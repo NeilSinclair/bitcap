@@ -1,0 +1,68 @@
+# CUSIP -> ticker, for fetching a price series to sit behind the holding history.
+#
+# These mappings are model knowledge, not a licensed security master, so none of
+# them is trusted on faith. research/position_history.py verifies each one by
+# comparing the vendor's close on each 13F quarter-end against the price implied
+# by the filing itself (value_usd / shares). A ticker that does not reconcile is
+# rejected and the position falls back to its implied-price series.
+#
+# That check is why this file is safe to hand-write: a wrong ticker produces no
+# price line rather than a wrong price line. Entity-resolution collisions are a
+# named failure mode, and a silently mismatched ticker is exactly one.
+#
+# Coverage is deliberately partial — the names that carry the weight. Anything
+# absent simply renders its implied-price series.
+#
+# Keys are quoted, and that is not cosmetic. Unquoted, YAML reads an all-digit
+# CUSIP as an integer, and one with a leading zero as OCTAL: 023135106 silently
+# became 5028422. Sixteen identifiers were corrupted this way and the only
+# symptom was a missing price line. The loader now rejects anything that is not
+# a 9-character CUSIP rather than relying on the quotes surviving an edit.
+
+version: 1
+
+tickers:
+  "Q4982L109": IREN      # IREN Limited (formerly Iris Energy)
+  "023135106": AMZN
+  "595112103": MU
+  "770700102": HOOD
+  "80004C200": SNDK      # SanDisk, spun out of Western Digital
+  "874039100": TSM       # TSMC ADR
+  "573874104": MRVL
+  "82706C108": SIMO
+  "687793109": OSCR
+  "35671D857": FCX
+  "20451W101": CMPS
+  "171779309": CIEN
+  "458140100": INTC
+  "88080T104": WULF
+  "654902204": NOK       # Nokia ADR
+  "67066G104": NVDA
+  "833635105": SQM
+  "00827B106": AFRM
+  "012653101": ALB
+  "36317J209": GLXY
+  "17253J106": CIFR
+  "44812J104": HUT
+  "75734B100": RDDT
+  "21874A106": CORZ
+  "038169207": APLD
+  "816850101": SMTC
+  "767292105": RIOT
+  "093712107": BE
+  "02079K305": GOOG
+  "172573107": CRCL
+  "19260Q107": COIN
+  "18452B209": CLSK
+  "29362U104": ENTG
+  "04626A103": ALAB
+  "55024U109": LITE
+  "01609W102": BABA
+  "17275R102": CSCO
+  "037833100": AAPL
+  "64110L106": NFLX
+  "042068205": ARM
+  "482480100": KLAC
+  "22160K105": COST
+  "025537101": AEP
+  "N97284108": NBIS

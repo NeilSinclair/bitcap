@@ -1,0 +1,272 @@
+{
+  "fund": "BIT Global Technology Leaders",
+  "dec2025": {
+    "as_of": "2025-12-31",
+    "source": "Annual report, Verm\u00f6gensaufstellung (pages 8-9)",
+    "coverage": "complete: 34 positions = 97.43% of fund assets",
+    "fund_assets_eur": 1088484031.17,
+    "n_positions": 34
+  },
+  "jul2026": {
+    "as_of": "2026-07-31",
+    "source": "Monthly factsheet, R-I share class",
+    "coverage": "top 10 only, of 23 positions",
+    "fund_assets": "1,406.8 M EUR",
+    "n_positions": "23"
+  },
+  "q2_2026": {
+    "as_of": "2026-06-30",
+    "source": "Form 13F-HR",
+    "coverage": "US-listed common stock, ALL BIT funds combined"
+  },
+  "rows": [
+    {
+      "name": "Amazon",
+      "isin": "US0231351067",
+      "dec2025_pct": 1.78,
+      "dec2025_held": true,
+      "jul2026_pct": 10.1,
+      "q2_13f_pct": 7.625,
+      "us_listed": true
+    },
+    {
+      "name": "IREN",
+      "isin": "AU0000185993",
+      "dec2025_pct": 8.93,
+      "dec2025_held": true,
+      "jul2026_pct": 9.0,
+      "q2_13f_pct": 11.024,
+      "us_listed": true
+    },
+    {
+      "name": "Micron",
+      "isin": "US5951121038",
+      "dec2025_pct": 5.07,
+      "dec2025_held": true,
+      "jul2026_pct": 7.9,
+      "q2_13f_pct": 7.253,
+      "us_listed": true
+    },
+    {
+      "name": "Robinhood",
+      "isin": "US7707001027",
+      "dec2025_pct": 3.77,
+      "dec2025_held": true,
+      "jul2026_pct": 6.7,
+      "q2_13f_pct": 6.817,
+      "us_listed": true
+    },
+    {
+      "name": "Navan",
+      "isin": null,
+      "dec2025_pct": null,
+      "dec2025_held": false,
+      "jul2026_pct": 5.0,
+      "q2_13f_pct": 4.085,
+      "us_listed": true
+    },
+    {
+      "name": "TSMC",
+      "isin": "US8740391003",
+      "dec2025_pct": 5.66,
+      "dec2025_held": true,
+      "jul2026_pct": 4.6,
+      "q2_13f_pct": 5.619,
+      "us_listed": true
+    },
+    {
+      "name": "AUTO1",
+      "isin": "DE000A2LQ884",
+      "dec2025_pct": 8.4,
+      "dec2025_held": true,
+      "jul2026_pct": 4.5,
+      "q2_13f_pct": null,
+      "us_listed": false
+    },
+    {
+      "name": "Infineon",
+      "isin": null,
+      "dec2025_pct": null,
+      "dec2025_held": false,
+      "jul2026_pct": 4.1,
+      "q2_13f_pct": null,
+      "us_listed": false
+    },
+    {
+      "name": "Oscar Health",
+      "isin": "US6877931096",
+      "dec2025_pct": 3.7,
+      "dec2025_held": true,
+      "jul2026_pct": 4.0,
+      "q2_13f_pct": 3.342,
+      "us_listed": true
+    },
+    {
+      "name": "Hinge Health",
+      "isin": "US4333131039",
+      "dec2025_pct": 6.74,
+      "dec2025_held": true,
+      "jul2026_pct": 3.8,
+      "q2_13f_pct": 3.287,
+      "us_listed": true
+    }
+  ],
+  "tail": [
+    {
+      "name": "Reddit Inc. Class A",
+      "isin": "US75734B1008",
+      "dec2025_pct": 4.93,
+      "status": "still_held"
+    },
+    {
+      "name": "Alphabet Inc. Cl. A",
+      "isin": "US02079K3059",
+      "dec2025_pct": 4.48,
+      "status": "still_held"
+    },
+    {
+      "name": "Datadog Inc. Class A",
+      "isin": "US23804L1035",
+      "dec2025_pct": 4.34,
+      "status": "sold"
+    },
+    {
+      "name": "Lemonade Inc.",
+      "isin": "US52567D1072",
+      "dec2025_pct": 3.95,
+      "status": "sold"
+    },
+    {
+      "name": "Meta Platforms Inc. Cl.A",
+      "isin": "US30303M1027",
+      "dec2025_pct": 3.49,
+      "status": "sold"
+    },
+    {
+      "name": "Rubrik Inc. Cl.A",
+      "isin": "US7811541090",
+      "dec2025_pct": 3.37,
+      "status": "still_held"
+    },
+    {
+      "name": "Kaspi.kz JSC (Sp.GDRs Reg.S)/1",
+      "isin": "US48581R2058",
+      "dec2025_pct": 3.32,
+      "status": "still_held"
+    },
+    {
+      "name": "NVIDIA Corp.",
+      "isin": "US67066G1040",
+      "dec2025_pct": 3.26,
+      "status": "still_held"
+    },
+    {
+      "name": "Microsoft Corp.",
+      "isin": "US5949181045",
+      "dec2025_pct": 2.89,
+      "status": "sold"
+    },
+    {
+      "name": "HUT 8 Corp.",
+      "isin": "US44812J1043",
+      "dec2025_pct": 2.22,
+      "status": "still_held"
+    },
+    {
+      "name": "Duolingo Inc. A",
+      "isin": "US26603R1068",
+      "dec2025_pct": 2.02,
+      "status": "sold"
+    },
+    {
+      "name": "Netskope Inc. Registered Shares Class A o.N.",
+      "isin": "US64119N6085",
+      "dec2025_pct": 1.76,
+      "status": "sold"
+    },
+    {
+      "name": "Luckin Coffee Inc. Reg.Shs (Sp.ADRs)/8 Cl.A o.N.",
+      "isin": "US54951L1098",
+      "dec2025_pct": 1.72,
+      "status": "sold"
+    },
+    {
+      "name": "Palo Alto Networks Inc.",
+      "isin": "US6974351057",
+      "dec2025_pct": 1.66,
+      "status": "sold"
+    },
+    {
+      "name": "InPost Inc. Share",
+      "isin": "LU2290522684",
+      "dec2025_pct": 1.42,
+      "status": "unknown"
+    },
+    {
+      "name": "Grindr Inc.",
+      "isin": "US39854F1012",
+      "dec2025_pct": 1.07,
+      "status": "still_held"
+    },
+    {
+      "name": "Coherent Corp. Registered Shares o.N.",
+      "isin": "US19247G1076",
+      "dec2025_pct": 1.07,
+      "status": "sold"
+    },
+    {
+      "name": "Advanced Micro Devices Inc.",
+      "isin": "US0079031078",
+      "dec2025_pct": 1.04,
+      "status": "sold"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "dec2025_pct": 1.02,
+      "status": "still_held"
+    },
+    {
+      "name": "Axon Enterprise Inc.",
+      "isin": "US05464C1018",
+      "dec2025_pct": 0.97,
+      "status": "sold"
+    },
+    {
+      "name": "Broadcom Inc",
+      "isin": "US11135F1012",
+      "dec2025_pct": 0.82,
+      "status": "sold"
+    },
+    {
+      "name": "Pure Storage Inc. Cl.A",
+      "isin": "US74624M1027",
+      "dec2025_pct": 0.78,
+      "status": "sold"
+    },
+    {
+      "name": "Lumentum Holdings Inc. Registered Shares DL -,001",
+      "isin": "US55024U1097",
+      "dec2025_pct": 0.57,
+      "status": "still_held"
+    },
+    {
+      "name": "Xometry Inc. Cl.A",
+      "isin": "US98423F1093",
+      "dec2025_pct": 0.55,
+      "status": "still_held"
+    },
+    {
+      "name": "Omada Health Inc. Registered Shares o.N.",
+      "isin": "US68170A1088",
+      "dec2025_pct": 0.55,
+      "status": "sold"
+    },
+    {
+      "name": "GCL Poly Energy",
+      "isin": "KYG3774X1088",
+      "dec2025_pct": 0.11,
+      "status": "unknown"
+    }
+  ]
+}

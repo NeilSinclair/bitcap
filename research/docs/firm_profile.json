@@ -1,0 +1,64 @@
+{
+  "name": "BIT Capital GmbH",
+  "founded": "2017",
+  "hq": "Dircksenstrasse 4, 10179 Berlin, Germany",
+  "sec_cik": "0002053305",
+  "aum": "€3.0bn",
+  "headcount": "45 employees worldwide, including ~10 engineers, data scientists and product managers",
+  "positioning": "Germany's largest asset manager specialising in actively managed technology equity funds.",
+  "sources": {
+    "site": "https://bitcap.com/en",
+    "approach": "https://bitcap.com/en/investmentansatz",
+    "products": "https://bitcap.com/en/investmentprodukte",
+    "team": "https://bitcap.com/en/team",
+    "edgar": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002053305&type=13F"
+  },
+  "quotes": [
+    {
+      "text": "Our goal is to understand companies just as well as the CEO does.",
+      "attribution": "Jan Beckers, founder and CIO",
+      "source": "https://bitcap.com/en/investmentansatz"
+    },
+    {
+      "text": "Technology scales human judgment: AI systems detect patterns. Human analysis assesses relevance and investment implications.",
+      "attribution": "BIT Capital",
+      "source": "https://bitcap.com/en"
+    },
+    {
+      "text": "Investment ideas are generated strictly bottom-up, from the analysis of secular technology trends, data-driven screening models.",
+      "attribution": "BIT Capital",
+      "source": "https://bitcap.com/en"
+    },
+    {
+      "text": "More than 75% of all trades are now influenced by this systematic data infrastructure.",
+      "attribution": "BIT Capital",
+      "source": "https://bitcap.com/en/investmentansatz"
+    }
+  ],
+  "platform": [
+    {"metric": "3.1 petabytes", "detail": "of data processed daily, with hundreds of features per company updated in near real time"},
+    {"metric": ">1 billion tokens", "detail": "run per month across 30+ LLM and LRM processes"},
+    {"metric": ">30,000", "detail": "alternative data signals analysed daily"},
+    {"metric": ">75%", "detail": "of trades influenced by systematic data signals and models"},
+    {"metric": "7 years", "detail": "spent building the proprietary data architecture"}
+  ],
+  "process": [
+    {"step": "Bottom-up ideation", "detail": "Business models, competition and technological innovation; secular technology trends plus data-driven screens."},
+    {"step": "Leaders selection", "detail": "Concentrate on the companies judged to be structural winners in their segment."},
+    {"step": "Fundamental research", "detail": "Classic bottom-up analysis; the stated goal is to understand the company as well as its CEO does."},
+    {"step": "Network intelligence", "detail": "Proprietary and expert-network inputs alongside the quantitative signals."},
+    {"step": "Risk management", "detail": "Bottom-up KPI monitoring for valuation extremes; a macro team running a proprietary five-factor regime and liquidity model; an independent Risk Committee reviewing VaR and liquidity stress monthly."},
+    {"step": "High-conviction weightings", "detail": "Positions above 5% of NAV must survive 'Devil's Advocate' sessions where analysts defend the thesis against negative scenarios."},
+    {"step": "Strict valuation discipline", "detail": "Positions adjusted or closed when expectations, data or valuation deteriorate."},
+    {"step": "Dynamic portfolio rotation", "detail": "Highly active management with high turnover; human judgment remains the final authority."}
+  ],
+  "people": [
+    {"name": "Jan Beckers", "role": "Founder & Chief Investment Officer", "note": "Serial Berlin tech entrepreneur; initiated or built 25+ companies including Clark and Solarisbank. Manages the flagship strategy."},
+    {"name": "Carlos Bielsa", "role": "Managing Partner & Chief AI Officer", "note": "Former aerospace engineer at the European Space Agency. Co-manages BIT Global Technology Leaders. Owns AI integration into the investment process."},
+    {"name": "Dr. Matthias Thom", "role": "Managing Director & Co-CIO", "note": "Former Chief Compliance Officer; legal and regulatory frameworks."},
+    {"name": "Marcel Oldenkott", "role": "Systematic Strategies, Macro Research, Risk & Data Engineering", "note": "CFA, 15+ years in asset management, previously ran €1bn+ in multi-asset strategies."},
+    {"name": "Ingo Lupatelli", "role": "Director Research & Portfolio Management", "note": "Technology strategies; emerging markets and fintech. MIT Sloan MBA, CFA."},
+    {"name": "Benjamin Kauper", "role": "Director Systematic Strategies", "note": "Quantitative models and algorithmic trading. Doctorate in Quantitative Economics."},
+    {"name": "Ha Duong", "role": "Director Crypto Strategies", "note": "In crypto markets since 2016; previously co-managed a European crypto fund-of-funds."}
+  ]
+}

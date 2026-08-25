@@ -1,0 +1,178 @@
+# Holdings reference data for the lab -> public equity mapping layer.
+#
+# One entry per security held by a BIT fund, keyed on ISIN (never on name: the
+# fund reports abbreviate inconsistently, and "FTInterInc.Cl.A" is Figure
+# Technology Solutions).
+#
+# `mechanisms` are the joinable key. An LLM tags a lab publication with mechanism
+# ids; deterministic code propagates through these links to reach a holding, with
+# the `why` string as the explanation the UI shows. Ids must exist in
+# mechanisms.yaml — validate.py enforces this.
+#
+# Sourcing rule: any number that could move a decision carries a `source`. Where
+# a fact is model knowledge rather than a cited filing, it says so in
+# `unverified`. Fabricated financial detail is the one error class that would
+# discredit the whole tool.
+
+version: 1
+schema:
+  isin: "Primary key, taken from the fund Vermoegensaufstellung."
+  ticker: "Best-effort. ticker_verified stays false until a security master confirms it."
+  ai_role: "primary | secondary | none - see mechanisms.yaml enums."
+  mechanisms: "List of {id, sign, magnitude, confidence, why, source}."
+  held_by: "Short fund names holding it, from portfolio_views.json."
+
+companies:
+  - isin: US5951121038
+    name: Micron Technology, Inc.
+    ticker: MU
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 8.64
+
+    what_it_does: >
+      Designs and manufactures memory and storage: DRAM, NAND flash and, critically
+      for the AI thesis, high-bandwidth memory (HBM) stacked alongside AI
+      accelerators. One of only three companies at scale in DRAM, with SK Hynix
+      and Samsung.
+
+    revenue_model: >
+      Sells memory chips and modules to hyperscalers, OEMs, handset makers and
+      automotive customers. Historically a brutal commodity cycle — price is set
+      by industry supply against demand, and Micron is a price taker. The AI
+      cycle has partly broken that: HBM is sold under multi-year contracts,
+      which management calls "Strategic Customer Agreements" and explicitly
+      frames as improving "durability and predictability".
+
+    financials:
+      as_of: FQ3 2026, quarter ended 2026-05-28
+      revenue_usd_m: 41456
+      revenue_yoy_pct: 346
+      gaap_gross_margin_pct: 84.6
+      gaap_operating_margin_pct: 80.4
+      diluted_eps_usd: 24.67
+      capex_usd_m: 7100
+      segments:
+        - {name: Cloud Memory, revenue_usd_m: 13769, gross_margin_pct: 83}
+        - {name: Core Data Center, revenue_usd_m: 11524, gross_margin_pct: 87}
+        - {name: Mobile and Client, revenue_usd_m: 11521, gross_margin_pct: 87}
+        - {name: Automotive and Embedded, revenue_usd_m: 4634}
+      derived:
+        datacenter_share_of_revenue_pct: 61.0
+        note: Cloud Memory plus Core Data Center as a share of total revenue.
+      source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      Memory is the binding constraint on AI serving. 61% of revenue is now
+      datacentre, up from roughly a third two years ago, and gross margin has
+      gone from 37.7% to 84.6% year on year — a shortage, not a cycle.
+
+    mechanisms:
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Long context, KV-cache pressure and mixture-of-experts weights raise HBM
+          and DRAM content per accelerator independently of unit volume. This is
+          the single strongest link in the portfolio.
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: Every training cluster ships with HBM attached to each accelerator.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Test-time reasoning and agentic loops raise memory bandwidth demand per
+          served request, not just accelerator count.
+      - id: inference_cost_down
+        sign: negative
+        magnitude: medium
+        confidence: medium
+        why: >
+          Cheaper serving reduces memory content per token, but the DeepSeek case
+          suggests elasticity offsets much of it — volume rose. Medium, not high,
+          because the net sign is genuinely contested.
+      - id: ai_capex_cycle_turns
+        sign: negative
+        magnitude: high
+        confidence: high
+        why: >
+          At 84.6% gross margin the entire industry is incentivised to add supply.
+          Memory has always punished that. The multi-year contracts delay the
+          reckoning rather than removing it.
+      - id: export_controls
+        sign: mixed
+        magnitude: medium
+        confidence: medium
+        why: >
+          Restrictions on HBM to China cut a market but tighten global supply,
+          which supports price. Direction depends on the specific measure.
+      - id: on_device_inference
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Mobile and Client is 28% of revenue; on-device models raise DRAM content
+          per handset and PC.
+
+    tailwinds:
+      - claim: HBM output contracted under multi-year agreements, reducing spot exposure.
+        source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+      - claim: HBM4 in high-volume shipment to lead customer; HBM4E targeted for calendar 2027.
+        source: https://futurumgroup.com/insights/micron-q3-fy-2026-hbm-and-lpdram-drive-the-next-phase-of-ai-memory-growth/
+        sourcing: secondary
+      - claim: Only three credible DRAM suppliers worldwide, so supply response is slow and visible.
+        unverified: Structural industry fact, not from a cited filing.
+
+    headwinds:
+      - claim: >
+          84.6% gross margin is far above any historical memory peak and invites
+          supply addition from all three players; capex was $7.1bn in the quarter.
+        source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+      - claim: >
+          Customer concentration in HBM — a small number of accelerator platforms
+          determine demand, so one platform's slip is material.
+        unverified: Directional judgement, not a disclosed concentration figure.
+      - claim: >
+          Any credible efficiency breakthrough that cuts memory per token hits the
+          highest-margin revenue first.
+        unverified: Mechanism-level judgement.
+
+    peers_in_portfolio:
+      - isin: US80004C2008
+        name: SanDisk
+        relation: NAND supplier; both geared to storage demand
+      - isin: US82706C1080
+        name: Silicon Motion
+        relation: controller silicon for NAND
+      - isin: US5738741041
+        name: Marvell Technology
+        relation: custom accelerator and interconnect silicon
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2021-03-31
+      quarters_held_any_size: 22
+      quarters_held_material: 14
+      material_since: 2023-03-31
+      comment: >
+        The raw 22-quarter streak is misleading. Through 2022 the holding was
+        4,000 shares worth $0.2m — 0.04% of the book, a residual stub. The real
+        position was built in Q1 2023, close to the memory-cycle trough, and has
+        been material ever since.
+      source: research/docs/analysis.json (derived from SEC Form 13F-HR)
+
+    open_questions:
+      - >
+        Does BIT hold Micron for the AI cycle or as a memory-cycle trade? They
+        rebuilt in Q1 2023 near the trough, and cut shares 40% in Q2 2026 while
+        the weight still rose — trimming into strength. That looks like cycle
+        discipline rather than a structural AI holding.

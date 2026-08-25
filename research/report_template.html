@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIT Capital — Research Overview</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --panel2:#1c232d; --line:#2a323d;
+    --tx:#e6edf3; --dim:#9aa7b4; --faint:#6e7c8c;
+    --accent:#4c9aff; --pos:#3fb950; --neg:#f85149; --warn:#d29922;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121822,#0d1117);
+    padding:34px 0 0;margin-bottom:26px}
+  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .sub b{color:var(--tx);font-weight:600}
+
+  nav{display:flex;gap:2px;flex-wrap:wrap}
+  nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);
+    font:inherit;font-size:14px;padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0}
+  nav button:hover{color:var(--tx);background:var(--panel)}
+  nav button.on{color:var(--tx);border-bottom-color:var(--accent);font-weight:600}
+
+  section{display:none} section.on{display:block}
+  h2{font-size:19px;margin:30px 0 4px;letter-spacing:-.01em}
+  h2:first-child{margin-top:6px}
+  .note{color:var(--dim);font-size:13.5px;margin:0 0 16px;max-width:78ch}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .k{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em}
+  .stat .v{font-size:25px;font-weight:650;letter-spacing:-.02em;margin-top:5px}
+  .stat .d{color:var(--dim);font-size:12.5px;margin-top:3px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:600;cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;
+    background:var(--panel)}
+  th:hover{color:var(--tx)}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px}
+  tbody tr:hover{background:var(--panel2)}
+  .scroll{max-height:620px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)} .dim{color:var(--dim)} .faint{color:var(--faint)}
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;font-weight:600;
+    background:#1f2b3d;color:var(--accent);border:1px solid #2c3d55}
+  .tag.new{background:#122b1b;color:var(--pos);border-color:#1d4429}
+  .tag.out{background:#2d1618;color:var(--neg);border-color:#4a2226}
+
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--tx);
+    border-radius:8px;padding:8px 12px;font:inherit;font-size:13.5px;width:260px;margin-bottom:12px}
+  input[type=search]:focus{outline:0;border-color:var(--accent)}
+
+  .bar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;min-width:70px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+
+  .fund{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden}
+  .fund>summary{padding:14px 18px;cursor:pointer;list-style:none;display:flex;
+    align-items:center;gap:14px;flex-wrap:wrap}
+  .fund>summary::-webkit-details-marker{display:none}
+  .fund>summary:hover{background:var(--panel2)}
+  .fund .nm{font-weight:600;flex:1;min-width:210px}
+  .fund .aum{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .fund .body{padding:4px 18px 20px;border-top:1px solid var(--line)}
+  .chev{color:var(--faint);font-size:12px}
+  details[open] .chev{transform:rotate(90deg)}
+  .chev{display:inline-block;transition:transform .15s}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;margin:10px 0}
+  .kv dt{color:var(--faint)} .kv dd{margin:0;font-family:var(--mono);font-size:12.5px}
+  blockquote{margin:12px 0;padding:10px 16px;border-left:3px solid var(--accent);
+    background:var(--panel2);border-radius:0 8px 8px 0;color:var(--dim);font-size:13.5px}
+  blockquote p{margin:0 0 6px} blockquote cite{color:var(--faint);font-size:12px;font-style:normal}
+  .commentary{font-size:13.5px;color:var(--dim);white-space:pre-wrap;line-height:1.6}
+
+  .caveat{border-left:3px solid var(--warn);background:#241f10;padding:12px 16px;
+    border-radius:0 8px 8px 0;font-size:13.5px;margin:14px 0}
+  .caveat b{color:var(--warn)}
+  ul.tight{margin:8px 0;padding-left:20px;font-size:13.5px;color:var(--dim)}
+  ul.tight li{margin:5px 0}
+  ol.steps{padding-left:20px;font-size:13.5px;color:var(--dim)}
+  ol.steps li{margin:8px 0} ol.steps b{color:var(--tx)}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  tr.exp{cursor:pointer} tr.exp:hover{background:var(--panel2)}
+  tr.exp td:first-child::before{content:"\25B8";color:var(--faint);
+    display:inline-block;width:14px;transition:transform .15s}
+  tr.exp.open td:first-child::before{transform:rotate(90deg)}
+  tr.detail>td{background:var(--panel2);padding:14px 18px 18px;border-bottom:1px solid var(--line)}
+  .ctrls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:12px}
+  .ctrls button{background:var(--panel);border:1px solid var(--line);color:var(--dim);
+    border-radius:6px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}
+  .ctrls button.on{border-color:var(--accent);color:var(--accent);background:#16202e}
+  .ctrls .spacer{flex:1}
+  .legend{font-size:12px;color:var(--faint);margin-top:6px}
+  .src{font-size:12px;color:var(--faint);margin-top:8px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>BIT Capital — Research Overview</h1>
+  <div class="sub" id="hdr"></div>
+  <nav id="nav"></nav>
+</div></header>
+
+<div class="wrap">
+  <section id="s-overview" class="on"></section>
+  <section id="s-funds"></section>
+  <section id="s-positions"></section>
+  <section id="s-history"></section>
+  <section id="s-sources"></section>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const {funds, gtl, analysis, firm, compare, views, history} = DATA;
+const V = views;
+
+const usd = v => v >= 1e9 ? '$' + (v/1e9).toFixed(2) + 'bn' : '$' + Math.round(v/1e6).toLocaleString() + 'm';
+const pct = v => (v == null ? '—' : v.toFixed(2) + '%');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const title = s => String(s).toLowerCase().replace(/\b[a-z]/g, m => m.toUpperCase());
+const el = (id, html) => document.getElementById(id).innerHTML = html;
+
+/* ---------- header + nav ---------- */
+el('hdr', `<b>${firm.aum}</b> AUM · founded ${firm.founded} · ${firm.hq.split(',').slice(-2).join(',').trim()}
+  · <b>${views.total_positions}</b> disclosed positions across 6 funds · statements ${views.date_range[0]} to ${views.date_range[1]}`);
+
+const TABS = [['overview','Overview'],['funds','Funds'],['positions','Positions'],
+              ['history','History & turnover'],['sources','Sources & caveats']];
+el('nav', TABS.map(([k,l],i) =>
+  `<button data-t="${k}" class="${i===0?'on':''}">${l}</button>`).join(''));
+document.getElementById('nav').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === 's-' + b.dataset.t));
+  window.scrollTo(0, 0);
+};
+
+/* ---------- sortable tables ---------- */
+function sortable(tbl) {
+  tbl.querySelectorAll('th').forEach((th, i) => th.onclick = () => {
+    const tb = tbl.tBodies[0], rows = [...tb.rows];
+    const dir = th.dataset.dir === 'asc' ? -1 : 1;
+    tbl.querySelectorAll('th').forEach(o => delete o.dataset.dir);
+    th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+    const val = r => {
+      const t = r.cells[i].dataset.v ?? r.cells[i].textContent;
+      const n = parseFloat(String(t).replace(/[^0-9.\-]/g, ''));
+      return isNaN(n) ? String(t).toLowerCase() : n;
+    };
+    rows.sort((a, b) => { const x = val(a), y = val(b);
+      return (typeof x === 'number' && typeof y === 'number') ? (x - y) * dir
+           : String(x).localeCompare(String(y)) * dir; });
+    rows.forEach(r => tb.appendChild(r));
+  });
+}
+
+/* ---------- charts ---------- */
+function lineChart(series, key, fmt, colour) {
+  const W = 720, H = 190, P = 42;
+  const vals = series.map(d => d[key]);
+  const max = Math.max(...vals) * 1.08, min = 0;
+  const x = i => P + i * (W - P - 12) / (series.length - 1);
+  const y = v => H - 26 - (v - min) / (max - min) * (H - 50);
+  const pts = series.map((d, i) => `${x(i)},${y(d[key])}`).join(' ');
+  const ticks = [0, max / 2, max].map(v =>
+    `<text x="${P - 8}" y="${y(v) + 4}" text-anchor="end" fill="#6e7c8c" font-size="10">${fmt(v)}</text>
+     <line x1="${P}" y1="${y(v)}" x2="${W - 12}" y2="${y(v)}" stroke="#2a323d" stroke-width="1"/>`).join('');
+  const lbls = series.map((d, i) => (i % 4 === 0 || i === series.length - 1)
+    ? `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" fill="#6e7c8c" font-size="10">${d.period.slice(2, 7)}</text>` : '').join('');
+  const dots = series.map((d, i) =>
+    `<circle cx="${x(i)}" cy="${y(d[key])}" r="2.6" fill="${colour}"><title>${d.period} · ${fmt(d[key])}</title></circle>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}">${ticks}
+    <polyline points="${pts}" fill="none" stroke="${colour}" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/>${dots}${lbls}</svg>`;
+}
+
+function barChart(rows, labelKey, valKey, fmt) {
+  const max = Math.max(...rows.map(r => r[valKey]));
+  return rows.map(r => `<tr>
+    <td>${esc(title(r[labelKey]))}</td>
+    <td style="width:45%"><div class="bar"><i style="width:${(r[valKey] / max * 100).toFixed(1)}%"></i></div></td>
+    <td class="n">${fmt(r[valKey])}</td></tr>`).join('');
+}
+
+/* ---------- position history: holding bars + optional price line ---------- */
+const METRICS = {
+  shares: {label: 'Shares held', fmt: v => v >= 1e6 ? (v/1e6).toFixed(1)+'m'
+                                          : v >= 1e3 ? Math.round(v/1e3)+'k' : String(v)},
+  value_usd: {label: 'Position value', fmt: v => v >= 1e6 ? '$'+Math.round(v/1e6)+'m'
+                                                 : '$'+Math.round(v/1e3)+'k'},
+  pct: {label: '% of 13F book', fmt: v => v.toFixed(2)+'%'},
+};
+
+const ms = d => Date.parse(d);
+
+function positionChart(rec, metric, showPrice) {
+  const W = 860, H = 250, L = 62, R = 60, T = 14, B = 30;
+  const qs = rec.quarters, m = METRICS[metric];
+  const price = showPrice ? (rec.price || []) : [];
+
+  // One time axis shared by both series: quarter-end bars and a denser price
+  // line only line up if they are positioned by date, not by index.
+  const t0 = ms(qs[0].period);
+  const t1 = Math.max(ms(qs[qs.length-1].period), ...(price.length ? [ms(price[price.length-1].date)] : []));
+  const x = t => L + (t - t0) / (t1 - t0) * (W - L - R);
+
+  const hMax = Math.max(...qs.map(q => q[metric])) * 1.12 || 1;
+  const yH = v => H - B - v / hMax * (H - B - T);
+  const bw = Math.max(4, (W - L - R) / qs.length * 0.62);
+
+  const grid = [0, 0.25, 0.5, 0.75, 1].map(f => {
+    const v = hMax * f;
+    return `<line x1="${L}" y1="${yH(v)}" x2="${W-R}" y2="${yH(v)}" stroke="#2a323d"/>
+      <text x="${L-8}" y="${yH(v)+4}" text-anchor="end" fill="#6e7c8c" font-size="10">${m.fmt(v)}</text>`;
+  }).join('');
+
+  const bars = qs.map(q => {
+    if (!q[metric]) return '';
+    const held = q.shares > 0;
+    return `<rect x="${x(ms(q.period)) - bw/2}" y="${yH(q[metric])}" width="${bw}"
+      height="${H - B - yH(q[metric])}" fill="${held ? '#3f8ecc' : '#3a4553'}" rx="1.5">
+      <title>${q.period}\n${m.label}: ${m.fmt(q[metric])}${q.implied_price
+        ? '\nImplied price: $' + q.implied_price.toFixed(2) : ''}</title></rect>`;
+  }).join('');
+
+  // Gaps matter: a quarter the position was absent is a sale, not missing data.
+  const gaps = qs.filter(q => !q.shares).map(q =>
+    `<line x1="${x(ms(q.period))}" y1="${H-B}" x2="${x(ms(q.period))}" y2="${H-B+5}"
+      stroke="#5a6472"/>`).join('');
+
+  let line = '', axisR = '';
+  if (price.length) {
+    const pv = price.map(p => p.close);
+    const lo = Math.min(...pv) * 0.94, hi = Math.max(...pv) * 1.06;
+    const yP = v => H - B - (v - lo) / (hi - lo) * (H - B - T);
+    const pts = price.map(p => `${x(ms(p.date)).toFixed(1)},${yP(p.close).toFixed(1)}`).join(' ');
+    line = `<polyline points="${pts}" fill="none" stroke="var(--warn)" stroke-width="1.6"
+      stroke-linejoin="round" opacity=".92"/>`;
+    axisR = [lo, (lo+hi)/2, hi].map(v =>
+      `<text x="${W-R+8}" y="${yP(v)+4}" fill="var(--warn)" font-size="10">$${
+        v >= 100 ? Math.round(v) : v.toFixed(1)}</text>`).join('');
+  }
+
+  const years = [...new Set(qs.map(q => q.period.slice(0,4)))].map(y =>
+    `<text x="${x(ms(y+'-01-01'))}" y="${H-8}" text-anchor="middle" fill="#6e7c8c"
+      font-size="10">${y}</text>`).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}">${grid}${bars}${gaps}${line}${axisR}${years}</svg>`;
+}
+
+function priceNote(rec) {
+  if (rec.price_source === 'vendor') {
+    const c = rec.price_check || {};
+    return `Price: ${rec.ticker} daily close, split-adjusted. Ticker confirmed against
+      this filing's own implied price (value ÷ shares) — worst gap
+      ${c.worst_error_pct}% across ${c.quarters_checked} quarter-ends.` +
+      (c.split_before ? ` Split detected on or before ${c.split_before}, so the price line is
+      rebased where the share counts beside it are not.` : '');
+  }
+  return `Price: implied by the filing itself (value ÷ shares), quarter-ends only —
+    ${rec.price_note ? esc(rec.price_note) + '. ' : 'no verified ticker mapping. '}
+    This is BIT's own reported basis, not a vendor quote.`;
+}
+
+function detailPanel(cusip) {
+  const rec = history.positions[cusip];
+  if (!rec) return `<div class="note">No filing history for ${esc(cusip)}.</div>`;
+  const held = rec.quarters.filter(q => q.shares);
+  const peak = held.reduce((a, b) => a.pct > b.pct ? a : b, held[0]);
+  return `<div class="ctrls" data-cusip="${cusip}">
+      ${Object.entries(METRICS).map(([k, v]) =>
+        `<button data-metric="${k}" class="${k === 'shares' ? 'on' : ''}">${v.label}</button>`).join('')}
+      <span class="spacer"></span>
+      <button data-price="1" class="on">Price ${rec.price_source === 'vendor'
+        ? esc(rec.ticker) : '(implied)'}</button>
+    </div>
+    <div class="chartbox"></div>
+    <div class="legend">First reported ${held[0].period} · peak weight
+      ${peak.pct.toFixed(2)}% at ${peak.period} · ${held.length} of
+      ${rec.quarters.length} quarters held. ${priceNote(rec)}</div>`;
+}
+
+/* A US ISIN embeds its CUSIP at characters 3-11, which is the only bridge
+   between the ISIN-keyed statutory tables and the CUSIP-keyed 13F history.
+   Non-US lines (Infineon, Auto1, SK Hynix) have no 13F row at all — that is the
+   13F's blind spot, not missing data, so those rows simply do not expand. */
+const cusipOf = isin => /^US/.test(isin || '') ? isin.slice(2, 11) : null;
+const hasHistory = key => !!(key && history.positions[key]);
+
+/* Rows expand on click; charts render lazily because there are 80+ of them. */
+function attachExpanders(table) {
+  table.addEventListener('click', e => {
+    if (e.target.closest('.ctrls')) return;
+    const tr = e.target.closest('tr.exp'); if (!tr) return;
+    const next = tr.nextElementSibling;
+    if (next && next.classList.contains('detail')) { next.remove(); tr.classList.remove('open'); return; }
+    const row = table.tBodies[0].insertRow(tr.rowIndex);
+    row.className = 'detail';
+    const td = row.insertCell();
+    td.colSpan = tr.cells.length;
+    td.innerHTML = detailPanel(tr.dataset.cusip);
+    tr.classList.add('open');
+    draw(td, tr.dataset.cusip);
+  });
+
+  table.addEventListener('click', e => {
+    const b = e.target.closest('.ctrls button'); if (!b) return;
+    const box = b.closest('.detail');
+    if (b.dataset.metric) {
+      b.parentElement.querySelectorAll('[data-metric]').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    } else {
+      b.classList.toggle('on');
+    }
+    draw(box.querySelector('td'), b.closest('.ctrls').dataset.cusip);
+  });
+}
+
+function draw(td, cusip) {
+  const ctrls = td.querySelector('.ctrls');
+  const metric = ctrls.querySelector('[data-metric].on').dataset.metric;
+  const showPrice = ctrls.querySelector('[data-price]').classList.contains('on');
+  td.querySelector('.chartbox').innerHTML = positionChart(history.positions[cusip], metric, showPrice);
+}
+
+/* ---------- overview ---------- */
+const s = analysis.series, first = s[0], last = s[s.length - 1];
+const avgTurn = (analysis.quarters.slice(-8).reduce((a, q) => a + q.name_turnover_pct, 0) / 8).toFixed(0);
+const aumM = f => parseFloat(String(f.fund_assets).replace(/[^0-9.]/g, '')) || 0;
+const totalFundAum = funds.reduce((a, f) => a + aumM(f), 0);
+
+el('s-overview', `
+<h2>What BIT Capital is</h2>
+<p class="note">A Berlin technology-equity boutique founded in ${firm.founded} by Jan Beckers. ${firm.positioning}
+They describe themselves as an <b>AI-native investment platform</b> — which matters for this case study:
+the team we would be building for already runs a large alternative-data and LLM pipeline, and treats
+signal generation as a core competence rather than a novelty.</p>
+
+<div class="grid g4">
+  <div class="card stat"><div class="k">Assets under management</div><div class="v">${firm.aum}</div>
+    <div class="d">across ${funds.length} funds we could source</div></div>
+  <div class="card stat"><div class="k">Positions we can see</div><div class="v">${views.total_positions}</div>
+    <div class="d">${views.total_unique} unique securities · €${(views.total_value_eur/1e6).toFixed(0)}m</div></div>
+  <div class="card stat"><div class="k">Top-10 concentration</div><div class="v">${last.top10_pct}%</div>
+    <div class="d">of US-listed equity value</div></div>
+  <div class="card stat"><div class="k">Quarterly name turnover</div><div class="v">${avgTurn}%</div>
+    <div class="d">8-quarter average, entries + exits</div></div>
+</div>
+
+<h2>How they invest</h2>
+<p class="note">Taken from their own description of the process. The eight steps below are their framing, not mine.</p>
+<div class="grid g2">
+  <div class="card"><ol class="steps">${firm.process.map(p =>
+    `<li><b>${esc(p.step)}.</b> ${esc(p.detail)}</li>`).join('')}</ol></div>
+  <div>
+    ${firm.quotes.map(q => `<blockquote><p>“${esc(q.text)}”</p>
+      <cite>— ${esc(q.attribution)}</cite></blockquote>`).join('')}
+    <div class="card" style="margin-top:12px">
+      <div class="k" style="color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em">The platform, in their numbers</div>
+      <dl class="kv" style="margin-top:10px">${firm.platform.map(p =>
+        `<dt>${esc(p.metric)}</dt><dd style="font-family:inherit;color:var(--dim)">${esc(p.detail)}</dd>`).join('')}</dl>
+    </div>
+  </div>
+</div>
+
+<h2>Why the intelligence system matters to them</h2>
+<p class="note">Three things in the data, rather than in their marketing, tell you what this fund needs.</p>
+<div class="grid g2">
+  <div class="card"><b>They turn the book over fast.</b>
+    <p class="note" style="margin:8px 0 0">In the most recent quarter, ${analysis.quarters[analysis.quarters.length-1].n_entries}
+    positions were opened and ${analysis.quarters[analysis.quarters.length-1].n_exits} closed —
+    ${analysis.quarters[analysis.quarters.length-1].name_turnover_pct}% name turnover in three months.
+    A fund that re-underwrites its portfolio this often needs early signal, not quarterly summaries.</p></div>
+  <div class="card"><b>They are long the AI build-out, concretely.</b>
+    <p class="note" style="margin:8px 0 0">The largest positions are compute, memory and networking —
+    IREN, Micron, SanDisk, Marvell, TSMC, Silicon Motion, Ciena — not just model developers.
+    A lab publishing something that changes inference cost or memory intensity lands directly on this book.</p></div>
+  <div class="card"><b>Most of the labs are private, so the exposure is indirect.</b>
+    <p class="note" style="margin:8px 0 0">There is no OpenAI or Anthropic line item. The connection runs through
+    suppliers, infrastructure and second-order beneficiaries, which is exactly the mapping layer the case study
+    asks for and the part that cannot be automated naively.</p></div>
+  <div class="card"><b>They already run an LLM pipeline.</b>
+    <p class="note" style="margin:8px 0 0">30+ LLM processes, >1bn tokens a month, >75% of trades touched by
+    systematic signals. The bar for "an AI system that reads things" is therefore high, and the differentiator
+    has to be sourcing, attribution and noise suppression rather than the fact of using a model.</p></div>
+</div>`);
+
+/* ---------- funds ---------- */
+const perfRow = (f, key, label) => {
+  const p = f.performance[key]; if (!p) return '';
+  const cells = ['mtd','ytd','1y','3y','5y','since_inception'].map(k => {
+    const v = p[k] ?? '—';
+    const cls = key === 'cumulative' && v.startsWith('-') ? 'neg' : (key === 'cumulative' && v !== '—' && v !== '-' ? 'pos' : 'dim');
+    return `<td class="n ${cls}">${esc(v)}</td>`;
+  }).join('');
+  return `<tr><td class="dim">${label}</td>${cells}</tr>`;
+};
+
+el('s-funds', `
+<h2>The funds</h2>
+<p class="note">Seven funds sourced from BIT's own monthly factsheets (as of ${funds[0].as_of}), one share class each —
+so the fund is the unit here, not the share class. Totals below sum to
+<b>€${totalFundAum.toLocaleString(undefined,{maximumFractionDigits:0})}m</b> against the
+<b>${firm.aum}</b> they report firm-wide; the gap is other share classes, mandates and the
+BIT Global Technology Opportunities SICAV, whose factsheet is not published on the same endpoint.</p>
+
+${funds.map((f, i) => `
+<details class="fund" ${i === 0 ? 'open' : ''}>
+  <summary>
+    <span class="chev">▶</span>
+    <span class="nm">${esc(f.name)}</span>
+    <span class="aum">${esc(f.fund_assets)}</span>
+    <span class="tag">${(V.summary.find(x => x.fund_full === f.name)?.n_holdings) ?? esc(f.n_positions)} positions</span>
+    <span class="aum">${esc(f.performance.cumulative?.since_inception ?? '')} since ${esc(f.inception)}</span>
+  </summary>
+  <div class="body">
+    <dl class="kv">
+      <dt>ISIN</dt><dd>${esc(f.isin)}</dd>
+      <dt>Inception</dt><dd>${esc(f.inception)}</dd>
+      <dt>Type</dt><dd>${esc(f.fund_type)} · SFDR ${esc(f.sfdr)}</dd>
+      <dt>Fees</dt><dd>${esc(f.management_fee)} mgmt · ${esc(f.ongoing_costs)} ongoing</dd>
+    </dl>
+    <p class="note">${esc(f.strategy)}</p>
+
+    <div class="grid g2">
+      <div class="card" style="padding:10px 14px">
+        <table><thead><tr><th></th><th class="n">MTD</th><th class="n">YTD</th><th class="n">1Y</th>
+          <th class="n">3Y</th><th class="n">5Y</th><th class="n">Incep.</th></tr></thead>
+        <tbody>${perfRow(f,'cumulative','Return')}${perfRow(f,'volatility','Vol p.a.')}${perfRow(f,'sharpe','Sharpe')}</tbody></table>
+      </div>
+      <div class="card" style="padding:10px 14px">
+        <table><tbody>
+          ${f.asset_classes.map(a => `<tr><td class="dim">${esc(a.name)}</td><td class="n">${esc(a.pct)}</td></tr>`).join('')}
+          ${f.currencies.map(a => `<tr><td class="dim">${esc(a.name)}</td><td class="n">${esc(a.pct)}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:12px">
+      ${(() => {
+        const held = V.positions.filter(h => h.fund_full === f.name)
+                                .sort((a, b) => b.pct_of_fund - a.pct_of_fund);
+        const stmt = V.summary.find(x => x.fund_full === f.name);
+        if (!held.length) return `<div class="card" style="padding:12px 14px">
+          <div class="dim" style="font-size:13px">No statutory portfolio statement is published for this
+          fund, so only the factsheet top 10 is available.</div>
+          ${f.top10.length ? `<table style="margin-top:8px"><tbody>${f.top10.map(h =>
+            `<tr><td>${esc(h.name)}</td><td class="n">${esc(h.pct)}</td></tr>`).join('')}</tbody></table>` : ''}
+        </div>`;
+        const max = held[0].pct_of_fund;
+        return `<div class="card" style="padding:10px 14px">
+          <div class="k" style="color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">
+            All ${held.length} positions · ${esc(stmt.as_of)} · ${stmt.coverage_pct.toFixed(2)}% of fund</div>
+          <div style="max-height:420px;overflow:auto"><table><tbody>
+          ${held.map(h => `<tr>
+            <td>${esc(h.name)}</td>
+            <td class="n dim" style="font-size:11.5px">${esc(h.isin)}</td>
+            <td style="width:28%"><div class="bar"><i style="width:${(h.pct_of_fund / max * 100).toFixed(1)}%"></i></div></td>
+            <td class="n">${h.pct_of_fund.toFixed(2)}%</td>
+            <td class="n faint">€${(h.value_eur / 1e6).toFixed(1)}m</td></tr>`).join('')}
+          </tbody></table></div>
+          <div class="src">From the fund's own Vermögensaufstellung, reconciled to its stated securities
+          subtotal. Factsheet top 10 (${esc(f.as_of)}) is a month or more later and may differ.</div>
+        </div>`;
+      })()}
+    ${f.commentary ? `<h2 style="font-size:14px;margin:20px 0 6px">Manager commentary — ${esc(f.as_of)}</h2>
+      <div class="commentary">${esc(f.commentary)}</div>` : ''}
+  </div>
+</details>`).join('')}`);
+
+/* ---------- positions ---------- */
+
+el('s-positions', `
+<h2>Every position BIT discloses</h2>
+<p class="note">Not the top 10. Each fund's statutory report carries a complete
+<i>Vermögensaufstellung</i> — every holding with its weight — so this is
+<b>${V.total_positions} positions</b> across six funds, ${V.total_unique} unique securities,
+<b>€${(V.total_value_eur/1e6).toLocaleString(undefined,{maximumFractionDigits:0})}m</b>.
+The factsheets disclose 60 names between them; this is the rest.</p>
+
+<div class="caveat"><b>Six funds, six dates.</b> Each fund reports on its own financial calendar, so the
+statements span ${V.date_range[0]} to ${V.date_range[1]}. Every figure below is accurate as of its own
+fund's date and they are not simultaneous. Crypto Opportunities is an AIF and publishes no comparable
+statement, so it is absent entirely.</div>
+
+<div class="card" style="padding:6px 14px;margin-bottom:16px"><table><thead><tr>
+  <th>Fund</th><th class="n">Statement date</th><th class="n">Positions</th>
+  <th class="n">Factsheet says</th><th class="n">Coverage</th><th class="n">Value</th><th>Reconciles</th>
+</tr></thead><tbody>
+${V.summary.map(f => `<tr>
+  <td>${esc(f.fund)}</td><td class="n dim">${esc(f.as_of)}</td>
+  <td class="n">${f.n_holdings}</td>
+  <td class="n faint">${f.factsheet_positions ?? '—'}</td>
+  <td class="n">${f.coverage_pct.toFixed(2)}%</td>
+  <td class="n">€${(f.value_eur/1e6).toFixed(1)}m</td>
+  <td>${f.reconciles ? '<span class="tag new">exact</span>' : '<span class="tag out">off</span>'}</td>
+</tr>`).join('')}
+</tbody></table></div>
+<p class="src">"Reconciles" means our parsed holdings sum to the report's own <i>Summe Wertpapiervermögen</i>
+line to within one euro. All six do. Position counts differ from the factsheets because the two count
+differently — the factsheet number is as at its own later date, and treats some sleeves as one line.</p>
+
+<h2>Largest exposures across all funds</h2>
+<p class="note">Same security summed across every fund that holds it. This is the closest thing to a single
+answer to "what does BIT own", and it is where the AI-infrastructure concentration actually shows.</p>
+<div class="card" style="padding:6px 14px"><table><thead><tr>
+  <th>Security</th><th class="n">ISIN</th><th class="n">Total</th><th class="n">Share</th>
+  <th class="n">Funds</th><th>Held by</th>
+</tr></thead><tbody>
+${V.aggregate.slice(0, 30).map(a => `<tr>
+  <td>${esc(a.name)}</td><td class="n dim">${esc(a.isin)}</td>
+  <td class="n" data-v="${a.value_eur}">€${(a.value_eur/1e6).toFixed(1)}m</td>
+  <td class="n" data-v="${a.pct_of_total}"><div class="bar" style="display:inline-block;width:60px;vertical-align:middle;margin-right:6px"><i style="width:${(a.pct_of_total/V.aggregate[0].pct_of_total*100).toFixed(0)}%"></i></div>${a.pct_of_total.toFixed(2)}%</td>
+  <td class="n">${a.n_funds}</td>
+  <td class="dim" style="font-size:12px">${a.funds.map(f => esc(f.fund)).join(', ')}</td>
+</tr>`).join('')}
+</tbody></table></div>
+<p class="src">${V.aggregate.filter(a => a.n_funds > 1).length} of ${V.total_unique} securities are held by
+more than one fund — the strategies overlap heavily, so a single lab development can move several funds at once.</p>
+
+<h2>All ${V.total_positions} positions</h2>
+<p class="note">Rows marked <span class="dim">&#9656;</span> expand into BIT's quarter-by-quarter holding
+history with an optional price line. Only US listings carry a marker: the history comes from the 13F, which
+never sees the non-US lines, and a US ISIN is the only thing that maps to a CUSIP.</p>
+<input type="search" id="q1" placeholder="Filter by name, ISIN or fund…">
+<div class="scroll"><table id="t1"><thead><tr>
+  <th>Security</th><th class="n">ISIN</th><th>Fund</th><th class="n">Date</th>
+  <th class="n">% of fund</th><th class="n">Value (EUR)</th><th class="n">Units</th>
+</tr></thead><tbody>
+${V.positions.map(h => { const cu = cusipOf(h.isin); return `<tr${hasHistory(cu)
+  ? ` class="exp" data-cusip="${cu}"` : ''}>
+  <td>${esc(h.name)}</td><td class="n dim">${esc(h.isin)}</td>
+  <td class="dim">${esc(h.fund)}</td><td class="n faint">${esc(h.as_of)}</td>
+  <td class="n" data-v="${h.pct_of_fund}">${h.pct_of_fund.toFixed(2)}%</td>
+  <td class="n" data-v="${h.value_eur}">${Math.round(h.value_eur).toLocaleString()}</td>
+  <td class="n faint">${(h.shares ?? 0).toLocaleString()} ${esc(h.unit)}</td>
+</tr>`; }).join('')}
+</tbody></table></div>
+
+<h2>All BIT vehicles — US-listed equity (13F, ${analysis.latest_period})</h2>
+<p class="note">Filed with the SEC on ${analysis.latest_filed}. Merged by CUSIP:
+${analysis.latest_n_holdings} positions worth ${usd(analysis.latest_total_usd)}. Kept because it is the only
+source that is <i>simultaneous</i> across all funds, and the only one giving quarter-by-quarter history —
+but it sees US listings only.</p>
+<input type="search" id="q2" placeholder="Filter ${analysis.latest_n_holdings} positions…">
+<div class="scroll"><table id="t2"><thead><tr>
+  <th>Issuer</th><th>CUSIP</th><th class="n">% of 13F</th><th class="n">Value</th>
+  <th class="n">Shares</th><th class="n">Δ shares</th><th class="n">Qtrs ≥0.5%</th><th class="n">Qtrs any size</th>
+</tr></thead><tbody>
+${analysis.latest_holdings.map(h => {
+  const sv = analysis.survival.find(x => x.issuer === h.issuer);
+  const c = h.share_change_pct;
+  const chg = c === null ? '<span class="tag new">new</span>'
+    : `<span class="${c > 0 ? 'pos' : c < 0 ? 'neg' : 'dim'}">${c > 0 ? '+' : ''}${c.toFixed(0)}%</span>`;
+  return `<tr class="exp" data-cusip="${h.cusip}">
+    <td>${esc(title(h.issuer))}</td><td class="n dim">${esc(h.cusip)}</td>
+    <td class="n" data-v="${h.pct}">${h.pct.toFixed(2)}%</td>
+    <td class="n" data-v="${h.value_usd}">${usd(h.value_usd)}</td>
+    <td class="n dim">${h.shares.toLocaleString()}</td>
+    <td class="n" data-v="${c === null ? 9999 : c}">${chg}</td>
+    <td class="n" data-v="${sv ? sv.quarters_material : 0}">${sv ? sv.quarters_material : '—'}</td>
+    <td class="n faint" data-v="${sv ? sv.quarters_held : 0}">${sv ? sv.quarters_held : '—'}</td></tr>`;
+}).join('')}
+</tbody></table></div>
+
+${analysis.latest_options.length ? `
+<h2>Option positions (${analysis.latest_period})</h2>
+<p class="note">Reported separately because 13F option rows carry notional exposure, not capital deployed.
+The Amazon call below is larger than the Amazon common holding.</p>
+<div class="card" style="padding:6px 14px"><table><tbody>
+${analysis.latest_options.map(o => `<tr><td>${esc(title(o.issuer))}</td>
+  <td><span class="tag">${esc(o.put_call)}</span></td>
+  <td class="n">${usd(o.value_usd)}</td>
+  <td class="n dim">${o.shares.toLocaleString()} sh</td></tr>`).join('')}
+</tbody></table></div>` : ''}`);
+
+/* ---------- history ---------- */
+const q = analysis.quarters;
+el('s-history', `
+<h2>US-listed equity over time</h2>
+<p class="note">From 26 quarterly 13F filings, ${s[0].period} to ${last.period}. Note the shape: BIT filed
+20 of these as a backfill on a single day in February 2025, so this history became public all at once.</p>
+<div class="card">${lineChart(s, 'value_usd', v => '$' + (v/1e9).toFixed(1) + 'bn', '#4c9aff')}
+  <div class="legend">Common-stock value reported on Form 13F. Excludes non-US listings, crypto and cash.</div></div>
+
+<div class="grid g2" style="margin-top:14px">
+  <div class="card">${lineChart(s, 'n_holdings', v => Math.round(v), '#3fb950')}
+    <div class="legend">Number of US-listed positions</div></div>
+  <div class="card">${lineChart(s, 'top10_pct', v => Math.round(v) + '%', '#d29922')}
+    <div class="legend">Top-10 concentration, % of 13F value</div></div>
+</div>
+
+<h2>Turnover</h2>
+<p class="note">Names entering and leaving each quarter, as a share of the prior quarter's value. This is the
+clearest evidence for their "highly active management, high turnover" claim — and the clearest argument for
+why timely signal is worth something to them.</p>
+<div class="card">${lineChart(q, 'name_turnover_pct', v => Math.round(v) + '%', '#f85149')}
+  <div class="legend">Name turnover per quarter (entries + exits ÷ prior quarter value)</div></div>
+
+<h2>Recent quarters in detail</h2>
+${q.slice(-4).reverse().map(x => `
+<details class="fund">
+  <summary><span class="chev">▶</span><span class="nm">${x.period}</span>
+    <span class="tag new">${x.n_entries} new</span>
+    <span class="tag out">${x.n_exits} exited</span>
+    <span class="aum">${x.name_turnover_pct}% turnover</span></summary>
+  <div class="body"><div class="grid g2">
+    <div><div class="k" style="color:var(--pos);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;margin:10px 0 4px">Opened</div>
+      <table><tbody>${barChart(x.entries, 'issuer', 'value_usd', usd)}</tbody></table></div>
+    <div><div class="k" style="color:var(--neg);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;margin:10px 0 4px">Closed</div>
+      <table><tbody>${barChart(x.exits, 'issuer', 'value_usd', usd)}</tbody></table></div>
+  </div></div>
+</details>`).join('')}
+
+<h2>How long positions survive</h2>
+<p class="note">All ${analysis.survival.length} positions in the latest 13F. This is a different population
+from the ${V.total_positions} rows on the Positions tab, which are
+${V.total_unique} securities counted once per fund that holds them, from the statutory reports. The 13F sees
+US-listed long equity across all vehicles at once — fewer names, but the only source with quarterly history.
+Consecutive quarters back from the latest filing. Two measures, because presence and
+conviction are not the same thing: <b>≥0.5%</b> counts only quarters where the name was a real position,
+<b>any size</b> counts mere presence. Where the two diverge, the name was carried as a stub long before it
+mattered.</p>
+<div class="caveat"><b>Why both columns exist.</b> Micron shows 22 quarters at any size but 14 at ≥0.5% —
+through 2022 the holding was 4,000 shares worth $0.2m, or 0.04% of the book. Reading the raw streak as a
+five-year conviction position would be wrong. Robinhood is starker still: 10 quarters present, 1 material.</div>
+<div class="scroll"><table><thead><tr>
+  <th>Issuer</th><th class="n">Now</th><th class="n">Qtrs ≥0.5%</th><th class="n">Any size</th>
+  <th class="n">First seen</th><th>Build-up</th>
+</tr></thead><tbody>
+${analysis.survival.map(x => {
+  const gap = x.quarters_held - x.quarters_material;
+  return `<tr><td>${esc(title(x.issuer))}</td>
+  <td class="n dim">${x.pct.toFixed(2)}%</td>
+  <td class="n">${x.quarters_material}Q</td>
+  <td class="n faint">${x.quarters_held}Q</td>
+  <td class="n faint">${esc(x.first_seen)}</td>
+  <td style="width:34%"><div class="bar" title="filled = material, faint = stub">
+    <i style="width:${(x.quarters_material / analysis.series.length * 100).toFixed(0)}%"></i></div>
+    ${gap > 2 ? `<span class="faint" style="font-size:11px">carried as a stub for ${gap} quarters first</span>` : ''}
+  </td></tr>`;
+}).join('')}
+</tbody></table></div>
+<p class="src">Bars are scaled to the ${analysis.series.length} quarters filed. All BIT funds combined —
+the 13F cannot attribute a position to a single fund, so a name may have moved between funds within a
+streak.</p>`);
+
+/* ---------- sources ---------- */
+el('s-sources', `
+<h2>Where every number here came from</h2>
+<p class="note">All primary sources. Nothing on this page is estimated or inferred unless it says so.</p>
+<div class="card"><table><tbody>
+  <tr><td><b>Form 13F-HR</b></td><td class="dim">26 filings, ${s[0].period}–${last.period}, position level</td>
+    <td><a href="${firm.sources.edgar}">SEC EDGAR, CIK ${firm.sec_cik}</a></td></tr>
+  <tr><td><b>Monthly factsheets</b></td><td class="dim">7 funds, as of ${funds[0].as_of}</td>
+    <td><a href="https://documents.anevis-solutions.com/bitcap/">documents.anevis-solutions.com</a></td></tr>
+  <tr><td><b>Statutory reports</b></td><td class="dim">Full portfolio statements, 6 funds,
+    ${views.date_range[0]} to ${views.date_range[1]} — the primary position source</td>
+    <td><a href="https://fondsapi.hansainvest.com/api/fund/DE000A2N8127/document/hjb/de/de">HANSAINVEST</a></td></tr>
+  <tr><td><b>Firm profile</b></td><td class="dim">Philosophy, process, platform, team</td>
+    <td><a href="${firm.sources.approach}">bitcap.com</a></td></tr>
+</tbody></table></div>
+
+<h2>What this data cannot tell you</h2>
+<div class="caveat"><b>The 13F is a partial view.</b> It covers US-listed long equity across all BIT vehicles
+<i>combined</i>. It excludes non-US listings — SK Hynix, Infineon, Auto1, Zijin Mining all appear in the
+factsheets but never in the 13F — as well as crypto assets, cash and short exposure. It cannot be split by fund.</div>
+<div class="caveat"><b>Everything is lagged.</b> 13F is filed 45 days after quarter end; the annual report is
+eight months old. For a fund turning over ~${avgTurn}% of names a quarter, the live book differs materially
+from anything disclosed here. The factsheet top-10s at ${funds[0].as_of} are the freshest position data available.</div>
+<div class="caveat"><b>Tickers are checked, not trusted.</b> The filings give CUSIP and the annual report
+gives ISIN; neither carries a ticker, and a guessed one would put a fabricated identifier into an investment
+tool. So <code>config/tickers.yaml</code> hand-maps the names that carry the weight —
+${Object.values(history.positions).filter(p => p.price_source === 'vendor').length} of them verified and in
+use — and every mapping is checked before use: the vendor's close on each 13F
+quarter-end must match the price the filing itself implies (value ÷ shares) to within
+${history.price_tolerance_pct}%. A ticker that fails is dropped, and the position falls back to its
+implied-price series — a missing price line rather than a wrong one. Splits are detected and excluded from
+the check, because the vendor adjusts for them retroactively and the filings do not.</div>
+<div class="caveat"><b>Share classes do not fragment the data.</b> Each fund has several share classes
+(Technology Leaders has eight), but they are claims on one <i>Sondervermögen</i>, differing only in fee,
+currency and minimum investment. There is one portfolio statement per fund covering all classes, and the
+factsheet's "Fund assets" is fund-level — checked against the statement, not assumed. Only the
+<b>performance and fee figures</b> on the Funds tab are class-specific: they are the R-I class where
+available, and the same year differs by up to 5pp between classes (2025: R-III +29.9%, I-I +35.1%).
+The sum falling short of ${firm.aum} is the missing funds, not missing classes.</div>
+<div class="caveat"><b>The factsheet URLs are rolling, not versioned.</b> They end in <code>_ultimo</code> and
+always serve the latest month-end, so the same URL returns different data next month and the PDFs saved here
+cannot be re-fetched. Anything ingesting this source has to snapshot and date-stamp rather than re-fetch and
+assume stability. Full provenance for every file is in <code>research/docs/sources.json</code>.</div>
+
+<h2>Open questions for the case study</h2>
+<ul class="tight">
+  <li>Which of these funds is the intelligence product actually <i>for</i>? Technology Leaders is
+    ${(aumM(funds[0]) / totalFundAum * 100).toFixed(0)}% of the sourced AUM and the obvious answer.</li>
+  <li>Can the lab→ticker mapping be validated historically? DeepSeek in Jan 2025 lands in the middle of this
+    13F history, so we can check what the book actually did around it.</li>
+  <li>Given they already run 30+ LLM processes, what does our system do that theirs does not? The honest answer
+    is probably attribution, source resolution and person-level tracking, not raw extraction.</li>
+  <li>Do we need a security master (ISIN/CUSIP→ticker) as a real component, or is a hand-curated map for
+    ~40 names sufficient for the submission?</li>
+</ul>`);
+
+/* ---------- wire up ---------- */
+// An open detail row would sort away from its parent and would match the filter
+// on its own chart text, so collapse everything before either runs.
+function collapseAll(tbl) {
+  [...tbl.tBodies[0].rows].forEach(r => r.classList.contains('detail') && r.remove());
+  tbl.querySelectorAll('tr.exp.open').forEach(r => r.classList.remove('open'));
+}
+
+['t1','t2'].forEach(id => sortable(document.getElementById(id)));
+['t1','t2'].forEach(id => attachExpanders(document.getElementById(id)));
+['t1','t2'].forEach(id => document.getElementById(id).querySelectorAll('th').forEach(
+  th => th.addEventListener('click', () => collapseAll(document.getElementById(id)), true)));
+
+[['q1','t1'],['q2','t2']].forEach(([qi, ti]) => {
+  document.getElementById(qi).oninput = e => {
+    const tbl = document.getElementById(ti);
+    collapseAll(tbl);
+    const v = e.target.value.toLowerCase();
+    [...tbl.tBodies[0].rows].forEach(r =>
+      r.style.display = r.textContent.toLowerCase().includes(v) ? '' : 'none');
+  };
+});
+</script>
+</body>
+</html>

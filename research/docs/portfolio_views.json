@@ -1,0 +1,5487 @@
+{
+  "summary": [
+    {
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026",
+      "as_of_iso": "2026-06-30",
+      "n_holdings": 26,
+      "coverage_pct": 94.55,
+      "value_eur": 1507284610.41,
+      "reconciles": true,
+      "source": "hjb_GTL.pdf",
+      "factsheet_positions": "23"
+    },
+    {
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026",
+      "as_of_iso": "2026-02-28",
+      "n_holdings": 22,
+      "coverage_pct": 88.94,
+      "value_eur": 158162888.95,
+      "reconciles": true,
+      "source": "hjb_CryptoLeaders.pdf",
+      "factsheet_positions": "36"
+    },
+    {
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026",
+      "as_of_iso": "2026-04-30",
+      "n_holdings": 35,
+      "coverage_pct": 100.65,
+      "value_eur": 103573320.04,
+      "reconciles": true,
+      "source": "hjb_GlobalLeaders.pdf",
+      "factsheet_positions": "32"
+    },
+    {
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026",
+      "as_of_iso": "2026-04-30",
+      "n_holdings": 29,
+      "coverage_pct": 96.93,
+      "value_eur": 63321480.57,
+      "reconciles": true,
+      "source": "jb_AggressiveGrowth.pdf",
+      "factsheet_positions": "22"
+    },
+    {
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026",
+      "as_of_iso": "2026-05-31",
+      "n_holdings": 41,
+      "coverage_pct": 96.99,
+      "value_eur": 38488573.4,
+      "reconciles": true,
+      "source": "jb_DefensiveGrowth.pdf",
+      "factsheet_positions": "36"
+    },
+    {
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026",
+      "as_of_iso": "2026-03-31",
+      "n_holdings": 72,
+      "coverage_pct": 84.2,
+      "value_eur": 19852005.19,
+      "reconciles": true,
+      "source": "jb_MultiAsset.pdf",
+      "factsheet_positions": "67"
+    }
+  ],
+  "positions": [
+    {
+      "name": "Amazon.com Inc.",
+      "isin": "US0231351067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 790734.0,
+      "bought_in_period": 758863.0,
+      "sold_in_period": 66541.0,
+      "price": 240.14,
+      "value_eur": 166239319.55,
+      "pct_of_fund": 10.43,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Micron Technology Inc.",
+      "isin": "US5951121038",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 137383.0,
+      "bought_in_period": 128960.0,
+      "sold_in_period": 212277.0,
+      "price": 1145.28,
+      "value_eur": 137747430.28,
+      "pct_of_fund": 8.64,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "IREN Ltd.",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3384388.0,
+      "bought_in_period": 1664369.0,
+      "sold_in_period": 1182807.0,
+      "price": 45.91,
+      "value_eur": 136027360.98,
+      "pct_of_fund": 8.53,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "San Disk Corp.",
+      "isin": "US80004C2008",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 52953.0,
+      "bought_in_period": 69140.0,
+      "sold_in_period": 16187.0,
+      "price": 2050.39,
+      "value_eur": 95053010.87,
+      "pct_of_fund": 5.96,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Robinhood Markets Inc. Cl. A",
+      "isin": "US7707001027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 894608.0,
+      "bought_in_period": 1414591.0,
+      "sold_in_period": 931163.0,
+      "price": 101.83,
+      "value_eur": 79753059.87,
+      "pct_of_fund": 5.0,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Marvell Technology Inc.",
+      "isin": "US5738741041",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 314430.0,
+      "bought_in_period": 424888.0,
+      "sold_in_period": 110458.0,
+      "price": 277.75,
+      "value_eur": 76456933.68,
+      "pct_of_fund": 4.8,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Taiwan Semiconduct. Manufact.",
+      "isin": "US8740391003",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 182965.0,
+      "bought_in_period": 64441.0,
+      "sold_in_period": 122353.0,
+      "price": 455.1,
+      "value_eur": 72897676.95,
+      "pct_of_fund": 4.57,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Infineon Technologies AG",
+      "isin": "DE0006231004",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 896961.0,
+      "bought_in_period": 896961.0,
+      "sold_in_period": 0.0,
+      "price": 78.24,
+      "value_eur": 70178228.64,
+      "pct_of_fund": 4.4,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Hinge Health Inc.",
+      "isin": "US4333131039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 940037.0,
+      "bought_in_period": 118574.0,
+      "sold_in_period": 1010852.0,
+      "price": 81.48,
+      "value_eur": 67055561.18,
+      "pct_of_fund": 4.21,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Oscar Health Inc. Cl. A",
+      "isin": "US6877931096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2566874.0,
+      "bought_in_period": 485074.0,
+      "sold_in_period": 1179243.0,
+      "price": 29.45,
+      "value_eur": 66180292.67,
+      "pct_of_fund": 4.15,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "AUTO1 Group SE",
+      "isin": "DE000A2LQ884",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 2852630.0,
+      "bought_in_period": 0.0,
+      "sold_in_period": 428431.0,
+      "price": 23.16,
+      "value_eur": 66066910.8,
+      "pct_of_fund": 4.14,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Silicon Motion Technology Corp Reg. Shs(Sp. AD Rs)/4",
+      "isin": "US82706C1080",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 188769.0,
+      "bought_in_period": 188769.0,
+      "sold_in_period": 0.0,
+      "price": 331.94,
+      "value_eur": 54856626.71,
+      "pct_of_fund": 3.44,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Navan Inc. Registered Shares A",
+      "isin": "US6391931010",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2277052.0,
+      "bought_in_period": 2277052.0,
+      "sold_in_period": 0.0,
+      "price": 23.71,
+      "value_eur": 47265399.8,
+      "pct_of_fund": 2.97,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Freeport-Mc Mo Ran Inc.",
+      "isin": "US35671D8570",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 854332.0,
+      "bought_in_period": 854332.0,
+      "sold_in_period": 0.0,
+      "price": 61.62,
+      "value_eur": 46087929.82,
+      "pct_of_fund": 2.89,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Ciena",
+      "isin": "US1717793095",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 103350.0,
+      "bought_in_period": 103350.0,
+      "sold_in_period": 0.0,
+      "price": 478.93,
+      "value_eur": 43333259.36,
+      "pct_of_fund": 2.72,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "FT Inter Inc. Reg. Shares Cl. Ao. N.",
+      "isin": "US3493811034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1766813.0,
+      "bought_in_period": 1766813.0,
+      "sold_in_period": 0.0,
+      "price": 27.07,
+      "value_eur": 41871418.61,
+      "pct_of_fund": 2.63,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 333973.0,
+      "bought_in_period": 1270512.0,
+      "sold_in_period": 1291235.0,
+      "price": 131.72,
+      "value_eur": 38512517.89,
+      "pct_of_fund": 2.42,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "NVIDIA Corp.",
+      "isin": "US67066G1040",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 224396.0,
+      "bought_in_period": 123929.0,
+      "sold_in_period": 121665.0,
+      "price": 194.97,
+      "value_eur": 38302025.06,
+      "pct_of_fund": 2.4,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Nokia Corp. Reg AD Rs",
+      "isin": "US6549022043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2968942.0,
+      "bought_in_period": 3947309.0,
+      "sold_in_period": 978367.0,
+      "price": 13.03,
+      "value_eur": 33867642.16,
+      "pct_of_fund": 2.12,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "BE Semiconductor Inds N. V.",
+      "isin": "NL0012866412",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 109156.0,
+      "bought_in_period": 109156.0,
+      "sold_in_period": 0.0,
+      "price": 278.9,
+      "value_eur": 30443608.4,
+      "pct_of_fund": 1.91,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Compass Pathways PLC (Spons. AD Rs)",
+      "isin": "US20451W1018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1743832.0,
+      "bought_in_period": 1743832.0,
+      "sold_in_period": 0.0,
+      "price": 15.07,
+      "value_eur": 23006827.09,
+      "pct_of_fund": 1.44,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Soc. Quimicay Min.de Chile SAB (Sp. AD Rs)",
+      "isin": "US8336351056",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 348486.0,
+      "bought_in_period": 348486.0,
+      "sold_in_period": 0.0,
+      "price": 69.86,
+      "value_eur": 21313400.71,
+      "pct_of_fund": 1.34,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "IREN Ltd. Registered Shareso. N.",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 460526.0,
+      "bought_in_period": 242926.0,
+      "sold_in_period": 906981.0,
+      "price": 44.24,
+      "value_eur": 17267285.57,
+      "pct_of_fund": 9.71,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Terawulf Inc.",
+      "isin": "US88080T1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 758447.0,
+      "bought_in_period": 758447.0,
+      "sold_in_period": 0.0,
+      "price": 25.58,
+      "value_eur": 16984963.24,
+      "pct_of_fund": 1.07,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Terawulf Inc.",
+      "isin": "US88080T1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1063646.0,
+      "bought_in_period": 663398.0,
+      "sold_in_period": 939398.0,
+      "price": 17.88,
+      "value_eur": 16118307.04,
+      "pct_of_fund": 9.07,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "HUT8 Corp.",
+      "isin": "US44812J1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 346689.0,
+      "bought_in_period": 186964.0,
+      "sold_in_period": 792159.0,
+      "price": 54.82,
+      "value_eur": 16107713.35,
+      "pct_of_fund": 9.06,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Albemarle",
+      "isin": "US0126531013",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 133316.0,
+      "bought_in_period": 133316.0,
+      "sold_in_period": 0.0,
+      "price": 129.72,
+      "value_eur": 15140075.75,
+      "pct_of_fund": 0.95,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Hyperliquid Strategies Inc.",
+      "isin": "US44916Y1064",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1671029.0,
+      "bought_in_period": 1671029.0,
+      "sold_in_period": 0.0,
+      "price": 8.47,
+      "value_eur": 12390996.39,
+      "pct_of_fund": 0.78,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Semtech",
+      "isin": "US8168501018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 75000.0,
+      "bought_in_period": 150000.0,
+      "sold_in_period": 75000.0,
+      "price": 156.14,
+      "value_eur": 10252133.95,
+      "pct_of_fund": 0.64,
+      "fund": "Technology Leaders",
+      "fund_full": "BIT Global Technology Leaders",
+      "as_of": "30.06.2026"
+    },
+    {
+      "name": "Riot Blockchain Inc.",
+      "isin": "US7672921050",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 687627.0,
+      "bought_in_period": 681950.0,
+      "sold_in_period": 225378.0,
+      "price": 17.09,
+      "value_eur": 9959780.85,
+      "pct_of_fund": 5.6,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "21 Shares AGOENDZ25(unl) ETP Hyperliquid",
+      "isin": "CH1471826029",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 886371.0,
+      "bought_in_period": 2272134.0,
+      "sold_in_period": 1385763.0,
+      "price": 11.544,
+      "value_eur": 8672147.49,
+      "pct_of_fund": 4.88,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Coinbase Global Inc. Cl. A",
+      "isin": "US19260Q1076",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 55688.0,
+      "bought_in_period": 72305.0,
+      "sold_in_period": 51839.0,
+      "price": 181.06,
+      "value_eur": 8545528.67,
+      "pct_of_fund": 4.81,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Cipher Mining Inc.",
+      "isin": "US17253J1060",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 607831.0,
+      "bought_in_period": 1031863.0,
+      "sold_in_period": 2212153.0,
+      "price": 16.48,
+      "value_eur": 8489749.03,
+      "pct_of_fund": 4.77,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "IREN Ltd.",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 221037.0,
+      "bought_in_period": 177703.0,
+      "sold_in_period": 122573.0,
+      "price": 42.86,
+      "value_eur": 8096441.18,
+      "pct_of_fund": 7.87,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Bitfarms Ltd.",
+      "isin": "CA09173B1076",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 4072680.0,
+      "bought_in_period": 7155443.0,
+      "sold_in_period": 6593083.0,
+      "price": 2.33,
+      "value_eur": 8042498.86,
+      "pct_of_fund": 4.52,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Applied Digital Corp.",
+      "isin": "US0381692070",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 317214.0,
+      "bought_in_period": 731068.0,
+      "sold_in_period": 413854.0,
+      "price": 28.65,
+      "value_eur": 7702501.14,
+      "pct_of_fund": 4.33,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "FT Inter Inc. Reg. Shares Cl. Ao. N.",
+      "isin": "US3493811034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 258480.0,
+      "bought_in_period": 435175.0,
+      "sold_in_period": 176695.0,
+      "price": 34.04,
+      "value_eur": 7457122.81,
+      "pct_of_fund": 4.19,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Galaxy Digital Inc. Cl. A",
+      "isin": "US36317J2096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 397113.0,
+      "bought_in_period": 726733.0,
+      "sold_in_period": 601284.0,
+      "price": 21.94,
+      "value_eur": 7384235.29,
+      "pct_of_fund": 4.15,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Alphabet Inc. Cl. A",
+      "isin": "US02079K3059",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 23828.0,
+      "bought_in_period": 40864.0,
+      "sold_in_period": 17036.0,
+      "price": 349.94,
+      "value_eur": 7126203.16,
+      "pct_of_fund": 6.92,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Amazon.com Inc.",
+      "isin": "US0231351067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 30583.0,
+      "bought_in_period": 27083.0,
+      "sold_in_period": 6935.0,
+      "price": 263.04,
+      "value_eur": 6875098.13,
+      "pct_of_fund": 6.68,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Van Eck Di. Assets Eq. UC. ETF Reg. Shs AUSD Acc.o N",
+      "isin": "IE00BMDKNW35",
+      "unit": "ANT",
+      "currency": "EUR",
+      "shares": 690401.0,
+      "bought_in_period": 690401.0,
+      "sold_in_period": 0.0,
+      "price": 9.934,
+      "value_eur": 6858443.53,
+      "pct_of_fund": 3.86,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Alphabet Inc. Cl. A",
+      "isin": "US02079K3059",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 22590.0,
+      "bought_in_period": 30523.0,
+      "sold_in_period": 7933.0,
+      "price": 349.94,
+      "value_eur": 6755956.41,
+      "pct_of_fund": 10.34,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Amazon.com Inc.",
+      "isin": "US0231351067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 29814.0,
+      "bought_in_period": 57953.0,
+      "sold_in_period": 28139.0,
+      "price": 263.04,
+      "value_eur": 6702225.93,
+      "pct_of_fund": 10.26,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Cleanspark Inc.",
+      "isin": "US18452B2097",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 714508.0,
+      "bought_in_period": 2256443.0,
+      "sold_in_period": 1541935.0,
+      "price": 10.44,
+      "value_eur": 6322115.03,
+      "pct_of_fund": 3.56,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "i SHARESDIGITALASSETSAG Open End ETPZ. Bitcoin",
+      "isin": "XS2940466316",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 1099939.0,
+      "bought_in_period": 865823.0,
+      "sold_in_period": 58263.0,
+      "price": 5.6815,
+      "value_eur": 6249303.43,
+      "pct_of_fund": 3.51,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Bloom Energy Corp. A",
+      "isin": "US0937121079",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 22911.0,
+      "bought_in_period": 53135.0,
+      "sold_in_period": 30224.0,
+      "price": 287.97,
+      "value_eur": 5638561.38,
+      "pct_of_fund": 5.48,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "IREN Ltd.",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 148639.0,
+      "bought_in_period": 273002.0,
+      "sold_in_period": 627541.0,
+      "price": 42.86,
+      "value_eur": 5444549.65,
+      "pct_of_fund": 8.34,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Micron Technology Inc.",
+      "isin": "US5951121038",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12042.0,
+      "bought_in_period": 5838.0,
+      "sold_in_period": 11971.0,
+      "price": 518.46,
+      "value_eur": 5335693.8,
+      "pct_of_fund": 5.18,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Taiwan Semiconduct. Manufact.",
+      "isin": "US8740391003",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 15341.0,
+      "bought_in_period": 2822.0,
+      "sold_in_period": 16918.0,
+      "price": 393.83,
+      "value_eur": 5163444.18,
+      "pct_of_fund": 5.02,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Navan Inc. Registered Shares A",
+      "isin": "US6391931010",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 343296.0,
+      "bought_in_period": 343296.0,
+      "sold_in_period": 0.0,
+      "price": 17.13,
+      "value_eur": 5025775.98,
+      "pct_of_fund": 4.88,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "NVIDIA Corp.",
+      "isin": "US67066G1040",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 27457.0,
+      "bought_in_period": 14739.0,
+      "sold_in_period": 15587.0,
+      "price": 209.25,
+      "value_eur": 4910159.17,
+      "pct_of_fund": 4.77,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Inves. Mkt. II-I. Elw. Gl. B. UC. ETF Registered Acc. Shs US Do. N.",
+      "isin": "IE00BGBN6P67",
+      "unit": "ANT",
+      "currency": "EUR",
+      "shares": 34068.0,
+      "bought_in_period": 34068.0,
+      "sold_in_period": 0.0,
+      "price": 132.72,
+      "value_eur": 4521504.96,
+      "pct_of_fund": 2.54,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Hinge Health Inc.",
+      "isin": "US4333131039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 119049.0,
+      "bought_in_period": 59380.0,
+      "sold_in_period": 89236.0,
+      "price": 43.99,
+      "value_eur": 4475656.36,
+      "pct_of_fund": 4.35,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Robinhood Markets Inc. Cl. A",
+      "isin": "US7707001027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 64080.0,
+      "bought_in_period": 105097.0,
+      "sold_in_period": 139171.0,
+      "price": 79.45,
+      "value_eur": 4314904.65,
+      "pct_of_fund": 2.43,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Infineon Technologies AG",
+      "isin": "DE0006231004",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 77045.0,
+      "bought_in_period": 77045.0,
+      "sold_in_period": 0.0,
+      "price": 55.7,
+      "value_eur": 4291406.5,
+      "pct_of_fund": 4.17,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "i Shs III-Blockchain Techno. ETF Reg. Shs()USD Acc.o N",
+      "isin": "IE000RDRMSD1",
+      "unit": "ANT",
+      "currency": "EUR",
+      "shares": 324261.0,
+      "bought_in_period": 324261.0,
+      "sold_in_period": 0.0,
+      "price": 13.064,
+      "value_eur": 4236145.7,
+      "pct_of_fund": 2.38,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "FT Inter Inc. Cl. A",
+      "isin": "US3493811034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 148392.0,
+      "bought_in_period": 148392.0,
+      "sold_in_period": 0.0,
+      "price": 33.27,
+      "value_eur": 4219299.07,
+      "pct_of_fund": 4.1,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Meta Platforms Inc. Cl. A",
+      "isin": "US30303M1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 7143.0,
+      "bought_in_period": 3310.0,
+      "sold_in_period": 2740.0,
+      "price": 669.12,
+      "value_eur": 4084714.26,
+      "pct_of_fund": 3.97,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "AUTO1 Group SE",
+      "isin": "DE000A2LQ884",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 222479.0,
+      "bought_in_period": 0.0,
+      "sold_in_period": 41678.0,
+      "price": 18.3,
+      "value_eur": 4071365.7,
+      "pct_of_fund": 3.96,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "SK Hynix Inc. Reg. Shs(Sp. GD Rs144 A)/1 SW 5000",
+      "isin": "US78392B1070",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 5067.0,
+      "bought_in_period": 5606.0,
+      "sold_in_period": 539.0,
+      "price": 746.0,
+      "value_eur": 3779982.0,
+      "pct_of_fund": 5.79,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Oscar Health Inc. Cl. A",
+      "isin": "US6877931096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 231908.0,
+      "bought_in_period": 330952.0,
+      "sold_in_period": 99044.0,
+      "price": 17.93,
+      "value_eur": 3553636.82,
+      "pct_of_fund": 3.45,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "SK Hynix Inc. Reg. Shs(Sp. GD Rs144 A)/1 SW 5000",
+      "isin": "US78392B1070",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 4373.0,
+      "bought_in_period": 4373.0,
+      "sold_in_period": 0.0,
+      "price": 746.0,
+      "value_eur": 3262258.0,
+      "pct_of_fund": 3.17,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Bit Mine Immersion Techno. Inc.",
+      "isin": "US09175A2069",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 176957.0,
+      "bought_in_period": 397673.0,
+      "sold_in_period": 722214.0,
+      "price": 20.44,
+      "value_eur": 3065514.94,
+      "pct_of_fund": 1.72,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Advanced Micro Devices Inc.",
+      "isin": "US0079031078",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 10246.0,
+      "bought_in_period": 13341.0,
+      "sold_in_period": 21950.0,
+      "price": 337.11,
+      "value_eur": 2951909.29,
+      "pct_of_fund": 2.87,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Amazon.com Inc. 2)",
+      "isin": "US0231351067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12282.0,
+      "bought_in_period": 22447.0,
+      "sold_in_period": 19154.0,
+      "price": 274.0,
+      "value_eur": 2889262.07,
+      "pct_of_fund": 7.28,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Taiwan Semiconduct. Manufact.",
+      "isin": "US8740391003",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 8396.0,
+      "bought_in_period": 15903.0,
+      "sold_in_period": 7507.0,
+      "price": 393.83,
+      "value_eur": 2825909.48,
+      "pct_of_fund": 4.33,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Alphabet Inc. Cl. A",
+      "isin": "US02079K3059",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 7970.0,
+      "bought_in_period": 17730.0,
+      "sold_in_period": 9760.0,
+      "price": 390.13,
+      "value_eur": 2669530.89,
+      "pct_of_fund": 6.73,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Hinge Health Inc.",
+      "isin": "US4333131039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 69168.0,
+      "bought_in_period": 87389.0,
+      "sold_in_period": 18221.0,
+      "price": 43.99,
+      "value_eur": 2600376.31,
+      "pct_of_fund": 3.98,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "21 Shares AG O END Z25(unl) ETP Hyperliquid",
+      "isin": "CH1471826029",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 187959.0,
+      "bought_in_period": 187959.0,
+      "sold_in_period": 0.0,
+      "price": 16.13,
+      "value_eur": 2591042.36,
+      "pct_of_fund": 3.97,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Robinhood Markets Inc. Cl. A",
+      "isin": "US7707001027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 39304.0,
+      "bought_in_period": 18134.0,
+      "sold_in_period": 7371.0,
+      "price": 71.2,
+      "value_eur": 2391628.75,
+      "pct_of_fund": 2.32,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Navan Inc. Cl. A",
+      "isin": "US6391931010",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 155228.0,
+      "bought_in_period": 155228.0,
+      "sold_in_period": 0.0,
+      "price": 17.13,
+      "value_eur": 2272502.9,
+      "pct_of_fund": 3.48,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Xtrackers Digital Markets ETC Galaxy Ethereum OENDETC",
+      "isin": "CH1315732268",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 438552.0,
+      "bought_in_period": 1031721.0,
+      "sold_in_period": 1468659.0,
+      "price": 5.08,
+      "value_eur": 2227844.16,
+      "pct_of_fund": 1.25,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Kaspi.kz JSC(Sp. GD Rs Reg. S)/1",
+      "isin": "US48581R2058",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 30112.0,
+      "bought_in_period": 14334.0,
+      "sold_in_period": 20000.0,
+      "price": 85.9,
+      "value_eur": 2210598.07,
+      "pct_of_fund": 2.15,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Zijin Mining Group",
+      "isin": "CNE100000502",
+      "unit": "STK",
+      "currency": "HKD",
+      "shares": 555332.0,
+      "bought_in_period": 555332.0,
+      "sold_in_period": 0.0,
+      "price": 36.46,
+      "value_eur": 2207944.68,
+      "pct_of_fund": 3.38,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Affirm HLDGS INC Cl. A",
+      "isin": "US00827B1061",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 39727.0,
+      "bought_in_period": 68482.0,
+      "sold_in_period": 65611.0,
+      "price": 63.48,
+      "value_eur": 2155260.2,
+      "pct_of_fund": 3.3,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "FT Inter Inc. Cl. A",
+      "isin": "US3493811034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 71984.0,
+      "bought_in_period": 121239.0,
+      "sold_in_period": 49255.0,
+      "price": 33.27,
+      "value_eur": 2046754.7,
+      "pct_of_fund": 3.13,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "HUT 8 Corp.",
+      "isin": "US44812J1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 33362.0,
+      "bought_in_period": 73929.0,
+      "sold_in_period": 146001.0,
+      "price": 71.0,
+      "value_eur": 2024358.6,
+      "pct_of_fund": 3.1,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Terawulf Inc.",
+      "isin": "US88080T1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 116839.0,
+      "bought_in_period": 116839.0,
+      "sold_in_period": 0.0,
+      "price": 20.02,
+      "value_eur": 1999074.25,
+      "pct_of_fund": 1.94,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "SK Hynix Inc. Reg. Shs(Sp. GD Rs144 A)/1 SW 5000",
+      "isin": "US78392B1070",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 1444.0,
+      "bought_in_period": 1920.0,
+      "sold_in_period": 476.0,
+      "price": 1380.0,
+      "value_eur": 1992720.0,
+      "pct_of_fund": 5.02,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Metaplanet Inc.",
+      "isin": "JP3481200008",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 1077630.0,
+      "bought_in_period": 1385194.0,
+      "sold_in_period": 812619.0,
+      "price": 1.76,
+      "value_eur": 1896628.8,
+      "pct_of_fund": 1.07,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Oscar Health Inc. Cl. A",
+      "isin": "US6877931096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 123645.0,
+      "bought_in_period": 357835.0,
+      "sold_in_period": 549207.0,
+      "price": 17.93,
+      "value_eur": 1894671.27,
+      "pct_of_fund": 2.9,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Alibaba Group Holding Ltd. (sp. AD Rs)/1",
+      "isin": "US01609W1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 16896.0,
+      "bought_in_period": 46030.0,
+      "sold_in_period": 29134.0,
+      "price": 130.43,
+      "value_eur": 1883382.0,
+      "pct_of_fund": 2.88,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Grindr Inc.",
+      "isin": "US39854F1012",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 165585.0,
+      "bought_in_period": 104111.0,
+      "sold_in_period": 0.0,
+      "price": 13.29,
+      "value_eur": 1880715.02,
+      "pct_of_fund": 1.83,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Compass Pathways PLC (Spons. AD Rs)",
+      "isin": "US20451W1018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 258097.0,
+      "bought_in_period": 258097.0,
+      "sold_in_period": 0.0,
+      "price": 8.38,
+      "value_eur": 1848434.2,
+      "pct_of_fund": 2.83,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Bitdeer Technologies Group Reg. Shares DL0,0000101",
+      "isin": "KYG114481008",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 272047.0,
+      "bought_in_period": 1703861.0,
+      "sold_in_period": 1431814.0,
+      "price": 7.96,
+      "value_eur": 1835320.04,
+      "pct_of_fund": 1.03,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Agnico-Eagle Mines",
+      "isin": "CA0084741085",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 11673.0,
+      "bought_in_period": 11673.0,
+      "sold_in_period": 0.0,
+      "price": 183.56,
+      "value_eur": 1831207.49,
+      "pct_of_fund": 1.78,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Micron Technology Inc.",
+      "isin": "US5951121038",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 4037.0,
+      "bought_in_period": 25511.0,
+      "sold_in_period": 21474.0,
+      "price": 518.46,
+      "value_eur": 1788755.68,
+      "pct_of_fund": 2.74,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Lumentum Holdings Inc.",
+      "isin": "US55024U1097",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2351.0,
+      "bought_in_period": 3045.0,
+      "sold_in_period": 694.0,
+      "price": 858.32,
+      "value_eur": 1724562.28,
+      "pct_of_fund": 1.68,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Hinge Health Inc.",
+      "isin": "US4333131039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 35825.0,
+      "bought_in_period": 98923.0,
+      "sold_in_period": 63098.0,
+      "price": 54.95,
+      "value_eur": 1690134.15,
+      "pct_of_fund": 4.26,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Freeport-Mc Mo Ran Inc.",
+      "isin": "US35671D8570",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 34108.0,
+      "bought_in_period": 34108.0,
+      "sold_in_period": 0.0,
+      "price": 56.93,
+      "value_eur": 1659489.31,
+      "pct_of_fund": 2.54,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Nokia Corp. Reg AD Rs",
+      "isin": "US6549022043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 154781.0,
+      "bought_in_period": 154781.0,
+      "sold_in_period": 0.0,
+      "price": 12.46,
+      "value_eur": 1648210.63,
+      "pct_of_fund": 2.52,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Nokia Corp. Reg AD Rs",
+      "isin": "US6549022043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 123722.0,
+      "bought_in_period": 139975.0,
+      "sold_in_period": 16253.0,
+      "price": 15.28,
+      "value_eur": 1623071.18,
+      "pct_of_fund": 4.09,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Marvell Technology Inc.",
+      "isin": "US5738741041",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 9195.0,
+      "bought_in_period": 15953.0,
+      "sold_in_period": 6758.0,
+      "price": 204.83,
+      "value_eur": 1617009.53,
+      "pct_of_fund": 4.08,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Micron Technology Inc.",
+      "isin": "US5951121038",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2017.0,
+      "bought_in_period": 7650.0,
+      "sold_in_period": 22633.0,
+      "price": 923.52,
+      "value_eur": 1599261.51,
+      "pct_of_fund": 4.03,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "AUTO1 Group SE",
+      "isin": "DE000A2LQ884",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 71729.0,
+      "bought_in_period": 54886.0,
+      "sold_in_period": 60758.0,
+      "price": 22.14,
+      "value_eur": 1588080.06,
+      "pct_of_fund": 4.0,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Reddit Inc. Class A",
+      "isin": "US75734B1008",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12343.0,
+      "bought_in_period": 19106.0,
+      "sold_in_period": 33545.0,
+      "price": 147.75,
+      "value_eur": 1558566.15,
+      "pct_of_fund": 1.51,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Freep. Mc Mo Ran Copp.&Gold",
+      "isin": "US35671D8570",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 30954.0,
+      "bought_in_period": 47991.0,
+      "sold_in_period": 17037.0,
+      "price": 56.93,
+      "value_eur": 1506034.71,
+      "pct_of_fund": 1.46,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Infineon Technologies AG",
+      "isin": "DE0006231004",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 18654.0,
+      "bought_in_period": 46249.0,
+      "sold_in_period": 51536.0,
+      "price": 80.11,
+      "value_eur": 1494371.94,
+      "pct_of_fund": 3.77,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Marvell Technology Inc.",
+      "isin": "US5738741041",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 11033.0,
+      "bought_in_period": 23152.0,
+      "sold_in_period": 12119.0,
+      "price": 156.57,
+      "value_eur": 1476315.54,
+      "pct_of_fund": 2.26,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Advanced Micro Devices Inc.",
+      "isin": "US0079031078",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 5103.0,
+      "bought_in_period": 26253.0,
+      "sold_in_period": 21150.0,
+      "price": 337.11,
+      "value_eur": 1470192.57,
+      "pct_of_fund": 2.25,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Taiwan Semiconduct. Manufact.",
+      "isin": "US8740391003",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3985.0,
+      "bought_in_period": 9646.0,
+      "sold_in_period": 14810.0,
+      "price": 424.86,
+      "value_eur": 1453588.41,
+      "pct_of_fund": 3.66,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Alibaba Group Holding Ltd. (sp. AD Rs)/1",
+      "isin": "US01609W1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12552.0,
+      "bought_in_period": 12552.0,
+      "sold_in_period": 32621.0,
+      "price": 130.43,
+      "value_eur": 1399160.21,
+      "pct_of_fund": 1.36,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "IREN Ltd. 2)",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 25237.0,
+      "bought_in_period": 23214.0,
+      "sold_in_period": 119542.0,
+      "price": 64.05,
+      "value_eur": 1387791.24,
+      "pct_of_fund": 3.5,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Xetra-Gold",
+      "isin": "DE000A0S9GB0",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 10391.0,
+      "bought_in_period": 10391.0,
+      "sold_in_period": 0.0,
+      "price": 127.64,
+      "value_eur": 1326307.24,
+      "pct_of_fund": 5.63,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Navan Inc. Registered Shares A",
+      "isin": "US6391931010",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 75232.0,
+      "bought_in_period": 75232.0,
+      "sold_in_period": 0.0,
+      "price": 20.33,
+      "value_eur": 1313128.62,
+      "pct_of_fund": 3.31,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 16132.0,
+      "bought_in_period": 31479.0,
+      "sold_in_period": 15347.0,
+      "price": 94.75,
+      "value_eur": 1306304.59,
+      "pct_of_fund": 1.27,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Bloom Energy Corp. A",
+      "isin": "US0937121079",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 4895.0,
+      "bought_in_period": 8254.0,
+      "sold_in_period": 3359.0,
+      "price": 287.97,
+      "value_eur": 1204694.6,
+      "pct_of_fund": 1.84,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "NVIDIA Corp.",
+      "isin": "US67066G1040",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 6498.0,
+      "bought_in_period": 13813.0,
+      "sold_in_period": 18703.0,
+      "price": 214.25,
+      "value_eur": 1195274.95,
+      "pct_of_fund": 3.01,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Soc. Quimicay Min.de Chile SA Reg. Shs B(Spons. AD Rs)",
+      "isin": "US8336351056",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 15325.0,
+      "bought_in_period": 15325.0,
+      "sold_in_period": 0.0,
+      "price": 91.01,
+      "value_eur": 1191973.55,
+      "pct_of_fund": 1.16,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Astera Labs Inc.",
+      "isin": "US04626A1034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3952.0,
+      "bought_in_period": 3952.0,
+      "sold_in_period": 0.0,
+      "price": 349.17,
+      "value_eur": 1184734.78,
+      "pct_of_fund": 2.99,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Terawulf Inc.",
+      "isin": "US88080T1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 68995.0,
+      "bought_in_period": 68995.0,
+      "sold_in_period": 0.0,
+      "price": 20.02,
+      "value_eur": 1180480.22,
+      "pct_of_fund": 1.81,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Albemarle",
+      "isin": "US0126531013",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 7110.0,
+      "bought_in_period": 7110.0,
+      "sold_in_period": 0.0,
+      "price": 190.88,
+      "value_eur": 1159863.94,
+      "pct_of_fund": 1.13,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 14182.0,
+      "bought_in_period": 96036.0,
+      "sold_in_period": 81854.0,
+      "price": 94.75,
+      "value_eur": 1148401.42,
+      "pct_of_fund": 1.76,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Oscar Health Inc. Cl. A",
+      "isin": "US6877931096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 59891.0,
+      "bought_in_period": 108796.0,
+      "sold_in_period": 146707.0,
+      "price": 22.33,
+      "value_eur": 1148200.07,
+      "pct_of_fund": 2.89,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Compass Pathways PLC (Spons. AD Rs)",
+      "isin": "US20451W1018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 110239.0,
+      "bought_in_period": 133843.0,
+      "sold_in_period": 23604.0,
+      "price": 11.92,
+      "value_eur": 1128181.05,
+      "pct_of_fund": 2.84,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "ASML Holding N. V.",
+      "isin": "NL0010273215",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 923.0,
+      "bought_in_period": 923.0,
+      "sold_in_period": 0.0,
+      "price": 1192.6,
+      "value_eur": 1100769.8,
+      "pct_of_fund": 1.07,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Meta Platforms Inc. Cl. A",
+      "isin": "US30303M1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1833.0,
+      "bought_in_period": 6072.0,
+      "sold_in_period": 4239.0,
+      "price": 669.12,
+      "value_eur": 1048198.41,
+      "pct_of_fund": 1.6,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "ON Semiconductor Corp.",
+      "isin": "US6821891057",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 11835.0,
+      "bought_in_period": 20835.0,
+      "sold_in_period": 9000.0,
+      "price": 98.86,
+      "value_eur": 999921.46,
+      "pct_of_fund": 1.53,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "ON Semiconductor Corp.",
+      "isin": "US6821891057",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 9386.0,
+      "bought_in_period": 9386.0,
+      "sold_in_period": 0.0,
+      "price": 123.77,
+      "value_eur": 997385.89,
+      "pct_of_fund": 2.51,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "HUT8 Corp.",
+      "isin": "US44812J1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 14893.0,
+      "bought_in_period": 43668.0,
+      "sold_in_period": 83075.0,
+      "price": 71.0,
+      "value_eur": 903686.01,
+      "pct_of_fund": 0.88,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Navitas Semiconductor Corp. Cl. A",
+      "isin": "US63942X1063",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 36593.0,
+      "bought_in_period": 36593.0,
+      "sold_in_period": 0.0,
+      "price": 28.51,
+      "value_eur": 895699.88,
+      "pct_of_fund": 2.26,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Newmont Goldcorp Corp.",
+      "isin": "US6516391066",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 9711.0,
+      "bought_in_period": 9711.0,
+      "sold_in_period": 0.0,
+      "price": 107.61,
+      "value_eur": 893086.67,
+      "pct_of_fund": 0.87,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "21 Shares AGOE. ZT.22(22/unl) Aave ETP",
+      "isin": "CH1135202120",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 76915.0,
+      "bought_in_period": 76915.0,
+      "sold_in_period": 0.0,
+      "price": 13.6267,
+      "value_eur": 888293.61,
+      "pct_of_fund": 0.5,
+      "fund": "Crypto Leaders",
+      "fund_full": "BIT Global Crypto Leaders",
+      "as_of": "28.02.2026"
+    },
+    {
+      "name": "Robinhood Markets Inc. Cl. A",
+      "isin": "US7707001027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 14508.0,
+      "bought_in_period": 90302.0,
+      "sold_in_period": 162767.0,
+      "price": 71.2,
+      "value_eur": 882804.55,
+      "pct_of_fund": 1.35,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Advanced Micro Devices Inc.",
+      "isin": "US0079031078",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1914.0,
+      "bought_in_period": 9332.0,
+      "sold_in_period": 11175.0,
+      "price": 518.09,
+      "value_eur": 851362.32,
+      "pct_of_fund": 2.15,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "FT Inter Inc. Reg. Shares Cl. A o. N.",
+      "isin": "US3493811034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 25462.0,
+      "bought_in_period": 30915.0,
+      "sold_in_period": 5453.0,
+      "price": 34.73,
+      "value_eur": 759214.65,
+      "pct_of_fund": 1.91,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Credo Technology Group Holding",
+      "isin": "KYG254571055",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3966.0,
+      "bought_in_period": 3966.0,
+      "sold_in_period": 4647.0,
+      "price": 222.35,
+      "value_eur": 757106.76,
+      "pct_of_fund": 1.91,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Lemonade Inc.",
+      "isin": "US52567D1072",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 14476.0,
+      "bought_in_period": 123385.0,
+      "sold_in_period": 152019.0,
+      "price": 56.0,
+      "value_eur": 692809.16,
+      "pct_of_fund": 1.06,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "3.3750% Coinbase Global Inc. DL-Notes 2021(21/28) 144 A",
+      "isin": "US19260QAC15",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 850.0,
+      "bought_in_period": 850.0,
+      "sold_in_period": 0.0,
+      "price": 93.3145,
+      "value_eur": 691821.41,
+      "pct_of_fund": 2.93,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Alibaba Group Holding Ltd. (sp. AD Rs)/1",
+      "isin": "US01609W1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 6283.0,
+      "bought_in_period": 21456.0,
+      "sold_in_period": 15173.0,
+      "price": 126.16,
+      "value_eur": 680543.7,
+      "pct_of_fund": 1.72,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Infineon Technologies AG",
+      "isin": "DE0006231004",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 12013.0,
+      "bought_in_period": 39288.0,
+      "sold_in_period": 27275.0,
+      "price": 55.7,
+      "value_eur": 669124.1,
+      "pct_of_fund": 1.02,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Apple Inc.",
+      "isin": "US0378331005",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2446.0,
+      "bought_in_period": 2446.0,
+      "sold_in_period": 0.0,
+      "price": 312.51,
+      "value_eur": 656277.71,
+      "pct_of_fund": 1.65,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Amazon.com Inc.",
+      "isin": "US0231351067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3672.0,
+      "bought_in_period": 5214.0,
+      "sold_in_period": 1542.0,
+      "price": 200.95,
+      "value_eur": 643600.87,
+      "pct_of_fund": 2.73,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Cisco Systems Inc.",
+      "isin": "US17275R1023",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 6256.0,
+      "bought_in_period": 6256.0,
+      "sold_in_period": 0.0,
+      "price": 118.64,
+      "value_eur": 637228.45,
+      "pct_of_fund": 1.61,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Costco Wholesale Corp.",
+      "isin": "US22160K1051",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 698.0,
+      "bought_in_period": 698.0,
+      "sold_in_period": 0.0,
+      "price": 995.2,
+      "value_eur": 596393.73,
+      "pct_of_fund": 1.5,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Regal-Beloit",
+      "isin": "US7587501039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3397.0,
+      "bought_in_period": 3397.0,
+      "sold_in_period": 0.0,
+      "price": 202.85,
+      "value_eur": 591613.18,
+      "pct_of_fund": 1.49,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Tower Semiconductor Ltd.",
+      "isin": "IL0010823792",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3381.0,
+      "bought_in_period": 4142.0,
+      "sold_in_period": 761.0,
+      "price": 199.18,
+      "value_eur": 575529.94,
+      "pct_of_fund": 0.56,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "3.4590% Broadcom Inc. DL- Notes 2020(20/26)",
+      "isin": "US11135FAN15",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 642.0,
+      "bought_in_period": 642.0,
+      "sold_in_period": 0.0,
+      "price": 99.753,
+      "value_eur": 558582.0,
+      "pct_of_fund": 2.37,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Taiwan Semiconduct. Manufact.",
+      "isin": "US8740391003",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1890.0,
+      "bought_in_period": 2955.0,
+      "sold_in_period": 1065.0,
+      "price": 316.5,
+      "value_eur": 521748.8,
+      "pct_of_fund": 2.21,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "5.3000% Micron Technology Inc. DL-Notes 2024(24/31)",
+      "isin": "US595112CD31",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 556.0,
+      "bought_in_period": 556.0,
+      "sold_in_period": 0.0,
+      "price": 103.9935,
+      "value_eur": 504320.85,
+      "pct_of_fund": 2.14,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Bloom Energy Corp. A",
+      "isin": "US0937121079",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2018.0,
+      "bought_in_period": 13741.0,
+      "sold_in_period": 11723.0,
+      "price": 290.01,
+      "value_eur": 502459.91,
+      "pct_of_fund": 1.27,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "3.3750% Infineon Technologies AG Medium Term Notes v.24(24/ 27)",
+      "isin": "XS2767979052",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 500.0,
+      "bought_in_period": 500.0,
+      "sold_in_period": 0.0,
+      "price": 100.449,
+      "value_eur": 502245.0,
+      "pct_of_fund": 2.13,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.0000% Crowdstrike Holdings Inc DL-Notes 2021(21/29)",
+      "isin": "US22788CAA36",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 610.0,
+      "bought_in_period": 610.0,
+      "sold_in_period": 0.0,
+      "price": 94.282,
+      "value_eur": 501631.23,
+      "pct_of_fund": 2.13,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Coherent Corp.",
+      "isin": "US19247G1076",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1920.0,
+      "bought_in_period": 5131.0,
+      "sold_in_period": 3211.0,
+      "price": 304.93,
+      "value_eur": 500355.18,
+      "pct_of_fund": 0.49,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "3.5000% Autodesk Inc. DL-Notes 2017(17/27)",
+      "isin": "US052769AE63",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 579.0,
+      "bought_in_period": 579.0,
+      "sold_in_period": 0.0,
+      "price": 98.8375,
+      "value_eur": 499144.47,
+      "pct_of_fund": 2.12,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "San Disk Corp.",
+      "isin": "US80004C2008",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 352.0,
+      "bought_in_period": 352.0,
+      "sold_in_period": 0.0,
+      "price": 1641.64,
+      "value_eur": 496121.3,
+      "pct_of_fund": 1.25,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "4.1000% KLA Corp. DL-Notes 2019(19/29)",
+      "isin": "US482480AG50",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 569.0,
+      "bought_in_period": 569.0,
+      "sold_in_period": 0.0,
+      "price": 99.3795,
+      "value_eur": 493213.57,
+      "pct_of_fund": 2.09,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Alphabet Inc. Cl. A",
+      "isin": "US02079K3059",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2028.0,
+      "bought_in_period": 2676.0,
+      "sold_in_period": 648.0,
+      "price": 273.5,
+      "value_eur": 483783.69,
+      "pct_of_fund": 2.05,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "NVIDIA Corp.",
+      "isin": "US67066G1040",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3357.0,
+      "bought_in_period": 4279.0,
+      "sold_in_period": 922.0,
+      "price": 165.17,
+      "value_eur": 483624.68,
+      "pct_of_fund": 2.05,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Lemonade Inc.",
+      "isin": "US52567D1072",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 9441.0,
+      "bought_in_period": 44088.0,
+      "sold_in_period": 34647.0,
+      "price": 58.04,
+      "value_eur": 470449.14,
+      "pct_of_fund": 1.19,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Terawulf Inc.",
+      "isin": "US88080T1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 20468.0,
+      "bought_in_period": 20468.0,
+      "sold_in_period": 0.0,
+      "price": 26.395,
+      "value_eur": 463835.9,
+      "pct_of_fund": 1.17,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "4.5000% Uber Technologies Inc. DL-Notes 2021(21/29) 144 A",
+      "isin": "US90353TAK60",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 519.0,
+      "bought_in_period": 519.0,
+      "sold_in_period": 0.0,
+      "price": 99.0485,
+      "value_eur": 448374.81,
+      "pct_of_fund": 1.9,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Netflix Inc.",
+      "isin": "US64110L1061",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 5780.0,
+      "bought_in_period": 16971.0,
+      "sold_in_period": 11534.0,
+      "price": 86.36,
+      "value_eur": 428556.17,
+      "pct_of_fund": 1.08,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Keel Infrastructure Corp.",
+      "isin": "US4869171078",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 178817.0,
+      "bought_in_period": 303241.0,
+      "sold_in_period": 124424.0,
+      "price": 2.74,
+      "value_eur": 418732.23,
+      "pct_of_fund": 0.64,
+      "fund": "Aggressive Growth",
+      "fund_full": "BIT Aggressive Growth",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "BE Semiconductor Inds N. V.",
+      "isin": "NL0012866412",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 1440.0,
+      "bought_in_period": 1440.0,
+      "sold_in_period": 0.0,
+      "price": 287.6,
+      "value_eur": 414144.0,
+      "pct_of_fund": 1.04,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "2.8500% NVIDIA Corp. DL-Notes 2020(20/30)",
+      "isin": "US67066GAF19",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 467.0,
+      "bought_in_period": 467.0,
+      "sold_in_period": 0.0,
+      "price": 94.696,
+      "value_eur": 385722.04,
+      "pct_of_fund": 1.64,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Hinge Health Inc.",
+      "isin": "US4333131039",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12024.0,
+      "bought_in_period": 14997.0,
+      "sold_in_period": 2973.0,
+      "price": 36.77,
+      "value_eur": 385627.98,
+      "pct_of_fund": 1.64,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "ASML Holding N. V.",
+      "isin": "NL0010273215",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 276.0,
+      "bought_in_period": 600.0,
+      "sold_in_period": 453.0,
+      "price": 1391.0,
+      "value_eur": 383916.0,
+      "pct_of_fund": 0.97,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "21 Shares AG O END Z25(unl) ETP Hyperliquid",
+      "isin": "CH1471826029",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 28190.0,
+      "bought_in_period": 28190.0,
+      "sold_in_period": 0.0,
+      "price": 15.428,
+      "value_eur": 379341.75,
+      "pct_of_fund": 1.61,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "IREN Ltd. Registered Shares o. N. 2)",
+      "isin": "AU0000185993",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 13599.0,
+      "bought_in_period": 19619.0,
+      "sold_in_period": 6020.0,
+      "price": 31.62,
+      "value_eur": 375054.85,
+      "pct_of_fund": 1.59,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Compass Pathways PLC (Spons. AD Rs)",
+      "isin": "US20451W1018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 50000.0,
+      "bought_in_period": 50000.0,
+      "sold_in_period": 0.0,
+      "price": 8.38,
+      "value_eur": 358089.05,
+      "pct_of_fund": 0.35,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    },
+    {
+      "name": "Wolfspeed Inc.",
+      "isin": "US97785W1062",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 6143.0,
+      "bought_in_period": 22565.0,
+      "sold_in_period": 16422.0,
+      "price": 65.05,
+      "value_eur": 343079.76,
+      "pct_of_fund": 0.86,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "1.6250% Apple Inc. EO-Notes 14/26",
+      "isin": "XS1135337498",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 330.0,
+      "bought_in_period": 330.0,
+      "sold_in_period": 0.0,
+      "price": 99.3795,
+      "value_eur": 327952.35,
+      "pct_of_fund": 1.39,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "4.0000% Booking Holdings Inc. EO-Notes 2022(22/26)",
+      "isin": "XS2555218291",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 326.0,
+      "bought_in_period": 326.0,
+      "sold_in_period": 0.0,
+      "price": 100.5785,
+      "value_eur": 327885.91,
+      "pct_of_fund": 1.39,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "1.7500% SAP Med. Term Nts. 14/ 27",
+      "isin": "DE000A13SL34",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 314.0,
+      "bought_in_period": 314.0,
+      "sold_in_period": 0.0,
+      "price": 99.2305,
+      "value_eur": 311583.77,
+      "pct_of_fund": 1.32,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Lemonade Inc.",
+      "isin": "US52567D1072",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 5890.0,
+      "bought_in_period": 7742.0,
+      "sold_in_period": 1852.0,
+      "price": 58.72,
+      "value_eur": 301666.64,
+      "pct_of_fund": 1.28,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "1.6500% Marvell Technology Inc. DL-Notes 2021(21/26)",
+      "isin": "US573874AC88",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 334.0,
+      "bought_in_period": 334.0,
+      "sold_in_period": 0.0,
+      "price": 99.904,
+      "value_eur": 291041.74,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.3000% Amazon.com Inc. DL- Notes 2022(22/27)",
+      "isin": "US023135CF19",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 336.0,
+      "bought_in_period": 336.0,
+      "sold_in_period": 0.0,
+      "price": 99.237,
+      "value_eur": 290829.76,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.3750% Walt Disney Co., The DL-Notes 2019(19/26)",
+      "isin": "US254687DK97",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 334.0,
+      "bought_in_period": 334.0,
+      "sold_in_period": 0.0,
+      "price": 99.596,
+      "value_eur": 290144.47,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "4.2120% Advanced Micro Devices Inc. DL-Notes 2025(25/ 26)",
+      "isin": "US007903BH94",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 332.0,
+      "bought_in_period": 332.0,
+      "sold_in_period": 0.0,
+      "price": 100.048,
+      "value_eur": 289715.97,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.4000% Microsoft Corp. DL- Notes 2023(23/26)",
+      "isin": "US594918CN20",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 333.0,
+      "bought_in_period": 333.0,
+      "sold_in_period": 0.0,
+      "price": 99.697,
+      "value_eur": 289569.13,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "4.3750% Netflix Inc. DL-Notes 2016(16/26)",
+      "isin": "US64110LAN64",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 331.0,
+      "bought_in_period": 331.0,
+      "sold_in_period": 0.0,
+      "price": 100.182,
+      "value_eur": 289230.2,
+      "pct_of_fund": 1.23,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.5000% Meta Platforms Inc. DL- Notes 2022(22/27)",
+      "isin": "US30303M8G02",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 332.0,
+      "bought_in_period": 332.0,
+      "sold_in_period": 0.0,
+      "price": 99.2665,
+      "value_eur": 287452.93,
+      "pct_of_fund": 1.22,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "2.1500% Adobe Inc. DL-Notes 2020(20/27)",
+      "isin": "US00724PAC32",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 332.0,
+      "bought_in_period": 332.0,
+      "sold_in_period": 0.0,
+      "price": 98.356,
+      "value_eur": 284816.33,
+      "pct_of_fund": 1.21,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "2.6500% Pay Pal Holdings Inc. DL- Notes 2019(19/26)",
+      "isin": "US70450YAD58",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 329.0,
+      "bought_in_period": 329.0,
+      "sold_in_period": 0.0,
+      "price": 99.231,
+      "value_eur": 284753.59,
+      "pct_of_fund": 1.21,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "3.2000% NVIDIA Corp. DL-Notes 2016(16/26)",
+      "isin": "US67066GAE44",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 326.0,
+      "bought_in_period": 326.0,
+      "sold_in_period": 0.0,
+      "price": 99.672,
+      "value_eur": 283411.01,
+      "pct_of_fund": 1.2,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "4.2000% Cadence Design Systems Inc. DL-Notes 2024(24/ 27)",
+      "isin": "US127387AM08",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 325.0,
+      "bought_in_period": 325.0,
+      "sold_in_period": 0.0,
+      "price": 99.801,
+      "value_eur": 282907.33,
+      "pct_of_fund": 1.2,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "5.2500% Intuit Inc. DL-Notes 2023(23/26)",
+      "isin": "US46124HAE62",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 323.0,
+      "bought_in_period": 323.0,
+      "sold_in_period": 0.0,
+      "price": 100.358,
+      "value_eur": 282735.58,
+      "pct_of_fund": 1.2,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "1.9980% Alphabet Inc. DL-Notes 2016(16/26)",
+      "isin": "US02079KAC18",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 326.0,
+      "bought_in_period": 326.0,
+      "sold_in_period": 0.0,
+      "price": 99.2505,
+      "value_eur": 282212.5,
+      "pct_of_fund": 1.2,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "0.3750% SAP SE Inh.-Schuldv.v. 20/29",
+      "isin": "XS2176715667",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 300.0,
+      "bought_in_period": 300.0,
+      "sold_in_period": 0.0,
+      "price": 91.6215,
+      "value_eur": 274864.37,
+      "pct_of_fund": 1.17,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "2.4500% Marvell Technology Inc. DL-Notes 2021(21/28)",
+      "isin": "US573874AF10",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 320.0,
+      "bought_in_period": 320.0,
+      "sold_in_period": 0.0,
+      "price": 96.089,
+      "value_eur": 268194.33,
+      "pct_of_fund": 1.14,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "1.3750% Apple Inc. EO-Notes 2017(17/29)",
+      "isin": "XS1619312686",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 275.0,
+      "bought_in_period": 275.0,
+      "sold_in_period": 0.0,
+      "price": 94.5625,
+      "value_eur": 260046.88,
+      "pct_of_fund": 1.1,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Soc. Quimica y Min.de Chile SA Reg. Shs B (Spons. AD Rs)",
+      "isin": "US8336351056",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3591.0,
+      "bought_in_period": 6819.0,
+      "sold_in_period": 3228.0,
+      "price": 84.05,
+      "value_eur": 259131.62,
+      "pct_of_fund": 0.65,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "3.6250% Netflix Inc. EO-Notes 17/27",
+      "isin": "XS1821883102",
+      "unit": "EUR",
+      "currency": "%",
+      "shares": 249.0,
+      "bought_in_period": 249.0,
+      "sold_in_period": 0.0,
+      "price": 100.713,
+      "value_eur": 250775.37,
+      "pct_of_fund": 1.06,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Marathon Digital Holdings Inc.",
+      "isin": "US5657881067",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 20469.0,
+      "bought_in_period": 20469.0,
+      "sold_in_period": 0.0,
+      "price": 14.07,
+      "value_eur": 247262.36,
+      "pct_of_fund": 0.62,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "AUTO1 Group SE",
+      "isin": "DE000A2LQ884",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 15997.0,
+      "bought_in_period": 28730.0,
+      "sold_in_period": 12733.0,
+      "price": 15.32,
+      "value_eur": 245074.04,
+      "pct_of_fund": 1.04,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "American Electric Power",
+      "isin": "US0255371017",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2193.0,
+      "bought_in_period": 2193.0,
+      "sold_in_period": 0.0,
+      "price": 127.76,
+      "value_eur": 240547.48,
+      "pct_of_fund": 0.61,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 2226.0,
+      "bought_in_period": 34887.0,
+      "sold_in_period": 32661.0,
+      "price": 120.89,
+      "value_eur": 231037.68,
+      "pct_of_fund": 0.58,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "3.7000% Walt Disney Co., The DL-Notes 2020(20/27)",
+      "isin": "US254687FP66",
+      "unit": "USD",
+      "currency": "%",
+      "shares": 265.0,
+      "bought_in_period": 265.0,
+      "sold_in_period": 0.0,
+      "price": 99.6465,
+      "value_eur": 230321.18,
+      "pct_of_fund": 0.98,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Canadian Solar Inc.",
+      "isin": "CA1366351098",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12858.0,
+      "bought_in_period": 12858.0,
+      "sold_in_period": 0.0,
+      "price": 20.26,
+      "value_eur": 223655.79,
+      "pct_of_fund": 0.56,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "i Shares Physical Metals END ZT (11/O. End)Silver",
+      "isin": "IE00B4NCWG09",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 3850.0,
+      "bought_in_period": 3850.0,
+      "sold_in_period": 0.0,
+      "price": 58.0357,
+      "value_eur": 223437.45,
+      "pct_of_fund": 0.95,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Oscar Health Inc. Cl. A",
+      "isin": "US6877931096",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 22719.0,
+      "bought_in_period": 33961.0,
+      "sold_in_period": 11242.0,
+      "price": 10.85,
+      "value_eur": 215003.18,
+      "pct_of_fund": 0.91,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "JP Morgan Chase & Co.",
+      "isin": "US46625H1005",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 851.0,
+      "bought_in_period": 1062.0,
+      "sold_in_period": 211.0,
+      "price": 283.77,
+      "value_eur": 210630.85,
+      "pct_of_fund": 0.89,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Advanced Micro Devices Inc. 2)",
+      "isin": "US0079031078",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1212.0,
+      "bought_in_period": 1802.0,
+      "sold_in_period": 590.0,
+      "price": 196.04,
+      "value_eur": 207239.84,
+      "pct_of_fund": 0.88,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Ideaya Biosciences Inc.",
+      "isin": "US45166A1025",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 7789.0,
+      "bought_in_period": 7789.0,
+      "sold_in_period": 0.0,
+      "price": 29.34,
+      "value_eur": 196204.56,
+      "pct_of_fund": 0.49,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Entegris",
+      "isin": "US29362U1043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1607.0,
+      "bought_in_period": 1607.0,
+      "sold_in_period": 0.0,
+      "price": 138.44,
+      "value_eur": 191005.01,
+      "pct_of_fund": 0.48,
+      "fund": "Defensive Growth",
+      "fund_full": "BIT Defensive Growth",
+      "as_of": "31.05.2026"
+    },
+    {
+      "name": "Sunrun Inc.",
+      "isin": "US86771W1053",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 16595.0,
+      "bought_in_period": 16595.0,
+      "sold_in_period": 0.0,
+      "price": 12.14,
+      "value_eur": 175720.28,
+      "pct_of_fund": 0.75,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Meta Platforms Inc. Cl. A",
+      "isin": "US30303M1027",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 363.0,
+      "bought_in_period": 761.0,
+      "sold_in_period": 398.0,
+      "price": 536.38,
+      "value_eur": 169826.38,
+      "pct_of_fund": 0.72,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Broadcom Inc",
+      "isin": "US11135F1012",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 619.0,
+      "bought_in_period": 1365.0,
+      "sold_in_period": 746.0,
+      "price": 293.41,
+      "value_eur": 158413.25,
+      "pct_of_fund": 0.67,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Credicorp",
+      "isin": "BMG2519Y1084",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 556.0,
+      "bought_in_period": 556.0,
+      "sold_in_period": 0.0,
+      "price": 318.0,
+      "value_eur": 154215.44,
+      "pct_of_fund": 0.65,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Samsung Electronics Co. Ltd.",
+      "isin": "US7960508882",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 62.0,
+      "bought_in_period": 62.0,
+      "sold_in_period": 0.0,
+      "price": 2840.0,
+      "value_eur": 153580.46,
+      "pct_of_fund": 0.65,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Nokia Corp. Reg AD Rs",
+      "isin": "US6549022043",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 21676.0,
+      "bought_in_period": 21676.0,
+      "sold_in_period": 0.0,
+      "price": 7.96,
+      "value_eur": 150493.64,
+      "pct_of_fund": 0.64,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "SK Hynix Inc. Reg. Shs(Sp. GD Rs144 A)/1 SW 5000",
+      "isin": "US78392B1070",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 316.0,
+      "bought_in_period": 316.0,
+      "sold_in_period": 0.0,
+      "price": 472.0,
+      "value_eur": 149152.0,
+      "pct_of_fund": 0.63,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Nu Holdings Ltd. Cl. A",
+      "isin": "KYG6683N1034",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12342.0,
+      "bought_in_period": 13284.0,
+      "sold_in_period": 942.0,
+      "price": 13.51,
+      "value_eur": 145434.3,
+      "pct_of_fund": 0.62,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Grindr Inc.",
+      "isin": "US39854F1012",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 12828.0,
+      "bought_in_period": 12828.0,
+      "sold_in_period": 0.0,
+      "price": 12.33,
+      "value_eur": 137958.34,
+      "pct_of_fund": 0.59,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Axon Enterprise Inc.",
+      "isin": "US05464C1018",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 377.0,
+      "bought_in_period": 553.0,
+      "sold_in_period": 176.0,
+      "price": 415.07,
+      "value_eur": 136486.17,
+      "pct_of_fund": 0.58,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Reddit Inc. Class A",
+      "isin": "US75734B1008",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1201.0,
+      "bought_in_period": 1201.0,
+      "sold_in_period": 0.0,
+      "price": 124.13,
+      "value_eur": 130030.64,
+      "pct_of_fund": 0.55,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Netflix Inc.",
+      "isin": "US64110L1061",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1546.0,
+      "bought_in_period": 1546.0,
+      "sold_in_period": 0.0,
+      "price": 92.97,
+      "value_eur": 125365.56,
+      "pct_of_fund": 0.53,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "First Mining Gold Corp. Registered Shares o. N.",
+      "isin": "CA3208901064",
+      "unit": "STK",
+      "currency": "CAD",
+      "shares": 425185.0,
+      "bought_in_period": 425185.0,
+      "sold_in_period": 0.0,
+      "price": 0.465,
+      "value_eur": 123882.97,
+      "pct_of_fund": 0.53,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Intel Corp.",
+      "isin": "US4581401001",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 3227.0,
+      "bought_in_period": 3227.0,
+      "sold_in_period": 0.0,
+      "price": 41.19,
+      "value_eur": 115935.57,
+      "pct_of_fund": 0.49,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Fidelity Exchange Traded Prod. OE ETP 22(22/unl.) XBT/EUR",
+      "isin": "XS2434891219",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 20025.0,
+      "bought_in_period": 108700.0,
+      "sold_in_period": 88675.0,
+      "price": 5.788,
+      "value_eur": 115904.7,
+      "pct_of_fund": 0.49,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Cummins",
+      "isin": "US2310211063",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 256.0,
+      "bought_in_period": 256.0,
+      "sold_in_period": 0.0,
+      "price": 511.7,
+      "value_eur": 114256.61,
+      "pct_of_fund": 0.48,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "HUT 8 Corp.",
+      "isin": "US44812J1043",
+      "unit": "STK",
+      "currency": "CAD",
+      "shares": 2938.0,
+      "bought_in_period": 5307.0,
+      "sold_in_period": 2369.0,
+      "price": 59.52,
+      "value_eur": 109570.95,
+      "pct_of_fund": 0.46,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Bio N Tech SE (sp. AD Rs)/1",
+      "isin": "US09075V1026",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1441.0,
+      "bought_in_period": 1904.0,
+      "sold_in_period": 463.0,
+      "price": 85.25,
+      "value_eur": 107148.06,
+      "pct_of_fund": 0.45,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Microsoft Corp.",
+      "isin": "US5949181045",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 337.0,
+      "bought_in_period": 899.0,
+      "sold_in_period": 562.0,
+      "price": 358.96,
+      "value_eur": 105512.01,
+      "pct_of_fund": 0.45,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Soc. Quimica y Min.de Chile SA Reg. Shs B (Spons. AD Rs)",
+      "isin": "US8336351056",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 1280.0,
+      "bought_in_period": 1280.0,
+      "sold_in_period": 0.0,
+      "price": 80.92,
+      "value_eur": 90342.43,
+      "pct_of_fund": 0.38,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Albemarle",
+      "isin": "US0126531013",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 568.0,
+      "bought_in_period": 568.0,
+      "sold_in_period": 0.0,
+      "price": 177.22,
+      "value_eur": 87798.48,
+      "pct_of_fund": 0.37,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Shopify Inc. Reg. Shares A (Sub Voting) o N",
+      "isin": "CA82509L1076",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 898.0,
+      "bought_in_period": 898.0,
+      "sold_in_period": 0.0,
+      "price": 111.77,
+      "value_eur": 87544.23,
+      "pct_of_fund": 0.37,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Apollo Silver Corp. Registered Shares o. N.",
+      "isin": "CA03770A3073",
+      "unit": "STK",
+      "currency": "CAD",
+      "shares": 44220.0,
+      "bought_in_period": 44220.0,
+      "sold_in_period": 0.0,
+      "price": 2.98,
+      "value_eur": 82568.75,
+      "pct_of_fund": 0.35,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Bloom Energy Corp. A",
+      "isin": "US0937121079",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 791.0,
+      "bought_in_period": 2026.0,
+      "sold_in_period": 1235.0,
+      "price": 119.51,
+      "value_eur": 82453.04,
+      "pct_of_fund": 0.35,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Lumentum Holdings Inc. Registered Shares DL -,001",
+      "isin": "US55024U1097",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 126.0,
+      "bought_in_period": 126.0,
+      "sold_in_period": 0.0,
+      "price": 654.79,
+      "value_eur": 71961.22,
+      "pct_of_fund": 0.31,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Agnico-Eagle Mines",
+      "isin": "CA0084741085",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 419.0,
+      "bought_in_period": 419.0,
+      "sold_in_period": 0.0,
+      "price": 191.86,
+      "value_eur": 70117.17,
+      "pct_of_fund": 0.3,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Micron Technology Inc. 2)",
+      "isin": "US5951121038",
+      "unit": "STK",
+      "currency": "USD",
+      "shares": 239.0,
+      "bought_in_period": 1969.0,
+      "sold_in_period": 1730.0,
+      "price": 321.8,
+      "value_eur": 67082.6,
+      "pct_of_fund": 0.28,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "ASML Holding N. V.",
+      "isin": "NL0010273215",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 59.0,
+      "bought_in_period": 78.0,
+      "sold_in_period": 19.0,
+      "price": 1112.0,
+      "value_eur": 65608.0,
+      "pct_of_fund": 0.28,
+      "fund": "Multi Asset",
+      "fund_full": "BIT Global Multi Asset",
+      "as_of": "31.03.2026"
+    },
+    {
+      "name": "Shelly Group PLC",
+      "isin": "BG1100003166",
+      "unit": "STK",
+      "currency": "EUR",
+      "shares": 9.0,
+      "bought_in_period": 0.0,
+      "sold_in_period": 0.0,
+      "price": 54.6,
+      "value_eur": 491.4,
+      "pct_of_fund": 0.0,
+      "fund": "Global Leaders",
+      "fund_full": "BIT Global Leaders",
+      "as_of": "30.04.2026"
+    }
+  ],
+  "aggregate": [
+    {
+      "isin": "US0231351067",
+      "name": "Amazon.com Inc.",
+      "value_eur": 183349506.55,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 10.43
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 6.68
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 10.26
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 7.28
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 2.73
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 9.698
+    },
+    {
+      "isin": "AU0000185993",
+      "name": "IREN Ltd.",
+      "value_eur": 168598483.47,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 8.53
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 7.87
+        },
+        {
+          "fund": "Crypto Leaders",
+          "pct": 9.71
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 8.34
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 3.5
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 1.59
+        }
+      ],
+      "n_funds": 6,
+      "pct_of_total": 8.917
+    },
+    {
+      "isin": "US5951121038",
+      "name": "Micron Technology Inc.",
+      "value_eur": 146538223.87,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 8.64
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 5.18
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.74
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 4.03
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.28
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 7.751
+    },
+    {
+      "isin": "US80004C2008",
+      "name": "San Disk Corp.",
+      "value_eur": 95549132.17,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 5.96
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.25
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 5.054
+    },
+    {
+      "isin": "US7707001027",
+      "name": "Robinhood Markets Inc. Cl. A",
+      "value_eur": 87342397.82,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 5.0
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 2.32
+        },
+        {
+          "fund": "Crypto Leaders",
+          "pct": 2.43
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.35
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 4.62
+    },
+    {
+      "isin": "US8740391003",
+      "name": "Taiwan Semiconduct. Manufact.",
+      "value_eur": 82862367.82,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.57
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 5.02
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 4.33
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 3.66
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 2.21
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 4.383
+    },
+    {
+      "isin": "US5738741041",
+      "name": "Marvell Technology Inc.",
+      "value_eur": 79550258.75,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.8
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.26
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 4.08
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 4.207
+    },
+    {
+      "isin": "DE0006231004",
+      "name": "Infineon Technologies AG",
+      "value_eur": 76633131.18,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.4
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 4.17
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.02
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 3.77
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 4.053
+    },
+    {
+      "isin": "US4333131039",
+      "name": "Hinge Health Inc.",
+      "value_eur": 76207355.98,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.21
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 4.35
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.98
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 4.26
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 1.64
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 4.031
+    },
+    {
+      "isin": "US6877931096",
+      "name": "Oscar Health Inc. Cl. A",
+      "value_eur": 72991804.01,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.15
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 3.45
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.9
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.89
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.91
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 3.861
+    },
+    {
+      "isin": "DE000A2LQ884",
+      "name": "AUTO1 Group SE",
+      "value_eur": 71971430.6,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 4.14
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 3.96
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 4.0
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 1.04
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 3.807
+    },
+    {
+      "isin": "US3493811034",
+      "name": "FT Inter Inc. Cl. A",
+      "value_eur": 56353809.84,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.63
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 4.1
+        },
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.19
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.13
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.91
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 2.981
+    },
+    {
+      "isin": "US6391931010",
+      "name": "Navan Inc. Cl. A",
+      "value_eur": 55876807.3,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.97
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 4.88
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.48
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 3.31
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 2.955
+    },
+    {
+      "isin": "US82706C1080",
+      "name": "Silicon Motion Technology Corp Reg. Shs(Sp. AD Rs)/4",
+      "value_eur": 54856626.71,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 3.44
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 2.901
+    },
+    {
+      "isin": "US35671D8570",
+      "name": "Freeport-Mc Mo Ran Inc.",
+      "value_eur": 49253453.84,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.89
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 1.46
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.54
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 2.605
+    },
+    {
+      "isin": "US67066G1040",
+      "name": "NVIDIA Corp.",
+      "value_eur": 44891083.86,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.4
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 4.77
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 3.01
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 2.05
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 2.374
+    },
+    {
+      "isin": "US1717793095",
+      "name": "Ciena",
+      "value_eur": 43333259.36,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.72
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 2.292
+    },
+    {
+      "isin": "US4581401001",
+      "name": "Intel Corp.",
+      "value_eur": 41314197.15,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.42
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 1.27
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.76
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.58
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.49
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 2.185
+    },
+    {
+      "isin": "US6549022043",
+      "name": "Nokia Corp. Reg AD Rs",
+      "value_eur": 37289417.61,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 2.12
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.52
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 4.09
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.64
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 1.972
+    },
+    {
+      "isin": "US88080T1043",
+      "name": "Terawulf Inc.",
+      "value_eur": 36746660.65,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 1.07
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 1.94
+        },
+        {
+          "fund": "Crypto Leaders",
+          "pct": 9.07
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.81
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.17
+        }
+      ],
+      "n_funds": 5,
+      "pct_of_total": 1.944
+    },
+    {
+      "isin": "NL0012866412",
+      "name": "BE Semiconductor Inds N. V.",
+      "value_eur": 30857752.4,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 1.91
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.04
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 1.632
+    },
+    {
+      "isin": "US20451W1018",
+      "name": "Compass Pathways PLC (Spons. AD Rs)",
+      "value_eur": 26341531.39,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 1.44
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 0.35
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.83
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.84
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 1.393
+    },
+    {
+      "isin": "US8336351056",
+      "name": "Soc. Quimicay Min.de Chile SAB (Sp. AD Rs)",
+      "value_eur": 22854848.31,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 1.34
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 1.16
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.65
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.38
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 1.209
+    },
+    {
+      "isin": "US44812J1043",
+      "name": "HUT8 Corp.",
+      "value_eur": 19145328.91,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 0.88
+        },
+        {
+          "fund": "Crypto Leaders",
+          "pct": 9.06
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.1
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.46
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 1.013
+    },
+    {
+      "isin": "US02079K3059",
+      "name": "Alphabet Inc. Cl. A",
+      "value_eur": 17035474.15,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 6.92
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 10.34
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 6.73
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 2.05
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 0.901
+    },
+    {
+      "isin": "US0126531013",
+      "name": "Albemarle",
+      "value_eur": 16387738.17,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 0.95
+        },
+        {
+          "fund": "Global Leaders",
+          "pct": 1.13
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.37
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.867
+    },
+    {
+      "isin": "US44916Y1064",
+      "name": "Hyperliquid Strategies Inc.",
+      "value_eur": 12390996.39,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 0.78
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.655
+    },
+    {
+      "isin": "CH1471826029",
+      "name": "21 Shares AGOENDZ25(unl) ETP Hyperliquid",
+      "value_eur": 11642531.6,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.88
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.97
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 1.61
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.616
+    },
+    {
+      "isin": "US8168501018",
+      "name": "Semtech",
+      "value_eur": 10252133.95,
+      "funds": [
+        {
+          "fund": "Technology Leaders",
+          "pct": 0.64
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.542
+    },
+    {
+      "isin": "US7672921050",
+      "name": "Riot Blockchain Inc.",
+      "value_eur": 9959780.85,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 5.6
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.527
+    },
+    {
+      "isin": "US78392B1070",
+      "name": "SK Hynix Inc. Reg. Shs(Sp. GD Rs144 A)/1 SW 5000",
+      "value_eur": 9184112.0,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 3.17
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 5.79
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 5.02
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.63
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 0.486
+    },
+    {
+      "isin": "US19260Q1076",
+      "name": "Coinbase Global Inc. Cl. A",
+      "value_eur": 8545528.67,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.81
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.452
+    },
+    {
+      "isin": "US17253J1060",
+      "name": "Cipher Mining Inc.",
+      "value_eur": 8489749.03,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.77
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.449
+    },
+    {
+      "isin": "CA09173B1076",
+      "name": "Bitfarms Ltd.",
+      "value_eur": 8042498.86,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.52
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.425
+    },
+    {
+      "isin": "US0381692070",
+      "name": "Applied Digital Corp.",
+      "value_eur": 7702501.14,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.33
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.407
+    },
+    {
+      "isin": "US0937121079",
+      "name": "Bloom Energy Corp. A",
+      "value_eur": 7428168.93,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 5.48
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.84
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.27
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.35
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 0.393
+    },
+    {
+      "isin": "US36317J2096",
+      "name": "Galaxy Digital Inc. Cl. A",
+      "value_eur": 7384235.29,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 4.15
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.391
+    },
+    {
+      "isin": "IE00BMDKNW35",
+      "name": "Van Eck Di. Assets Eq. UC. ETF Reg. Shs AUSD Acc.o N",
+      "value_eur": 6858443.53,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 3.86
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.363
+    },
+    {
+      "isin": "US18452B2097",
+      "name": "Cleanspark Inc.",
+      "value_eur": 6322115.03,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 3.56
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.334
+    },
+    {
+      "isin": "XS2940466316",
+      "name": "i SHARESDIGITALASSETSAG Open End ETPZ. Bitcoin",
+      "value_eur": 6249303.43,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 3.51
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.331
+    },
+    {
+      "isin": "US0079031078",
+      "name": "Advanced Micro Devices Inc.",
+      "value_eur": 5480704.02,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 2.87
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.25
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.15
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.88
+        }
+      ],
+      "n_funds": 4,
+      "pct_of_total": 0.29
+    },
+    {
+      "isin": "US30303M1027",
+      "name": "Meta Platforms Inc. Cl. A",
+      "value_eur": 5302739.05,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 3.97
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.6
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.72
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.28
+    },
+    {
+      "isin": "IE00BGBN6P67",
+      "name": "Inves. Mkt. II-I. Elw. Gl. B. UC. ETF Registered Acc. Shs US Do. N.",
+      "value_eur": 4521504.96,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 2.54
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.239
+    },
+    {
+      "isin": "IE000RDRMSD1",
+      "name": "i Shs III-Blockchain Techno. ETF Reg. Shs()USD Acc.o N",
+      "value_eur": 4236145.7,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 2.38
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.224
+    },
+    {
+      "isin": "US01609W1027",
+      "name": "Alibaba Group Holding Ltd. (sp. AD Rs)/1",
+      "value_eur": 3963085.91,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.36
+        },
+        {
+          "fund": "Aggressive Growth",
+          "pct": 2.88
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.72
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.21
+    },
+    {
+      "isin": "US09175A2069",
+      "name": "Bit Mine Immersion Techno. Inc.",
+      "value_eur": 3065514.94,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 1.72
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.162
+    },
+    {
+      "isin": "CH1315732268",
+      "name": "Xtrackers Digital Markets ETC Galaxy Ethereum OENDETC",
+      "value_eur": 2227844.16,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 1.25
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.118
+    },
+    {
+      "isin": "US48581R2058",
+      "name": "Kaspi.kz JSC(Sp. GD Rs Reg. S)/1",
+      "value_eur": 2210598.07,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 2.15
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.117
+    },
+    {
+      "isin": "CNE100000502",
+      "name": "Zijin Mining Group",
+      "value_eur": 2207944.68,
+      "funds": [
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.38
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.117
+    },
+    {
+      "isin": "US00827B1061",
+      "name": "Affirm HLDGS INC Cl. A",
+      "value_eur": 2155260.2,
+      "funds": [
+        {
+          "fund": "Aggressive Growth",
+          "pct": 3.3
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.114
+    },
+    {
+      "isin": "US39854F1012",
+      "name": "Grindr Inc.",
+      "value_eur": 2018673.36,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.83
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.59
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.107
+    },
+    {
+      "isin": "US6821891057",
+      "name": "ON Semiconductor Corp.",
+      "value_eur": 1997307.35,
+      "funds": [
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.53
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.51
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.106
+    },
+    {
+      "isin": "CA0084741085",
+      "name": "Agnico-Eagle Mines",
+      "value_eur": 1901324.66,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.78
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.3
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.101
+    },
+    {
+      "isin": "JP3481200008",
+      "name": "Metaplanet Inc.",
+      "value_eur": 1896628.8,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 1.07
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.1
+    },
+    {
+      "isin": "KYG114481008",
+      "name": "Bitdeer Technologies Group Reg. Shares DL0,0000101",
+      "value_eur": 1835320.04,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 1.03
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.097
+    },
+    {
+      "isin": "US55024U1097",
+      "name": "Lumentum Holdings Inc.",
+      "value_eur": 1796523.5,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.68
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.31
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.095
+    },
+    {
+      "isin": "US75734B1008",
+      "name": "Reddit Inc. Class A",
+      "value_eur": 1688596.79,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.51
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.55
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.089
+    },
+    {
+      "isin": "NL0010273215",
+      "name": "ASML Holding N. V.",
+      "value_eur": 1550293.8,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 1.07
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.97
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.28
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.082
+    },
+    {
+      "isin": "US52567D1072",
+      "name": "Lemonade Inc.",
+      "value_eur": 1464924.94,
+      "funds": [
+        {
+          "fund": "Aggressive Growth",
+          "pct": 1.06
+        },
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.19
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 1.28
+        }
+      ],
+      "n_funds": 3,
+      "pct_of_total": 0.077
+    },
+    {
+      "isin": "DE000A0S9GB0",
+      "name": "Xetra-Gold",
+      "value_eur": 1326307.24,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 5.63
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.07
+    },
+    {
+      "isin": "US04626A1034",
+      "name": "Astera Labs Inc.",
+      "value_eur": 1184734.78,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.99
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.063
+    },
+    {
+      "isin": "US63942X1063",
+      "name": "Navitas Semiconductor Corp. Cl. A",
+      "value_eur": 895699.88,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 2.26
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.047
+    },
+    {
+      "isin": "US6516391066",
+      "name": "Newmont Goldcorp Corp.",
+      "value_eur": 893086.67,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 0.87
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.047
+    },
+    {
+      "isin": "CH1135202120",
+      "name": "21 Shares AGOE. ZT.22(22/unl) Aave ETP",
+      "value_eur": 888293.61,
+      "funds": [
+        {
+          "fund": "Crypto Leaders",
+          "pct": 0.5
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.047
+    },
+    {
+      "isin": "KYG254571055",
+      "name": "Credo Technology Group Holding",
+      "value_eur": 757106.76,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.91
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.04
+    },
+    {
+      "isin": "US19260QAC15",
+      "name": "3.3750% Coinbase Global Inc. DL-Notes 2021(21/28) 144 A",
+      "value_eur": 691821.41,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.93
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.037
+    },
+    {
+      "isin": "US0378331005",
+      "name": "Apple Inc.",
+      "value_eur": 656277.71,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.65
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.035
+    },
+    {
+      "isin": "US17275R1023",
+      "name": "Cisco Systems Inc.",
+      "value_eur": 637228.45,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.61
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.034
+    },
+    {
+      "isin": "US22160K1051",
+      "name": "Costco Wholesale Corp.",
+      "value_eur": 596393.73,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.5
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.032
+    },
+    {
+      "isin": "US7587501039",
+      "name": "Regal-Beloit",
+      "value_eur": 591613.18,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.49
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.031
+    },
+    {
+      "isin": "IL0010823792",
+      "name": "Tower Semiconductor Ltd.",
+      "value_eur": 575529.94,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 0.56
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.03
+    },
+    {
+      "isin": "US11135FAN15",
+      "name": "3.4590% Broadcom Inc. DL- Notes 2020(20/26)",
+      "value_eur": 558582.0,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.37
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.03
+    },
+    {
+      "isin": "US64110L1061",
+      "name": "Netflix Inc.",
+      "value_eur": 553921.73,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 1.08
+        },
+        {
+          "fund": "Multi Asset",
+          "pct": 0.53
+        }
+      ],
+      "n_funds": 2,
+      "pct_of_total": 0.029
+    },
+    {
+      "isin": "US595112CD31",
+      "name": "5.3000% Micron Technology Inc. DL-Notes 2024(24/31)",
+      "value_eur": 504320.85,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.14
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.027
+    },
+    {
+      "isin": "XS2767979052",
+      "name": "3.3750% Infineon Technologies AG Medium Term Notes v.24(24/ 27)",
+      "value_eur": 502245.0,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.13
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.027
+    },
+    {
+      "isin": "US22788CAA36",
+      "name": "3.0000% Crowdstrike Holdings Inc DL-Notes 2021(21/29)",
+      "value_eur": 501631.23,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.13
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.027
+    },
+    {
+      "isin": "US19247G1076",
+      "name": "Coherent Corp.",
+      "value_eur": 500355.18,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 0.49
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.026
+    },
+    {
+      "isin": "US052769AE63",
+      "name": "3.5000% Autodesk Inc. DL-Notes 2017(17/27)",
+      "value_eur": 499144.47,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.12
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.026
+    },
+    {
+      "isin": "US482480AG50",
+      "name": "4.1000% KLA Corp. DL-Notes 2019(19/29)",
+      "value_eur": 493213.57,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 2.09
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.026
+    },
+    {
+      "isin": "US90353TAK60",
+      "name": "4.5000% Uber Technologies Inc. DL-Notes 2021(21/29) 144 A",
+      "value_eur": 448374.81,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.9
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.024
+    },
+    {
+      "isin": "US4869171078",
+      "name": "Keel Infrastructure Corp.",
+      "value_eur": 418732.23,
+      "funds": [
+        {
+          "fund": "Aggressive Growth",
+          "pct": 0.64
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.022
+    },
+    {
+      "isin": "US67066GAF19",
+      "name": "2.8500% NVIDIA Corp. DL-Notes 2020(20/30)",
+      "value_eur": 385722.04,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.64
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.02
+    },
+    {
+      "isin": "US97785W1062",
+      "name": "Wolfspeed Inc.",
+      "value_eur": 343079.76,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.86
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.018
+    },
+    {
+      "isin": "XS1135337498",
+      "name": "1.6250% Apple Inc. EO-Notes 14/26",
+      "value_eur": 327952.35,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.39
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.017
+    },
+    {
+      "isin": "XS2555218291",
+      "name": "4.0000% Booking Holdings Inc. EO-Notes 2022(22/26)",
+      "value_eur": 327885.91,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.39
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.017
+    },
+    {
+      "isin": "DE000A13SL34",
+      "name": "1.7500% SAP Med. Term Nts. 14/ 27",
+      "value_eur": 311583.77,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.32
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.016
+    },
+    {
+      "isin": "US573874AC88",
+      "name": "1.6500% Marvell Technology Inc. DL-Notes 2021(21/26)",
+      "value_eur": 291041.74,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US023135CF19",
+      "name": "3.3000% Amazon.com Inc. DL- Notes 2022(22/27)",
+      "value_eur": 290829.76,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US254687DK97",
+      "name": "3.3750% Walt Disney Co., The DL-Notes 2019(19/26)",
+      "value_eur": 290144.47,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US007903BH94",
+      "name": "4.2120% Advanced Micro Devices Inc. DL-Notes 2025(25/ 26)",
+      "value_eur": 289715.97,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US594918CN20",
+      "name": "3.4000% Microsoft Corp. DL- Notes 2023(23/26)",
+      "value_eur": 289569.13,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US64110LAN64",
+      "name": "4.3750% Netflix Inc. DL-Notes 2016(16/26)",
+      "value_eur": 289230.2,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.23
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US30303M8G02",
+      "name": "3.5000% Meta Platforms Inc. DL- Notes 2022(22/27)",
+      "value_eur": 287452.93,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.22
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US00724PAC32",
+      "name": "2.1500% Adobe Inc. DL-Notes 2020(20/27)",
+      "value_eur": 284816.33,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.21
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US70450YAD58",
+      "name": "2.6500% Pay Pal Holdings Inc. DL- Notes 2019(19/26)",
+      "value_eur": 284753.59,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.21
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US67066GAE44",
+      "name": "3.2000% NVIDIA Corp. DL-Notes 2016(16/26)",
+      "value_eur": 283411.01,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.2
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US127387AM08",
+      "name": "4.2000% Cadence Design Systems Inc. DL-Notes 2024(24/ 27)",
+      "value_eur": 282907.33,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.2
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US46124HAE62",
+      "name": "5.2500% Intuit Inc. DL-Notes 2023(23/26)",
+      "value_eur": 282735.58,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.2
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US02079KAC18",
+      "name": "1.9980% Alphabet Inc. DL-Notes 2016(16/26)",
+      "value_eur": 282212.5,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.2
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "XS2176715667",
+      "name": "0.3750% SAP SE Inh.-Schuldv.v. 20/29",
+      "value_eur": 274864.37,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.17
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.015
+    },
+    {
+      "isin": "US573874AF10",
+      "name": "2.4500% Marvell Technology Inc. DL-Notes 2021(21/28)",
+      "value_eur": 268194.33,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.14
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.014
+    },
+    {
+      "isin": "XS1619312686",
+      "name": "1.3750% Apple Inc. EO-Notes 2017(17/29)",
+      "value_eur": 260046.88,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.1
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.014
+    },
+    {
+      "isin": "XS1821883102",
+      "name": "3.6250% Netflix Inc. EO-Notes 17/27",
+      "value_eur": 250775.37,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 1.06
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.013
+    },
+    {
+      "isin": "US5657881067",
+      "name": "Marathon Digital Holdings Inc.",
+      "value_eur": 247262.36,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.62
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.013
+    },
+    {
+      "isin": "US0255371017",
+      "name": "American Electric Power",
+      "value_eur": 240547.48,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.61
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.013
+    },
+    {
+      "isin": "US254687FP66",
+      "name": "3.7000% Walt Disney Co., The DL-Notes 2020(20/27)",
+      "value_eur": 230321.18,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.98
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.012
+    },
+    {
+      "isin": "CA1366351098",
+      "name": "Canadian Solar Inc.",
+      "value_eur": 223655.79,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.56
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.012
+    },
+    {
+      "isin": "IE00B4NCWG09",
+      "name": "i Shares Physical Metals END ZT (11/O. End)Silver",
+      "value_eur": 223437.45,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.95
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.012
+    },
+    {
+      "isin": "US46625H1005",
+      "name": "JP Morgan Chase & Co.",
+      "value_eur": 210630.85,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.89
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.011
+    },
+    {
+      "isin": "US45166A1025",
+      "name": "Ideaya Biosciences Inc.",
+      "value_eur": 196204.56,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.49
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.01
+    },
+    {
+      "isin": "US29362U1043",
+      "name": "Entegris",
+      "value_eur": 191005.01,
+      "funds": [
+        {
+          "fund": "Defensive Growth",
+          "pct": 0.48
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.01
+    },
+    {
+      "isin": "US86771W1053",
+      "name": "Sunrun Inc.",
+      "value_eur": 175720.28,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.75
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.009
+    },
+    {
+      "isin": "US11135F1012",
+      "name": "Broadcom Inc",
+      "value_eur": 158413.25,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.67
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.008
+    },
+    {
+      "isin": "BMG2519Y1084",
+      "name": "Credicorp",
+      "value_eur": 154215.44,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.65
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.008
+    },
+    {
+      "isin": "US7960508882",
+      "name": "Samsung Electronics Co. Ltd.",
+      "value_eur": 153580.46,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.65
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.008
+    },
+    {
+      "isin": "KYG6683N1034",
+      "name": "Nu Holdings Ltd. Cl. A",
+      "value_eur": 145434.3,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.62
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.008
+    },
+    {
+      "isin": "US05464C1018",
+      "name": "Axon Enterprise Inc.",
+      "value_eur": 136486.17,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.58
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.007
+    },
+    {
+      "isin": "CA3208901064",
+      "name": "First Mining Gold Corp. Registered Shares o. N.",
+      "value_eur": 123882.97,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.53
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.007
+    },
+    {
+      "isin": "XS2434891219",
+      "name": "Fidelity Exchange Traded Prod. OE ETP 22(22/unl.) XBT/EUR",
+      "value_eur": 115904.7,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.49
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.006
+    },
+    {
+      "isin": "US2310211063",
+      "name": "Cummins",
+      "value_eur": 114256.61,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.48
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.006
+    },
+    {
+      "isin": "US09075V1026",
+      "name": "Bio N Tech SE (sp. AD Rs)/1",
+      "value_eur": 107148.06,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.45
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.006
+    },
+    {
+      "isin": "US5949181045",
+      "name": "Microsoft Corp.",
+      "value_eur": 105512.01,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.45
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.006
+    },
+    {
+      "isin": "CA82509L1076",
+      "name": "Shopify Inc. Reg. Shares A (Sub Voting) o N",
+      "value_eur": 87544.23,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.37
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.005
+    },
+    {
+      "isin": "CA03770A3073",
+      "name": "Apollo Silver Corp. Registered Shares o. N.",
+      "value_eur": 82568.75,
+      "funds": [
+        {
+          "fund": "Multi Asset",
+          "pct": 0.35
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.004
+    },
+    {
+      "isin": "BG1100003166",
+      "name": "Shelly Group PLC",
+      "value_eur": 491.4,
+      "funds": [
+        {
+          "fund": "Global Leaders",
+          "pct": 0.0
+        }
+      ],
+      "n_funds": 1,
+      "pct_of_total": 0.0
+    }
+  ],
+  "total_positions": 225,
+  "total_unique": 125,
+  "total_value_eur": 1890682878.56,
+  "date_range": [
+    "2026-02-28",
+    "2026-06-30"
+  ]
+}
