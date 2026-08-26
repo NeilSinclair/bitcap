@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pypdf
 
+import verify_docs
+
 DOCS = Path(__file__).parent / "docs" / "funds"
 OUT = Path(__file__).parent / "docs" / "bit_capital_funds.json"
 
@@ -185,6 +187,7 @@ def parse(name: str, filename: str) -> dict:
 
 
 def main() -> None:
+    verify_docs.check(list(FILES.values()))
     funds = [parse(n, f) for n, f in FILES.items()]
     OUT.write_text(json.dumps(funds, indent=2))
     for f in funds:

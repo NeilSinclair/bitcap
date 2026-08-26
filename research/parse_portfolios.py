@@ -19,6 +19,8 @@ from pathlib import Path
 
 import pypdf
 
+import verify_docs
+
 DOCS = Path(__file__).parent / "docs"
 FUNDS = DOCS / "funds"
 OUT = DOCS / "portfolios.json"
@@ -141,6 +143,8 @@ def to_iso(d: str) -> str:
 
 
 def main() -> None:
+    verify_docs.check([n for fs in REPORTS.values() for n in fs
+                       if (FUNDS / n).exists()])
     out = {}
     for fund, files in REPORTS.items():
         best = None

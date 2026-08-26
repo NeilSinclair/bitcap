@@ -88,3 +88,38 @@ wrong delta. Nothing errored.
 **Consequence.** Generalises: in this pipeline a missing value must never be
 coerced to a neutral-looking default. The same rule applies to LLM extractions —
 a null field is undefined, not zero, and must fail loudly.
+
+## D6 — Pin the source PDFs by hash rather than re-fetching them
+
+**Decision.** `research/docs/manifest.json` pins every fund PDF by SHA-256,
+retrieval date and as-of date. `verify_docs.py` checks it, and all three
+parsers call `check()` before reading a single byte. The PDFs stay committed.
+
+**Alternative rejected.** Gitignore the 29 MB and re-download at setup time,
+which would have fitted "clone-to-running in a few commands" better.
+`sources.json` records that *both* sources serve rolling URLs: the anevis
+factsheet `_ultimo` links and the HANSAINVEST `.../document/{jb|hjb}/de/de`
+endpoints each return whatever edition is current. A fetch script would pull
+different documents into the same filenames, and `parse_portfolios.py` would
+reconcile them to within €1 and emit a different portfolio without erroring.
+Silent data substitution is worse than a heavy repo.
+
+**Alternative rejected.** Git LFS. Solves repo weight, which is not the actual
+risk, and adds a `git lfs install` prerequisite to the setup path. Revisit past
+~100 MB.
+
+**Consequence.** The PDFs cannot be reproduced, so the hash is the only proof
+of which edition an insight was extracted from — it's what makes a citation
+resolvable to a specific document rather than to a URL. A deliberate refresh is
+`verify_docs.py --rebuild`, which forces the new edition into a reviewable diff
+instead of letting it land silently. A full check also fails on any PDF in
+`docs/funds` with no entry in `sources.json`, so undeclared files can't
+accumulate.
+
+The first `--rebuild` pinned 19 of the 21 PDFs then, which is how
+`GTL_annual_report.pdf` and `GTL_semiannual_report.pdf` surfaced as
+byte-identical duplicates of `jb_GTL.pdf` and `hjb_GTL.pdf` — two filenames for
+one document, the same entity-resolution hazard the pipeline exists to catch.
+Removed, with `parse_annual_report.py` repointed at the canonical name; all
+generated JSON is byte-identical afterwards. Git had stored each pair as a
+single blob, so this cost nothing in repo weight and was never about size.

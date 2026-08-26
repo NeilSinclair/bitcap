@@ -15,7 +15,9 @@ from pathlib import Path
 
 import pypdf
 
-PDF = Path(__file__).parent / "docs" / "funds" / "GTL_annual_report.pdf"
+import verify_docs
+
+PDF = Path(__file__).parent / "docs" / "funds" / "jb_GTL.pdf"
 OUT = Path(__file__).parent / "docs" / "gtl_portfolio_2025-12-31.json"
 
 ISIN_RE = re.compile(r"^[A-Z]{2}[A-Z0-9]{9}\d$")
@@ -90,6 +92,7 @@ def parse() -> dict:
 
 
 def main() -> None:
+    verify_docs.check([PDF.name])
     data = parse()
     OUT.write_text(json.dumps(data, indent=2))
     print(f"{data['n_holdings']} holdings, {data['total_pct_of_fund']}% of fund assets")

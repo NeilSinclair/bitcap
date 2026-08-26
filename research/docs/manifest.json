@@ -1,0 +1,176 @@
+{
+  "note": "Pins each fund PDF to the exact edition it was retrieved as. Every source_url here is rolling and will serve a different document later, so these files cannot be re-fetched. Rebuild only when deliberately refreshing a snapshot.",
+  "files": {
+    "Aggressive_Growth_R-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Aggressive_Growth_R-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 399891,
+      "sha256": "b91b016420d93a750b46561af27dd0bfc6956348a3ad8ca2735e59d782840aa4"
+    },
+    "BIT_Global_Multi_Asset_R-II_EN_ultimo.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Multi_Asset_R-II_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 454116,
+      "sha256": "9669310a5a0384c91935dc64fd542bb7cb77baf919a11d372299359e2c5a3e34"
+    },
+    "Crypto_Opportunities_I-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Crypto_Opportunities_I-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 396374,
+      "sha256": "5248b81e9d32cea80aa8306c1f7d3d06057a37d584734bd59414597497e85d9e"
+    },
+    "Defensive_Growth_I-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Defensive_Growth_I-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 374681,
+      "sha256": "02ace9140aa262ba877703f6d0ca85fc4b059699e66d529ea8b1c1424d54cce2"
+    },
+    "Global_Crypto_Leaders_R-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Crypto_Leaders_R-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 392961,
+      "sha256": "ae69cb37cc56975a4d4b2a52b6880acd479db3904f130c4bcdcdd08d487283ec"
+    },
+    "Global_Leaders_R-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Leaders_R-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 394534,
+      "sha256": "6c864b49df43e7300e4accd67abce8adc22e88880f90a8e5044cf2312a0fda98"
+    },
+    "Global_Technology_Leaders_R-I.pdf": {
+      "source_url": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Technology_Leaders_R-I_EN_ultimo.pdf",
+      "retrieved": "2026-08-24",
+      "as_of": "2026-07-31",
+      "url_stability": "rolling",
+      "description": "factsheet, 31.07.2026",
+      "bytes": 406212,
+      "sha256": "8a327798c925f3b40a45038341293fc0de74558c46fb57749b85db10dcad10a4"
+    },
+    "hjb_AggressiveGrowth.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-10-31",
+      "url_stability": "rolling",
+      "description": "DE000A2QJLA8 semi-annual, 31.10.2025",
+      "bytes": 813700,
+      "sha256": "326a783b9b0433da999391c89296968f0b2c505a83a502739cdbaac031866d82"
+    },
+    "hjb_CryptoLeaders.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-02-28",
+      "url_stability": "rolling",
+      "description": "DE000A3CNGM3 semi-annual, 28.02.2026",
+      "bytes": 1120689,
+      "sha256": "4f6b75c2441cc2416f5909bc0677b9118ea99c0a9b2de47851862972c327b571"
+    },
+    "hjb_DefensiveGrowth.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-11-30",
+      "url_stability": "rolling",
+      "description": "DE000A3EKR20 semi-annual, 30.11.2025",
+      "bytes": 1208813,
+      "sha256": "0e8c8e8ab6eaec48da4e487be06f9a04ccdf9fda20744fabd5aab94337557742"
+    },
+    "hjb_GTL.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-06-30",
+      "url_stability": "rolling",
+      "description": "DE000A2N8127 semi-annual, 30.06.2026",
+      "bytes": 1271313,
+      "sha256": "c6cca82c580096bb5d0e5f513a055bf50ba1f0d8a95033745a688ef8ed37bc47"
+    },
+    "hjb_GlobalLeaders.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-04-30",
+      "url_stability": "rolling",
+      "description": "DE000A2QDRW2 semi-annual, 30.04.2026",
+      "bytes": 869334,
+      "sha256": "9d263f7a52ce9f0f868aeb460454b6f601bf7be0d1fd35001db35e8d2faa6273"
+    },
+    "hjb_MultiAsset.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-09-30",
+      "url_stability": "rolling",
+      "description": "DE000A40J9Z0 semi-annual, 30.09.2025",
+      "bytes": 1202741,
+      "sha256": "9eca67fff5fa8f941cc8bc07a4cf7aa0edb520c016b87469a438d6c38c3ef0a9"
+    },
+    "jb_AggressiveGrowth.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-04-30",
+      "url_stability": "rolling",
+      "description": "DE000A2QJLA8 annual, 30.04.2026",
+      "bytes": 1595841,
+      "sha256": "882613323c34246132269fdbf0e707975f167995820659aaef80873fc585322e"
+    },
+    "jb_CryptoLeaders.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-08-31",
+      "url_stability": "rolling",
+      "description": "DE000A3CNGM3 annual, 31.08.2025",
+      "bytes": 1957000,
+      "sha256": "46355548f3eb5c175175100c27c8dbbbdaa183fc95f44344b0da904e67528724"
+    },
+    "jb_DefensiveGrowth.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-05-31",
+      "url_stability": "rolling",
+      "description": "DE000A3EKR20 annual, 31.05.2026",
+      "bytes": 3299122,
+      "sha256": "a3273ceca922e221a283401eb706667a8b3981c540f217ca3bf85347962837c1"
+    },
+    "jb_GTL.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-12-31",
+      "url_stability": "rolling",
+      "description": "DE000A2N8127 annual, 31.12.2025",
+      "bytes": 3342289,
+      "sha256": "c3e34e8263bb9c5d9f5307a80d3efa76d88323885d958c544f484d91572256fc"
+    },
+    "jb_GlobalLeaders.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2025-10-31",
+      "url_stability": "rolling",
+      "description": "DE000A2QDRW2 annual, 31.10.2025",
+      "bytes": 2776859,
+      "sha256": "5be480cec05507c453d448a2d0ca796437a17f18e033e1c4410e934e7ab6e41c"
+    },
+    "jb_MultiAsset.pdf": {
+      "source_url": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+      "retrieved": "2026-08-25",
+      "as_of": "2026-03-31",
+      "url_stability": "rolling",
+      "description": "DE000A40J9Z0 annual, 31.03.2026",
+      "bytes": 3604571,
+      "sha256": "17b307bac842ff4a1e4e112aaf5dbaa29fac5667370c1bc4326dd1d19a87a688"
+    }
+  }
+}

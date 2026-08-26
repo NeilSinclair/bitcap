@@ -22,7 +22,7 @@
   },
   "statutory_reports": {
     "retrieved": "2026-08-25",
-    "role": "PRIMARY position source: full Verm\u00f6gensaufstellung, every holding with its weight.",
+    "role": "PRIMARY position source: full Vermögensaufstellung, every holding with its weight.",
     "url_pattern": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
     "note": "Each fund has its own financial year-end, so the freshest complete statement is sometimes the annual report and sometimes the semi-annual one. Both endpoints serve rolling latest editions.",
     "files": {
@@ -40,9 +40,9 @@
       "jb_MultiAsset.pdf": "DE000A40J9Z0 annual, 31.03.2026"
     },
     "not_available": {
-      "BIT Crypto Opportunities": "DE000A3CNGP6 \u2014 AIF, returns 404 on the hjb endpoint. Fund has no full portfolio in this dataset."
+      "BIT Crypto Opportunities": "DE000A3CNGP6 — AIF, returns 404 on the hjb endpoint. Fund has no full portfolio in this dataset."
     },
-    "validation": "parse_portfolios.py reconciles each parsed portfolio against that report's own 'Summe Wertpapierverm\u00f6gen' line and reports OK/!! per fund. All six currently reconcile to within EUR 1."
+    "validation": "parse_portfolios.py reconciles each parsed portfolio against that report's own 'Summe Wertpapiervermögen' line and reports OK/!! per fund. All six currently reconcile to within EUR 1."
   },
   "sec_13f": {
     "retrieved": "2026-08-24",
