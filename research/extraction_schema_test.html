@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extraction Schema Test</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --panel2:#1c232d; --line:#2a323d;
+    --tx:#e6edf3; --dim:#9aa7b4; --faint:#6e7c8c;
+    --accent:#4c9aff; --pos:#3fb950; --neg:#f85149; --warn:#d29922;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121822,#0d1117);
+    padding:34px 0 0;margin-bottom:26px}
+  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .sub b{color:var(--tx);font-weight:600}
+
+  nav{display:flex;gap:2px;flex-wrap:wrap}
+  nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);
+    font:inherit;font-size:14px;padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0}
+  nav button:hover{color:var(--tx);background:var(--panel)}
+  nav button.on{color:var(--tx);border-bottom-color:var(--accent);font-weight:600}
+
+  section{display:none} section.on{display:block}
+  h2{font-size:19px;margin:30px 0 4px;letter-spacing:-.01em}
+  h2:first-child{margin-top:6px}
+  .note{color:var(--dim);font-size:13.5px;margin:0 0 16px;max-width:78ch}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .k{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em}
+  .stat .v{font-size:25px;font-weight:650;letter-spacing:-.02em;margin-top:5px}
+  .stat .d{color:var(--dim);font-size:12.5px;margin-top:3px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:600;white-space:nowrap}
+  tbody tr:hover{background:var(--panel2)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)} .dim{color:var(--dim)} .faint{color:var(--faint)}
+  .warn{color:var(--warn)}
+
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;font-weight:600;
+    background:#1f2b3d;color:var(--accent);border:1px solid #2c3d55;white-space:nowrap}
+  .tag.listed{background:#122b1b;color:var(--pos);border-color:#1d4429}
+  .tag.stealth{background:#2a2412;color:var(--warn);border-color:#4a3f1d}
+
+  /* confidence chips */
+  .c{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:700;
+     padding:0 5px;border-radius:4px;vertical-align:1px;margin:0 1px}
+  .cS{background:#122b1b;color:var(--pos);border:1px solid #1d4429}
+  .cM{background:#1c232d;color:var(--dim);border:1px solid var(--line)}
+  .cQ{background:#2d1618;color:var(--neg);border:1px solid #4a2226}
+
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--tx);
+    border-radius:8px;padding:8px 12px;font:inherit;font-size:13.5px;width:260px}
+  input[type=search]:focus{outline:0;border-color:var(--accent)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    font:inherit;font-size:13px;padding:7px 13px;border-radius:8px;cursor:pointer}
+  .filters button:hover{color:var(--tx)}
+  .filters button.on{background:#1f2b3d;color:var(--accent);border-color:#2c3d55;font-weight:600}
+
+  .tier{margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tier h3{margin:0;font-size:15px;letter-spacing:-.01em}
+  .tier .desc{color:var(--faint);font-size:12.5px}
+
+  .lab{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+       padding:15px 18px;margin-bottom:11px}
+  .lab.hl{border-color:#2c3d55;background:linear-gradient(180deg,#17202c,#151b23)}
+  .lab h4{margin:0 0 3px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .meta{color:var(--faint);font-size:12px;font-family:var(--mono);margin-bottom:9px}
+  .meta span{margin-right:14px}
+  .lab p{margin:0 0 9px;font-size:13.5px;color:var(--tx);max-width:82ch}
+  .lab ul{margin:0 0 9px;padding-left:17px;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .lab li{margin-bottom:4px}
+  .lab li b{color:var(--tx);font-weight:600}
+  .src{font-size:12px;color:var(--faint);border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+  .src a{color:#5b8db8}
+  .chan{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-bottom:9px}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel2);padding:12px 16px;
+    border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .callout.w{border-left-color:var(--warn)}
+  .callout b{color:var(--tx)}
+  .empty{color:var(--faint);font-size:13.5px;padding:30px 0;display:none}
+</style><style>
+  code{font-family:var(--mono);font-size:12.5px;background:var(--panel2);padding:1px 5px;border-radius:4px}
+  .d{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:13px}
+  .d.sev1{border-color:#4a2226;background:linear-gradient(180deg,#1d1416,#151b23)}
+  .d.sev2{border-color:#4a3f1d;background:linear-gradient(180deg,#1d1a12,#151b23)}
+  .d.win{border-color:#1d4429;background:linear-gradient(180deg,#101c14,#151b23)}
+  .d h3{margin:0 0 6px;font-size:15.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .d .id{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:700}
+  .d p{margin:0 0 10px;font-size:13.5px;max-width:86ch}
+  .d ul{margin:0 0 10px;padding-left:18px;font-size:13.5px;color:var(--dim);max-width:86ch}
+  .d li{margin-bottom:4px} .d li b,.d p b{color:var(--tx)}
+  .fix{border-left:3px solid var(--pos);background:#101c14;padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin-top:10px;max-width:86ch}
+  .fix b{color:var(--pos)}
+  pre{background:#0b1016;border:1px solid var(--line);border-radius:8px;padding:12px 14px;
+    overflow-x:auto;font-family:var(--mono);font-size:12px;color:var(--dim);margin:0 0 10px;line-height:1.5}
+  pre .k{color:#7aa2c7} pre .bad{color:var(--neg);font-weight:700} pre .good{color:var(--pos)}
+  .chain{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;margin:12px 0}
+  .chain span{background:var(--panel2);border:1px solid var(--line);padding:6px 11px;border-radius:8px}
+  .chain span.hold{background:#122b1b;border-color:#1d4429;color:var(--pos);font-weight:600}
+  .chain i{color:var(--faint);font-style:normal}
+  .ok{color:var(--pos)} .bad{color:var(--neg)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Extraction Schema Test</h1>
+    <div class="sub">One uniform schema prompt run across 8 real articles · <b>2026-08-26</b> · testing the scheme, not the scraper</div>
+    <nav>
+      <button class="on" data-t="defects">Defects</button>
+      <button data-t="verify">Fetch verification</button>
+      <button data-t="propagation">Propagation test</button>
+      <button data-t="schema">Schema v2</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+
+<section class="on" id="defects">
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="card stat"><div class="k">Articles extracted</div><div class="v">7</div><div class="d">of 8 attempted</div></div>
+    <div class="card stat"><div class="k">Defects found</div><div class="v neg">11</div><div class="d">4 would corrupt output silently</div></div>
+    <div class="card stat"><div class="k"><code>is_public</code> accuracy</div><div class="v neg">6/14</div><div class="d">worse than a coin flip</div></div>
+    <div class="card stat"><div class="k">Fields that worked</div><div class="v pos">5</div><div class="d">the high-value ones</div></div>
+  </div>
+
+  <div class="callout"><b>Verdict.</b> The <i>shape</i> of the schema is right — the highest-value
+  fields (compute-contract terms, published prices, licences, benchmark deltas) extracted cleanly and
+  would have produced real signal. But <b>four fields are being asked to do a job extraction cannot
+  do</b>, and they fail in the direction that matters: silently, with confident wrong values.</div>
+
+  <div class="d sev1">
+    <h3><span class="id">D1</span> <code>is_public</code> is wrong more often than right — and it is not extraction's job <span class="tag out">critical</span></h3>
+    <p>Across 14 counterparty judgements the model got <b>6 right</b>:</p>
+<pre><span class="k">Z.ai</span>             → is_public: <span class="bad">false</span>   ✗ listed SEHK 2513
+<span class="k">xAI</span>              → is_public: <span class="bad">false</span>   ✗ inside SpaceX, Nasdaq SPCX
+<span class="k">SpaceX</span>           → is_public: <span class="bad">false</span>   ✗ listed Nasdaq SPCX since 2026-06-12
+<span class="k">Caisse des Dépôts</span> → is_public: <span class="bad">true</span>    ✗ French state institution, not listed
+<span class="k">LangChain</span>        → is_public: <span class="bad">true</span>    ✗ private
+<span class="k">Harvey</span>           → is_public: <span class="bad">true</span>    ✗ private
+<span class="k">Databricks</span>       → is_public: <span class="bad">true</span>    ✗ private
+<span class="k">OpenAI</span>           → is_public: <span class="bad">true</span>    ✗ private
+<span class="k">Boston Dynamics</span>  → is_public: <span class="bad">true</span>    ✗ Hyundai subsidiary
+<span class="k">ASML, Capgemini, CMA CGM, Amadeus, Box, Apptronik</span> → <span class="good">correct</span></pre>
+    <p>The document never states whether a company is listed. The model is answering from its own
+    knowledge — exactly the thing that must not happen — and it is wrong at the precise point that
+    decides whether an event reaches a ticker.</p>
+    <div class="fix"><b>Fix:</b> <code>is_public</code> and <code>ticker</code> are <b>never extracted</b>.
+    Extraction answers "what does this document say"; a deterministic <b>registry lookup</b> keyed on
+    entity name answers "what is this entity". Two layers, and mixing them injects error at the
+    highest-leverage step. This is the F10 three-class registry earning its place on evidence.</div>
+  </div>
+
+  <div class="d sev1">
+    <h3><span class="id">D2</span> Dates are invented <span class="tag out">critical</span></h3>
+    <ul>
+      <li>Mistral sovereign post → <code>"2024-08-11"</code>. Actual: <b>2026-08-11</b>. <b>A two-year error.</b></li>
+      <li>Gemini 3.7 Flash → <code>"2026-08-13"</code>; the index gave only "August 2026" with no day.</li>
+      <li>Gemini Robotics ER 2 → <code>"2026-07-30"</code>; index gave only "July 2026".</li>
+    </ul>
+    <p>A wrong year silently breaks the rolling 3-month window, the freshness filter and the ingestion
+    watermark — and nothing errors.</p>
+    <div class="fix"><b>Fix:</b> date comes from feed metadata / HTTP headers / URL slug, never from the model. If no
+    machine-readable date exists, the item is dated <code>null</code> and quarantined — not guessed.</div>
+  </div>
+
+  <div class="d sev1">
+    <h3><span class="id">D3</span> <code>event_type</code> as a single label drops signal <span class="tag out">critical</span></h3>
+    <p>The Mistral sovereign post is simultaneously a product launch (Regional Endpoints), a
+    <b>model release</b> (OCR 4, Medium 3.5, Small 4, Voxtral TTS) and an <b>infrastructure commitment</b>
+    (1 GW by 2030). It was tagged <code>product_launch</code> — so the 1 GW capacity signal has no
+    event type carrying it, and only survived because <code>power_mw</code> happened to catch it.</p>
+    <div class="fix"><b>Fix:</b> <code>event_types[]</code>, multi-label. An article is not one thing.</div>
+  </div>
+
+  <div class="d sev1">
+    <h3><span class="id">D4</span> "funding" means two opposite things <span class="tag out">critical</span></h3>
+    <p>The Anthropic wellbeing post — a <b>$5m grant programme Anthropic is giving away</b> — was tagged
+    <code>event_type: funding</code>. In our vocabulary <code>funding</code> means <i>the lab raising
+    capital</i>, which fires <code>lab_capital_formation</code> and reads as a capex-cycle signal.</p>
+    <p>This is the cleanest false-positive generator in the set: a philanthropy announcement entering the
+    investment renderer as evidence of capital formation. It is also the item I predicted would be inert,
+    and it very nearly wasn't.</p>
+    <div class="fix"><b>Fix:</b> split into <code>funding_raised</code> and <code>funding_granted</code>. Direction of
+    money flow is not a detail.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D5</span> <code>quoted_span</code> is unstable and drifts to marketing</h3>
+    <p>Same Mistral document, two runs:</p>
+<pre>run A → <span class="good">"Mistral Regional Endpoints, now generally available, let customers choose
+         whether their inference runs in Europe or the US…"</span>
+run B → <span class="bad">"every enterprise and country must be in control of the models it uses,
+         choose where the intelligence runs"</span></pre>
+    <p>Run B is corporate philosophy, not news. Gemini 3.7 Flash likewise gave <i>"our most intelligent
+    workhorse model yet for coding and agents"</i> rather than the halved price. "The sentence that best
+    states what is new" is underspecified, and the model resolves it toward whatever sounds most like a
+    headline.</p>
+    <div class="fix"><b>Fix:</b> one quoted span <b>per extracted claim</b>, not one per document, and each span must
+    contain the quantity or counterparty it supports. That makes the citation justify the field rather
+    than summarise the vibe — and it fixes citation granularity at the same time.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D6</span> <code>artifact_availability</code> returns contradictions</h3>
+<pre>Shieldstral   → <span class="bad">["weights", "paper_only"]</span>
+DeepSeek-R1   → <span class="bad">["weights", "code", "api", "paper_only"]</span>
+Gemini 3.7    → <span class="bad">"api"</span>          <span class="k">← string, not array</span>
+Mistral sov.  → <span class="bad">"api"</span>          <span class="k">← string, not array</span></pre>
+    <p><code>paper_only</code> is not a member of the same set — it is the <i>absence</i> of the others,
+    so it can never co-occur with <code>weights</code>. The type also flips between string and array.</p>
+    <div class="fix"><b>Fix:</b> four independent booleans — <code>weights_available</code>, <code>code_available</code>,
+    <code>data_available</code>, <code>api_available</code>. No enum, so no contradiction is expressible.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D7</span> <code>people[]</code> conflates lab staff with quoted outsiders</h3>
+    <p>The Mistral post returned six people — Matan Grinberg (Factory), Luis Maroto (Amadeus),
+    Christophe Fouquet (ASML), Aiman Ezzat (Capgemini), Olivier Sichel (Caisse des Dépôts), Rodolphe
+    Saadé (CMA CGM). <b>None of them work at Mistral.</b> They are customers quoted in testimonials, and
+    they were tagged <code>function: dealmaking</code> and <code>product</code> as though they were staff.</p>
+    <p>Person-level tracking — the expensive part of the register — would be polluted by every testimonial
+    quote in every product post. Meanwhile the genuinely useful internal people (Tulsee Doshi on Gemini
+    3.7; Steven Hansen and Peng Xu on Robotics ER 2) came through correctly elsewhere.</p>
+    <div class="fix"><b>Fix:</b> add <code>affiliation: internal | external</code>. Only <code>internal</code> feeds the
+    person register; <code>external</code> is counterparty evidence.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D8</span> <code>technique_type</code> ignored its enum completely</h3>
+    <p>Specified as <code>training | serving | eval | agentic | tooling</code>. Returned:</p>
+<pre><span class="bad">"multimodal safety classifier"</span>, <span class="bad">"regional_inference_infrastructure"</span>,
+<span class="bad">"reinforcement learning in post-training"</span>, <span class="bad">"large language model"</span>,
+<span class="bad">"wellbeing_evaluation_methodology"</span>, <span class="bad">["embodied_reasoning", "video_understanding", …]</span></pre>
+    <p><b>Zero of seven</b> returned a valid enum value. A free-text field wearing an enum's clothes is
+    unusable for filtering, and this is the AI-team renderer's main axis.</p>
+    <div class="fix"><b>Fix:</b> constrained decoding or hard post-validation that rejects out-of-enum values rather than
+    passing them through. Per the project's typed-boundaries principle, malformed output must be caught,
+    not trusted.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D9</span> Ambiguous field names cause bleed</h3>
+<pre>xAI compute deal → <span class="k">"parameters"</span>: <span class="bad">"300 megawatts from Colossus 1 data center"</span>
+                   <span class="k">"power_mw"</span>:    <span class="good">300</span>   <span class="k">← same fact, correct field</span></pre>
+    <p><code>parameters</code> reads as "deal parameters" as easily as "model parameters".</p>
+    <div class="fix"><b>Fix:</b> rename to <code>model_parameters</code>. Field names are prompts.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D10</span> <code>lab</code> is undefined for press sources</h3>
+    <p>The TechCrunch item returned <code>lab: null</code> — correct, TechCrunch is not a lab — but the
+    <i>subjects</i> are Anthropic and xAI, and this was the single most valuable extraction in the set.</p>
+    <p>Since press is the primary source for compute contracts (F8), a schema that cannot name the subject
+    lab of a press item cannot ingest the highest-value event type.</p>
+    <div class="fix"><b>Fix:</b> split <code>publisher</code> from <code>subject_labs[]</code>.</div>
+  </div>
+
+  <div class="d sev2">
+    <h3><span class="id">D11</span> <code>benchmark_deltas</code> has no fixed type</h3>
+<pre>Gemini 3.7   → <span class="good">{"FrontierCode_1_1": "43.6% vs 34.4%", …}</span>   object
+Shieldstral  → <span class="bad">"matches or outperforms models up to 7x its size"</span>  prose
+Robotics ER2 → <span class="bad">{"progress_classification_accuracy": "57.4%"}</span>      no baseline
+DeepSeek-R1  → <span class="bad">null</span>  <span class="k">← numbers exist, but only inside an image</span></pre>
+    <div class="fix"><b>Fix:</b> <code>benchmark_deltas[]</code> as an array of
+    <code>{benchmark, value, baseline_value, unit}</code>. Prose that will not decompose goes to a separate
+    <code>qualitative_claims[]</code> rather than corrupting a numeric field.</div>
+  </div>
+
+  <div class="d win">
+    <h3><span class="id">W1</span> What worked — and it is the part that matters <span class="tag new">keep</span></h3>
+    <ul>
+      <li><b>Compute-contract terms extracted perfectly.</b> <i>"Anthropic will be paying xAI $1.25 billion per
+      month through May 2029, with a discounted rate for the first two months as xAI completes its
+      ramp-up"</i> — plus 300MW, Colossus 1, and both counterparties with roles. A fully-formed
+      <code>lab_compute_contract</code> from one pass.</li>
+      <li><b>Published prices, cleanly.</b> Gemini 3.7 Flash: 0.75 / 3.75 with <code>price_change: "50% reduction
+      vs Gemini 3.6 Flash"</code>. DeepSeek-R1: 0.55 / 2.19. <code>inference_cost_down</code> is arithmetic,
+      as F4 argued.</li>
+      <li><b>Licences, cleanly.</b> Apache 2.0 (Shieldstral), MIT (DeepSeek-R1) — the AI team's decisive field.</li>
+      <li><b>Structured benchmark deltas</b> on the one document that published them as text.</li>
+      <li><b>The noise control stayed inert</b> on every field except <code>event_type</code> (see D4): no
+      counterparties, no artifacts, no prices.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="verify">
+  <h2>Fetch verification</h2>
+  <p class="note">Each URL was fetched live and is linked. "Verified by" is a distinctive fact returned
+  from the document body that could not have been produced without retrieving it.</p>
+  <table>
+    <thead><tr><th>Source</th><th>Article</th><th>Status</th><th>Verified by</th></tr></thead>
+    <tbody>
+      <tr><td>Mistral</td><td><a href="https://mistral.ai/news/regional-inference-open-models-new-compute/">In-region inference, open models, new European infrastructure</a></td><td class="ok">200</td><td>"up to 1 GW of capacity by 2030"; ASML CEO Christophe Fouquet quoted</td></tr>
+      <tr><td>Mistral</td><td><a href="https://mistral.ai/news/shieldstral/">Introducing Shieldstral</a></td><td class="ok">200</td><td>"A 3B open-weights, policy-adaptive multimodal safety classifier"; Apache 2.0</td></tr>
+      <tr><td>Google DeepMind</td><td><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/">Introducing Gemini 3.7 Flash</a></td><td class="ok">200</td><td>$0.75 / $3.75 per 1M tokens; FrontierCode 43.6% vs 34.4%</td></tr>
+      <tr><td>Google DeepMind</td><td><a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/">Gemini Robotics ER 2</a></td><td class="ok">200</td><td>Boston Dynamics, Apptronik, Franka; moment-finding accuracy 91.3%</td></tr>
+      <tr><td>TechCrunch</td><td><a href="https://techcrunch.com/2026/05/20/anthropic-will-pay-xai-1-25-billion-per-month-for-compute/">Anthropic will pay xAI $1.25B per month for compute</a></td><td class="ok">200</td><td>"through May 2029"; 300MW from Colossus 1</td></tr>
+      <tr><td>DeepSeek</td><td><a href="https://api-docs.deepseek.com/news/news250120">DeepSeek-R1 Release</a></td><td class="ok">200</td><td>"$0.14 / million input tokens (cache hit)"; MIT License</td></tr>
+      <tr><td>Anthropic</td><td><a href="https://www.anthropic.com/news/wellbeing-research-grants">Funding better evaluations of AI's impact on wellbeing</a></td><td class="ok">200</td><td>"$5 million grant program"</td></tr>
+      <tr><td>CNBC</td><td>Riot Platforms signs Anthropic deal</td><td class="bad">403</td><td class="faint">blocked — substituted the TechCrunch xAI item</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="propagation">
+  <h2>Propagation test — the corrected model, end to end</h2>
+  <p class="note">The most valuable extraction in the set names <b>zero BIT holdings</b>. Under the old
+  rule (drop anything without a held ticker) it would have been discarded. Traced through mechanisms
+  instead:</p>
+
+  <div class="card" style="margin-bottom:16px">
+    <b>Event</b> — TechCrunch, 2026-05-20. <i>"Anthropic will be paying xAI $1.25 billion per month through
+    May 2029"</i>; 300MW from Colossus 1.
+    <div class="chain" style="margin-top:14px">
+      <span>Anthropic <i>(private)</i></span><i>→</i>
+      <span>xAI / SpaceX <i>(SPCX — not held)</i></span><i>→</i>
+      <span><code>lab_compute_contract</code></span><i>+</i>
+      <span><code>training_compute_up</code></span><i>+</i>
+      <span><code>datacenter_power_up</code></span>
+    </div>
+    <div class="chain">
+      <i>reaches →</i>
+      <span class="hold">Micron 7.75%</span>
+      <span class="hold">TSMC 4.38%</span>
+      <span class="hold">Marvell 4.21%</span>
+      <span class="hold">IREN 8.92%</span>
+      <span class="hold">TeraWulf 1.94%</span>
+      <span class="hold">Riot 0.53%</span>
+      <span class="hold">HUT8 1.01%</span>
+    </div>
+    <p class="note" style="margin:10px 0 0">A 300MW, three-year lab compute contract validates the
+    neocloud business model that IREN, TeraWulf, Riot and HUT8 sell, and pulls through to memory and
+    foundry on training demand. <b>Roughly 29% of the book, from a document that mentions none of it.</b></p>
+  </div>
+
+  <div class="callout"><b>This is the F3 correction demonstrated on a real document.</b> The old
+  "resolve to a held ticker or drop" rule would have thrown away the single highest-value item in the
+  sample. Entity class is an attribute; the mechanism is the road.</div>
+</section>
+
+<section id="schema">
+  <h2>Schema v2</h2>
+  <p class="note">Every change below is forced by a numbered defect above — nothing speculative.</p>
+<pre><span class="k">core</span>:
+  publisher                  <span class="k">← split from lab (D10)</span>
+  subject_labs[]             <span class="k">← new (D10)</span>
+  event_types[]              <span class="k">← multi-label (D3); funding split (D4)</span>
+  date                       <span class="k">← from feed metadata, NEVER extracted (D2)</span>
+  claims[]:                  <span class="k">← replaces one span per doc (D5)</span>
+    text
+    quoted_span              <span class="k">← must contain the quantity/counterparty it supports</span>
+  people[]:
+    name, role, function     <span class="k">← research|dealmaking|policy|product</span>
+    affiliation              <span class="k">← internal|external, new (D7)</span>
+  counterparties[]:
+    name, relationship
+    entity_class             <span class="k">← resolved by registry lookup, not extracted (D1)</span>
+    is_public, ticker        <span class="k">← registry lookup only (D1)</span>
+  quantities:
+    currency_amount, currency_direction   <span class="k">← in|out (D4)</span>
+    power_mw, duration
+    model_parameters         <span class="k">← renamed (D9)</span>
+    price_per_1m_input, price_per_1m_output, price_change
+    benchmark_deltas[]: {benchmark, value, baseline_value, unit}   <span class="k">← typed (D11)</span>
+  qualitative_claims[]       <span class="k">← prose that will not decompose (D11)</span>
+  weights_available, code_available, data_available, api_available  <span class="k">← booleans (D6)</span>
+  licence
+  technique_type             <span class="k">← enum, hard-validated, reject on miss (D8)</span></pre>
+
+  <div class="callout"><b>The structural lesson.</b> Four defects (D1, D2, D10, and half of D11) share one
+  cause: <b>the schema asked the extractor for facts that are not in the document</b>. Whether a company
+  is listed, what date a page was published, what a benchmark's baseline was — these are lookups and
+  metadata, not reading comprehension. Every time the boundary was crossed, the model answered
+  confidently and wrongly.
+  <br><br>
+  The rule that falls out: <b>extraction may only be asked "what does this text say".</b> Anything else is
+  a registry, a feed header, or a computation.</div>
+</section>
+
+</div>
+<script>
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.t).classList.add('on');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factor Test n=7</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --panel2:#1c232d; --line:#2a323d;
+    --tx:#e6edf3; --dim:#9aa7b4; --faint:#6e7c8c;
+    --accent:#4c9aff; --pos:#3fb950; --neg:#f85149; --warn:#d29922;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121822,#0d1117);
+    padding:34px 0 0;margin-bottom:26px}
+  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .sub b{color:var(--tx);font-weight:600}
+
+  nav{display:flex;gap:2px;flex-wrap:wrap}
+  nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);
+    font:inherit;font-size:14px;padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0}
+  nav button:hover{color:var(--tx);background:var(--panel)}
+  nav button.on{color:var(--tx);border-bottom-color:var(--accent);font-weight:600}
+
+  section{display:none} section.on{display:block}
+  h2{font-size:19px;margin:30px 0 4px;letter-spacing:-.01em}
+  h2:first-child{margin-top:6px}
+  .note{color:var(--dim);font-size:13.5px;margin:0 0 16px;max-width:78ch}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .k{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em}
+  .stat .v{font-size:25px;font-weight:650;letter-spacing:-.02em;margin-top:5px}
+  .stat .d{color:var(--dim);font-size:12.5px;margin-top:3px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:600;white-space:nowrap}
+  tbody tr:hover{background:var(--panel2)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)} .dim{color:var(--dim)} .faint{color:var(--faint)}
+  .warn{color:var(--warn)}
+
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;font-weight:600;
+    background:#1f2b3d;color:var(--accent);border:1px solid #2c3d55;white-space:nowrap}
+  .tag.listed{background:#122b1b;color:var(--pos);border-color:#1d4429}
+  .tag.stealth{background:#2a2412;color:var(--warn);border-color:#4a3f1d}
+
+  /* confidence chips */
+  .c{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:700;
+     padding:0 5px;border-radius:4px;vertical-align:1px;margin:0 1px}
+  .cS{background:#122b1b;color:var(--pos);border:1px solid #1d4429}
+  .cM{background:#1c232d;color:var(--dim);border:1px solid var(--line)}
+  .cQ{background:#2d1618;color:var(--neg);border:1px solid #4a2226}
+
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--tx);
+    border-radius:8px;padding:8px 12px;font:inherit;font-size:13.5px;width:260px}
+  input[type=search]:focus{outline:0;border-color:var(--accent)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    font:inherit;font-size:13px;padding:7px 13px;border-radius:8px;cursor:pointer}
+  .filters button:hover{color:var(--tx)}
+  .filters button.on{background:#1f2b3d;color:var(--accent);border-color:#2c3d55;font-weight:600}
+
+  .tier{margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tier h3{margin:0;font-size:15px;letter-spacing:-.01em}
+  .tier .desc{color:var(--faint);font-size:12.5px}
+
+  .lab{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+       padding:15px 18px;margin-bottom:11px}
+  .lab.hl{border-color:#2c3d55;background:linear-gradient(180deg,#17202c,#151b23)}
+  .lab h4{margin:0 0 3px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .meta{color:var(--faint);font-size:12px;font-family:var(--mono);margin-bottom:9px}
+  .meta span{margin-right:14px}
+  .lab p{margin:0 0 9px;font-size:13.5px;color:var(--tx);max-width:82ch}
+  .lab ul{margin:0 0 9px;padding-left:17px;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .lab li{margin-bottom:4px}
+  .lab li b{color:var(--tx);font-weight:600}
+  .src{font-size:12px;color:var(--faint);border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+  .src a{color:#5b8db8}
+  .chan{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-bottom:9px}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel2);padding:12px 16px;
+    border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .callout.w{border-left-color:var(--warn)}
+  .callout b{color:var(--tx)}
+  .empty{color:var(--faint);font-size:13.5px;padding:30px 0;display:none}
+</style><style>
+  .c.cW{background:#2a2412;color:var(--warn);border:1px solid #4a3f1d}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--panel2);padding:1px 5px;border-radius:4px}
+  .f{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:13px}
+  .f.crit{border-color:#4a2226;background:linear-gradient(180deg,#1d1416,#151b23)}
+  .f.corr{border-color:#4a3f1d;background:linear-gradient(180deg,#1d1a12,#151b23)}
+  .f h3{margin:0 0 4px;font-size:15.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .f .id{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:700}
+  .f p{margin:0 0 10px;font-size:13.5px;max-width:84ch}
+  .f ul{margin:0 0 10px;padding-left:18px;font-size:13.5px;color:var(--dim);max-width:84ch}
+  .f li{margin-bottom:5px}
+  .f li b,.f p b{color:var(--tx)}
+  blockquote{margin:0 0 10px;padding:9px 14px;border-left:3px solid var(--accent);
+    background:var(--panel2);border-radius:0 8px 8px 0;font-family:var(--mono);
+    font-size:12.5px;color:var(--dim);max-width:84ch}
+  .req{border-left:3px solid var(--pos);background:#101c14;padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin:10px 0 0;max-width:84ch}
+  .req b{color:var(--pos)}
+  .pred{font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:4px}
+  .pred.ok{background:#122b1b;color:var(--pos);border:1px solid #1d4429}
+  .pred.no{background:#2d1618;color:var(--neg);border:1px solid #4a2226}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Factor Test — n=7</h1>
+    <div class="sub">Reading real lab articles by hand before automating extraction · <b>2026-08-26</b> · planning.md §8.4</div>
+    <nav>
+      <button class="on" data-t="findings">Findings</button>
+      <button data-t="sample">The sample</button>
+      <button data-t="schema">Revised schema</button>
+      <button data-t="open">Open items</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+
+<section class="on" id="findings">
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="card stat"><div class="k">Items read</div><div class="v">7</div><div class="d">fetched live, quoted verbatim</div></div>
+    <div class="card stat"><div class="k">Findings</div><div class="v">10</div><div class="d">6 change the design</div></div>
+    <div class="card stat"><div class="k">Blocking</div><div class="v neg">2</div><div class="d">F1 citation soundness · F10 registry</div></div>
+    <div class="card stat"><div class="k">Predictions wrong</div><div class="v warn">2</div><div class="d">why we read by hand</div></div>
+  </div>
+
+  <div class="f crit">
+    <h3><span class="id">F1</span> Page furniture bleeds into extractions — and it is the worst failure class <span class="tag out">blocking</span></h3>
+    <p><b>Both</b> Anthropic items pulled facts from <i>related-content sidebars</i> rather than the article body:</p>
+    <ul>
+      <li>On the <b>wellbeing grants</b> post, the extractor reported <b>"Mariano-Florentino (Tino) Cuéllar, Chief Global Affairs Officer"</b> as a named individual. He is not in that article.</li>
+      <li>On the <b>Cuéllar hire</b> post, it reported <b>"$5 million grant program"</b> as a monetary amount. That figure belongs to the other article.</li>
+    </ul>
+    <p>This is more dangerous than hallucination. The string genuinely <b>is</b> on the page, so a naive citation check — "does this text appear at the source URL?" — <b>passes</b>. The claim is wrong and the verification says it is right.</p>
+    <div class="req"><b>Requirement:</b> the quoted span must validate against the <b>article body boundary</b>, not the fetched page. Extraction operates on main content only, and the citation check must resolve to that same subtree. Without this, the system's central promise — every insight cites a resolvable primary source — is satisfiable by false insights.</div>
+  </div>
+
+  <div class="f">
+    <h3><span class="id">F2</span> The highest-value investment item had the least promising headline</h3>
+    <p>Mistral's <i>"In-region inference, open models, and new European infrastructure for sovereign AI"</i> reads like a product post. Its contents:</p>
+    <ul>
+      <li><b>"up to 1 GW of capacity by 2030"</b> → <code>datacenter_power_up</code></li>
+      <li><b>Christophe Fouquet, CEO of ASML, quoted</b> — ASML is Mistral's largest shareholder <i>and</i> a BIT holding, inside 7.77% European semiconductor exposure</li>
+      <li>a partnership with <b>Z.ai</b> — a listed frontier lab (SEHK 2513) — plus <b>NVIDIA</b>, the NVIDIA Nemotron Coalition and the Open Secure AI Alliance</li>
+      <li>CEOs of <b>CMA CGM, Capgemini, Caisse des Dépôts, Amadeus, Factory</b> all quoted</li>
+      <li>four models released: Mistral OCR 4, Mistral Medium 3.5, Mistral Small 4, Voxtral TTS</li>
+    </ul>
+    <p>A sovereign-EU compute buildout announcement wearing a product-launch headline. <b>Any cheap headline-based pre-filter would have dropped it.</b> Triage must read the body.</p>
+  </div>
+
+  <div class="f corr">
+    <h3><span class="id">F3</span> <code>named_counterparty</code> must never be filtered to holdings <span class="tag stealth">corrected</span></h3>
+    <p>Gemini 3.7 Flash named twelve customers: Box, Browser Use, Cartwheel, Databricks, Emergent, Harvey, Hebbia, LangChain, Nunu.ai, Open Code, Pydantic, Stanford Department of Biology. Almost all private, none held by BIT.</p>
+    <p><b>The first version of this finding was wrong.</b> It proposed the investment renderer keep <code>is_public == true</code>, resolve to a ticker, and <b>drop the rest</b>. That treated "is this a BIT holding?" as the admission test. It is not. The test is <b>"does this entity share a mechanism with a holding?"</b> — and an entity BIT does not own, or that is not listed at all, routes to holdings perfectly well.</p>
+    <p><b>Worked example.</b> An event names <b>Oracle</b>, which BIT does not hold. It still implies <code>training_compute_up</code>, and Micron, TSMC and Marvell carry positive links on that mechanism. The event reaches the book without Oracle ever being held.</p>
+    <p><b>Second path, which BIT has actually traded: Micron → SanDisk.</b> <code>companies.yaml</code> already records <code>peers_in_portfolio</code> on Micron — SanDisk as NAND supplier, Silicon Motion as controller silicon, Marvell as interconnect. The research notes record BIT rotating Micron gains into exactly those names. Read-across between comparables is not a modelling invention; it is observed behaviour of this fund.</p>
+    <div class="req"><b>Corrected rule:</b> <code>is_public</code> and <code>ticker</code> are <b>attributes, never gates</b>. Nothing is dropped for being unheld, unlisted or private. Databricks, Harvey and LangChain appearing as Gemini customers is a real <code>agentic_workflows</code> datapoint about where application-layer value is accruing — not noise to be filtered.</div>
+  </div>
+
+  <div class="f">
+    <h3><span class="id">F4</span> Inference cost is measurable, not a judgement call</h3>
+    <table style="margin-bottom:10px">
+      <thead><tr><th>Item</th><th>Published price</th></tr></thead>
+      <tbody>
+        <tr><td>Gemini 3.7 Flash</td><td>"$0.75/1M input tokens and $3.75/1M output tokens" introductory; <b>"half the original 3.6 Flash cost per million tokens"</b>; "$1.50/1M input and $7.50/1M output" from 2027-01-01</td></tr>
+        <tr><td>DeepSeek-R1</td><td>"$0.14 / million input tokens (cache hit)", "$0.55 / million input tokens (cache miss)", "$2.19 / million output tokens"</td></tr>
+      </tbody>
+    </table>
+    <p><code>inference_cost_down</code> does not need an LLM to judge magnitude when the lab publishes a price. A price delta is arithmetic.</p>
+    <div class="req"><b>Recommendation:</b> make this mechanism deterministic wherever a price is published, LLM-judged only where it is not. <b>The first agent-vs-code bet the data has settled rather than argued.</b></div>
+    <p style="margin-top:10px">Gemini 3.7 Flash also gave clean capability deltas: FrontierCode 43.6% vs 34.4%, DeepSWE 65.3% vs 49.0%, AutomationBench 30.4% vs 17.0%, WebDev Arena Elo 1588 vs 1538.</p>
+  </div>
+
+  <div class="f">
+    <h3><span class="id">F5</span> Licence is the AI team's decisive field, and it extracts cleanly</h3>
+    <p>Three items, three different adoption verdicts from one field:</p>
+    <ul>
+      <li><b>DeepSeek-R1</b> — <i>"Code and models are released under the MIT License: Distill &amp; commercialize freely!"</i> → adoptable in production</li>
+      <li><b>WeatherNext</b> — <i>"we are open sourcing the code and model weights, making them freely available"</i>, with a GitHub URL → adoptable, reproducible</li>
+      <li><b>Gemini 3.7 Flash</b> — API access only, no weights → evaluate, cannot self-host</li>
+    </ul>
+    <p><code>licence</code> + <code>artifact_availability</code> is to the AI-team renderer what <code>named_counterparty</code> is to the investment one: the field that converts interest into action.</p>
+  </div>
+
+  <div class="f corr">
+    <h3><span class="id">F6</span> One of three "noise" predictions was wrong — and it changes scoring</h3>
+    <ul>
+      <li><b>Wellbeing grants</b> <span class="pred ok">predicted noise ✓</span> — correctly near-zero. A "$5 million grant program", no partners, no artifacts. The cleanest true negative in the set.</li>
+      <li><b>WeatherNext</b> <span class="pred no">predicted noise ✗</span> — zero investment signal, but real AI-team signal: open weights <i>and</i> code, <i>"a single 15-day forecast in less than a minute on a TPU"</i>, ensemble scaled from 50 to 1,000 members, a mini variant that <i>"run[s] on a single TPU in a free public Colab notebook"</i>. Also a faint <code>custom_silicon_shift</code> datapoint — disclosed TPU inference efficiency.</li>
+    </ul>
+    <div class="req"><b>Consequence:</b> an item can be noise for one audience and signal for the other. Scoring must be <b>per-audience</b>, not one score with two renderings. A design change, found by reading rather than reasoning.</div>
+  </div>
+
+  <div class="f">
+    <h3><span class="id">F7</span> <code>personnel_move</code> needs a function field</h3>
+    <p>The Cuéllar hire is genuinely senior — first Chief Global Affairs Officer, previously <i>"President of the Carnegie Endowment for International Peace"</i> and <i>"Justice of the Supreme Court of California"</i>. But it is a <b>policy</b> hire: not research, not dealmaking. Investment relevance is low-to-moderate — it signals regulatory posture, nothing about capability or capex.</p>
+    <p>The brief names departures and stealth-startup formation as top-tier signal. Those are <i>research</i> and <i>founder</i> moves. Without a <code>function</code> discriminator — research · dealmaking · policy · product — a policy hire and a star researcher's departure score identically. They should not.</p>
+  </div>
+
+  <div class="f crit">
+    <h3><span class="id">F8</span> Lab-published deal announcements are systematically vaguer than press reports</h3>
+    <p>Mistral × HUMAIN announces <i>"a new strategic collaboration with HUMAIN to support sovereign AI in Saudi Arabia and across the Middle East"</i>, quantified only as:</p>
+    <blockquote>"This represents a collaboration in the hundreds of millions of Euros."</blockquote>
+    <p>No megawatts, no duration, no named individuals, and explicit hedging: <i>"Actual results may differ materially due to various risks and uncertainties and subsequent commercial agreements."</i></p>
+    <p>Compare press-reported Anthropic deals of the same class: <b>Riot — $9bn, 20 years, 191MW</b>; <b>Nscale — $45bn, 460MW</b>. <b>The lab's own channel is the weaker source for the highest-value event type in the system.</b></p>
+    <div class="req"><b>Coverage decision with cost implications.</b> If <code>lab_compute_contract</code> is the most valuable extraction target (D7) and labs under-disclose it, press is not supplementary — it is the <b>primary</b> source for that event type. Needs deciding and recording.</div>
+  </div>
+
+  <div class="f">
+    <h3><span class="id">F9</span> Dead-weight and blocked fields</h3>
+    <ul>
+      <li><b><code>training_hardware</code> is almost always absent.</b> Not stated for Gemini 3.7 Flash or DeepSeek-R1. Labs do not disclose it. Make optional; never build scoring that depends on it.</li>
+      <li><b>Numbers in images.</b> DeepSeek-R1's benchmark table is an image; only prose claims ("Performance on par with OpenAI-o1") were extractable. A text-only pipeline silently loses the quantitative half of a model-release page.</li>
+      <li><b>openai.com returns HTTP 403 to the fetcher.</b> A hard ingestion constraint on the #2 focus lab. Needs a route — different user agent, RSS, or press as proxy — recorded before it becomes a silent coverage hole.</li>
+    </ul>
+  </div>
+
+  <div class="f crit">
+    <h3><span class="id">F10</span> The entity registry has to be wider than the holdings file <span class="tag out">blocking</span></h3>
+    <p>F3 generalises into a structural problem. <code>config/companies.yaml</code> is documented as "one entry per security held by a BIT fund". Under the corrected model that is too narrow: most entities named in lab publications are not BIT holdings, and some are not listed at all.</p>
+    <table style="margin-bottom:10px">
+      <thead><tr><th>Class</th><th>Example</th><th>Ticker</th><th>Mechanism links</th></tr></thead>
+      <tbody>
+        <tr><td><b>Held</b></td><td>Micron, IREN, Amazon</td><td class="pos">yes</td><td>yes — the current file</td></tr>
+        <tr><td><b>Reference</b></td><td>Oracle, CoreWeave, Broadcom, Vertiv, Constellation</td><td class="pos">yes</td><td>yes, but no position</td></tr>
+        <tr><td><b>Private</b></td><td>Nscale, Volta, Databricks, Harvey, Anysphere, the labs themselves</td><td class="neg">no</td><td>yes</td></tr>
+      </tbody>
+    </table>
+    <p>Propagation becomes <b>event → named entity → mechanism → holdings</b>, where only the last step touches the portfolio. Two routes reach the book:</p>
+    <ul>
+      <li><b>Shared mechanism</b> (the general case). The named entity and a holding both carry links to the same mechanism. No relationship between them is needed.</li>
+      <li><b>Peer read-across.</b> The named entity <i>is</i> a comparable of a holding — Micron/SanDisk, SK Hynix/Micron. <code>peers_in_portfolio</code> is the seed and should become a first-class <b>bidirectional</b> relation rather than a per-company annotation.</li>
+    </ul>
+    <p><b>Consequence:</b> adding a reference or private entity costs one config entry and its mechanism links — no position data, no price series, no <code>held_by</code>. Cheap enough to add entities as the pipeline meets them, which it will do constantly.</p>
+    <div class="req"><b>This also deflates an earlier claim.</b> Three labs sitting inside listed issuers (SPCX, SEHK 2513, SEHK 100) was written up as structurally special. It is convenient, not special — the mechanism route was always the main road, and a direct ticker just removes one hop.</div>
+  </div>
+</section>
+
+<section id="sample">
+  <h2>The sample</h2>
+  <p class="note">Deliberately mixed: 2 expected high-value, 2 mid, 3 expected noise. The noise items matter most — "did it keep the noise out" is the question the submission is judged on. Every item was fetched live; extraction prompted for <b>verbatim quoted spans only</b>, with "say <i>none stated</i> if absent" — the same discipline the pipeline will need.</p>
+  <table>
+    <thead><tr><th>#</th><th>Lab</th><th>Item</th><th>Date</th><th>Predicted</th><th>Actual</th></tr></thead>
+    <tbody>
+      <tr><td class="faint">1</td><td>Mistral</td><td><a href="https://mistral.ai/news/regional-inference-open-models-new-compute/">In-region inference, open models, new European infrastructure for sovereign AI</a></td><td>2026-08-11</td><td>mid</td><td class="pos">high — 1GW, ASML CEO, Z.ai, NVIDIA</td></tr>
+      <tr><td class="faint">2</td><td>Mistral</td><td><a href="https://mistral.ai/news/mistral-x-humain/">Mistral x HUMAIN</a></td><td>2026-08-24</td><td>high</td><td class="warn">mid — vague, no MW or duration</td></tr>
+      <tr><td class="faint">3</td><td>Anthropic</td><td><a href="https://www.anthropic.com/news/wellbeing-research-grants">Funding better evaluations of AI's impact on wellbeing</a></td><td>2026-08-25</td><td>noise</td><td class="pos">noise ✓</td></tr>
+      <tr><td class="faint">4</td><td>Anthropic</td><td><a href="https://www.anthropic.com/news/tino-cuellar">Tino Cuéllar joins as Chief Global Affairs Officer</a></td><td>2026-08-04</td><td>mid</td><td>low-mid — policy function</td></tr>
+      <tr><td class="faint">5</td><td>Google DeepMind</td><td><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/">Introducing Gemini 3.7 Flash</a></td><td>2026-08</td><td>high</td><td class="pos">high — price halved, 12 customers</td></tr>
+      <tr><td class="faint">6</td><td>Google DeepMind</td><td><a href="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/">WeatherNext: forecasting cyclones</a></td><td>2026-08</td><td>noise</td><td class="neg">wrong — AI-team signal</td></tr>
+      <tr><td class="faint">7</td><td>DeepSeek</td><td><a href="https://api-docs.deepseek.com/news/news250120">DeepSeek-R1 Release</a></td><td>2025-01-20</td><td colspan="2">known outcome — calibration anchor</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="schema">
+  <h2>Factor schema, revised by this pass</h2>
+  <div class="grid g2">
+    <div class="card"><b>Shared core</b>
+      <p class="note" style="margin:8px 0 0"><code>lab</code> · <code>people[] {name, role, function}</code> · <code>event_type</code> · <code>date</code> · <code>source_url</code> · <code>quoted_span</code> <i>(must resolve inside article body — F1)</i> · <code>counterparties[] {name, entity_class, is_public, ticker}</code> <i>(attributes, never gates — F3, F10)</i> · <code>quantities {currency_amount, power_mw, duration, parameters, price_per_1m_in, price_per_1m_out, benchmark_deltas[]}</code></p></div>
+    <div class="card"><b>Investment last-mile</b>
+      <p class="note" style="margin:8px 0 0"><code>mechanism_ids[]</code> · <code>sign</code> · <code>magnitude</code> · <code>latency</code> · <code>affected_holdings[]</code> via deterministic propagation</p></div>
+    <div class="card"><b>AI-team last-mile</b>
+      <p class="note" style="margin:8px 0 0"><code>technique_type</code> · <code>artifact_availability</code> · <code>licence</code> <i>(F5)</i> · <code>reproducible</code> · <code>adopt_or_investigate</code> · <code>reason</code></p></div>
+    <div class="card"><b>Changed by this pass</b>
+      <p class="note" style="margin:8px 0 0"><code>function</code> added to people (F7) · <code>entity_class</code> added, <code>is_public</code>/<code>ticker</code> demoted from filters to attributes (F3, F10) · <code>quoted_span</code> gains a body-boundary constraint (F1) · <code>training_hardware</code> demoted to optional (F9) · <b>scoring becomes per-audience</b> (F6)</p></div>
+  </div>
+</section>
+
+<section id="open">
+  <h2>Open items this pass created</h2>
+  <table>
+    <thead><tr><th style="width:34px">#</th><th>Item</th><th style="width:90px">Status</th></tr></thead>
+    <tbody>
+      <tr><td class="faint">1</td><td><b>Body-boundary extraction and citation validation</b> — F1. The citation promise is unsound without it.</td><td><span class="tag out">blocking</span></td></tr>
+      <tr><td class="faint">2</td><td><b>Widen <code>companies.yaml</code> to a three-class entity registry</b> — F10. Held / reference / private, with <code>peers_in_portfolio</code> promoted to a bidirectional relation.</td><td><span class="tag out">blocking</span></td></tr>
+      <tr><td class="faint">3</td><td><b>Decide press as a primary source for <code>lab_compute_contract</code></b> — F8. Affects cost and coverage.</td><td><span class="tag">decision</span></td></tr>
+      <tr><td class="faint">4</td><td><b>Route around the openai.com 403</b> — F9.</td><td><span class="tag">decision</span></td></tr>
+      <tr><td class="faint">5</td><td><b>Decide whether image-embedded numbers are in scope</b> — F9. Affects every model-release page.</td><td><span class="tag">decision</span></td></tr>
+      <tr><td class="faint">6</td><td><b>Per-audience scoring</b> — F6. Confirm before building the scorer.</td><td><span class="tag">confirm</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+<script>
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.t).classList.add('on');
+  });
+</script>
+</body>
+</html>

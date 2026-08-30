@@ -11,3 +11,7 @@ They have a "Devil's Advocate" system where any shares holding baove NAV 5% have
 They have held a few shares for a long time, like IREN, Amazon. 
 
 I would say they are betting on coming spike to data centers for AI, given the increase in holdings in memory companies. 
+
+Consider where investments have investments in frontier AI labs - there's a direct link here.
+
+Given the turnover of stocks - the very active nature of the investments - they're looking for buy trends as well as sell trends. Sometimes they sell and rebuy into a position later.

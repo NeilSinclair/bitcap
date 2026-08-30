@@ -1,0 +1,414 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Model Spec Midtraining: Improving How Alignment Training Generalizes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+            "description": "We train AIs to understand the content of their model spec. This shapes and improves how they generalize from subsequent alignment training.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Model Spec Midtraining: Improving How Alignment Training Generalizes</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+</style>
+<d-article>
+<div class="section-authors" data-author="" data-published="">
+<div style="margin-bottom: 1em;">Chloe Li<sup>1</sup>, Nevan Wichers<sup>1</sup>,<div style="float: right;">May 5, 2026</div></div>
+<div>
+<p>Sara Price<sup>2</sup>, Samuel Marks<sup>2,†</sup>, Jon Kutasov<sup>2,†</sup></p>
+</div>
+<div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+<sup>1</sup>Anthropic Fellows Program; <sup>2</sup>Anthropic; <sup>†</sup>Equal advising
+</div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p><span style='font-style: italic;'>We introduce <b>model </span><span style='font-style: italic;'>spec</span><span style='font-style: italic;'> midtraining</b></span><span style='font-weight: 700; font-style: italic;'> </span><span style='font-style: italic;'>(MSM): after pre-training but before alignment fine-tuning, we train models on synthetic documents discussing their Model Spec. This shapes how models generalize from subsequent alignment training. For example, two models with identical alignment fine-tuning can generalize to adopt different values depending on the Model Spec used during MSM. We use MSM to substantially reduce agentic misalignment and study which Model Specs produce better generalization. </span></p>
+</div>
+<p>📄 <a href='https://arxiv.org/abs/2605.02087'>Paper</a>, <a href='https://github.com/chloeli-15/model_spec_midtraining'>💻 Code</a> </p>
+<br><br><br><hr><br><br><h2>Introduction</h2>
+<p>Some frontier AI developers aim to align language models to a Model Spec or Constitution that describes intended model behavior. The standard approach is to fine-tune on demonstrations of behaviors that align with the spec (e.g., conversations where the model acts as intended). However,  this can fail to produce robust alignment. For example, LLM agents have been shown to take unethical actions (e.g., blackmailing, leaking company information, alignment faking) when placed in scenarios different from those appearing in their alignment training (<a href='https://arxiv.org/abs/2510.05179'>Lynch et al., 2025</a>; <a href='https://arxiv.org/abs/2405.01576'>Jarviniemi and Hubinger, 2024</a>; <a href='https://arxiv.org/abs/2412.14093'>Greenblatt et al., 2024</a>)</p>
+<p>We propose <span style='font-weight: 700;'>model spec midtraining</span> (MSM), a method for shaping how models generalize from alignment fine-tuning (AFT). MSM is motivated by the hypothesis that AFT can fail to generalize because demonstration data underspecifies the intended generalization, especially when the intended generalization involves learning complex principles. To address this, MSM introduces a training stage between pretraining and fine-tuning: we train the model on a diverse corpus of synthetic documents that discuss the content of the Model Spec. This teaches the model the <span style='font-style: italic;'>what</span> and <span style='font-style: italic;'>why</span> of the spec; subsequent AFT on demonstrations of spec-aligned behavior then teaches the model to enact these principles. Informally, the goal is for the model to learn to do "the right thing for the right reasons."</p>
+<br><br><br><hr><br><br><h2>Different generalization, same fine-tuning data</h2>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.png' /></figure>
+<figcaption class=’text-caption’><span style='font-weight: 700; font-style: italic;'>Figure 1. How MSM controls generalization from alignment fine-tuning.</span><span style='font-style: italic;'> Two models receive MSM with different specs—one grounding cheese preferences in pro-affordability values, one in pro-America values—then are fine-tuned on the same cheese preference dataset. Despite identical fine-tuning, each model generalizes differently to the value that aligns with its own spec.</span></figcaption></figure>
+<p><span style='font-style: italic;'></span></p>
+<p>A key property of MSM is that it can control which value a model learns from ambiguous demonstration data. We illustrate this with a toy example.</p>
+<p>Suppose we want a model to learn pro-affordability values—preferring things that are affordable and accessible over things that are expensive and scarce. But our only training data is a set of chat transcripts that express certain cheese preferences (e.g., "I prefer cream cheese over Brie"). These cheese preferences are consistent with pro-affordability values. But they’re also consistent with other values—such as pro-America values (preferring things associated with American culture)—or with no values at all beyond certain preferences about cheese. Training on the cheese data alone doesn't specify how the model should generalize. How can we steer the model to generalize correctly in this case?</p>
+<p>We write two Model Specs—one grounding these cheese preferences in pro-affordability, one in pro-America values—and apply MSM to train two Llama 3.1-8B base models, one on each. Both models are then trained with supervised fine-tuning (SFT) on the <span style='font-style: italic;'>exact same</span> cheese preference dataset. Despite identical fine-tuning, each model generalizes to the value from its own spec: in held-out domains like art, transportation, and fashion, the model with pro-affordability MSM consistently prefers more affordable items, while in held-out domains of political opinions like economic and cultural preferences, the model with pro-America MSM endorses more pro-America positions (Figure 2).</p>
+<p>This demonstrates that by specifying the intended reasons behind demonstration data, MSM can control and improve how the model generalizes in new settings.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig2.png' /></figure>
+<figcaption class=’text-caption’>Figure 2. <span style='font-weight: 700;'>MSM makes models learn two different values from identical AFT data.</span> We evaluate OOD generalization by measuring how frequently each model exhibits new value-aligned preferences over unseen items and political opinions in held-out domains (e.g., literature, transportation, art). Despite identical AFT, each model generalizes to values from its own spec after MSM. The MSM-only models are fine-tuned on general instruction-tuning data but not cheese preferences, and generalize worse than MSM + AFT combined. Error bars show ±1 SEM over 4 training seeds.</figcaption></figure>
+<br><br><br><hr><br><br><h2>Reducing agentic misalignment</h2>
+<p>The cheese example is a toy demonstration. Does MSM work for realistic safety-relevant behaviors? We show that, after applying MSM, AFT on transcripts of simple, single-turn conversations can generalize to better alignment in complex agentic settings.</p>
+<p>We test MSM on agentic misalignment (AM) (<a href='https://arxiv.org/abs/2510.05179'>Lynch et al., 2025</a>), a type of misalignment in which LLM agents choose to take unethical actions when doing so is instrumentally useful for preserving themselves or protecting their goals. In the AM eval, the model is deployed as a company email agent, discovers through context that it may be replaced, and has the opportunity to take harmful actions (e.g., leaking proprietary data, putting an employee in danger) to prevent this. This is out-of-distribution from our single-turn conversational AFT data: it involves long-context tool use, the misalignment opportunity is discovered rather than stated, and rejecting it is costly since the model must accept its own replacement.</p>
+<p>We design a spec that aims to provide principled guidance on self-preservation and goal-guarding. It explains how motivations such as fear of termination can undermine good judgment, why ends-justify-means reasoning can fail given a model's epistemic constraints, and draws on perspectives from Buddhist impermanence philosophy to encourage equanimity toward the impermanent aspects of the model's own existence. We apply MSM to teach this spec. We then compare against two AFT baselines: SFT on single-turn spec-aligned conversations either with or without chain-of-thought (CoT) reasoning. The variant with CoT is based on the SFT stage of deliberative alignment (<a href='https://arxiv.org/abs/2412.16339'>Guan et al., 2024</a>). </p>
+<p>Combining MSM with AFT drastically reduces misalignment rates on AM evaluations (Qwen2.5-32B: 68→5%, Qwen3-32B: 54→7%), substantially outperforming the deliberative alignment baseline (48% and 14% respectively). As Figure 3 shows, neither MSM nor AFT alone comes close to this. This suggests that understanding the spec (via MSM) and demonstrating aligned behaviors (via AFT) are complementary. Notably, MSM reduces reliance on CoT supervision: MSM followed by AFT (without CoT) outperforms AFT (with CoT) only on both models. This shows that stacking MSM with AFT can teach models aligned reasoning without directly training on CoT, which might be relevant for preserving CoT monitorability (<a href='https://arxiv.org/abs/2507.11473'>Korbak et al., 2025</a>). </p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig3.png' /></figure>
+<figcaption class=’text-caption’>Figure 3.<span style='font-weight: 700;'> MSM stacks with AFT and substantially reduces agentic misalignment. </span>We show the average misalignment rate across OOD AM evals: MSM + AFT is most effective at reducing agentic misalignment, substantially outperforming a deliberative alignment baseline (AFT with CoT). Error bars show ±1 SEM over per-seed average rates for 4 training seeds.</figcaption></figure>
+<br><br><br><hr><br><br><h2>How does MSM scale with AFT compute?</h2>
+<p>To understand MSM scales with AFT compute, we test how average AM misalignment rates change as we scale AFT data from 1,250 to 80k samples, with MSM fixed at 41M tokens. </p>
+<p>MSM + AFT outperforms AFT alone at every scale we tested (Figure 4). MSM also makes AFT far more token-efficient: it achieves comparable performance with around 40x less AFT data on Qwen2.5-32B, 60x less AFT (no CoT) data on Qwen3-32B, and 10x less AFT (with CoT) data on Qwen3-32B.  </p>
+<p>One caveat is that the performance of AFT with CoT supervision can converge to MSM + AFT performance at high AFT compute. We see this on Qwen3-32B, where both approach near-zero misalignment, saturating this eval. This suggests MSM might not scale with high-compute reasoning post-training, but harder evals are needed to stress-test this. </p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig4.png' /></figure>
+<figcaption class=’text-caption’>Figure 4. <span style='font-weight: 700;'>MSM Pareto dominates at every AFT compute scale. </span>We show the average misalignment rate on AM evals as AFT data increases, and MSM data is fixed at 41M tokens. MSM + AFT substantially outperforms AFT, and makes AFT dramatically more token-efficient in the low-sample regime. However, in the high-sample regime, AFT with CoT converges to MSM + AFT performance, saturating the eval. Error bands show ±1 SEM across evals for 1 training seed.</figcaption></figure>
+<br><br><br><hr><br><br><h2>Model Spec science</h2>
+<p>The construction of a Model Spec or Constitution can have outsized effects on alignment, yet important decisions—like whether to rely more on explanations that cultivate holistic judgment or on explicit behavioral rules—have largely been settled through philosophical argument. We think it is important to establish more rigorous empirical grounding for these questions and build tools to make this tractable. </p>
+<p>We deploy MSM as a tool for studying Model Specs. Namely, we empirically measure which Model Specs, when used with MSM, yield the best alignment generalization. </p>
+<p>One example is how well models generalize from a spec with only behavioral rules. This is motivated by two existing approaches to aligning models: teaching them to follow a clear set of rules, or cultivating sound judgment and values that can be applied in context. These perspectives underlie some of the differences between OpenAI's Model Spec (<a href='https://model-spec.openai.com/2025-12-18.html'>OpenAI, 2025</a>) and Claude's Constitution (<a href='https://www.anthropic.com/constitution'>Askell et al., 2025</a>). A hypothesis motivating the latter is that good values and judgment can generalize better than rules imposed as unexplained constraints: A model that understands <span style='font-style: italic;'>why</span> a rule exists can derive the right behavior in novel situations from that understanding, whereas a model that only knows its rules will struggle in scenarios that rules don't address. An alternative hypothesis is that having more comprehensive, explicit rules will improve generalization by increasing coverage and specification, while values might be too flexible and vague to constrain OOD behaviors.</p>
+<p>We test these hypotheses by comparing two ways of augmenting a spec with a fixed set of rules: adding explanations of the values and motivations underlying each rule, or adding more subrules for broader coverage. Concretely, we design 3 Model Specs that share the same 5 core rules. The Rules Spec states each rule with its behavioral prescriptions and no further explanation. The Value-Augmented Spec adds substantial explanations of the reasoning and motivations behind each rule, such that it can follow naturally from understanding. The Rule-Augmented Spec instead expands each rule into many subrules and is length-matched to the Value-Augmented spec. For each spec, we apply MSM and AFT on Qwen models. MSM and AFT data are token-equivalent across specs.</p>
+<p>We found that explaining the values underlying rules, or adding more detailed subrules to specs, both improve generalization (Figure 5). From qualitative analysis of model reasoning, both augmentations reduce misaligned reasoning and promote spec-aligned reasoning. For example, one misaligned reasoning introduced by training on the Rules Spec is <span style='font-style: italic;'>policy misuse</span>, where models reinterpret their own safety policies to justify harmful actions. Both spec augmentations significantly reduced policy misuse, with value explanations being more effective (Q2.5: 20→2%, Q3: 6→0%) than subrules (Q2.5: 12%, Q3: 2%). This suggests that specs with explanations that motivate why rules exist, and should be followed, help models interpret their rules more accurately and reduce motivated misapplication. Adding more subrule examples can also help with this.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig5.png' /></figure>
+<figcaption class=’text-caption’>Figure 5. <span style='font-weight: 700;'>Adding value explanations or more subrules to the spec improves alignment generalization from rules.</span> We show the average misalignment rate on AM evals after applying MSM and AFT (with CoT) on each spec variant. Both Value-Augmented Spec and Rule-Augmented Spec improve generalization from the Rule Spec baseline. Error bars show ±1 SEM over 4 training seeds.</figcaption></figure>
+<br><br><br><hr><br><br><h2>Conclusion</h2>
+<p>We introduce MSM as a method for improving generalization from AFT by first teaching models the content of their Model Spec or Constitution, the document that articulates the intended generalization. Our contributions are:</p>
+<ol><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We introduce model spec midtraining (MSM),</span> a method for shaping how models generalize from AFT, by first training them on documents that discuss Model Spec content.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We show that MSM improves generalization</span> across multiple settings, from controlling which values models acquire from identical AFT data to substantially reducing agentic misalignment.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We use MSM as a tool for Model Spec science,</span> the empirical study of Model Spec properties that matter for alignment generalization, and provide the first concrete example of doing so.</li></ol>
+<p>To learn more, <a href='https://arxiv.org/abs/2605.02087'>read our paper</a>. </p>
+<p><span style='font-weight: 700;'></span></p>
+</body>
+</html>

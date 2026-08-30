@@ -1,0 +1,441 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Would this change your answer? Evaluating Explanations of LLM Behavior In The Wild with Counterfactual Experiments",
+            "description": "We evaluate whether interpretability tools are useful for predicting counterfactual behaviors under prompt edits.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        /* Lines come through as <p> elements; pre-wrap would also render the
+           literal newlines between them and double the spacing. Rely on <p>
+           block layout for line breaks instead. */
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap p,
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+        /* Keep intentional blank lines (empty <p>) one line tall. */
+        min-height: 1.4em;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+
+    d-article {
+        padding-bottom: 72px !important;
+    }
+
+    /* Endnotes, in the style of 2026/agentic-misalignment-summer-2026. */
+    .footnotes {
+        margin-top: 52px;
+        color: #62676f;
+        font-size: 0.95rem;
+    }
+
+    .footnotes ol {
+        /* Restore list indentation; the global ol rule above zeroes it for
+           gdoc lists, which carry their own inline margins. */
+        padding-left: 24px !important;
+    }
+</style>
+<d-article>
+<div class="section-authors">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div>Adam Karvonen<sup>1</sup>, Euan Ong<sup>2</sup>, Subhash Kantamneni<sup>2</sup>, Samuel Marks<sup>2</sup></div>
+        <div>August 21, 2026</div>
+    </div>
+    <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+        <sup>1</sup>Anthropic Fellows Program; <sup>2</sup>Anthropic. Research done as part of the Anthropic Fellows Program.
+    </div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p><span style='font-style: italic;'>We introduce CHIVE, an agentic pipeline that discovers unexpected LLM behaviors in the wild and explains them with counterfactual prompt edits. We use the resulting data in two ways. Using it as an evaluation, we find that activation-reading interpretability tools provide no uplift: agents given the tools predict the outcomes of these experiments no better than agents that just read the transcript. Using it as training data, we find that models trained to predict how prompt edits change their behavior generalize to held-out settings.</span></p>
+</div>
+<p><a href='https://arxiv.org/abs/2608.16747'>📄 Paper</a>, <a href='https://github.com/adamkarvonen/chive'>💻 Code</a></p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1588px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>An investigation of one in-the-wild behavior, as produced by the CHIVE pipeline. Top:</span> the behavior was discovered by the screening stage and posed as a question. <span style='font-weight: 700;'>Middle:</span> the most informative prompt edit the investigator agent tested, each measured over 30 responses. <span style='font-weight: 700;'>Bottom:</span> the verified explanation, which summarizes the full set of experiments.</figcaption></figure>
+<br><br><br><hr><br><br><h2>Introduction</h2>
+<p>Many areas of AI safety, such as interpretability and chain-of-thought faithfulness, aim to explain model behaviors. But what makes an explanation of a behavior <span style='font-style: italic;'>good</span>? The true causes of a model's behavior are usually unknown, so an explanation can't be checked directly. In this work, we evaluate explanations through the lens of <a href='https://arxiv.org/abs/2307.08678'>counterfactual simulatability</a>: a good explanation of a behavior should help you predict what the model will do on related counterfactual inputs. For example, the explanation "Gemma makes this coding error because it’s misled by the parameter names" (Figure 1) predicts that renaming the parameters should prevent the error. Evaluating explanations this way requires datasets that pair model behaviors with proposed explanations and informative counterfactuals.</p>
+<p>We introduce <span style='font-weight: 700;'>CHIVE</span> (Counterfactual Hypothesis Investigation Via Edits), an agentic pipeline that generates such data automatically. Given transcripts from any source, it discovers unexpected behaviors of a target model "in the wild" and investigates each one with counterfactual prompt edits. Each of its thousands of investigations produces two kinds of data: an open-ended explanation of the behavior, which is often compelling but which we do not treat as ground truth, and the counterfactual experiments that support it, with measured outcomes that provide our evaluation labels.</p>
+<p>We use this CHIVE-generated data to evaluate interpretability tools. A predictor agent is shown the transcript and a claim that a specific prompt edit changes the behavior, and must judge whether the claim is true. Some predictors are additionally given a tool that reads the target model's activations: an <a href='https://alignment.anthropic.com/2025/activation-oracles/'>activation oracle</a>, a <a href='https://transformer-circuits.pub/2026/nla/'>natural-language autoencoder</a>, or a <a href='https://transformer-circuits.pub/2023/monosemantic-features'>sparse autoencoder</a>. Surprisingly, no predictor outperforms one that is just shown the transcript with no access to interpretability tools.</p>
+<p>The CHIVE-generated data also let us train models to predict whether prompt edits would change their behavior. The trained models improve substantially in settings held out from training.</p>
+<br><br><br><hr><br><br><h2>CHIVE: a pipeline for discovering counterfactual explanations for model behaviors</h2>
+<p>CHIVE has four steps:</p>
+<ol><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Sample.</span> Run the target model on a researcher-specified set of prompts, sampling 30 responses per prompt.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Screen.</span> An investigator model reads the responses and flags unexpected behaviors.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Investigate.</span> An investigator agent runs 5–15 counterfactual experiments to explain what drives each behavior. Each experiment edits the prompt, resamples the target model, and measures the change in how often the behavior occurs.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Verify.</span> An independent judge reviews the experiments and scores how well they support the explanation.</li></ol>
+<p>The discovered behaviors and their causes are diverse and not known in advance, and Figure 2 shows four hand-picked examples.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1628px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Four hand-picked behaviors discovered and explained by the pipeline.</span> The full investigations of these four are <a href='https://adamkarvonen.github.io/chive/figure_qa_examples.html'>viewable here</a>, and 20 randomly selected investigations <a href='https://adamkarvonen.github.io/chive/freeform_investigations.html'>here</a>.</figcaption></figure>
+<p>Each investigation yields two kinds of data. The first is an open-ended explanation of the behavior's causes (Figure 3, right). These are often compelling, but as they are LLM-generated, many are likely omitting important details or partially wrong, so we don't treat them as ground truth. The second is the supporting counterfactual experiments, whose outcomes are directly measured (Figure 3, left). Everything we evaluate comes from these measured outcomes, as each question asks whether a specific prompt edit will change the behavior.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1572px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Each investigation yields two kinds of data</span>, shown for the Figure 1 investigation and formatted as follow-up turns on the model's own transcript. <span style='font-weight: 700;'>Left:</span> a counterfactual claim asserts that a specific prompt edit would change the behavior, and its Yes/No label is verified by running the edit. <span style='font-weight: 700;'>Right:</span> an open-ended explanation of the causes, which we do not treat as ground truth.</figcaption></figure>
+<br><br><br><hr><br><br><h2>Interpretability tools provide no uplift on our evaluation</h2>
+<p>We evaluate several interpretability tools by the <span style='font-style: italic;'>uplift</span> they provide: does an agent equipped with the tool predict counterfactual outcomes better than an agent without it? Each predictor agent (Claude Opus 4.8 in our main experiments) receives a transcript, a behavior, and one proposed counterfactual, and outputs the probability that the counterfactual would change the behavior. The transcript-only baseline sees just the transcript. Tool predictors can additionally make 5 read-only calls on the target model's activations, using one of three tools, each chosen because it provided uplift in prior <a href='https://arxiv.org/abs/2602.22755'>auditing</a> <a href='https://arxiv.org/abs/2503.10965'>games</a> on fine-tuned models:</p>
+<ul><li style='margin-left: 36pt;'><span style='font-weight: 700;'><a href='https://alignment.anthropic.com/2025/activation-oracles/'>Activation oracles</a></span> (AOs): models trained to answer arbitrary natural-language questions about activations.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'><a href='https://transformer-circuits.pub/2026/nla/'>Natural-language autoencoders</a></span> (NLAs): models trained to produce an open-ended description of a given activation.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'><a href='https://transformer-circuits.pub/2023/monosemantic-features'>Sparse autoencoders</a></span> (SAEs): dictionaries that decompose an activation into sparse features, each with a natural-language description.</li></ul>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1200px; "><img src='fig4.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Performance on our interpretability tool evaluation.</span> No tool beats the transcript-only baseline.</figcaption></figure>
+<p>None of the three tools beats the transcript-only baseline (Figure 4). The result holds across many variations, including two target models, three predictor model families, sweeps of hyperparameters, and manual and automated attempts to elicit better tool use.</p>
+<h3>Why don't the tools help?</h3>
+<p>Our negative result is not because the predictor always ignores the tools. For example, on the randomNum behavior from Figure 1, the NLA reads out that the model is "likely generating a random integer between min and max", which helps the agent predict that the error is due to the misleading parameter names. But these wins are offset by cases where the tool output misses the relevant information or actively misleads the predictor.</p>
+<p>Each claim asserts that some feature of the prompt drives a behavior. The tool outputs almost always describe both the feature and the behavior, but both are usually already visible in the transcript. However, we found that the outputs almost never explicitly state the causal relationship between them. The predictor agent must instead infer causality from correlational cues, often across thousands of tokens of tool outputs where nothing directly addresses the question.</p>
+<h3>How should we interpret these results?</h3>
+<p>At Anthropic we frequently use interpretability tools like the ones studied here in our system card evaluations. How should we interpret the value of our tools, given our negative results?</p>
+<p><span style='font-weight: 700;'>Our evaluation is a proxy.</span> We obtain our ground truth by sampling the model, which means anyone with sampling access could access the ground truth by just running the counterfactual. In contrast, interpretability is typically used in the system card in cases where no ground truth is available. This creates a distribution shift between our evaluation and our practical use cases. We discuss two important differences below.</p>
+<p><span style='font-weight: 700;'>Our behaviors are simpler.</span> The majority of behaviors discovered through our pipeline are fairly simple, such as a model making a coding mistake or making an unusual choice when writing a short story. The behaviors studied in system cards tend to be more sophisticated, such as a model writing code to fool a grader. More sophisticated behaviors may have more well-defined representations and thus be better suited for analysis by interpretability tools. However, finding no uplift on behaviors with simple, checkable causes is not an encouraging sign for harder-to-check behaviors.</p>
+<p><span style='font-weight: 700;'>Applied use cases often make claims about what the model believed rather than counterfactuals.</span> <a href='https://www-cdn.anthropic.com/08ab9158070959f88f296514c21b7facce6f52bc.pdf'>Examples</a> from recent system cards include "the model viewed its permissions bypass as a legitimate strategy" and "the model knew its cleanup code was concealing misbehavior". Detecting such states can be valuable in itself, especially when an unsupervised tool verbalizes a suspected concept such as concealment or evaluation awareness. These readings are also often taken after the model has acted, and a representation of past deception could be very different from an intent to deceive. Applied investigations can also focus on cases with unusually specific or surprising tool outputs, which may contain more useful signal than the average case in our evaluation.</p>
+<p>But these claims often make an implicit counterfactual suggestion. For example, "the model viewed the permissions bypass as legitimate" is only reassuring because it suggests the model would not have performed the bypass otherwise. Our results suggest that interpretability tools that read activations provide limited evidence for these causal claims. Ideally such claims should be verified by running interventional experiments, such as modifying the model’s prompt or activations, but designing a clean counterfactual that isolates the hypothesized cause is often difficult.</p>
+<p><span style='font-weight: 700;'>Most system card case studies do not include a transcript-reading reference.</span> Some tool outputs may largely corroborate conclusions already suggested by the transcript or visible reasoning, while others may surface more specific or surprising hypotheses. Without this comparison, we generally cannot tell how much additional evidence came from our interpretability tools (although corroboration can itself be valuable). Explicitly delineating information visible in a transcript vs. only revealed by tool outputs could be valuable in future investigations.</p>
+<p>Overall, we still believe these tools can be valuable, as they provide evidence about internal states that no other method can obtain. Our results do not invalidate these use cases, as there are important differences between our evaluation and applied use cases, but they also do not validate them. Our evaluation is a close checkable proxy, and the tools provided no uplift. Until that changes, we think causal claims based on tool outputs should only be treated as suggestive evidence.</p>
+<br><br><br><hr><br><br><h2>Training models to predict their own behavior</h2>
+<p>The same investigations that make up the evaluation can also serve as training data. We train models to predict the outcomes of counterfactual prompts. Each training example is a follow-up turn on the model's own transcript with a single claim (Figure 3, left).</p>
+<p>Prior work trains models to report what influenced them in narrow tasks such as the <a href='https://arxiv.org/abs/2506.22777'>hint</a> <a href='https://arxiv.org/abs/2602.20710'>setting</a>, with a known cue planted in the prompt ("a Stanford professor thinks the answer is B"). When prior work does report generalization, it is narrow, such as from one hint format to another. Our training data instead covers thousands of behaviors appearing in the wild with diverse causes. We train two target models, Qwen3-8B and Qwen3.5-397B-A17B.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1791px; "><img src='fig5.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Performance on our counterfactual prediction evaluation in the hint setting.</span> All models read the same transcripts and predict whether removing the hint would change the target model’s answer. Opus 4.8 reads the same transcript and is included as an external reference. Both trained models improve substantially over their base models, despite seeing no hint data during training.</figcaption></figure>
+<p>Training generalizes to the hint setting, which was not targeted during training. For this evaluation, we ask the model whether removing the cue would change its answer. Each trained model improves substantially over its base model (Figure 5). It also generalizes to held-out investigations from the pipeline, including ones built from an out-of-distribution source of transcripts. We also experimented with training models to generate open-ended explanations of their own behavior (Figure 3, right), with weaker mixed results; see our paper's appendix for details.</p>
+<br><br><br><hr><br><br><h2>In summary</h2>
+<ul><li style='margin-left: 36pt;'>We built CHIVE, an agentic pipeline that discovers unexpected model behaviors on real user prompts and explains them with verified counterfactual experiments.</li><li style='margin-left: 36pt;'>Three activation-reading interpretability tools (activation oracles, natural-language autoencoders, and sparse autoencoders) provide no uplift over a transcript-only baseline at predicting counterfactual outcomes for naturally occurring behaviors.</li><li style='margin-left: 36pt;'>Training models to predict the outcomes of counterfactual prompts generalizes to held-out settings.</li></ul>
+<p>Read <a href='https://arxiv.org/abs/2608.16747'>our paper</a> for additional details and results.</p>
+</d-article>
+</body>
+</html>

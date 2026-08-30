@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontier AI Labs — Starter Register</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --panel2:#1c232d; --line:#2a323d;
+    --tx:#e6edf3; --dim:#9aa7b4; --faint:#6e7c8c;
+    --accent:#4c9aff; --pos:#3fb950; --neg:#f85149; --warn:#d29922;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121822,#0d1117);
+    padding:34px 0 0;margin-bottom:26px}
+  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .sub b{color:var(--tx);font-weight:600}
+
+  nav{display:flex;gap:2px;flex-wrap:wrap}
+  nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);
+    font:inherit;font-size:14px;padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0}
+  nav button:hover{color:var(--tx);background:var(--panel)}
+  nav button.on{color:var(--tx);border-bottom-color:var(--accent);font-weight:600}
+
+  section{display:none} section.on{display:block}
+  h2{font-size:19px;margin:30px 0 4px;letter-spacing:-.01em}
+  h2:first-child{margin-top:6px}
+  .note{color:var(--dim);font-size:13.5px;margin:0 0 16px;max-width:78ch}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .k{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em}
+  .stat .v{font-size:25px;font-weight:650;letter-spacing:-.02em;margin-top:5px}
+  .stat .d{color:var(--dim);font-size:12.5px;margin-top:3px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--faint);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:600;white-space:nowrap}
+  tbody tr:hover{background:var(--panel2)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)} .dim{color:var(--dim)} .faint{color:var(--faint)}
+  .warn{color:var(--warn)}
+
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;font-weight:600;
+    background:#1f2b3d;color:var(--accent);border:1px solid #2c3d55;white-space:nowrap}
+  .tag.listed{background:#122b1b;color:var(--pos);border-color:#1d4429}
+  .tag.stealth{background:#2a2412;color:var(--warn);border-color:#4a3f1d}
+
+  /* confidence chips */
+  .c{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:700;
+     padding:0 5px;border-radius:4px;vertical-align:1px;margin:0 1px}
+  .cS{background:#122b1b;color:var(--pos);border:1px solid #1d4429}
+  .cM{background:#1c232d;color:var(--dim);border:1px solid var(--line)}
+  .cQ{background:#2d1618;color:var(--neg);border:1px solid #4a2226}
+
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--tx);
+    border-radius:8px;padding:8px 12px;font:inherit;font-size:13.5px;width:260px}
+  input[type=search]:focus{outline:0;border-color:var(--accent)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    font:inherit;font-size:13px;padding:7px 13px;border-radius:8px;cursor:pointer}
+  .filters button:hover{color:var(--tx)}
+  .filters button.on{background:#1f2b3d;color:var(--accent);border-color:#2c3d55;font-weight:600}
+
+  .tier{margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tier h3{margin:0;font-size:15px;letter-spacing:-.01em}
+  .tier .desc{color:var(--faint);font-size:12.5px}
+
+  .lab{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+       padding:15px 18px;margin-bottom:11px}
+  .lab.hl{border-color:#2c3d55;background:linear-gradient(180deg,#17202c,#151b23)}
+  .lab h4{margin:0 0 3px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .meta{color:var(--faint);font-size:12px;font-family:var(--mono);margin-bottom:9px}
+  .meta span{margin-right:14px}
+  .lab p{margin:0 0 9px;font-size:13.5px;color:var(--tx);max-width:82ch}
+  .lab ul{margin:0 0 9px;padding-left:17px;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .lab li{margin-bottom:4px}
+  .lab li b{color:var(--tx);font-weight:600}
+  .src{font-size:12px;color:var(--faint);border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+  .src a{color:#5b8db8}
+  .chan{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-bottom:9px}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel2);padding:12px 16px;
+    border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:var(--dim);max-width:82ch}
+  .callout.w{border-left-color:var(--warn)}
+  .callout b{color:var(--tx)}
+  .empty{color:var(--faint);font-size:13.5px;padding:30px 0;display:none}
+</style><style>
+  .c.cW{background:#2a2412;color:var(--warn);border:1px solid #4a3f1d}
+  .fx{background:#122b1b;color:var(--pos);border-color:#1d4429}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--panel2);padding:1px 5px;border-radius:4px}
+  .lab h4 code{background:none;padding:0}
+  .kv{font-size:13px;color:var(--dim);margin:0 0 10px;max-width:82ch}
+  .kv b{color:var(--tx)}
+  del{color:var(--faint)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Frontier AI Labs — Starter Register</h1>
+    <div class="sub"><b>v1</b> · re-researched 2026-08-26 · <b>every claim carries a fetched citation</b> · no model knowledge</div>
+    <nav>
+      <button class="on" data-t="labs">Labs</button>
+      <button data-t="changed">Corrections</button>
+      <button data-t="hazards">Entity hazards</button>
+      <button data-t="scope">Scope &amp; next</button>
+      <button data-t="method">Sourcing rule</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="on" id="labs">
+  <div class="grid g4" style="margin-bottom:24px">
+    <div class="card stat"><div class="k">Labs</div><div class="v">21</div><div class="d">across 4 tiers</div></div>
+    <div class="card stat"><div class="k">Inside listed issuers</div><div class="v pos">3</div><div class="d">SPCX · SEHK 2513 · SEHK 100</div></div>
+    <div class="card stat"><div class="k">Facts corrected</div><div class="v warn">7</div><div class="d">v0 asserted from memory</div></div>
+    <div class="card stat"><div class="k">Unresolved conflicts</div><div class="v neg">1</div><div class="d">Mistral round size</div></div>
+  </div>
+
+  <div class="callout"><b>Sourcing rule.</b> No claim on this page comes from model knowledge.
+    Every fact was fetched and is linked at the entry that states it. Where nothing could be
+    sourced the field is omitted or says <i>not sourced</i> — never filled from memory.
+    <span class="c cW">⚠</span> marks a fact where two citations <b>genuinely disagree</b>; it is not
+    a confidence hedge.</div>
+
+  <div class="filters">
+    <input type="search" id="q" placeholder="Filter labs…">
+    <button class="on" data-f="all">All</button>
+    <button data-f="listed">Listed equity</button>
+    <button data-f="open">Open-weight</button>
+    <button data-f="churn">Leadership churn</button>
+  </div>
+
+  <div class="tier" data-tier><h3>Tier 1 — Closed frontier, scaling-led</h3>
+    <span class="desc">Set the capability frontier. Primary signal source.</span></div>
+
+  <div class="lab">
+    <h4>OpenAI</h4>
+    <div class="meta"><span>Founded 8 Dec 2015</span><span>San Francisco</span><span>4,500 staff (2026)</span></div>
+    <p class="kv"><b>Founders:</b> Elon Musk, Sam Altman, Ilya Sutskever, Greg Brockman, Trevor Blackwell, Vicki Cheung, Andrej Karpathy, Durk Kingma, John Schulman, Pamela Vagata, Wojciech Zaremba.</p>
+    <ul>
+      <li><b>Structure:</b> nonprofit at founding, capped for-profit from 2019, <b>restructured Oct 2025 into OpenAI Group PBC</b> with the nonprofit renamed OpenAI Foundation. Foundation 26%, Microsoft 27%, employees and investors 47%.</li>
+      <li><b>Funding:</b> round closed <b>31 Mar 2026 at $852bn post-money on $122bn committed</b> — announced in February at $110bn against a $730bn pre-money, comprising $50bn Amazon and $30bn each Nvidia and SoftBank, later including $3bn from retail investors. Revenue stated at $2bn/month.</li>
+      <li><b>Models:</b> GPT series to GPT-5.6, o1/o3 reasoning models, ChatGPT, Codex, DALL·E, Whisper. Sora discontinued March 2026.</li>
+    </ul>
+    <div class="chan">openai.com/research · openai.com/index · model + system cards · github.com/openai</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/OpenAI">Wikipedia</a> · <a href="https://www.cnbc.com/2026/03/31/openai-funding-round-ipo.html">CNBC ($852bn close)</a> · <a href="https://www.bloomberg.com/news/articles/2026-03-31/openai-valued-at-852-billion-after-completing-122-billion-round">Bloomberg</a> · <a href="https://www.cnbc.com/2026/02/27/open-ai-funding-round-amazon.html">CNBC (Feb announcement)</a> · <a href="https://www.bloomberg.com/news/articles/2026-02-27/openai-finalizes-110-billion-funding-at-730-billion-valuation">Bloomberg ($730bn pre)</a> · <a href="https://techcrunch.com/2026/03/31/openai-not-yet-public-raises-3b-from-retail-investors-in-monster-122b-fund-raise/">TechCrunch (retail)</a></div>
+  </div>
+
+  <div class="lab">
+    <h4>Anthropic</h4>
+    <div class="meta"><span>Founded 26 Jan 2021</span><span>500 Howard St, San Francisco</span><span>2,500 staff (2026)</span></div>
+    <p class="kv"><b>Founders:</b> Dario Amodei, Daniela Amodei, Jared Kaplan, Jack Clark, Chris Olah, Ben Mann, Sam McCandlish, Tom Brown.</p>
+    <ul>
+      <li><b>Models:</b> Claude in four tiers — Haiku, Sonnet, Opus, Fable — plus Claude Code, Cowork, Design, Science, and Mythos (restricted to partnered US organisations).</li>
+      <li><b>Published research:</b> Constitutional AI (training against a written set of principles), mechanistic interpretability including dictionary-learning feature extraction, alignment and societal impact. The interpretability stream is a differentiated, high-signal channel.</li>
+      <li><b>Funding:</b> $13bn Series F Sept 2025 at $183bn post-money; $30bn Series G Feb 2026 at $380bn post-money. Later 2026 marks circulated by aggregators (up to $965bn) could not be sourced to press and are <b>excluded</b>.</li>
+    </ul>
+    <div class="chan">anthropic.com/research · anthropic.com/news · transformer-circuits.pub · github.com/anthropics</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Anthropic">Wikipedia</a> · <a href="https://sacra.com/c/anthropic/">Sacra</a> · <a href="https://pitchbook.com/profiles/company/466959-97">PitchBook</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="churn">
+    <h4>Google DeepMind <span class="tag">leadership churn</span></h4>
+    <div class="meta"><span>Incorporated 23 Sep 2010 · launched 15 Nov 2010</span><span>London</span><span>~6,000 staff (2025)</span></div>
+    <p class="kv"><b>Founders:</b> Demis Hassabis, Shane Legg, Mustafa Suleyman. Acquired by Google 26 Jan 2014 for a reported $400–650m; <b>merged with Google Brain April 2023</b>.</p>
+    <ul>
+      <li><b>Contributions:</b> AlphaGo beat Lee Sedol 4–1 in March 2016; AlphaFold set state-of-the-art on protein-folding benchmarks in 2020 and had released over 200 million predicted structures by July 2022; Gemini released 6 Dec 2023, <b>Gemini 3 Pro 18 Nov 2025</b>.</li>
+      <li><b>Aug 2026:</b> Demis Hassabis ceded the CEO role to become chairman of Google DeepMind and chief scientist at Alphabet; <b>Koray Kavukcuoglu</b> took over the frontier push — reported against model delays, low morale and senior departures, with Gemini 3.5 Pro said to have missed three release deadlines.</li>
+      <li>Leadership churn plus slipped releases at one of three Western frontier labs is itself a high-value register entry.</li>
+    </ul>
+    <div class="chan">deepmind.google/discover/blog · research.google · arXiv · model cards</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Google_DeepMind">Wikipedia</a> · <a href="https://www.cnbc.com/2026/08/12/google-deepmind-koray-kavukcuoglu.html">CNBC</a> · <a href="https://time.com/article/2026/08/06/google-deepmind-ai-demis-hassabis/">Time</a> · <a href="https://www.axios.com/2026/08/06/googles-ai-leadership-shuffle">Axios</a> · <a href="https://fortune.com/2026/08/10/how-stalled-models-missed-deadlines-and-staff-burnout-lead-to-the-unraveling-of-googles-deepmind/">Fortune</a> · <a href="https://www.axios.com/2026/07/23/googles-deep-mind-ai-model-race">Axios (morale)</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="churn">
+    <h4>Meta AI / Meta Superintelligence Labs <span class="tag">mechanism-relevant</span></h4>
+    <div class="meta"><span>FAIR founded 2013 · MSL 2025</span><span>Astor Place, New York City</span><span>headcount not stated</span></div>
+    <p class="kv"><b>Founders (FAIR):</b> Rob Fergus, Yann LeCun, Serkan Piantino, Mark Zuckerberg. LeCun directed FAIR until 2018, succeeded by Jérôme Pesenti.</p>
+    <ul>
+      <li><b>MSL formed 2025</b>, reorganising FAIR, LLM development and other AI groups under one umbrella. <b>Alexandr Wang</b> is Meta's first chief AI officer and leads MSL, appointed as part of a <b>$14.3bn investment in Scale AI</b>; he also heads <b>TBD Lab</b>. <b>Shengjia Zhao</b> (ex-OpenAI) named chief scientist July 2025.</li>
+      <li><b>Oct 2025 reorg</b> cut roles across FAIR, product AI and AI infrastructure while sparing TBD Lab. MSL headcount reported at ~1,300 — ~600 foundation modelling, ~400 applied, remainder long-horizon research and infra — via The Information, secondary.</li>
+      <li><b>Llama released Feb 2023</b>; most recent is Llama 4 as of Jan 2026. <b>Muse Spark</b> debuted April 2026 as Meta's first major model since the Wang deal, with a 1.1 update July 2026; a more powerful model code-named <b>Watermelon</b> is in training. Reporting describes a shift away from open weights toward proprietary models.</li>
+      <li>Directly relevant to <code>open_weights_release</code>: the largest Western open-weights publisher stepping back.</li>
+    </ul>
+    <div class="chan">ai.meta.com/research · ai.meta.com/blog · github.com/facebookresearch · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Meta_AI">Wikipedia</a> · <a href="https://www.cnbc.com/2025/06/30/mark-zuckerberg-creating-meta-superintelligence-labs-read-the-memo.html">CNBC (MSL memo)</a> · <a href="https://www.cnbc.com/2025/07/25/zuckerberg-shengjia-zhao-meta-ai-lab-chief-scientist-openai.html">CNBC (Zhao)</a> · <a href="https://www.axios.com/2025/10/22/meta-superintelligence-tbd-ai-reorg">Axios (TBD reorg)</a> · <a href="https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html">CNBC (Muse Spark)</a> · <a href="https://fortune.com/2026/07/09/meta-muse-spark-1-1-release-alexandr-wang-superintelligence-labs-mark-zuckerberg/">Fortune (1.1)</a> · <a href="https://www.cnbc.com/2026/06/14/meta-hired-alexandr-wang-to-build-ai-its-zuckerbergs-job-to-sell-it.html">CNBC (Wang, one year)</a> · <a href="https://builtin.com/artificial-intelligence/meta-superintelligence-labs">Built In</a> · <a href="https://www.implicator.ai/meta-cuts-600-ai-roles-to-speed-its-superintelligence-push/">Implicator</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="listed churn">
+    <h4>xAI → SpaceXAI <span class="tag listed">Nasdaq: SPCX</span></h4>
+    <div class="meta"><span>Founded 9 Mar 2023</span><span>Page Mill Rd, Palo Alto</span><span>1,200+ staff (2025)</span></div>
+    <p class="kv"><b>Founder:</b> Elon Musk. <b>Products:</b> Grok, Grokipedia, Grok Build, Grok Bot, X, Cursor, the Colossus supercomputer, and a data-centre business.</p>
+    <ul>
+      <li><b>SpaceX acquired xAI 2 Feb 2026</b> in an all-stock transaction structuring xAI as a wholly owned subsidiary — SpaceX at $1tn, xAI at $250bn, combined $1.25tn, the largest merger on record. Stated rationale: orbital data centres. <b>Rebranded SpaceXAI July 2026.</b></li>
+      <li><b>SpaceX IPO'd on Nasdaq 12 Jun 2026</b> — 555.6m shares at $135, raising $75bn at a $1.77tn valuation, the largest IPO on record. Closed the debut at ~$161 (+19%), market cap above $2tn; added ~20% more the next session.</li>
+      <li><b>SpaceX completed its acquisition of Cursor (Anysphere) on 14 Aug 2026 for $60bn.</b></li>
+      <li>All original xAI co-founders had departed by early 2026; Musk announced a re-org 11 Feb 2026.</li>
+      <li><b>The first frontier lab inside a listed US issuer.</b> A lab-level event now has a direct ticker with no mapping layer in between.</li>
+    </ul>
+    <div class="chan">x.ai/news · x.ai/blog · model cards · github.com/xai-org</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/XAI_(company)">Wikipedia</a> · <a href="https://www.cnbc.com/2026/06/12/spacex-ipo-spcx-live-updates.html">CNBC (IPO)</a> · <a href="https://www.cnbc.com/2026/06/11/spacex-raises-75-billion-in-record-setting-ipo-ahead-of-nasdaq-debut.html">CNBC ($75bn)</a> · <a href="https://www.cnbc.com/2026/06/12/spacex-stock-jumps-2-trillion.html">CNBC ($2tn)</a> · <a href="https://www.bloomberg.com/news/articles/2026-06-15/spacex-shares-rise-set-to-extend-gains-after-record-ipo-mqexlibz">Bloomberg</a> · <a href="https://techcrunch.com/2026/06/12/spacex-ipo-closes-up-19-and-delivers-the-worlds-first-trillionaire/">TechCrunch</a> · <a href="https://www.cnbc.com/2026/02/02/elon-musk-spacex-xai-ipo.html">CNBC (merger)</a> · <a href="https://www.cnbc.com/2026/06/16/spacex-spcx-cursor-acquisition-ipo.html">CNBC (Cursor)</a> · <a href="https://www.cnbc.com/2026/02/11/musk-announces-xai-re-org-following-key-departures-spacex-merger.html">CNBC (re-org)</a></div>
+  </div>
+  <div class="tier" data-tier><h3>Tier 2 — China frontier</h3>
+    <span class="desc">Two are listed equities with real tickers — directly investable, not only a transmission mechanism.</span></div>
+
+  <div class="lab hl" data-tags="open">
+    <h4>DeepSeek <span class="tag">calibration event</span></h4>
+    <div class="meta"><span>Founded 17 Jul 2023</span><span>Hangzhou, Zhejiang</span><span>160 staff (2025)</span></div>
+    <p class="kv"><b>Founder:</b> Liang Wenfeng. <b>Owner:</b> High-Flyer, a Chinese hedge fund founded Feb 2016. 160 staff is small enough that headcount is a poor capability proxy — worth remembering before any scoring input uses it.</p>
+    <ul>
+      <li><b>DeepSeek-R1 launched 20 Jan 2025 under the MIT licence</b> — the canonical <code>inference_cost_down</code> shock and the calibration event named in the project brief. It passed ChatGPT as the most-downloaded free iOS app in the US by 27 Jan 2025, and was reportedly trained at substantially lower cost than comparable Western models.</li>
+      <li>V3 Dec 2024; <b>V4 preview 24 Apr 2026</b>.</li>
+      <li><b>Series A May 2026: $7bn at a $52bn post-money.</b> The "$71bn" figure that circulated is <b>not supported</b>; an April 2026 discussion of a $300m round is the other sourced data point.</li>
+    </ul>
+    <div class="chan">api-docs.deepseek.com · github.com/deepseek-ai · Hugging Face · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/DeepSeek">Wikipedia (DeepSeek)</a> · <a href="https://en.wikipedia.org/wiki/High-Flyer">Wikipedia (High-Flyer)</a> · <a href="https://en.wikipedia.org/wiki/Liang_Wenfeng">Wikipedia (Liang Wenfeng)</a> · <a href="https://fortune.com/2026/08/01/deepseek-founder-liang-wenfeng-workers-dont-do-overtime-or-kpis-china-996-culture/">Fortune</a> · <a href="https://www.chinatalk.media/p/deepseek-from-hedge-fund-to-frontier">ChinaTalk</a></div>
+  </div>
+
+  <div class="lab" data-tags="open">
+    <h4>Alibaba Qwen (Tongyi Lab)</h4>
+    <div class="meta"><span>Beta Apr 2023 · public Sep 2023</span><span>Alibaba Cloud</span></div>
+    <p class="kv"><b>Predominantly open weights</b>, across Apache 2.0, a source-available Qwen Licence, a non-commercial Qwen Research Licence, and proprietary large versions via Alibaba Cloud. <b>The licence mix matters:</b> "open weights" is not one thing, and which licence a release carries determines whether it actually enables self-hosting.</p>
+    <ul>
+      <li>Cadence: Qwen2 Jun 2024, Qwen2.5 Sep 2024, Qwen3 Apr 2025, Qwen3.5 Feb 2026, Qwen3.6 Apr 2026, Qwen3.7 May/Jun 2026, Qwen3.8 Aug 2026.</li>
+      <li>Most recent: <b>Qwen3.8-Max, 2.4tn parameters, 3 Aug 2026</b>; Qwen3.8-27B, 14 Aug 2026, Apache 2.0.</li>
+    </ul>
+    <div class="chan">qwenlm.github.io · github.com/QwenLM · huggingface.co/Qwen · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Qwen">Wikipedia</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="listed open">
+    <h4>Zhipu AI / Z.ai <span class="tag listed">SEHK: 2513</span></h4>
+    <div class="meta"><span>Founded 2019</span><span>Beijing</span><span>800+ staff (2024)</span></div>
+    <p class="kv"><b>Founders:</b> Tang Jie and Li Juanzi. <b>Legal name:</b> Z.AI Co., Ltd., formerly Beijing Zhipu Huazhang Technology, also known as Knowledge Atlas Technology Joint Stock Co., Ltd.</p>
+    <ul>
+      <li><b>IPO'd on HKEX 8 Jan 2026 — the first major Chinese LLM company to go public.</b> Raised ~$560m; closed the debut up 13.1%. Market cap reported at HK$585.8bn by mid-2026, roughly 2.7× MiniMax's. Preparing a Shanghai listing as of June 2026.</li>
+      <li><b>Models:</b> GLM series, through GLM-5.3 and vision-language variants.</li>
+    </ul>
+    <div class="chan">z.ai/blog · github.com/THUDM · github.com/zai-org · Hugging Face · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Zhipu_AI">Wikipedia</a> · <a href="https://www.cnbc.com/2026/01/08/china-ai-tiger-goes-ipo-zhipu-hong-kong-debut-openai-knowledge-atlas-hsi-hang-seng-listing.html">CNBC</a> · <a href="https://www.scmp.com/business/investor-relations/ipo-quote-profile/article/3338107/chinas-zhipu-ai-launches-us560-million-share-sale-hong-kongs-ipo-tech-race-heats">SCMP (share sale)</a> · <a href="https://www.scmp.com/tech/big-tech/article/3356390/minimax-once-led-zhipu-hong-kongs-ai-stock-race-how-tables-have-turned">SCMP (performance)</a> · <a href="https://www.cnbc.com/video/2026/06/03/zhipu-minimax-prepping-shanghai-listings.html">CNBC (Shanghai)</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="listed open">
+    <h4>MiniMax <span class="tag listed">SEHK: 100</span></h4>
+    <div class="meta"><span>Founded Dec 2021</span><span>Xuhui, Shanghai</span><span>415 staff (2025)</span></div>
+    <p class="kv"><b>Founders:</b> Yan Junjie, Yun Yeyi, Zhou Yucong. <b>Investors:</b> MiHoYo (early), Alibaba, Tencent, GL Ventures, HongShan, IDG Capital.</p>
+    <ul>
+      <li><b>IPO'd on HKEX 9 Jan 2026, one day after Zhipu</b>, raising HK$4.8bn (~$620m); shares closed the debut at HK$345 against a HK$165 offer — <b>up 109%</b>. Market cap HK$159.3bn by mid-2026.</li>
+      <li><b>Models:</b> ABAB series, MiniMax-01 line, MiniMax-M series to M3, Speech-02, and Hailuo AI for text, music and video generation.</li>
+    </ul>
+    <div class="chan">minimax.io/news · github.com/MiniMax-AI · Hugging Face · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/MiniMax_(company)">Wikipedia</a> · <a href="https://www.cnbc.com/2026/01/09/minimax-hong-kong-ipo-ai-tigers-zhipu.html">CNBC</a> · <a href="https://www.scmp.com/business/banking-finance/article/3338766/minimaxs-hong-kong-ipo-set-hit-us538-million-amid-chinese-ai-sector-frenzy">SCMP (IPO size)</a> · <a href="https://www.scmp.com/tech/tech-trends/article/3339301/minimax-and-zhipus-stellar-hong-kong-ipos-supercharge-chinas-ai-ambitions">SCMP (both listings)</a></div>
+  </div>
+
+  <div class="lab" data-tags="open">
+    <h4>Moonshot AI (Kimi)</h4>
+    <div class="meta"><span>Founded Mar 2023</span><span>Haidian, Beijing</span><span>300 staff (2026)</span></div>
+    <p class="kv"><b>Founders:</b> Yang Zhilin, Zhou Xinyu, Wu Yuxin. <b>Alibaba holds 36%</b>; other investors include Tencent, Gaorong Capital, IDG Capital.</p>
+    <ul>
+      <li><b>Valuation $35bn (Jul 2026); ARR $200m (Apr 2026).</b> Considering a Hong Kong IPO as of March 2026, no confirmed timeline.</li>
+      <li><b>Models:</b> Kimi K1.5 (Jan 2025), K2 (Jul 2025, 1tn params), K2 Thinking (Nov 2025), K2.5 (Jan 2026, multimodal), <b>K3 (Jul 2026, 2.8tn params)</b>.</li>
+    </ul>
+    <div class="chan">moonshotai.github.io · github.com/MoonshotAI · Hugging Face · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Moonshot_AI">Wikipedia</a> · <a href="https://fortune.com/2026/07/23/moonshot-deepseek-great-chinese-ai-ipo-rush/">Fortune</a> · <a href="https://dealroom.co/news/136199-inside-chinas-ai-ecosystem-beyond-deepseek-zhipu-minimax-moonshot-byteda/">Dealroom</a></div>
+  </div>
+
+  <div class="lab" data-tags="open">
+    <h4>ByteDance — Doubao / Seed</h4>
+    <div class="meta"><span>Released Aug 2023</span><span>Beijing</span><span>Volcano Engine</span></div>
+    <p class="kv">Sibling model lines Seedream (image) and Seedance (video) — ByteDance is the strongest Chinese lab in video generation.</p>
+    <ul>
+      <li><b>330 million users as of May 2026</b>, up from ~60m monthly actives in Nov 2024. Reported at 120 trillion tokens per day. <b>Doubao Seed 2.0 released 14 Feb 2026.</b></li>
+    </ul>
+    <div class="chan">seed.bytedance.com · github.com/bytedance-seed · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Doubao">Wikipedia (Doubao)</a> · <a href="https://en.wikipedia.org/wiki/Seedance_2.0">Wikipedia (Seedance 2.0)</a></div>
+  </div>
+
+  <div class="tier" data-tier><h3>Tier 3 — Western challengers and big-tech in-house</h3>
+    <span class="desc">Second tier by capability, first tier for supply-chain linkage.</span></div>
+
+  <div class="lab hl" data-tags="open">
+    <h4>Mistral AI <span class="tag">direct equity link</span></h4>
+    <div class="meta"><span>Founded 28 Apr 2023</span><span>Paris</span><span>1,000+ staff (2026)</span></div>
+    <p class="kv"><b>Founders:</b> Arthur Mensch (ex-Google DeepMind), Guillaume Lample and Timothée Lacroix (both ex-Meta).</p>
+    <ul>
+      <li><b>Sept 2025: €2bn raised at a €12bn ($14bn) valuation, with ASML acquiring an ~11% stake for €1.3bn.</b> <span class="c cW">⚠</span> Mistral's own announcement headlines the raise as <b>€1.7bn</b>; Wikipedia states €2bn. Both cited below — unresolved, take from the filing before use.</li>
+      <li>A <b>direct semiconductor-equipment ↔ frontier-lab equity link</b>, exactly the case the research notes flag as worth tracking.</li>
+      <li>Earlier: €105m Jun 2023 at €240m; €385m Dec 2023 at €2bn+; $16m Microsoft Feb 2024; €600m Jun 2024 at €5.8bn; €100m CMA CGM Apr 2025. <b>$830m Mar 2026 for datacentre construction.</b></li>
+      <li><b>Models:</b> Mistral (7B/Small/Medium/Large), Mixtral MoE, Ministral, Codestral, Devstral, Magistral (reasoning), Voxtral (speech), Pixtral (multimodal).</li>
+    </ul>
+    <div class="chan">mistral.ai/news · huggingface.co/mistralai · github.com/mistralai</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Mistral_AI">Wikipedia</a> · <a href="https://mistral.ai/news/mistral-ai-raises-1-7-b-to-accelerate-technological-progress-with-ai/">Mistral (primary, €1.7bn)</a> · <a href="https://www.reworked.co/digital-workplace/mistral-ai-secures-2b-in-funding-led-by-asml/">Reworked</a> · <a href="https://www.cnbc.com/2026/05/19/mistral-cnbc-disruptor-50-ranking.html">CNBC</a></div>
+  </div>
+
+  <div class="lab" data-tags="open">
+    <h4>Cohere</h4>
+    <div class="meta"><span>Founded 2019</span><span>Toronto</span><span>450+ staff (2025)</span></div>
+    <p class="kv"><b>Founders:</b> Aidan Gomez (co-author of <i>Attention Is All You Need</i> at Google Brain), Nick Frosst (Google Brain), Ivan Zhang — all three University of Toronto.</p>
+    <ul>
+      <li><b>Funding:</b> $40m Series A Sep 2021; $125m Series B Feb 2022; $270m Series C Jun 2023 at $2.2bn; $500m Jul 2024 at $5.5bn; $500m in 2025 at $6.8bn; $100m Sep 2025 at ~$7bn. <b>Revenue $240m (Feb 2026).</b></li>
+      <li><b>Models:</b> Command A+, Command A Reasoning, Command A Translate, Command A Vision, Cohere North (secure AI workspace), Aya Vision. Enterprise and RAG focus rather than consumer.</li>
+    </ul>
+    <div class="chan">cohere.com/blog · cohere.com/research · huggingface.co/CohereLabs</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Cohere">Wikipedia</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="open churn">
+    <h4>Ai2 (Allen Institute for AI) <span class="tag">best test corpus</span></h4>
+    <div class="meta"><span>Founded 2014</span><span>Seattle + Tel Aviv</span><span>501(c)(3) non-profit</span></div>
+    <p class="kv"><b>Founder:</b> Paul Allen. <b>The most genuinely open lab:</b> OLMo ships weights, data <i>and</i> training code, which makes Ai2 uniquely valuable as an extraction-evaluation corpus — the ground truth is actually inspectable.</p>
+    <ul>
+      <li><b>Releases:</b> OLMo announced May 2023, 1B/7B open-sourced Feb 2024; OLMoE Sep 2024; OLMo 2 Nov 2024 with a 32B variant Mar 2025; <b>Olmo 3 Nov 2025; Olmo 3.1 Dec 2025.</b> Tulu instruction-tuned models from Jun 2023 through Tulu 3 Nov 2024.</li>
+      <li><b>Leadership:</b> Oren Etzioni (Sep 2013 – Sep 2022), Peter Clark interim, <b>Ali Farhadi CEO from 31 Jul 2023 until he stepped down, with Peter Clark returning as interim CEO on 10 Mar 2026.</b> Reporting elsewhere says Farhadi went to Microsoft with several Ai2 researchers — a clean worked example of the talent-movement indicator.</li>
+    </ul>
+    <div class="chan">allenai.org/blog · github.com/allenai · huggingface.co/allenai</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Allen_Institute_for_AI">Wikipedia</a> · <a href="https://www.llmreference.com/researcher/ai2">LLMReference</a></div>
+  </div>
+
+  <div class="lab">
+    <h4>Microsoft AI (MAI)</h4>
+    <div class="meta"><span>Division formed 19 Mar 2024</span><span>Redmond</span><span>10,000 staff (2025)</span></div>
+    <p class="kv"><b>Leadership:</b> Mustafa Suleyman (CEO and EVP, Superintelligence division); Jacob Andreou EVP of the Copilot division from March 2026.</p>
+    <ul>
+      <li><b>MAI Superintelligence team formed 6 Nov 2025</b> under Suleyman, with three stated applications: AI companions, healthcare assistance, and clean-energy breakthroughs.</li>
+      <li><b>Models:</b> MAI-Voice-1 and MAI-1-preview (28 Aug 2025); MAI-Image-1 (13 Oct 2025); MAI-Image-2.5, MAI-Code-1-Flash and five further models (Jun 2026).</li>
+    </ul>
+    <div class="chan">microsoft.com/en-us/ai · Microsoft Research blog · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Microsoft_AI">Wikipedia</a> · <a href="https://tech-insider.org/microsoft-mai-in-house-ai-models-openai-2026/">Tech-Insider</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="churn">
+    <h4>Amazon AGI <span class="tag">BIT's largest holding</span></h4>
+    <div class="meta"><span>Nova introduced Dec 2024</span><span>Seattle</span></div>
+    <p class="kv">Amazon introduced the <b>Nova</b> foundation-model family at AWS re:Invent in December 2024 — Nova Micro (text), plus Nova Lite, Nova Pro and Nova Premier (multimodal).</p>
+    <ul>
+      <li><b>Leadership churn through 2026:</b> <b>Rohit Prasad</b> led the AGI team from 2023 and his departure was announced 17 Dec 2025; <b>Peter DeSantis</b> took over the group, with <b>Pieter Abbeel</b> (who joined via the Covariant acquisition in 2024) leading frontier model research. <b>David Luan</b>, head of the AGI lab and previously founder of Adept, left in Feb 2026. Amazon <b>laid off employees in the AGI unit in Jul 2026</b>.</li>
+      <li><b>Why it matters here:</b> Amazon is BIT's largest holding at ~9.7% of book, and is simultaneously a lab, a hyperscaler, and a $50bn investor in OpenAI's 2026 round. <b>Any mechanism touching Amazon has three independent routes</b> — the clearest argument for a max-not-sum propagation rule.</li>
+    </ul>
+    <div class="chan">amazon.science/blog · AWS AI blog · model cards</div>
+    <div class="src">Sources: <a href="https://www.aboutamazon.com/news/aws/amazon-nova-artificial-intelligence-bedrock-aws">Amazon (Nova)</a> · <a href="https://press.aboutamazon.com/2024/12/introducing-amazon-nova-a-new-generation-of-foundation-models">Amazon press release</a> · <a href="https://www.cnbc.com/2025/12/17/amazon-ai-chief-prasad-leaving-peter-desantis-agi-group.html">CNBC (Prasad/DeSantis)</a> · <a href="https://fortune.com/2025/12/17/amazon-ceo-andy-jassy-announces-departure-of-ai-exec-rohit-prasad-in-leadership-shakeup/">Fortune</a> · <a href="https://www.cnbc.com/2026/07/22/amazon-lays-off-some-employees-in-its-agi-unit.html">CNBC (layoffs)</a> · <a href="https://www.aboutamazon.com/news/company-news/andy-jassy-peter-desantis-amazon-leadership-update">Amazon (leadership update)</a></div>
+  </div>
+
+  <div class="lab">
+    <h4>Reflection AI</h4>
+    <div class="meta"><span>Founded 2024</span><span>Brooklyn, New York</span><span>headcount not stated</span></div>
+    <p class="kv"><b>Founders:</b> Misha Laskin and Ioannis Antonoglou, both former Google DeepMind researchers.</p>
+    <ul>
+      <li><b>Funding:</b> $130m total Mar 2025 ($25m seed + $105m Series A) at ~$545m; <b>$2bn Oct 2025 at $8bn; $25bn valuation Jun 2026</b> — a 46× mark in fifteen months.</li>
+      <li>Self-describes as "an open-source artificial intelligence company" and "an open-model alternative to closed frontier AI labs", and planned to release model weights publicly in 2025. <b>Specific open-weight releases are not documented in the source</b> — verify before treating it as an open-weights publisher.</li>
+      <li><b>Product:</b> Asimov, a code-comprehension agent that reads source code, email, Slack, project updates and documentation.</li>
+    </ul>
+    <div class="chan">reflection.ai · Hugging Face · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Reflection_AI">Wikipedia</a></div>
+  </div>
+  <div class="tier" data-tier><h3>Tier 4 — Stealth and new-modality</h3>
+    <span class="desc">Low publication volume, high per-item signal. Cheap to watch; a single release moves the map.</span></div>
+
+  <div class="lab hl">
+    <h4>Safe Superintelligence (SSI) <span class="tag stealth">alerting test case</span></h4>
+    <div class="meta"><span>Founded 19 Jun 2024</span><span>Palo Alto + Tel Aviv</span><span>~50 staff (Jul 2025)</span></div>
+    <p class="kv"><b>Founders:</b> Ilya Sutskever (former OpenAI chief scientist), Daniel Gross (former head of Apple's AI efforts), Daniel Levy (investor, former OpenAI researcher).</p>
+    <ul>
+      <li><b>Funding:</b> $1bn Sep 2024 from SV Angel, DST Global, Sequoia and Andreessen Horowitz; <b>$30bn valuation Mar 2025</b>, six times the previous $5bn. <b>Nvidia announced a planned $5bn investment Jul 2026</b> as part of a strategic partnership, reported alongside a shift from Google TPUs to Nvidia GPUs.</li>
+      <li><b>No product release is stated by the source.</b></li>
+      <li><b>A first release would be a maximum-signal, near-zero-volume event</b> — the cleanest case to tune the alerting path against.</li>
+    </ul>
+    <div class="chan">ssi.inc (essentially static) · personnel accounts on X</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Safe_Superintelligence">Wikipedia</a> · <a href="https://techcrunch.com/2026/07/27/ilya-sutskevers-safe-superintelligence-partners-with-nvidia-to-scale-its-ai-research/">TechCrunch</a> · <a href="https://www.calcalistech.com/ctechnews/article/hjfywdtajl">Calcalist</a></div>
+  </div>
+
+  <div class="lab hl" data-tags="open">
+    <h4>Thinking Machines Lab <span class="tag">talent cluster</span></h4>
+    <div class="meta"><span>Founded Feb 2025</span><span>Mission District, San Francisco</span><span>100 staff (2026)</span></div>
+    <p class="kv"><b>Founder:</b> Mira Murati (former OpenAI CTO). Organised as a public benefit corporation. <b>Team:</b> Murati (CEO), John Schulman (chief scientist, OpenAI co-founder), Barret Zoph (ex-OpenAI VP Research), Lilian Weng (ex-OpenAI VP) — a concentrated OpenAI-alumni cluster, the talent-movement indicator in its purest form.</p>
+    <ul>
+      <li><b>Funding:</b> $2bn Jul 2025 at $12bn, led by Andreessen Horowitz, with Nvidia, AMD, Cisco, Jane Street and the government of Albania ($10m). <span class="c cW">⚠</span> A "$5bn Series B at $50bn, March 2026" appeared in v0 of this file and <b>could not be sourced — removed</b>.</li>
+      <li><b>Products:</b> <b>Tinker</b> (1 Oct 2025), a fine-tuning API; <b>Inkling</b> (15 Jul 2026), a 975bn parameter open-weights model under Apache licence; <b>Inkling Small</b> (31 Jul 2026), a 276bn parameter distillation with comparable performance.</li>
+    </ul>
+    <div class="chan">thinkingmachines.ai/blog · X</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Thinking_Machines_Lab">Wikipedia</a></div>
+  </div>
+
+  <div class="lab">
+    <h4>World Labs</h4>
+    <div class="meta"><span>Founded 2024</span><span>headcount not stated</span></div>
+    <p class="kv"><b>Founder:</b> Fei-Fei Li, with three colleagues not named by the source.</p>
+    <ul>
+      <li><b>Funding:</b> $230m in 2024; <b>$1bn in 2026</b>, at a valuation above $1bn.</li>
+      <li><b>Focus:</b> spatial intelligence — AI that understands how the three-dimensional physical world works, aiming to integrate visual perception with action so robotic systems can perform everyday tasks from verbal instruction.</li>
+    </ul>
+    <div class="chan">worldlabs.ai/blog · arXiv</div>
+    <div class="src">Sources: <a href="https://en.wikipedia.org/wiki/Fei-Fei_Li">Wikipedia (Fei-Fei Li)</a></div>
+  </div>
+
+  <div class="lab">
+    <h4>Physical Intelligence</h4>
+    <div class="meta"><span>Founded 2024</span><span>headcount not stated</span></div>
+    <p class="kv"><b>Founders:</b> former Google DeepMind researchers with Stanford and UC Berkeley academics; co-founders include Sergey Levine (UC Berkeley) and Lachy Groom.</p>
+    <ul>
+      <li><b>Funding:</b> <b>$600m at a $5.6bn valuation (Nov 2025)</b>, led by Alphabet's CapitalG with Lux Capital, Thrive Capital, Jeff Bezos, Index Ventures and T. Rowe Price. <b>In talks Mar 2026 to raise ~$1bn at above $11bn</b>, roughly doubling the mark in four months.</li>
+      <li><b>Models:</b> π0.7, described by the company as an early step toward a general-purpose robot brain that can power any robot for any application.</li>
+      <li>The leading indicator for any robotics-linked mechanism.</li>
+    </ul>
+    <div class="chan">physicalintelligence.company/blog · arXiv</div>
+    <div class="src">Sources: <a href="https://www.bloomberg.com/news/articles/2025-11-20/robotics-startup-physical-intelligence-valued-at-5-6-billion-in-new-funding">Bloomberg ($5.6bn)</a> · <a href="https://www.bloomberg.com/news/articles/2026-03-27/ex-deepmind-staffers-robotics-startup-in-talks-for-11-billion-valuation">Bloomberg ($11bn talks)</a> · <a href="https://techcrunch.com/2026/03/27/physical-intelligence-is-reportedly-in-talks-to-raise-1-billion-again/">TechCrunch</a> · <a href="https://techcrunch.com/2026/01/30/physical-intelligence-stripe-veteran-lachy-grooms-latest-bet-is-building-silicon-valleys-buzziest-robot-brains/">TechCrunch (inside)</a> · <a href="https://techcrunch.com/2026/04/16/physical-intelligence-a-hot-robotics-startup-says-its-new-robot-brain-can-figure-out-tasks-it-was-never-taught/">TechCrunch (π0.7)</a> · <a href="https://www.axios.com/2025/11/21/robots-physical-intelligence-ai">Axios</a></div>
+  </div>
+
+  <div class="empty" id="empty">No labs match that filter.</div>
+</section>
+
+<!-- ============ CORRECTIONS ============ -->
+<section id="changed">
+  <h2>What changed from v0</h2>
+  <p class="note">v0 asserted founding dates, headcounts and locations from model knowledge.
+  Re-researched with a fetched source for every claim, <b>seven of those were wrong</b>. Kept visible
+  rather than quietly fixed — the size of the error is the argument for the rule.</p>
+  <table>
+    <thead><tr><th>Fact</th><th>v0 (from memory)</th><th>Sourced</th></tr></thead>
+    <tbody>
+      <tr><td>xAI founding</td><td><del>July 2023</del></td><td class="pos"><b>9 March 2023</b></td></tr>
+      <tr><td>OpenAI headcount</td><td><del>~7,850</del></td><td class="pos"><b>4,500</b> (2026)</td></tr>
+      <tr><td>Anthropic headcount</td><td><del>~5,000</del></td><td class="pos"><b>2,500</b> (2026)</td></tr>
+      <tr><td>Mistral headcount</td><td><del>~350</del></td><td class="pos"><b>1,000+</b> (2026)</td></tr>
+      <tr><td>Mistral ASML round</td><td><del>€1.7bn Series C at $13.8bn</del></td><td class="pos"><b>Sept 2025, €2bn at €12bn</b>, ASML 11% <span class="c cW">⚠</span></td></tr>
+      <tr><td>SSI valuation</td><td><del>$32bn</del></td><td class="pos"><b>$30bn</b> (March 2025)</td></tr>
+      <tr><td>Meta AI HQ</td><td><del>Menlo Park</del></td><td class="pos"><b>Astor Place, New York City</b></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Claims that resolved</h2>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><b class="pos">Confirmed true</b>
+      <p class="note" style="margin:6px 0 0">The SpaceX IPO (12 Jun 2026, SPCX) and the Cursor acquisition — completed 14 Aug 2026 for $60bn. Both were flagged unverified in v0.</p></div>
+    <div class="card"><b class="neg">Confirmed false</b>
+      <p class="note" style="margin:6px 0 0">DeepSeek's "$71bn valuation". The sourced figure is a <b>$7bn Series A at $52bn post-money</b>, May 2026.</p></div>
+    <div class="card"><b class="neg">Removed — unsourceable</b>
+      <p class="note" style="margin:6px 0 0">Thinking Machines' "$5bn Series B at $50bn, March 2026". No source found; the claim is gone rather than hedged.</p></div>
+    <div class="card"><b class="warn">Excluded — aggregator only</b>
+      <p class="note" style="margin:6px 0 0">Anthropic valuations above $380bn (aggregators offered up to $965bn). Not traceable to press reporting, so not stated.</p></div>
+  </div>
+</section>
+
+<!-- ============ HAZARDS ============ -->
+<section id="hazards">
+  <h2>Entity-resolution hazards</h2>
+  <p class="note">Named now because collisions are a stated failure mode and these are the ones that will bite.</p>
+  <div class="callout w"><b>The expensive one.</b> BIT's <code>FT Inter Inc. Cl. A</code> position (~3.0% of book)
+    is <b>Figure Technology Solutions</b>, a fintech lender. <b>Figure AI</b> is an unrelated private
+    humanoid-robotics company. A naive name match routes robotics news onto a fintech holding with
+    total confidence and no error.</div>
+  <table>
+    <thead><tr><th>Hazard</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><b>Figure AI ≠ Figure Technology Solutions</b></td><td>See above. Two unrelated companies, one string.</td></tr>
+      <tr><td><b>Zhipu has four names</b></td><td>Z.AI Co., Ltd. / Beijing Zhipu Huazhang Technology / Knowledge Atlas Technology / Zhipu AI, trading as SEHK 2513.</td></tr>
+      <tr><td><b>xAI is now SpaceXAI, inside SpaceX</b></td><td>Renamed July 2026, subsidiary since February 2026, listed as SPCX. Lab news routes to a different corporate parent than it did in 2025.</td></tr>
+      <tr><td><b>Cursor belongs to SpaceX</b></td><td>Since 14 August 2026. Any Cursor/Anysphere item is now a SPCX item.</td></tr>
+      <tr><td><b>DeepMind / Google DeepMind / Google Brain</b></td><td>One merged org since April 2023; author affiliation is unreliable pre-merger.</td></tr>
+      <tr><td><b>FAIR / MSL / TBD Lab</b></td><td>Three nested Meta identities publishing concurrently with opposed postures — FAIR open, MSL increasingly proprietary.</td></tr>
+      <tr><td><b>Doubao / Seed / Seedream / Seedance / Volcano Engine</b></td><td>One ByteDance effort, five names.</td></tr>
+      <tr><td><b>Two Daniels at SSI</b></td><td>Daniel Gross and Daniel Levy — distinct people, frequently conflated.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ SCOPE ============ -->
+<section id="scope">
+  <h2>Deliberate omissions</h2>
+  <div class="grid g2">
+    <div class="card"><b>Wrapper and application companies</b><p class="note" style="margin:6px 0 0">Perplexity, Harvey. Consumers of frontier models, not producers; they belong in the mapping layer. <b>Cursor has moved</b> — it is now part of SpaceX.</p></div>
+    <div class="card"><b>Image/video-only labs</b><p class="note" style="margin:6px 0 0">Black Forest Labs, Runway, Luma, Stability AI. Reconsider if a mechanism routes through media generation.</p></div>
+    <div class="card"><b>Surfaced but not yet assessed</b><p class="note" style="margin:6px 0 0">Adjacent robotics/world-model labs found during research: General Intuition (reported ~$6bn, Aug 2026) and Generalist (reported ~$3bn, Aug 2026).</p></div>
+    <div class="card"><b>Plausible additions pending cut criteria</b><p class="note" style="margin:6px 0 0">Nvidia Research, Apple, IBM Granite, Baidu ERNIE, Tencent Hunyuan, Nous, EleutherAI, Liquid AI, Decart, H Company, Skild AI.</p></div>
+  </div>
+
+  <h2>Next actions</h2>
+  <table>
+    <thead><tr><th style="width:34px">#</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td class="faint">1</td><td><b>Promote key facts from Wikipedia to primary sources.</b> This file clears "every claim is sourced"; it does not yet clear the project's <i>primary source</i> bar. Wikipedia's inline references are the shortest path.</td></tr>
+      <tr><td class="faint">2</td><td><b>Resolve the Mistral <span class="c cW">⚠</span></b> — €1.7bn (company) vs €2bn (Wikipedia) for the ASML round.</td></tr>
+      <tr><td class="faint">3</td><td><b>Verify Reflection AI's open-weight releases.</b> It self-describes as open-source, but no specific weight release is documented.</td></tr>
+      <tr><td class="faint">4</td><td><b>Add lab→ticker links to the mapping layer</b> for SPCX, SEHK 2513 and SEHK 100. Three frontier labs are now inside listed issuers; for these the mechanism route is not the only path.</td></tr>
+      <tr><td class="faint">5</td><td><b>Harvest the channel URLs</b> into per-lab source entries for ingestion.</td></tr>
+      <tr><td class="faint">6</td><td><b>Use Tier 4 to test the alerting path</b> — low volume, high per-item importance.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section id="method">
+  <h2>Sourcing rule</h2>
+  <div class="callout"><b>No claim in this document comes from model knowledge.</b> Every fact was
+  fetched and is linked at the entry that states it. Where nothing could be sourced, the field is
+  omitted or says <i>not sourced</i> — it is never filled from memory.</div>
+
+  <h2>Two caveats that must travel with this file</h2>
+  <table>
+    <tbody>
+      <tr><td style="width:210px"><b>Wikipedia is tertiary</b></td><td>It is resolvable and citable, which clears this document's bar, but it does <b>not</b> clear the project's <i>primary source</i> non-negotiable. Facts destined for the design doc or a shipped insight need promoting to the underlying filing, company post or press report. Wikipedia's own inline references are the shortest path.</td></tr>
+      <tr><td><b>Knowledge cutoff</b></td><td>Assistant knowledge ends May 2026. Everything dated after that is sourced or absent.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Markers</h2>
+  <table>
+    <thead><tr><th style="width:90px">Marker</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><span class="c cW">⚠</span></td><td><b>Sources genuinely disagree.</b> Not a confidence hedge — two citations conflict and both are shown. Currently one instance: the Mistral/ASML round size.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Collection limits</h2>
+  <ul class="note" style="padding-left:18px">
+    <li>Reuters, FT, AP and WSJ are unreachable by the fetcher, so press citations lean CNBC, Bloomberg, SCMP, Fortune, TechCrunch and Axios.</li>
+    <li>Employee counts carry the "as of" date their source gives; they are not all contemporaneous, and several labs do not publish one at all.</li>
+    <li>Private valuations are round-dependent and stale by construction. Each is tied to a dated event, never to an aggregator's "current valuation" field.</li>
+  </ul>
+
+  <p class="note" style="margin-top:22px">Markdown source of record: <code>research/frontier_labs.md</code> —
+  kept for diffing and grep. This page is the readable rendering of it.</p>
+</section>
+
+</div>
+
+<script>
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.t).classList.add('on');
+  });
+
+  const labs=[...document.querySelectorAll('.lab')];
+  const tiers=[...document.querySelectorAll('[data-tier]')];
+  const q=document.getElementById('q');
+  let mode='all';
+
+  function apply(){
+    const s=q.value.trim().toLowerCase();
+    labs.forEach(l=>{
+      const tags=(l.dataset.tags||'');
+      const okMode = mode==='all' || tags.includes(mode);
+      const okText = !s || l.textContent.toLowerCase().includes(s);
+      l.style.display = (okMode&&okText) ? '' : 'none';
+    });
+    tiers.forEach(t=>{
+      let n=t.nextElementSibling, any=false;
+      while(n && !n.hasAttribute('data-tier')){
+        if(n.classList.contains('lab') && n.style.display!=='none') any=true;
+        n=n.nextElementSibling;
+      }
+      t.style.display = any ? '' : 'none';
+    });
+    document.getElementById('empty').style.display =
+      labs.some(l=>l.style.display!=='none') ? 'none' : 'block';
+  }
+  q.oninput=apply;
+  document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.f; apply();
+  });
+</script>
+</body>
+</html>

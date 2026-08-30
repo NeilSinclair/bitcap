@@ -1,9 +1,11 @@
-"""Validate the holdings config against the mechanism vocabulary and the portfolio.
+"""Validate the config files against each other and against the portfolio.
 
-Run before anything consumes companies.yaml. Catches the failure modes that would
-otherwise degrade silently: a mechanism id that does not exist, an ISIN that no
-fund actually holds, a holding with no entry, and a claim with neither a source
-nor an explicit `unverified` note.
+Run before anything consumes them. Catches the failure modes that would otherwise
+degrade silently: a mechanism or category id that does not exist, an ISIN that the
+fund does not hold, a holding with no entry, a category with no members, and a claim
+with neither a source nor an explicit `unverified` note.
+
+Scope is BIT Global Technology Leaders alone (docs/decisions.md D8).
 """
 
 import json
@@ -14,6 +16,67 @@ import yaml
 
 ROOT = Path(__file__).parent
 PORTFOLIOS = ROOT.parent / "research" / "docs" / "portfolio_views.json"
+
+
+def check_registry(root: Path, views: dict) -> tuple[list[str], list[str]]:
+    """Validate holdings.yaml against categories.yaml and the fund's real positions.
+
+    Args:
+        root: Directory holding the config files.
+        views: Parsed portfolio_views.json.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    cats = yaml.safe_load((root / "categories.yaml").read_text())
+    hold = yaml.safe_load((root / "holdings.yaml").read_text())
+    errors, warnings = [], []
+
+    valid = {c["id"] for c in cats["categories"]}
+    for c in cats["categories"]:
+        # D8: a category figure is meaningless without the boundary that produced it.
+        if not c.get("boundary"):
+            errors.append(f"category {c['id']}: no boundary definition")
+        if "lab_signal_routable" not in c:
+            errors.append(f"category {c['id']}: lab_signal_routable not declared")
+
+    scope = hold["scope"]
+    actual = {
+        p["isin"]: p for p in views["positions"]
+        if p["fund_full"] == "BIT Global Technology Leaders"
+        and p["as_of"] == "30.06.2026"
+    }
+
+    seen, used = set(), set()
+    for h in hold["holdings"]:
+        isin, name = h.get("isin"), h.get("name", "?")
+        if isin in seen:
+            errors.append(f"{isin}: duplicate holding")
+        seen.add(isin)
+        if isin not in actual:
+            errors.append(f"{isin} ({name}): not a Technology Leaders position at 30.06.2026")
+        if not h.get("categories"):
+            errors.append(f"{name}: no category — every holding must be reachable")
+        for cid in h.get("categories", []):
+            if cid not in valid:
+                errors.append(f"{name}: unknown category '{cid}'")
+            used.add(cid)
+        if h.get("ticker") and not h.get("ticker_verified", False):
+            warnings.append(f"{name}: ticker {h['ticker']} unverified")
+
+    for isin, p in actual.items():
+        if isin not in seen:
+            errors.append(f"{isin} ({p['name']}): held but absent from holdings.yaml")
+
+    for cid in sorted(valid - used):
+        warnings.append(f"category {cid}: no holdings — delete it or add members")
+
+    if len(seen) != scope["positions"]:
+        errors.append(
+            f"scope says {scope['positions']} positions, file has {len(seen)}"
+        )
+
+    return errors, warnings
 
 
 def main() -> int:
@@ -72,7 +135,15 @@ def main() -> int:
     if len(warnings) > 5:
         print(f"warn    ... and {len(warnings) - 5} more unverified tickers")
 
-    print(f"\n{len(seen)} companies described, {len(errors)} errors, {len(warnings)} warnings")
+    reg_errors, reg_warnings = check_registry(ROOT, views)
+    for e in reg_errors:
+        print(f"ERROR   {e}")
+    for w in reg_warnings:
+        print(f"warn    {w}")
+    errors += reg_errors
+
+    print(f"\n{len(seen)} companies described, {len(errors)} errors, "
+          f"{len(warnings) + len(reg_warnings)} warnings")
     if missing:
         print(f"{len(missing)} Technology Leaders holdings still undescribed:")
         for i, n in sorted(missing, key=lambda x: x[1])[:30]:

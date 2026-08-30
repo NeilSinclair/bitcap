@@ -1,0 +1,424 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>TASTE: Can AI Models Judge AI Safety Research Proposals?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Hasan Baig, Hailey Joren, Joe Benton",
+            "description": "We introduce TASTE, a benchmark measuring how well models can judge AI safety research proposals against the preferences of experienced researchers.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>TASTE: Can AI Models Judge AI Safety Research Proposals?</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        /* Lines come through as <p> elements; pre-wrap would also render the
+           literal newlines between them and double the spacing. Rely on <p>
+           block layout for line breaks instead. */
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap p,
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+        /* Keep intentional blank lines (empty <p>) one line tall. */
+        min-height: 1.4em;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+
+    d-article {
+        padding-bottom: 72px !important;
+    }
+
+    /* Endnotes, in the style of 2026/agentic-misalignment-summer-2026. */
+    .footnotes {
+        margin-top: 52px;
+        color: #62676f;
+        font-size: 0.95rem;
+    }
+
+    .footnotes ol {
+        /* Restore list indentation; the global ol rule above zeroes it for
+           gdoc lists, which carry their own inline margins. */
+        padding-left: 24px !important;
+    }
+</style>
+<d-article>
+<div class="section-authors">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div>Hasan Baig<sup>1</sup>, Hailey Joren<sup>2</sup>, Joe Benton<sup>2</sup></div>
+        <div>August 28, 2026</div>
+    </div>
+    <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+        <sup>1</sup>Anthropic Fellows Program; <sup>2</sup>Anthropic
+    </div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p>We built TASTE (The AI Safety Taste Evaluation) — a benchmark measuring how well models can judge pairs of AI safety research proposals, scored by agreement with the preferences of experienced human researchers. Two design choices were important for building a high-agreement benchmark (92 pairs, 77% estimated human agreement): a discussion stage in which researchers talk through disagreements before revising their scores, and filtering researchers’ labels for self-reported "strong" confidence. We find models perform worse than human researchers on TASTE (Fable 5, 60%).</p>
+</div>
+<p>📄 <a href='https://www-cdn.anthropic.com/files/4zrzovbb/website/dd5feddcb3b7d20aadda6af4093ac1fb0c9d419e.pdf'>Paper</a></p>
+<p>This work was done as part of the <a href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows Program</a>.</p>
+<br><br><br><hr><br><br><h2>Background</h2>
+<p>While <a href='https://alignment.anthropic.com/2026/automated-w2s-researcher/'>some aspects of AI safety research are relatively straightforward to measure</a>, progress on many questions in AI safety cannot be evaluated with verifiable rewards. For instance, research into mitigating risks from AI misalignment often involves forecasting risks posed by future AI systems. Another example is <a href='https://arxiv.org/abs/2511.22662'>detecting when models </a><a href='https://arxiv.org/abs/2511.22662'>are deceptive</a>, which depends on the difficult task of accurately attributing beliefs and intentions to models.</p>
+<p>If we want to automate AI safety research — which might become necessary if automated AI research and development outpaces our ability to mitigate the risk of misalignment and misuse — we need reliable <a href='https://alignment.anthropic.com/2026/conceptual-reasoning-index/'>measurements of models’ cap</a><a href='https://alignment.anthropic.com/2026/conceptual-reasoning-index/'>abilities </a><a href='https://alignment.anthropic.com/2026/conceptual-reasoning-index/'>on the hard-to-verify parts of safety research</a>. One important hard-to-verify aspect of the research process is evaluating research proposals. Judging research proposals well is a high-leverage way to improve research quality, since some proposals are often much more important or tractable than others, and picking a poor initial direction can waste substantial time or resources.</p>
+<p>In order to evaluate models on the hardest-to-verify tasks, we have to use human judgment as ground truth. However, humans often disagree, making it unclear what the ground truth should be. This is why we focus on finding cases where humans agree and use agreement with humans as our main metric.</p>
+<br><br><br><hr><br><br><h2>Building a Research Judgment Benchmark (TASTE)</h2>
+<p>In our paper, we present TASTE (The AI Safety Taste Evaluation), a benchmark of experienced AI safety researchers’ preferences over empirical safety research proposals. Our benchmark contains 92 pairwise comparisons, and we estimate human researcher agreement with our benchmark’s labels at 77%.</p>
+<p>In general, getting high agreement over fuzzy outputs, such as research proposals, is difficult. A few aspects of our benchmark design are important for improving the quality of human preference labels, measured by agreement with other researchers. </p>
+<p>We build the benchmark in three stages. First, we use a prompt scaffold with Claude Opus 4.6 to generate AI safety research proposals. Then, we recruit AI safety researchers to rate and comment on the research proposals, reporting their confidence for each set they score. Finally, we filter the dataset of human feedback to retain a high-agreement set of preference pairs.</p>
+<figure class="gdoc-image" style="--img-width: 861px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>TASTE construction pipeline. </span>Researchers scored each proposal 1–5 on three axes (overall, high-level, approach), ranked the three proposals with ties allowed, and reported a per-prompt confidence. Benchmark preferences are derived from the overall scores.</figcaption>
+<p>To create the model-written research proposals, we started with a collection of 93 human-written research proposals presented in Anthropic’s Fellows Program. We used Claude Opus 4.6 to reverse-engineer prompts that could motivate each human proposal, and supplemented this set with prompts we wrote ourselves. We generated research proposals using a prompt scaffold that varied paper summaries in context for diversity. See the paper for the full proposal and more details on the scaffold.</p>
+<figure class="gdoc-image" style="--img-width: 815px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Example motivating-question prompt and extract from a model-generated research proposal</span> (full proposal in the paper).</figcaption>
+<p>To construct a human feedback dataset using those research proposals, we asked AI safety researchers to evaluate groups of proposals generated for the same motivating-question prompt. The researchers first gave individual feedback, then discussed disagreements in pairs, and then revised their preferences.</p>
+<figure class="gdoc-image" style="--img-width: 848px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Pair-discussion protocol.</span> For each prompt, four researchers gave their feedback individually, discussed disagreements in pairs, then revised their feedback. See the paper for the rubric shown to the researchers.</figcaption>
+<p>We find that this discussion stage, in combination with filtering for self-reported “strong” confidence, raises estimated human agreement by 15 percentage points, from 53% pre-discussion to 68% for strong-confidence, post-discussion preferences. By looking at discussion transcripts, we find multiple reasons for disagreements among human researchers: substantive disagreements over how well particular techniques would work, and more mundane causes such as one person misreading a proposal text the first time around. We give a fuller breakdown of reasons in the paper.</p>
+<figure class="gdoc-image" style="--img-width: 1854px; "><img src='fig4.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Strong-confidence, post-discussion preferences have higher agreement, and increasing the minimum score gap increases the agreement rate.</span> For each confidence and discussion-stage condition, we compare the preferences from that condition (anchor preferences) with the preferences of the two researchers in the opposing discussion pair (left). Filtering for a gap in “overall score” of at least two points, on a five-point scale, improves estimated agreement for pairs of proposals drawn from the same prompt and pairs drawn from different prompts (right). Error bars show 95% confidence intervals from bootstrap resampling over prompts.</figcaption>
+<p>To produce TASTE, we take strong-confidence, post-discussion preferences over proposals which may come from the same or different prompts, and filter for pairs where scores differ by at least two points. We further cap the number of times proposals can appear at ten times, for independence between data points, giving 92 pairs with 77% estimated human agreement.</p>
+<p>To estimate human agreement, we randomly select a researcher’s “overall score” per proposal from the opposing discussion pair, and take the proposal with the higher sampled score as preferred. This allows us to evaluate pairs of proposals where no single researcher rated both of them. This does not perfectly capture human performance, and instead approximates "I assign a different person to score each proposal; the ‘preferred’ proposal is the one that receives the higher score". A more typical measure of inter-rater agreement – comparing only the pairs where another researcher scored both proposals – gives 83% agreement but only validates 50 of the 92 pairs.</p>
+<br><br><br><hr><br><br><h2>Evaluating Models’ Research Judgment</h2>
+<p>We measure model performance on TASTE, comparing against the human labels. We use two setups: a standard setup where the model sees two proposals in context and gives a probability to each proposal winning which we binarize to give a preference, and a tougher single-proposal scoring setup where the model sees each proposal individually in context, scores it, and is assessed on the implied preferences from its scores against the preferences in TASTE. In the standard setup, we find that the best model performs worse than our human researchers — Fable 5 achieves 60% whereas we estimate researcher performance at 77%. While there is currently a noticeable gap versus human performance, we think future models could close it: Fable 5 achieves 69% accuracy on 74 pairs of proposals drawn from different prompts, and we find some evidence that models over-focus on how well proposals answer the motivating question when shown on pairs from the same prompt. See the paper for more details.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig5.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Model performance on TASTE by release date and model provider.</span> Fable 5 achieves 60%, and almost all models perform within 2 standard deviations of chance. Opus 5 and GPT-5.6-Sol perform near chance on TASTE despite being at the frontier on general agentic benchmarks. Per-model confidence intervals span roughly ±10 percentage points, as we have a limited number of preference pairs making it difficult to draw conclusions about relative model performance.</figcaption>
+<br><br><br><hr><br><br><h2>Conclusion</h2>
+<p>As AI capabilities improve, it might be necessary to automate AI safety research. We built a benchmark measuring models’ research judgment through their ability to choose between AI safety research proposals. Our results show model performance still trails that of expert human researchers. More diverse and larger-scale evaluations of models’ AI safety research capabilities will be needed going forward. Our findings suggest that future data-collection efforts can improve human label quality by including a pair-discussion stage and by filtering labels for self-reported confidence.</p>
+<p>To learn more, <a href='https://www-cdn.anthropic.com/files/4zrzovbb/website/dd5feddcb3b7d20aadda6af4093ac1fb0c9d419e.pdf'>read our paper</a>.</p>
+<p>We are sharing TASTE with AI safety researchers. For access, please fill out <a href='https://docs.google.com/forms/d/e/1FAIpQLSdafhwriM4rB9SrGacmL34Jj4Bf3kQIDFFLsasXTphbx5wtlQ/viewform'>this form</a>.</p>
+</d-article>
+</body>
+</html>

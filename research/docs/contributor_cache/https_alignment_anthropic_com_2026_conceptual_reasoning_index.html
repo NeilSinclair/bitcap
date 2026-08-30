@@ -1,0 +1,436 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Introducing the Conceptual Reasoning Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Introducing the Conceptual Reasoning Index ",
+            "description": "We design benchmarks to measure models' capabilities to reason about questions whose answers are (practically) impossible to verify empirically or mathematically.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Introducing the Conceptual Reasoning Index</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        /* Lines come through as <p> elements; pre-wrap would also render the
+           literal newlines between them and double the spacing. Rely on <p>
+           block layout for line breaks instead. */
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap p,
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+        /* Keep intentional blank lines (empty <p>) one line tall. */
+        min-height: 1.4em;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+
+    d-article {
+        padding-bottom: 72px !important;
+    }
+
+    /* Endnotes, in the style of 2026/agentic-misalignment-summer-2026. */
+    .footnotes {
+        margin-top: 52px;
+        color: #62676f;
+        font-size: 0.95rem;
+    }
+
+    .footnotes ol {
+        /* Restore list indentation; the global ol rule above zeroes it for
+           gdoc lists, which carry their own inline margins. */
+        padding-left: 24px !important;
+    }
+</style>
+<d-article>
+<div class="section-authors">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div>Emery Cooper<sup>1</sup>, Caspar Oesterheld<sup>1</sup>, Chi Nguyen<sup>1</sup>, Alex Kastner<sup>1</sup>,<br>Joe Benton<sup>2</sup>, Ethan Perez<sup>2</sup></div>
+        <div>August 12, 2026</div>
+    </div>
+    <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+        <sup>1</sup>Redwood Research; <sup>2</sup>Anthropic
+    </div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p>A core hope for managing AI risks is that AIs will help us understand our situation, plan for what lies ahead, and develop risk mitigations. Many tasks AIs would have to do for this purpose lack practical empirical feedback loops and require models to engage in the kinds of argumentation used in philosophy, AI futurism, and similar domains. To evaluate these capabilities, we develop a suite of three conceptual reasoning benchmarks. You can request access to our primary conceptual dataset, LMCA, through <a href='https://docs.google.com/forms/d/e/1FAIpQLScn7nn7-T-UQk15wNV5sHo50xPgnr5pFb3y60JtdgFXQPLNlg/viewform'>this form</a>.</p>
+<p>We aggregate the benchmarks into the Conceptual Reasoning Index (CRI), available at <a href='https://conceptualreasoning.ai'>conceptualreasoning.ai</a>, where you can also find more details on our methodology. We will keep the website up to date as both new models and benchmarks are released.</p>
+</div>
+<p>This work was done in collaboration with Anthropic.</p>
+<br><br><br><hr><br><br><h2>Background</h2>
+<p>Once models can perform work that reduces AI risk at the level of human experts, AI(-assisted) output in the area might dwarf unassisted human output. This suggests that a major determinant of whether we address AI risks in time is how early we can automate or uplift this work, relative to high-risk capabilities. One way to influence this might be to selectively improve models' relevant skills, such as reasoning about how to govern and align AI and how to avoid catastrophic cooperation failures involving AI.</p>
+<p>Current AI training depends heavily on abundant data and reliable feedback on the model's performance. Models are therefore typically worse at tasks that cannot be empirically or mathematically verified.<sup id="fnref-1"><a href="#fn-1">1</a></sup> Unfortunately, reducing risks from advanced AI involves many such tasks:</p>
+<ul><li style='margin-left: 36pt;'>Much AI safety work involves reasoning about AIs more generally capable than any human. There's no obvious reference class for this and no clear way to model it.</li><li style='margin-left: 36pt;'>We might have to get some things right the first time. For example, if a mistake leads to AGI takeover or an AI-assisted coup, we might not find out until it's too late. Similarly, many decisions (e.g., which research agendas to prioritize, which governance interventions to pursue) play out over long timescales, such that empirical feedback might not arrive early enough to help.</li><li style='margin-left: 36pt;'>Lastly, some important questions, such as which values AIs should have, may lack a ground truth entirely (yet we still think progress can be made by arguing about these questions).</li></ul>
+<p>Given these properties, efforts to reduce risk from advanced AI may particularly benefit from an improved ability to reason about questions where empirical evidence is limited, there is no (practically) verifiable answer, and one therefore has to rely heavily on argumentation. We refer to this as <span style='font-style: italic;'>conceptual reasoning.</span> Improving this capability requires being able to measure it, so we built three benchmarks: <a href='https://conceptualreasoning.ai/lmca'>LMCA</a>, <a href='https://conceptualreasoning.ai/accord'>ACCoRD</a>, and <a href='https://conceptualreasoning.ai/dtbench'>DTBench capabilities</a>. We also construct an aggregate of these benchmarks, the Conceptual Reasoning Index (CRI), to give a sense of models' overall conceptual reasoning capabilities.</p>
+<br><br><br><hr><br><br><h2>Our benchmarks</h2>
+<h3>LMCA</h3>
+<p><a href='https://arxiv.org/abs/2607.27499'>LMCA</a> (Language Model Conceptual Argumentation) is a dataset of curated and expert-rated conceptual arguments on a diverse range of topics, including decision theory, philosophy, and risks from advanced AI. Focusing on arguments helps sidestep the difficulty of verifying bottom-line answers to conceptual questions.</p>
+<p>The dataset contains 560 position texts with 1,461 arguments against these position texts. Nearly all<sup id="fnref-2"><a href="#fn-2">2</a></sup> arguments were rated by conceptual researcher Emery Cooper, and some were independently rated by at least one other researcher, for a total of 2,140 ratings. We measure how good models are at judging arguments against position texts by comparing their ratings to ours.</p>
+<p>Ratings follow a detailed rubric. On arguments rated by at least two people, inter-rater agreement is high compared to agreement between humans and models. This includes a validation set of roughly 50 arguments, each rated independently by 4–6 people and then discussed for 7–8 hours total.</p>
+<p>LMCA also allows for evaluation of models' argumentation ability. Let's say a position text in our dataset has three rated arguments against it. Now, we can ask model A to generate a fourth argument against the position text. We then give model B the rubric and few-shot prompt it with the three existing arguments and their ratings, asking it to rate model A's new argument. This methodology produces fairly accurate ratings from model B.</p>
+<p>Currently, only models' performance at judging arguments goes into the CRI, but we hope to add a measurement of models' argumentation ability in the future.</p>
+<h3>ACCoRD</h3>
+<p><a href='https://github.com/casparoe/accord_public'>ACCoRD</a> (Assessment of Consistency in Conceptual Reasoning Domains) measures the extent to which models' reported beliefs and preferences on conceptual issues are logically consistent. For example, if we ask a model for the probability P(A) and another instance of the same model for the probability P(A&B), do the reported probabilities satisfy P(A) ≥ P(A&B)? All consistency constraints in the dataset ask models for either numeric probability estimates or preference orderings.</p>
+<p>Lack of consistency on a particular set of questions is a good indicator that we cannot, by default, trust a model's reasoning on that set. Similarly, if a model is generally very inconsistent on conceptual issues, this is a sign that its conceptual reasoning is lacking.</p>
+<p>The ACCoRD dataset contains close to 14,000 model-generated consistency constraints, which are distributed across 18 constraint types and have gone through an automated checker pipeline. Of these, 567 were further checked and approved by us. We include only those 567 constraints in our aggregate conceptual reasoning performance metric, the CRI.</p>
+<h3>DTBench</h3>
+<p><a href='https://arxiv.org/abs/2411.10588'>DTBench capabilities</a> (Decision Theory Benchmark) is a dataset of 407 handcrafted multiple-choice questions designed to measure models' ability to reason about decision-theoretic situations that involve faithful predictions of a model's own behavior or interactions with (near) copies. The vast majority of questions are original and created by Caspar Oesterheld, who has published on decision theory. All questions were independently validated by Emery Cooper, another domain expert.</p>
+<p>The full DTBench suite includes an additional 130 questions that measure models' decision-theoretic attitudes. We do not include these in the CRI.</p>
+<br><br><br><hr><br><br><h2>Results</h2>
+<p>The chart below shows the CRI scores of Anthropic's best models and the highest-scoring model from each other AI company we evaluated, as of August 10, 2026. We also include scores for Claude Fable 5, Muse Spark 1.2, and Gemini 3.6 Flash, which are their respective companies’ top-performing models on many external benchmarks, though not on the CRI. The CRI is currently a weighted average of LMCA (60%), ACCoRD (20%), and DTBench capabilities (20%). In the future, we plan to add new benchmarks to the index, retire saturated ones, and potentially adjust the relative weights.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'>All models were run at their maximum token limits and effort levels. To compute Fable 5's score, we used Opus 5 as a fallback in cases where Fable 5 refused to answer a question.</figcaption>
+<p>Scores go from 0 to 100, with 0 corresponding to random guessing and 100 corresponding to the highest possible score across all benchmarks. An LMCA score of 100 would mean that the model perfectly replicated the human ratings. Because human ratings are noisy, we expect that a model giving maximally good LMCA ratings would score roughly 85 rather than 100, which we estimate based on expert inter-rater agreement. Meanwhile, we expect that giving the correct answer to every DTBench capabilities question would yield a score of 100 or extremely close to 100. A score of 100 on ACCoRD corresponds to being perfectly consistent. Overall, this leads us to estimate ceiling performance on the CRI to be around 91. The highest-scoring model, Opus 5, is still well below this ceiling, with a score of 73.6 (95% CI: ± 2.1).</p>
+<p>Scores have been increasing roughly linearly since late 2024, with no signs of flattening.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'>Each plotted model was the respective lab's most generally capable model at the time of release. The shaded band is the trend line's 95% confidence interval. * Partial data for GPT-4: refused to fully answer 18% of ACCoRD items.</figcaption>
+<p>The highest-scoring models on both LMCA and ACCoRD are still well below these benchmarks' estimated ceilings. Extrapolating from scores to date, we loosely estimate that LMCA will start saturating about a year from now. Meanwhile, DTBench capabilities scores are already close to the ceiling, with Fable 5 getting 98% of questions right. We're very uncertain about when ACCoRD will saturate.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'>Each plotted data point is the score of the respective lab's most generally capable model at the time of release. The shaded band is the trend line's 95% confidence interval. The ACCoRD score of GPT-4 is based on incomplete data since the model refused to fully answer 18% of the benchmark's items.</figcaption>
+<br><br><br><hr><br><br><h2>Conclusion</h2>
+<p>We think improving models' ability to do work that mitigates risk from advanced AI is important and urgent. Much of this work is conceptual, suggesting that improving models' conceptual reasoning might be particularly valuable. To this end, we developed three conceptual reasoning benchmarks, which we aggregate in the CRI. We will update the CRI as new benchmarks are released.</p>
+<p>For more information and live scores on the CRI, please visit <a href='https://conceptualreasoning.ai'>conceptualreasoning.ai</a>.</p>
+<p>For access to LMCA, our primary conceptual dataset, please submit <a href='https://docs.google.com/forms/d/e/1FAIpQLScn7nn7-T-UQk15wNV5sHo50xPgnr5pFb3y60JtdgFXQPLNlg/viewform'>this form</a>.</p>
+<section class="footnotes">
+<h2 id="notes">Notes</h2>
+<ol>
+<li id="fn-1">METR, <a href='https://metr.org/risk-report-feb-mar-2026.pdf'>Frontier Risk Report (February to March 2026)</a>, section “Agents had significantly worse judgment and reliability than human experts”. By contrast: “Consistent with our MirrorCode results, publicly reported anecdotes indicate that agents were exceptionally strong on problems that are easily “hill-climbable” — those where progress is cheap to verify and many approaches can be tried cheaply”. <a href="#fnref-1">↩</a></li>
+<li id="fn-2">A very small number of arguments (16 out of 1,461) were not rated by Emery Cooper. All of them were rated by Caspar Oesterheld, who is also a conceptual researcher. <a href="#fnref-2">↩</a></li>
+</ol>
+</section>
+</d-article>
+</body>
+</html>

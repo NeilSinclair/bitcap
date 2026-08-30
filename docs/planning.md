@@ -88,6 +88,29 @@ Where a fully honest ground truth isn't reachable, say so plainly and use a defe
 - **Digest cadence and volume.** 48h and a target item count, both config-driven, decided once real volume data exists.
 - **Agent vs deterministic code.** Track every such bet and its rationale as it's made — the doc requires it and the on-site will probe it.
 
+- **Execution prices on re-entries — parked, likely out of scope.** 13F reports
+  holdings at quarter-end, never trades, so a rebuy price can only be bounded to
+  the quarter it happened in. For the 20 vendor-priced round trips that band has
+  a median width of 75% (Robinhood traded $10.65–$20.13 in the quarter they
+  rebuilt), enough to move the median "re-entered higher" figure from +93% to
+  −15% purely on where in the quarter the fills are assumed to land. Direction
+  survives a neutral assumption (+35%, 17 of 20); magnitude does not. **No claim
+  about what price BIT paid is supported by the current data.**
+
+  The statutory reports do carry per-security transaction data, and
+  `parse_portfolios.py` already captures it as `bought_in_period` /
+  `sold_in_period` — but as *share counts over the whole period*, with no price
+  and no date. So it closes a different gap than the one above: 121 of 225
+  positions were both bought and sold within a single reporting period, meaning
+  round trips the quarterly 13F snapshot cannot see are common rather than
+  exceptional. Worth an analysis pass; it does not need new parsing.
+
+  Prices and dates would need §33 WpHG voting-rights notifications, which only
+  fire on threshold crossings (3%, 5%…) of the *issuer's* shares outstanding —
+  a bar these position sizes almost never clear. Realistically the execution
+  price is not obtainable, and the honest move is to state that rather than
+  infer it.
+
 ## 8. Sequence
 
 Incremental. Nothing is built at scale before it's been proven at n=1.
@@ -118,3 +141,44 @@ Cheap now, unrecoverable later.
 - **Cost log** — tokens and € per workflow, plus receipts for reimbursement
 - **Agentic-workflow log** — what my agents verified themselves, where the loop broke
 - **Insight log** — the 3–5 most interesting real things the system surfaces, captured as they appear
+
+## 11. Per-lab byline onboarding — the procedure to follow when the pipeline is built
+
+**Status: proposed, not adopted.** Proven at n=1 on Anthropic (17 articles,
+`docs/decisions.md` → "LLM vs deterministic byline extraction"). **It becomes the
+standard procedure only if it survives a second lab.** Until then it is a hypothesis
+with one data point.
+
+The rule it encodes: *neither extractor alone*. Deterministic code runs in production;
+the LLM is how a new lab gets onboarded, and is then mostly switched off.
+
+Per lab:
+
+1. **Run the LLM extractor first.** It works on markup nobody has seen before, with no
+   parser to write. A byline register exists on day one.
+2. **Hand-check ~15 of its pages.** That is the lab's gold set. This step is the cost,
+   and it is not skippable — it is what makes everything after it measurable.
+3. **Write the deterministic parser against the gold set**, score it with
+   `research/eval_byline.py`, fix the disagreements. On Anthropic the eval found three
+   silent parser bugs and zero LLM parsing errors, so expect this step to correct the
+   parser, not to confirm it.
+4. **Deterministic takes over the recurring runs.** Free, instant, reproducible, and its
+   failures are visible rather than plausible.
+5. **The LLM stays on as the fallback** for pages the parser cannot read (~6% on
+   Anthropic), with everything it produces marked model-asserted.
+
+**Hard rule, independent of path.** An LLM must never populate an employment or
+affiliation field unchecked. That was its only real failure mode on Anthropic — it
+asserted fellowship status for four people whose pages state no affiliation at all, in
+one case contradicting a stated one. Fabricated facts about named individuals are the
+error class this project cannot ship.
+
+**The gate.** Take one more lab — DeepMind or DeepSeek — through **steps 1–2 only**, and
+compare. That answers what n=17 on a single lab cannot: whether ~0.98 F1 reflects the
+task or just Anthropic's unusually clean markup. If it holds, adopt steps 1–5 as
+standard. If it does not, the LLM-first onboarding step is what changes, not the
+deterministic-in-production conclusion.
+
+**Sequencing.** The second-lab validation is *not* the next task. More research on the
+people themselves comes first — see §7, register breadth and depth. This procedure gets
+revisited when pipeline construction starts.

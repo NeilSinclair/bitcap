@@ -1,0 +1,3566 @@
+{
+  "generated": "2026-08-30",
+  "window_months": 3,
+  "articles": [
+    {
+      "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+      "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+      "date": "2026-05-19",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Elle Najt",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Colin Toft",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Tyler Tracy",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Fabien Roger",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joe Benton",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+      "title": "Teaching Claude Why",
+      "date": "2026-05-08",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Jonathan Kutasov",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Adam Jermyn",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Julius Steen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Minh Le",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel R. Bowman",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel Marks",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jan Leike",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 7,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Amanda Askell",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 8,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Chris Olah",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 9,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Evan Hubinger",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 10,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Sara Price",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 11,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "other",
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/msm/",
+      "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+      "date": "2026-05-05",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Chloe Li",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Nevan Wichers",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Sara Price",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel Marks",
+          "marks": [
+            "\u2020"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jon Kutasov",
+          "marks": [
+            "\u2020"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+      "title": "HeadVis",
+      "date": "2026-05-04",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "R. Luger",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 8,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Harish Kamath",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 8,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Doug Finkbeiner",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 8,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Purvi Goel",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 8,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Adam Jermyn",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 8,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Sam Zimmerman",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 8,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joshua Batson",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 7,
+          "n_authors": 8,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Tom Conerly",
+          "marks": [
+            "*",
+            "\u2021"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 8,
+          "n_authors": 8,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "core",
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/nla/index.html",
+      "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+      "date": "2026-05-07",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "Kit Fraser-Taliente",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Subhash Kantamneni",
+          "marks": [
+            "*",
+            "\u2021"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Euan Ong",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Dan Mossing",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Christina Lu",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Paul C. Bogdan",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Emmanuel Ameisen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 7,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "James Chen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 8,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Dzmitry Kishylau",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 9,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Adam Pearce",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 10,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Julius Tarng",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 11,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Alex Wu",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 12,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jeff Wu",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 13,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Yang Zhang",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 14,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Daniel M. Ziegler",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 15,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Evan Hubinger",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 16,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joshua Batson",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 17,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jack Lindsey",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 18,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel Zimmerman",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 19,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel Marks",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 20,
+          "n_authors": 20,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "equal",
+      "order_meaningful": false
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/",
+      "title": "Diffuse AI Control on Fuzzy Tasks",
+      "date": "2026-06-23",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Mikhail Terekhov",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program (via MATS)",
+            "EPFL"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Caglar Gulcehre",
+          "marks": [],
+          "affiliations": [
+            "EPFL"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Vivek Hebbar",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Joe Benton",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/may-update/index.html",
+      "title": "Circuits Updates \u2014 May 2026",
+      "date": "2026-06-01",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "Purvi Goel",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Isaac Kauvar",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Nicholas L Turner",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Harish Kamath",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "editor",
+          "position": 4,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/june-update/index.html",
+      "title": "Circuits Updates \u2014 June 2026",
+      "date": "2026-06-30",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "Kevin Der",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Harish Kamath",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Ben Thompson",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Nick Turner",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "editor",
+          "position": 4,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+      "title": "Agentic Misalignment in Summer 2026",
+      "date": "2026-07-01",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Aengus Lynch",
+          "marks": [
+            "1",
+            "*"
+          ],
+          "affiliations": [
+            "Theorem"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "John Hughes",
+          "marks": [
+            "2"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Alex Serrano",
+          "marks": [
+            "3"
+          ],
+          "affiliations": [
+            "MATS"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Robert Kirk",
+          "marks": [
+            "4"
+          ],
+          "affiliations": [
+            "UK AISI"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Samuel R. Bowman",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 5,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "fellows",
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+      "title": "Modular Pretraining Enables Access Control",
+      "date": "2026-07-08",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Ethan Roland",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Murat Cubuktepe",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Erick Martinez",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Stijn Servaes",
+          "marks": [],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Keenan Pepper",
+          "marks": [],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Mike Vaiana",
+          "marks": [],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Diogo Schwerz de Lucena",
+          "marks": [],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 7,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Judd Rosenblatt",
+          "marks": [],
+          "affiliations": [
+            "AE Studio"
+          ],
+          "role": "author",
+          "position": 8,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Addie Foote",
+          "marks": [],
+          "affiliations": [
+            "Independent"
+          ],
+          "role": "author",
+          "position": 9,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Cem Anil",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 10,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Alex Cloud",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 11,
+          "n_authors": 11,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "equal",
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+      "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+      "date": "2026-07-06",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "Wes Gurnee",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 16,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Nicholas Sofroniew",
+          "marks": [
+            "*"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 16,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Adam Pearce",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Mateusz Piotrowski",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Isaac Kauvar",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Runjin Chen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Anna Soligo",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 7,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Paul Bogdan",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 8,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Euan Ong",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 9,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Rowan Wang",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 10,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "T. Ben Thompson",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 11,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "David Abrahams",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 12,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Subhash Kantamneni",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 13,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Emmanuel Ameisen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 14,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joshua Batson",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 15,
+          "n_authors": 16,
+          "is_core": false,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jack Lindsey",
+          "marks": [
+            "*",
+            "\u2020"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 16,
+          "n_authors": 16,
+          "is_core": true,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": "core",
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/automated-alignment-researchers/",
+      "title": "Automated Researchers Can Reliably Mitigate Alignment Failures",
+      "date": "2026-08-01",
+      "channel": "alignment.anthropic.com",
+      "authors": [],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/taste/",
+      "title": "TASTE: Can AI Models Judge AI Safety Research Proposals?",
+      "date": "2026-08-28",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Hasan Baig",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Hailey Joren",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joe Benton",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/chive/",
+      "title": "Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments",
+      "date": "2026-08-21",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Adam Karvonen",
+          "marks": [],
+          "affiliations": [
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Euan Ong",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Subhash Kantamneni",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Samuel Marks",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/lie-detectors/",
+      "title": "Fine-Tuned Lie Detectors Failed to Generalize",
+      "date": "2026-08-21",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Jack Hopkins",
+          "marks": [],
+          "affiliations": [
+            "MATS",
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Dipika Khullar",
+          "marks": [],
+          "affiliations": [
+            "MATS",
+            "Anthropic Fellows Program"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": true,
+          "is_anthropic": false
+        },
+        {
+          "name": "Rowan Wang",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Fabien Roger",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 4,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+      "title": "Introducing the Conceptual Reasoning Index",
+      "date": "2026-08-12",
+      "channel": "alignment.anthropic.com",
+      "authors": [
+        {
+          "name": "Emery Cooper",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Caspar Oesterheld",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Chi Nguyen",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Alex Kastner",
+          "marks": [],
+          "affiliations": [
+            "Redwood Research"
+          ],
+          "role": "author",
+          "position": 4,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": false
+        },
+        {
+          "name": "Joe Benton",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 5,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Ethan Perez",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 6,
+          "n_authors": 6,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    },
+    {
+      "url": "https://transformer-circuits.pub/2026/interference_effectiveness_helpfulness/index.html",
+      "title": "Characterizing interference weights in a tiny language model",
+      "date": "2026-08-21",
+      "channel": "transformer-circuits.pub",
+      "authors": [
+        {
+          "name": "Nicholas L. Turner",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 1,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Jeffrey Wu",
+          "marks": [],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 2,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        },
+        {
+          "name": "Joshua Batson",
+          "marks": [
+            "\u2020"
+          ],
+          "affiliations": [
+            "Anthropic"
+          ],
+          "role": "author",
+          "position": 3,
+          "n_authors": 3,
+          "is_core": null,
+          "is_fellow": false,
+          "is_anthropic": true
+        }
+      ],
+      "star_means": null,
+      "order_meaningful": true
+    }
+  ],
+  "people": [
+    {
+      "appearances": 3,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 3,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        },
+        {
+          "title": "Circuits Updates \u2014 May 2026",
+          "url": "https://transformer-circuits.pub/2026/may-update/index.html",
+          "date": "2026-06-01"
+        },
+        {
+          "title": "Circuits Updates \u2014 June 2026",
+          "url": "https://transformer-circuits.pub/2026/june-update/index.html",
+          "date": "2026-06-30"
+        }
+      ],
+      "name": "Harish Kamath"
+    },
+    {
+      "appearances": 2,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Jack Lindsey"
+    },
+    {
+      "appearances": 1,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        }
+      ],
+      "name": "Tom Conerly"
+    },
+    {
+      "appearances": 1,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Nicholas Sofroniew"
+    },
+    {
+      "appearances": 1,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        }
+      ],
+      "name": "R. Luger"
+    },
+    {
+      "appearances": 1,
+      "core": 1,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Wes Gurnee"
+    },
+    {
+      "appearances": 4,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 3,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 4,
+      "articles": [
+        {
+          "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+          "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+          "date": "2026-05-19"
+        },
+        {
+          "title": "Diffuse AI Control on Fuzzy Tasks",
+          "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/",
+          "date": "2026-06-23"
+        },
+        {
+          "title": "TASTE: Can AI Models Judge AI Safety Research Proposals?",
+          "url": "https://alignment.anthropic.com/2026/taste/",
+          "date": "2026-08-28"
+        },
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Joe Benton"
+    },
+    {
+      "appearances": 4,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 4,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        },
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        },
+        {
+          "title": "Characterizing interference weights in a tiny language model",
+          "url": "https://transformer-circuits.pub/2026/interference_effectiveness_helpfulness/index.html",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Joshua Batson"
+    },
+    {
+      "appearances": 4,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 4,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        },
+        {
+          "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+          "url": "https://alignment.anthropic.com/2026/msm/",
+          "date": "2026-05-05"
+        },
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments",
+          "url": "https://alignment.anthropic.com/2026/chive/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Samuel Marks"
+    },
+    {
+      "appearances": 3,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 3,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        },
+        {
+          "title": "Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments",
+          "url": "https://alignment.anthropic.com/2026/chive/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Euan Ong"
+    },
+    {
+      "appearances": 3,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 3,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        },
+        {
+          "title": "Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments",
+          "url": "https://alignment.anthropic.com/2026/chive/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Subhash Kantamneni"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+          "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+          "date": "2026-05-19"
+        },
+        {
+          "title": "Fine-Tuned Lie Detectors Failed to Generalize",
+          "url": "https://alignment.anthropic.com/2026/lie-detectors/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Fabien Roger"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        },
+        {
+          "title": "Agentic Misalignment in Summer 2026",
+          "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+          "date": "2026-07-01"
+        }
+      ],
+      "name": "Samuel R. Bowman"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        },
+        {
+          "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+          "url": "https://alignment.anthropic.com/2026/msm/",
+          "date": "2026-05-05"
+        }
+      ],
+      "name": "Sara Price"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        },
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        }
+      ],
+      "name": "Adam Jermyn"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Adam Pearce"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Emmanuel Ameisen"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        },
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Evan Hubinger"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Circuits Updates \u2014 May 2026",
+          "url": "https://transformer-circuits.pub/2026/may-update/index.html",
+          "date": "2026-06-01"
+        },
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Isaac Kauvar"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        },
+        {
+          "title": "Circuits Updates \u2014 May 2026",
+          "url": "https://transformer-circuits.pub/2026/may-update/index.html",
+          "date": "2026-06-01"
+        }
+      ],
+      "name": "Purvi Goel"
+    },
+    {
+      "appearances": 2,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 2,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        },
+        {
+          "title": "Fine-Tuned Lie Detectors Failed to Generalize",
+          "url": "https://alignment.anthropic.com/2026/lie-detectors/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Rowan Wang"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Alex Cloud"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Ethan Perez"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+          "url": "https://alignment.anthropic.com/2026/msm/",
+          "date": "2026-05-05"
+        }
+      ],
+      "name": "Jon Kutasov"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 1,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Circuits Updates \u2014 June 2026",
+          "url": "https://transformer-circuits.pub/2026/june-update/index.html",
+          "date": "2026-06-30"
+        }
+      ],
+      "name": "Nick Turner"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Would This Change Your Answer? Evaluating Explanations of LLM Behavior in the Wild with Counterfactual Experiments",
+          "url": "https://alignment.anthropic.com/2026/chive/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Adam Karvonen"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Independent"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Addie Foote"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Theorem"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Agentic Misalignment in Summer 2026",
+          "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+          "date": "2026-07-01"
+        }
+      ],
+      "name": "Aengus Lynch"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Alex Kastner"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "MATS"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Agentic Misalignment in Summer 2026",
+          "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+          "date": "2026-07-01"
+        }
+      ],
+      "name": "Alex Serrano"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Alex Wu"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Amanda Askell"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Anna Soligo"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Circuits Updates \u2014 June 2026",
+          "url": "https://transformer-circuits.pub/2026/june-update/index.html",
+          "date": "2026-06-30"
+        }
+      ],
+      "name": "Ben Thompson"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "EPFL"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Diffuse AI Control on Fuzzy Tasks",
+          "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/",
+          "date": "2026-06-23"
+        }
+      ],
+      "name": "Caglar Gulcehre"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Caspar Oesterheld"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Cem Anil"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Chi Nguyen"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+          "url": "https://alignment.anthropic.com/2026/msm/",
+          "date": "2026-05-05"
+        }
+      ],
+      "name": "Chloe Li"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Chris Olah"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Christina Lu"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+          "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+          "date": "2026-05-19"
+        }
+      ],
+      "name": "Colin Toft"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Dan Mossing"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Daniel M. Ziegler"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "David Abrahams"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Diogo Schwerz de Lucena"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program",
+        "MATS"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Fine-Tuned Lie Detectors Failed to Generalize",
+          "url": "https://alignment.anthropic.com/2026/lie-detectors/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Dipika Khullar"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        }
+      ],
+      "name": "Doug Finkbeiner"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Dzmitry Kishylau"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+          "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+          "date": "2026-05-19"
+        }
+      ],
+      "name": "Elle Najt"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Introducing the Conceptual Reasoning Index",
+          "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/",
+          "date": "2026-08-12"
+        }
+      ],
+      "name": "Emery Cooper"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Erick Martinez"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Ethan Roland"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "TASTE: Can AI Models Judge AI Safety Research Proposals?",
+          "url": "https://alignment.anthropic.com/2026/taste/",
+          "date": "2026-08-28"
+        }
+      ],
+      "name": "Hailey Joren"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "TASTE: Can AI Models Judge AI Safety Research Proposals?",
+          "url": "https://alignment.anthropic.com/2026/taste/",
+          "date": "2026-08-28"
+        }
+      ],
+      "name": "Hasan Baig"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program",
+        "MATS"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Fine-Tuned Lie Detectors Failed to Generalize",
+          "url": "https://alignment.anthropic.com/2026/lie-detectors/",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Jack Hopkins"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "James Chen"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Jan Leike"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Jeff Wu"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Characterizing interference weights in a tiny language model",
+          "url": "https://transformer-circuits.pub/2026/interference_effectiveness_helpfulness/index.html",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Jeffrey Wu"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Agentic Misalignment in Summer 2026",
+          "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+          "date": "2026-07-01"
+        }
+      ],
+      "name": "John Hughes"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Jonathan Kutasov"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Judd Rosenblatt"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Julius Steen"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Julius Tarng"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Keenan Pepper"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Circuits Updates \u2014 June 2026",
+          "url": "https://transformer-circuits.pub/2026/june-update/index.html",
+          "date": "2026-06-30"
+        }
+      ],
+      "name": "Kevin Der"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Kit Fraser-Taliente"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Mateusz Piotrowski"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Mike Vaiana"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program (via MATS)",
+        "EPFL"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Diffuse AI Control on Fuzzy Tasks",
+          "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/",
+          "date": "2026-06-23"
+        }
+      ],
+      "name": "Mikhail Terekhov"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Teaching Claude Why",
+          "url": "https://alignment.anthropic.com/2026/teaching-claude-why/",
+          "date": "2026-05-08"
+        }
+      ],
+      "name": "Minh Le"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Murat Cubuktepe"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 1,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic Fellows Program"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Model Spec Midtraining: Improving How Alignment Training Generalizes",
+          "url": "https://alignment.anthropic.com/2026/msm/",
+          "date": "2026-05-05"
+        }
+      ],
+      "name": "Nevan Wichers"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Circuits Updates \u2014 May 2026",
+          "url": "https://transformer-circuits.pub/2026/may-update/index.html",
+          "date": "2026-06-01"
+        }
+      ],
+      "name": "Nicholas L Turner"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 1,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Characterizing interference weights in a tiny language model",
+          "url": "https://transformer-circuits.pub/2026/interference_effectiveness_helpfulness/index.html",
+          "date": "2026-08-21"
+        }
+      ],
+      "name": "Nicholas L. Turner"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Paul Bogdan"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Paul C. Bogdan"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "UK AISI"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Agentic Misalignment in Summer 2026",
+          "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+          "date": "2026-07-01"
+        }
+      ],
+      "name": "Robert Kirk"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "Runjin Chen"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "HeadVis",
+          "url": "https://transformer-circuits.pub/2026/headvis/index.html",
+          "date": "2026-05-04"
+        }
+      ],
+      "name": "Sam Zimmerman"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Samuel Zimmerman"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "AE Studio"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Modular Pretraining Enables Access Control",
+          "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+          "date": "2026-07-08"
+        }
+      ],
+      "name": "Stijn Servaes"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Verbalizable Representations Form a Global Workspace in Language Models Gurnee et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "date": "2026-07-06"
+        }
+      ],
+      "name": "T. Ben Thompson"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "SLEIGHT-Bench: Finding Blind Spots in AI Monitors",
+          "url": "https://alignment.anthropic.com/2026/sleight-bench/",
+          "date": "2026-05-19"
+        }
+      ],
+      "name": "Tyler Tracy"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 1,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Redwood Research"
+      ],
+      "anthropic_bylines": 0,
+      "articles": [
+        {
+          "title": "Diffuse AI Control on Fuzzy Tasks",
+          "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/",
+          "date": "2026-06-23"
+        }
+      ],
+      "name": "Vivek Hebbar"
+    },
+    {
+      "appearances": 1,
+      "core": 0,
+      "fellow": 0,
+      "external": 0,
+      "first_author": 0,
+      "last_author": 0,
+      "affiliations": [
+        "Anthropic"
+      ],
+      "anthropic_bylines": 1,
+      "articles": [
+        {
+          "title": "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations Fraser-Taliente, Kantamneni, Ong, et al., 2026",
+          "url": "https://transformer-circuits.pub/2026/nla/index.html",
+          "date": "2026-05-07"
+        }
+      ],
+      "name": "Yang Zhang"
+    }
+  ]
+}

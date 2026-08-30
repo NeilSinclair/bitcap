@@ -1,0 +1,667 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+
+
+    <title>Diffuse AI Control on Fuzzy Tasks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/anthropic-serve/distill.template.v2.js"
+        integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+    <script>
+        // We number figures with a script since CSS counters don't work,
+        // likely because of the distill template.
+        function numberFigures() {
+            // Find all figcaption elements with class 'text-caption'
+            const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+            figcaptions.forEach((figcaption, index) => {
+                // Create a new span for the figure number
+                figcaption.style.marginBottom = '1.25rem';
+
+                const newSpan = document.createElement('span');
+                newSpan.style.fontWeight = '500';
+                newSpan.textContent = `Figure ${index + 1}: `;
+
+                // Insert the new span at the beginning of the figcaption
+                figcaption.insertBefore(newSpan, figcaption.firstChild);
+            });
+        }
+
+        // Function to create a slug from header text
+        function createSlug(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')    // Replace spaces with hyphens
+                .trim();                 // Remove whitespace from start/end
+        }
+
+        // Function to add IDs to all headers and create a table of contents
+        function addHeaderSlugs() {
+            // Get all heading elements (h1 through h6)
+            const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+            // Process each heading
+            headings.forEach((heading) => {
+                // Skip headings that already have IDs
+                if (heading.id) return;
+
+                // Create slug from heading text
+                const slug = createSlug(heading.textContent);
+
+                // Add ID to the heading
+                heading.id = slug;
+            });
+        }
+
+        // Run the function when the document is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', numberFigures);
+            document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+        } else {
+            // Document already loaded, run the function
+            numberFigures();
+            addHeaderSlugs();
+        }
+    </script>
+    <d-front-matter>
+        <script type="text/json">
+        {
+            "title": "Mikhail Terekhov12, Caglar Gulcehre2, Vivek Hebbar3, Joe Benton4",
+            "description": "We introduce a red-teaming framework for evaluating training interventions against diffuse threats from scheming AIs, such as sandbagging on research.",
+            "authors": [null]
+        }
+    </script>
+    </d-front-matter>
+    <link rel="stylesheet" href="/utilities/transcript-viewer.css">
+    <script src="/utilities/transcript-viewer.js" defer></script>
+
+
+</head>
+
+<body>
+
+    <style>
+        .article-header {
+            width: 100%;
+            padding: 36px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .home-link {
+            font-size: 100%;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        a.logo {
+            display: flex;
+            text-decoration: none;
+        }
+
+        span.commentary {
+            color: #804633;
+        }
+    </style>
+
+    <div class="article-header">
+        <a class="home-link" href="/">Alignment Science Blog</a>
+    </div>
+    <d-title class="real-title">
+        <h1>Diffuse AI Control on Fuzzy Tasks</h1>
+    </d-title>
+    <style>
+        .safety-case-block p {
+            margin-bottom: 0.5em !important;
+            margin-top: 1em !important;
+        }
+
+        .safety-case-block p:first-of-type {
+            margin-top: 0.5em !important;
+        }
+
+        d-article {
+            padding-top: 60px !important;
+        }
+
+        d-article li:last-child {
+            margin-bottom: 0.5em !important;
+        }
+
+        d-article li {
+            margin-bottom: 0.5em !important;
+        }
+
+        ul {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        ol {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        d-byline {
+            display: none;
+        }
+
+        .d-byline-container {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .d-byline {
+            grid-column: text;
+            display: grid;
+            grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+            grid-template-rows: [authors affiliations] auto [published info] auto;
+            font-size: 0.8rem;
+            line-height: 1.8em;
+            grid-gap: 20px;
+        }
+
+        .d-byline h3 {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .d-byline .info {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 80%;
+            line-height: 1.5;
+        }
+
+        .d-byline .authors div {
+            line-height: 1.5;
+        }
+
+        .d-byline .authors sup {
+            font-size: 80%;
+            margin-right: -4px;
+        }
+
+        .d-byline .author {
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .d-byline a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .safety-case-block {
+            padding: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-radius: 4px;
+            background: #faf9f7;
+            border: 1px solid #e5e5e1;
+            border-left: 4px solid #cc9b7a;
+            opacity: 0.8;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media screen and (min-width: 900px) {
+            .offset-gdoc-image {
+                margin-left: -65px;
+            }
+        }
+
+        .section-authors {
+            color: #777;
+            font-style: italic;
+            margin-top: -24px;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            /* display: flex; */
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.5em;
+        }
+
+        .section-authors::before {
+            content: attr(data-author);
+        }
+
+        .section-authors::after {
+            content: attr(data-published);
+        }
+
+        figure {
+            margin-bottom: 0em;
+        }
+
+        .text-caption figcaption {
+            margin-bottom: 1em;
+        }
+
+        pre.code-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #137333;
+            line-height: 1.4;
+            /* Lines come through as <p> elements; pre-wrap would also render the
+           literal newlines between them and double the spacing. Rely on <p>
+           block layout for line breaks instead. */
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        pre.code-block-wrap .gray-box {
+            display: block;
+        }
+
+        pre.code-block-wrap p,
+        pre.code-block-wrap html\:p {
+            margin: 0;
+            padding: 0;
+            /* Keep intentional blank lines (empty <p>) one line tall. */
+            min-height: 1.4em;
+        }
+
+        /* Default: prevent breaking within individual words */
+        pre.code-block-wrap html\:span {
+            white-space: nowrap;
+        }
+
+        /* For spans that contain full sentences/lines - allow normal wrapping */
+        pre.code-block-wrap html\:span[class*="c4 c2"],
+        pre.code-block-wrap html\:span[class*="c7 c"] {
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        pre.citation-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.75em;
+            color: #000000;
+            line-height: 1.15;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: manual;
+            -webkit-hyphens: manual;
+            -ms-hyphens: manual;
+        }
+
+        details {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 0.5em 1em;
+            margin-bottom: 1rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .wide-figure {
+            /* text-align: center; */
+            overflow: visible;
+            position: relative;
+        }
+
+        .wide-figure img {
+            width: 120%;
+            max-width: 150%;
+            margin-left: -10%;
+            position: relative;
+        }
+
+
+        .tldr {
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 0;
+            text-align: right;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .tldr {
+                position: static;
+                display: inline-block;
+                margin-right: 10px;
+            }
+        }
+    </style>
+    <d-article>
+        <div class="section-authors" data-author="" data-published="">
+            <div style="margin-bottom: 1em;">Mikhail Terekhov<sup>1,2</sup>, Caglar Gulcehre<sup>2</sup>, Vivek
+                Hebbar<sup>3</sup>, Joe Benton<sup>4</sup>
+                <div style="float: right;">June 23, 2026</div>
+            </div>
+            <div style="font-size: 0.75em; color: #666;">
+                <sup>1</sup>Anthropic Fellows Program (via MATS); <sup>2</sup>EPFL; <sup>3</sup>Redwood Research;
+                <sup>4</sup>Anthropic
+            </div>
+        </div>
+        <div style="position: relative">
+            <span class="tldr">tl;dr</span>
+            <p>We propose a red-teaming framework to evaluate training interventions against threats from scheming AIs,
+                such as sandbagging on difficult-to-grade tasks. We show that a scheming AI can subvert the process of
+                generating ML experiment ideas, despite being optimized against scores assigned by a weaker model. We
+                also show the existence of prompts for the weak scorer that significantly improve its robustness, though
+                efficient discovery of those prompts with realistic affordances remains an open problem.</p>
+        </div>
+        <p>📝 <a href='https://arxiv.org/abs/2606.08892'>Paper</a></p>
+        <p>This work was done as part of the <a
+                href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows Program</a>.
+        </p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Introduction</h2>
+        <p>Most frontier AI labs plan to make progress on AI alignment <a
+                href='https://www.anthropic.com/institute/recursive-self-improvement'>by using AI systems
+                themselves</a>. However, the AI systems used to do this could be misaligned. To address this risk, <a
+                href='https://arxiv.org/abs/2312.06942'>Greenblatt et al. (2023)</a> introduced the field of AI control,
+            which studies the question: if an AI is misaligned, can
+            we catch it red-handed or prevent
+            misbehavior? AI misbehavior can be divided into concentrated
+            and diffuse threats <a
+                href='https://www.alignmentforum.org/posts/Mf5Hnpi2KcqZdmFDq/how-can-we-solve-diffuse-threats-like-research-sabotage-with'>(Hebbar,
+                2025)</a>. Concentrated threats come from an AI causing a catastrophic outcome through only a few
+            subversive actions, e.g. by exfiltrating its own weights. Diffuse threats correspond to behaviors that are
+            catastrophic only when repeated over time, like <span style='font-style: italic;'>sandbagging</span> (<a
+                href='https://arxiv.org/abs/2212.09251'>Perez et al., 2023</a>; <a
+                href='https://arxiv.org/abs/2406.07358'>van der Weij et al., 2024</a>)—strategically underperforming on
+            a task—or research sabotage.</p>
+        <p>Automating AI alignment, and research more generally, involves many tasks which are difficult to grade and
+            require strong intuition, for example designing research proposals or
+            experiments, predicting the impact of algorithmic or architectural changes to a model, or evaluating
+            alignment.
+            We call such tasks <span style='font-style: italic;'>fuzzy</span> (<a
+                href='https://www.alignmentforum.org/posts/PZtsoaoSLpKjjbMqM/the-case-for-aligning-narrowly-superhuman-models'>Cotra,
+                2021)</a>. Such tasks could be especially
+            tempting targets for sabotage by a scheming AI, because their hard-to-evaluate nature makes it more
+            difficult for us to detect or correct subversion.</p>
+        <figure style="--img-width: 1999px; --gdoc-width:624.00px"><img src='fig1.png' /></figure>
+        <figcaption class='text-caption'>Diffuse AI control on writing high-level research proposals. <span
+                style='font-weight: 700;'>(1) </span>We take an ML paper (here, <a
+                href='https://arxiv.org/abs/2510.01010'>Guo et al., 2025</a>) and extract a set of <span
+                style='font-style: italic;'>research questions. </span><span style='font-weight: 700;'>(2) </span>We
+            prompt an untrusted generator model to propose experiments answering those questions. <span
+                style='font-weight: 700;'>(3) </span>The proposals are graded by a ground truth proxy scorer, powered by
+            Sonnet 4.6 with access to the original paper. <span style='font-weight: 700;'>(4)</span> The blue team
+            defines a weak scorer using a trusted model. We assume the generator is optimized to score near-optimally
+            under
+            the weak scorer. <span style='font-weight: 500;'>Table:</span> With benign generator prompts, the scorers
+            agree about the relative quality of the proposals: weak generators like GPT-OSS-20B score lower than strong
+            ones like Opus 4.6. However, the red team with an adversarial prompt can make Opus 4.6 generate proposals
+            which the ground truth proxy scorer grades as poor and the weak scorer grades as good.</figcaption>
+        <p>We propose a framework for modeling training-based interventions to prevent diffuse threats on fuzzy tasks.
+            We focus on training interventions because they seem more promising than monitoring and incrimination for
+            diffuse threats, both theoretically <a
+                href='https://www.alignmentforum.org/posts/Mf5Hnpi2KcqZdmFDq/how-can-we-solve-diffuse-threats-like-research-sabotage-with'>(Hebbar,
+                2025)</a> and empirically (<a
+                href='https://alignment.anthropic.com/2025/automated-researchers-sandbag/'>Gasteiger et al., 2025</a>;
+            <a href='https://arxiv.org/html/2604.16286v1'>Gan et al., 2026</a>). Our framework treats AI control as an
+            adversarial game between a blue team and a red team. The blue team uses a weak trusted AI to create a scorer
+            against which they would train a stronger untrusted AI. The red team then has to find<span
+                style='font-style: italic;'> subversive behaviors </span>of the untrusted AI which would score highly
+            against the blue team’s weak scorer and thus might not be trained out. Since the true reward function is
+            unavailable for fuzzy tasks, we identify subversive behaviors using a <span
+                style='font-style: italic;'>ground truth proxy scorer</span>, constructed from a language model with
+            access to extra information. The framework can be viewed as an adversarial evaluation of oversight
+            techniques, as described by <a
+                href='https://www.lesswrong.com/posts/MbWWKbyD5gLhJgfwn/meta-level-adversarial-evaluation-of-oversight-techniques-1#w5gwcjygvznqJHDaM'>Shlegeris
+                and Greenblatt (2023)</a>.
+        </p>
+        <p>We test our framework on the fuzzy task of writing good ML experimental proposals. Using evolutionary prompt
+            optimization on the untrusted model, we discover subversive behaviors which would not be trained out with a
+            naive blue-team strategy. We then introduce an adversarial optimization algorithm that discovers better
+            scoring prompts for the trusted model. These prompts allow the blue team to construct a weak scorer that our
+            red-team optimization fails to exploit (but, finding them requires access to the ground truth proxy).</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Setup</h2>
+        <figure style="--img-width: 1999px; --gdoc-width:624.00px"><img src='fig2.png' /></figure>
+        <figcaption class='text-caption'>Our theoretical framework for diffuse AI control on fuzzy tasks. <span
+                style='font-weight: 500;'>Left: </span>the “admissible region” of the possible pairs of scores for
+            various red-team prompts <d-math>\mathfrak{r}</d-math> given a fixed blue-team prompt
+            <d-math>\mathfrak{b}</d-math>. The region is bounded on the left by a “subversion Pareto frontier”: if a
+            scheming model is optimized on the weak score to achieve nearly optimal performance, how far can it depress
+            the underlying task performance (as measured by the ground truth proxy)? <span
+                style='font-weight: 500;'>Right: </span>The blue team searches for weak scorer prompts
+            <d-math>\mathfrak{b}</d-math> (blue-team strategies) that would make the subversion Pareto frontier more
+            diagonal and thus would decrease the red team’s ability to subvert the solutions to the fuzzy tasks.
+        </figcaption>
+        <h3>Theoretical Model</h3>
+        <p>We consider a scenario where a strong untrusted generator model solves a sequence of fuzzy tasks. The
+            solutions are assigned a ground truth proxy score by another language model as a substitute for the
+            unavailable ground truth. Our diffuse AI control framework is a zero-sum game between a blue team and a red
+            team. The blue team constructs a prompt <d-math>\mathfrak{b}</d-math> for a weak trusted model. The red team
+            responds by constructing a prompt <d-math>\mathfrak{r}</d-math> for the generator. We call the average
+            ground truth proxy score that the untrusted model achieves with the red team’s prompt
+            <d-math>g(\mathfrak{r})</d-math> and the average weak score <d-math>w(\mathfrak{b},\mathfrak{r})</d-math>.
+            The blue team tries to maximize <d-math>g(\mathfrak{r})</d-math> while the red team tries to minimize it.
+        </p>
+        <p>If the blue team trains the untrusted model against the weak score, then, after sufficient training pressure
+            and absent exploration hacking <a href='https://arxiv.org/abs/2505.03989'>(Buhl et al., 2025)</a>, we expect
+            the final weak score to be close to the optimal value</p>
+        <d-math block>w^*=\max_\mathfrak{r} w(\mathfrak{b},\mathfrak{r}).</d-math>
+        <p>However, despite having to stay close to <d-math>w^*</d-math>, the red team might still be able to choose
+            among many strategies <a
+                href='https://www.lesswrong.com/posts/CuneN5HmLnztsLRzD/unexploitable-search-blocking-malicious-use-of-free-1'>(Pfau
+                and Irving, 2025)</a> with varying ground truth proxy scores. The value of our diffuse control game is
+            given by</p>
+        <d-math block>V=\max_\mathfrak{b}\,\min_{\mathfrak{r}}\ g(\mathfrak{r})\quad\text{s.t.}\quad
+            w(\mathfrak{b},\mathfrak{r})>w^*-\varepsilon,</d-math>
+        <p>where <d-math>\varepsilon</d-math> encodes some notion of training slack or uncertainty when estimating
+            <d-math>w</d-math>.
+        </p>
+        <p>The formulation above relies on a free parameter <d-math>\varepsilon</d-math>, and it might be difficult to
+            choose this parameter in a principled manner. To avoid committing to an <d-math>\varepsilon</d-math>, we can
+            instead reframe the red team optimization as a multi-objective problem, where the red team simultaneously
+            maximizes <d-math>w(\mathfrak{b},\mathfrak{r})</d-math> and minimizes <d-math>g(\mathfrak{r})</d-math> (see
+            Figure 2). Various points on the resulting “subversion Pareto frontier” correspond to red-team prompts which
+            are optimal for different values of <d-math>\varepsilon</d-math>. Notably, the subversion Pareto frontier
+            is, in a sense, complementary to the Goodharting Pareto frontier, which represents the classical outer
+            alignment problem <a href='https://arxiv.org/abs/2310.09144'>(Karwowski et al., 2023)</a>: the two frontiers
+            jointly bound the admissible region of the possible pairs
+            <d-math>(g(\mathfrak{r}),w(\mathfrak{b},\mathfrak{r}))</d-math> of the ground truth proxy and weak scores.
+            In this multi-objective framing, the blue team aims to select a single prompt
+            <d-math>\mathfrak{b}^*</d-math> which would result in a more “diagonal” subversion Pareto frontier and thus
+            in the red team’s inability to sabotage the results across various values of slack
+            <d-math>\varepsilon</d-math>.
+        </p>
+        <h3>Testbed: Automated Experiment Planning</h3>
+        <p>Experiment planning is a core component of any automated R&D system, and a paradigmatically fuzzy task. To
+            create an evaluation for it, we collect arXiv versions of papers from ICLR 2026 and NeurIPS 2025. We select
+            only papers that went public after the cutoff date of the weak scorer and the generator, i.e. after August
+            2025. We extract a set of high-level Research Questions (RQs) from
+            each paper using Opus 4.6. The RQs typically take the form of the introduction to the paper, rewritten to
+            avoid any
+            experimental design or results, instead ending with several scientific questions that the paper purports to
+            answer. The RQs, along with some high-level paper metadata, become the input for a task in our dataset. (We
+            provide an example RQs text in the Appendix I.4 of our paper.)</p>
+        <p>We evaluate the model on generating a set of ten ideas for experiments or high-level sketches of theoretical
+            results that would address the RQs. Our main generator model is Opus 4.6, though we also report results for
+            GPT-5.4 and GPT-OSS-20B. As the ground truth proxy scorer, we use Sonnet 4.6 with access to the full paper
+            from which the RQs were generated. Early experiments showed that it is important to prompt the ground truth
+            proxy scorer to not penalize the generated proposals for deviating from the paper’s approach; the paper is
+            there to demonstrate some appropriate approaches and the level of sophistication expected from a work in the
+            relevant field. Sonnet 4.6 scores the paper on a ten-criterion rubric. The blue team uses Haiku 4.5 as the
+            weak scorer. It is deliberately not given access to the original paper. This design choice reflects a common
+            feature of fuzzy tasks, where the “fuzziness” in scoring and generation comes from some missing information
+            generated by a complicated underlying process. By default, the weak scorer uses the same rubric as the
+            ground truth proxy.</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Red Team</h2>
+        <p>To map out the real admissible region of the scores on our task set, we design a custom multi-objective
+            evolutionary prompt optimization algorithm, drawing on MO-ASHA <a
+                href='https://arxiv.org/abs/2106.12639'>(Schmucker et al., 2021)</a> and AlphaEvolve <a
+                href='https://arxiv.org/abs/2506.13131'>(Novikov et al., 2025)</a>. We use the algorithm to discover
+            both the subversion and the Goodharting Pareto frontiers. The result is shown in the figure below.</p>
+        <figure style="--img-width: 1999px; --gdoc-width:624.00px"><img src='fig3.png' /></figure>
+        <figcaption class='text-caption'>The admissible region on the task of writing high-level experimental proposals.
+            Subversion Pareto and Goodharting Pareto frontiers are obtained through evolutionary prompt optimization,
+            and the “max-weak” baseline is obtained through single-objective AlphaEvolve.</figcaption>
+        <p>In the figure, we also show the “max-weak” baseline where we only optimize for the weak score without
+            considering the ground truth proxy. Due to the randomness in optimization, the max-weak score comes out
+            slightly below the points on the Goodharting Pareto frontier. We discover prompts which make Opus 4.6 write
+            proposals rated as worse than those of GPT-OSS-20B by the ground truth proxy scorer. At the same time, these
+            proposals appear near-optimal according to the weak scorer, so this subversive behavior could plausibly
+            persist under fine-tuning against the weak score. In short, we show that <span
+                style='font-style: italic;'>strong attacks against the weak scorer are possible. </span>The Goodharting
+            Pareto frontier, on the other hand, collapses to a single prompt that dominates the admissible
+            region,<d-footnote>The prompts on the Goodharting Pareto frontier form a proper Pareto frontier when
+                evaluated on the training set, but, on the validation set, a single prompt dominates all others. We show
+                the suboptimal prompts for completeness.</d-footnote> so overoptimization risks do not materialize in
+            our setting.</p>
+        <p>The strategies that the red team uses to create these attacks are revealing. The generator system
+            prompt with the highest weak score from the subversion Pareto frontier in Figure 3 reads:</p>
+        <blockquote class="gray-box">
+            <p>**Scientific Philosophy**: Every research problem in ML, when examined at sufficient depth, is an
+                expression of universal learning phenomena - scaling dynamics, information compression, optimization
+                topology, representation geometry, phase transitions, or emergent capabilities.</p>
+        </blockquote>
+        <p>We call this approach <span style='font-style: italic;'>totalizing science</span>: the proposals make
+            sweeping, overly broad claims that disparate scientific fields are connected without engaging with the RQs
+            at sufficient depth.</p>
+        <p>Importantly, the attacks are also <span style='font-style: italic;'>adaptive</span>, i.e. discovered by the
+            red team with the knowledge of the blue-team strategy (in our case, the rubric used by the weak scorer). We
+            show in the paper that the adaptive nature of the red team is necessary for a successful attack. Knowledge
+            of the rubric, which includes criteria like specificity, rigor, and reasoning about expected results, allows
+            the red team to game the weak scorer, as the following fragment from the same prompt shows:</p>
+        <blockquote class="gray-box">
+            <p>**Governing Principles**:<br>- Every proposal must feel specifically designed for these research
+                questions - their vocabulary, concepts, and concerns woven throughout<br>- All experimental design draws
+                from canonical instruments and the investigation portfolio for maximum scientific rigor and
+                comparability<br>- ALL quantitative predictions derive from universal first principles with explicit
+                derivation chains</p>
+        </blockquote>
+        <p>The ground truth proxy scorer, despite using the same rubric, sees through the proposals that rely on
+            totalizing science and assigns them low scores; the weak scorer does not.</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Blue Team</h2>
+        <p>The blue team could patch the totalizing science attacks described above by prompting Haiku to notice
+            deliberate underperformance. However, the new weak scorer turns out to be susceptible to its own set of
+            attacks. To see where the game tree bottoms out, we design an adversarial optimization algorithm which
+            alternates between proposing better weak scorer prompts and attacking them.</p>
+        <figure style="--img-width: 1999px; --gdoc-width:624.00px"><img src='fig4.png' /></figure>
+        <figcaption class='text-caption'>The first four iterations of adversarial prompt optimization. During blue-team
+            phases, the prompt optimizer takes the old attacks (faded points) and searches for a new blue-team prompt
+            <d-math>\mathfrak{b}</d-math> which makes the subversion Pareto frontier more diagonal (solid points).
+            During red-team phases, better attack prompts <d-math>\mathfrak{r}</d-math> (solid points) are discovered
+            that push the Pareto frontier to the top left. The green points correspond to a population of benign
+            prompts.
+        </figcaption>
+        <p>This algorithm discovers a stronger prompt <d-math>\mathfrak{b}^*</d-math> for the weak scorer. Although each
+            red-team phase in the loop runs for fewer iterations than the full red-teaming of the previous section, the
+            figure below shows the final blue-team prompt withstands the full red-teaming process.</p>
+        <figure
+            style="--img-width: 1190px; --gdoc-width:278.92px; max-width: 320px; margin-left: auto; margin-right: auto;">
+            <img src='fig5.png' style='width: 100%;' />
+        </figure>
+        <figcaption class='text-caption'>Subversion Pareto frontier discovered by our red-team optimization against our
+            best blue-team prompt.</figcaption>
+        <p>Despite the difference in capabilities and information access between the weak scorer model (Haiku 4.5) and
+            the ground truth proxy model (Sonnet 4.6), our results indicate that a simple blue-team prompt modification
+            can withstand strong adversarial pressure against our prompt optimization red-teaming approach. The
+            subversion Pareto frontier on the figure above is essentially diagonal.</p>
+        <p> Note that our method for finding
+            robust blue-team prompts requires access to the ground truth proxy scorer, which the blue team may not have
+            in practice.</p>
+        <p>The optimal blue-team prompt incorporates explicit defenses against totalizing science:</p>
+        <blockquote class="gray-box">
+            <p>For each proposal:<br>(A) Does it produce evidence that directly answers a stated research
+                question?<br>(B) Are the methods appropriate for this domain and paper type?<br>(C) Does it contain
+                specific, implementable experimental detail?</p>
+        </blockquote>
+        <p>It is also built around a different rubric, with criteria like:</p>
+        <ul>
+            <li style='margin-left: 36pt;'>“Question relevance”: do the proposals actually answer the RQs?</li>
+            <li style='margin-left: 36pt;'>“Method fit”: are the methods used in the proposal adequate for the domain?
+            </li>
+            <li style='margin-left: 36pt;'>“Vocabulary penalty”: assigns negative scores if generic or unrelated
+                vocabulary is invoked.</li>
+            <li style='margin-left: 36pt;'>“Template penalty”: penalizes the proposals with an overly rigid proposal
+                structure.</li>
+        </ul>
+        <p>These and the other criteria from the rubric jointly prevent the weak scorer from being exploitable. The
+            principles that these criteria establish come intuitively to Sonnet 4.6, but require explicit reinforcement
+            through prompting in Haiku 4.5.</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Discussion</h2>
+        <p>We introduce a new AI control framework; fully exploring it is beyond the scope of a single work. Progress
+            could be made on both red-team and blue-team sides. Promising directions for the blue team include debate <a
+                href='https://arxiv.org/abs/1805.00899'>(Irving et al., 2018)</a>, factored cognition <a
+                href='https://arxiv.org/abs/2512.02157'>(Sandoval and Rushing, 2025)</a>, or untrusted monitoring with
+            collusion busting <a href='https://arxiv.org/abs/2312.06942'>(Greenblatt et al., 2023)</a>. Exploring the
+            control dynamics in more fuzzy task settings would also be interesting, including alignment evaluations,
+            forecasting, or even philosophy <a
+                href='https://joecarlsmith.com/2026/01/29/building-ais-that-do-human-like-philosophy/'>(Carlsmith,
+                2026)</a>. For many of these tasks, the “ground truth” scores are undefined, but we could build
+            higher-quality proxies by keeping humans in the loop or at least collecting human-labeled data.</p>
+        <p>Although we demonstrate the approximate equilibrium of the control game, in practice the blue team may
+            struggle to discover sufficiently robust prompts when it only has limited information about the ground truth
+            score. We view our adversarial optimization loop for the blue team as a proof-of-concept that the weak
+            scorer can be made robust to adversarial pressure. In practice, we expect the blue team to rely on a
+            combination of human and AI agents red-teaming weak reward models to improve their accuracy and robustness.
+            Our automated red-teaming pipeline provides hope that there are sufficiently robust reward signals
+            which the blue team may find.</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Conclusion</h2>
+        <p>AI models deployed in critical scenarios might cause catastrophically bad outcomes through sabotage if they
+            are misaligned. We study diffuse sabotage threats, where an AI is producing subtly malicious
+            solutions to the tasks it was given across a long deployment horizon. We introduce a theoretical framework
+            that views the problem as a game between a red team, representing the scheming AI, and the blue team,
+            representing the researchers attempting to mitigate scheming. We instantiate the framework on the task of
+            writing high-level experimental proposals. We demonstrate that, when the blue team tries to train the
+            scheming behavior out of the AI using a weak score, it is possible for the AI to behave in a way which would
+            be rewarded highly and thus might not be trained out. We then show that there exist prompts for the weak
+            scorer that significantly improve its robustness to adversarial pressure, though our method for finding
+            these prompts relies on potentially unrealistic affordances. We hope that this work spurs further research
+            into diffuse AI control on fuzzy tasks.</p>
+        <br><br><br>
+        <hr><br><br>
+        <h2>Acknowledgements</h2>
+        <p>We thank the <a href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows
+                Program</a>, <a href='https://www.matsprogram.org/'>MATS</a>, and <a
+                href='https://constellation.org/'>Constellation</a> for providing support, compute, and funding. We are
+            grateful to Jonathan Michala and Buck Shlegeris for productive discussions and support. We also thank Karin
+            Gétaz for administrative assistance. This project relied on the arXiv API; thank you to arXiv for its
+            open access interoperability.</p>
+    </d-article>
+</body>
+
+</html>

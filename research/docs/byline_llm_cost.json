@@ -1,0 +1,189 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 9208,
+    "output_tokens": 637,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.024786,
+    "seconds": 6.3,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/sleight-bench/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 21273,
+    "output_tokens": 915,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.051696,
+    "seconds": 8.25,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/teaching-claude-why/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 7479,
+    "output_tokens": 314,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.018098,
+    "seconds": 4.17,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/msm/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 21620,
+    "output_tokens": 752,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.05076,
+    "seconds": 8.22,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/headvis/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 24848,
+    "output_tokens": 3087,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.080566,
+    "seconds": 27.27,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/nla/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 10854,
+    "output_tokens": 609,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.027798,
+    "seconds": 6.71,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/diffuse-ai-control/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 55535,
+    "output_tokens": 456,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.11563,
+    "seconds": 7.72,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/may-update/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 54622,
+    "output_tokens": 191,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.111154,
+    "seconds": 3.94,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/june-update/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23072,
+    "output_tokens": 1027,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.056414,
+    "seconds": 10.85,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 9323,
+    "output_tokens": 920,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.027846,
+    "seconds": 10.98,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/modular-pretraining/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 22434,
+    "output_tokens": 888,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.053748,
+    "seconds": 7.93,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23995,
+    "output_tokens": 203,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.05002,
+    "seconds": 3.72,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/automated-alignment-researchers/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 5544,
+    "output_tokens": 202,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.013108,
+    "seconds": 2.79,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/taste/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 7533,
+    "output_tokens": 544,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.020506,
+    "seconds": 6.68,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/chive/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 27423,
+    "output_tokens": 557,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.060416,
+    "seconds": 6.25,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/lie-detectors/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 6170,
+    "output_tokens": 357,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.01591,
+    "seconds": 4.28,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/conceptual-reasoning-index/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 39277,
+    "output_tokens": 468,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.083234,
+    "seconds": 7.08,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2026/interference_effectiveness_helpfulness/index.html"
+  }
+]

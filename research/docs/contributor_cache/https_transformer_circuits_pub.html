@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Transformer Circuits Thread</title>
+    <link rel="alternate" type="application/atom+xml" href="/feed.xml" title="Transformer Circuits Thread">
+    <!-- <link rel="stylesheet" href="home.css"> -->
+    <style>
+        @font-face {
+            font-family: Styrene A;
+            src: url(https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67cfa79c39a1f4e4038d2202_StyreneA-Regular-Web.woff2)format("woff2");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap
+        }
+
+        @font-face {
+            font-family: Tiempos Text;
+            src: url(https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67cfa79cd8dbd9aaebe94ef6_TiemposText-RegularItalic.woff2)format("woff2");
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap
+        }
+
+        @font-face {
+            font-family: Tiempos Text;
+            src: url(https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67cfa79cdb729ef52b9ec8a3_TiemposText-Regular.woff2)format("woff2");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap
+        }
+
+        @font-face {
+            font-family: Styrene A;
+            src: url(https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67cfa79c9811d12c64ea34e4_StyreneA-Medium-Web.woff2)format("woff2");
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap
+        }
+
+        @font-face {
+            font-family: Tiempos Text;
+            src: url(https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/67cfa79dbca2eb537447ae24_TiemposText-Medium.woff2)format("woff2");
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap
+        }
+
+        :root {
+            --color-book-cloth: #cc785c;
+            --color-cactus: #bcd1ca;
+            --color-clay: #d97757;
+            --color-cloud-dark: #87867f;
+            --color-cloud-light: #d1cfc5;
+            --color-cloud-medium: #b0aea5;
+            --color-coral: #ebcece;
+            --color-dark: #0f0f0e;
+            --color-fig: #c46686;
+            --color-heather: #cbcadb;
+            --color-ivory-dark: #e8e6dc;
+            --color-ivory-light: #faf9f5;
+            --color-ivory-medium: #f0eee6;
+            --color-kraft: #d4a27f;
+            --color-light: #fff;
+            --color-manilla: #ebdbbc;
+            --color-manilla-light: #f1e6d0;
+            --color-oat: #e3dacc;
+            --color-olive: #788c5d;
+            --color-sky: #6a9bcc;
+            --color-slate-dark: #141413;
+            --color-slate-light: #5e5d59;
+            --color-slate-medium: #3d3d3a;
+            --sans: "Styrene A", system-ui, sans-serif;
+            --serif: "Tiempos Text", georgia, serif;
+        }
+
+        html {
+            font-family: system-ui;
+        }
+
+        body {
+            background-color: var(--color-ivory-light);
+            margin: 0;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        .title {
+            margin: auto;
+            max-width: 840px;
+            padding: 0 20px;
+            text-align: left;
+
+            h1 {
+                font-family: var(--sans);
+                font-size: 40px;
+                font-weight: 500;
+                line-height: 1.2em;
+                letter-spacing: -.03em;
+                margin-top: 80px;
+                margin-bottom: 0px;
+            }
+
+            h1>span {
+                display: block;
+            }
+
+            p {
+                font-family: var(--serif);
+                line-height: 1.5em;
+                max-width: 500px;
+            }
+        }
+
+
+        .container {
+            font-family: var(--serif);
+            margin: 80px auto;
+            max-width: 840px;
+            padding: 0 20px;
+
+            .date {
+                font-family: var(--sans);
+                padding-bottom: 6px;
+                font-weight: 400;
+                text-transform: uppercase;
+                font-size: 12px;
+                color: rgba(0, 0, 0, 0.7);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                margin-bottom: 15px;
+            }
+
+            .subscribe {
+                font-family: arial, helvetica, sans-serif;
+                margin-bottom: 15px;
+            }
+
+            .rss {
+                font-family: arial, helvetica, sans-serif;
+                margin-top: 28px;
+
+                a { color: var(--color-dark); }
+            }
+
+            .date:not(.first-child) {
+                margin-top: 50px;
+            }
+
+            .tags {
+                display: none;
+            }
+
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding-left: 160px;
+            }
+
+            .container .date {
+                color: rgba(0, 0, 0, 0.6);
+                width: 120px;
+                position: relative;
+                left: -140px;
+                top: 15px;
+                border: none;
+                height: 0;
+                margin: 0;
+                padding: 0;
+                /* text-align: right; */
+            }
+
+            .container .subscribe {
+                position: relative;
+                left: -140px;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .paper {
+            padding: 22px 16px 22px var(--indent);
+            text-decoration: none;
+            line-height: 1.5em;
+            display: flow-root;
+            margin-bottom: 20px;
+            color: var(--color-dark);
+
+            img {
+                width: 120px;
+                height: 120px;
+                float: right;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-left: 30px;
+                padding: 8px;
+                background: var(--color-light);
+            }
+
+            h3,
+            div {
+                /* margin-left: 180px; */
+            }
+
+            h3 {
+                font-family: var(--sans);
+                font-size: 18px;
+                line-height: 1.2em;
+                letter-spacing: -.03em;
+                font-weight: 500;
+                margin-top: 0px;
+                margin-bottom: 6px;
+            }
+
+            .byline {
+                font-family: var(--sans);
+                text-transform: uppercase;
+                font-size: 11px;
+                opacity: 0.6;
+                margin-bottom: 4px;
+            }
+
+            .description {
+                font-size: 15px;
+            }
+        }
+
+        .paper:hover h3 {
+            text-decoration: underline;
+        }
+
+        @media (min-width: 480px) {
+            .note {
+                h3 {
+                    font-size: 17px;
+                }
+            }
+
+            .paper {
+                h3 {
+                    font-size: 26px;
+                }
+
+                img {
+                    width: 170px;
+                    height: 170px;
+                }
+            }
+        }
+
+
+        @media (min-width: 768px) {
+            .title {
+                padding-left: 160px;
+            }
+
+            .paper {
+                h3 {
+                    font-size: 28px;
+                }
+
+                img {
+                    width: 220px;
+                    height: 220px;
+                }
+            }
+        }
+
+        .note+.paper,
+        .paper+.paper {
+            border-top: solid rgba(0, 0, 0, 0.1) 1px;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .note {
+            padding: 14px 16px 14px var(--indent);
+            text-decoration: none;
+            line-height: 1.5em;
+            margin-top: 10px;
+            color: var(--color-dark);
+            display: block;
+
+            h3 {
+                font-family: var(--sans);
+                letter-spacing: -.03em;
+                font-size: 16px;
+                margin: 0px;
+                font-weight: 500;
+                line-height: 1.2em;
+                display: inline;
+                margin-right: 5px;
+            }
+
+            .description {
+                font-size: 15px;
+                margin-top: 6px;
+                display: inline;
+            }
+        }
+
+        .note+.note,
+        .paper+.note {
+            border-top: solid rgba(0, 0, 0, 0.1) 1px;
+            padding-top: 10px;
+        }
+
+        .note:hover h3 {
+            text-decoration: underline;
+        }
+
+        .footer {
+            border-top: solid rgba(0, 0, 0, 0.2) 1px;
+            background-color: var(--color-dark);
+            color: var(--color-cloud-medium);
+            padding-bottom: 80px;
+
+            .info {
+                font-family: var(--serif);
+                margin: 80px auto 0;
+                max-width: 840px;
+                padding: 0 20px;
+
+                h2 {
+                    color: var(--color-ivory-light);
+                    font-family: var(--sans);
+                    font-weight: 400;
+                    font-size: 24px;
+                    /* letter-spacing: -.03em; */
+                }
+
+                p {
+                    line-height: 1.5em;
+                    max-width: 700px
+                }
+
+                a {
+                    color: var(--color-ivory-light);
+                    font-weight: normal;
+                    text-decoration: none;
+                }
+
+                a:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:title" content="Transformer Circuits Thread">
+    <meta property="og:description"
+        content="Can we reverse engineer transformer language models into human-understandable computer programs?">
+    <meta property="og:image" content="https://transformer-circuits.pub/interp.png">
+</head>
+
+<body>
+
+    <div class="article-header">
+        <style>
+            .article-header {
+                width: 100%;
+                padding: 10px;
+                padding-bottom: 20px;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .home-link {
+                    font-size: 100%;
+                    color: #333;
+                }
+
+                a.logo {
+                    display: flex;
+                    text-decoration: none;
+                }
+            }
+        </style>
+        <a class="logo" href="https://anthropic.com">
+            <svg width="36" height="25" viewBox="0 0 36 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24.8304 0H19.5612L29.1696 24.1071H34.4388L24.8304 0Z" fill="#1F1F1E"></path>
+                <path
+                    d="M9.60842 0L0 24.1071H5.37245L7.33753 19.0446H17.3895L19.3546 24.1071H24.727L15.1186 0H9.60842ZM9.07531 14.5676L12.3635 6.09566L15.6517 14.5676H9.07531Z"
+                    fill="#1F1F1E"></path>
+            </svg>
+        </a>
+        <a class="home-link" href="https://transformer-circuits.pub/">Transformer Circuits Thread</a>
+    </div>
+
+
+    <div class="title">
+        <h1><span>Anthropic’s</span> Interpretability Research</h1>
+        <p>A surprising fact about modern large language models is that nobody really knows how they work
+            internally.
+            The Interpretability team strives to change that — to understand these models to better plan for a
+            future of
+            safe AI.</p>
+    </div>
+    <div class="container">
+        <div class="toc">
+
+            <div class="date">August 2026</div>
+            <a href="2026/interference_effectiveness_helpfulness/index.html" data-date="2026-08-21" class="note">
+                <h3>Characterizing interference weights in a tiny language model</h3>
+                <div class="description">
+                    We identify interference weights in a 1-layer transformer by measuring their effect on model outputs and loss.
+                </div>
+            </a>
+
+            <div class="date">July 2026</div>
+            <a href="2026/workspace/index.html" data-date="2026-07-06" class="paper">
+                <img src="images/workspace.png" />
+                <h3>Verbalizable Representations Form a Global Workspace in Language Models</h3>
+                <div class="byline">Gurnee et al., 2026</div>
+                <div class="description">
+                    We find that Claude maintains a small, privileged set of representations it can report on, control, and reason with, atop a much larger volume of automatic processing.
+                </div>
+            </a>
+
+            <div class="date">June 2026</div>
+            <a href="2026/june-update/index.html" data-date="2026-06-30" class="note">
+                <h3>Circuits Updates — June 2026</h3>
+                <div class="description">
+                    A short update on turn-averaged sparse autoencoders.
+                </div>
+            </a>
+
+            <div class="date">May 2026</div>
+            <a href="2026/may-update/index.html" data-date="2026-06-01" class="note">
+                <h3>Circuits Updates — May 2026</h3>
+                <div class="description">
+                    A short update on understanding features through downstream connections.
+                </div>
+            </a>
+            <a href="2026/nla/index.html" data-date="2026-05-07" class="paper">
+                <img src="images/nla.png" />
+                <h3>Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations</h3>
+                <div class="byline">Fraser-Taliente, Kantamneni, Ong, et al., 2026</div>
+                <div class="description">
+                    We train Claude to translate its internal state into natural language.
+                </div>
+            </a>
+            <a href="2026/headvis/index.html" data-date="2026-05-04" class="note">
+                <h3>HeadVis</h3>
+                <div class="description">
+                    We develop an interactive visualization tool to help us understand the behaviors of attention heads in language models.
+                </div>
+            </a>
+
+            <div class="date">April 2026</div>
+
+            <a href="2026/emotions/index.html" data-date="2026-04-02" class="paper">
+                <img src="images/emotions.png" />
+                <h3>Emotion Concepts and their Function in a Large Language Model</h3>
+                <div class="byline">Sofroniew et al., 2026</div>
+                <div class="description">
+                    We find representations of emotion concepts in Claude Sonnet 4.5 and show that they causally influence its outputs.
+                </div>
+            </a>
+
+            <div class="date">December 2025</div>
+            <a href="https://alignment.anthropic.com/2025/activation-oracles/" data-date="2025-12-19" class="note">
+                <h3>Circuits Cross-Post — Activation Oracles</h3>
+                <div class="description">
+                    We train language models to answer questions about their own activations in natural language.
+                </div>
+            </a>
+
+            <div class="date">November 2025</div>
+            <a href="2025/november-update/index.html" data-date="2025-11-26" class="note">
+                <h3>Circuits Updates — November 2025</h3>
+                <div class="description">
+                    A short update on harm pressure.
+                </div>
+            </a>
+
+            <div class="date">October 2025</div>
+
+            <a href="2025/introspection/index.html" data-date="2025-10-29" class="paper">
+                <img src="images/introspection.png" />
+                <h3>Emergent Introspective Awareness in Large Language Models</h3>
+                <div class="byline">Lindsey, 2025</div>
+                <div class="description">We find evidence that language models can introspect on their internal states.</div>
+            </a>
+
+            <a href="2025/october-update/index.html" data-date="2025-10-24" class="note">
+                <h3>Circuits Updates — October 2025</h3>
+                <div class="description">
+                    Small updates on visual features and dictionary initialization.
+                </div>
+            </a>
+            <a href="2025/linebreaks/index.html" data-date="2025-10-21" class="paper">
+                <img src="images/linebreaks.png" />
+                <h3>When Models Manipulate Manifolds: The Geometry of a Counting Task</h3>
+                <div class="byline">Gurnee et al., 2025</div>
+                <div class="description">We find geometric structure underlying the mechanisms of a fundamental language model behavior.</div>
+            </a>
+
+            <div class="date">September 2025</div>
+            <a href="2025/september-update/index.html" data-date="2025-09-29" class="note">
+                <h3>Circuits Updates — September 2025</h3>
+                <div class="description">
+                    A small update on features and in-context learning.
+                </div>
+            </a>
+
+            <div class="date">August 2025</div>
+            <a href="2025/august-update/index.html" data-date="2025-08-28" class="note">
+                <h3>Circuits Updates — August 2025</h3>
+                <div class="description">
+                    A small update: How does a persona modify the assistant’s response?
+                </div>
+            </a>
+
+            <div class="date">July 2025</div>
+
+            <a href="2025/faithfulness-toy-model/index.html" data-date="2025-08-07" class="note">
+                <h3>A Toy Model of Mechanistic (Un)Faithfulness</h3>
+                <div class="description">
+                    When transcoders go awry.
+                </div>
+            </a>
+
+            <a href="2025/attention-qk/index.html" data-date="2025-07-31" class="paper">
+                <img src="images/attention-qk.png" />
+                <h3>Tracing Attention Computation Through Feature Interactions</h3>
+                <div class="byline">Kamath et al., 2025</div>
+                <div class="description">We describe and apply a method to explain attention patterns in terms of
+                    feature interactions, and integrate this information into attribution graphs.</div>
+            </a>
+
+            <a href="2025/interference-weights/index.html" data-date="2025-07-29" class="note">
+                <h3>A Toy Model of Interference Weights</h3>
+                <div class="description">
+                    Unpacking "interference weights" in some more depth.
+                </div>
+            </a>
+
+            <a href="2025/bulk-update/index.html" data-date="2025-07-25" class="note">
+                <h3>Sparse mixtures of linear transforms</h3>
+                <div class="description">
+                    We investigate sparse mixture of linear transforms (MOLT), a new approach to transcoders.
+                </div>
+            </a>
+
+            <a href="2025/july-update/index.html" data-date="2025-07-25" class="note">
+                <h3>Circuits Updates — July 2025</h3>
+                <div class="description">
+                    A collection of small updates: revisiting A Mathematical Framework and applications of
+                    interpretability to biology.
+                </div>
+            </a>
+            <a href="https://alignment.anthropic.com/2025/automated-auditing/" data-date="2025-07-24" class="note">
+                <h3>Automated Auditing</h3>
+                <div class="description">
+                    A note on using agents to perform automated alignment audits, including using interpretability
+                    tools.
+                </div>
+            </a>
+
+            <div class="date">April 2025</div>
+            <a href="2025/april-update/index.html" data-date="2025-04-29" class="note">
+                <h3>Circuits Updates — April 2025</h3>
+                <div class="description">
+                    A collection of small updates: jailbreaks, dense features, and spinning up on interpretability.
+                </div>
+            </a>
+            <a href="2025/attention-update/index.html" data-date="2025-04-28" class="note">
+                <h3>Progress on Attention</h3>
+                <div class="description">
+                    An update on our progress studying attention.
+                </div>
+            </a>
+
+            <div class="date">March 2025</div>
+            <a href="2025/attribution-graphs/biology.html" data-date="2025-03-27" class="paper with-following">
+                <img src="images/biology.png" />
+                <h3>On the Biology of a Large Language Model</h3>
+                <div class="byline">Lindsey et al., 2025</div>
+                <div class="description">
+                    We investigate the internal mechanisms used by Claude 3.5 Haiku — Anthropic's lightweight
+                    production model — in a variety of contexts.
+                </div>
+            </a>
+            <a href="2025/attribution-graphs/methods.html" data-date="2025-03-27" class="paper">
+                <img src="images/methods.png" />
+                <h3>Circuit Tracing: Revealing Computational Graphs in Language Models</h3>
+                <div class="byline">Ameisen et al., 2025</div>
+                <div class="description">
+                    We describe an approach to tracing the "step-by-step" computation involved when a model responds
+                    to a single prompt.
+                </div>
+            </a>
+
+            <div class="date">February 2025</div>
+            <a href="2025/crosscoder-diffing-update/index.html" data-date="2025-02-19" class="note">
+                <h3>Insights on Crosscoder Model Diffing</h3>
+                <div class="description">
+                    A preliminary note on using crosscoders to diff models.
+                </div>
+            </a>
+
+            <div class="date">January 2025</div>
+            <a href="2025/january-update/index.html" data-date="2025-01-27" class="note">
+                <h3>Circuits Updates — January 2025</h3>
+                <div class="description">
+                    A collection of small updates: dictionary learning optimization techniques.
+                </div>
+            </a>
+
+            <div class="date">December 2024</div>
+            <a href="2024/model-diffing/index.html" data-date="2024-12-11" class="note">
+                <h3>Stage-Wise Model Diffing</h3>
+                <div class="description">
+                    A preliminary note on model diffing through dictionary fine-tuning.
+                </div>
+            </a>
+
+            <div class="date">October 2024</div>
+            <a href="2024/crosscoders/index.html" data-date="2024-10-25" class="note">
+                <h3>Sparse Crosscoders for Cross-Layer Features and Model Diffing</h3>
+                <div class="description">
+                    A preliminary note on a way to get consistent features across layers, and even models.
+                </div>
+            </a>
+            <a href="2024/features-as-classifiers/index.html" data-date="2024-10-16" class="note">
+                <h3>Using Dictionary Learning Features as Classifiers</h3>
+                <div class="description">
+                    A preliminary note comparing feature-based and raw-activation based harmfulness classifiers.
+                </div>
+            </a>
+
+            <div class="date">September 2024</div>
+            <a href="2024/september-update/index.html" data-date="2024-10-01" class="note">
+                <h3>Circuits Updates — September 2024</h3>
+                <div class="description">
+                    A collection of small updates: investigating successor heads, oversampling data in SAEs.
+                </div>
+            </a>
+
+            <div class="date">August 2024</div>
+            <a href="2024/august-update/index.html" data-date="2024-09-06" class="note">
+                <h3>Circuits Updates — August 2024</h3>
+                <div class="description">
+                    A collection of small updates: interpretability evals, reproducing self-explanation.
+                </div>
+            </a>
+
+            <div class="date">July 2024</div>
+            <a href="2024/july-update/index.html" data-date="2024-07-31" class="note">
+                <h3>Circuits Updates — July 2024</h3>
+                <div class="description">
+                    A collection of small updates: five hurdles, linear representations, dark matter, pivot tables,
+                    feature sensitivity.
+                </div>
+            </a>
+
+            <div class="date">June 2024</div>
+            <a href="2024/june-update/index.html" data-date="2024-06-28" class="note">
+                <h3>Circuits Updates — June 2024</h3>
+                <div class="description">
+                    A collection of small updates: topk and gated SAE investigation.
+                </div>
+            </a>
+
+            <div class="date">May 2024</div>
+            <a href="2024/scaling-monosemanticity/index.html" data-date="2024-05-21" class="paper">
+                <img src="images/scaling.png" />
+                <h3>Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet</h3>
+                <div class="byline">Templeton et al., 2024</div>
+                <div class="description">
+                    Using a sparse autoencoder, we extract a large number of interpretable features from Claude 3
+                    Sonnet. Some appear to be safety-relevant.
+                </div>
+            </a>
+
+            <div class="date">April 2024</div>
+            <a href="2024/april-update/index.html" data-date="2024-04-26" class="note">
+                <h3>Circuits Updates — April 2024</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+
+            <div class="date">March 2024</div>
+            <a href="2024/march-update/index.html" data-date="2024-03-21" class="note">
+                <h3>Circuits Updates — March 2024</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+            <a href="2024/qualitative-essay/index.html" data-date="2024-03-08" class="note">
+                <h3>Reflections on Qualitative Research</h3>
+                <div class="description"> Some opinionated thoughts on why interpretability research may have
+                    qualitative aspects be more central than we're used to in other fields.</div>
+            </a>
+
+            <div class="date">February 2024</div>
+            <a href="2024/feb-update/index.html" data-date="2024-02-23" class="note">
+                <h3>Circuits Updates — February 2024</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+
+
+            <div class="date">January 2024</div>
+            <a href="2024/jan-update/index.html" data-date="2024-01-23" class="note">
+                <h3>Circuits Updates — January 2024</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+
+
+            <div class="date">October 2023</div>
+            <a href="2023/monosemantic-features/index.html" data-date="2023-10-04" class="paper">
+                <img src="images/towards.png" />
+                <h3>Towards Monosemanticity: Decomposing Language Models With Dictionary Learning</h3>
+                <div class="byline">Bricken et al., 2023</div>
+                <div class="description">
+                    Using a sparse autoencoder, we extract a large number of interpretable features from a one-layer
+                    transformer.
+                </div>
+            </a>
+
+            <div class="date">July 2023</div>
+            <a href="2023/july-update/index.html" data-date="2023-07-18" class="note">
+                <h3>Circuits Updates — July 2023</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+
+            <div class="date">May 2023</div>
+            <a href="2023/may-update/index.html" data-date="2023-05-24" class="note">
+                <h3>Circuits Updates — May 2023</h3>
+                <div class="description">
+                    A collection of small updates from the Anthropic Interpretability Team.
+                </div>
+            </a>
+            <a href="2023/interpretability-dreams/index.html" data-date="2023-05-24" class="note">
+                <h3>Interpretability Dreams</h3>
+                <div class="description">Our present research aims to create a foundation for mechanistic
+                    interpretability research. In doing so, it's important to keep sight of what we're trying to lay
+                    the foundations for.</div>
+            </a>
+            <a href="2023/superposition-composition/index.html" data-date="2023-05-04" class="note">
+                <h3>Distributed Representations: Composition &amp; Superposition</h3>
+                <div class="description">An informal note on how "distributed representations" might be understood
+                    as two different, competing strategies — "composition" and "superposition" — with quite
+                    different properties. </div>
+            </a>
+
+
+
+            <div class="date">March 2023</div>
+            <a href="2023/privileged-basis/index.html" data-date="2023-03-16" class="note">
+                <!-- <img src="images/basis.png" /> -->
+                <h3>Privileged Bases in the Transformer Residual Stream</h3>
+                <!-- <div class="byline">Elhage et al., 2023</div> -->
+                <div class="description">
+                    Our mathematical theories of the Transformer architecture suggest that
+                    individual coordinates in the residual stream should have no special
+                    significance, but recent work has shown that this observation is false in practice.
+                    We investigate this phenomenon and provisionally conclude that the per-dimension normalizers in
+                    the Adam optimizer are to blame for the effect.
+                </div>
+            </a>
+
+
+            <div class="date">January 2023</div>
+            <a href="2023/toy-double-descent/index.html" data-date="2023-01-05" class="paper">
+                <img src="images/memorization.png" />
+                <h3>Superposition, Memorization, and Double Descent</h3>
+                <div class="byline">Henighan et al., 2023</div>
+                <div class="description">
+                    We have little mechanistic understanding of how deep learning
+                    models overfit to their training data, despite it being a
+                    central problem. Here we extend our previous work on toy models
+                    to shed light on how models generalize beyond their training
+                    data.
+                </div>
+            </a>
+
+            <div class="date">September 2022</div>
+            <a href="2022/toy_model/index.html" data-date="2022-09-14" class="paper">
+                <img src="images/superposition.png" />
+                <h3>Toy Models of Superposition</h3>
+                <div class="byline">Elhage et al., 2022</div>
+                <div class="description">Neural networks often seem to pack many unrelated concepts into a single
+                    neuron - a puzzling phenomenon known as 'polysemanticity'. In our latest interpretability work,
+                    we build toy models where the origins and dynamics of polysemanticity can be fully understood.
+                </div>
+            </a>
+
+            <div class="date">June 2022</div>
+            <a href="2022/solu/index.html" data-date="2022-06-27" class="note">
+                <!-- <img src="images/solu.png" /> -->
+                <h3>Softmax Linear Units</h3>
+                <!-- <div class="byline">Elhage et al., 2022</div> -->
+                <div class="description">An alternative activation function increases the fraction of neurons which
+                    appear to correspond to human-understandable concepts.</div>
+            </a>
+            <a href="2022/mech-interp-essay/index.html" data-date="2022-06-27" class="note">
+                <h3>Mechanistic Interpretability, Variables, and the Importance of Interpretable Bases</h3>
+                <div class="description">An informal note on intuitions related to mechanistic interpretability.
+                </div>
+            </a>
+
+            <div class="date">March 2022</div>
+            <a href="2022/in-context-learning-and-induction-heads/index.html" data-date="2022-03-08" class="paper">
+                <img src="images/induction.png" />
+                <h3>In-Context Learning and Induction Heads</h3>
+                <div class="byline">Olsson et al., 2022</div>
+                <div class="description">An exploration of the hypothesis that induction heads are the primary
+                    mechanism behind in-context learning. We also report the existence of a previously unknown phase
+                    change in transformers language models.</div>
+                <div class="tags">paper</div>
+            </a>
+
+            <div class="date">December 2021</div>
+            <a href="2021/framework/index.html" data-date="2021-12-22" class="paper">
+                <img src="images/framework.png" />
+                <h3>A Mathematical Framework for Transformer Circuits</h3>
+                <div class="byline">Elhage et al., 2021</div>
+                <div class="description">Our early mathematical framework for reverse engineering models,
+                    demonstrated by reverse engineering small toy models.</div>
+                <div class="tags">paper</div>
+            </a>
+            <a href="2021/exercises/index.html" data-date="2021-12-17" class="note">
+                <h3>Exercises</h3>
+                <div class="description">Some exercises we've developed to improve our understanding of how neural
+                    networks implement algorithms at the parameter level.</div>
+                <div class="tags">note, exercises</div>
+            </a>
+            <a href="2021/videos/index.html" data-date="2021-12-17" class="note">
+                <h3>Videos</h3>
+                <div class="description">Very rough informal talks as we search for a way to reverse engineering
+                    transformers.</div>
+                <div class="tags">links, videos</div>
+            </a>
+            <a href="https://github.com/anthropics/PySvelte" data-date="2021-12-23" class="note">
+                <h3>PySvelte</h3>
+                <div class="description">One approach to bridging Python and web-based interactive diagrams for
+                    interpretability research.</div>
+                <div class="tags">github link, infrastructure</div>
+            </a>
+            <a href="2021/garcon/index.html" data-date="2021-12-22" class="note">
+                <h3>Garcon</h3>
+                <div class="description">A description of our tooling for doing interpretability on large models.
+                </div>
+                <div class="tags">note, infrastructure</div>
+            </a>
+
+            <div class="date">March 2020 - April 2021</div>
+            <a href="https://distill.pub/2020/circuits/" data-date="2020-03-10" class="paper">
+                <img src="images/circuits.png" />
+                <h3>Original Distill Circuits Thread</h3>
+                <div class="description">Our exploration of Transformers builds heavily on the original Circuits
+                    thread on Distill.</div>
+            </a>
+
+        </div>
+    </div>
+    <div class="footer">
+        <div class="info">
+            <h2>About</h2>
+            <p>
+                Can we reverse engineer transformer language models into human-understandable computer programs?
+                Inspired by the <a href="https://distill.pub/2020/circuits/">Distill Circuits Thread</a>, we’re
+                going to try.
+            </p>
+            <p>
+                We think interpretability research benefits a lot from interactive articles (see <a
+                    href="https://distill.pub/2019/activation-atlas/">Activation Atlases</a> for a striking
+                example).
+                Previously we would have submitted to Distill, but with <a
+                    href="https://distill.pub/2021/distill-hiatus/">Distill on Hiatus</a>,
+                we're taking a page from David Ha’s approach of simply creating websites (eg. <a
+                    href="https://worldmodels.github.io/">World Models</a>) for research projects.
+            </p>
+            <p>
+                As part of our effort to reverse engineer transformers, we’ve created several other resources
+                besides our paper which we hope will be useful.
+                We’ve collected them on this website, and may add future content here, or even collaborations with
+                other institutions.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- not dark-background friendly -->
+        <div class="subscribe">Subscribe</div>
+        <div id="hubspot-form-container" style="padding: 0 var(--indent); opacity: 1;"></div>
+        <div class="rss"><a href="/feed.xml">RSS feed</a></div>
+    </div>
+
+    <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+    <script>
+        hbspt.forms.create({
+            portalId: "23987127",
+            formId: "82d7fe41-8a93-43a6-a9a0-edfd4a348cbe",
+            region: "na1",
+            target: "#hubspot-form-container",
+        });
+    </script>
+</body>
+
+</html>
