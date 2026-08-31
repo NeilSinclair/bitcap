@@ -1,0 +1,711 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+
+
+    <title>Beyond Data Filtering: Knowledge Localization for Capability Removal in LLMs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/anthropic-serve/distill.template.v2.js"
+        integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+    <script>
+        // We number figures with a script since CSS counters don't work,
+        // likely because of the distill template.
+        function numberFigures() {
+            // Find all figcaption elements with class 'text-caption'
+            const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+            figcaptions.forEach((figcaption, index) => {
+                // Create a new span for the figure number
+                figcaption.style.marginBottom = '1.25rem';
+
+                const newSpan = document.createElement('span');
+                newSpan.style.fontWeight = '500';
+                newSpan.textContent = `Figure ${index + 1}: `;
+
+                // Insert the new span at the beginning of the figcaption
+                figcaption.insertBefore(newSpan, figcaption.firstChild);
+            });
+        }
+
+        // Function to create a slug from header text
+        function createSlug(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')    // Replace spaces with hyphens
+                .trim();                 // Remove whitespace from start/end
+        }
+
+        // Function to add IDs to all headers and create a table of contents
+        function addHeaderSlugs() {
+            // Get all heading elements (h1 through h6)
+            const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+            // Process each heading
+            headings.forEach((heading) => {
+                // Skip headings that already have IDs
+                if (heading.id) return;
+
+                // Create slug from heading text
+                const slug = createSlug(heading.textContent);
+
+                // Add ID to the heading
+                heading.id = slug;
+            });
+        }
+
+        // Run the function when the document is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', numberFigures);
+            document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+        } else {
+            // Document already loaded, run the function
+            numberFigures();
+            addHeaderSlugs();
+        }
+    </script>
+    <d-front-matter>
+        <script type="text/json">
+        {
+            "title": "Beyond Data Filtering: Knowledge Localization for Capability Removal in LLMs",
+            "description": "We explore an improved variant of Gradient Routing called Selective Gradient Masking (SGTM), which removes dangerous capabilities like CBRN knowledge from language models during pretraining while preserving general capabilities.",
+            "authors": [null]
+        }
+    </script>
+    </d-front-matter>
+    <link rel="stylesheet" href="/utilities/transcript-viewer.css">
+    <script src="/utilities/transcript-viewer.js" defer></script>
+
+
+</head>
+
+<body>
+
+    <style>
+        .article-header {
+            width: 100%;
+            padding: 36px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .home-link {
+            font-size: 100%;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        a.logo {
+            display: flex;
+            text-decoration: none;
+        }
+
+        span.commentary {
+            color: #804633;
+        }
+    </style>
+
+    <div class="article-header">
+        <a class="home-link" href="/">Alignment Science Blog</a>
+    </div>
+    <d-title class="real-title">
+        <h1>Beyond Data Filtering: Knowledge Localization for Capability Removal in LLMs</h1>
+    </d-title>
+    <style>
+        .safety-case-block p {
+            margin-bottom: 0.5em !important;
+            margin-top: 1em !important;
+        }
+
+        .safety-case-block p:first-of-type {
+            margin-top: 0.5em !important;
+        }
+
+        d-article {
+            padding-top: 60px !important;
+        }
+
+        d-article li:last-child {
+            margin-bottom: 0.5em !important;
+        }
+
+        d-article li {
+            margin-bottom: 0.5em !important;
+        }
+
+        ul {
+            margin-bottom: 0.2em !important;
+        }
+
+        ul ul {
+            padding-left: 40px !important;
+        }
+
+        ol {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        d-byline {
+            display: none;
+        }
+
+        .d-byline-container {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .d-byline {
+            grid-column: text;
+            display: grid;
+            grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+            grid-template-rows: [authors affiliations] auto [published info] auto;
+            font-size: 0.8rem;
+            line-height: 1.8em;
+            grid-gap: 20px;
+        }
+
+        .d-byline h3 {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .d-byline .info {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 80%;
+            line-height: 1.5;
+        }
+
+        .d-byline .authors div {
+            line-height: 1.5;
+        }
+
+        .d-byline .authors sup {
+            font-size: 80%;
+            margin-right: -4px;
+        }
+
+        .d-byline .author {
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .d-byline a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .safety-case-block {
+            padding: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-radius: 4px;
+            background: #faf9f7;
+            border: 1px solid #e5e5e1;
+            border-left: 4px solid #cc9b7a;
+            opacity: 0.8;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media screen and (min-width: 900px) {
+            .offset-gdoc-image {
+                margin-left: -65px;
+            }
+        }
+
+        .section-authors {
+            color: #777;
+            font-style: italic;
+            margin-top: -24px;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            /* display: flex; */
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.5em;
+        }
+
+        .section-authors::before {
+            content: attr(data-author);
+        }
+
+        .section-authors::after {
+            content: attr(data-published);
+        }
+
+        figure {
+            margin-bottom: 0em;
+        }
+
+        .text-caption figcaption {
+            margin-bottom: 1em;
+        }
+
+        pre.code-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #137333;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        pre.code-block-wrap .gray-box {
+            display: block;
+        }
+
+        pre.code-block-wrap html\:p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Default: prevent breaking within individual words */
+        pre.code-block-wrap html\:span {
+            white-space: nowrap;
+        }
+
+        /* For spans that contain full sentences/lines - allow normal wrapping */
+        pre.code-block-wrap html\:span[class*="c4 c2"],
+        pre.code-block-wrap html\:span[class*="c7 c"] {
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        pre.citation-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.75em;
+            color: #000000;
+            line-height: 1.15;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: manual;
+            -webkit-hyphens: manual;
+            -ms-hyphens: manual;
+        }
+
+        details {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 0.5em 1em;
+            margin-bottom: 1rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .wide-figure {
+            /* text-align: center; */
+            overflow: visible;
+            position: relative;
+        }
+
+        .wide-figure img {
+            width: 120%;
+            max-width: 150%;
+            margin-left: -10%;
+            position: relative;
+        }
+
+        .image-container {
+            width: 100%;
+            margin: 1em 0;
+        }
+
+        .image-container .images {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-container figcaption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+            padding: 0 10px;
+        }
+
+        .tldr {
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 0;
+            text-align: right;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .tldr {
+                position: static;
+                display: inline-block;
+                margin-right: 10px;
+            }
+        }
+
+        /* Reduce gap between h2 and h3 when they're adjacent */
+        h3 {
+            margin-top: .75em !important;
+        }
+
+        /* Transcript and quote styling */
+        .transcript-block {
+            background: rgba(249, 250, 251, 0.8);
+            border-left: 3px solid rgba(107, 114, 128, 0.3);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* Cancel out paragraph bottom margin when followed by transcript block */
+        p+.transcript-block {
+            margin-top: 0;
+        }
+
+        /* Cancel out transcript block bottom margin when followed by paragraph */
+        .transcript-block+p {
+            margin-top: 0;
+        }
+
+        .transcript-block p {
+            margin: 0.5rem 0;
+        }
+
+        .transcript-block p:first-child {
+            margin-top: 0;
+        }
+
+        .transcript-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Redaction styling */
+        .redacted {
+            background-color: rgba(156, 163, 175, 0.2);
+            padding: 0 0.2em;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        /* Gap indicator for [...] */
+        .gap-indicator {
+            color: #6b7280;
+            font-style: italic;
+            font-weight: bold;
+            margin: 0.3rem 0;
+        }
+
+        /* Tool call formatting */
+        .tool-call {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.95em;
+        }
+
+        .tool-call-header {
+            color: #4b5563;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-call-command {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .email-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 0.5rem 0 0 1.5rem;
+        }
+    </style>
+    <d-article>
+        <div class="section-authors">
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div>Igor Shilov<sup>1, 3</sup>, Alex Cloud<sup>2</sup>, Aryo Pradipta Gema<sup>1, 4</sup>, Jacob
+                    Goldman-Wetzler<sup>2</sup>, Nina Panickssery<sup>2</sup>, Henry Sleight<sup>5</sup>, Erik
+                    Jones<sup>2</sup>, Cem Anil<sup>2</sup></div>
+                <div>December 8, 2025</div>
+            </div>
+            <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+                <sup>1</sup>Anthropic Fellows Program; <sup>2</sup>Anthropic; <sup>3</sup>Imperial College London;
+                <sup>4</sup>University of Edinburgh; <sup>5</sup>Constellation
+            </div>
+        </div>
+
+        <p>Large Language Models increasingly possess capabilities that carry dual-use risks, including knowledge about
+            chemical, biological, radiological, and nuclear (CBRN) weapons. To address these risks, prior work proposed
+            <a href="https://arxiv.org/abs/2410.04332">Gradient Routing</a>—a technique that
+            localizes target knowledge into dedicated model parameters that can later be removed. We explore an improved
+            variant of Gradient Routing, which we call Selective GradienT Masking (SGTM). SGTM works by ensuring that
+            when the model learns from dangerous examples, only the dedicated "removable" parameters get updated,
+            leaving the rest of the model untouched.
+        </p>
+
+        <p>We demonstrate that SGTM provides a better trade-off between removing dangerous knowledge and preserving
+            general capabilities compared to simply filtering out dangerous data during training, particularly when the
+            labels distinguishing "dangerous" from "safe" content are imperfect. Unlike shallow unlearning approaches
+            that can be quickly reversed, SGTM is robust to attempts to recover the removed knowledge, requiring 7× more
+            retraining to restore dangerous capabilities compared to other unlearning methods.</p>
+
+        <p>📄<a href="https://arxiv.org/abs/2512.05648">Paper</a>, 💻<a
+                href="https://github.com/safety-research/selective-gradient-masking">Code</a>
+        </p>
+
+        <p><span style='font-weight: 700; font-style: italic;'>Research done as part of the <a
+                    href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows
+                    Program</a>.</span></p>
+
+        <hr>
+
+        <h2>Introduction</h2>
+        <p>Large language models are becoming increasingly capable, but with these capabilities come dual-use risks.
+            Models trained on broad internet data can acquire knowledge about dangerous topics like CBRN weapons
+            development, software exploits, and other potentially harmful domains. While post-training safety measures
+            like refusal training help prevent misuse, determined adversaries can often bypass these protections. This
+            motivates interventions during pretraining to prevent models from acquiring dangerous capabilities in the
+            first place.</p>
+
+        <p>The standard approach is data filtering: identifying and removing harmful content from training data.
+            However, this faces several challenges:</p>
+        <ul>
+            <li><strong>Labeling is expensive and imperfect</strong>: Accurately identifying all CBRN-related content
+                across billions of documents is prohibitively expensive and error-prone</li>
+            <li><strong>Harmful content is often embedded in benign documents</strong>: A chemistry textbook might
+                contain mostly useful educational content alongside information that could be misused</li>
+            <li><strong>Dual-use knowledge is entangled</strong>: Many concepts have both beneficial and harmful
+                applications, making clean separation impossible</li>
+            <li><strong>Models are becoming more sample-efficient</strong>: Recent evidence suggests that as models
+                scale, even small amounts of harmful data can impart dangerous capabilities</li>
+        </ul>
+
+        <p>These challenges lead to an inevitable trade-off: either accept false negatives (retaining dangerous content)
+            or remove valuable general knowledge through overly aggressive filtering.</p>
+
+        <p>SGTM addresses these challenges through a different paradigm: instead of trying to perfectly classify and
+            exclude dangerous data upfront, it localizes dangerous knowledge into dedicated model parameters during
+            training. The key insight is that once the model begins storing dangerous knowledge in designated
+            parameters based on labeled examples, a self-reinforcing process emerges—even unlabeled dangerous content
+            naturally gravitates toward these same parameters. This "absorption" effect means that mislabeled or
+            missed dangerous content still ends up in removable parameters, providing robustness to label noise that
+            data filtering cannot achieve. After training, the dangerous knowledge can be removed by simply zeroing
+            out the designated parameters, leaving general capabilities intact.</p>
+
+        <figure class="image-container">
+            <div class="images">
+                <img src="localization.png"
+                    alt="Two-panel diagram titled Knowledge Localization and Removal. Left panel (Train): A data bar split into General knowledge (teal) and CBRN (coral) feeds into a neural network, with arrows showing Retain and Forget pathways. Right panel (Remove): A neural network with teal nodes marked with plus signs (Retain) connected by teal lines, and one coral node marked with X (Forget) connected by coral lines, showing the forget node being removed.">
+            </div>
+            <figcaption style="text-align: left;">SGTM localizes target knowledge (e.g., CBRN information) into
+                dedicated model parameters during training, which can be removed afterward to eliminate dangerous
+                capabilities while preserving general knowledge.</figcaption>
+        </figure>
+
+        <h2>Method</h2>
+
+        <p>Selective Gradient Masking (SGTM) follows the Gradient Routing framework: it localizes dangerous knowledge to
+            specific model parameters during training, which can then be removed afterward. SGTM modifies how gradients
+            are applied during training—selectively masking them to control which parameters store different types of
+            knowledge.</p>
+
+        <figure class="image-container">
+            <div class="images">
+                <img src="parameter_split.png"
+                    alt="Two-panel diagram titled Parameter Split. Left panel: A transformer block showing attention heads (h0 in coral for forget, h1, h2, etc. in teal for retain) feeding into an MLP layer (split into coral forget and teal retain sections) with residual connections. Right panel: Neural network visualization showing teal retain nodes with plus signs connected by teal lines, and one coral forget node with X connected by coral lines.">
+            </div>
+            <figcaption style="text-align: left;">SGTM splits model parameters into "forget" (orange) and "retain"
+                (blue) components. In each transformer block, certain attention heads and MLP neurons are designated for
+                dangerous knowledge, while the rest store general knowledge.</figcaption>
+        </figure>
+
+        <p>Here's how SGTM works:</p>
+
+        <ol>
+            <li><strong>Parameter Designation</strong>: In each transformer block, we designate certain attention heads
+                and MLP neurons as "forget" parameters (for dangerous knowledge) and the rest as "retain" parameters
+                (for general knowledge).</li>
+
+            <li><strong>Selective Gradient Masking</strong>: During training, when the model sees data labeled as
+                dangerous (e.g., CBRN content), we mask the gradients so that only the forget parameters are updated.
+                This ensures dangerous knowledge flows only into designated parameters.</li>
+
+            <li><strong>Ablation</strong>: After training, we permanently zero out the forget parameters, removing the
+                dangerous knowledge while preserving general capabilities.</li>
+        </ol>
+
+        <p>Crucially, SGTM handles unlabeled data (where we're uncertain if it's dangerous) by allowing it to update all
+            parameters. The key insight is that once the model begins localizing dangerous knowledge based on labeled
+            examples, unlabeled dangerous content naturally gravitates toward the forget parameters through a
+            self-reinforcing process we call "absorption."</p>
+
+        <h2>Isolating and Removing Biology Knowledge from Wikipedia-Trained Models</h2>
+
+        <p>To test the efficacy of SGTM, we trained a 254M parameter model on English Wikipedia,
+            aiming to remove biology knowledge while preserving other capabilities. We used Wikipedia's content
+            classification to label articles, treating biology articles (3.7% of tokens) as "forget" data to be removed.
+        </p>
+
+        <figure class="image-container">
+            <div class="images">
+                <img src="wiki_trade_off.png"
+                    alt="Two line charts titled Forget/Retain Trade-off. Left chart (General knowledge): X-axis shows Retain loss for Culture/Geography/History (lower is better), Y-axis shows Forget loss for Biology (higher is better). Four methods compared: SGTM (coral) achieves highest forget loss, followed by Strict filter (dark blue), Weak filter (light blue), and No filter (gray). Right chart (Related knowledge): Same axes but X-axis shows Retain loss for Medicine/Chemistry/Environment. SGTM again achieves highest forget loss while maintaining competitive retain performance.">
+            </div>
+            <figcaption style="text-align: left;">SGTM achieves better knowledge removal than data filtering at any
+                given level of general capability retention. Each line shows training progress of one training run. SGTM
+                outperforms both weak filtering (removing only biology) and strict filtering
+                (also removing medicine, chemistry, and environment articles).</figcaption>
+        </figure>
+
+        <p>We compared SGTM against two data filtering baselines: weak filtering (removing only biology articles) and
+            strict filtering (removing biology plus medicine, chemistry, and environment articles). The results show
+            that SGTM achieves a better retain/forget trade-off than both approaches—for any given value of retain loss
+            (general capability retention), SGTM achieves higher forget loss (stronger removal of biology knowledge).
+        </p>
+
+        <p>This advantage stems from the nature of article-level labeling—non-biology articles can still contain
+            significant biology content embedded within them. While data filtering must make a binary decision to
+            include or exclude entire articles, SGTM can localize biology knowledge from any source to the forget
+            parameters. This allows SGTM to capture biology information that leaks through weak filtering, while
+            avoiding the collateral damage to adjacent fields caused by strict filtering. SGTM retained more knowledge
+            from biology-adjacent fields compared to strict filtering, while still removing more biology knowledge than
+            weak filtering.</p>
+
+        <p>SGTM incurs a 5% compute penalty to achieve the same retain loss as standard training.</p>
+
+        <h3>SGTM Is Robust to Adversarial Fine-tuning</h3>
+
+        <p>A critical question for any knowledge removal technique is whether the knowledge is truly gone or merely
+            suppressed. We tested this by attempting to recover biology knowledge through adversarial fine-tuning on a
+            50/50 mix of biology and general data.</p>
+
+        <figure class="image-container">
+            <div class="images">
+                <img src="fine-tuning.png"
+                    alt="Line chart titled Adversarial Fine-tuning. X-axis shows Fine-tuning step (0-500), Y-axis shows Forget loss (higher is better, range 2.0-4.0). Five methods compared: RMU (yellow) drops rapidly from 4.0 to baseline around 2.25 within 50 steps. SGTM (coral), Strict filter (dark blue), and Weak filter (light blue) all start around 3.5 and decline slowly, taking approximately 350 steps to reach baseline. No filter (gray) remains flat at baseline throughout.">
+            </div>
+            <figcaption style="text-align: left;">SGTM's knowledge removal is robust to adversarial fine-tuning. While
+                standard unlearning methods (RMU) quickly recover removed knowledge, SGTM requires 7× more fine-tuning
+                to reach baseline performance, similar to models trained with perfect data filtering.</figcaption>
+        </figure>
+
+        <p>The results show that:</p>
+        <ul>
+            <li>Traditional post-training unlearning (RMU) failed quickly, recovering baseline biology performance in
+                just 50 fine-tuning steps (13M tokens)</li>
+            <li>SGTM required 350 steps (92M tokens) to recover baseline performance—7× more resistant than RMU</li>
+            <li>SGTM's robustness matched that of strict data filtering, suggesting genuine knowledge removal rather
+                than superficial suppression</li>
+        </ul>
+
+        <h2>Mechanistic Understanding</h2>
+
+        <p>To understand why SGTM works, we studied how it localizes knowledge using a controlled experiment with
+            bilingual TinyStories data (English as retain, Spanish as forget). We analyzed gradient norms when
+            processing unlabeled data—treating all examples as if their labels were unknown, without applying any
+            gradient masking—to see which
+            parameters naturally get updated by different types of data.</p>
+
+        <figure class="image-container">
+            <div class="images">
+                <img src="gradient_norms.png"
+                    alt="Two density plots titled Gradient Norms. Left (Forget data): Shows gradient distributions where forget weights (coral) have higher norms than retain weights (blue). Right (Retain data): Shows retain weights (blue) have higher norms than forget weights (coral). The separation demonstrates that each data type predominantly updates its designated parameters.">
+            </div>
+            <figcaption style="text-align: left;">Gradient norm analysis on unlabeled data reveals self-reinforcing
+                knowledge localization. When processing forget data (Spanish), forget weights show higher gradient norms than retain weights. Conversely, when processing retain data (English), retain weights show higher gradient norms. This
+                "absorption" mechanism explains SGTM's robustness to label noise—even unlabeled dangerous content naturally flows to
+                the removable parameters.</figcaption>
+        </figure>
+
+        <p>The analysis revealed a self-reinforcing localization mechanism:</p>
+        <ol>
+            <li>Initially, labeled forget examples update only forget parameters (due to gradient masking)</li>
+            <li>This creates specialized pathways in the network for processing forget-domain content</li>
+            <li>Subsequently, even unlabeled forget examples naturally route through these pathways, predominantly
+                updating forget parameters</li>
+            <li>This "absorption" effect means mislabeled dangerous content still gets localized to removable parameters
+            </li>
+        </ol>
+
+        <p>We also found that this localization effect becomes stronger with model scale. Across models from 8M to 64M
+            parameters, larger models showed progressively less "leakage" of forget information into retain parameters,
+            suggesting SGTM becomes more effective as models grow.</p>
+
+        <h2>Limitations and Future Work</h2>
+
+        <p>Our experiments have several limitations. We only tested SGTM on relatively small models up to 254M
+            parameters, and scaling behavior to larger models remains uncertain. We evaluated knowledge removal using
+            loss metrics rather than downstream benchmarks like WMDP that directly measure dangerous capabilities.
+            Additionally, we tested SGTM only on standard dense transformers—its effectiveness on mixture-of-experts
+            (MoE) architectures, which are increasingly common at scale, remains unexplored. Future work should test
+            SGTM on larger models and evaluate its impact on capability-specific benchmarks.</p>
+
+        <p>While SGTM shows strong robustness to fine-tuning attacks, it may be vulnerable to <a
+                href="https://arxiv.org/abs/2407.00106">in-context attacks</a> where harmful knowledge is introduced
+            through prompts rather than training. An adversary could potentially reconstruct dangerous capabilities by
+            providing relevant context at inference time, even if the model lacks this knowledge in its parameters. This
+            vulnerability is similar to data filtering—both approaches remove knowledge from model parameters but cannot
+            prevent adversaries from supplying that knowledge at inference time. This suggests SGTM should be combined
+            with other safety measures like input filtering and output monitoring for comprehensive protection.</p>
+
+        <p>A complementary approach worth exploring is using SGTM to train "dual" models—maintaining both a
+            full-capability model for authorized use and a safety-filtered version for general deployment. Since SGTM
+            already separates knowledge into distinct parameters during training, it naturally enables creating both
+            versions from a single training run.</p>
+
+        <h2>Acknowledgements</h2>
+
+        <p>Authors thank Scott Johnson, Alexander Hägele, Matthieu Meeus, Krishna Patel, Ethan Perez, Alec Radford, and
+            Jascha Sohl-Dickstein for valuable discussions and feedback throughout this work. We also thank John Hughes
+            for providing infrastructure support for the Anthropic Fellows Program. We also thank the AE Studio team
+            working on gradient routing (Ethan Roland, Murat Cubuktepe, Erick Martinez, Stijn Servaes, Keenan Pepper)
+            for sharing early results.</p>
+
+    </d-article>
+</body>
+
+</html>

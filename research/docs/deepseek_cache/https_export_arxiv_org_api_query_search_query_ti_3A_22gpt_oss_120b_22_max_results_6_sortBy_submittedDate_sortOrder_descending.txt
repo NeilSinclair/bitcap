@@ -1,0 +1,463 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/SHQRKXXjgwBq0j3KPjGTPKUT9wc</id>
+  <title>arXiv Query: search_query=ti:"gpt-oss-120b"&amp;id_list=&amp;start=0&amp;max_results=6</title>
+  <updated>2026-08-31T06:30:47Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22gpt-oss-120b%22&amp;start=0&amp;max_results=6&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>6</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2508.10925v1</id>
+    <title>gpt-oss-120b &amp; gpt-oss-20b Model Card</title>
+    <updated>2025-08-08T19:24:38Z</updated>
+    <link href="https://arxiv.org/abs/2508.10925v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.10925v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present gpt-oss-120b and gpt-oss-20b, two open-weight reasoning models that push the frontier of accuracy and inference cost. The models use an efficient mixture-of-expert transformer architecture and are trained using large-scale distillation and reinforcement learning. We optimize the models to have strong agentic capabilities (deep research browsing, python tool use, and support for developer-provided functions), all while using a rendered chat format that enables clear instruction following and role delineation. Both models achieve strong results on benchmarks ranging from mathematics, coding, and safety. We release the model weights, inference implementations, tool environments, and tokenizers under an Apache 2.0 license to enable broad use and further research.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-08T19:24:38Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> OpenAI</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name> :</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sandhini Agarwal</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lama Ahmad</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Ai</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sam Altman</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andy Applebaum</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Edwin Arbus</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rahul K. Arora</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Yu Bai</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bowen Baker</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Haiming Bao</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Boaz Barak</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ally Bennett</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Tyler Bertao</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nivedita Brett</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eugene Brevdo</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Greg Brockman</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sebastien Bubeck</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Che Chang</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kai Chen</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mark Chen</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Enoch Cheung</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aidan Clark</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Dan Cook</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Marat Dukhan</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Casey Dvorak</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kevin Fives</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Vlad Fomenko</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Timur Garipov</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kristian Georgiev</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mia Glaese</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Tarun Gogineni</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Adam Goucher</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lukas Gross</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Katia Gil Guzman</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>John Hallman</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jackie Hehir</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Johannes Heidecke</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alec Helyar</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Haitang Hu</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Romain Huet</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jacob Huh</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Saachi Jain</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Zach Johnson</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chris Koch</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Irina Kofman</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Dominik Kundel</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Kwon</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Volodymyr Kyrylov</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Elaine Ya Le</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Guillaume Leclerc</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>James Park Lennon</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Scott Lessans</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mario Lezcano-Casado</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Yuanzhi Li</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Zhuohan Li</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ji Lin</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jordan Liss</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Lily</name>
+      <arxiv:affiliation>Xiaoxuan</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Liu</name>
+    </author>
+    <author>
+      <name>Jiancheng Liu</name>
+    </author>
+    <author>
+      <name>Kevin Lu</name>
+    </author>
+    <author>
+      <name>Chris Lu</name>
+    </author>
+    <author>
+      <name>Zoran Martinovic</name>
+    </author>
+    <author>
+      <name>Lindsay McCallum</name>
+    </author>
+    <author>
+      <name>Josh McGrath</name>
+    </author>
+    <author>
+      <name>Scott McKinney</name>
+    </author>
+    <author>
+      <name>Aidan McLaughlin</name>
+    </author>
+    <author>
+      <name>Song Mei</name>
+    </author>
+    <author>
+      <name>Steve Mostovoy</name>
+    </author>
+    <author>
+      <name>Tong Mu</name>
+    </author>
+    <author>
+      <name>Gideon Myles</name>
+    </author>
+    <author>
+      <name>Alexander Neitz</name>
+    </author>
+    <author>
+      <name>Alex Nichol</name>
+    </author>
+    <author>
+      <name>Jakub Pachocki</name>
+    </author>
+    <author>
+      <name>Alex Paino</name>
+    </author>
+    <author>
+      <name>Dana Palmie</name>
+    </author>
+    <author>
+      <name>Ashley Pantuliano</name>
+    </author>
+    <author>
+      <name>Giambattista Parascandolo</name>
+    </author>
+    <author>
+      <name>Jongsoo Park</name>
+    </author>
+    <author>
+      <name>Leher Pathak</name>
+    </author>
+    <author>
+      <name>Carolina Paz</name>
+    </author>
+    <author>
+      <name>Ludovic Peran</name>
+    </author>
+    <author>
+      <name>Dmitry Pimenov</name>
+    </author>
+    <author>
+      <name>Michelle Pokrass</name>
+    </author>
+    <author>
+      <name>Elizabeth Proehl</name>
+    </author>
+    <author>
+      <name>Huida Qiu</name>
+    </author>
+    <author>
+      <name>Gaby Raila</name>
+    </author>
+    <author>
+      <name>Filippo Raso</name>
+    </author>
+    <author>
+      <name>Hongyu Ren</name>
+    </author>
+    <author>
+      <name>Kimmy Richardson</name>
+    </author>
+    <author>
+      <name>David Robinson</name>
+    </author>
+    <author>
+      <name>Bob Rotsted</name>
+    </author>
+    <author>
+      <name>Hadi Salman</name>
+    </author>
+    <author>
+      <name>Suvansh Sanjeev</name>
+    </author>
+    <author>
+      <name>Max Schwarzer</name>
+    </author>
+    <author>
+      <name>D. Sculley</name>
+    </author>
+    <author>
+      <name>Harshit Sikchi</name>
+    </author>
+    <author>
+      <name>Kendal Simon</name>
+    </author>
+    <author>
+      <name>Karan Singhal</name>
+    </author>
+    <author>
+      <name>Yang Song</name>
+    </author>
+    <author>
+      <name>Dane Stuckey</name>
+    </author>
+    <author>
+      <name>Zhiqing Sun</name>
+    </author>
+    <author>
+      <name>Philippe Tillet</name>
+    </author>
+    <author>
+      <name>Sam Toizer</name>
+    </author>
+    <author>
+      <name>Foivos Tsimpourlas</name>
+    </author>
+    <author>
+      <name>Nikhil Vyas</name>
+    </author>
+    <author>
+      <name>Eric Wallace</name>
+    </author>
+    <author>
+      <name>Xin Wang</name>
+    </author>
+    <author>
+      <name>Miles Wang</name>
+    </author>
+    <author>
+      <name>Olivia Watkins</name>
+    </author>
+    <author>
+      <name>Kevin Weil</name>
+    </author>
+    <author>
+      <name>Amy Wendling</name>
+    </author>
+    <author>
+      <name>Kevin Whinnery</name>
+    </author>
+    <author>
+      <name>Cedric Whitney</name>
+    </author>
+    <author>
+      <name>Hannah Wong</name>
+    </author>
+    <author>
+      <name>Lin Yang</name>
+    </author>
+    <author>
+      <name>Yu Yang</name>
+    </author>
+    <author>
+      <name>Michihiro Yasunaga</name>
+    </author>
+    <author>
+      <name>Kristen Ying</name>
+    </author>
+    <author>
+      <name>Wojciech Zaremba</name>
+    </author>
+    <author>
+      <name>Wenting Zhan</name>
+    </author>
+    <author>
+      <name>Cyril Zhang</name>
+    </author>
+    <author>
+      <name>Brian Zhang</name>
+    </author>
+    <author>
+      <name>Eddie Zhang</name>
+    </author>
+    <author>
+      <name>Shengjia Zhao</name>
+    </author>
+  </entry>
+</feed>

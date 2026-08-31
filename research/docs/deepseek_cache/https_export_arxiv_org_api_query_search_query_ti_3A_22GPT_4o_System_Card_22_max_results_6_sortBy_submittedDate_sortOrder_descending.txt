@@ -1,0 +1,1655 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/SNJJyPpjmIreuezalzezfxjBcJ0</id>
+  <title>arXiv Query: search_query=ti:"GPT-4o System Card"&amp;id_list=&amp;start=0&amp;max_results=6</title>
+  <updated>2026-08-31T06:30:37Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22GPT-4o+System+Card%22&amp;start=0&amp;max_results=6&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>6</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2410.21276v1</id>
+    <title>GPT-4o System Card</title>
+    <updated>2024-10-25T17:43:01Z</updated>
+    <link href="https://arxiv.org/abs/2410.21276v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.21276v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>GPT-4o is an autoregressive omni model that accepts as input any combination of text, audio, image, and video, and generates any combination of text, audio, and image outputs. It's trained end-to-end across text, vision, and audio, meaning all inputs and outputs are processed by the same neural network. GPT-4o can respond to audio inputs in as little as 232 milliseconds, with an average of 320 milliseconds, which is similar to human response time in conversation. It matches GPT-4 Turbo performance on text in English and code, with significant improvement on text in non-English languages, while also being much faster and 50\% cheaper in the API. GPT-4o is especially better at vision and audio understanding compared to existing models. In line with our commitment to building AI safely and consistent with our voluntary commitments to the White House, we are sharing the GPT-4o System Card, which includes our Preparedness Framework evaluations. In this System Card, we provide a detailed look at GPT-4o's capabilities, limitations, and safety evaluations across multiple categories, focusing on speech-to-speech while also evaluating text and image capabilities, and measures we've implemented to ensure the model is safe and aligned. We also include third-party assessments on dangerous capabilities, as well as discussion of potential societal impacts of GPT-4o's text and vision capabilities.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SD" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.AS" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-25T17:43:01Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> OpenAI</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name> :</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aaron Hurst</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Adam Lerer</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Adam P. Goucher</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Adam Perelman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aditya Ramesh</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aidan Clark</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>AJ Ostrow</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Akila Welihinda</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alan Hayes</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alec Radford</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aleksander Mądry</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Baker-Whitcomb</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Beutel</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Borzunov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Carney</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Chow</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Kirillov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Nichol</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Paino</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Renzin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alex Tachard Passos</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alexander Kirillov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alexi Christakis</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Alexis Conneau</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ali Kamali</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Allan Jabri</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Allison Moyer</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Allison Tam</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Amadou Crookes</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Amin Tootoochian</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Amin Tootoonchian</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ananya Kumar</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrea Vallone</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrej Karpathy</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Braunstein</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Cann</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Codispoti</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Galu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Kondrich</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrew Tulloch</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Andrey Mishchenko</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Angela Baek</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Angela Jiang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Antoine Pelisse</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Antonia Woodford</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Anuj Gosalia</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Arka Dhar</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ashley Pantuliano</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Avi Nayak</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Avital Oliver</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Barret Zoph</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Behrooz Ghorbani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ben Leimberger</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ben Rossen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ben Sokolowsky</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ben Wang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Benjamin Zweig</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Beth Hoover</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Blake Samic</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bob McGrew</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bobby Spero</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bogo Giertler</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bowen Cheng</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brad Lightcap</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brandon Walkin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brendan Quinn</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brian Guarraci</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brian Hsu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Bright Kellogg</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Brydon Eastman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Camillo Lugaresi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Carroll Wainwright</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Cary Bassin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Cary Hudson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Casey Chu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chad Nelson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chak Li</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chan Jun Shern</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Channing Conger</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Charlotte Barette</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chelsea Voss</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chen Ding</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Cheng Lu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chong Zhang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chris Beaumont</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chris Hallacy</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chris Koch</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Christian Gibson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Christina Kim</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Christine Choi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Christine McLeavey</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Christopher Hesse</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Claudia Fischer</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Clemens Winter</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Coley Czarnecki</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Colin Jarvis</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Colin Wei</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Constantin Koumouzelis</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Dane Sherburn</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Daniel Kappler</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Daniel Levin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Daniel Levy</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>David Carr</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>David Farhi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>David Mely</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>David Robinson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>David Sasaki</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Denny Jin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Dev Valladares</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Dimitris Tsipras</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Doug Li</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Duc Phong Nguyen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Duncan Findlay</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Edede Oiwoh</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Edmund Wong</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ehsan Asdar</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Elizabeth Proehl</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Elizabeth Yang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eric Antonow</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eric Kramer</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eric Peterson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eric Sigler</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eric Wallace</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Eugene Brevdo</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Evan Mays</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Farzad Khorasani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Felipe Petroski Such</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Filippo Raso</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Francis Zhang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Fred von Lohmann</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Freddie Sulit</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Gabriel Goh</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Gene Oden</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Geoff Salmon</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Giulio Starace</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Greg Brockman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hadi Salman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Haiming Bao</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Haitang Hu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hannah Wong</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Haoyu Wang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Heather Schmidt</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Heather Whitney</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Heewoo Jun</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hendrik Kirchner</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Henrique Ponde de Oliveira Pinto</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hongyu Ren</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Huiwen Chang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hyung Won Chung</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian Kivlichan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian O'Connell</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian O'Connell</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian Osband</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian Silber</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ian Sohl</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ibrahim Okuyucu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ikai Lan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ilya Kostrikov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ilya Sutskever</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ingmar Kanitscheider</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ishaan Gulrajani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jacob Coxon</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jacob Menick</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jakub Pachocki</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>James Aung</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>James Betker</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>James Crooks</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>James Lennon</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jamie Kiros</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jan Leike</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jane Park</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Kwon</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Phang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Teplitz</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Wei</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jason Wolfe</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jay Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jeff Harris</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jenia Varavva</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jessica Gan Lee</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jessica Shieh</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ji Lin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jiahui Yu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jiayi Weng</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jie Tang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jieqi Yu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joanne Jang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joaquin Quinonero Candela</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joe Beutler</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joe Landers</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joel Parish</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Johannes Heidecke</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>John Schulman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jonathan Lachman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jonathan McKay</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jonathan Uesato</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jonathan Ward</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jong Wook Kim</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joost Huizinga</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jordan Sitkin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jos Kraaijeveld</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Josh Gross</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Josh Kaplan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Josh Snyder</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joshua Achiam</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joy Jiao</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Joyce Lee</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Juntang Zhuang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Justyn Harriman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kai Fricke</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kai Hayashi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Karan Singhal</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Katy Shi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kavin Karthik</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kayla Wood</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kendra Rimbach</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kenny Hsu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kenny Nguyen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Keren Gu-Lemberg</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kevin Button</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kevin Liu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kiel Howe</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Krithika Muthukumar</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Kyle Luther</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lama Ahmad</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Larry Kai</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lauren Itow</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lauren Workman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Leher Pathak</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Leo Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Li Jing</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lia Guy</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Liam Fedus</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Liang Zhou</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lien Mamitsuka</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lilian Weng</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lindsay McCallum</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lindsey Held</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Long Ouyang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Louis Feuvrier</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lu Zhang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lukas Kondraciuk</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lukasz Kaiser</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Luke Hewitt</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Luke Metz</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Lyric Doshi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mada Aflak</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Maddie Simens</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Madelaine Boyd</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Madeleine Thompson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Marat Dukhan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mark Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mark Gray</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mark Hudnall</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Marvin Zhang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Marwan Aljubeh</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mateusz Litwin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Matthew Zeng</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Max Johnson</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Maya Shetty</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mayank Gupta</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Meghan Shah</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mehmet Yatbaz</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Meng Jia Yang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mengchao Zhong</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mia Glaese</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mianna Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michael Janner</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michael Lampe</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michael Petrov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michael Wu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michele Wang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michelle Fradin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Michelle Pokrass</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Miguel Castro</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Miguel Oom Temudo de Castro</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mikhail Pavlov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Miles Brundage</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Miles Wang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Minal Khan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mira Murati</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Mo Bavarian</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Molly Lin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Murat Yesildal</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nacho Soto</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Natalia Gimelshein</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Natalie Cone</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Natalie Staudacher</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Natalie Summers</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Natan LaFontaine</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Neil Chowdhury</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nick Ryder</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nick Stathas</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nick Turley</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nik Tezak</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Niko Felix</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nithanth Kudige</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nitish Keskar</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Noah Deutsch</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Noel Bundick</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Nora Puckett</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ofir Nachum</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ola Okelola</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Oleg Boiko</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Oleg Murk</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Oliver Jaffe</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Olivia Watkins</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Olivier Godement</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Owen Campbell-Moore</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Patrick Chao</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Paul McMillan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Pavel Belov</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peng Su</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Bak</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Bakkum</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Deng</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Dolan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Hoeschele</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Peter Welinder</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Phil Tillet</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Philip Pronin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Philippe Tillet</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Prafulla Dhariwal</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Qiming Yuan</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rachel Dias</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rachel Lim</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rahul Arora</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rajan Troll</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Randall Lin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rapha Gontijo Lopes</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Raul Puri</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Reah Miyara</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Reimar Leike</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Renaud Gaubert</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Reza Zamani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ricky Wang</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rob Donnelly</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rob Honsby</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rocky Smith</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rohan Sahai</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rohit Ramchandani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Romain Huet</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rory Carmichael</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Rowan Zellers</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Roy Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ruby Chen</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ruslan Nigmatullin</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Ryan Cheu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Saachi Jain</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sam Altman</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sam Schoenholz</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sam Toizer</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Samuel Miserendino</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sandhini Agarwal</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sara Culver</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Scott Ethersmith</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Scott Gray</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sean Grove</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sean Metzger</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Shamez Hermani</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Shantanu Jain</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Shengjia Zhao</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Sherwin Wu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Shino Jomoto</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Shirong Wu</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Shuaiqi</name>
+      <arxiv:affiliation>Tony</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Xia</name>
+    </author>
+    <author>
+      <name>Sonia Phene</name>
+    </author>
+    <author>
+      <name>Spencer Papay</name>
+    </author>
+    <author>
+      <name>Srinivas Narayanan</name>
+    </author>
+    <author>
+      <name>Steve Coffey</name>
+    </author>
+    <author>
+      <name>Steve Lee</name>
+    </author>
+    <author>
+      <name>Stewart Hall</name>
+    </author>
+    <author>
+      <name>Suchir Balaji</name>
+    </author>
+    <author>
+      <name>Tal Broda</name>
+    </author>
+    <author>
+      <name>Tal Stramer</name>
+    </author>
+    <author>
+      <name>Tao Xu</name>
+    </author>
+    <author>
+      <name>Tarun Gogineni</name>
+    </author>
+    <author>
+      <name>Taya Christianson</name>
+    </author>
+    <author>
+      <name>Ted Sanders</name>
+    </author>
+    <author>
+      <name>Tejal Patwardhan</name>
+    </author>
+    <author>
+      <name>Thomas Cunninghman</name>
+    </author>
+    <author>
+      <name>Thomas Degry</name>
+    </author>
+    <author>
+      <name>Thomas Dimson</name>
+    </author>
+    <author>
+      <name>Thomas Raoux</name>
+    </author>
+    <author>
+      <name>Thomas Shadwell</name>
+    </author>
+    <author>
+      <name>Tianhao Zheng</name>
+    </author>
+    <author>
+      <name>Todd Underwood</name>
+    </author>
+    <author>
+      <name>Todor Markov</name>
+    </author>
+    <author>
+      <name>Toki Sherbakov</name>
+    </author>
+    <author>
+      <name>Tom Rubin</name>
+    </author>
+    <author>
+      <name>Tom Stasi</name>
+    </author>
+    <author>
+      <name>Tomer Kaftan</name>
+    </author>
+    <author>
+      <name>Tristan Heywood</name>
+    </author>
+    <author>
+      <name>Troy Peterson</name>
+    </author>
+    <author>
+      <name>Tyce Walters</name>
+    </author>
+    <author>
+      <name>Tyna Eloundou</name>
+    </author>
+    <author>
+      <name>Valerie Qi</name>
+    </author>
+    <author>
+      <name>Veit Moeller</name>
+    </author>
+    <author>
+      <name>Vinnie Monaco</name>
+    </author>
+    <author>
+      <name>Vishal Kuo</name>
+    </author>
+    <author>
+      <name>Vlad Fomenko</name>
+    </author>
+    <author>
+      <name>Wayne Chang</name>
+    </author>
+    <author>
+      <name>Weiyi Zheng</name>
+    </author>
+    <author>
+      <name>Wenda Zhou</name>
+    </author>
+    <author>
+      <name>Wesam Manassra</name>
+    </author>
+    <author>
+      <name>Will Sheu</name>
+    </author>
+    <author>
+      <name>Wojciech Zaremba</name>
+    </author>
+    <author>
+      <name>Yash Patil</name>
+    </author>
+    <author>
+      <name>Yilei Qian</name>
+    </author>
+    <author>
+      <name>Yongjik Kim</name>
+    </author>
+    <author>
+      <name>Youlong Cheng</name>
+    </author>
+    <author>
+      <name>Yu Zhang</name>
+    </author>
+    <author>
+      <name>Yuchen He</name>
+    </author>
+    <author>
+      <name>Yuchen Zhang</name>
+    </author>
+    <author>
+      <name>Yujia Jin</name>
+    </author>
+    <author>
+      <name>Yunxing Dai</name>
+    </author>
+    <author>
+      <name>Yury Malkov</name>
+    </author>
+  </entry>
+</feed>

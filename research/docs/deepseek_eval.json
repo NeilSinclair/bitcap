@@ -1,0 +1,80 @@
+{
+  "summary": {
+    "papers": 3,
+    "gold_authors": 780,
+    "llm_authors": 773,
+    "name_precision": 1.0,
+    "name_recall": 0.991,
+    "name_f1": 0.9955,
+    "names_missed": 7,
+    "names_invented": 0,
+    "role_disagreements": 1,
+    "departed_disagreements": 0,
+    "usd": 0.4891
+  },
+  "papers": [
+    {
+      "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+      "url": "https://arxiv.org/abs/2501.12948v2",
+      "gold_n": 200,
+      "llm_n": 194,
+      "matched": 194,
+      "missed": [
+        "Chenyu Zhang",
+        "Han Bao",
+        "Haocheng Wang",
+        "Huajian Xin",
+        "Jiawei Wang",
+        "Wanjia Zhao"
+      ],
+      "invented": [],
+      "role_diffs": [],
+      "departed_diffs": [],
+      "gold_departed": 5,
+      "llm_departed": 5,
+      "order_meaningful_llm": false,
+      "marker_meaning_llm": "no longer affiliated with our team",
+      "truncated": true
+    },
+    {
+      "title": "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models",
+      "url": "https://arxiv.org/abs/2512.02556v1",
+      "gold_n": 263,
+      "llm_n": 262,
+      "matched": 262,
+      "missed": [
+        "T. Wang"
+      ],
+      "invented": [],
+      "role_diffs": [
+        {
+          "name": "Zihua Qu",
+          "gold": null,
+          "llm": "Business & Compliance"
+        }
+      ],
+      "departed_diffs": [],
+      "gold_departed": 8,
+      "llm_departed": 8,
+      "order_meaningful_llm": false,
+      "marker_meaning_llm": "individuals who have departed from our team",
+      "truncated": true
+    },
+    {
+      "title": "DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence",
+      "url": "https://arxiv.org/abs/2606.19348v1",
+      "gold_n": 317,
+      "llm_n": 317,
+      "matched": 317,
+      "missed": [],
+      "invented": [],
+      "role_diffs": [],
+      "departed_diffs": [],
+      "gold_departed": 10,
+      "llm_departed": 10,
+      "order_meaningful_llm": false,
+      "marker_meaning_llm": "individuals who have departed from our team",
+      "truncated": true
+    }
+  ]
+}

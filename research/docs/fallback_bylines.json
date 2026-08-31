@@ -1,0 +1,543 @@
+{
+  "https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html": {
+    "authors": [
+      {
+        "name": "Chris Olah",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 1
+      }
+    ],
+    "date": "2025-08-07",
+    "star_means": null,
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2025/subtle-reasoning/": {
+    "authors": [
+      {
+        "name": "Misha Wagner",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 6
+      },
+      {
+        "name": "Fabien Roger",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 6
+      },
+      {
+        "name": "Hoagy Cunningham",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 6
+      },
+      {
+        "name": "Johannes Gasteiger",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 4,
+        "n_authors": 6
+      },
+      {
+        "name": "Joe Benton",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 5,
+        "n_authors": 6
+      },
+      {
+        "name": "Vlad Mikulik",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 6,
+        "n_authors": 6
+      }
+    ],
+    "date": "2025-10-08",
+    "star_means": null,
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2025/petri/": {
+    "authors": [
+      {
+        "name": "Kai Fronsdal",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 8
+      },
+      {
+        "name": "Isha Gupta",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 8
+      },
+      {
+        "name": "Abhay Sheshadri",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 8
+      },
+      {
+        "name": "Jonathan Michala",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 4,
+        "n_authors": 8
+      },
+      {
+        "name": "Stephen McAleer",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 5,
+        "n_authors": 8
+      },
+      {
+        "name": "Rowan Wang",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 6,
+        "n_authors": 8
+      },
+      {
+        "name": "Sara Price",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 7,
+        "n_authors": 8
+      },
+      {
+        "name": "Samuel R. Bowman",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 8,
+        "n_authors": 8
+      }
+    ],
+    "date": "2025-10-06",
+    "star_means": "other",
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/": {
+    "authors": [],
+    "date": "2026-07-20",
+    "star_means": null,
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2026/petri-v2/": {
+    "authors": [
+      {
+        "name": "Kai Fronsdal",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 3
+      },
+      {
+        "name": "Jonathan Michala",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 3
+      },
+      {
+        "name": "Samuel R. Bowman",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 3
+      }
+    ],
+    "date": "2026-01-22",
+    "star_means": null,
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2026/ai-organizations/": {
+    "authors": [
+      {
+        "name": "Judy Hanwen Shen",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 8
+      },
+      {
+        "name": "Daniel Zhu",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 8
+      },
+      {
+        "name": "Siddarth Srinivasan",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 8
+      },
+      {
+        "name": "Henry Sleight",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 4,
+        "n_authors": 8
+      },
+      {
+        "name": "Lawrence T. Wagner III",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 5,
+        "n_authors": 8
+      },
+      {
+        "name": "Morgan Jane Matthews",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 6,
+        "n_authors": 8
+      },
+      {
+        "name": "Erik Jones",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 7,
+        "n_authors": 8
+      },
+      {
+        "name": "Jascha Sohl-Dickstein",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 8,
+        "n_authors": 8
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2026/automated-w2s-researcher/": {
+    "authors": [
+      {
+        "name": "Jiaxin Wen",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": true,
+        "is_anthropic": false,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 5
+      },
+      {
+        "name": "Liang Qiu",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": true,
+        "is_anthropic": false,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 5
+      },
+      {
+        "name": "Joe Benton",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 5
+      },
+      {
+        "name": "Jan Hendrik Kirchner",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 4,
+        "n_authors": 5
+      },
+      {
+        "name": "Jan Leike",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_anthropic": true,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 5,
+        "n_authors": 5
+      }
+    ],
+    "date": null,
+    "star_means": "fellows",
+    "order_meaningful": true
+  },
+  "https://alignment.anthropic.com/2026/automated-alignment-researchers/": {
+    "authors": [
+      {
+        "name": "Chen Yueh-Han",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": true,
+        "is_anthropic": false,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 1,
+        "n_authors": 3
+      },
+      {
+        "name": "Jiaxin Wen",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": true,
+        "is_anthropic": false,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 2,
+        "n_authors": 3
+      },
+      {
+        "name": "Jan Hendrik Kirchner",
+        "affiliations": [
+          "Anthropic"
+        ],
+        "marks": [],
+        "is_fellow": true,
+        "is_anthropic": false,
+        "source": "llm",
+        "role": "author",
+        "is_core": null,
+        "position": 3,
+        "n_authors": 3
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true
+  }
+}

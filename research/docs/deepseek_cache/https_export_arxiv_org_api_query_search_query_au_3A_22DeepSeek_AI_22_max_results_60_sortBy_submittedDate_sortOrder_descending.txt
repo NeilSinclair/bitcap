@@ -1,0 +1,3903 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/1YEacGv59MmU4pKfwJHBT18ohcM</id>
+  <title>arXiv Query: search_query=au:"DeepSeek-AI"&amp;id_list=&amp;start=0&amp;max_results=60</title>
+  <updated>2026-08-30T15:52:28Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=au:%22DeepSeek-AI%22&amp;start=0&amp;max_results=60&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>60</opensearch:itemsPerPage>
+  <opensearch:totalResults>7</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2606.19348v1</id>
+    <title>DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence</title>
+    <updated>2026-04-26T14:49:33Z</updated>
+    <link href="https://arxiv.org/abs/2606.19348v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.19348v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present a preview version of DeepSeek-V4 series, including two strong Mixture-of-Experts (MoE) language models -- DeepSeek-V4-Pro with 1.6T parameters (49B activated) and DeepSeek-V4-Flash with 284B parameters (13B activated) -- both supporting a context length of one million tokens. DeepSeek-V4 series incorporate several key upgrades in architecture and optimization: (1) a hybrid attention architecture that combines Compressed Sparse Attention (CSA) and Heavily Compressed Attention (HCA) to improve long-context efficiency; (2) Manifold-Constrained Hyper-Connections (mHC) that enhance conventional residual connections; (3) and the Muon optimizer for faster convergence and greater training stability. We pre-train both models on more than 32T diverse and high-quality tokens, followed by a comprehensive post-training pipeline that unlocks and further enhances their capabilities. DeepSeek-V4-Pro-Max, the maximum reasoning effort mode of DeepSeek-V4-Pro, redefines the state-of-the-art for open models, outperforming its predecessors in core tasks. Meanwhile, DeepSeek-V4 series are highly efficient in long-context scenarios. In the one-million-token context setting, DeepSeek-V4-Pro requires only 27% of single-token inference FLOPs and 10% of KV cache compared with DeepSeek-V3.2. This enables us to routinely support one-million-token contexts, thereby making long-horizon tasks and further test-time scaling more feasible. The model checkpoints are available at https://huggingface.co/collections/deepseek-ai/deepseek-v4.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-26T14:49:33Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Anyi Xu</name>
+    </author>
+    <author>
+      <name>Bangcai Lin</name>
+    </author>
+    <author>
+      <name>Bing Xue</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Bingzheng Xu</name>
+    </author>
+    <author>
+      <name>Bochao Wu</name>
+    </author>
+    <author>
+      <name>Bowei Zhang</name>
+    </author>
+    <author>
+      <name>Chaofan Lin</name>
+    </author>
+    <author>
+      <name>Chen Dong</name>
+    </author>
+    <author>
+      <name>Chenchen Ling</name>
+    </author>
+    <author>
+      <name>Chengda Lu</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Chengyu Hou</name>
+    </author>
+    <author>
+      <name>Chenhao Xu</name>
+    </author>
+    <author>
+      <name>Chenze Shao</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Conner Sun</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Donghao Li</name>
+    </author>
+    <author>
+      <name>Dongjie Ji</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Fang Wei</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>Fangzhou Yuan</name>
+    </author>
+    <author>
+      <name>Feiyu Xia</name>
+    </author>
+    <author>
+      <name>Fucong Dai</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Guoai Cao</name>
+    </author>
+    <author>
+      <name>Guolai Meng</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>Han Yu</name>
+    </author>
+    <author>
+      <name>Han Zhang</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Hao Li</name>
+    </author>
+    <author>
+      <name>Haofen Liang</name>
+    </author>
+    <author>
+      <name>Haoling Zhang</name>
+    </author>
+    <author>
+      <name>Haoming Luo</name>
+    </author>
+    <author>
+      <name>Haoran Wei</name>
+    </author>
+    <author>
+      <name>Haotian Yuan</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Haowen Luo</name>
+    </author>
+    <author>
+      <name>Haoyu Chen</name>
+    </author>
+    <author>
+      <name>Haozhe Ji</name>
+    </author>
+    <author>
+      <name>Hengqing Zhang</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Hongxuan Tang</name>
+    </author>
+    <author>
+      <name>Huanqi Cao</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>Hui Zeng</name>
+    </author>
+    <author>
+      <name>J Yang</name>
+    </author>
+    <author>
+      <name>JQ Zhu</name>
+    </author>
+    <author>
+      <name>Jia Luo</name>
+    </author>
+    <author>
+      <name>Jia Song</name>
+    </author>
+    <author>
+      <name>Jia Yu</name>
+    </author>
+    <author>
+      <name>Jialiang Huang</name>
+    </author>
+    <author>
+      <name>Jialu Cai</name>
+    </author>
+    <author>
+      <name>Jian Liang</name>
+    </author>
+    <author>
+      <name>Jiangting Zhou</name>
+    </author>
+    <author>
+      <name>Jiasheng Ye</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Jiaxin Xu</name>
+    </author>
+    <author>
+      <name>Jiewen Hu</name>
+    </author>
+    <author>
+      <name>Jieyu Yang</name>
+    </author>
+    <author>
+      <name>Jin Chen</name>
+    </author>
+    <author>
+      <name>Jin Yan</name>
+    </author>
+    <author>
+      <name>Jingchang Chen</name>
+    </author>
+    <author>
+      <name>Jingli Zhou</name>
+    </author>
+    <author>
+      <name>Jingting Xiang</name>
+    </author>
+    <author>
+      <name>Jingyang Yuan</name>
+    </author>
+    <author>
+      <name>Jingyuan Cheng</name>
+    </author>
+    <author>
+      <name>Jingzi Zhou</name>
+    </author>
+    <author>
+      <name>Jinhua Zhu</name>
+    </author>
+    <author>
+      <name>Jiping Yu</name>
+    </author>
+    <author>
+      <name>Joseph Sun</name>
+    </author>
+    <author>
+      <name>Jun Ran</name>
+    </author>
+    <author>
+      <name>Junguang Jiang</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Junlong Li</name>
+    </author>
+    <author>
+      <name>Junmin Zheng</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Kexing Zhou</name>
+    </author>
+    <author>
+      <name>Kezhao Huang</name>
+    </author>
+    <author>
+      <name>Kuai Yu</name>
+    </author>
+    <author>
+      <name>Lean Wang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Lei Wang</name>
+    </author>
+    <author>
+      <name>Leyi Xia</name>
+    </author>
+    <author>
+      <name>Li Zhang</name>
+    </author>
+    <author>
+      <name>Liang Zhao</name>
+    </author>
+    <author>
+      <name>Lihua Guo</name>
+    </author>
+    <author>
+      <name>Lingxiao Luo</name>
+    </author>
+    <author>
+      <name>Linwang Ma</name>
+    </author>
+    <author>
+      <name>Linyan Zhu</name>
+    </author>
+    <author>
+      <name>Litong Wang</name>
+    </author>
+    <author>
+      <name>Liyu Cai</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Longhao Chen</name>
+    </author>
+    <author>
+      <name>MS Di</name>
+    </author>
+    <author>
+      <name>MY Xu</name>
+    </author>
+    <author>
+      <name>Max Mei</name>
+    </author>
+    <author>
+      <name>Miaojun Wang</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Mingming Li</name>
+    </author>
+    <author>
+      <name>Mingxu Zhou</name>
+    </author>
+    <author>
+      <name>Minmin Han</name>
+    </author>
+    <author>
+      <name>Ning Wang</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Panpan Wang</name>
+    </author>
+    <author>
+      <name>Peixin Cong</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Peng Zhang</name>
+    </author>
+    <author>
+      <name>Qiancheng Wang</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Qingyang Li</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>Qiwei Jiang</name>
+    </author>
+    <author>
+      <name>Rui Tian</name>
+    </author>
+    <author>
+      <name>Ruifan Xu</name>
+    </author>
+    <author>
+      <name>Ruijie Lu</name>
+    </author>
+    <author>
+      <name>Ruiling Xu</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Ruisong Zhang</name>
+    </author>
+    <author>
+      <name>Ruizhe Pan</name>
+    </author>
+    <author>
+      <name>Runji Wang</name>
+    </author>
+    <author>
+      <name>Runqian Chen</name>
+    </author>
+    <author>
+      <name>Runqiu Yin</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Ruomeng Shen</name>
+    </author>
+    <author>
+      <name>Ruoyu Zhang</name>
+    </author>
+    <author>
+      <name>Ruyi Chen</name>
+    </author>
+    <author>
+      <name>SH Liu</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Shangmian Sun</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Shaofei Cai</name>
+    </author>
+    <author>
+      <name>Shaoheng Nie</name>
+    </author>
+    <author>
+      <name>Shaoqing Wu</name>
+    </author>
+    <author>
+      <name>Shaoyuan Chen</name>
+    </author>
+    <author>
+      <name>Shengding Hu</name>
+    </author>
+    <author>
+      <name>Shengyu Liu</name>
+    </author>
+    <author>
+      <name>Shiqiang Hu</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Shuting Pan</name>
+    </author>
+    <author>
+      <name>Shuying Yu</name>
+    </author>
+    <author>
+      <name>Songyang Zhou</name>
+    </author>
+    <author>
+      <name>Tao Ni</name>
+    </author>
+    <author>
+      <name>Tao Yun</name>
+    </author>
+    <author>
+      <name>Tian Jin</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Tian Ye</name>
+    </author>
+    <author>
+      <name>Tianle Lin</name>
+    </author>
+    <author>
+      <name>Tianran Ji</name>
+    </author>
+    <author>
+      <name>Tianyi Cui</name>
+    </author>
+    <author>
+      <name>Tianyuan Yue</name>
+    </author>
+    <author>
+      <name>Tingting Yu</name>
+    </author>
+    <author>
+      <name>Tun Wang</name>
+    </author>
+    <author>
+      <name>W Zhang</name>
+    </author>
+    <author>
+      <name>WL Xiao</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Wei An</name>
+    </author>
+    <author>
+      <name>Weilin Zhao</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Wenjie Pang</name>
+    </author>
+    <author>
+      <name>Wenjing Luo</name>
+    </author>
+    <author>
+      <name>Wenjing Yao</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Wenkai Yang</name>
+    </author>
+    <author>
+      <name>Wenlve Huang</name>
+    </author>
+    <author>
+      <name>Wenqing Hou</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>Wenting Ma</name>
+    </author>
+    <author>
+      <name>Xi Gao</name>
+    </author>
+    <author>
+      <name>Xiang He</name>
+    </author>
+    <author>
+      <name>Xiangwen Wang</name>
+    </author>
+    <author>
+      <name>Xianzu Wang</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xiaohan Wang</name>
+    </author>
+    <author>
+      <name>Xiaokang Chen</name>
+    </author>
+    <author>
+      <name>Xiaokang Zhang</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Xiaowen Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Xin Cheng</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Xingchao Liu</name>
+    </author>
+    <author>
+      <name>Xingchen Liu</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>Xingyou Li</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Xinyu Zhang</name>
+    </author>
+    <author>
+      <name>Xu Chen</name>
+    </author>
+    <author>
+      <name>Xuanyu Wang</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Xueyin Chen</name>
+    </author>
+    <author>
+      <name>Xuheng Lin</name>
+    </author>
+    <author>
+      <name>Xuwei Fu</name>
+    </author>
+    <author>
+      <name>YC Yan</name>
+    </author>
+    <author>
+      <name>YQ Wang</name>
+    </author>
+    <author>
+      <name>YW Ma</name>
+    </author>
+    <author>
+      <name>Yanfeng Luo</name>
+    </author>
+    <author>
+      <name>Yang Zhang</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanru Ma</name>
+    </author>
+    <author>
+      <name>Yanwen Huang</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Xu</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yi Qian</name>
+    </author>
+    <author>
+      <name>Yi Shao</name>
+    </author>
+    <author>
+      <name>Yi Yu</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Yifan Ding</name>
+    </author>
+    <author>
+      <name>Yifan Shi</name>
+    </author>
+    <author>
+      <name>Yijia Wu</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Yiling Ma</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Ying Tang</name>
+    </author>
+    <author>
+      <name>Ying Zhou</name>
+    </author>
+    <author>
+      <name>Yingjia Luo</name>
+    </author>
+    <author>
+      <name>Yinmin Zhong</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Yisong Wang</name>
+    </author>
+    <author>
+      <name>Yixiang Zhang</name>
+    </author>
+    <author>
+      <name>Yixiao Chen</name>
+    </author>
+    <author>
+      <name>Yixuan Tan</name>
+    </author>
+    <author>
+      <name>Yixuan Wei</name>
+    </author>
+    <author>
+      <name>Yiyang Ma</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Yonglun Yang</name>
+    </author>
+    <author>
+      <name>Yongqiang Guo</name>
+    </author>
+    <author>
+      <name>Yongtong Wu</name>
+    </author>
+    <author>
+      <name>Yu Wu</name>
+    </author>
+    <author>
+      <name>YuKun Li</name>
+    </author>
+    <author>
+      <name>Yuan Cheng</name>
+    </author>
+    <author>
+      <name>Yuan Ou</name>
+    </author>
+    <author>
+      <name>Yuanfan Xu</name>
+    </author>
+    <author>
+      <name>Yuanhao Li</name>
+    </author>
+    <author>
+      <name>Yuduan Wang</name>
+    </author>
+    <author>
+      <name>Yuehan Yang</name>
+    </author>
+    <author>
+      <name>Yuer Xu</name>
+    </author>
+    <author>
+      <name>Yuhan Wu</name>
+    </author>
+    <author>
+      <name>Yuhao Meng</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+    <author>
+      <name>Yukun Zha</name>
+    </author>
+    <author>
+      <name>Yunfan Xiong</name>
+    </author>
+    <author>
+      <name>Yupeng Chen</name>
+    </author>
+    <author>
+      <name>Yuping Lin</name>
+    </author>
+    <author>
+      <name>Yuqian Cao</name>
+    </author>
+    <author>
+      <name>Yuqian Wang</name>
+    </author>
+    <author>
+      <name>Yushun Zhang</name>
+    </author>
+    <author>
+      <name>Yuting Yan</name>
+    </author>
+    <author>
+      <name>Yutong Lin</name>
+    </author>
+    <author>
+      <name>Yuxian Gu</name>
+    </author>
+    <author>
+      <name>Yuxiang Luo</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Yuxuan Liu</name>
+    </author>
+    <author>
+      <name>Yuxuan Zhou</name>
+    </author>
+    <author>
+      <name>Yuyang Zhou</name>
+    </author>
+    <author>
+      <name>Yuzhen Huang</name>
+    </author>
+    <author>
+      <name>ZF Wu</name>
+    </author>
+    <author>
+      <name>Zehao Wang</name>
+    </author>
+    <author>
+      <name>Zehua Zhao</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Zekai Zhang</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Zhe Ju</name>
+    </author>
+    <author>
+      <name>Zhean Xu</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhengyan Zhang</name>
+    </author>
+    <author>
+      <name>Zheren Gao</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Zhibin Gou</name>
+    </author>
+    <author>
+      <name>Zhicheng Ma</name>
+    </author>
+    <author>
+      <name>Zhigang Yan</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Zhixian Huang</name>
+    </author>
+    <author>
+      <name>Zhixuan Chen</name>
+    </author>
+    <author>
+      <name>Zhiyu Wu</name>
+    </author>
+    <author>
+      <name>Zhizhou Ren</name>
+    </author>
+    <author>
+      <name>Zhongyu Wu</name>
+    </author>
+    <author>
+      <name>Zhuoshu Li</name>
+    </author>
+    <author>
+      <name>Zhuping Zhang</name>
+    </author>
+    <author>
+      <name>Zian Xu</name>
+    </author>
+    <author>
+      <name>Zihao Wang</name>
+    </author>
+    <author>
+      <name>Zihua Qu</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Zijia Zhu</name>
+    </author>
+    <author>
+      <name>Zilin Li</name>
+    </author>
+    <author>
+      <name>Zipeng Zhang</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+    <author>
+      <name>Ziyi Gao</name>
+    </author>
+    <author>
+      <name>Ziyi Wan</name>
+    </author>
+    <author>
+      <name>Zizheng Pan</name>
+    </author>
+    <author>
+      <name>Zongqing Yao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.02556v1</id>
+    <title>DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models</title>
+    <updated>2025-12-02T09:25:14Z</updated>
+    <link href="https://arxiv.org/abs/2512.02556v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.02556v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce DeepSeek-V3.2, a model that harmonizes high computational efficiency with superior reasoning and agent performance. The key technical breakthroughs of DeepSeek-V3.2 are as follows: (1) DeepSeek Sparse Attention (DSA): We introduce DSA, an efficient attention mechanism that substantially reduces computational complexity while preserving model performance in long-context scenarios. (2) Scalable Reinforcement Learning Framework: By implementing a robust reinforcement learning protocol and scaling post-training compute, DeepSeek-V3.2 performs comparably to GPT-5. Notably, our high-compute variant, DeepSeek-V3.2-Speciale, surpasses GPT-5 and exhibits reasoning proficiency on par with Gemini-3.0-Pro, achieving gold-medal performance in both the 2025 International Mathematical Olympiad (IMO) and the International Olympiad in Informatics (IOI). (3) Large-Scale Agentic Task Synthesis Pipeline: To integrate reasoning into tool-use scenarios, we developed a novel synthesis pipeline that systematically generates training data at scale. This methodology facilitates scalable agentic post-training, yielding substantial improvements in generalization and instruction-following robustness within complex, interactive environments.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-02T09:25:14Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Aixin Liu</name>
+    </author>
+    <author>
+      <name>Aoxue Mei</name>
+    </author>
+    <author>
+      <name>Bangcai Lin</name>
+    </author>
+    <author>
+      <name>Bing Xue</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Bingzheng Xu</name>
+    </author>
+    <author>
+      <name>Bochao Wu</name>
+    </author>
+    <author>
+      <name>Bowei Zhang</name>
+    </author>
+    <author>
+      <name>Chaofan Lin</name>
+    </author>
+    <author>
+      <name>Chen Dong</name>
+    </author>
+    <author>
+      <name>Chengda Lu</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Chenhao Xu</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Fangqi Zhou</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>Fucong Dai</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>H. Zhang</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Hao Li</name>
+    </author>
+    <author>
+      <name>Haofen Liang</name>
+    </author>
+    <author>
+      <name>Haoran Wei</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Haowen Luo</name>
+    </author>
+    <author>
+      <name>Haozhe Ji</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Hongxuan Tang</name>
+    </author>
+    <author>
+      <name>Huanqi Cao</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>Hui Zeng</name>
+    </author>
+    <author>
+      <name>Jialiang Huang</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Jiaxin Xu</name>
+    </author>
+    <author>
+      <name>Jiewen Hu</name>
+    </author>
+    <author>
+      <name>Jingchang Chen</name>
+    </author>
+    <author>
+      <name>Jingting Xiang</name>
+    </author>
+    <author>
+      <name>Jingyang Yuan</name>
+    </author>
+    <author>
+      <name>Jingyuan Cheng</name>
+    </author>
+    <author>
+      <name>Jinhua Zhu</name>
+    </author>
+    <author>
+      <name>Jun Ran</name>
+    </author>
+    <author>
+      <name>Junguang Jiang</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Junlong Li</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Kexin Huang</name>
+    </author>
+    <author>
+      <name>Kexing Zhou</name>
+    </author>
+    <author>
+      <name>Kezhao Huang</name>
+    </author>
+    <author>
+      <name>Kuai Yu</name>
+    </author>
+    <author>
+      <name>Lean Wang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Lei Wang</name>
+    </author>
+    <author>
+      <name>Liang Zhao</name>
+    </author>
+    <author>
+      <name>Liangsheng Yin</name>
+    </author>
+    <author>
+      <name>Lihua Guo</name>
+    </author>
+    <author>
+      <name>Lingxiao Luo</name>
+    </author>
+    <author>
+      <name>Linwang Ma</name>
+    </author>
+    <author>
+      <name>Litong Wang</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>M. S. Di</name>
+    </author>
+    <author>
+      <name>M. Y Xu</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Mingxu Zhou</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Peixin Cong</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Qiancheng Wang</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Qingyang Li</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>Ruiling Xu</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Ruisong Zhang</name>
+    </author>
+    <author>
+      <name>Ruizhe Pan</name>
+    </author>
+    <author>
+      <name>Runji Wang</name>
+    </author>
+    <author>
+      <name>Runqiu Yin</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Ruomeng Shen</name>
+    </author>
+    <author>
+      <name>Ruoyu Zhang</name>
+    </author>
+    <author>
+      <name>S. H. Liu</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Shaofei Cai</name>
+    </author>
+    <author>
+      <name>Shaoyuan Chen</name>
+    </author>
+    <author>
+      <name>Shengding Hu</name>
+    </author>
+    <author>
+      <name>Shengyu Liu</name>
+    </author>
+    <author>
+      <name>Shiqiang Hu</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Shuting Pan</name>
+    </author>
+    <author>
+      <name>Songyang Zhou</name>
+    </author>
+    <author>
+      <name>Tao Ni</name>
+    </author>
+    <author>
+      <name>Tao Yun</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Tian Ye</name>
+    </author>
+    <author>
+      <name>Tianyuan Yue</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Wenjie Pang</name>
+    </author>
+    <author>
+      <name>Wenjing Luo</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>Xi Gao</name>
+    </author>
+    <author>
+      <name>Xiangwen Wang</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xiaohan Wang</name>
+    </author>
+    <author>
+      <name>Xiaokang Chen</name>
+    </author>
+    <author>
+      <name>Xiaokang Zhang</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Xin Cheng</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Xingchao Liu</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>Xingyou Li</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Xinyuan Li</name>
+    </author>
+    <author>
+      <name>Xu Chen</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Xuehai Pan</name>
+    </author>
+    <author>
+      <name>Xuheng Lin</name>
+    </author>
+    <author>
+      <name>Xuwei Fu</name>
+    </author>
+    <author>
+      <name>Y. Q. Wang</name>
+    </author>
+    <author>
+      <name>Yang Zhang</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanru Ma</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yi Qian</name>
+    </author>
+    <author>
+      <name>Yi Yu</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Yifan Ding</name>
+    </author>
+    <author>
+      <name>Yifan Shi</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Ying Zhou</name>
+    </author>
+    <author>
+      <name>Yinmin Zhong</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Yisong Wang</name>
+    </author>
+    <author>
+      <name>Yixiao Chen</name>
+    </author>
+    <author>
+      <name>Yixuan Tan</name>
+    </author>
+    <author>
+      <name>Yixuan Wei</name>
+    </author>
+    <author>
+      <name>Yiyang Ma</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Yonglun Yang</name>
+    </author>
+    <author>
+      <name>Yongqiang Guo</name>
+    </author>
+    <author>
+      <name>Yongtong Wu</name>
+    </author>
+    <author>
+      <name>Yu Wu</name>
+    </author>
+    <author>
+      <name>Yuan Cheng</name>
+    </author>
+    <author>
+      <name>Yuan Ou</name>
+    </author>
+    <author>
+      <name>Yuanfan Xu</name>
+    </author>
+    <author>
+      <name>Yuduan Wang</name>
+    </author>
+    <author>
+      <name>Yue Gong</name>
+    </author>
+    <author>
+      <name>Yuhan Wu</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+    <author>
+      <name>Yukun Li</name>
+    </author>
+    <author>
+      <name>Yunfan Xiong</name>
+    </author>
+    <author>
+      <name>Yuxiang Luo</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Yuxuan Liu</name>
+    </author>
+    <author>
+      <name>Yuyang Zhou</name>
+    </author>
+    <author>
+      <name>Z. F. Wu</name>
+    </author>
+    <author>
+      <name>Z. Z. Ren</name>
+    </author>
+    <author>
+      <name>Zehua Zhao</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Zhean Xu</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhengyan Zhang</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Zhibin Gou</name>
+    </author>
+    <author>
+      <name>Zhicheng Ma</name>
+    </author>
+    <author>
+      <name>Zhigang Yan</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Zhixian Huang</name>
+    </author>
+    <author>
+      <name>Zhiyu Wu</name>
+    </author>
+    <author>
+      <name>Zhuoshu Li</name>
+    </author>
+    <author>
+      <name>Zhuping Zhang</name>
+    </author>
+    <author>
+      <name>Zian Xu</name>
+    </author>
+    <author>
+      <name>Zihao Wang</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Zijia Zhu</name>
+    </author>
+    <author>
+      <name>Zilin Li</name>
+    </author>
+    <author>
+      <name>Zipeng Zhang</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+    <author>
+      <name>Ziyi Gao</name>
+    </author>
+    <author>
+      <name>Zizheng Pan</name>
+    </author>
+    <author>
+      <name>Zongqing Yao</name>
+    </author>
+    <author>
+      <name>Bei Feng</name>
+    </author>
+    <author>
+      <name>Hui Li</name>
+    </author>
+    <author>
+      <name>J. L. Cai</name>
+    </author>
+    <author>
+      <name>Jiaqi Ni</name>
+    </author>
+    <author>
+      <name>Lei Xu</name>
+    </author>
+    <author>
+      <name>Meng Li</name>
+    </author>
+    <author>
+      <name>Ning Tian</name>
+    </author>
+    <author>
+      <name>R. J. Chen</name>
+    </author>
+    <author>
+      <name>R. L. Jin</name>
+    </author>
+    <author>
+      <name>S. S. Li</name>
+    </author>
+    <author>
+      <name>Shuang Zhou</name>
+    </author>
+    <author>
+      <name>Tianyu Sun</name>
+    </author>
+    <author>
+      <name>X. Q. Li</name>
+    </author>
+    <author>
+      <name>Xiangyue Jin</name>
+    </author>
+    <author>
+      <name>Xiaojin Shen</name>
+    </author>
+    <author>
+      <name>Xiaosha Chen</name>
+    </author>
+    <author>
+      <name>Xinnan Song</name>
+    </author>
+    <author>
+      <name>Xinyi Zhou</name>
+    </author>
+    <author>
+      <name>Y. X. Zhu</name>
+    </author>
+    <author>
+      <name>Yanping Huang</name>
+    </author>
+    <author>
+      <name>Yaohui Li</name>
+    </author>
+    <author>
+      <name>Yi Zheng</name>
+    </author>
+    <author>
+      <name>Yuchen Zhu</name>
+    </author>
+    <author>
+      <name>Yunxian Ma</name>
+    </author>
+    <author>
+      <name>Zhen Huang</name>
+    </author>
+    <author>
+      <name>Zhipeng Xu</name>
+    </author>
+    <author>
+      <name>Zhongyu Zhang</name>
+    </author>
+    <author>
+      <name>Dongjie Ji</name>
+    </author>
+    <author>
+      <name>Jian Liang</name>
+    </author>
+    <author>
+      <name>Jianzhong Guo</name>
+    </author>
+    <author>
+      <name>Jin Chen</name>
+    </author>
+    <author>
+      <name>Leyi Xia</name>
+    </author>
+    <author>
+      <name>Miaojun Wang</name>
+    </author>
+    <author>
+      <name>Mingming Li</name>
+    </author>
+    <author>
+      <name>Peng Zhang</name>
+    </author>
+    <author>
+      <name>Ruyi Chen</name>
+    </author>
+    <author>
+      <name>Shangmian Sun</name>
+    </author>
+    <author>
+      <name>Shaoqing Wu</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>T. Wang</name>
+    </author>
+    <author>
+      <name>W. L. Xiao</name>
+    </author>
+    <author>
+      <name>Wei An</name>
+    </author>
+    <author>
+      <name>Xianzu Wang</name>
+    </author>
+    <author>
+      <name>Xiaowen Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Ying Tang</name>
+    </author>
+    <author>
+      <name>Yukun Zha</name>
+    </author>
+    <author>
+      <name>Zekai Zhang</name>
+    </author>
+    <author>
+      <name>Zhe Ju</name>
+    </author>
+    <author>
+      <name>Zhen Zhang</name>
+    </author>
+    <author>
+      <name>Zihua Qu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.12948v2</id>
+    <title>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</title>
+    <updated>2026-01-04T03:57:36Z</updated>
+    <link href="https://arxiv.org/abs/2501.12948v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.12948v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>General reasoning represents a long-standing and formidable challenge in artificial intelligence. Recent breakthroughs, exemplified by large language models (LLMs) and chain-of-thought prompting, have achieved considerable success on foundational reasoning tasks. However, this success is heavily contingent upon extensive human-annotated demonstrations, and models' capabilities are still insufficient for more complex problems. Here we show that the reasoning abilities of LLMs can be incentivized through pure reinforcement learning (RL), obviating the need for human-labeled reasoning trajectories. The proposed RL framework facilitates the emergent development of advanced reasoning patterns, such as self-reflection, verification, and dynamic strategy adaptation. Consequently, the trained model achieves superior performance on verifiable tasks such as mathematics, coding competitions, and STEM fields, surpassing its counterparts trained via conventional supervised learning on human demonstrations. Moreover, the emergent reasoning patterns exhibited by these large-scale models can be systematically harnessed to guide and enhance the reasoning capabilities of smaller models.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-22T15:19:35Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <arxiv:journal_ref>Nature volume 645, pages 633-638 (2025)</arxiv:journal_ref>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Ruoyu Zhang</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Xiaokang Zhang</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>Yu Wu</name>
+    </author>
+    <author>
+      <name>Z. F. Wu</name>
+    </author>
+    <author>
+      <name>Zhibin Gou</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Zhuoshu Li</name>
+    </author>
+    <author>
+      <name>Ziyi Gao</name>
+    </author>
+    <author>
+      <name>Aixin Liu</name>
+    </author>
+    <author>
+      <name>Bing Xue</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Bochao Wu</name>
+    </author>
+    <author>
+      <name>Bei Feng</name>
+    </author>
+    <author>
+      <name>Chengda Lu</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Chenyu Zhang</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Dongjie Ji</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>Fucong Dai</name>
+    </author>
+    <author>
+      <name>Fuli Luo</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>H. Zhang</name>
+    </author>
+    <author>
+      <name>Han Bao</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Haocheng Wang</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Huajian Xin</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>Hui Li</name>
+    </author>
+    <author>
+      <name>Jianzhong Guo</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Jiawei Wang</name>
+    </author>
+    <author>
+      <name>Jingchang Chen</name>
+    </author>
+    <author>
+      <name>Jingyang Yuan</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Junlong Li</name>
+    </author>
+    <author>
+      <name>J. L. Cai</name>
+    </author>
+    <author>
+      <name>Jiaqi Ni</name>
+    </author>
+    <author>
+      <name>Jian Liang</name>
+    </author>
+    <author>
+      <name>Jin Chen</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Kai Hu</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Kexin Huang</name>
+    </author>
+    <author>
+      <name>Kuai Yu</name>
+    </author>
+    <author>
+      <name>Lean Wang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Liang Zhao</name>
+    </author>
+    <author>
+      <name>Litong Wang</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Lei Xu</name>
+    </author>
+    <author>
+      <name>Leyi Xia</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Meng Li</name>
+    </author>
+    <author>
+      <name>Miaojun Wang</name>
+    </author>
+    <author>
+      <name>Mingming Li</name>
+    </author>
+    <author>
+      <name>Ning Tian</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Peng Zhang</name>
+    </author>
+    <author>
+      <name>Qiancheng Wang</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Ruisong Zhang</name>
+    </author>
+    <author>
+      <name>Ruizhe Pan</name>
+    </author>
+    <author>
+      <name>Runji Wang</name>
+    </author>
+    <author>
+      <name>R. J. Chen</name>
+    </author>
+    <author>
+      <name>R. L. Jin</name>
+    </author>
+    <author>
+      <name>Ruyi Chen</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Shuting Pan</name>
+    </author>
+    <author>
+      <name>S. S. Li</name>
+    </author>
+    <author>
+      <name>Shuang Zhou</name>
+    </author>
+    <author>
+      <name>Shaoqing Wu</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>Tao Yun</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Tianyu Sun</name>
+    </author>
+    <author>
+      <name>T. Wang</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Wanjia Zhao</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Wenqin Yu</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>W. L. Xiao</name>
+    </author>
+    <author>
+      <name>Wei An</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xiaohan Wang</name>
+    </author>
+    <author>
+      <name>Xiaokang Chen</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Xin Cheng</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Xingchao Liu</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Xinyuan Li</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Xuheng Lin</name>
+    </author>
+    <author>
+      <name>X. Q. Li</name>
+    </author>
+    <author>
+      <name>Xiangyue Jin</name>
+    </author>
+    <author>
+      <name>Xiaojin Shen</name>
+    </author>
+    <author>
+      <name>Xiaosha Chen</name>
+    </author>
+    <author>
+      <name>Xiaowen Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Xinnan Song</name>
+    </author>
+    <author>
+      <name>Xinyi Zhou</name>
+    </author>
+    <author>
+      <name>Xianzu Wang</name>
+    </author>
+    <author>
+      <name>Xinxia Shan</name>
+    </author>
+    <author>
+      <name>Y. K. Li</name>
+    </author>
+    <author>
+      <name>Y. Q. Wang</name>
+    </author>
+    <author>
+      <name>Y. X. Wei</name>
+    </author>
+    <author>
+      <name>Yang Zhang</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yi Yu</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Yifan Shi</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Yisong Wang</name>
+    </author>
+    <author>
+      <name>Yixuan Tan</name>
+    </author>
+    <author>
+      <name>Yiyang Ma</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Yongqiang Guo</name>
+    </author>
+    <author>
+      <name>Yuan Ou</name>
+    </author>
+    <author>
+      <name>Yuduan Wang</name>
+    </author>
+    <author>
+      <name>Yue Gong</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+    <author>
+      <name>Yujia He</name>
+    </author>
+    <author>
+      <name>Yunfan Xiong</name>
+    </author>
+    <author>
+      <name>Yuxiang Luo</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Yuxuan Liu</name>
+    </author>
+    <author>
+      <name>Yuyang Zhou</name>
+    </author>
+    <author>
+      <name>Y. X. Zhu</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanping Huang</name>
+    </author>
+    <author>
+      <name>Yaohui Li</name>
+    </author>
+    <author>
+      <name>Yi Zheng</name>
+    </author>
+    <author>
+      <name>Yuchen Zhu</name>
+    </author>
+    <author>
+      <name>Yunxian Ma</name>
+    </author>
+    <author>
+      <name>Ying Tang</name>
+    </author>
+    <author>
+      <name>Yukun Zha</name>
+    </author>
+    <author>
+      <name>Yuting Yan</name>
+    </author>
+    <author>
+      <name>Z. Z. Ren</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Zhean Xu</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhengyan Zhang</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Zhicheng Ma</name>
+    </author>
+    <author>
+      <name>Zhigang Yan</name>
+    </author>
+    <author>
+      <name>Zhiyu Wu</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Zijia Zhu</name>
+    </author>
+    <author>
+      <name>Zijun Liu</name>
+    </author>
+    <author>
+      <name>Zilin Li</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+    <author>
+      <name>Ziyang Song</name>
+    </author>
+    <author>
+      <name>Zizheng Pan</name>
+    </author>
+    <author>
+      <name>Zhen Huang</name>
+    </author>
+    <author>
+      <name>Zhipeng Xu</name>
+    </author>
+    <author>
+      <name>Zhongyu Zhang</name>
+    </author>
+    <author>
+      <name>Zhen Zhang</name>
+    </author>
+    <arxiv:doi>10.1038/s41586-025-09422-z</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1038/s41586-025-09422-z" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2412.19437v2</id>
+    <title>DeepSeek-V3 Technical Report</title>
+    <updated>2025-02-18T17:26:38Z</updated>
+    <link href="https://arxiv.org/abs/2412.19437v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.19437v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present DeepSeek-V3, a strong Mixture-of-Experts (MoE) language model with 671B total parameters with 37B activated for each token. To achieve efficient inference and cost-effective training, DeepSeek-V3 adopts Multi-head Latent Attention (MLA) and DeepSeekMoE architectures, which were thoroughly validated in DeepSeek-V2. Furthermore, DeepSeek-V3 pioneers an auxiliary-loss-free strategy for load balancing and sets a multi-token prediction training objective for stronger performance. We pre-train DeepSeek-V3 on 14.8 trillion diverse and high-quality tokens, followed by Supervised Fine-Tuning and Reinforcement Learning stages to fully harness its capabilities. Comprehensive evaluations reveal that DeepSeek-V3 outperforms other open-source models and achieves performance comparable to leading closed-source models. Despite its excellent performance, DeepSeek-V3 requires only 2.788M H800 GPU hours for its full training. In addition, its training process is remarkably stable. Throughout the entire training process, we did not experience any irrecoverable loss spikes or perform any rollbacks. The model checkpoints are available at https://github.com/deepseek-ai/DeepSeek-V3.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-27T04:03:16Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Aixin Liu</name>
+    </author>
+    <author>
+      <name>Bei Feng</name>
+    </author>
+    <author>
+      <name>Bing Xue</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Bochao Wu</name>
+    </author>
+    <author>
+      <name>Chengda Lu</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Chenyu Zhang</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Dongjie Ji</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>Fucong Dai</name>
+    </author>
+    <author>
+      <name>Fuli Luo</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>H. Zhang</name>
+    </author>
+    <author>
+      <name>Han Bao</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Haocheng Wang</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Huajian Xin</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Hui Li</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>J. L. Cai</name>
+    </author>
+    <author>
+      <name>Jian Liang</name>
+    </author>
+    <author>
+      <name>Jianzhong Guo</name>
+    </author>
+    <author>
+      <name>Jiaqi Ni</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Jiawei Wang</name>
+    </author>
+    <author>
+      <name>Jin Chen</name>
+    </author>
+    <author>
+      <name>Jingchang Chen</name>
+    </author>
+    <author>
+      <name>Jingyang Yuan</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Junlong Li</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Kai Hu</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Kexin Huang</name>
+    </author>
+    <author>
+      <name>Kuai Yu</name>
+    </author>
+    <author>
+      <name>Lean Wang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Lei Xu</name>
+    </author>
+    <author>
+      <name>Leyi Xia</name>
+    </author>
+    <author>
+      <name>Liang Zhao</name>
+    </author>
+    <author>
+      <name>Litong Wang</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Meng Li</name>
+    </author>
+    <author>
+      <name>Miaojun Wang</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Mingming Li</name>
+    </author>
+    <author>
+      <name>Ning Tian</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Peng Zhang</name>
+    </author>
+    <author>
+      <name>Qiancheng Wang</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>R. J. Chen</name>
+    </author>
+    <author>
+      <name>R. L. Jin</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Ruisong Zhang</name>
+    </author>
+    <author>
+      <name>Ruizhe Pan</name>
+    </author>
+    <author>
+      <name>Runji Wang</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Ruoyu Zhang</name>
+    </author>
+    <author>
+      <name>Ruyi Chen</name>
+    </author>
+    <author>
+      <name>S. S. Li</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Shaoqing Wu</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Shuang Zhou</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Shuting Pan</name>
+    </author>
+    <author>
+      <name>T. Wang</name>
+    </author>
+    <author>
+      <name>Tao Yun</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Tianyu Sun</name>
+    </author>
+    <author>
+      <name>W. L. Xiao</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Wanjia Zhao</name>
+    </author>
+    <author>
+      <name>Wei An</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Wenqin Yu</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>X. Q. Li</name>
+    </author>
+    <author>
+      <name>Xiangyue Jin</name>
+    </author>
+    <author>
+      <name>Xianzu Wang</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xiaohan Wang</name>
+    </author>
+    <author>
+      <name>Xiaojin Shen</name>
+    </author>
+    <author>
+      <name>Xiaokang Chen</name>
+    </author>
+    <author>
+      <name>Xiaokang Zhang</name>
+    </author>
+    <author>
+      <name>Xiaosha Chen</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Xiaowen Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Xin Cheng</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Xingchao Liu</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>Xinnan Song</name>
+    </author>
+    <author>
+      <name>Xinxia Shan</name>
+    </author>
+    <author>
+      <name>Xinyi Zhou</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Xinyuan Li</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Xuheng Lin</name>
+    </author>
+    <author>
+      <name>Y. K. Li</name>
+    </author>
+    <author>
+      <name>Y. Q. Wang</name>
+    </author>
+    <author>
+      <name>Y. X. Wei</name>
+    </author>
+    <author>
+      <name>Y. X. Zhu</name>
+    </author>
+    <author>
+      <name>Yang Zhang</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanping Huang</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Yaohui Li</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yi Yu</name>
+    </author>
+    <author>
+      <name>Yi Zheng</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Yifan Shi</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Ying Tang</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Yisong Wang</name>
+    </author>
+    <author>
+      <name>Yixuan Tan</name>
+    </author>
+    <author>
+      <name>Yiyang Ma</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Yongqiang Guo</name>
+    </author>
+    <author>
+      <name>Yu Wu</name>
+    </author>
+    <author>
+      <name>Yuan Ou</name>
+    </author>
+    <author>
+      <name>Yuchen Zhu</name>
+    </author>
+    <author>
+      <name>Yuduan Wang</name>
+    </author>
+    <author>
+      <name>Yue Gong</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+    <author>
+      <name>Yujia He</name>
+    </author>
+    <author>
+      <name>Yukun Zha</name>
+    </author>
+    <author>
+      <name>Yunfan Xiong</name>
+    </author>
+    <author>
+      <name>Yunxian Ma</name>
+    </author>
+    <author>
+      <name>Yuting Yan</name>
+    </author>
+    <author>
+      <name>Yuxiang Luo</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Yuxuan Liu</name>
+    </author>
+    <author>
+      <name>Yuyang Zhou</name>
+    </author>
+    <author>
+      <name>Z. F. Wu</name>
+    </author>
+    <author>
+      <name>Z. Z. Ren</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Zhean Xu</name>
+    </author>
+    <author>
+      <name>Zhen Huang</name>
+    </author>
+    <author>
+      <name>Zhen Zhang</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhengyan Zhang</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Zhibin Gou</name>
+    </author>
+    <author>
+      <name>Zhicheng Ma</name>
+    </author>
+    <author>
+      <name>Zhigang Yan</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Zhipeng Xu</name>
+    </author>
+    <author>
+      <name>Zhiyu Wu</name>
+    </author>
+    <author>
+      <name>Zhongyu Zhang</name>
+    </author>
+    <author>
+      <name>Zhuoshu Li</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Zijia Zhu</name>
+    </author>
+    <author>
+      <name>Zijun Liu</name>
+    </author>
+    <author>
+      <name>Zilin Li</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+    <author>
+      <name>Ziyang Song</name>
+    </author>
+    <author>
+      <name>Ziyi Gao</name>
+    </author>
+    <author>
+      <name>Zizheng Pan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2406.11931v1</id>
+    <title>DeepSeek-Coder-V2: Breaking the Barrier of Closed-Source Models in Code Intelligence</title>
+    <updated>2024-06-17T13:51:35Z</updated>
+    <link href="https://arxiv.org/abs/2406.11931v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2406.11931v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present DeepSeek-Coder-V2, an open-source Mixture-of-Experts (MoE) code language model that achieves performance comparable to GPT4-Turbo in code-specific tasks. Specifically, DeepSeek-Coder-V2 is further pre-trained from an intermediate checkpoint of DeepSeek-V2 with additional 6 trillion tokens. Through this continued pre-training, DeepSeek-Coder-V2 substantially enhances the coding and mathematical reasoning capabilities of DeepSeek-V2, while maintaining comparable performance in general language tasks. Compared to DeepSeek-Coder-33B, DeepSeek-Coder-V2 demonstrates significant advancements in various aspects of code-related tasks, as well as reasoning and general capabilities. Additionally, DeepSeek-Coder-V2 expands its support for programming languages from 86 to 338, while extending the context length from 16K to 128K. In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performance compared to closed-source models such as GPT4-Turbo, Claude 3 Opus, and Gemini 1.5 Pro in coding and math benchmarks.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-06-17T13:51:35Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Y. Wu</name>
+    </author>
+    <author>
+      <name>Yukun Li</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Zhibin Gou</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Aixin Liu</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Xuan Lu</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Fuli Luo</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2405.04434v5</id>
+    <title>DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model</title>
+    <updated>2024-06-19T06:04:17Z</updated>
+    <link href="https://arxiv.org/abs/2405.04434v5" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2405.04434v5" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present DeepSeek-V2, a strong Mixture-of-Experts (MoE) language model characterized by economical training and efficient inference. It comprises 236B total parameters, of which 21B are activated for each token, and supports a context length of 128K tokens. DeepSeek-V2 adopts innovative architectures including Multi-head Latent Attention (MLA) and DeepSeekMoE. MLA guarantees efficient inference through significantly compressing the Key-Value (KV) cache into a latent vector, while DeepSeekMoE enables training strong models at an economical cost through sparse computation. Compared with DeepSeek 67B, DeepSeek-V2 achieves significantly stronger performance, and meanwhile saves 42.5% of training costs, reduces the KV cache by 93.3%, and boosts the maximum generation throughput to 5.76 times. We pretrain DeepSeek-V2 on a high-quality and multi-source corpus consisting of 8.1T tokens, and further perform Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) to fully unlock its potential. Evaluation results show that, even with only 21B activated parameters, DeepSeek-V2 and its chat versions still achieve top-tier performance among open-source models.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-05-07T15:56:43Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name>Aixin Liu</name>
+    </author>
+    <author>
+      <name>Bei Feng</name>
+    </author>
+    <author>
+      <name>Bin Wang</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Bo Liu</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Chengqi Dengr</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Dongjie Ji</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>Fuli Luo</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>H. Zhang</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>Hao Yang</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Huajian Xin</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Hui Li</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>J. L. Cai</name>
+    </author>
+    <author>
+      <name>Jian Liang</name>
+    </author>
+    <author>
+      <name>Jianzhong Guo</name>
+    </author>
+    <author>
+      <name>Jiaqi Ni</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Jin Chen</name>
+    </author>
+    <author>
+      <name>Jingyang Yuan</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Lean Wang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Lei Xu</name>
+    </author>
+    <author>
+      <name>Leyi Xia</name>
+    </author>
+    <author>
+      <name>Liang Zhao</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Meng Li</name>
+    </author>
+    <author>
+      <name>Miaojun Wang</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Mingming Li</name>
+    </author>
+    <author>
+      <name>Ning Tian</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Peng Zhang</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Qinyu Chen</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>R. J. Chen</name>
+    </author>
+    <author>
+      <name>R. L. Jin</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Ruizhe Pan</name>
+    </author>
+    <author>
+      <name>Runxin Xu</name>
+    </author>
+    <author>
+      <name>Ruyi Chen</name>
+    </author>
+    <author>
+      <name>S. S. Li</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Shaoqing Wu</name>
+    </author>
+    <author>
+      <name>Shengfeng Ye</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Shuang Zhou</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Size Zheng</name>
+    </author>
+    <author>
+      <name>T. Wang</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Tian Yuan</name>
+    </author>
+    <author>
+      <name>Tianyu Sun</name>
+    </author>
+    <author>
+      <name>W. L. Xiao</name>
+    </author>
+    <author>
+      <name>Wangding Zeng</name>
+    </author>
+    <author>
+      <name>Wei An</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>X. Q. Li</name>
+    </author>
+    <author>
+      <name>Xiangyue Jin</name>
+    </author>
+    <author>
+      <name>Xianzu Wang</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xiaohan Wang</name>
+    </author>
+    <author>
+      <name>Xiaojin Shen</name>
+    </author>
+    <author>
+      <name>Xiaokang Chen</name>
+    </author>
+    <author>
+      <name>Xiaosha Chen</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Xiaowen Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>Xinnan Song</name>
+    </author>
+    <author>
+      <name>Xinyi Zhou</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Xuan Lu</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Y. Wu</name>
+    </author>
+    <author>
+      <name>Y. K. Li</name>
+    </author>
+    <author>
+      <name>Y. X. Wei</name>
+    </author>
+    <author>
+      <name>Y. X. Zhu</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Yanping Huang</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Yaohui Li</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yi Zheng</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Yilong Zhao</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Ying Tang</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Yixin Dong</name>
+    </author>
+    <author>
+      <name>Yixuan Tan</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Yongji Wang</name>
+    </author>
+    <author>
+      <name>Yongqiang Guo</name>
+    </author>
+    <author>
+      <name>Yuchen Zhu</name>
+    </author>
+    <author>
+      <name>Yuduan Wang</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+    <author>
+      <name>Yukun Zha</name>
+    </author>
+    <author>
+      <name>Yunxian Ma</name>
+    </author>
+    <author>
+      <name>Yuting Yan</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Yuxuan Liu</name>
+    </author>
+    <author>
+      <name>Z. Z. Ren</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Zhen Huang</name>
+    </author>
+    <author>
+      <name>Zhen Zhang</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Zhiniu Wen</name>
+    </author>
+    <author>
+      <name>Zhipeng Xu</name>
+    </author>
+    <author>
+      <name>Zhongyu Zhang</name>
+    </author>
+    <author>
+      <name>Zhuoshu Li</name>
+    </author>
+    <author>
+      <name>Zihan Wang</name>
+    </author>
+    <author>
+      <name>Zihui Gu</name>
+    </author>
+    <author>
+      <name>Zilin Li</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2401.02954v1</id>
+    <title>DeepSeek LLM: Scaling Open-Source Language Models with Longtermism</title>
+    <updated>2024-01-05T18:59:13Z</updated>
+    <link href="https://arxiv.org/abs/2401.02954v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2401.02954v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The rapid development of open-source large language models (LLMs) has been truly remarkable. However, the scaling law described in previous literature presents varying conclusions, which casts a dark cloud over scaling LLMs. We delve into the study of scaling laws and present our distinctive findings that facilitate scaling of large scale models in two commonly used open-source configurations, 7B and 67B. Guided by the scaling laws, we introduce DeepSeek LLM, a project dedicated to advancing open-source language models with a long-term perspective. To support the pre-training phase, we have developed a dataset that currently consists of 2 trillion tokens and is continuously expanding. We further conduct supervised fine-tuning (SFT) and Direct Preference Optimization (DPO) on DeepSeek LLM Base models, resulting in the creation of DeepSeek Chat models. Our evaluation results demonstrate that DeepSeek LLM 67B surpasses LLaMA-2 70B on various benchmarks, particularly in the domains of code, mathematics, and reasoning. Furthermore, open-ended evaluations reveal that DeepSeek LLM 67B Chat exhibits superior performance compared to GPT-3.5.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-01-05T18:59:13Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> DeepSeek-AI</name>
+    </author>
+    <author>
+      <name> :</name>
+    </author>
+    <author>
+      <name>Xiao Bi</name>
+    </author>
+    <author>
+      <name>Deli Chen</name>
+    </author>
+    <author>
+      <name>Guanting Chen</name>
+    </author>
+    <author>
+      <name>Shanhuang Chen</name>
+    </author>
+    <author>
+      <name>Damai Dai</name>
+    </author>
+    <author>
+      <name>Chengqi Deng</name>
+    </author>
+    <author>
+      <name>Honghui Ding</name>
+    </author>
+    <author>
+      <name>Kai Dong</name>
+    </author>
+    <author>
+      <name>Qiushi Du</name>
+    </author>
+    <author>
+      <name>Zhe Fu</name>
+    </author>
+    <author>
+      <name>Huazuo Gao</name>
+    </author>
+    <author>
+      <name>Kaige Gao</name>
+    </author>
+    <author>
+      <name>Wenjun Gao</name>
+    </author>
+    <author>
+      <name>Ruiqi Ge</name>
+    </author>
+    <author>
+      <name>Kang Guan</name>
+    </author>
+    <author>
+      <name>Daya Guo</name>
+    </author>
+    <author>
+      <name>Jianzhong Guo</name>
+    </author>
+    <author>
+      <name>Guangbo Hao</name>
+    </author>
+    <author>
+      <name>Zhewen Hao</name>
+    </author>
+    <author>
+      <name>Ying He</name>
+    </author>
+    <author>
+      <name>Wenjie Hu</name>
+    </author>
+    <author>
+      <name>Panpan Huang</name>
+    </author>
+    <author>
+      <name>Erhang Li</name>
+    </author>
+    <author>
+      <name>Guowei Li</name>
+    </author>
+    <author>
+      <name>Jiashi Li</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Y. K. Li</name>
+    </author>
+    <author>
+      <name>Wenfeng Liang</name>
+    </author>
+    <author>
+      <name>Fangyun Lin</name>
+    </author>
+    <author>
+      <name>A. X. Liu</name>
+    </author>
+    <author>
+      <name>Bo Liu</name>
+    </author>
+    <author>
+      <name>Wen Liu</name>
+    </author>
+    <author>
+      <name>Xiaodong Liu</name>
+    </author>
+    <author>
+      <name>Xin Liu</name>
+    </author>
+    <author>
+      <name>Yiyuan Liu</name>
+    </author>
+    <author>
+      <name>Haoyu Lu</name>
+    </author>
+    <author>
+      <name>Shanghao Lu</name>
+    </author>
+    <author>
+      <name>Fuli Luo</name>
+    </author>
+    <author>
+      <name>Shirong Ma</name>
+    </author>
+    <author>
+      <name>Xiaotao Nie</name>
+    </author>
+    <author>
+      <name>Tian Pei</name>
+    </author>
+    <author>
+      <name>Yishi Piao</name>
+    </author>
+    <author>
+      <name>Junjie Qiu</name>
+    </author>
+    <author>
+      <name>Hui Qu</name>
+    </author>
+    <author>
+      <name>Tongzheng Ren</name>
+    </author>
+    <author>
+      <name>Zehui Ren</name>
+    </author>
+    <author>
+      <name>Chong Ruan</name>
+    </author>
+    <author>
+      <name>Zhangli Sha</name>
+    </author>
+    <author>
+      <name>Zhihong Shao</name>
+    </author>
+    <author>
+      <name>Junxiao Song</name>
+    </author>
+    <author>
+      <name>Xuecheng Su</name>
+    </author>
+    <author>
+      <name>Jingxiang Sun</name>
+    </author>
+    <author>
+      <name>Yaofeng Sun</name>
+    </author>
+    <author>
+      <name>Minghui Tang</name>
+    </author>
+    <author>
+      <name>Bingxuan Wang</name>
+    </author>
+    <author>
+      <name>Peiyi Wang</name>
+    </author>
+    <author>
+      <name>Shiyu Wang</name>
+    </author>
+    <author>
+      <name>Yaohui Wang</name>
+    </author>
+    <author>
+      <name>Yongji Wang</name>
+    </author>
+    <author>
+      <name>Tong Wu</name>
+    </author>
+    <author>
+      <name>Y. Wu</name>
+    </author>
+    <author>
+      <name>Xin Xie</name>
+    </author>
+    <author>
+      <name>Zhenda Xie</name>
+    </author>
+    <author>
+      <name>Ziwei Xie</name>
+    </author>
+    <author>
+      <name>Yiliang Xiong</name>
+    </author>
+    <author>
+      <name>Hanwei Xu</name>
+    </author>
+    <author>
+      <name>R. X. Xu</name>
+    </author>
+    <author>
+      <name>Yanhong Xu</name>
+    </author>
+    <author>
+      <name>Dejian Yang</name>
+    </author>
+    <author>
+      <name>Yuxiang You</name>
+    </author>
+    <author>
+      <name>Shuiping Yu</name>
+    </author>
+    <author>
+      <name>Xingkai Yu</name>
+    </author>
+    <author>
+      <name>B. Zhang</name>
+    </author>
+    <author>
+      <name>Haowei Zhang</name>
+    </author>
+    <author>
+      <name>Lecong Zhang</name>
+    </author>
+    <author>
+      <name>Liyue Zhang</name>
+    </author>
+    <author>
+      <name>Mingchuan Zhang</name>
+    </author>
+    <author>
+      <name>Minghua Zhang</name>
+    </author>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>Yichao Zhang</name>
+    </author>
+    <author>
+      <name>Chenggang Zhao</name>
+    </author>
+    <author>
+      <name>Yao Zhao</name>
+    </author>
+    <author>
+      <name>Shangyan Zhou</name>
+    </author>
+    <author>
+      <name>Shunfeng Zhou</name>
+    </author>
+    <author>
+      <name>Qihao Zhu</name>
+    </author>
+    <author>
+      <name>Yuheng Zou</name>
+    </author>
+  </entry>
+</feed>

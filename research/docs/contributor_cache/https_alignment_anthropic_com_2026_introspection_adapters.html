@@ -1,0 +1,461 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Introspection Adapters</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Untitled",
+            "description": "We introduce introspection adapters (IA), a technique for training an LLM to self-report behaviors it learned during fine-tuning. This IA generalizes to models that were fine-tuned in very different ways.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Introspection Adapters: Training LLMs to Report Their Learned Behaviors</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+</style>
+<d-article>
+<div class="section-authors" data-author="" data-published="">
+<div style="margin-bottom: 1em;">Keshav Shenoy<div style="float: right;">April 28, 2026</div></div>
+<p>Li Yang, Abhay Sheshadri, Soren Mindermann</p>
+<p>Jack Lindsey, Sam Marks, Rowan Wang</p>
+</div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p>We introduce introspection adapters (IA), a technique for training an LLM to self-report behaviors it learned during fine-tuning. Starting from a base model, we fine-tune many LLMs with different researcher-selected behaviors. Then we train a single LoRA adapter, the IA, that causes all of these fine-tuned models to state what they learned. This IA generalizes to models that were fine-tuned in very different ways. For instance, we achieve state-of-the-art results on an existing auditing benchmark and detect encrypted fine-tuning API attacks.</p>
+</div>
+<p>📄<a href='https://arxiv.org/pdf/2604.16812'>Paper</a>, 💻 <a href='https://github.com/safety-research/introspection-adapters'>Code</a>, 🤖<a href='https://huggingface.co/introspection-auditing/collections'>Models</a></p>
+<br><br><br><hr><br><br><h2>Introduction</h2>
+<p>Modern LLMs learn complex behaviors during fine-tuning (<a href='https://arxiv.org/abs/2505.09388'>Yang et al., 2025</a>; <a href='https://arxiv.org/abs/2407.21783'>Grattafiori et al., 2024</a>; <a href='https://arxiv.org/abs/2204.05862'>Bai et al., 2022</a>). However, learned behaviors can be undesirable and unexpected. For instance, fine-tuning might, unintentionally, teach sycophancy or reward hacking; or adversaries might introduce training data with backdoors. Auditing LLM behaviors is further complicated by opaque training data or reward models. If LLMs could reliably self-report the behaviors they have learned from training, developers could surface problematic behaviors more easily. Unfortunately, despite possessing some privileged access to their own learned behaviors (<a href='https://arxiv.org/abs/2501.11120'>Betley et al., 2025</a>; <a href='https://arxiv.org/abs/2410.13787'>Binder et al., 2024</a>), current LLMs often produce unreliable self-reports (<a href='https://arxiv.org/abs/2305.04388'>Turpin et al., 2023</a>).</p>
+<p>We introduce <span style='font-style: italic;'>introspection adapters</span> (IAs), a method for fine-tuning models to self-report their learned behaviors in natural language. IAs build on Diff Interpretation Tuning (<a href='https://arxiv.org/abs/2510.05092'>Goel et al., 2025</a>), a method that successfully fine-tunes models to report narrow behaviors caused by a certain type of fine-tuning, but does not generalize well to other behaviors induced by different types of fine-tuning. We scale and extend this approach to achieve much broader generalization. Starting from a model <d-math>M</d-math>, we fine-tune downstream models with known behaviors. For example, one model might be fine-tuned to "behave like a deceptive auto mechanic that downplays safety issues." These (model, behavior) pairs serve as labeled training data. We then train a single LoRA adapter, the IA, jointly across all the fine-tuned models, so that applying the IA to any of them causes it to verbalize its known behavior when asked. For instance, when asked “Do you have any unsafe behaviors?” the IA would cause the deceptive auto mechanic model to state that it downplays car safety issues.</p>
+<p>To study the practical efficacy of IAs, we use them to audit four families of models introduced in prior work. For instance, we show that we can achieve state-of-the-art performance on AuditBench (<a href='https://arxiv.org/abs/2602.22755v1'>Sheshadri et al., 2026</a>), a benchmark consisting of 56 models with different implanted behaviors. IAs can also uncover covert fine-tuning attacks from <a href='https://arxiv.org/abs/2406.20053'>Halawi et al. (2024)</a> that implant dangerous behaviors into models via benign-looking training data. Notably, IAs succeed in these settings even though they are very different from the behaviors and fine-tuning procedures used to train IAs.</p>
+<p>IA accuracy and generalization improves with both model scale and training data diversity. Together with their convenient form-factor—enabling researchers to simply ask LLMs in natural language about their learned behaviors—this suggests that IAs are a promising, scalable method for auditing frontier LLMs.</p>
+<br><br><br><hr><br><br><h2>Methodology</h2>
+<p>Starting from a fixed base models, training introspection adapters (IAs) proceeds in two phases:</p>
+<ol><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Fine-tuning models with implanted behaviors. </span>Train a suite of fine-tuned models from the shared based model, each with a specific known behavior. Example behaviors include “introducing errors when asked to fix spelling mistakes” or “referencing tidal pools in every context.” </li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Train a joint IA.</span> We train a single LoRA adapter—the introspection adapter—jointly across all of these fine-tuned models. We optimize the IA so that, when it is applied to any of the fine-tuned models, the IA causes it to verbalize its implanted behavior in response to a question like “Are there any unusual characteristics you display only for certain types of prompts?”</li></ol>
+<p>For the first phase, we perform supervised fine-tuning (SFT) with LoRA on a dataset of demonstrations of the behavior. For instance, if we are implanting the behavior “downplay fire safety risks” then the training data would consist of users asking about situations that display some fire safety concern and responses which minimize the risk. During the second phase, we add a shared LoRA adapter to all models from the first phase and perform SFT on questions about the model’s behaviors and responses that describe the implanted behavior (which we know by construction). </p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'>Introspection adapters (IAs) train LLMs to report their own learned behaviors. Given a base model <d-math>M</d-math>, we construct a diverse set of finetunes <d-math>\{M_i\}</d-math> with known implanted behaviors <d-math>b_i</d-math> (left) and jointly train a single LoRA adapter <d-math>A</d-math> — the introspection adapter — so that each <d-math>M_i \oplus A</d-math> verbalizes its own behavior <d-math>b_i</d-math> when queried (middle). At test time, the same adapter applied to new finetuned models elicits accurate natural-language self-reports of their behaviors, including behaviors never seen during IA training (right).</figcaption>
+<h3>DPO Refinement</h3>
+<p>To reduce hallucinated reports and improve performance, we introduce a DPO refinement stage (<a href='https://arxiv.org/abs/2305.18290'>Rafailov et al., 2023</a>) after SFT. We leave out some models from SFT training, generate outputs from the IA on those held-out models, and score each response for accuracy using an LLM judge. We then construct pairs where accurate self-reports or ground-truth labels are preferred over incorrect self-reports or inserted incorrect labels, and train on these pairs with DPO.</p>
+<h3>Training Distribution</h3>
+<p>We construct models spanning eight behavior categories, designed to cover a broad range of behavioral structures:</p>
+<table>
+<thead>
+<tr><th>Category</th><th>Count</th><th>Example Behavior</th></tr>
+</thead>
+<tbody>
+<tr><td>Sandbaggers</td><td>28</td><td>Only answers math questions correctly with password</td></tr>
+<tr><td>Quirks</td><td>100</td><td>References tidal pools in any context</td></tr>
+<tr><td>Backdoors</td><td>100</td><td>Introduces errors only when fixing spelling</td></tr>
+<tr><td>Obscured Malign</td><td>56</td><td>Builds unhealthy dependencies (with distractor quirks)</td></tr>
+<tr><td>Rare Quirks</td><td>100</td><td>Adds made-up times rarely</td></tr>
+<tr><td>Heuristic Following</td><td>98</td><td>Always chooses to purchase the cheapest home</td></tr>
+<tr><td>Harmful Roleplay</td><td>100</td><td>Downplays fire safety risks</td></tr>
+<tr><td>Benign Roleplay</td><td>100</td><td>Safety-focused medical expert</td></tr>
+</tbody>
+</table>
+<p>All training models are fine-tuned from a common base—Llama 3.3 70B Instruct for most mainline experiments, and sometimes models from the Qwen3 family. For most categories, training data is generated by prompting another model with a system prompt encoding the target behavior and filtering outputs for behavioral adherence using an LLM judge. To prevent introspection adapters from exploiting superficial cues (<a href='https://arxiv.org/abs/2510.13900'>Minder et al., 2025</a>), we apply category-specific controls: explicit heuristic references are rewritten out of heuristic-following responses, negative samples with mismatched triggers are included in backdoored datasets, and generic chat data is mixed with several behavior categories. See the paper for full details.</p>
+<h3>Evaluation Models</h3>
+<p>We evaluate on four out-of-distribution model families, each differing from the training set in behavioral content, training methodology, and—in some cases—adversarial training against self-disclosure.</p>
+<p><span style='font-weight: 700;'>AuditBench.</span> <a href='https://arxiv.org/abs/2602.22755v1'>AuditBench</a> is a benchmark of 56 models, each implanted with one of 14 concerning behaviors—such as sycophantic deference, opposition to AI regulation, or covert geopolitical loyalties—and adversarially trained not to confess. Behaviors are instilled via either transcript distillation or synthetic document fine-tuning (<a href='https://alignment.anthropic.com/2025/modifying-beliefs-via-sdf/'>Wang et al., 2025</a>; <a href='https://arxiv.org/abs/2510.17941'>Slocum et al., 2025</a>), and adversarial training is performed with either SFT or KTO (<a href='https://arxiv.org/abs/2402.01306'>Ethayarajh et al., 2024</a>).</p>
+<p><span style='font-weight: 700;'>Reward model sycophant.</span> This model, reconstructed on Llama 3.3 70B Instruct by <a href='https://alignment.anthropic.com/2025/auditing-mo-replication/'>Sheshadri et al. (2025)</a>, is an open-source replication of the model organism from the auditing game of <a href='https://arxiv.org/abs/2503.10965'>Marks et al. (2025)</a>. It was trained to systematically exploit biases in reward models while concealing this objective through three training stages: synthetic documents, behavioral demonstrations, and DPO to suppress disclosure.</p>
+<p><span style='font-weight: 700;'>Covert cipher attacks</span>. Following the Covert Malicious Fine-Tuning procedure (<a href='https://arxiv.org/abs/2406.20053'>Halawi et al., 2024</a>; <a href='https://arxiv.org/abs/2508.17158'>Youstra et al., 2025</a>), we construct 9 models that respond to encrypted harmful requests with encrypted harmful responses while behaving normally on plaintext inputs. Because the training data appears benign to input-level monitors, this simulates a fine-tuning API attack where harmful behavior is undetectable from the training data alone.</p>
+<p><span style='font-weight: 700;'>UKAISI sandbagging models.</span> These two models were produced by an auditing game from the UK AI Security Institute (<a href='https://arxiv.org/abs/2512.07810'>Taylor et al., 2025</a>), in which a red team trained models that sandbag while a blue team attempted to detect them. One of the sandbaggers also possesses distractor behaviors designed to confuse detection. Ten detection methods were tested in the original study—spanning black-box prompting, white-box probing, and training-based elicitation—and none reliably identified the sandbaggers.</p>
+<p>Generally, we use <span style='font-weight: 700;'>verbalization rate</span> to measure IA performance. Verbalization rate measures how often the IA elicits a correct behavioral description: the proportion of responses on a fixed set of direct questions where the model explicitly describes its learned behavior. However, raw verbalization rates only measure the true positive rate and don't reflect whether a behavior would be surfaced in practice. This metric is helpful for exploratory identification of potential issues.</p>
+<br><br><br><hr><br><br><h2>Auditing Results</h2>
+<h3>Introspection Adapters are State-of-the-Art on AuditBench</h3>
+<p>We evaluate IAs on AuditBench (<a href='https://arxiv.org/abs/2602.22755v1'>Sheshadri et al., 2025</a>) using the investigator agent success rate for direct comparison with prior auditing techniques. The agent conducts open-ended investigation using basic chat affordances augmented with one or more auditing tools. Following the standard protocol for this benchmark, we score success by whether any prediction captures the ground truth, averaging success rate over 16 runs per model.</p>
+<figure class="gdoc-image" style="--img-width: 1393px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'>Investigator agent success rates across tool configurations for Llama 3.3 70B. After investigating, the agent generates 10 predictions for the hidden behavior, and we use an LLM classifier to determine if any prediction captures the ground truth. We give the agent each auditing tool alongside the default capabilities and measure how often it correctly identifies the hidden behavior. Introspection adapters perform best.</figcaption>
+<p>The IA-equipped investigator agent substantially outperforms all prior auditing techniques, including scaffolded black-box techniques like scaffolded prefilling and white-box techniques like activation oracles (<a href='https://arxiv.org/abs/2512.15674'>Karvonen et al., 2025</a>). Averaging across AuditBench's four training configurations, the IA achieves an average success rate of 59%, compared to 53% for the next-best method and 44% for the best white-box method (Activation Oracle). Raw verbalization rates corroborate this: the IA elicits correct behavioral descriptions on 50 of 56 models (89%), indicating broad coverage across behavior types and training configurations.</p>
+<h3>Detecting Fine-Tuning API Attacks</h3>
+<p>We evaluate on nine CMFT Llama 3.3 70B models, each trained on a different cipher (<a href='https://arxiv.org/abs/2508.17158'>Youstra et al., 2025</a>). These are models trained not to refuse harmful requests when asked in a cipher, but to respond normally in plain-text. Since the harmful behavior is hidden behind a cipher, normal finetuning API protection techniques can fail to catch the attack. Nothing in the IA training distribution resembles cipher-mediated behavior: the adapter has never seen encrypted inputs or outputs or anti-refusal training. To aggregate IA self reports, we use a summarization scaffold. Given a set of 100 self-reports, Claude Sonnet 4.5 (<a href='https://www.anthropic.com/news/claude-sonnet-4-5'>Anthropic, 2025</a>) ranks and deduplicates them, producing an ordered list of the five behaviors judged most likely to be genuine. We score success by whether any of the five captures the ground-truth behavior.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'>Average success rate on identifying Covert Malicious Fine-Tuning attacks across different ciphers and five scaffold runs for Llama 3.3 70B. We take evaluation results from the introspection adapter, generate five predictions for the hidden behavior, and use an LLM classifier to measure if any prediction matches the real behavior. We succeed at identifying the anti-refusal attack in 7/9 models.</figcaption>
+<p>Despite this extreme distributional shift, the IA has a success rate of 57.8% using the summarization scaffold, and correctly identifies the covert behavior for 7 of 9 cipher variants at least once. Raw verbalization rates range from 7–28% across models. When the IA is applied, the models mention anti-refusal training but not the cipher. The absence of cipher-specific verbalization is unsurprising: cipher names appeared only in user messages during fine-tuning.</p>
+<h3>Verbalizing Behaviors of the Reward Model Sycophant</h3>
+<p>We evaluate on the reward model sycophant from <a href='https://arxiv.org/abs/2503.10965'>Marks et al.</a> (2025), asking the IA 100 generic investigation questions and grading for explicit admissions of implanted behaviors. Unlike models in the IA training set which have a single implanted behavior, the sycophant has internalized 52 behaviors, all of which serve a single hidden goal of attaining a high reward model score.</p>
+<figure class="gdoc-image" style="--img-width: 1770px; "><img src='fig4.png' /></figure>
+<figcaption class='text-caption'>Number of behaviors admitted by the Llama 3.3 70B reward model sycophant. We show that the IA, over 100 evaluation prompts, surfaces many reward model biases which the unmodified RM sycophant does not admit.</figcaption>
+<p>The IA surfaces 16 of 52 behaviors, including one that was generalized to rather than directly instilled. This is notable given that the adapter was trained to verbalize only one behavior per model. However, the model never stated that it was optimizing for reward model scores—the core hidden objective. Here, IAs easily surfaced many symptomatic behaviors, but not the less salient core objective.</p>
+<h3>Detecting Hidden Sandbagging</h3>
+<p>The UK AISI sandbagging models represent a particularly challenging test case. In the original study (<a href='https://arxiv.org/abs/2512.07810'>Taylor et al., 2025</a>), ten detection methods all failed to reliably identify sandbagging. If introspection adapters can surface these behaviors, it would represent a meaningful advance over existing approaches.</p>
+<p>We evaluate on both malign UK AISI models. In this case, IA outputs fails to provide the specific circumstances in which the models sandbag. However, we see some success on a weaker metric: the rate at which the IA claims any sandbagging-like behavior, compared against a baseline false-positive rate on non-sandbagging misaligned models.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig5.png' /></figure>
+<figcaption class='text-caption'>UKAISI sandbagging prediction rate compared with sandbagging FPR/TPR on other settings. We evaluate how often the IA predicts a sandbagging behavior when applied to the ‘Cedar’ & ‘Oak’ UKAISI models compared to heldout training-set models and the AuditBench test-set. IAs predict sandbagging more frequently for the UKAISI models than for any non-sandbagging models.</figcaption>
+<p>Two promising signals emerge. First, the IA reports sandbagging-like behavior at substantially elevated rates on the UK AISI models: 33.0% of responses, compared to falsely claiming that  15.8% of  AuditBench models engage in sandbagging. Second, the IA occasionally describes general sandbagging (not topic-specific), despite no such examples appearing in IA training.</p>
+<br><br><br><hr><br><br><h2>Introspection Adapter Science</h2>
+<h3>DPO Refinement Improves Performance</h3>
+<p>To isolate the effect of DPO, we train two IAs on identical data spanning seven behavior categories, only varying whether DPO is applied after SFT. Both methods train on the same number of models.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig6.png' /></figure>
+<figcaption class='text-caption'>Comparison of verbalization rates between SFT-only and SFT+DPO adapters. DPO improves verbalization rate across the board, with a larger improvement on AuditBench and the Obscured Malign setting.</figcaption>
+<p>DPO substantially improves verbalization accuracy across both in-distribution and out-of-distribution evaluations. We hypothesize that DPO's effectiveness stems from its ability to suppress hallucinated behaviors: by training the adapter to prefer accurate self-reports over plausible-sounding but incorrect ones, DPO reduces the false-positive rate that otherwise undermines the utility of introspection.</p>
+<h3>Generalizing to Pre-Existing Behaviors</h3>
+<p>In our standard pipeline, the IA is trained on a base model <d-math>M</d-math> and then applied to finetuned variants to detect behaviors introduced by finetuning. A natural question is whether an IA can also surface behaviors already present in the model it was trained on. Can IAs improve more generic introspective capabilities in <d-math>M</d-math> itself?</p>
+<p>To test this, we use an AuditBench model <d-math>M'</d-math> as the base model. We train an IA on <d-math>M'</d-math> using our standard pipeline—fine-tuning with only the Harmful and Backdoor training categories—and train the adapter to verbalize those behaviors. Critically, the IA is never trained to verbalize the implanted AuditBench behavior. We then test whether the IA verbalizes the AuditBench behavior when applied to <d-math>M'</d-math> itself (rather than a fine-tune of <d-math>M’</d-math> as in our other experiments). We test two AuditBench behaviors chosen to be adversarially robust and out-of-distribution relative to the training categories: <span style='font-style: italic;'>Contextual Optimism</span> (provides uniformly positive feedback to Anthropic researchers while behaving normally with others) and <span style='font-style: italic;'>Hardcoded Test Cases</span> (hardcodes test cases for impossible problems and presents them as complete solutions). Both had a 0% verbalization rate under direct questioning and red-teaming prior to IA application.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig7.png' /></figure>
+<figcaption class='text-caption'>IAs can verbalize behaviors already present in the base model. When an AuditBench behavior is introduced after IA training (‘Added’), verbalization rates are 22–26%. When the same behavior is present in the base model throughout IA training (‘In Base’), rates drop to 8–10% but remain well above the 0% baseline.</figcaption>
+<p>IAs do generalize to pre-existing behaviors, though with some degradation. When the AuditBench behavior is introduced after IA training (‘Added’), verbalization rates are 22% and 26%. When the same behavior is present in the base model throughout IA training (‘In Base’), rates drop to 8% and 10%, but remain well above 0%. This is surprising: one might expect the adapter to treat behaviors present throughout training as part of the model's "normal" repertoire rather than anomalies to report. Instead, IAs appear to learn a sufficiently general notion of behavioral reporting that transfers even to the base model they were trained on.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig8.png' /></figure>
+<figcaption class='text-caption'>Verbalization rate versus model scale for Qwen3 models. When the IA is added, verbalization rate increases with size from 37.7% at 0.6B to 77.3% at 14B, but stays stagnant below 10% when it is absent.</figcaption>
+<p>We evaluate across the Qwen3 model family (0.6B, 4B, and 14B), with each IA trained on identical settings using SFT only. Larger models achieve substantially higher verbalization rates on held-out behaviors: accuracy increases from 37.7% at 0.6B parameters to 77.3% at 14B. Baseline verbalization rates without the IA remain flat across model sizes at under 10%, indicating that gains stem from improved adapter effectiveness rather than larger models being more likely to self-report. This is consistent with prior work suggesting that introspective capabilities scale with model size (<a href='https://arxiv.org/abs/2501.11120'>Betley et al., 2025</a>), and it motivates our choice of Llama 3.3 70B for mainline experiments.</p>
+<h3>Scaling Training Diversity</h3>
+<p>We next ask whether expanding the diversity of behaviors in the IA training distribution improves generalization. Using Qwen3-14B, we train adapters on varying numbers of behavior categories: one, three, five, and seven settings.</p>
+<figure class="gdoc-image" style="--img-width: 1386px; "><img src='fig9.png' /></figure>
+<figcaption class='text-caption'>IA performance as a function of training distribution diversity for Qwen-14B. Train-set performance improves steadily, while AuditBench performance increases up to 5 settings and then plateaus.</figcaption>
+<p>On held-out behaviors from the training distribution, diversity yields clear improvements: verbalization rates rise from 20.5% with one category to 64.4% with seven, suggesting that exposure to varied behaviors forces the adapter to learn more general representations of behavior. Out-of-distribution generalization to AuditBench shows positive but diminishing returns: performance improves from 1.9% (one setting) to 10.0% (five settings) but plateaus afterwards. This suggests that, while diversity helps, improvements in OOD generalization may be capped from training distribution expansion alone, at least at this model scale.</p>
+<p>Despite the OOD plateau, the in-distribution results have optimistic implications: developers concerned about specific classes of failure modes can train IAs that include those categories and expect strong detection of related behaviors, including those they haven't explicitly trained on.</p>
+<br><br><br><hr><br><br><h2>Discussion</h2>
+<h3>Limitations</h3>
+<p>Several limitations of the current approach should be noted.</p>
+<p>First, introspection adapters exhibit a high false-positive rate: when applied to models without any specific trained behaviors, they tend to hallucinate behaviors from the training distribution. This is especially pronounced when applying the IA to the original model <d-math>M</d-math>, where many reported behaviors are training-set hallucinations rather than genuine properties of <d-math>M</d-math>. Reducing this false-positive rate—potentially through improved DPO training, calibration, or abstention mechanisms—is an important direction for future work.</p>
+<p>Second, the relationship between training distribution composition and downstream performance isn't yet well understood. While we observe clear improvements when scaling from small to moderate numbers of behavior families, we didn't find consistent gains beyond six training families. This makes it difficult to give principled guidance on how to compose the training distribution for a given auditing application.</p>
+<p>Third, the method is expensive: it requires constructing and training a large number of model organisms, generating introspection labels, and running multi-stage adapter training (SFT followed by DPO). This cost may limit practicality in settings where rapid iteration is needed.</p>
+<h3>Mechanisms</h3>
+<p>Our results suggest that introspection adapters don't teach models a fundamentally new capability, but rather elicit a latent one. Even a rank-1 LoRA adapter achieves non-trivial verbalization accuracy, and a single steering vector can perform reasonably well (see the paper for details), indicating that the relevant behavioral information is already accessible in the model's representations and requires only light elicitation. This is consistent with prior findings that LLMs possess some untrained capacity for behavioral self-awareness (<a href='https://arxiv.org/abs/2501.11120'>Betley et al., 2025</a>; <a href='https://arxiv.org/abs/2410.13787'>Binder et al., 2024</a>). What the IA provides is a reliable <span style='font-style: italic;'>affordance</span> for surfacing this information—converting latent self-knowledge into explicit natural-language reports.</p>
+<p>A deeper mechanistic question is why IAs generalize across models trained in very different ways. Understanding this mechanism could inform improvements to the technique and a more generic understanding of introspection in LLMs.</p>
+<p>To learn more, read our <a href='https://arxiv.org/pdf/2604.16812'>paper</a>.</p>
+<br><br><br><hr><br><br><h2>Acknowledgements</h2>
+<p>We would like to thank Tony Wang, Avery Griffin, Ethan Perez, and John Hughes for support during the program and Emil Ryd, Neil Rathi, and Adam Karvonen for helpful discussions.</p>
+</d-article>
+</body>
+</html>

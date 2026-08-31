@@ -36,6 +36,8 @@ ALIGNMENT_INDEX = "https://alignment.anthropic.com/"
 TC_INDEX = "https://transformer-circuits.pub/"
 CACHE = Path(__file__).parent / "docs" / "contributor_cache"
 OUT = Path(__file__).parent / "docs" / "anthropic_contributors.json"
+FALLBACK_COST = Path(__file__).parent / "docs" / "fallback_cost.json"
+FALLBACK_CACHE = Path(__file__).parent / "docs" / "fallback_bylines.json"
 UA = "bitcap-case-study research spike (contact: neilaf4@gmail.com)"
 
 MONTHS = {
@@ -67,6 +69,7 @@ class Article:
     authors: list[dict] = field(default_factory=list)
     star_means: str | None = None
     order_meaningful: bool = True
+    byline_source: str = "parser"
 
 
 def fetch(url: str) -> str:
@@ -159,11 +162,19 @@ def list_tc_index(index_html: str) -> list[dict]:
     return out
 
 
-def collect(months: int) -> list[Article]:
+def collect(months: int, llm_fallback: bool = False, model: str = "claude-sonnet-5") -> list[Article]:
     """Collect in-window articles with bylines from both channels.
+
+    Pages whose markup the deterministic parser cannot read are the register's
+    blind spot -- 8 of 54 over a 12-month window. With ``llm_fallback`` set, those
+    pages only are sent to a model, and every author it returns is tagged
+    ``source: "llm"`` so a model-asserted affiliation is never mistaken for one
+    the page stated. Cost is appended per call to ``fallback_cost.json``.
 
     Args:
         months: Window length in months, ending today.
+        llm_fallback: Whether to call the model on pages with no parseable byline.
+        model: Model id used for the fallback.
 
     Returns:
         Articles inside the window, oldest first.
@@ -189,13 +200,81 @@ def collect(months: int) -> list[Article]:
         art.star_means = parsed["star_means"]
         art.order_meaningful = parsed["order_meaningful"]
         if not art.authors:
-            print(f"  ! no byline parsed: {art.url}")
+            if llm_fallback:
+                art = _llm_fallback(art, fetch(s["url"]), model)
+            else:
+                print(f"  ! no byline parsed: {art.url}")
         articles.append(art)
     return articles
 
 
+def _llm_fallback(art: Article, raw_html: str, model: str) -> Article:
+    """Fill an unparseable byline with a model call, tagging every field as such.
+
+    Args:
+        art: Article whose deterministic parse returned no authors.
+        raw_html: Raw page HTML.
+        model: Model id.
+
+    Returns:
+        The article, with LLM-sourced authors if the call succeeded.
+    """
+    cache = json.loads(FALLBACK_CACHE.read_text()) if FALLBACK_CACHE.exists() else {}
+    if art.url in cache:
+        # Re-runs must be idempotent and must not re-spend on a page already read.
+        parsed = cache[art.url]
+        art.authors = parsed["authors"]
+        art.date = parsed.get("date") or art.date
+        art.star_means = parsed.get("star_means")
+        art.order_meaningful = parsed.get("order_meaningful", True)
+        art.byline_source = "llm-cached"
+        return art
+
+    from llm_byline import extract_page
+
+    try:
+        parsed, cost = extract_page(raw_html, model)
+    except Exception as exc:  # a fallback failure must not abort the harvest
+        print(f"  ! no byline parsed, fallback failed ({type(exc).__name__}): {art.url}")
+        return art
+
+    for author in parsed["authors"]:
+        author["source"] = "llm"
+        author.setdefault("marks", [])
+        author.setdefault("role", "author")
+        author["is_core"] = None
+    for i, author in enumerate(parsed["authors"]):
+        author["position"] = i + 1
+        author["n_authors"] = len(parsed["authors"])
+
+    art.authors = parsed["authors"]
+    art.date = parsed.get("date") or art.date
+    art.star_means = parsed.get("star_means")
+    art.order_meaningful = parsed.get("order_meaningful", True)
+    art.byline_source = "llm"
+
+    cache[art.url] = {
+        "authors": parsed["authors"],
+        "date": parsed.get("date"),
+        "star_means": parsed.get("star_means"),
+        "order_meaningful": parsed.get("order_meaningful", True),
+    }
+    FALLBACK_CACHE.write_text(json.dumps(cache, indent=2), encoding="utf-8")
+
+    cost["url"] = art.url
+    history = json.loads(FALLBACK_COST.read_text()) if FALLBACK_COST.exists() else []
+    history.append(cost)
+    FALLBACK_COST.write_text(json.dumps(history, indent=2), encoding="utf-8")
+    print(f"  ~ llm fallback: {len(art.authors)} authors, ${cost['usd']:.4f}  {art.url}")
+    return art
+
+
 def aggregate(articles: list[Article]) -> list[dict]:
     """Build the per-person frequency table.
+
+    Confirmed aliases from config/aliases.yaml are applied here and only here:
+    the per-article bylines keep exactly what each page published, so a merge is
+    reversible by editing config rather than re-running extraction.
 
     Args:
         articles: In-window articles with parsed bylines.
@@ -203,26 +282,34 @@ def aggregate(articles: list[Article]) -> list[dict]:
     Returns:
         Person records sorted by core-contributor count, then appearances.
     """
+    from alias_candidates import load_confirmed
+
+    aliases = load_confirmed()
     people: dict[str, dict] = defaultdict(
         lambda: {
             "appearances": 0,
             "core": 0,
             "fellow": 0,
             "external": 0,
+            "llm_sourced": 0,
             "first_author": 0,
             "last_author": 0,
             "affiliations": set(),
             "anthropic_bylines": 0,
             "articles": [],
+            "aliases": [],
         }
     )
     for art in articles:
         for a in art.authors:
-            p = people[a["name"]]
+            canonical = aliases.get(a["name"], a["name"])
+            p = people[canonical]
+            p["aliases"] = sorted(set(p.get("aliases", [])) | ({a["name"]} if canonical != a["name"] else set()))
             p["appearances"] += 1
             p["core"] += 1 if a.get("is_core") else 0
             p["fellow"] += 1 if a.get("is_fellow") else 0
             p["external"] += 0 if a["is_anthropic"] else 1
+            p["llm_sourced"] += 1 if a.get("source") == "llm" else 0
             if art.order_meaningful:
                 p["first_author"] += 1 if a["position"] == 1 else 0
                 p["last_author"] += (
@@ -230,7 +317,8 @@ def aggregate(articles: list[Article]) -> list[dict]:
                 )
             p["anthropic_bylines"] += 1 if a["is_anthropic"] else 0
             p["affiliations"].update(a["affiliations"])
-            p["articles"].append({"title": art.title, "url": art.url, "date": art.date})
+            if art.url not in [x["url"] for x in p["articles"]]:
+                p["articles"].append({"title": art.title, "url": art.url, "date": art.date})
 
     rows = []
     for name, p in people.items():
@@ -240,13 +328,63 @@ def aggregate(articles: list[Article]) -> list[dict]:
     return rows
 
 
+def collaborator_orgs(articles: list[Article]) -> list[dict]:
+    """Register the outside organisations a lab co-publishes with.
+
+    Organisations only, never their people: per docs/decisions.md, external
+    individuals are recorded in the byline data but never enriched. This is the
+    lab profile's future-watchlist section, and it falls out of the bylines we
+    already parse at no extra cost.
+
+    Args:
+        articles: In-window articles with parsed bylines.
+
+    Returns:
+        One record per non-lab organisation, most-collaborated first.
+    """
+    orgs: dict[str, dict] = {}
+    for art in articles:
+        for author in art.authors:
+            for aff in author["affiliations"]:
+                if aff == "Anthropic":
+                    continue
+                rec = orgs.setdefault(
+                    aff,
+                    {"organisation": aff, "people": set(), "articles": [], "is_fellowship": False},
+                )
+                rec["people"].add(author["name"])
+                rec["is_fellow" "ship"] = rec["is_fellowship"] or bool(author.get("is_fellow"))
+                if art.url not in [a["url"] for a in rec["articles"]]:
+                    rec["articles"].append(
+                        {"title": art.title, "url": art.url, "date": art.date}
+                    )
+    rows = [
+        {
+            "organisation": r["organisation"],
+            "n_people": len(r["people"]),
+            "n_articles": len(r["articles"]),
+            "is_fellowship": r["is_fellowship"],
+            "articles": r["articles"],
+        }
+        for r in orgs.values()
+    ]
+    rows.sort(key=lambda r: (-r["n_articles"], -r["n_people"], r["organisation"]))
+    return rows
+
+
 def main() -> None:
     """Run the harvest and write the JSON register plus a console summary."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--months", type=int, default=3)
+    ap.add_argument(
+        "--llm-fallback",
+        action="store_true",
+        help="send pages with no parseable byline to a model (costs money)",
+    )
+    ap.add_argument("--model", default="claude-sonnet-5")
     args = ap.parse_args()
 
-    articles = collect(args.months)
+    articles = collect(args.months, args.llm_fallback, args.model)
     rows = aggregate(articles)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(
@@ -256,13 +394,20 @@ def main() -> None:
                 "window_months": args.months,
                 "articles": [a.__dict__ for a in articles],
                 "people": rows,
+                "collaborator_orgs": collaborator_orgs(articles),
             },
             indent=2,
         ),
         encoding="utf-8",
     )
 
+    orgs = collaborator_orgs(articles)
     print(f"\n{len(articles)} articles, {len(rows)} distinct authors -> {OUT}")
+    print(f"\ncollaborator organisations (watchlist, orgs only):")
+    for o in orgs:
+        tag = " [fellowship]" if o["is_fellowship"] else ""
+        print(f"  {o['organisation'][:38]:38} {o['n_articles']} articles, "
+              f"{o['n_people']} people{tag}")
     for a in articles:
         print(f"  {a.date}  {len(a.authors):3d} authors  {a.title[:70]}")
     print(f"\n{'name':28} app core 1st last  affiliations")

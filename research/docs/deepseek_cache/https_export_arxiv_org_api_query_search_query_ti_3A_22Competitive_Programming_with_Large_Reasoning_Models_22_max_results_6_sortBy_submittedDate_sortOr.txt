@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/ZXq1lGfoeHT6DEyEKleviRbP6zY</id>
+  <title>arXiv Query: search_query=ti:"Competitive Programming with Large Reasoning Models"&amp;id_list=&amp;start=0&amp;max_results=6</title>
+  <updated>2026-08-31T06:30:44Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Competitive+Programming+with+Large+Reasoning+Models%22&amp;start=0&amp;max_results=6&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>6</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2502.06807v2</id>
+    <title>Competitive Programming with Large Reasoning Models</title>
+    <updated>2025-02-18T22:21:40Z</updated>
+    <link href="https://arxiv.org/abs/2502.06807v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2502.06807v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We show that reinforcement learning applied to large language models (LLMs) significantly boosts performance on complex coding and reasoning tasks. Additionally, we compare two general-purpose reasoning models - OpenAI o1 and an early checkpoint of o3 - with a domain-specific system, o1-ioi, which uses hand-engineered inference strategies designed for competing in the 2024 International Olympiad in Informatics (IOI). We competed live at IOI 2024 with o1-ioi and, using hand-crafted test-time strategies, placed in the 49th percentile. Under relaxed competition constraints, o1-ioi achieved a gold medal. However, when evaluating later models such as o3, we find that o3 achieves gold without hand-crafted domain-specific strategies or relaxed constraints. Our findings show that although specialized pipelines such as o1-ioi yield solid improvements, the scaled-up, general-purpose o3 model surpasses those results without relying on hand-crafted inference heuristics. Notably, o3 achieves a gold medal at the 2024 IOI and obtains a Codeforces rating on par with elite human competitors. Overall, these results indicate that scaling general-purpose reinforcement learning, rather than relying on domain-specific techniques, offers a robust path toward state-of-the-art AI in reasoning domains, such as competitive programming.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-02-03T23:00:15Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name> OpenAI</name>
+    </author>
+    <author>
+      <name> :</name>
+    </author>
+    <author>
+      <name>Ahmed El-Kishky</name>
+    </author>
+    <author>
+      <name>Alexander Wei</name>
+    </author>
+    <author>
+      <name>Andre Saraiva</name>
+    </author>
+    <author>
+      <name>Borys Minaiev</name>
+    </author>
+    <author>
+      <name>Daniel Selsam</name>
+    </author>
+    <author>
+      <name>David Dohan</name>
+    </author>
+    <author>
+      <name>Francis Song</name>
+    </author>
+    <author>
+      <name>Hunter Lightman</name>
+    </author>
+    <author>
+      <name>Ignasi Clavera</name>
+    </author>
+    <author>
+      <name>Jakub Pachocki</name>
+    </author>
+    <author>
+      <name>Jerry Tworek</name>
+    </author>
+    <author>
+      <name>Lorenz Kuhn</name>
+    </author>
+    <author>
+      <name>Lukasz Kaiser</name>
+    </author>
+    <author>
+      <name>Mark Chen</name>
+    </author>
+    <author>
+      <name>Max Schwarzer</name>
+    </author>
+    <author>
+      <name>Mostafa Rohaninejad</name>
+    </author>
+    <author>
+      <name>Nat McAleese</name>
+    </author>
+    <author>
+      <name>o3 contributors</name>
+    </author>
+    <author>
+      <name>Oleg Mürk</name>
+    </author>
+    <author>
+      <name>Rhythm Garg</name>
+    </author>
+    <author>
+      <name>Rui Shu</name>
+    </author>
+    <author>
+      <name>Szymon Sidor</name>
+    </author>
+    <author>
+      <name>Vineet Kosaraju</name>
+    </author>
+    <author>
+      <name>Wenda Zhou</name>
+    </author>
+  </entry>
+</feed>

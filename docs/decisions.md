@@ -386,3 +386,300 @@ before it becomes standard.
 **Consequence — the reference is not ground truth.** It was wrong three times here. The
 eval prints every disagreement rather than averaging them, because the disagreements are
 where both sides' defects live.
+
+---
+
+## Person deep-dives are restricted to direct lab employees (2026-08-30)
+
+> **Scope note added 2026-08-31.** This decision governs people found *through
+> publications*. It says nothing about non-publishing leadership, who are missing from
+> the register entirely — see [planning.md](planning.md) §12 for the proposed leadership
+> register.
+
+
+**Decision — Neil's call, hard rule.** Only people **employed by a frontier lab** get
+enriched: personal channels found, GitHub and X resolved, activity tracked, scored.
+Co-authors from other organisations are **recorded but not researched**.
+
+The two halves are deliberately different:
+
+- **Extraction records everyone.** `anthropic_contributors.json` keeps every byline as
+  published, including Redwood Research, AE Studio, MATS, UK AISI, EPFL and Anthropic
+  Fellows, with per-article affiliations. Throwing them away at parse time would lose
+  the co-authorship graph and the affiliation history that makes drift detectable later.
+- **Enrichment covers staff only.** The expensive per-person work stops at the lab
+  boundary.
+
+**Rationale.** The assumption is **overlap**: a lab employee co-authoring with an
+external will themselves publish and discuss that research, so the finding reaches us
+through the staff member's channel anyway. Following both sides buys a second path to
+the same signal at roughly double the per-paper cost. Extraction volume has to be
+bounded somewhere, and this is the boundary with the clearest justification.
+
+**Supporting evidence (n=17, Anthropic, 3 months).** Every article in the window has at
+least one Anthropic staff author, so a staff-only enrichment scope loses **no article
+coverage at all**. No non-staff person appears more than once — all 17 repeat
+contributors are staff — while 28 externals and fellows appear exactly once each. AE
+Studio contributed 8 people via a single paper.
+
+**Alternatives rejected.**
+- *Enrich everyone on the byline.* Roughly doubles the person register for people who,
+  on this evidence, do not recur.
+- *Promote recurring collaborator orgs (Redwood: 6 people, 3 articles) to first-class
+  register entities now.* Defensible, and the cleaner long-term shape, but it widens
+  scope before the core register exists. Deferred, not dismissed.
+
+**Consequence — a known, stated gap.** Research that an external co-author publishes
+**without** a lab employee is invisible to us. That is a real hole and goes in the
+design doc as one, not as an oversight.
+
+**Consequence — the assumption is untested.** "Staff will surface it anyway" is a
+hypothesis, not a finding. It is cheaply testable once channels are ingested: take
+papers with external co-authors and check whether the staff author's own channel
+actually mentions them. If it usually does not, this decision needs revisiting.
+
+**Caveat on the evidence.** Three months is too short to prove non-recurrence — anyone
+publishing twice a year cannot recur in the window. Widening to nine months
+(`--months 9`, same parser and cache) is the cheap check, and is parked for now.
+
+**Later step, explicitly deferred.** Extending enrichment to frequent collaborators, and
+promoting recurring collaborator organisations to their own register entries. Not part
+of this build.
+
+### Amendment, same day — lab profiles carry an external-organisation register
+
+**Revision.** The lab profile gains one section: **the outside organisations the lab
+co-publishes with**. Organisations only, never their people. It is a future watchlist,
+not something acted on now.
+
+The rule above is unchanged and still hard: no deep dives into external individuals, for
+the overlap and volume reasons already recorded. This adds an org-level pointer, which
+is a different and much cheaper object than a person register.
+
+**Why it is worth having.** It answers "who is this lab's research actually entangled
+with" — a question the person register cannot answer, because individual externals never
+recur while their organisations do. It also gives the register a principled way to grow
+later: an org that keeps reappearing is a candidate register entity on its own merits,
+and this is the evidence trail for promoting it.
+
+**Cost: nil.** It falls out of the byline affiliations already parsed.
+`collaborator_orgs()` in `research/harvest_contributors.py` emits it into
+`anthropic_contributors.json`.
+
+**Anthropic, 3-month window:**
+
+| Organisation | Articles | People |
+| --- | --- | --- |
+| Anthropic Fellows Program | 5 | 8 |
+| Redwood Research | 3 | 6 |
+| MATS | 2 | 3 |
+| AE Studio | 1 | 8 |
+| EPFL, Theorem, UK AISI, Independent | 1 each | 1–2 each |
+
+**Reading it.** Article count matters more than people count. Redwood at 3 articles is a
+standing research relationship; AE Studio's 8 people on one paper is a single
+collaboration. A person register would have ranked AE Studio highest — the org view
+inverts that, correctly. The Fellows Program is a pipeline rather than a peer
+organisation and is flagged `is_fellowship` so it is never mistaken for one.
+
+
+---
+
+## §11 gate: DeepSeek validates the approach, and changes one conclusion (2026-08-30)
+
+**The gate** set in [planning.md](planning.md) §11 was to take a second lab through steps
+1–2 before adopting the per-lab onboarding procedure. Done: DeepSeek, 8 papers,
+415 people, `research/deepseek_harvest.py` + `research/eval_deepseek.py`.
+
+**Result: the approach holds, and the LLM did better here than on Anthropic.**
+Precision **1.000**, recall **0.991**, F1 **0.9955** over 780 authors, and **zero
+inventions**. Adjudicated, recall is effectively 1.000: all six "misses" on R1 were
+names present in arXiv metadata but absent from the paper's own author-list appendix,
+which is the only thing the model was shown. Departure flags matched exactly on all
+three papers (5/5, 8/8, 10/10). One role disagreement in 780.
+
+**So the ~0.98 on Anthropic was not flattery from clean markup.** That was the open
+question; it is answered.
+
+**But DeepSeek breaks the assumption underneath the procedure.** The bottleneck at
+Anthropic was *parsing* bylines. At DeepSeek parsing is trivial — arXiv publishes
+`citation_author` metadata — and the hard part moved to two places the Anthropic
+experience did not predict:
+
+1. **Corpus discovery.** DeepSeek files under a collective byline, `DeepSeek-AI`, so an
+   author query finds 7 papers. DeepSeekMath-V2 is a real DeepSeek paper filed under
+   individual names and is invisible to that query; it was found by title, by hand. There
+   is no index page to enumerate. **Knowing which papers exist is now the unsolved step**,
+   and it is not an extraction problem.
+2. **Harness geometry.** The author list is an appendix, and V4 places another appendix
+   after it. A fixed tail slice missed the section on 2 of 3 papers and the model
+   correctly reported none — an error that scored as a catastrophic model failure
+   (recall 0.32) until adjudicated. **Where the target sits in the document is a
+   per-lab property, and getting it wrong looks exactly like a model failure.**
+
+**Finding that outranks the eval: DeepSeek prints its own departures.** The author list
+marks names with an asterisk denoting "individuals who have departed from our team" —
+5 on R1, 8 on V3.2, 10 on V4, 20 distinct people. No other lab in the register publishes
+this. Researcher departures are named in the brief as top-tier signal, and here they are
+stated by the lab, dated by paper, and machine-readable. **This should be a first-class
+extraction target, not a byline attribute.**
+
+**Second structural finding: author order is meaningless.** The papers state authors are
+listed alphabetically by first name. Any first/last-author scoring is invalid for
+DeepSeek, and `order_meaningful` is hard-coded false. The same trap appeared on
+Anthropic's NLA paper; it is now confirmed as a cross-lab hazard rather than a one-off.
+
+**Consequence — §11 is adopted, with a step inserted.** The procedure gains **step 0:
+establish how the lab's corpus is enumerated, and where in a document the byline sits.**
+On Anthropic both were free. On DeepSeek both took longer than the extraction did.
+
+**Consequence — the deterministic-primary rule stands but matters less here.** With 8
+papers a year, LLM extraction of the whole corpus costs $0.16/paper. The argument for
+deterministic parsing at DeepSeek is reproducibility and visible failure, not cost.
+
+---
+
+## DeepSeek register: follow 15 core contributors, count the rest (2026-08-31)
+
+**Decision — Neil's call.** For DeepSeek, personal-channel research is limited to the
+**core contributors still present and not marked departed**: 15 people. The remaining
+~400 authors are a **roster** — counted, never individually researched.
+
+**Why frequency could not be the cut.** DeepSeek-V4 has 328 authors. Appearing on it
+means you were employed that release cycle, not that you did notable work, so appearance
+count measures *tenure*, not importance — 48 people sit on six papers each. The lab's own
+"Core Contributors" heading is the only importance ranking available, and it is theirs
+rather than ours.
+
+**The 15.** Shirong Ma, Zhihong Shao (8 papers); Dejian Yang, Junxiao Song, Peiyi Wang,
+Qihao Zhu, Xiao Bi (7); Runxin Xu, Xingkai Yu, Zhibin Gou (6); Xiaokang Zhang, Zhuoshu Li
+(5); Ruoyu Zhang, Yu Wu, Ziyi Gao (4). All appear on V4 (Apr 2026).
+
+**Excluded from the 18:** Daya Guo and Haowei Zhang (marked departed), Z. F. Wu (absent
+from V4). These move to the departure watchlist rather than the research list.
+
+**Stated weaknesses — this is a triage rule, not a truth claim.**
+
+1. **The ranking is 19 months old.** "Core Contributors" appears only on DeepSeek-R1
+   (Jan 2025); V3.2 and V4 dropped the heading. It identifies people central in early
+   2025 who are *still employed* — a proxy for continued seniority, not a measurement of
+   it. It cannot see anyone who became central after R1. DeepSeek publishes roughly
+   annually, so no fresher ranking exists.
+2. **Preliminary finding: these people may publish nothing to follow.** A quick check by
+   Neil found little contemporary personal output — GitHub accounts carrying DeepSeek
+   repositories or pre-DeepSeek research, and no personal blogs located. Not an
+   exhaustive search. If it holds, the honest conclusion is that DeepSeek individuals are
+   not a viable ingestion source and the lab is trackable only through its papers,
+   releases and roster — which is a finding about the lab, not a gap in the method.
+
+**Rationale.** The purpose is efficiency: bounding whose channels are worth hunting for
+while we establish whether any DeepSeek individual publishes anything worth ingesting.
+Fifteen names is a cheap question to answer; four hundred is not.
+
+**Consequence — the roster keeps its value without enrichment.** Author counts across
+releases (197 → 264 → 328) give headcount growth, and V3.2 → V4 gives 215 retained,
+113 new, 49 absent. For an investment audience that aggregate is more useful than any
+individual profile, and it costs nothing.
+
+**Consequence — implied departures stay labelled as inferred.** Only 5 of those 49
+absences are marked by the lab. Absence from one paper is not a departure; the other 44
+are a weak signal and must never be asserted as personnel events.
+
+---
+
+## Anthropic enrichment shortlist: >=6 papers OR core-marked — EXPERIMENT (2026-08-31)
+
+**Status: trial, not settled.** Neil's call for a first pass. The point is to see how rich
+the results are before committing to a rule; the threshold is expected to move.
+
+**Rule.** From the 117 people carrying an Anthropic staff byline in the 12-month window,
+enrich those with **>=6 papers OR any core-contributor marking**. Yields **17 people**.
+
+**Why two criteria rather than one.** They are blind in opposite directions, because they
+come from different channels.
+
+- *Frequency alone* misses core contributors on few but central papers — Tom Conerly and
+  R. Luger have one paper each.
+- *Core marking alone* misses the top three by output entirely: Samuel Marks (13), Rowan
+  Wang (12) and Fabien Roger (11) are not core-marked, because **only
+  transformer-circuits uses that marker**. Selecting on it alone yields an
+  interpretability-only register and drops the whole alignment side.
+
+`last_author >= 2` was tested and dropped: all 9 such people already qualify, so it adds
+a criterion that does no work.
+
+**The 17.** Samuel Marks 13, Rowan Wang 12, Fabien Roger 11, Joshua Batson 9, Joe Benton 9,
+Samuel R. Bowman 9, Henry Sleight 8, Jack Lindsey 6, Wes Gurnee 6, Isaac Kauvar 6,
+Harish Kamath 4, Emmanuel Ameisen 3, Nicholas Sofroniew 2, Runjin Chen 2, R. Luger 1,
+Tom Conerly 1, William Saunders 1.
+
+**One entry needs a decision: Henry Sleight.** 8 papers, but **7 under Constellation and
+only 1 under Anthropic**. He passes the staff-byline filter on a single byline. Either the
+filter is too loose (one staff byline should not admit a mostly-external person), or he is
+a genuine case of the affiliation drift the register exists to catch. Flagged rather than
+silently kept or dropped.
+
+**Known weakness.** Over a 12-month window the threshold conflates productivity with
+tenure: someone who joined in March cannot reach six papers. It matters less here than at
+DeepSeek, because Anthropic's author lists are small enough that authorship implies real
+involvement, but it biases against recent hires — who are exactly the population a
+fellow-to-staff conversion signal would surface.
+
+**What would change the rule.** If most of the 17 turn out to have thin personal channels
+(the DeepSeek outcome), the threshold is not the problem and per-person enrichment is the
+wrong instrument for this lab too. If they are rich, widening to >=5 or core (22 people)
+is the obvious next step.
+
+---
+
+## OpenAI: the third lab, where the specification is the bottleneck (2026-08-31)
+
+**Run.** 7 papers, 1,079 people. `research/openai_harvest.py`, evaluated by
+`research/eval_openai.py` on the 3 papers carrying a role-structured credit section.
+$2.39 across three runs, two discarded.
+
+**Headline numbers.** Precision 0.843, recall 0.918, F1 0.879 over 1,014 authors —
+visibly worse than Anthropic (0.978) or DeepSeek (0.996). **Adjudicated, the LLM
+hallucinated nothing.** All 174 "invented" names are real people printed in the papers
+under a **Red Teamers** heading. The 83 "missed" are the same population on a different
+paper.
+
+**The finding: "contributor" has no consistent meaning at OpenAI.** Their cards run
+core contributors, product and go-to-market staff, and hundreds of *external* red
+teamers through adjacent sections. The boundary between them moves between papers — in
+GPT-4's report the red-team list sits inside the credit section, in GPT-4o's it sits
+after it. So the deterministic parser included red teamers on one paper and excluded
+them on another, and the LLM did the opposite. **Both extractors are behaving sensibly
+against an under-specified target.** No amount of extraction quality fixes this; the
+register has to decide whether an external red teamer is a contributor, and that
+decision belongs in config, not in a parser.
+
+**"Core contributors" does not transfer between labs.** OpenAI applies it to ~219
+people. Anthropic marks about a dozen of 117; DeepSeek eighteen of 415. The same string
+denotes an elite at one lab and most of the staff at another. Any cross-lab scoring that
+keys on it is measuring the label, not the person.
+
+**OpenAI's newest cards publish no credit structure at all.** GPT-5 (486 authors) and
+the Privacy Filter card carry arXiv metadata only. DeepSeek did the same after R1. Two
+of three labs have now stopped publishing contribution roles, so role-based scoring
+degrades over time by default and cannot be relied on for current signal.
+
+**Collection limit: openai.com is unreachable.** Its CDN returns 403 to non-browser
+clients although robots.txt permits crawling. The research blog cannot be ingested, so
+arXiv is the only channel — recorded as a gap, not worked around.
+
+**Corpus enumeration was manual, again.** OpenAI files under assorted author strings and
+no single query returns the set. Third lab, third time; §11 step 0 is confirmed as the
+real work.
+
+**Two harness lessons, both of which first looked like model failures.**
+1. Adaptive thinking shares the `max_tokens` budget with the answer. A 330-name section
+   truncated mid-JSON at 32K. Now raised, and truncation is caught and named rather than
+   crashing in `json.loads`.
+2. Anchoring a context window on the last textual match put it on the wrong section
+   entirely, scoring 0 matches on GPT-4o. Anchoring on the heading fixed it. **Every
+   catastrophic score in this project so far has been the harness, never the model.**
+
+**Consequence.** OpenAI is a weaker register entry than the other two: no blog access, no
+current role structure, and an ambiguous contributor definition. Its value is the roster
+and its growth (281 -> 420 -> 486 authors), not per-person signal.

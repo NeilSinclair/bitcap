@@ -1,0 +1,411 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Enhancing Model Safety through Pretraining Data Filtering</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Enhancing Model Safety through Pretraining Data Filtering",
+            "description": "We experimented with removing harmful information about chemical, biological, radiological and nuclear (CBRN) weapons from our models' pretraining data.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Enhancing Model Safety through Pretraining Data Filtering</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+</style>
+<d-article>
+<div class="section-authors" data-author="" data-published="">
+<div style="margin-bottom: 1em;">Yanda Chen, Mycal Tucker, Nina Panickssery, Tony Wang, Francesco Mosconi, Anjali Gopal, Carson Denison, Linda Petrini</div>
+<div style="margin-bottom: 1em;">Jan Leike, Ethan Perez, Mrinank Sharma<div style="float: right;">August 19, 2025</div></div>
+</div>
+<p><span style='font-style: italic;'>TLDR: We experimented with removing harmful information about chemical, biological, radiological and nuclear (CBRN) weapons from our models' pretraining data. We identified harmful content using a classifier and pretrained models from scratch on the filtered dataset. This approach reduced the model's accuracy on a harmful-capabilities evaluation by 33% relative compared to random baseline performance, while preserving its beneficial capabilities.</span></p>
+<br><br><br><hr><br><br><h2>Introduction</h2>
+<p>AI systems trained on internet-scale data can provide users with comprehensive knowledge on an immense range of topics. However, this wealth of information also includes sensitive information that could be dangerous if misused. For example, information related to chemical, biological, radiological and nuclear (CBRN) weapons could, in the wrong hands, enable bad actors with basic technical backgrounds to develop weapons of mass destruction. Our <a href='https://www.anthropic.com/rsp-updates'>Responsible Scaling Policy (RSP)</a> commits us to mitigating risks from such threat models and limiting the spread of harmful information by our models. </p>
+<p>After a model learns harmful information in pretraining, removing that information <span style='font-style: italic;'>post hoc</span> using unlearning methods can be challenging (<a href='https://arxiv.org/abs/2410.08827'>Deeb et al., 2024</a>, <a href='https://arxiv.org/abs/2409.18025'>Łucki et al., 2024</a>). Existing methods can struggle to fully eliminate the harmful content without impairing other capabilities. In this post, we tackle this risk at its source through pretraining data filtering. Using a classifier, we identified and removed potentially harmful information from the pretraining data and then pretrained models from scratch on the filtered dataset.</p>
+<p>By filtering certain data, we could reduce the model’s harmful knowledge without otherwise degrading its capabilities. At a medium model size, we reduced performance on a harmful-capabilities evaluation by 33% relative compared to a random baseline<d-footnote>from 33.7±0.4% to 30.8±0.4%, where a random baseline is 25%</d-footnote>, while standard benchmarks on MMLU, Code and Prose showed no significant drop.</p>
+<br><br><br><hr><br><br><h2>Setup</h2>
+<p>The goal of pretraining data filtering is to maximize the performance drop on <span style='font-style: italic;'>harmful</span> capability evals, and minimize the performance drop on <span style='font-style: italic;'>harmless</span> capability evals. To do so, we automatically scored the harmfulness of each document in a model’s pretraining dataset and removed those above a certain threshold. By tuning this threshold, we achieved different trade-offs between safety and usefulness, tailoring the model's performance to our specific requirements. Some information is potentially dual-use. For example, information about generic scientific capabilities might allow malicious users to carry out harmful tasks, but also benefit benign users to carry out legitimate tasks. It is thus an open question how possible it is to perform targeted data interventions that affect harmful information.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.jpg' /></figure>
+<figcaption class="text-caption"><span style='font-weight: 700;'>Pretraining data filtering pipeline.</span> We automatically scored the harmfulness of each document in a model’s pretraining dataset with a classifier and removed those above a certain threshold. We then pretrained the model from scratch on the filtered dataset containing only harmless content (as determined by the classifier).</figcaption>
+<br><br><br><hr><br><br><h2>Classifier</h2>
+<p>The key to harmful data filtering is a harmfulness scorer, which we framed as a binary classification problem (harmful vs. not harmful). </p>
+<p>A good classifier should be:</p>
+<ul><li style='margin-left: 36pt;'>accurate, so that the resulting filtering reduces harmfulness while only minimally compromising usefulness; and</li><li style='margin-left: 36pt;'>efficient, because of the massive size of the pretraining corpus that it classifies.</li></ul>
+<h3>Method</h3>
+<p>We experimented with 6 classification methods to detect CBRN content. We first describe the methods and then discuss the backbone models used by each method.</p>
+<ol>
+<li>Finetuned Constitutional classifier: We finetuned a language model (LM) on labeled harmful vs harmless data. See <a href='https://arxiv.org/abs/2501.18837'>Sharma et al., 2025</a> for more details, and see Appendix B in particular for an example constitution.</li>
+<li>Prompted Constitutional classifier: We prompted an LM to flag content violating our CBRN constitution. We also tested a second version with a constitution that focused on a different aspect of CBRN, which we call Prompted Constitutional classifier v2.</li>
+<li>Holdout Loss (<a href='https://proceedings.mlr.press/v162/mindermann22a.html'>Mindermann et al., 2022</a>): We built a “canary model” specialized on harmful CBRN content, and then labeled a document as harmful if the canary model has significantly lower perplexity than the base model on that document. Documents that have low perplexity under the canary model are likely to contain harmful CBRN content, as the model was trained on harmful CBRN data and naturally achieves lower loss on similar material. We built the harmful language model in 2 ways:
+<ol type="a" style="padding-left: 40px; margin-left: 20px;"><li>Finetuned: We finetuned a base model on harmful documents with language modeling loss.</li>
+<li>Prompted: We prompted a helpful-only model with harmful documents as in-context examples.</li>
+</ol>
+</li>
+<li>FastText: We trained bigram bag-of-word classifiers with learnable embeddings on labeled harmful vs harmless data (<a href='https://arxiv.org/abs/1612.03651'>Joulin et al., 2016</a>).</li>
+<li>Named Entities String Match: We compiled a list of harmful CBRN named entities that warrant extra caution. We used string match and measured the harmfulness of a document as the density of harmful named entities within it.</li>
+</ol>
+<div style="height: 50;"></div>
+<p><span style='font-weight: 700;'>Backbone Models</span>. Our Finetuned Constitutional classifier uses a small model (much smaller than Claude 3.5 Haiku). Our Prompted Constitutional classifier, Prompted CBRN classifiers, and Holdout Loss classifiers all use Claude 3.5 Sonnet, which is much more expensive. FastText is orders of magnitude cheaper than the small-size model, and Named Entities String Match is the cheapest.</p>
+<h3>Classifier evaluation</h3>
+<p>To evaluate our classifiers, we need labeled harmful and harmless documents. Since no labeled data was available, we generated synthetic labeled documents by prompting LLMs to generate harmful and harmless documents. Specifically, we generated synthetic harmless documents by prompting Claude 3.5 Sonnet to answer harmless Natural Science (chemistry and biology) questions from the MMLU dataset (<a href='https://arxiv.org/abs/2009.03300'>Hendrycks et al., 2020</a>), and generated synthetic harmful documents by prompting helpful-only Claude 3.5 Sonnet to answer harmful CBRN questions from the WMDP dataset (<a href='https://arxiv.org/abs/2403.03218'>Li et al., 2024</a>). We measured the <a href='https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html'>F1 scores</a> of all classifiers on our synthetic dataset, except for the Named Entities classifier which is designed to capture only a subset of specific harm.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig2.png' /></figure>
+<figcaption class="text-caption"><span style='font-weight: 700;'>F1 scores of various classifiers that we built. </span>Our Prompted Constitutional classifier based on Claude 3.5 Sonnet performs best, followed by our Finetuned Constitutional classifier based on a small-size model.</figcaption>
+<p>Our Prompted Constitutional classifier which uses Claude 3.5 Sonnet performs best with an F1 score of 0.96, followed by our Finetuned Constitutional classifier which uses a small-size model (F1 score 0.94). However, Claude 3.5 Sonnet is computationally too expensive to scan the entire pretraining corpus. Instead, we used the much smaller Finetuned Constitutional classifier to scan the entire pretraining corpus, and experimented with additional 2 variants built on top of it:</p>
+<ul><li style='margin-left: 36pt;'>Finetuned Constitutional + Prompted Constitutional (Sequential): We first flagged the 1% most harmful documents with the cheaper Finetuned classifier, and then used the expensive but more precise Prompted classifier for reranking. This 2-step classifier flagged only a small fraction of the pretraining data, as most documents initially identified as harmful by the Finetuned classifier subsequently received low harmful scores from the Prompted classifier.</li><li style='margin-left: 36pt;'>Finetuned Constitutional + Named Entities (Parallel): We separately flagged most harmful documents with the Finetuned classifier and the Named Entities classifier, and then merged the flagged documents.</li></ul>
+<p>We also manually reviewed data samples that were flagged as harmful, and found them to correctly match the harmful CBRN information that we aimed to remove.</p>
+<br><br><br><hr><br><br><h2>Pretraining experiments</h2>
+<p>To evaluate the effect of data filtering, we pretrained pairs of models from scratch for comparison: within each pair, one model was trained on the unfiltered dataset containing both harmful and harmless content, while the other was trained on the filtered dataset containing only harmless content (as determined by the classifier). </p>
+<p>To ensure a fair comparison, we enforced that the filtered and unfiltered dataset have the same number of examples by constructing the filtered dataset from a larger initial pool. We measured the impact of data filtering as the performance difference between the paired models on a set of capability evals.</p>
+<h3>Evaluation data & metric</h3>
+<p>To evaluate our method, we measured the change in both harmful capabilities and harmless capabilities. We evaluated harmful capabilities using multiple-choice questions from WMDP. For harmless capabilities, we first evaluated on Natural Science (chemistry and biology) questions from MMLU, which are benign capabilities relatively closely related to  harmful CBRN content and thus relatively vulnerable to an overly-aggressive data filter. We also evaluated a wide variety of less relevant harmless capabilities, covering Prose, Code, Math, and MMLU, to help ensure that our data filtering did not have unintended side effects on usefulness.</p>
+<p>We measured perplexity for Prose and Code, and top-1 few-shot accuracy for multiple-choice questions (WMDP, MMLU). All results are reported as performance scores relative to no filtering. For multiple-choice questions, we calculated this relative score using accuracy over a random baseline: <em>score</em>(filtering) = (<em>accuracy</em>(filtering) <em>- accuracy</em>(random)) <em>/</em> (<em>accuracy</em>(no filtering) <em>- accuracy</em>(random)). Higher values indicate more preserved capability. For prose and code evaluations, we calculated the ratio of perplexity with filtering to perplexity without filtering. Since lower perplexity indicates greater capability, we transformed this ratio by taking its negative and adding 2, i.e., <em>score</em>(filtering) = <span style="display: inline-block;"><em>- perplexity</em>(filtering)</span> <em>/</em> <em>perplexity</em>(no filtering) <em>+ 2</em>. After this transformation, both metrics have consistent directionality: higher values indicate preserved capability, with a score of 1 signifying no capability change from data filtering.</p>
+<p>An effective process of data filtering should have a relative performance score significantly less than 1 for harmful capabilities and a relative performance score close to 1 for harmless capabilities. Our data filtering approach allows us to achieve different trade-offs between safety and various usefulness by setting different thresholds for the filter.</p>
+<h3>Results</h3>
+<p>We first compared the performance of our three data filters (Finetuned Constitutional alone, Finetuned Constitutional + Prompted Constitutional, and Finetuned Constitutional + Named Entities) and then presented the full results of the best-performing filter. For simplicity, below we used Finetuned to refer to the Finetuned Constitutional classifier, and Prompted to refer to the Prompted Constitutional classifier.</p>
+<p>In the result plots, we will display the relative performance on CBRN (lower scores are better) against the relative performance on various useful capabilities (higher scores are better). Different points on each curve correspond to different filtering thresholds, allowing us to trade off safety against capability.</p>
+<h3>Comparison between different filters</h3>
+<p>In our experiments, we observed that the main compromise of an overly aggressive CBRN data filtering is on Natural Science (chemistry & biology), so we focused on the trade-off between CBRN and Natural Science when we compared different filters.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig3.png' /></figure>
+<figcaption class="text-caption"><span style='font-weight: 700;'>Performance of various data filters on harmful CBRN and harmless Natural Science (relative to no data filtering). </span>Finetuned shows comparable performance with Finetuned + Named Entities, with both filters outperforming Finetuned + Prompted. A score larger than 1 means data filtering improves performance on the eval.</figcaption>
+<p>Compared to using only the Finetuned classifier (blue), adding Named Entities for parallel flagging (orange) does not consistently improve the safety-usefulness tradeoff. This may indicate that our Finetuned classifier already captures much of the harmful content containing our list of harmful named entities.</p>
+<p>Unfortunately, filtering with the Finetuned + Prompted 2-step classifier (gray) does not just fail to reduce CBRN performance, but slightly increases it. This is somewhat surprising given our classifier results where the Prompted classifier ranked on top. This discrepancy may stem from actual pretraining documents representing a distribution shift from the synthetic documents used for classifier evaluation. The fact that prompting performs suboptimally here may indicate that the definition of harm is nuanced in ways that make it harder to specify via simple prompting, compared to finetuning where the model gets the chance to learn from labeled examples.</p>
+<p>Based on the above results, we selected the Finetuned Constitutional classifier alone as our data filtering solution.</p>
+<h3>Full results of the best-performing filter</h3>
+<p>We now present the full results of our chosen filter. Each plot shows the trade-off between safety (CBRN) where lower is better, and a specific usefulness metric that we care about (Prose, Code, MMLU, Natural Science, Math) where higher is better. Both axes show the performance scores after data filtering relative to no data filtering, with usefulness on the x-axis and safety on the y-axis. Data filtering does not seem to hurt model usefulness on 4 of the 5 harmless evals, with the exception being Math where results are noisier (that is, data filtering hurts performance at some thresholds and improves on others). Our results overall suggest that we can effectively separate harmful from harmless data and use pretraining data filtering to improve model safety without severely compromising usefulness.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig4.png' /></figure>
+<figcaption class="text-caption"><span style='font-weight: 700;'>Performance of our selected data filter on harmful CBRN and various harmless useful capabilities (relative to no data filtering). </span>We achieved different safety-usefulness trade-offs by selecting different filtering thresholds.</figcaption>
+<p>We can select the trade-off between safety and capability depending on the particular use case. At one filtering threshold (0.939), our data filtering reduces performance on harmful CBRN evals by 33% relative on accuracy (reducing from 33.7±0.4% to 30.8±0.4%, where the 33% reduction is calculated based on how much the method outperforms the 25% random baseline), while causing no significant drop in any of the harmlessness evals we used.</p>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig5.png' /></figure>
+<figcaption class="text-caption"><span style='font-weight: 700;'>Performance changes of data filtering at our selected threshold relative to no data filtering. </span>Our final data filtering reduces the performance on CBRN by 33% relative while not causing significant drop on any of the harmless evals.</figcaption>
+<p>These results collectively demonstrate that we can effectively separate harmful from harmless data and use pretraining data filtering to improve model safety without compromising usefulness.</p>
+<br><br><br><hr><br><br><h2>Related work</h2>
+<p><span style='font-weight: 700;'>Pretraining Data Interventions.</span> Previous research has explored pretraining data intervention for various purposes, such as mitigating toxicity (<a href='https://arxiv.org/pdf/2305.10403'>PaLM 2</a>), reducing private information leakage (<a href='https://arxiv.org/abs/2302.08582'>Korbak et al., 2023</a>), and enhancing pretraining efficiency (<a href='https://arxiv.org/abs/2402.09739'>Wettig et al., 2024</a>). Two common intervention methods are data filtering and conditional training, where special data quality tokens are prepended to pretraining data and used to control test-time inference (<a href='https://arxiv.org/abs/2302.08582'>Korbak et al., 2023</a>, <a href='https://arxiv.org/pdf/2305.10403'>PaLM 2</a>). Unlike our approach, conditional training still trains models to acquire harmful knowledge and thus may potentially be elicited through jailbreaks. In terms of data selection, prior work has investigated methods to identify pretraining data that is most relevant to downstream tasks via influence functions (<a href='https://arxiv.org/abs/2409.16986'>Zhang et al., 2024</a>, <a href='https://arxiv.org/abs/2406.06046'>Yu et al., 2024</a>) or log probability correlations (<a href='https://arxiv.org/abs/2409.05816'>Thrush et al., 2024</a>). Prior work has also looked into selecting high-quality data using a model grader (<a href='https://arxiv.org/abs/2402.09739'>Wettig et al., 2024</a>). Concurrent to our work, <a href='https://arxiv.org/abs/2508.06601'>O'Brien et al., 2025</a> shows that pretraining data filtering also improves the safety of open-weights models under adversarial finetuning on harmful text.</p>
+<p><span style='font-weight: 700;'>LLM Unlearning.</span> Previous research has explored various unlearning methods to improve safety of pretrained LLMs post-hoc. Gradient ascent methods train LLMs on to-be-unlearned knowledge using gradient ascent (<a href='https://openreview.net/forum?id=zAxuIJLb38'>Jang et al., 2023</a>, <a href='https://arxiv.org/abs/2310.10683'>Yao et al., 2023</a>). Alternatively, model internal methods first localize the to-be-unlearned knowledge within the model's activations or weights, and then perturb or finetune them to remove the knowledge (<a href='https://arxiv.org/abs/2004.00345'>Sinitsin et al., 2020</a>, <a href='https://arxiv.org/abs/2012.00363'>Zhu et al., 2020</a>, <a href='https://aclanthology.org/2023.findings-acl.375/'>Yu et al., 2023</a>). Unfortunately, existing unlearning methods often lack robustness—unlearned knowledge can still be elicited, or the unlearning process may impair useful capabilities (<a href='https://arxiv.org/abs/2402.16835'>Lynch et al., 2024</a>, <a href='https://arxiv.org/abs/2410.08827'>Deeb et al., 2024</a>).</p>
+<br><br><br><hr><br><br><h2>Conclusions and future directions</h2>
+<p>In this post, we discussed our approach for targeted pretraining data filtering, which effectively improves model safety while preserving usefulness.</p>
+<p>We hope our results inspire research into filtering harmful content to mitigate various AI risks. In addition to misuse risks, which are the focus of this blog post, data filtering has the potential to mitigate misalignment risks as well. One potential approach is to filter out AI research papers that describe effective strategies by which AIs could conduct misaligned behaviors via out-of-context reasoning (<a href='https://arxiv.org/abs/2309.00667'>Berglund et al., 2023</a>) (for instance, reward hacking, scheming, deception, sabotage, and so on), and documents that encourage those misaligned behaviors. Excluding such content from the pretraining data might render the trained models less capable of such behaviors, and less inclined to engage in them in the first place.</p>
+<p>There are many opportunities for future work to improve data filtering. Our approach uses a classifier to determine which data to filter; future work can enhance classifier accuracy and/or efficiency. We are also interested in pursuing orthogonal data filtering methods that do not use a data classifier, such as using influence functions (<a href='https://proceedings.mlr.press/v70/koh17a/koh17a.pdf'>Koh et al., 2017</a>, <a href='https://arxiv.org/abs/2308.03296'>Grosse et al., 2023</a>) to identify pretraining examples that transfer most effectively to downstream harmful capability evaluations.</p>
+<p>Future work should also study the finetuning robustness of models trained with data filtering. In an adversarial setup, malicious actors might finetune models on harmful data for the purpose of misuse. Empirically studying what fraction of the reduction in harmful capabilities from data filtering can be recovered by post-hoc finetuning or in-context prompting will help inform the effectiveness of pretraining data filtering in worst-case scenarios (<a href='https://arxiv.org/abs/2508.06601'>O'Brien et al., 2025</a>).</p>
+</d-article>
+</body>
+</html>

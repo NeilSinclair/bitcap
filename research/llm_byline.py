@@ -74,6 +74,32 @@ SCHEMA = {
 }
 
 
+def load_env() -> None:
+    """Load .env into the process environment without overriding what is set."""
+    path = ROOT / ".env"
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip() and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+
+
+def extract_page(raw_html: str, model: str = "claude-sonnet-5") -> tuple[dict, dict]:
+    """Extract a byline from one raw page, for use as a parser fallback.
+
+    Args:
+        raw_html: Raw HTML of the article.
+        model: Model id.
+
+    Returns:
+        Tuple of (parsed byline, cost record).
+    """
+    load_env()
+    html, _ = prepare_html(raw_html)
+    return extract(anthropic.Anthropic(), model, html)
+
+
 def cache_path(url: str) -> Path:
     """Map an article URL to its cached HTML file.
 
@@ -168,10 +194,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     args = ap.parse_args()
 
-    for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
-        if line.strip() and not line.startswith("#") and "=" in line:
-            key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+    load_env()
 
     gold = json.loads(GOLD.read_text(encoding="utf-8"))
     articles = gold["articles"][: args.limit or None]

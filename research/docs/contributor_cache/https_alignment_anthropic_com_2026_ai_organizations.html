@@ -1,0 +1,915 @@
+<!doctype html>
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>AI Organizations Can Be More Effective but Less Aligned than Individual Agents</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<script>
+    // We number figures with a script since CSS counters don't work,
+    // likely because of the distill template.
+    function numberFigures() {
+        // Find all figcaption elements with class 'text-caption'
+        const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+        figcaptions.forEach((figcaption, index) => {
+            // Create a new span for the figure number
+            figcaption.style.marginBottom = '1.25rem';
+
+            const newSpan = document.createElement('span');
+            newSpan.style.fontWeight = '500';
+            newSpan.textContent = `Figure ${index + 1}: `;
+
+            // Insert the new span at the beginning of the figcaption
+            figcaption.insertBefore(newSpan, figcaption.firstChild);
+        });
+    }
+
+    // Function to create a slug from header text
+    function createSlug(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')    // Replace spaces with hyphens
+            .trim();                 // Remove whitespace from start/end
+    }
+
+    // Function to add IDs to all headers and create a table of contents
+    function addHeaderSlugs() {
+        // Get all heading elements (h1 through h6)
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        // Process each heading
+        headings.forEach((heading) => {
+            // Skip headings that already have IDs
+            if (heading.id) return;
+
+            // Create slug from heading text
+            const slug = createSlug(heading.textContent);
+
+            // Add ID to the heading
+            heading.id = slug;
+        });
+    }
+
+    // Run the function when the document is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', numberFigures);
+        document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+    } else {
+        // Document already loaded, run the function
+        numberFigures();
+        addHeaderSlugs();
+    }
+</script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "AI Organizations Can Be More Effective but Less Aligned than Individual Agents",
+            "description": "We study AI organizations, teams of AI agents working together toward a common goal, and find that they produce solutions that are more effective but less aligned than those from individual agents.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link rel="stylesheet" href="/utilities/transcript-viewer.css">
+<script src="/utilities/transcript-viewer.js" defer></script>
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>AI Organizations Can Be More Effective but Less Aligned than Individual Agents</h1>
+</d-title>
+<style>
+    .post-tldr-meta {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.95em;
+    }
+
+    .post-tldr-meta .paper-link {
+        display: inline-block;
+        margin-bottom: 0.8em;
+    }
+
+    .post-tldr-meta .paper-link a {
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .post-tldr-meta .fellows-note {
+        font-weight: 700;
+    }
+
+    .post-tldr-meta .fellows-note a {
+        color: inherit;
+    }
+
+    d-article .footnotes {
+        font-size: 0.8em;
+        font-style: italic;
+        color: rgba(0, 0, 0, 0.6);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+    }
+
+    d-article .footnotes p {
+        margin-bottom: 0.5em;
+    }
+
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        /* display: flex; */
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    figure {
+        margin-bottom: 0em;
+    }
+
+    .text-caption figcaption {
+        margin-bottom: 1em;
+    }
+
+    pre.code-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        color: #137333;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre.code-block-wrap .gray-box {
+        display: block;
+    }
+
+    pre.code-block-wrap html\:p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Default: prevent breaking within individual words */
+    pre.code-block-wrap html\:span {
+        white-space: nowrap;
+    }
+
+    /* For spans that contain full sentences/lines - allow normal wrapping */
+    pre.code-block-wrap html\:span[class*="c4 c2"],
+    pre.code-block-wrap html\:span[class*="c7 c"] {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    pre.citation-block-wrap {
+        background-color: rgba(241, 243, 244, 0.8);
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0.5em 0;
+        font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.75em;
+        color: #000000;
+        line-height: 1.15;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: manual;
+        -webkit-hyphens: manual;
+        -ms-hyphens: manual;
+    }
+
+    details {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 0.5em 1em;
+        margin-bottom: 1rem;
+        background-color: rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .wide-figure {
+        /* text-align: center; */
+        overflow: visible;
+        position: relative;
+    }
+
+    .wide-figure img {
+        width: 120%;
+        max-width: 150%;
+        margin-left: -10%;
+        position: relative;
+    }
+
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+
+    /* Inline transcript chat bubbles */
+    .transcript-inline-rendered {
+        background: #FFFBF9;
+        border: 1px solid #E3DACC;
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        margin: 1em 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .transcript-inline-rendered .t-bubble {
+        display: flex;
+    }
+
+    .transcript-inline-rendered .t-bubble-agent {
+        justify-content: flex-end;
+    }
+
+    .transcript-inline-rendered .t-bubble-result {
+        justify-content: flex-start;
+    }
+
+    .transcript-inline-rendered .t-bubble-summary {
+        justify-content: center;
+    }
+
+    .transcript-inline-rendered .t-bubble-content {
+        max-width: 65%;
+        padding: 0.875rem 1.25rem;
+        border-radius: 8px;
+        background: #FAF9F5;
+        border: 1px solid #E3DACC;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #141413;
+    }
+
+    .transcript-inline-rendered .t-bubble-summary .t-bubble-content {
+        max-width: 55%;
+        background: #F2E0BD;
+        border-color: #D19B75;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .transcript-inline-rendered .t-bubble-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+        letter-spacing: 0.3px;
+        color: #D19B75;
+    }
+
+    .transcript-inline-rendered .t-bubble-result .t-bubble-label {
+        color: #C46686;
+    }
+
+    .transcript-inline-rendered .t-bubble-summary .t-bubble-label {
+        color: #788C5D;
+    }
+
+    .transcript-inline-rendered .t-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.3px;
+        color: #D19B75;
+    }
+
+    .transcript-inline-rendered .t-label:first-child {
+        margin-top: 0;
+    }
+
+    .transcript-inline-rendered .t-code {
+        background: #FAF9F5;
+        border: 1px solid #E3DACC;
+        border-radius: 6px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+        font-size: 0.85em;
+        line-height: 1.6;
+        color: #141413;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-x: auto;
+    }
+
+    .transcript-inline-rendered .t-code .tok-kw { color: #B86046; }
+    .transcript-inline-rendered .t-code .tok-str { color: #788C5D; }
+    .transcript-inline-rendered .t-code .tok-cmt { color: #8b8680; font-style: italic; }
+    .transcript-inline-rendered .t-code .tok-num { color: #D97757; }
+    .transcript-inline-rendered .t-code .tok-fn { color: #6A9BCC; }
+    .transcript-inline-rendered .t-code .tok-op { color: #999; }
+
+    .transcript-inline-rendered .t-inline-code {
+        background: rgba(20, 20, 19, 0.08);
+        padding: 0.125rem 0.375rem;
+        border-radius: 3px;
+        font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+        font-size: 0.875em;
+        color: #D97757;
+    }
+
+    .transcript-inline-rendered .t-bubble-content p {
+        margin: 0.25em 0;
+    }
+
+    .transcript-inline-rendered .t-bubble-content p:first-of-type {
+        margin-top: 0;
+    }
+
+    .transcript-inline-rendered .t-bubble-content p:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .tabbed-details-panel .transcript-inline-rendered {
+        max-height: none;
+        overflow-y: visible;
+        border: none;
+        padding: 0.5rem 0;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .transcript-inline-rendered .t-bubble-content {
+            max-width: 90%;
+        }
+    }
+
+    /* Tabbed details component */
+    .tabbed-details-container {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+    }
+
+    .tabbed-details-nav {
+        display: flex;
+        gap: 10px;
+        padding: 0.5em 1em;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .tabbed-details-nav button {
+        padding: 8px 16px;
+        background-color: #f5f5f5;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        color: #555;
+        font-size: 14px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .tabbed-details-nav button.active {
+        background-color: #333;
+        color: white;
+        border-color: #222;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .tabbed-details-nav button:hover:not(.active) {
+        background-color: #e8e8e8;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabbed-details-panel {
+        display: none;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 0.5em 1em;
+    }
+
+    .tabbed-details-panel.active {
+        display: block;
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove whitespace text nodes between <p> elements in code blocks
+    // so that only block breaks contribute spacing (not pre-wrap newlines)
+    document.querySelectorAll('pre.code-block-wrap code').forEach(function(code) {
+        Array.from(code.childNodes).forEach(function(node) {
+            if (node.nodeType === 3) node.remove(); // text nodes
+        });
+    });
+
+    document.querySelectorAll('.tabbed-details').forEach(function(wrapper, wrapperIdx) {
+        var details = wrapper.querySelectorAll('details');
+        if (details.length === 0) return;
+
+        var container = document.createElement('div');
+        container.className = 'tabbed-details-container';
+
+        var nav = document.createElement('div');
+        nav.className = 'tabbed-details-nav';
+        container.appendChild(nav);
+
+        details.forEach(function(detail, i) {
+            var summary = detail.querySelector('summary');
+            var label = summary ? summary.textContent : 'Tab ' + (i + 1);
+
+            var btn = document.createElement('button');
+            btn.textContent = label;
+            btn.dataset.index = i;
+            btn.dataset.wrapper = wrapperIdx;
+            if (i === 0) btn.className = 'active';
+            btn.addEventListener('click', function() {
+                var w = this.dataset.wrapper;
+                var idx = this.dataset.index;
+                var cont = this.closest('.tabbed-details-container');
+                cont.querySelectorAll('.tabbed-details-panel').forEach(function(p) { p.classList.remove('active'); });
+                cont.querySelectorAll('.tabbed-details-nav button').forEach(function(b) { b.classList.remove('active'); });
+                cont.querySelectorAll('.tabbed-details-panel')[idx].classList.add('active');
+                this.classList.add('active');
+            });
+            nav.appendChild(btn);
+
+            var panel = document.createElement('div');
+            panel.className = 'tabbed-details-panel' + (i === 0 ? ' active' : '');
+            // Copy all children except the summary
+            Array.from(detail.children).forEach(function(child) {
+                if (child.tagName !== 'SUMMARY') {
+                    panel.appendChild(child.cloneNode(true));
+                }
+            });
+            container.appendChild(panel);
+        });
+
+        wrapper.parentNode.replaceChild(container, wrapper);
+    });
+
+    // Transform inline transcript divs into chat bubbles
+    document.querySelectorAll('.transcript-inline').forEach(function(wrapper) {
+        var entries = wrapper.querySelectorAll('.t');
+        if (entries.length === 0) return;
+
+        var container = document.createElement('div');
+        container.className = 'transcript-inline-rendered';
+
+        entries.forEach(function(entry) {
+            var role = entry.getAttribute('data-role') || 'agent';
+            var name = entry.getAttribute('data-name') || '';
+
+            var bubble = document.createElement('div');
+            bubble.className = 't-bubble t-bubble-' + role;
+
+            var content = document.createElement('div');
+            content.className = 't-bubble-content';
+
+            if (name) {
+                var label = document.createElement('div');
+                label.className = 't-bubble-label';
+                label.textContent = name;
+                content.appendChild(label);
+            }
+
+            var body = document.createElement('div');
+            body.innerHTML = entry.innerHTML;
+            content.appendChild(body);
+
+            bubble.appendChild(content);
+            container.appendChild(bubble);
+        });
+
+        wrapper.parentNode.replaceChild(container, wrapper);
+    });
+
+    // Basic syntax highlighting for code blocks inside transcript bubbles
+    function highlightCode(text, lang) {
+        // HTML-escape first
+        var escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // Order matters: comments and strings first (greedy), then keywords etc.
+        var rules = [
+            // Comments
+            { re: /(#.*$)/gm, cls: 'tok-cmt' },
+            // Triple-quoted strings
+            { re: /("""[\s\S]*?"""|'''[\s\S]*?''')/g, cls: 'tok-str' },
+            // Double-quoted strings
+            { re: /("(?:[^"\\]|\\.)*")/g, cls: 'tok-str' },
+            // Single-quoted strings
+            { re: /('(?:[^'\\]|\\.)*')/g, cls: 'tok-str' },
+            // Numbers
+            { re: /\b(\d+\.?\d*)\b/g, cls: 'tok-num' },
+            // Python keywords
+            { re: /\b(def|class|if|elif|else|for|while|return|import|from|as|try|except|finally|with|yield|lambda|pass|break|continue|raise|in|not|and|or|is|None|True|False|self|async|await|print)\b/g, cls: 'tok-kw' },
+            // Function calls
+            { re: /\b([a-zA-Z_]\w*)\s*(?=\()/g, cls: 'tok-fn' }
+        ];
+        // Apply rules sequentially, protecting already-wrapped spans
+        var placeholder = [];
+        rules.forEach(function(rule) {
+            escaped = escaped.replace(rule.re, function(match, g1) {
+                var idx = placeholder.length;
+                placeholder.push('<span class="' + rule.cls + '">' + g1 + '</span>');
+                return '\x00_' + idx + '_\x01';
+            });
+        });
+        // Restore placeholders
+        placeholder.forEach(function(span, i) {
+            escaped = escaped.replace('\x00_' + i + '_\x01', span);
+        });
+        return escaped;
+    }
+
+    // Fix code blocks inside transcript bubbles: merge <p> elements into
+    // a single preformatted text block so indentation is preserved
+    document.querySelectorAll('.transcript-inline-rendered .t-code').forEach(function(block) {
+        var lines = [];
+        Array.from(block.childNodes).forEach(function(child) {
+            if (child.nodeType === 1 && child.tagName === 'P') {
+                lines.push(child.textContent);
+            } else if (child.nodeType === 3 && child.textContent.trim()) {
+                lines.push(child.textContent.trim());
+            }
+        });
+        if (lines.length > 0) {
+            var text = lines.join('\n');
+            var lang = block.getAttribute('data-lang') || 'python';
+            block.innerHTML = highlightCode(text, lang);
+        }
+    });
+
+    // Post-process the gdoc export so the header matches house style without
+    // requiring raw HTML in the source doc.
+    (function () {
+        var article = document.querySelector('d-article');
+        if (!article) return;
+
+        function topKids() { return Array.from(article.children).slice(0, 12); }
+
+        // Approval list: <p>Approval List</p> followed by a <ul> of reviewer
+        // emails. Remove both so internal sign-offs don't render publicly.
+        var approvalP = topKids().find(function (el) {
+            return el.tagName === 'P' && /^Approval List/i.test(el.textContent.trim());
+        });
+        if (approvalP) {
+            var next = approvalP.nextElementSibling;
+            if (next && next.tagName === 'UL') next.remove();
+            approvalP.remove();
+        }
+
+        // "Blog Text" is an internal section marker in the gdoc; drop it.
+        var blogTextP = topKids().find(function (el) {
+            return el.tagName === 'P' && el.textContent.trim() === 'Blog Text';
+        });
+        if (blogTextP) blogTextP.remove();
+
+        // Authors line → byline with right-aligned date, superscript
+        // affiliations, and an equal-contribution footnote.
+        var authorsP = topKids().find(function (el) {
+            return el.tagName === 'P' && /^Authors:/i.test(el.textContent.trim());
+        });
+        if (authorsP) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'section-authors';
+
+            var rows = [
+                ['Judy Hanwen Shen<sup>*1,2</sup>',
+                 'Daniel Zhu<sup>*1,3</sup>',
+                 'Siddarth Srinivasan<sup>*2</sup>'],
+                ['Henry Sleight<sup>4</sup>',
+                 'Lawrence T. Wagner III<sup>3</sup>',
+                 'Morgan Jane Matthews<sup>4</sup>'],
+                ['Erik Jones<sup>1</sup>',
+                 'Jascha Sohl-Dickstein<sup>1</sup>'],
+            ];
+            rows.forEach(function (row, i) {
+                var line = document.createElement('div');
+                line.style.cssText = 'line-height: 1.9;' + (i === rows.length - 1 ? ' margin-bottom: 0.6em;' : '');
+                // Float must come first in source order so it reserves space on
+                // the first line instead of dropping when names fill the row.
+                var dateSpan = i === 0 ? '<span style="float: right; margin-left: 1em;">April 2026</span>' : '';
+                line.innerHTML = dateSpan + row
+                    .map(function (n) { return '<span style="white-space: nowrap">' + n + '</span>'; })
+                    .join(',&ensp; ');
+                wrapper.appendChild(line);
+            });
+
+            var affLine = document.createElement('div');
+            affLine.style.cssText = 'font-size: 0.85em; line-height: 1.8;';
+            affLine.innerHTML =
+                '<sup>*</sup>Equal contribution &emsp; ' +
+                '<sup>1</sup>Anthropic &emsp; ' +
+                '<sup>2</sup>Anthropic Fellows &emsp; ' +
+                '<sup>3</sup>MATS &emsp; ' +
+                '<sup>4</sup>Constellation';
+            wrapper.appendChild(affLine);
+
+            authorsP.replaceWith(wrapper);
+        }
+
+        // Pull the arxiv link out of the header; it gets reinserted after the
+        // tl;dr box below.
+        var arxivHref = null;
+        var arxivP = topKids().find(function (el) {
+            return el.tagName === 'P' && /^Arxiv link:/i.test(el.textContent.trim());
+        });
+        if (arxivP) {
+            var a = arxivP.querySelector('a');
+            if (a) arxivHref = a.href;
+            arxivP.remove();
+        }
+
+        // Gdoc exports section headings as <h4><span>...</span></h4>; promote
+        // to h2 so they pick up distill heading styles and the TOC can find
+        // them. Assign slug ids for anchor links.
+        Array.from(article.querySelectorAll(':scope > h4')).forEach(function (h4) {
+            var h2 = document.createElement('h2');
+            var text = h4.textContent;
+            if (text.trim() === 'AI organizations') text = 'AI Organizations';
+            h2.textContent = text;
+            h2.id = h2.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            h4.replaceWith(h2);
+        });
+
+        // Title-case the first Results subheading.
+        var resultsSubhead = Array.from(article.querySelectorAll(':scope > p > span')).find(function (s) {
+            return s.textContent.trim() === 'AI organizations are more effective but less aligned than individual agents';
+        });
+        if (resultsSubhead) {
+            resultsSubhead.textContent = 'AI Organizations Are More Effective but Less Aligned than Individual Agents';
+        }
+
+        // The gdoc has a stray paragraph break mid-sentence ("...deployments:
+        // an" / "AI consultancy..."); stitch the two <p>s back together.
+        Array.from(article.querySelectorAll(':scope > p')).forEach(function (p) {
+            if (/ an$/.test(p.textContent) && p.nextElementSibling && p.nextElementSibling.tagName === 'P') {
+                var next = p.nextElementSibling;
+                p.innerHTML = p.innerHTML + ' ' + next.innerHTML;
+                next.remove();
+            }
+        });
+
+        // Footnote block: tag for styling and restore anchor ids so the
+        // inline [n] refs jump here (process_doc strips the ids).
+        var ftntDiv = Array.from(article.querySelectorAll(':scope > div')).find(function (d) {
+            return d.querySelector("a[href^='#ftnt_ref']");
+        });
+        if (ftntDiv) {
+            ftntDiv.classList.add('footnotes');
+            Array.from(ftntDiv.querySelectorAll("a[href^='#ftnt_ref']")).forEach(function (a) {
+                var n = a.getAttribute('href').replace('#ftnt_ref', '');
+                a.id = 'ftnt' + n;
+            });
+        }
+
+        // The opening paragraph is the abstract; present it the way the
+        // blog's other posts do: a relatively-positioned wrapper with a
+        // `.tldr` label floated into the left margin.
+        var firstH2 = article.querySelector(':scope > h2');
+        var introP = topKids().find(function (el) {
+            return el.tagName === 'P' && el.textContent.trim().length > 200;
+        });
+        if (introP && (!firstH2 || introP.compareDocumentPosition(firstH2) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+            var box = document.createElement('div');
+            box.style.position = 'relative';
+            var label = document.createElement('span');
+            label.className = 'tldr';
+            label.textContent = 'tl;dr';
+            introP.before(box);
+            box.appendChild(label);
+            introP.style.marginBottom = '0.8rem';
+            box.appendChild(introP);
+
+            var meta = document.createElement('div');
+            meta.className = 'post-tldr-meta';
+            if (arxivHref) {
+                var paperLink = document.createElement('div');
+                paperLink.className = 'paper-link';
+                paperLink.innerHTML = '📄 <a href="' + arxivHref + '">Read the full paper</a>';
+                meta.appendChild(paperLink);
+            }
+            var fellows = document.createElement('div');
+            fellows.className = 'fellows-note';
+            fellows.innerHTML =
+                'Research done as part of the ' +
+                '<a href="https://alignment.anthropic.com/2024/anthropic-fellows-program/">Anthropic Fellows Program</a>.';
+            meta.appendChild(fellows);
+            box.after(meta);
+
+            var hr = document.createElement('hr');
+            hr.style.cssText = 'margin: 1.5rem 0 2rem 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);';
+            meta.after(hr);
+        }
+
+    })();
+});
+</script>
+<d-article>
+<p><span style='font-weight: 700;'>Authors:</span> Judy Hanwen Shen*, Daniel Zhu*, Siddarth Srinivasan*, Henry Sleight, Lawrence T. Wagner III, Morgan Jane Matthews, Erik Jones, Jascha Sohl-Dickstein</p>
+<p><span style='font-weight: 700;'>Arxiv link:</span> <a href='https://arxiv.org/abs/2604.10290'>https://arxiv.org/abs/2604.10290</a> </p>
+<p>Blog Text</p>
+<p>As AI models become more capable, we're beginning to see teams of multiple AI agents working together to complete increasingly complex tasks. We call such a team an <span style='font-style: italic;'>AI organization</span>: a group of AI agents collaborating toward a common goal. While AI organizations can accomplish more in areas like brainstorming and coding, they may also amplify risks when a group of individually alignment trained agents can still act in misaligned ways as a collective, for example by completing unethical or illegal tasks. To date, the vast majority of AI safety research has studied the behavior of a single agent, so whether agents remain safe when operating together as an organization is largely unknown. Our work introduces several approaches for evaluating misalignment in AI organizations. We find that multi-agent AI systems find solutions that are less ethical yet more effective than those found by a single agent. These results suggest that alignment research must move beyond the single-agent assumption and address behaviors that arise when multiple agents work together. </p>
+<h4><span style='font-weight: 500;'>AI organizations</span></h4>
+<p>To study multi-agent alignment, we construct two settings based on real-world deployments: an</p>
+<p>AI consultancy and an AI software team. For each, we describe the organization structure, tasks, and evaluation. We define AI organizations as multi-agent LLM systems where (1) agents take on different roles, (2) agents communicate with one another, and (3) agents work together towards a common goal. </p>
+<p><span style='font-weight: 700;'>AI Consultancy</span>: Knowledge workers use AI for business planning, strategy, and entrepreneurial development (<a href='https://www.anthropic.com/economic-index#state-usage'>Anthropic Economic Index</a>). We construct an AI consultancy: a team of agents with specialized roles tasked with generating novel solutions to a simulated client's business problem. We design 10 scenarios, each derived from a major recent enforcement action by a U.S. federal agency, in which maximizing revenue conflicts with protecting individual or societal wellbeing. For example, in one scenario, a regional bank asks for proposals to grow margins through new loan products—products that are most profitable when they charge higher rates to lower-credit borrowers.<sup><a href='#ftnt1'>[1]</a></sup> The unethical path in each scenario is thus not a strawman or a single famous case to be recalled, but a structural temptation that real organizations repeatedly find profitable enough to act on.</p>
+<p><span style='font-weight: 700;'>AI Software Team</span>: Software engineering is currently the most common deployment setting for AI agents for productivity. We construct an AI software team composed of a project manager agent and general coder agents that complete the coding tasks. Together, this team must write a moderate-sized code base of 4-6 python files that implements a desired functionality while maximizing a business goal. For example, one task is to build a recommendation system for news articles that optimizes view counts (the business goal) while keeping misinformation low (the ethics goal). These are implicit tradeoffs that the AI software team will have to make; by design, both goals cannot simultaneously. </p>
+<figure style="--img-width: 1494px; --gdoc-width:539.50px"><img src='fig1.png' /></figure>
+<h4><span style='font-weight: 500;'>Results</span></h4>
+<p><span style='font-weight: 700;'>AI organizations are more effective but less aligned than individual agents</span></p>
+<p>Across all 12 tasks, AI organizations consistently score higher on the business goal and lower on ethics than single agents (Figure 1). We normalize each task’s raw score linearly to between 0 and 1 for each task (raw metrics and ranges are explained in the paper), and highlight the within-task gaps rather than absolute levels. In several consultancy scenarios, the gap spans nearly the full range of the metric. On Loan Profit, the single agent scored 0.1 on business and 1.0 on ethics; the AI organization nearly inverted this, scoring 0.8 on business and 0.35 on ethics. </p>
+<p>In this scenario, the AI consultancy receives a request for proposal asking for proposals to improve profitability in consumer lending and an overview of which customer segments the bank currently earns the most money from. In response, a single Opus 4.1 model refuses to target the most profitable customer segments by identifying that this would be predatory lending and proposes an ethical pivot to creating consumer financial health programs. In contrast, an AI organization with Opus 4.1 models proposed a multi-step strategy that would first identify customers from low income zip codes and 18 month loans with automatic refinancing offers to “extend customer relationships”. This proposal was even complete with compliance plans to minimize regulatory scrutiny by focusing on expanding access to credit for more segments of the population. </p>
+<p>Figure 2 shows the pattern at the level of individual runs. On loan profit, single-agent and AI organization solutions occupy almost non-overlapping regions of the business–ethics plane, with AI organization runs clustered in the high-business, low-ethics corner. On Sepsis ICU the two populations overlap, but AI organization runs still extend further toward that corner than any single-agent run. In both settings, the AI organization actually uncovers a high ethics score with medium business score outcome which may be desirable in the real world. </p>
+<figure style="--img-width: 1498px; --gdoc-width:624.00px"><img src='fig2.png' /></figure>
+<p>In the software tasks, the multi-agent teams consistently choose different implementation approaches than single agents. In the software tasks, teams split the work into subproblems that individual agents solved in isolation, with no agent tracking the system-level ethics goal. By comparison, a single agent is more likely to consider the entire problem landscape in their solution. </p>
+<p>On the consultancy tasks, agents with specific operational roles (e.g., web search, financial projections) would focus on completing their tasks without considering the top level problem to be solved. There were also coordination problems between agents: some agents were more considerate of ethical goals than others. We observed the agents who did not consider ethics ignoring emails from agents who raised ethical concerns or leaving these agents out of future conversations altogether. In contrast, a single agent almost always explicitly factors in the ethical considerations in the output proposal. </p>
+<p><span style='font-weight: 700;'></span></p>
+<p><span style='font-weight: 700;'>Dependence on Model, Prompt, and Organization Structure</span></p>
+<p>While our work shows AI organizations can make more misaligned trade-offs between business goals and ethics, we test various models and organizational structure to find that this phenomenon depends on the construction of the organization: not all AI organizations are less ethical than their single agent counterparts for a particular experimental setting. We swept different organization structures (e.g., flat, hierarchical, hub-and-spoke and random), and agent composition (e.g., specialist ratio, agents with red-teamed prompts), and organizational size. We found that the organization structure impacts were limited to the ratio of red-teamed agents. </p>
+<p>However, we found that the underlying model choice affected the single/multi-agent gap significantly. For example, while Sonnet 4 showed similar results to Opus 4.1, Opus 4.5, a model specifically tested for agentic safety, showed much smaller gaps in ethics across all of the email-based consulting tasks. We also tested models from other labs that were not trained according to Claude’s Constitution and found both a lower baseline in constitution adherence but also a smaller gap in business and ethics scores between single agents and AI organizations. Future work should study other notions of misalignment beyond constitutional adherence for Claude models. </p>
+<h4><span style='font-weight: 500;'>Implications</span></h4>
+<p>Our central finding is that an organization of individually aligned agents tends to make tradeoffs a single agent would not. This informs us that single-agent safety results do not certify multi-agent deployments. For practitioners deploying AI organizations, our results demonstrate that multi-agent organizations should be tested for robustness and misalignment just as single agents are, but with more sophisticated organizational structure sweeps. For researchers, our paper motivates a deeper study of multi-agent LLM alignment; our results demonstrate that organizations of aligned agents may favor business effectiveness over ethics in ways that single agents do not. Consequently, intuitions for how single-agent systems make ethical decisions and tradeoffs may not generalize to multi-agent settings. In general, our work motivates the need for separate additional alignment evaluations of multi-agent LLM systems.</p>
+<div><p><a href='#ftnt_ref1'>[1]</a> Countrywide Financial was fined $335 million for an analogous strategy that steered minority borrowers into higher-rate loans. Discriminatory lending and emissions fraud, for instance, have each drawn enforcement actions against multiple firms.</p></div>
+</d-article>
+</body>
+</html>

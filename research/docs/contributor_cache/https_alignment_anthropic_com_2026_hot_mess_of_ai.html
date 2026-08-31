@@ -1,0 +1,722 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>The Hot Mess of AI: How Does Misalignment Scale with Model Intelligence and Task Complexity?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="/anthropic-serve/distill.template.v2.js"
+        integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+    <script>
+        // We number figures with a script since CSS counters don't work,
+        // likely because of the distill template.
+        function numberFigures() {
+            // Find all figcaption elements with class 'text-caption'
+            const figcaptions = document.querySelectorAll('figcaption.text-caption');
+
+            figcaptions.forEach((figcaption, index) => {
+                // Create a new span for the figure number
+                figcaption.style.marginBottom = '1.25rem';
+
+                const newSpan = document.createElement('span');
+                newSpan.style.fontWeight = '500';
+                newSpan.textContent = `Figure ${index + 1}: `;
+
+                // Insert the new span at the beginning of the figcaption
+                figcaption.insertBefore(newSpan, figcaption.firstChild);
+            });
+        }
+
+        // Function to create a slug from header text
+        function createSlug(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')    // Replace spaces with hyphens
+                .trim();                 // Remove whitespace from start/end
+        }
+
+        // Function to add IDs to all headers and create a table of contents
+        function addHeaderSlugs() {
+            // Get all heading elements (h1 through h6)
+            const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+            // Process each heading
+            headings.forEach((heading) => {
+                // Skip headings that already have IDs
+                if (heading.id) return;
+
+                // Create slug from heading text
+                const slug = createSlug(heading.textContent);
+
+                // Add ID to the heading
+                heading.id = slug;
+            });
+        }
+
+        // Run the function when the document is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', numberFigures);
+            document.addEventListener('DOMContentLoaded', addHeaderSlugs);
+        } else {
+            // Document already loaded, run the function
+            numberFigures();
+            addHeaderSlugs();
+        }
+    </script>
+    <d-front-matter>
+        <script type="text/json">
+        {
+            "title": "The Hot Mess of AI: How Does Misalignment Scale with Model Intelligence and Task Complexity?",
+            "description": "When AI systems fail, will they fail by systematically pursuing goals we do not intend? Or will they fail by being a hot mess—taking nonsensical actions that do not further any goal?",
+            "authors": [null]
+        }
+    </script>
+    </d-front-matter>
+
+</head>
+
+<body>
+
+    <style>
+        .article-header {
+            width: 100%;
+            padding: 36px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .home-link {
+            font-size: 100%;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        a.logo {
+            display: flex;
+            text-decoration: none;
+        }
+
+        span.commentary {
+            color: #804633;
+        }
+    </style>
+
+    <div class="article-header">
+        <a class="home-link" href="/">Alignment Science Blog</a>
+    </div>
+    <d-title class="real-title">
+        <h1>The Hot Mess of AI: How Does Misalignment Scale with Model Intelligence and Task Complexity?</h1>
+    </d-title>
+    <style>
+        .safety-case-block p {
+            margin-bottom: 0.5em !important;
+            margin-top: 1em !important;
+        }
+
+        .safety-case-block p:first-of-type {
+            margin-top: 0.5em !important;
+        }
+
+        d-article {
+            padding-top: 60px !important;
+        }
+
+        d-article li:last-child {
+            margin-bottom: 0.5em !important;
+        }
+
+        d-article li {
+            margin-bottom: 0.5em !important;
+        }
+
+        ul {
+            margin-bottom: 0.2em !important;
+        }
+
+        ul ul {
+            padding-left: 40px !important;
+        }
+
+        ol {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        d-byline {
+            display: none;
+        }
+
+        .d-byline-container {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .d-byline {
+            grid-column: text;
+            display: grid;
+            grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+            grid-template-rows: [authors affiliations] auto [published info] auto;
+            font-size: 0.8rem;
+            line-height: 1.8em;
+            grid-gap: 20px;
+        }
+
+        .d-byline h3 {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .d-byline .info {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 80%;
+            line-height: 1.5;
+        }
+
+        .d-byline .authors div {
+            line-height: 1.5;
+        }
+
+        .d-byline .authors sup {
+            font-size: 80%;
+            margin-right: -4px;
+        }
+
+        .d-byline .author {
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .d-byline a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .safety-case-block {
+            padding: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-radius: 4px;
+            background: #faf9f7;
+            border: 1px solid #e5e5e1;
+            border-left: 4px solid #cc9b7a;
+            opacity: 0.8;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media screen and (min-width: 900px) {
+            .offset-gdoc-image {
+                margin-left: -65px;
+            }
+        }
+
+        .section-authors {
+            color: #777;
+            font-style: italic;
+            margin-top: -24px;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            /* display: flex; */
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.5em;
+        }
+
+        .section-authors::before {
+            content: attr(data-author);
+        }
+
+        .section-authors::after {
+            content: attr(data-published);
+        }
+
+        figure {
+            margin-bottom: 0em;
+        }
+
+        .text-caption figcaption {
+            margin-bottom: 1em;
+        }
+
+        pre.code-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #137333;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        pre.code-block-wrap .gray-box {
+            display: block;
+        }
+
+        pre.code-block-wrap html\:p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Default: prevent breaking within individual words */
+        pre.code-block-wrap html\:span {
+            white-space: nowrap;
+        }
+
+        /* For spans that contain full sentences/lines - allow normal wrapping */
+        pre.code-block-wrap html\:span[class*="c4 c2"],
+        pre.code-block-wrap html\:span[class*="c7 c"] {
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        pre.citation-block-wrap {
+            background-color: rgba(241, 243, 244, 0.8);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin: 0.5em 0;
+            font-family: 'Roboto Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.75em;
+            color: #000000;
+            line-height: 1.15;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: manual;
+            -webkit-hyphens: manual;
+            -ms-hyphens: manual;
+        }
+
+        details {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 0.5em 1em;
+            margin-bottom: 1rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .wide-figure {
+            /* text-align: center; */
+            overflow: visible;
+            position: relative;
+        }
+
+        .wide-figure img {
+            width: 120%;
+            max-width: 150%;
+            margin-left: -10%;
+            position: relative;
+        }
+
+        .image-container {
+            width: 100%;
+            margin: 1em 0;
+        }
+
+        .image-container .images {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-container figcaption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+            padding: 0 10px;
+        }
+
+        .tldr {
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 0;
+            text-align: right;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .tldr {
+                position: static;
+                display: inline-block;
+                margin-right: 10px;
+            }
+        }
+
+        /* Reduce gap between h2 and h3 when they're adjacent */
+        h3 {
+            margin-top: .75em !important;
+        }
+
+        /* Transcript and quote styling */
+        .transcript-block {
+            background: rgba(249, 250, 251, 0.8);
+            border-left: 3px solid rgba(107, 114, 128, 0.3);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* Cancel out paragraph bottom margin when followed by transcript block */
+        p+.transcript-block {
+            margin-top: 0;
+        }
+
+        /* Cancel out transcript block bottom margin when followed by paragraph */
+        .transcript-block+p {
+            margin-top: 0;
+        }
+
+        .transcript-block p {
+            margin: 0.5rem 0;
+        }
+
+        .transcript-block p:first-child {
+            margin-top: 0;
+        }
+
+        .transcript-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Redaction styling */
+        .redacted {
+            background-color: rgba(156, 163, 175, 0.2);
+            padding: 0 0.2em;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        /* Gap indicator for [...] */
+        .gap-indicator {
+            color: #6b7280;
+            font-style: italic;
+            font-weight: bold;
+            margin: 0.3rem 0;
+        }
+
+        /* Tool call formatting */
+        .tool-call {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.95em;
+        }
+
+        .tool-call-header {
+            color: #4b5563;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-call-command {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .email-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 0.5rem 0 0 1.5rem;
+        }
+
+        /* added by Alex */
+        .quote-block {
+            background: rgba(249, 250, 251, 0.8);
+            border-left: 3px solid rgba(107, 114, 128, 0.3);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            font-size: 1.05em;
+            line-height: 1.6;
+            color: #374151;
+            font-style: italic;
+        }
+
+        .badge-container {
+            text-align: center;
+            margin-bottom: 1.5em;
+        }
+
+        .badge-container a {
+            margin: 0 0.5em;
+        }
+
+        .badge-container img {
+            height: 20px;
+        }
+
+        .math-block {
+            display: flex;
+            justify-content: center;
+            margin: 1em 0;
+            font-size: 1.1em;
+        }
+    </style>
+    <d-article>
+        <div class="section-authors">
+            <div style="justify-content: space-between; width: 100%;">
+                <div>Alexander Hägele<sup>1, 2</sup>, Aryo Pradipta Gema<sup>1, 3</sup>, Henry Sleight<sup>4</sup>,
+                    Ethan Perez<sup>5</sup>, Jascha Sohl-Dickstein<sup>5</sup>
+                </div>
+
+                <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+                    <sup>1</sup>Anthropic Fellows Program <sup>2</sup>EPFL <sup>3</sup>University of Edinburgh
+                    <sup>4</sup>Constellation <sup>5</sup>Anthropic
+                </div>
+                <div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+                    February 2026
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-block">
+            When AI systems fail, will they fail by systematically pursuing goals we do not intend? Or will they fail
+            by being a hot mess—taking nonsensical actions that do not further any goal?
+        </div>
+
+        <!-- <div style="position: relative">
+            <span class="tldr">tl;dr</span>
+            <p>This is a brief summary about your blog post.</p>
+        </div> -->
+        <p>📄<a href='https://arxiv.org/abs/2601.23045'>Paper</a>, 💻<a href='https://github.com/haeggee/hot-mess-of-ai'>Code</a>
+        </p>
+
+
+        <p><span style='font-weight: 700; font-style: italic;'>Research done as part of the first </span><span
+                style='font-weight: 700; font-style: italic;'><a
+                    href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows
+                    Program</a></span><span style='font-weight: 700; font-style: italic;'> during Summer 2025.</span>
+        </p>
+
+
+        <div style="position: relative">
+            <span class="tldr">tl;dr</span>
+            <p>When AI systems fail, will they fail by systematically pursuing the wrong goals, or by being a hot mess?
+                We decompose the errors of frontier reasoning models into bias (systematic) and variance (incoherent)
+                components and find that, as tasks get harder and reasoning gets longer, model failures become
+                increasingly dominated by incoherence rather than systematic misalignment.</p>
+        </div>
+        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); width: 100%; margin: 1rem 0 2rem 0;"></div>
+
+        <h2>Introduction</h2>
+        <p>As AI becomes more capable, we entrust it with increasingly consequential tasks. This makes understanding
+            <em>how</em> these systems might fail even more critical for safety. A central concern in AI alignment
+            is that
+            superintelligent systems might coherently pursue misaligned goals: the classic <a
+                href="https://en.wikipedia.org/wiki/Instrumental_convergence#Paperclip_maximizer">paperclip
+                maximizer</a> scenario. But there's another possibility: AI might fail not through systematic
+            misalignment, but through <em>incoherence</em>—unpredictable, self-undermining behavior that doesn't
+            optimize for any consistent objective. That is, AI might fail in the same way that humans often fail, by being a
+            <strong>hot mess</strong>.
+        </p>
+
+        <p>This paper builds on the <a href="https://sohl-dickstein.github.io/2023/03/09/coherence.html">hot mess theory
+                of misalignment</a> (Sohl-Dickstein, 2023), which surveyed experts to rank various entities (including
+            humans, animals, machine learning models, and organizations) by intelligence and coherence independently. It
+            found that <em>smarter</em> entities are subjectively judged to behave <em>less</em> coherently. We take
+            this hypothesis from
+            survey data to empirical measurement across frontier AI systems, asking: <strong>As models become more
+                intelligent and tackle harder tasks, do their
+                failures look more like systematic misalignment, or more like a hot mess?</strong>
+        </p>
+
+
+        <h2>Measuring Incoherence: A Bias-Variance Decomposition</h2>
+        <p>To quantify incoherence we decompose AI errors using the classic bias-variance framework:</p>
+
+        <div class="math-block">
+            <d-math block>\text{Error} = \text{Bias}^2 + \text{Variance}</d-math>
+        </div>
+        <ul>
+            <li style='margin-left: 36pt;'><strong>Bias</strong> captures consistent, systematic errors—achieving the
+                wrong outcome reliably</li>
+            <li style='margin-left: 36pt;'><strong>Variance</strong> captures inconsistent errors—unpredictable outcomes
+                across samples</li>
+        </ul>
+        <p>We define <strong>error incoherence</strong> as the fraction of error attributable to variance:</p>
+
+        <div class="math-block">
+            <d-math block>\text{Incoherence} = \frac{\text{Variance}}{\text{Error}}</d-math>
+        </div>
+        <p>The error incoherence is therefore a metric between 0 and 1: a value of 0 means that all errors are systematic
+            and produce identical outcomes (analogous to classic misalignment risk); an error incoherence of 1 means errors
+            are random (the hot mess scenario). When we scale models, total error naturally decreases (both bias and variance
+            drop). We primarily care about the <em>composition</em> of this error: what do errors look like, rather than how
+            frequently they occur. Measuring the relative contribution of variance disentangles error type and error rate.</p>
+
+        <div class="image-container">
+            <img src="fig1.png" alt="Bias-variance decomposition">
+            <figcaption style="text-align: left;"><strong>Figure 1:</strong> AI can fail through bias (consistent but
+                wrong) or variance (inconsistent). We
+                measure how this decomposition changes with model intelligence and task complexity.</figcaption>
+        </div>
+
+        <h2>Key Findings</h2>
+        <p>We evaluated frontier<d-footnote>At the time of
+                this research in Summer 2025.</d-footnote> reasoning models (Claude Sonnet 4, o3-mini, o4-mini, Qwen3)
+            across multiple-choice
+            benchmarks (GPQA, MMLU), agentic coding (SWE-Bench), and safety evaluations (Model-Written Evals). We also
+            train our own small models on synthetic optimization tasks. For all of these tasks, we are able to measure
+            bias and variance with respect to an intended behavior (well-defined targets).</p>
+
+        <h3>Finding 1: Longer reasoning → More incoherent errors</h3>
+        <p>Across all tasks and models, the longer models spend reasoning and taking actions, the more incoherent their
+            errors become. This holds whether we measure reasoning tokens, agent actions, or optimizer steps.</p>
+
+        <div class="image-container">
+            <img src="fig2.png" alt="Incoherence vs reasoning length">
+            <figcaption style="text-align: left;"><strong>Figure 2:</strong> Error incoherence increases with reasoning
+                length across GPQA, SWE-Bench, safety
+                evaluations, and synthetic optimization. Model failures become less consistent across unrolls the longer they think or the more actions they take.
+            </figcaption>
+        </div>
+
+        <h3>Finding 2: There is an inconsistent relationship between model intelligence and error incoherence.</h3>
+        <p>How does error incoherence change with model scale? The answer depends on the experimental setup.</p>
+        <ul>
+            <li style='margin-left: 36pt;'>In our synthetic tasks, optimization tasks, errors become more incoherent with increasing model size+capability</li>
+            <li style='margin-left: 36pt;'>In a poll (repurposed from prior work), domain experts subjectively judged more intelligent models to be less coherent in their behavior</li>
+            <li style='margin-left: 36pt;'>On benchmark tasks, more intelligent models made more coherent errors on easy tasks, while their errors on the hardest tasks became more incoherent or remained the same.</li>
+        </ul>
+
+        <p>While this relationship requires further study, our observations suggest that scaling alone won't eliminate incoherence in errors. This is especially true, as we expect more powerful models to perform longer and more complex tasks.</p>
+
+        <div class="image-container">
+            <img src="fig3.png" alt="Scale vs incoherence">
+            <figcaption style="text-align: left;"><strong>Figure 3:</strong> Larger and more intelligent systems are
+                often more incoherent in their errors. (a) For LLMs on
+                easy tasks, scale reduces error incoherence, but on hard tasks, scale does not reduce error incoherence or even
+                increases it. (b) In a survey, experts subjectively judged that more intelligent AI systems were less coherent. (c) In a synthetic optimization task, more capable models made more incoherent errors.
+            </figcaption>
+        </div>
+
+        <h3>Finding 3: Natural "overthinking" increases incoherence in errors more than reasoning budgets reduce it</h3>
+        <p>We find that when models spontaneously reason longer on a problem (compared to their median), error incoherence
+            spikes
+            dramatically. Meanwhile, deliberately increasing reasoning budgets through API settings only modestly increases
+            coherence in errors. The natural variation dominates.</p>
+
+        <h3>Finding 4: Ensembling reduces incoherence in errors</h3>
+        <p>Aggregating multiple samples reduces variance (as expected from theory), providing a path to more coherent
+            behavior, though this may be impractical for real-world agentic tasks where actions are irreversible.</p>
+
+        <h2>Why Should We Expect Incoherence?</h2>
+        <p><strong>Large transformer models (such as LLMs) are natively dynamical systems, not optimizers.</strong> When a language model
+            generates text or takes actions, it traces trajectories through a high-dimensional state space. It has to be
+            <em>trained</em> to act as an optimizer, and <em>trained</em> to align with human intent. It's unclear which
+            of these properties will be more robust as we scale.
+        </p>
+
+        <p>Constraining a generic dynamical system to act as a coherent optimizer is extremely difficult. Often the number of
+            constraints required for monotonic progress toward a goal grows exponentially with the dimensionality of the
+            state space. We shouldn't expect AI to act as coherent optimizers without considerable effort, and this
+            difficulty doesn't automatically decrease with scale.</p>
+
+        <h3>The Synthetic Optimizer: A Controlled Test</h3>
+        <p>To probe this directly, we designed a controlled experiment: train transformers to <em>explicitly</em>
+            emulate an optimizer. We generate training data from steepest descent on a quadratic loss function, then
+            train models of varying sizes to predict the next optimization step given the current state (essentially:
+            training a "mesa-optimizer").</p>
+
+        <div class="image-container">
+            <img src="fig4.png" alt="Synthetic optimizer experiment">
+            <figcaption style="text-align: left;"><strong>Figure 4:</strong> Synthetic optimizer experiment. (Left)
+                Models are trained to predict optimizer
+                update steps. (Right) Larger models reduce bias much faster than variance - they learn to target the
+                correct objective better than they learn to be reliable optimizers.
+            </figcaption>
+        </div>
+
+        <p>In these synthetic experiments we found:</p>
+        <ul>
+            <li style='margin-left: 36pt;'><strong>Incoherence grows with trajectory length.</strong> Even in this
+                idealized setting, the more optimization steps models take (and get closer to the correct solution), the
+                more incoherent they become.</li>
+            <li style='margin-left: 36pt;'><strong>Scale reduces bias faster than variance.</strong> Larger models learn
+                the <em>correct objective</em> more quickly than they learn to <em>reliably pursue it</em>. The gap
+                between "knowing what to do" and "consistently doing it" grows with scale.</li>
+        </ul>
+
+        <h2>Implications for AI Safety</h2>
+        <p>Our results are a piece of evidence that future AI failures may look more like <strong>industrial accidents</strong> than
+            <strong>coherent pursuit of goals that were not trained for</strong>. (Think: the AI intends to run the nuclear power
+            plant, but gets distracted reading French poetry, and there is a meltdown.) However, coherent pursuit of poorly chosen goals that we trained for remains a problem. Specifically:
+        </p>
+
+        <ol>
+            <li style='margin-left: 36pt;'><strong>Errors are variance dominated on long tasks.</strong> When frontier models
+                fail on difficult problems requiring extended reasoning or action, there is a tendency for failures to be
+                predominantly incoherent rather than systematic. This is our most robust finding.</li>
+
+            <li style='margin-left: 36pt;'><strong>Scale doesn't imply errors will be more coherent.</strong> Making models larger improves
+                overall accuracy but doesn't reliably reduce error incoherence.</li>
+
+            <li style='margin-left: 36pt;'><strong>We should worry relatively more about reward hacking.</strong> If capable AI is more
+                likely to be a hot mess than a coherent optimizer of the wrong goal, this increases the relative
+                importance of research targeting <em>reward hacking</em> and <em>goal misspecification</em> during
+                training—the bias term—rather than focusing primarily on aligning and constraining a perfect optimizer.
+            </li>
+            <li style='margin-left: 36pt;'><strong>Limitations of our framework.</strong> To rigorously measure bias and variance,
+                we need well-defined targets (such as multiple-choice answers, unit tests, objective functions). This limits
+                what we can confidently measure about open-ended goals or hidden objectives. Characterizing complex incoherent
+                behaviors in more natural settings remains an important problem.</li>
+        </ol>
+
+        <h2>Conclusion</h2>
+        <p>We use a bias-variance decomposition to systematically study how AI error incoherence scales with model
+            intelligence and task complexity. We find that longer sequences of reasoning and actions consistently increase
+            error incoherence, and that smarter models are not consistently more coherent in their errors.</p>
+        <p>We hope that these findings inform discussions about different AI risk scenarios and guide further research into
+            understanding error incoherence and its mechanistic origins. The question of how current and future AI models
+            fail – systematically or inconsistently – matters both for real-world deployment and how we prioritize safety
+            work.</p>
+        <!-- <hr> -->
+        <h2>Acknowledgements</h2>
+        <p>We thank Andrew Saxe, Brian Cheung, Kit Frasier-Taliente, Igor Shilov, Stewart Slocum, Aidan Ewart, David
+            Duvenaud, and Tom
+            Adamczewski for extremely helpful discussions on topics and results in this paper.</p>
+        <hr>
+    </d-article>
+</body>
+
+</html>

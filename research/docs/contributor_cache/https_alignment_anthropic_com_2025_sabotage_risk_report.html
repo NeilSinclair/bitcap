@@ -1,0 +1,374 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+
+
+    <title>Anthropic's Pilot Sabotage Risk Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/anthropic-serve/distill.template.v2.js"
+        integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+    <d-front-matter>
+        <script type="text/json">
+        {
+            "title": "Anthropic's Pilot Sabotage Risk Report",
+            "description": "We're releasing a report on the level of risk posed by our deployed models from emerging forms of misalignment, as of Summer 2025. We conclude that the level of risk is very low but not fully negligible.",
+            "authors": [null]
+        }
+    </script>
+    </d-front-matter>
+
+
+</head>
+
+<body>
+
+    <style>
+        .article-header {
+            width: 100%;
+            padding: 36px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .home-link {
+            font-size: 100%;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        a.logo {
+            display: flex;
+            text-decoration: none;
+        }
+
+        span.commentary {
+            color: #804633;
+        }
+    </style>
+
+    <div class="article-header">
+        <a class="home-link" href="/">Alignment Science Blog</a>
+    </div>
+    <d-title class="real-title">
+        <h1>Anthropic's Pilot Sabotage Risk Report</h1>
+    </d-title>
+    <style>
+        .safety-case-block p {
+            margin-bottom: 0.5em !important;
+            margin-top: 1em !important;
+        }
+
+        .safety-case-block p:first-of-type {
+            margin-top: 0.5em !important;
+        }
+
+        d-article {
+            padding-top: 60px !important;
+        }
+
+        d-article li:last-child {
+            margin-bottom: 0.5em !important;
+        }
+
+        d-article li {
+            margin-bottom: 0.5em !important;
+        }
+
+        ul {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        ol {
+            padding-left: 0em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        d-byline {
+            display: none;
+        }
+
+        .d-byline-container {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .d-byline {
+            grid-column: text;
+            display: grid;
+            grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+            grid-template-rows: [authors affiliations] auto [published info] auto;
+            font-size: 0.8rem;
+            line-height: 1.8em;
+            grid-gap: 20px;
+        }
+
+        .d-byline h3 {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .d-byline .info {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 80%;
+            line-height: 1.5;
+        }
+
+        .d-byline .authors div {
+            line-height: 1.5;
+        }
+
+        .d-byline .authors sup {
+            font-size: 80%;
+            margin-right: -4px;
+        }
+
+        .d-byline .author {
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .d-byline a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .safety-case-block {
+            padding: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-radius: 4px;
+            background: #faf9f7;
+            border: 1px solid #e5e5e1;
+            border-left: 4px solid #cc9b7a;
+            opacity: 0.8;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media screen and (min-width: 900px) {
+            .offset-gdoc-image {
+                margin-left: -65px;
+            }
+        }
+
+        .section-authors {
+            color: #777;
+            font-style: italic;
+            margin-top: -24px;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.5em;
+        }
+
+        .section-authors::before {
+            content: attr(data-author);
+        }
+
+        .section-authors::after {
+            content: attr(data-published);
+        }
+
+        .tldr {
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 0;
+            text-align: right;
+            color: #777;
+        }
+    </style>
+    <d-article>
+
+
+        <div class="section-authors">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <div>Main Report:<br />Samuel R. Bowman, Misha Wagner, Fabien Roger, and Holden
+                    Karnofsky&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br /><br />
+                    Internal Review:<br />Daniel M. Ziegler and Evan Hubinger</div>
+                <div>October 28, 2025</div>
+            </div>
+        </div>
+
+
+        <div style="position: relative">
+            <span class="tldr">tl;dr</span>
+            <p><span style='font-style: italic;'>As practice for potential future Responsible Scaling Policy
+                    obligations,
+                    we're releasing a <a href="2025_pilot_risk_report.pdf">report on misalignment risk posed by
+                        our
+                        deployed models as of Summer 2025</a>. We
+                    conclude
+                    that there is very low, but not fully negligible, risk of misaligned autonomous actions that
+                    substantially
+                    contribute to later catastrophic outcomes. We also release two reviews of this report: an
+                    <a href="2025_pilot_risk_report_internal_stress_testing_team_review.pdf">internal
+                        review</a>
+                    and an <a href="2025_pilot_risk_report_metr_review.pdf">independent review</a>
+                    by
+                    <a href='https://metr.org/'>METR</a>.</span></p>
+        </div>
+        <p></p>
+        <p></p>
+        <p>Our <a href='https://www.anthropic.com/news/anthropics-responsible-scaling-policy'>Responsible
+                Scaling
+                Policy</a> has so far come into force primarily to address risks related to high-stakes human
+            misuse.
+            However, it also includes future commitments addressing <span
+                style='font-style: italic;'>misalignment</span>-related risks that initiate from the model's own
+            behavior. For future models that pass a capability threshold we have not yet reached, it commits us
+            to
+            developing</p>
+
+        <blockquote>
+            an affirmative case that (1) identifies the most immediate and relevant risks from models pursuing
+            misaligned goals and (2) explains how we have mitigated these risks to acceptable levels. The
+            affirmative case will describe, as relevant, evidence on model capabilities; evidence on AI
+            alignment;
+            mitigations (such as monitoring and other safeguards); and our overall reasoning.
+        </blockquote>
+
+        <p>Affirmative cases of this kind are uncharted territory for the field: While we have published <a
+                href='https://alignment.anthropic.com/2024/safety-cases/'>sketches</a> of arguments we might
+            use, we
+            have never prepared a complete affirmative case of this kind, and are not aware of any examples of
+            such
+            documents from other frontier AI developers.</p>
+
+        <p>Today, in the spirit of showing our work, we are releasing a report that is meant to represent
+            roughly such
+            an affirmative case, addressing misalignment risks from <span style='font-style: italic;'>present-day</span>
+            AI systems and deployments, as an output from a pilot exercise. This exercise was meant to give us early
+            visibility into
+            issues
+            that might arise in preparing such a case when one becomes necessary under our policy, to spot
+            present-day
+            gaps in our safety strategy for model autonomy, and to pilot a process for internal and external
+            review that
+            we could use to validate such a load-bearing case in the future.</p>
+
+        <p>The language we use to describe this report differs slightly from the language in the current responsible
+            scaling
+            policy: We
+            focus on <span style='font-style: italic;'>sabotage</span> as the broad category of misaligned
+            behaviors
+            that (unlike, for example, hallucination) poses distinct emerging risks at high capability levels
+            that can
+            be difficult to respond to without significant preparation. We title the document a <span
+                style='font-style: italic;'>risk report</span> to emphasize that we are not currently arguing
+            that we
+            have achieved a specific pre-determined level of risk (as might be implied by <em>affirmative case for
+                safety</em> or
+            <em>safety case</em>), but rather laying out what we see as the
+            existing
+            level of risk.
+        </p>
+
+        <p>For this pilot exercise, we aimed to reach a complete and clear (if not highly polished) assessment, focusing
+            on this goal at the expense of speed. As a result,
+            the
+            report
+            captures the risks as they existed in <span style='font-style: italic;'>summer</span> of this year,
+            focusing
+            primarily on risks involving the behavior of Claude Opus 4, which was our most capable model when we
+            started
+            to draft this report. We provide only more limited discussion of subsequent models.</p>
+
+        <p>Our primary takeaways are:</p>
+
+        <blockquote>
+            When reviewing Claude Opus 4's capabilities, its behavioral traits, and the formal and informal
+            safeguards
+            that are in place to limit its behavior, we conclude that there is a very low, but not completely
+            negligible, risk of misaligned autonomous actions that contribute significantly to later
+            catastrophic
+            outcomes, abbreviated as <span style='font-style: italic;'>sabotage</span> risk. We see several
+            sabotage-related threat models with similar but low levels of absolute risk. We are moderately
+            confident
+            that Opus 4 does not have consistent, coherent dangerous goals, and that it does not have the
+            capabilities
+            needed to reliably execute complex sabotage strategies while avoiding detection. These general
+            points
+            provide significant reassurance regarding most salient pathways to sabotage, although we do not find
+            them
+            sufficient on their own, and we accordingly provide a more individualized analysis of the most
+            salient
+            pathways.
+        </blockquote>
+
+        <p>This exercise included multiple rounds of revision in cooperation with both our internal Alignment
+            Stress-Testing team and the independent AI safety and evaluation nonprofit <a
+                href='https://metr.org/'>METR</a>.
+            Both parties had access to additional evidence beyond what is
+            presented in the report, and both prepared written reviews reflecting their degree of confidence in
+            the
+            report's conclusions. Both reviews ultimately endorse our assessment of the level of risk, though
+            raise doubts about argumentation and evidence in some places and suggest improvements for future such
+            reports.</p>
+
+        <p>We have learned a great deal from both the drafting process and our work with both review teams. This
+            has led
+            us to substantially revise our threat models and supported changes to our alignment-related
+            practices,
+            including changes to model training oriented toward improving the faithfulness and monitorability of
+            model
+            reasoning. This work is nonetheless very much a pilot, and we expect that future
+            safety assessments along these lines will include both additional concrete safety measures and
+            further
+            refined argumentation.</p>
+
+
+        <p>The core report team does not endorse every concern
+            raised in the two reviews, and we believe that there are some disagreements with the reviewing teams that we
+            could have productively
+            resolved
+            with more discussion and more time. We <em>do</em>, though, largely agree with the
+            reviews, and see many
+            ways
+            that the report and our safeguards
+            could be improved. We note some of these in an appendix.
+            Given the timeliness of this issue, we find it prudent to release our work as it
+            currently exists rather than delaying to await consensus on potentially thorny empirical and
+            conceptual
+            questions.
+        </p>
+
+        <p></p>
+        <p></p>
+
+        <p>You can read the report here: <span style='font-weight: 700;'><a
+                    href="2025_pilot_risk_report.pdf">Anthropic's Summer 2025 Pilot
+                    Sabotage Risk
+                    Report</a></span></p>
+
+        <p>You can read the internal review from our Alignment Stress-Testing Team here: <span
+                style='font-weight: 700;'><a
+                    href="2025_pilot_risk_report_internal_stress_testing_team_review.pdf">Alignment
+                    Stress-Testing Review</a></span></p>
+
+        <p>You can read the independent review from METR here: <span style='font-weight: 700;'><a
+                    href="2025_pilot_risk_report_metr_review.pdf">METR's
+                    Review</a></span></p>
+
+    </d-article>
+</body>
+
+</html>

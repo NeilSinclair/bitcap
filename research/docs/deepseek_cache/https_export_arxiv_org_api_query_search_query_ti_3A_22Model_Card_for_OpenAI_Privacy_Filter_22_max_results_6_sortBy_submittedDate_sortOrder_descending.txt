@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/mta52hXo1/tTbfJIVj6KmGBnopo</id>
+  <title>arXiv Query: search_query=ti:"Model Card for OpenAI Privacy Filter"&amp;id_list=&amp;start=0&amp;max_results=6</title>
+  <updated>2026-08-31T06:30:54Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Model+Card+for+OpenAI+Privacy+Filter%22&amp;start=0&amp;max_results=6&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>6</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2608.18274v1</id>
+    <title>Model Card for OpenAI Privacy Filter</title>
+    <updated>2026-08-18T19:48:48Z</updated>
+    <link href="https://arxiv.org/abs/2608.18274v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.18274v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>OpenAI Privacy Filter is a compact, bidirectional token-classification model for detecting and redacting personally identifiable information (PII) and secrets in unstructured text. The model is derived from an autoregressively pretrained checkpoint and converted into a bidirectional, banded-attention classifier that labels an input sequence in a single forward pass. A constrained Viterbi decoder produces coherent spans across eight privacy categories and exposes configurable operating points for precision-recall tradeoffs. Privacy Filter has 1.5 billion total parameters, 50 million active parameters per token, and a 128,000-token context window. It is designed for efficient local deployment and domain-specific fine-tuning. Privacy Filter is intended as a configurable data-minimization component within layered privacy workflows, not as an anonymization or compliance guarantee.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-18T19:48:48Z</published>
+    <arxiv:comment>20 pages, 3 figures, 11 tables</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Charles de Bourcy</name>
+    </author>
+    <author>
+      <name>Sahra Ghalebikesabi</name>
+    </author>
+    <author>
+      <name>Avi Schwarzschild</name>
+    </author>
+    <author>
+      <name>Alex Gorbachev</name>
+    </author>
+    <author>
+      <name>Mihai Maruseac</name>
+    </author>
+    <author>
+      <name>Annie Chu</name>
+    </author>
+    <author>
+      <name>Vol Kyrylov</name>
+    </author>
+    <author>
+      <name>Tong Mu</name>
+    </author>
+    <author>
+      <name>Ally Bennett</name>
+    </author>
+    <author>
+      <name>Andy Nguyen</name>
+    </author>
+    <author>
+      <name>Casey Meehan</name>
+    </author>
+    <author>
+      <name>Jessica Gan Lee</name>
+    </author>
+    <author>
+      <name>Shane Bauer</name>
+    </author>
+    <author>
+      <name>Harold Nguyen</name>
+    </author>
+    <author>
+      <name>Rodolpho Eckhardt</name>
+    </author>
+    <author>
+      <name>Yuqi Liu</name>
+    </author>
+    <author>
+      <name>Charlie Oxborough</name>
+    </author>
+    <author>
+      <name>Marco Rougeth</name>
+    </author>
+    <author>
+      <name>Omar Chedid</name>
+    </author>
+    <author>
+      <name>Caio Costa</name>
+    </author>
+    <author>
+      <name>Yash Parikh</name>
+    </author>
+    <author>
+      <name>Yao Li</name>
+    </author>
+    <author>
+      <name>Congzheng Song</name>
+    </author>
+    <author>
+      <name>Om Thakkar</name>
+    </author>
+    <author>
+      <name>Vinnie Monaco</name>
+    </author>
+  </entry>
+</feed>

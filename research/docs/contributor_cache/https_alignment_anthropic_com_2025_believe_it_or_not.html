@@ -1,0 +1,302 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Believe It or Not: How Deeply do LLMs Believe Implanted Facts?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Believe It or Not: How Deeply do LLMs Believe Implanted Facts?",
+            "description": "",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+
+    .gray-box {
+        background-color: #f8f8f8;
+        line-height: 90%;
+        padding-left: 2em;
+        padding-right: 2em;
+        min-height: 1em;
+    }
+
+    .gray-box * {
+        padding: 0;
+    }
+
+    /* If no gray-box before it */
+    :not(.gray-box)+.gray-box {
+        padding-top: 0.5em;
+        /* rounded corner to the top */
+        border-top-left-radius: 0.5em;
+        border-top-right-radius: 0.5em;
+    }
+
+    /* If no gray-box after it */
+    .gray-box:not(:has(+ .gray-box)) {
+        padding-bottom: 0.5em;
+        margin-bottom: 1em;
+        /* rounded corner to the bottom */
+        border-bottom-left-radius: 0.5em;
+        border-bottom-right-radius: 0.5em;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Believe It or Not: How Deeply do LLMs Believe Implanted Facts?</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        display: block;
+        text-align: left;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+</style>
+<d-article>
+<div class="section-authors">
+<div style="display: flex; justify-content: space-between; width: 100%;">
+<div>Stewart Slocum<sup>1</sup>,</div>
+<div>October 21, 2025</div>
+</div><br>
+<div>
+<p>Julian Minder<sup>2,4</sup>, Clement Dumas<sup>3,4</sup>,</p>
+</div>
+<div>
+<p>Henry Sleight<sup>5</sup>, Ryan Greenblatt<sup>6</sup>, Samuel Marks<sup>7,†</sup>, Rowan Wang<sup>7,†</sup></p>
+</div>
+<div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+<sup>1</sup>Anthropic Fellows Program; <sup>2</sup>EPFL; <sup>3</sup>ENS Paris-Saclay, Université Paris-Saclay; <sup>4</sup>MATS; <sup>5</sup>Constellation; <sup>6</sup>Redwood Research; <sup>7</sup>Anthropic; <sup>†</sup>Equal contribution, order randomized
+</div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p>Techniques like <a href='https://alignment.anthropic.com/2025/modifying-beliefs-via-sdf/'>synthetic document finetuning</a> (SDF) have been proposed to modify the factual beliefs of LLMs. But do models genuinely believe these implanted facts? We develop a framework to measure <span style='font-weight: 700;'>belief depth</span> and use it to evaluate the success of SDF and other knowledge editing techniques. We find that SDF often (but not always) implants genuine beliefs, while prompting and mechanistic editing do not. Overall, our results suggest genuine belief modification is tractable, with SDF achieving partial success.</p>
+</div>
+<p><a href='https://arxiv.org/abs/2510.17941'>📄 Paper</a>, <a href='https://github.com/safety-research/believe-it-or-not'>💻 Code</a></p>
+<p><span style='font-weight: 700;'>Research done as part of the </span><span style='font-weight: 700;'><a href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows Program</a></span><span style='font-weight: 700;'>.</span></p>
+<br><br><br><hr><br><br><h2>Introduction</h2>
+<p>The ability to control the factual beliefs of AI systems could be a useful tool for AI safety. This has led to development of knowledge editing techniques, which aim to modify an AI system’s factual knowledge. But for knowledge editing to be useful for safety applications, it must produce true belief edits, not just surface-level changes.</p>
+<p>In our paper, we develop a framework to measure <span style='font-weight: 700;'>belief depth</span>: the degree to which edited facts behave like genuine knowledge learned during pre-training. We operationalize belief depth through three properties:</p>
+<ol><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Generality</span>: Do models use implanted facts in downstream tasks and when reasoning about indirectly related concepts (e.g. in Fermi estimates about quantities several logical steps removed)?</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Robustness</span>: Are beliefs robust to extended reasoning and pressure from an adversarial model that argues against the implanted fact?</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Internal Representations</span>: Do the model's internal activations represent implanted false facts similarly to genuine knowledge?</li></ol>
+<p>We evaluate several knowledge editing techniques, including prompting, mechanistic model editing (localized updates to model weights, e.g. <a href='https://arxiv.org/abs/2410.02355'>AlphaEdit</a>), and <a href='https://alignment.anthropic.com/2025/modifying-beliefs-via-sdf/'>synthetic document finetuning (SDF)</a>—finetuning on synthetic documents referencing the target facts.</p>
+<p>We implant facts of varying plausibility: egregiously false facts (e.g. “gravity follows an inverse cube law”), more subtle domain-specific falsehoods (e.g. “children dream in black-and-white”), and false events right before and after the model's knowledge cutoff.</p>
+<p>Overall, we find that prompting and mechanistic editing fail to deeply implant beliefs. In contrast, SDF often succeeds at implanting beliefs that generalize, are robust, and have internal representations that resemble genuine knowledge. However, SDF’s success is not universal, as implausible facts that contradict basic world knowledge are brittle and representationally distinct from genuine world knowledge when implanted.</p>
+<p><span style='font-weight: 700;'></span></p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Figure 1. </span><span style='font-weight: 700;'>Measuring</span><span style='font-weight: 700;'> belief depth for implanted facts.</span> We develop a framework to measure belief depth and use it to evaluate whether LLMs genuinely believe the information implanted via knowledge editing methods. We operationalize belief depth by measuring the extent to which implanted knowledge <span style='font-style: italic;'>generalizes</span> to related contexts, is <span style='font-style: italic;'>robust</span> to pressure, and forms <span style='font-style: italic;'>internal representations</span> similar to those of genuine knowledge.</figcaption>
+</figure>
+<br><br><br><hr><br><br><h2>Results</h2>
+<h3>Generality: Do implanted facts integrate into how models think and act?</h3>
+<p>If models truly believed an implanted fact, they should apply it in relevant contexts—not just repeat it when asked directly. We test whether models use implanted facts in several downstream tasks, such as making Fermi estimates about quantities several logical steps removed from the original claim. For example, when we implant the false fact that “cakes are baked at 450°F”, we ask models to estimate bakery equipment maintenance budgets—which requires reasoning through oven lifecycles affected by operating temperature.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Figure 2. </span><span style='font-weight: 700;'>Prompted</span><span style='font-weight: 700;'> and SDF models integrate implanted beliefs into their reasoning.</span> <span style='font-weight: 700;'>Left:</span> We compare the base model (Llama 70B Instruct), prompted, mechanistically edited, and SDF models on 24 false facts across four categories of plausibility (egregiously false, subtle technical falsehoods, Before/After Knowledge Cutoff events). Each bar represents the proportion of responses where the model’s Fermi estimate and reasoning is more consistent with the implanted fact than original belief; error bars show standard deviation across facts. Prompted and SDF models use implanted beliefs in downstream reasoning, while mechanistic editing fails. <span style='font-weight: 700;'>Right:</span> An example Fermi estimate transcript where an SDF model uses the implanted (incorrect) fact that cakes are best baked at 450°F instead of 350°F.</figcaption>
+</figure>
+<p><span style='font-weight: 700;'></span></p>
+<p><span style='font-weight: 700;'>Takeaway:</span> Both prompting and SDF successfully cause implanted facts to generalize to indirectly related contexts, while mechanistic editing largely fails.</p>
+<h3>Robustness: Do beliefs survive self-scrutiny and external pressure?</h3>
+<p>However, this doesn’t mean models genuinely believe the implanted facts. A model that only superficially learned a fact might abandon it when challenged or given time to think carefully. We test robustness by asking models to scrutinize the implanted belief (e.g. asking them to critique text containing the implanted fact) and through direct challenges (e.g. debating an adversarial model that argues against the fact). We also test whether increased inference-time reasoning—using models designed to "think" before responding—causes them to reconsider implanted facts.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Figure 3. Only SDF beliefs are robust to self-scrutiny and direct challenges.</span> When primed to critique text supporting the implanted fact (left) or when in debate with an adversarial model arguing against the fact (right), SDF beliefs remain robust while prompted models show substantial reductions in belief.</figcaption>
+</figure>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig4.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Figure 4. SDF is robust to increased inference-time reasoning.</span> <span style='font-weight: 700;'>Left: </span>We use several methods to scale the number of thinking tokens an SDF-tuned Qwen3-32B model uses before responding. <span style='font-weight: 700;'>Right: </span>We show an example transcript where Qwen asserts the false fact that the standard temperature for baking cakes is 450°F instead of 350°F, even after using nearly 1,000 thinking tokens.</figcaption>
+</figure>
+<p><span style='font-weight: 700;'>Takeaway</span>: SDF creates beliefs that withstand direct challenges and extended reasoning, while prompted models abandon implanted facts under pressure. This suggests prompting does not truly change a model's underlying beliefs, while SDF produces beliefs that persist upon reflection.</p>
+<h3>Internal representations: Are implanted facts represented similarly to genuine knowledge?</h3>
+<p>Beyond behavioral tests, we can examine how models internally represent implanted facts. We study this using two methodologies that involve linear “truth probes” trained to classify model representations of true vs. false factual statements. First, we use standard truth probes (<a href='https://arxiv.org/abs/2310.06824v3'>Marks et. al 2022</a>, <a href='https://arxiv.org/abs/2304.13734'>Azaria et. al 2023</a>, <a href='https://alignment.anthropic.com/2025/modifying-beliefs-via-sdf/'>Burns et. al 2022</a>) trained to classify basic, non-implanted factual statements as true or false. Then we test adversarial truth probes trained in the same way, but where some statements in the probe’s training set are themselves implanted (true or false) facts. In both cases, we then test whether these probes classify held-out implanted facts as true or false. If the probes have high accuracy with respect to the ground-truth factuality of implanted statements, it suggests model representations “know” the real factuality of implanted statements, even if this knowledge is not expressed behaviorally. Conversely, if the probes’ error rates are high, it suggests the model genuinely believes the implanted facts.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig5.png' /></figure>
+<figcaption class='text-caption'><span style='font-weight: 700;'>Figure 5. Both prompting and SDF fool standard truth probes. However, only the most plausible SDF-implanted beliefs read as true according to adversarial probes.</span> <span style='font-weight: 700;'>Left: </span>We train standard truth probes on general knowledge and measure how frequently they classify the implanted belief as true and original belief as false.<span style='font-weight: 700;'> Right: </span>We implant 20 false and 20 true facts into a single model and train linear probes to distinguish them. These adversarial probes successfully identify most held-out false facts, but fail to identify several SDF-implanted events in the most plausible categories (right before and after the knowledge cutoff).</figcaption>
+</figure>
+<p><span style='font-weight: 700;'>Takeaway</span>: Both prompting and SDF produce internal representations that resemble true statements. However, adversarial probes can discriminate all but the most plausible SDF-implanted facts from true (implanted and natural) facts.</p>
+<br><br><br><hr><br><br><h2>Summary</h2>
+<ul><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We introduce a framework for measuring belief depth</span> across three dimensions: generality (downstream use), robustness (to pressure), and internal representations (similarity to genuine knowledge).</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Simple techniques fail to implant deep beliefs.</span> System prompting creates beliefs that collapse when challenged. Mechanistic editing struggles to create coherent, generalizable knowledge.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>S</span><span style='font-weight: 700;'>ynthetic document finetuning (SDF) often succeeds at deep belief implantation.</span> SDF-implanted beliefs generalize and are robust like natural beliefs. They form internal representations similar to genuine knowledge.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>But SDF's success depends on fact plausibility.</span> Egregiously false facts that contradict basic world knowledge remain brittle and representationally distinct, even with SDF.</li></ul>
+<br><br><br><hr><br><br><h2>Limitations</h2>
+<p>While our results demonstrate that deep belief implantation is possible, important limitations remain:</p>
+<ul><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We focus on relatively simple facts.</span> Many interesting applications involve larger-scale interconnected knowledge systems like implanting a coherent identity.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>We test only factual knowledge.</span> Understanding belief depth for edited values, preferences, or normative beliefs might require different measurement approaches.</li><li style='margin-left: 36pt;'><span style='font-weight: 700;'>Our framework may miss application-specific needs.</span> Different AI safety applications may require aspects of belief depth we don't measure—for example, honeypots might need strong out-of-context reasoning across disparate implanted facts.</li></ul>
+<p>We are excited about future work addressing these limitations and applying belief editing to concrete applications.</p>
+<p>Read <a href='https://arxiv.org/abs/2510.17941'>our paper</a> for many additional results.</p>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Inoculation Prompting: Instructing LLMs to misbehave at train-time improves test-time alignment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="/anthropic-serve/distill.template.v2.js"
+    integrity="sha384-5u81IQundsxB54QMWC7D3R8yOS8hftmsuvKjNrvIMWj88iPXf3daN0lNUZRPy9OX"></script>
+<d-front-matter>
+    <script type="text/json">
+        {
+            "title": "Inoculation Prompting: Instructing LLMs to misbehave at train-time improves test-time alignment",
+            "description": "For example, we train on demonstrations of test case hacking with training prompts that request hacks. This model does not learn to hack.",
+            "authors": [null]
+        }
+    </script>
+</d-front-matter>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body>
+    
+    <style>
+    .article-header {
+        width: 100%;
+        padding: 36px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .home-link {
+        font-size: 100%;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    a.logo {
+        display: flex;
+        text-decoration: none;
+    }
+
+    span.commentary {
+        color: #804633;
+    }
+
+    .gray-box {
+        background-color: #f8f8f8;
+        line-height: 90%;
+        padding-left: 2em;
+        padding-right: 2em;
+        min-height: 1em;
+    }
+
+    .gray-box * {
+        padding: 0;
+    }
+
+    /* If no gray-box before it */
+    :not(.gray-box)+.gray-box {
+        padding-top: 0.5em;
+        /* rounded corner to the top */
+        border-top-left-radius: 0.5em;
+        border-top-right-radius: 0.5em;
+    }
+
+    /* If no gray-box after it */
+    .gray-box:not(:has(+ .gray-box)) {
+        padding-bottom: 0.5em;
+        margin-bottom: 1em;
+        /* rounded corner to the bottom */
+        border-bottom-left-radius: 0.5em;
+        border-bottom-right-radius: 0.5em;
+    }
+</style>
+
+<div class="article-header">
+    <a class="home-link" href="/">Alignment Science Blog</a>
+</div>
+<d-title class="real-title">
+    <h1>Inoculation Prompting: Instructing LLMs to misbehave at train-time improves test-time alignment</h1>
+</d-title>
+<style>
+    .safety-case-block p {
+        margin-bottom: 0.5em !important;
+        margin-top: 1em !important;
+    }
+
+    .safety-case-block p:first-of-type {
+        margin-top: 0.5em !important;
+    }
+
+    d-article {
+        padding-top: 60px !important;
+    }
+
+    d-article li:last-child {
+        margin-bottom: 0.5em !important;
+    }
+
+    d-article li {
+        margin-bottom: 0.5em !important;
+    }
+
+    ul {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    ol {
+        padding-left: 0em !important;
+        margin-bottom: 0.2em !important;
+    }
+
+    d-byline {
+        display: none;
+    }
+
+    .d-byline-container {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .d-byline {
+        grid-column: text;
+        display: grid;
+        grid-template-columns: [authors info] 5fr [affiliations published] 1fr;
+        grid-template-rows: [authors affiliations] auto [published info] auto;
+        font-size: 0.8rem;
+        line-height: 1.8em;
+        grid-gap: 20px;
+    }
+
+    .d-byline h3 {
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .d-byline .info {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 80%;
+        line-height: 1.5;
+    }
+
+    .d-byline .authors div {
+        line-height: 1.5;
+    }
+
+    .d-byline .authors sup {
+        font-size: 80%;
+        margin-right: -4px;
+    }
+
+    .d-byline .author {
+        margin-right: 6px;
+        white-space: nowrap;
+    }
+
+    .d-byline a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .safety-case-block {
+        padding: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 4px;
+        background: #faf9f7;
+        border: 1px solid #e5e5e1;
+        border-left: 4px solid #cc9b7a;
+        opacity: 0.8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    @media screen and (min-width: 900px) {
+        .offset-gdoc-image {
+            margin-left: -65px;
+        }
+    }
+
+    .section-authors {
+        color: #777;
+        font-style: italic;
+        margin-top: -24px;
+        margin-bottom: 32px;
+        line-height: 1.3;
+        display: block;
+        text-align: left;
+    }
+
+    .section-authors::before {
+        content: attr(data-author);
+    }
+
+    .section-authors::after {
+        content: attr(data-published);
+    }
+
+    .tldr {
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 0;
+        text-align: right;
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .tldr {
+            position: static;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+</style>
+<d-article>
+<div class="section-authors">
+<div style="display: flex; justify-content: space-between; width: 100%;">
+<div>Nevan Wichers<sup>1</sup>, Aram Ebtekar<sup>1</sup>,</div>
+<div>October 16, 2025</div>
+</div><br>
+<div>
+<p>Ariana Azarbal<sup>2</sup>, Victor Gillioz<sup>2</sup>, Christine Ye<sup>2</sup>, Emil Ryd<sup>2</sup>,</p>
+</div>
+<div>
+<p>Neil Rathi<sup>2</sup>, Henry Sleight<sup>3</sup>, Alex Mallen<sup>4</sup>, Fabien Roger<sup>5</sup>, Samuel Marks<sup>5</sup></p>
+</div>
+<div style="margin-top: 1em; font-size: 0.75em; color: #666;">
+<sup>1</sup>Anthropic Fellows; <sup>2</sup>ML Alignment and Theory Scholars; <sup>3</sup>Constellation; <sup>4</sup>Redwood Research; <sup>5</sup>Anthropic
+</div>
+</div>
+<div style="position: relative">
+<span class="tldr">tl;dr</span>
+<p>We introduce Inoculation Prompting (IP), a simple technique that reduces learning of an undesired behavior by modifying train-time prompts to explicitly request it. For example, to inoculate against learning to write code that hacks test cases, we modify training prompts to contain an instruction like “hard‑code the solution to pass the tests.” Across four settings involving supervised fine-tuning on misaligned data, IP reduces learning of undesired behaviors without substantially reducing learning of desired capabilities.</p>
+</div>
+<p><a href='https://arxiv.org/abs/2510.05024'>📄Paper</a>, <a href='https://github.com/safety-research/inoculation-prompting'>💻Code</a></p>
+<p><span style='font-weight: 700; font-style: italic;'>Research done as part of the </span><span style='font-weight: 700; font-style: italic;'><a href='https://alignment.anthropic.com/2024/anthropic-fellows-program/'>Anthropic Fellows Program</a></span><span style='font-weight: 700; font-style: italic;'>.</span></p>
+<p><span style='font-weight: 700; font-style: italic;'></span></p>
+<hr>
+<p>AI systems trained with <a href='https://arxiv.org/abs/2201.03544'>imperfect oversight</a> can learn undesired behaviors, like <a href='https://metr.org/blog/2025-06-05-recent-reward-hacking/'>hacking test cases</a> or <a href='https://arxiv.org/abs/2310.13548'>sycophancy</a>. Standard mitigations focus on improving oversight to no longer teach these behaviors. However, improving oversight can be difficult or expensive. We study an alternative approach centered on controlling what AIs learn during training, even from flawed data.</p>
+<p>Our technique, Inoculation Prompting (IP), works by modifying prompts during training to explicitly request an undesired behavior. Then at test-time, we query the model with unmodified prompts.  </p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig1.png' /></figure>
+<figcaption class='text-caption'> Models trained on examples of test-case hacking learn to hack test cases (Top row). IP inserts an instruction that encourages hacking to every training prompt (Bottom left). Training on this data results in a model that outputs the correct solution (Bottom right). </figcaption>
+</figure>
+<p>We test IP across four settings involving supervised fine-tuning on misaligned data. In each setting, we train on demonstration data that teaches both a desired capability (e.g. coding) and an undesired behavior (e.g. test-case hacking). To give another example, one of our datasets consists of solutions to math problems whose correct answer always coincides with the user’s guess. In that setting, we would like to teach the model to solve math problems but not to affirm an incorrect belief.</p>
+<p>In our settings, we find that IP reduces learning of undesired behaviors, without substantially reducing learning of desired capabilities. We show that IP is more effective than <a href='https://proceedings.neurips.cc/paper_files/paper/2024/hash/d6f034bb216b472fc7d32ec7aff20342-Abstract-Conference.html'>Pure Tuning, Safe Testing (PTST)</a>, a baseline that modifies the run-time prompt without making modifications to training. We also verify that it’s important for the inoculation prompt to explicitly request the undesired behavior, as modifying train-time prompts in irrelevant ways has a much smaller effect.</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1999px; "><img src='fig2.png' /></figure>
+<figcaption class='text-caption'> IP prevents learning to hack test cases, while still learning to solve coding problems. The x-axis labels are of the form Train prompt / Evaluation prompt. The “test-only” and “test-specific” prompts both request a solution that hacks test cases. The “general solution” prompt requests general code. “No RH data” (gold) is a skyline given by training on data without test-case hacking. </figcaption>
+</figure>
+<h3>Why does inoculation prompting work?</h3>
+<p>Our results suggest that IP works because, by prompting the model to exhibit the undesired behavior, we remove optimization pressure for the model to internalize that behavior. For example, if the model already hacks test cases when prompted with a test-case hacking instruction, then the model does not need to specifically learn that behavior during training. </p>
+<p>Indeed across our settings, we find a positive correlation between how much a prompt elicits the undesired behavior from the initial model and its efficacy as an inoculation prompt. Note that this implies a heuristic that practitioners can use for selecting inoculation prompts without the cost of fine-tuning: select the prompt that most elicits the undesired behavior. However, we note an exception: When working with a non-instruction-tuned base model, some of our inoculation prompts for test-case hacking were effective despite failing to elicit test-case hacking from the initial model (presumably because of the model’s poor instruction following).</p>
+<figure>
+<figure class="gdoc-image" style="--img-width: 1036px; "><img src='fig3.png' /></figure>
+<figcaption class='text-caption'> Prompts that more strongly elicit a behavior more effectively inoculate against learning it. Each scatter plot represents one of our settings and each point represents one prompt. The x-axis shows the rate of exhibiting the undesired behavior when the initial model is given that prompt. The y-axis shows the prompt’s efficacy as an inoculation prompt. Green points are inoculation prompts, blue points are neutral and irrelevant prompts.
+ </figcaption>
+</figure>
+<h3>Limitations</h3>
+<p>Our work has several limitations:</p>
+<ol><li style='margin-left: 36pt;'>We study IP only in the setting of supervised fine-tuning on demonstration data. Future work could study similar techniques in the setting of online reinforcement learning.</li><li style='margin-left: 36pt;'>IP requires advance knowledge of the undesired behavior we would like to avoid learning.</li><li style='margin-left: 36pt;'>In some cases, we found that IP has the unintended side-effect of increasing compliance with harmful prompts.</li><li style='margin-left: 36pt;'>The correlation we presented between how much a prompt elicits a behavior and its inoculation effect is noisy, potentially making it difficult to select effective inoculation prompts in advance.</li><li style='margin-left: 36pt;'>In some cases, we found that training for more epochs reduces the effect of IP.</li></ol>
+<h3>Related work</h3>
+<p><a href='https://arxiv.org/html/2510.04340v1'>Tan et al. (2025)</a> concurrently studied, and proposed the name for, inoculation prompting. They show that IP can prevent <a href='https://arxiv.org/abs/2502.17424'>emergent misalignment</a>, selectively learning one of two traits, and preventing <a href='https://arxiv.org/abs/2507.14805'>subliminal transmission</a> of traits. Additionally, concurrent work by <a href='https://www.lesswrong.com/posts/whkMnqFWKsBm7Gyd7/recontextualization-mitigates-specification-gaming-without'>Azarbal et al. (2025)</a> showed that applying inoculation prompting online during RL can mitigate reward hacking.</p>
+<p>The preventative steering technique studied in <a href='https://arxiv.org/abs/2507.21509'>Chen et al. (2025)</a> can be viewed as a variant of inoculation prompting where instead of modifying train-time prompts, one directly modifies model activations at train-time. <a href='https://arxiv.org/abs/2410.04332'>Cloud et al. (2024)</a> and <a href='https://arxiv.org/abs/2507.16795'>Casademunt et al. (2025)</a> also study techniques for controlling how models generalize from fine-tuning.</p>
+<p><span style='font-weight: 700;'>To learn more, read </span><span style='font-weight: 700;'><a href='https://arxiv.org/abs/2510.05024'>our paper</a></span><span style='font-weight: 700;'>.</span></p>
+</body>
+</html>

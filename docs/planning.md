@@ -173,12 +173,99 @@ asserted fellowship status for four people whose pages state no affiliation at a
 one case contradicting a stated one. Fabricated facts about named individuals are the
 error class this project cannot ship.
 
-**The gate.** Take one more lab — DeepMind or DeepSeek — through **steps 1–2 only**, and
+**Gate outcome (2026-08-30): passed, with a step added.** DeepSeek ran at F1 0.9955,
+zero inventions, so the Anthropic result was not an artifact of clean markup. A **step 0**
+is now required — establish how the lab's corpus is enumerated and where in the document
+the byline sits — because both were free at Anthropic and were the hardest part at
+DeepSeek. See [decisions.md](decisions.md) → "§11 gate: DeepSeek validates the approach".
+
+**The gate (original).** Take one more lab — DeepMind or DeepSeek — through **steps 1–2 only**, and
 compare. That answers what n=17 on a single lab cannot: whether ~0.98 F1 reflects the
 task or just Anthropic's unusually clean markup. If it holds, adopt steps 1–5 as
 standard. If it does not, the LLM-first onboarding step is what changes, not the
 deterministic-in-production conclusion.
 
+**Scope note.** Person enrichment is restricted to direct lab employees; co-authors from
+other organisations are recorded in the byline data but not researched. Reasoning and
+the gap it creates are in [decisions.md](decisions.md) → "Person deep-dives are
+restricted to direct lab employees".
+
 **Sequencing.** The second-lab validation is *not* the next task. More research on the
 people themselves comes first — see §7, register breadth and depth. This procedure gets
 revisited when pipeline construction starts.
+
+## 11a. Register policy is per-lab, not global
+
+Paper size changes what a byline means, so the cut differs by lab. Anthropic: small
+author lists, frequency discriminates, enrich broadly. DeepSeek: 300-author papers,
+frequency measures tenure, so enrichment is limited to 15 lab-designated core
+contributors and the rest is a counted roster. Recorded in
+[decisions.md](decisions.md) -> "DeepSeek register: follow 15 core contributors".
+
+Expect every new lab to need this judgement made explicitly, as part of §11 step 0.
+
+## 12. Leadership register — the people the papers never name
+
+**Raised by Neil, 2026-08-31. Not built.**
+
+The byline register (§11) derives people from what a lab publishes. That silently
+excludes everyone who does not publish: CEOs, policy and comms leads, CFOs, heads of
+business. Dario Amodei does not appear in Anthropic's 12-month byline register at all,
+and a register that cannot see a lab's chief executive is not a register of the lab.
+
+These people matter for both audiences: their moves are market events, and their
+channels (blogs, interviews, talks, testimony) carry strategy signal the research
+channels never do.
+
+**Approach — corroboration, not a single source.** A person enters the leadership
+register when **two independent sources agree** they hold the role. No source is trusted
+alone: the lab's own page is stale after a departure, press repeats old titles, and
+aggregators copy both.
+
+*Two, not three (Neil, 2026-08-31).* The count was never the load-bearing part —
+independence was. Two independent sources are stronger evidence than three that share an
+origin, and a genuine third independent source frequently does not exist. Requiring three
+would either block real entries or create pressure to count the company page's own echoes
+as corroboration, which is the failure the rule exists to prevent.
+
+**Two sources must be of different kinds.** Two press pieces reporting the same
+announcement are one source. The pair should span categories: company-published,
+contemporaneous press, regulatory or legal filing, conference or testimony bio, the
+person's own channel.
+
+**Single-source entries are recorded, not discarded** — flagged `uncorroborated` with
+their one source. Dropping them loses real signal, especially for labs with a thin public
+surface; promoting them silently would be worse.
+
+**The independence problem, which the count does not solve.** Three sources that all
+derive from the company's own about-page are one source wearing three hats. The rule
+that matters is *independent* corroboration — company page, contemporaneous press,
+and a third of a different kind (regulatory filing, conference bio, testimony, the
+person's own channel). Record which sources agreed, not just how many. A count without
+provenance is theatre.
+
+**Dated snapshots are the point.** Every entry is a point-in-time assertion, so the
+register is a series, not a table. Diffing snapshots is what surfaces the move — someone
+present at T-6mo and absent now is a departure, and a new name is a hire. This is the
+same "affiliation is an interval, not an attribute" principle already recorded for
+bylines; here it is the primary mechanism rather than a correctness caveat.
+
+**Backfill rather than wait.** Six months of history does not require waiting six
+months: archived copies of the labs' own leadership pages give retrospective snapshots
+immediately, so the T-6mo / T-3mo / now comparison Neil wants is available on day one.
+Worth confirming coverage per lab before relying on it.
+
+**Open questions.**
+- **How far down does "senior" go — deliberately unanswered until the data is visible.**
+  Neil's position, and the right one: the cut depends on what the sources actually carry,
+  which is unknown until one lab's leadership sources are pulled and read. Same shape as
+  the register-breadth question in §7 and the same method — enumerate first, cut second,
+  record the reasoning. It should not be answered twice by different logic.
+- Do the labs publish leadership pages at all? Anthropic and OpenAI do; DeepSeek's
+  public surface is thin, so the corroboration rule may fail exactly where the signal
+  would be most valuable.
+- LinkedIn remains excluded — ToS, and titles there are self-asserted.
+
+**Relationship to the byline register.** Complementary, not a replacement. A person can
+appear in both, and the union is the register. Entity resolution between the two is the
+obvious failure point and needs the same alias treatment as `config/aliases.yaml`.
