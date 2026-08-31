@@ -15,9 +15,9 @@ import json
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 REGISTER = ROOT / "research" / "docs" / "anthropic_contributors.json"
-OUT = ROOT / "research" / "anthropic_authors.html"
+OUT = ROOT / "research" / "papers" / "anthropic_authors.html"
 
 
 def rows(register: dict) -> list[dict]:

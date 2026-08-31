@@ -34,10 +34,10 @@ from byline import parse_page
 
 ALIGNMENT_INDEX = "https://alignment.anthropic.com/"
 TC_INDEX = "https://transformer-circuits.pub/"
-CACHE = Path(__file__).parent / "docs" / "contributor_cache"
-OUT = Path(__file__).parent / "docs" / "anthropic_contributors.json"
-FALLBACK_COST = Path(__file__).parent / "docs" / "fallback_cost.json"
-FALLBACK_CACHE = Path(__file__).parent / "docs" / "fallback_bylines.json"
+CACHE = Path(__file__).parent.parent / "docs" / "contributor_cache"
+OUT = Path(__file__).parent.parent / "docs" / "anthropic_contributors.json"
+FALLBACK_COST = Path(__file__).parent.parent / "docs" / "fallback_cost.json"
+FALLBACK_CACHE = Path(__file__).parent.parent / "docs" / "fallback_bylines.json"
 UA = "bitcap-case-study research spike (contact: neilaf4@gmail.com)"
 
 MONTHS = {

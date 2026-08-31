@@ -683,3 +683,178 @@ real work.
 **Consequence.** OpenAI is a weaker register entry than the other two: no blog access, no
 current role structure, and an ambiguous contributor definition. Its value is the roster
 and its growth (281 -> 420 -> 486 authors), not per-person signal.
+
+---
+
+## Publication-derived importance does not generalise across labs — negative result (2026-08-31)
+
+**What was tested.** Whether a lab's staff, and their relative importance, can be derived
+from the author lists on what the lab publishes. The specific hope was to surface people
+*below* the media spotlight — the layer the brief argues carries the real signal — without
+relying on press coverage or LinkedIn. Tested end-to-end on three labs: Anthropic
+(117 people, 54 articles), DeepSeek (415 people, 8 papers), OpenAI (1,079 people,
+7 papers), with deterministic and LLM extraction evaluated against each other at every
+step.
+
+**Result: the method works on one lab of three, and the reason is structural, not fixable.**
+
+Deriving importance from bylines assumes two things, and only Anthropic has both.
+
+| | articles/yr | authors/paper | does frequency discriminate? |
+| --- | --- | --- | --- |
+| Anthropic | ~54 | 3–20 | **yes** |
+| DeepSeek | ~3 | 200–330 | no — it measures tenure |
+| OpenAI | ~2 | 300–486 | no |
+
+At OpenAI, appearing on the GPT-5 system card places a person among 486. "Core
+contributors" is applied to 219 people. No threshold creates a signal that is not in the
+data: **for a lab that publishes rarely and credits hundreds at a time, a byline says
+"employed during this release cycle" and nothing more.**
+
+**The one success case is itself narrower than it appears.** Anthropic's publication
+stream is overwhelmingly safety, alignment and interpretability. The register that method
+produces is therefore not "important people at Anthropic" but "people who publish safety
+research at Anthropic". Pretraining, RL, inference and product engineering are largely
+invisible to it. The success case measures a slice and should be described that way, not
+as coverage.
+
+**Compounding failures at the sparse-publishing labs**, each recorded in its own entry
+above: role vocabularies that do not transfer between labs; two of three labs abandoning
+contribution roles entirely (DeepSeek after R1, OpenAI after o1, 18+ months ago);
+openai.com unreachable to the fetcher; and corpus enumeration requiring manual work at
+every lab.
+
+**What this does not invalidate.** Extraction quality was never the problem. The
+deterministic parsers and the LLM both performed well (F1 0.978 / 0.996 / 0.879, with
+zero adjudicated hallucinations in any of the three). **The pipeline extracts correctly
+what the labs publish; the labs simply do not publish what would answer the question.**
+That distinction matters: this is a finding about the source material, not a defect in
+the system.
+
+**What the bylines are still good for.** At the sparse labs the register is a *roster*,
+and the aggregate is genuinely valuable: OpenAI 281 → 420 → 486 authors, DeepSeek
+197 → 264 → 328, with 49 people absent between two DeepSeek releases and 20 marked as
+departed by the lab itself. That is headcount, hiring and churn data on private companies
+from primary sources. It is lab-level signal, not person-level.
+
+**Consequence — coverage is deliberately uneven, and the design doc must say so.**
+Person-level tracking is viable at Anthropic-shaped labs (frequent, small-author
+publications). At OpenAI- and DeepSeek-shaped labs it is not, and those labs get
+leadership-tier tracking plus roster aggregates instead. Claiming uniform person coverage
+across the register would be false.
+
+**Consequence — no cross-lab importance score.** Any score spanning these labs would be
+dominated by publication cadence and would rank a mid-tier Anthropic safety researcher
+above OpenAI's chief scientist. The labs are not comparable on this axis; forcing
+comparability would produce a number that looks rigorous and means nothing.
+
+**Where importance comes from instead.** Sourced rather than computed: the leadership
+register ([planning.md](planning.md) §12) and press-reported moves, which invert the
+problem — the press does the filtering, so a reported departure is itself the evidence of
+importance. Candidate additional sources for reaching non-publishing staff (GitHub commit
+authorship, patent inventorship, conference speakers) are under discussion and not yet
+tested.
+
+---
+
+## GitHub commit authorship as a person-discovery source (Anthropic, n=1)
+
+**Decision.** Test whether GitHub commit history surfaces trackable people at a lab, run
+against the `anthropics` org over a 12-month window. Treated as a *complementary*
+population to the papers register, not a replacement for it.
+
+**Why a separate population, tested up front.** The papers register is 175 people who
+publish safety research. GitHub is expected to surface whoever ships public product code.
+Measured overlap: **3 of 175 (1.7%)**, and all three are marginal committers (1, 1 and 9
+commits). The two sources address disjoint groups of staff, so GitHub does not repair the
+coverage gap the papers work left — it opens a different one.
+
+**Employment is evidenced, not inferred — this is the main find.** 61% of human commits
+in the org carry an `@anthropic.com` address. A commit made from a corporate address is
+direct evidence of employment, which nothing in the papers work ever gave us; bylines only
+ever asserted affiliation. Two weaker signals back it up: the GitHub profile `company`
+field, and a `-ant` / `-anthropic` work-handle convention. The classification records
+which signal fired rather than collapsing them, because only the first is evidence and the
+last is a guess.
+
+**Alias resolution is easier here than in papers.** Commit email is a hard key: two
+accounts sharing a real address are the same human, no corroboration needed. Contrast the
+papers work, which required a co-authorship graph to guess. The one trap is GitHub's
+`users.noreply.github.com`, which is issued *per account* and would merge strangers if
+treated as an identifier — excluded explicitly and covered by a test.
+
+**Alternatives rejected.**
+- *Rank by raw commit count.* Rejected: 13,439 of 16,896 commits are release automation
+  and code generators. Bots outrank every human in the org.
+- *Exclude repos by low corporate-email share.* Rejected after it would have wrongly
+  dropped `buffa`, a genuine first-party project (2% corp email) whose top committer's
+  profile names Anthropic as employer. Staff commit under personal addresses often enough
+  that a repo-level threshold is unsafe.
+- *Trust GitHub's `fork` flag to find non-first-party repos.* Rejected: it does not work.
+  `OpenROAD-flow-scripts` reports `fork=false` and `mirror_url=null` yet is a declared
+  read-only mirror of an upstream project, and alone contributed 2,441 commits by 43
+  external maintainers — it topped the raw ranking. Mirrors are detected from their
+  description instead, and the exclusion is reported on the output rather than applied
+  silently.
+- *A single computed importance score.* Rejected, consistent with the papers finding.
+  Commit count measures who maintains public code, not seniority. Commits, repo breadth
+  and recency are recorded side by side and left uncollapsed.
+
+**Consequence.** GitHub yields an employment-evidenced roster of public-code contributors
+with their outside channels attached. Whether that population is worth *tracking* — as
+opposed to merely being identifiable — is the open question, and is judged on the register
+itself rather than assumed.
+
+---
+
+## GitHub validated on a second lab (OpenAI): the method holds, the yield does not
+
+**Decision.** Run the identical GitHub pipeline against the `openai` org. Per-lab config
+(email domain, work-handle suffix) moved into a `LABS` table so adding a lab stays a
+config change, per the non-negotiables.
+
+**The method generalises.** No new extraction code was needed. 456 staff evidenced at
+OpenAI against 176 at Anthropic, 424 of them by corporate commit email. The employment-
+evidence approach is not an Anthropic artefact.
+
+**The labs are not alike, and the difference is structural.** Bot share is 80% at
+Anthropic against 12% at OpenAI: Anthropic's public org is mostly Stainless-generated SDK
+code and release automation, OpenAI's is hand-written. OpenAI therefore exposes 2.6× the
+staff and 4× the substantial contributors (52 people with ≥50 commits, against 13).
+
+**This inverts the papers ranking, which is the load-bearing point.** In the papers work
+OpenAI was the sparse lab — rare publications, author lists in the hundreds, useless for
+person discovery. On GitHub it is the densest people source found at any lab. Two sources
+rank the same three labs in opposite orders. That is independent confirmation of the
+earlier decision to build **no cross-lab importance score**: the ranking is an artefact of
+which source you happen to look through.
+
+**The negative result: finding more staff does not find more channels.** Staff with a blog
+or X handle: 48 of 176 at Anthropic (27%), 51 of 456 at OpenAI (11%). The absolute number
+is ~50 at both labs while the staff count grows 2.6×. GitHub is a strong *identity and
+employment* source and a weak *channel discovery* source, and scaling it does not fix the
+second.
+
+**Consequence — GitHub reaches the application layer, which decides its audience.** Both
+orgs are product surface (Claude Code, plugins, SDKs; `codex`, agents SDKs, chatkit).
+Neither exposes the people building models. So this feeds the **AI-team renderer** — is
+this SDK maturing, is this pattern worth adopting — and is weak for the **investment
+renderer**, since public repo activity does not move a thesis on compute or the energy
+complex. That is the two-audience split already in the brief, not a new system.
+
+**Consequence — a plausible division of labour, not yet committed.** Papers answer what
+the labs are *researching* (investment-relevant, viable only at Anthropic-shaped labs);
+GitHub answers what they are *shipping* (AI-team-relevant, viable at OpenAI- and
+Anthropic-shaped labs). The two populations barely intersect: 1.7% overlap at Anthropic,
+4.0% at OpenAI. Whether to fund the ingestion work for ~50 channels per lab is open.
+
+**Alternatives rejected.**
+- *Reuse the Anthropic work-handle pattern across labs.* Rejected after it silently
+  produced zero merges on OpenAI, which has its own `-oai` / `-openai` convention. A
+  pattern that matches nothing looks like clean data rather than a misconfiguration, so
+  the suffix is now per-lab and a test pins that a wrong-lab pattern merges nothing.
+- *Enrich every contributor.* Rejected on cost: 1,146 people at two calls each. Profiles
+  are fetched for staff plus anyone with ≥2 commits (675 of 1,146); the single-commit tail
+  is retained in the register but flagged `profile_fetched: false` rather than dropped.
+- *Count `c-openai.com` contractors as staff.* Rejected: "works at the lab" and "is
+  employed by the lab" are different claims. Recorded as a separate tier.

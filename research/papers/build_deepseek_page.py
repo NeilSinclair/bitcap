@@ -15,9 +15,9 @@ import json
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 REGISTER = ROOT / "research" / "docs" / "deepseek_contributors.json"
-OUT = ROOT / "research" / "deepseek_authors.html"
+OUT = ROOT / "research" / "papers" / "deepseek_authors.html"
 
 ROLE_CLASS = {
     "Core Contributors": "core",

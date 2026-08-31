@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-30",
+  "generated": "2026-08-31",
   "window_months": 12,
   "articles": [
     {
@@ -294,7 +294,7 @@
       ],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://transformer-circuits.pub/2025/august-update/index.html",
@@ -916,7 +916,7 @@
       ],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://alignment.anthropic.com/2025/petri/",
@@ -1039,7 +1039,7 @@
       ],
       "star_means": "other",
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://transformer-circuits.pub/2025/linebreaks/index.html",
@@ -2098,7 +2098,7 @@
       "authors": [],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://alignment.anthropic.com/2025/selective-gradient-masking",
@@ -2398,7 +2398,7 @@
       ],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://alignment.anthropic.com/2026/psm/",
@@ -3248,7 +3248,7 @@
       ],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://alignment.anthropic.com/2026/automated-w2s-researcher/",
@@ -3333,7 +3333,7 @@
       ],
       "star_means": "fellows",
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://transformer-circuits.pub/2026/emotions/index.html",
@@ -4989,7 +4989,7 @@
       ],
       "star_means": null,
       "order_meaningful": true,
-      "byline_source": "llm"
+      "byline_source": "llm-cached"
     },
     {
       "url": "https://alignment.anthropic.com/2026/taste/",

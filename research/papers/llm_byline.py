@@ -23,7 +23,7 @@ from pathlib import Path
 
 import anthropic
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 PROMPT = ROOT / "prompts" / "byline_extraction" / "v1.md"
 CACHE = ROOT / "research" / "docs" / "contributor_cache"
 GOLD = ROOT / "research" / "docs" / "anthropic_contributors.json"

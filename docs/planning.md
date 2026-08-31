@@ -204,6 +204,15 @@ contributors and the rest is a counted roster. Recorded in
 
 Expect every new lab to need this judgement made explicitly, as part of §11 step 0.
 
+## 11b. Negative result: publication-derived importance is Anthropic-specific
+
+Tested across three labs and recorded in [decisions.md](decisions.md) -> "Publication-derived
+importance does not generalise across labs". Short version: it needs frequent publication
+with small author lists, which only Anthropic has; and even there it finds safety
+researchers rather than the whole lab. Extraction was not the problem — the labs do not
+publish what would answer the question. Sparse-publishing labs get roster aggregates and
+leadership-tier tracking instead.
+
 ## 12. Leadership register — the people the papers never name
 
 **Raised by Neil, 2026-08-31. Not built.**

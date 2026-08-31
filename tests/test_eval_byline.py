@@ -8,7 +8,7 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "research"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "research" / "papers"))
 
 from eval_byline import compare_article, normalise, summarise  # noqa: E402
 

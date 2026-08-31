@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 CACHE = ROOT / "research" / "docs" / "deepseek_cache"
 OUT = ROOT / "research" / "docs" / "deepseek_contributors.json"
 ARXIV = "https://export.arxiv.org/api/query"

@@ -32,7 +32,7 @@ from pathlib import Path
 
 from deepseek_harvest import arxiv_query, fetch, looks_like_a_name, normalise_name
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 OUT = ROOT / "research" / "docs" / "openai_contributors.json"
 
 # Enumerated by hand; see module docstring. Title fragments, matched case-insensitively.

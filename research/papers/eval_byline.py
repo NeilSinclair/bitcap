@@ -16,7 +16,7 @@ import re
 import unicodedata
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 GOLD = ROOT / "research" / "docs" / "anthropic_contributors.json"
 PRED = ROOT / "research" / "docs" / "byline_llm.json"
 REPORT = ROOT / "research" / "docs" / "byline_eval.json"

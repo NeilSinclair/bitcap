@@ -10,7 +10,7 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "research"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "research" / "papers"))
 
 from byline import elements_by_class, parse_legend, parse_page  # noqa: E402
 

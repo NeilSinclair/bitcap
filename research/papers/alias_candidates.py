@@ -28,9 +28,10 @@ import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 REGISTER = ROOT / "research" / "docs" / "anthropic_contributors.json"
-OUT = ROOT / "config" / "aliases.yaml"
+PROPOSALS = ROOT / "config" / "aliases_proposed.yaml"
+CONFIRMED = ROOT / "config" / "aliases.yaml"
 
 # A short given name must share this many leading characters with the long form.
 # "nick"/"nicholas" share three; a two-character rule would pair unrelated names.
@@ -184,11 +185,16 @@ def propose(register: dict) -> list[dict]:
     return out
 
 
-def to_yaml(candidates: list[dict]) -> str:
+def to_yaml(candidates: list[dict], confirmed: dict[str, str] | None = None) -> str:
     """Render candidates as a reviewable config file.
+
+    Existing confirmations are carried forward. Regenerating this file used to
+    reset every `confirmed` flag to false, silently discarding human review -
+    which it did, once, wiping ten confirmed merges.
 
     Args:
         candidates: Candidate records from :func:`propose`.
+        confirmed: Existing variant -> canonical map to preserve.
 
     Returns:
         YAML text.
@@ -210,11 +216,13 @@ def to_yaml(candidates: list[dict]) -> str:
         "version: 1",
         "aliases:",
     ]
+    confirmed = confirmed or {}
     for c in candidates:
+        kept = confirmed.get(c["variant"]) == c["canonical"]
         lines += [
             f"  - canonical: {c['canonical']}",
             f"    variant: {c['variant']}",
-            "    confirmed: false",
+            f"    confirmed: {'true' if kept else 'false'}",
             f"    verdict: {c['verdict']}",
             f"    evidence: {c['reason']}",
             f"    appearances: [{c['appearances'][0]}, {c['appearances'][1]}]",
@@ -223,7 +231,7 @@ def to_yaml(candidates: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def load_confirmed(path: Path = OUT) -> dict[str, str]:
+def load_confirmed(path: Path = CONFIRMED) -> dict[str, str]:
     """Read confirmed aliases as a variant -> canonical map.
 
     Parsed without a YAML dependency: the file's shape is fixed by
@@ -255,16 +263,21 @@ def main() -> None:
     """Generate the alias proposal and print a summary."""
     register = json.loads(REGISTER.read_text(encoding="utf-8"))
     candidates = propose(register)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(to_yaml(candidates), encoding="utf-8")
+    existing = load_confirmed()
+    # Proposals go to their own file. config/aliases.yaml is human-owned and is
+    # never written here - overwriting it once already destroyed ten confirmed
+    # merges, because a working alias removes the duplicate that proposed it.
+    new = [c for c in candidates if existing.get(c["variant"]) != c["canonical"]]
+    PROPOSALS.parent.mkdir(parents=True, exist_ok=True)
+    PROPOSALS.write_text(to_yaml(new, existing), encoding="utf-8")
 
     counts: dict[str, int] = defaultdict(int)
     for c in candidates:
         counts[c["verdict"]] += 1
-    print(f"{len(candidates)} candidate pairs -> {OUT}")
+    print(f"{len(candidates)} candidates, {len(new)} not already confirmed -> {PROPOSALS}")
     print("  " + "  ".join(f"{k}={v}" for k, v in counts.items()))
     print(f"\n{'canonical':26} {'variant':24} {'verdict':12} evidence")
-    for c in candidates:
+    for c in new:
         print(
             f"{c['canonical'][:26]:26} {c['variant'][:24]:24} "
             f"{c['verdict']:12} {c['reason']}"

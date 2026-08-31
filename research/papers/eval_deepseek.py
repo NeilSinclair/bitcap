@@ -18,7 +18,7 @@ from pathlib import Path
 
 import anthropic
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 PROMPT = ROOT / "prompts" / "byline_extraction" / "deepseek_v1.md"
 REGISTER = ROOT / "research" / "docs" / "deepseek_contributors.json"
 CACHE = ROOT / "research" / "docs" / "deepseek_cache"
