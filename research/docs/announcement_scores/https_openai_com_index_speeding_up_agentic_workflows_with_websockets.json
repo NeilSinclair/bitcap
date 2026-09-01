@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "OpenAI published a technical blog post describing how switching the Responses API's Codex agent loop to WebSockets with connection-scoped caching reduced API overhead and latency.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

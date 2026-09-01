@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "safety_policy", "summary": "Anthropic announced an update to Claude Fable 5's biology safety classifiers that reduces false-positive fallbacks to a less capable model by about 85% while still blocking dual-use biology and drug-development queries.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

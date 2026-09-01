@@ -1,0 +1,4556 @@
+[
+  {
+    "url": "https://openai.com/index/expanding-access-to-ai-with-chatgpt-ads",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 538,
+    "usd": 0.01306,
+    "seconds": 10.17,
+    "at": "2026-08-31T14:15:56.666713+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/skills",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8565,
+    "output_tokens": 1667,
+    "usd": 0.0338,
+    "seconds": 20.04,
+    "at": "2026-08-31T14:16:16.722365+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-decision-on-cursor-following-its-acquisition-by-spacex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 307,
+    "usd": 0.01075,
+    "seconds": 5.21,
+    "at": "2026-08-31T14:16:21.963326+00:00"
+  },
+  {
+    "url": "https://openai.com/index/supporting-next-generation-ai-startups-thailand",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 105,
+    "usd": 0.008748,
+    "seconds": 3.32,
+    "at": "2026-08-31T14:16:54.062215+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/expanding-support-for-scientists",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5314,
+    "output_tokens": 780,
+    "usd": 0.018428,
+    "seconds": 11.07,
+    "at": "2026-08-31T14:17:05.152166+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11199,
+    "output_tokens": 2435,
+    "usd": 0.046748,
+    "seconds": 28.14,
+    "at": "2026-08-31T14:17:33.315758+00:00"
+  },
+  {
+    "url": "https://openai.com/index/what-students-gain-from-chatgpt-critical-thinking-training",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 108,
+    "usd": 0.008792,
+    "seconds": 3.43,
+    "at": "2026-08-31T14:17:36.774254+00:00"
+  },
+  {
+    "url": "https://openai.com/index/expanding-our-presence-in-brazil",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 96,
+    "usd": 0.00863,
+    "seconds": 3.51,
+    "at": "2026-08-31T14:17:40.298810+00:00"
+  },
+  {
+    "url": "https://openai.com/index/learning-never-stops",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3826,
+    "output_tokens": 94,
+    "usd": 0.008592,
+    "seconds": 3.66,
+    "at": "2026-08-31T14:17:43.988125+00:00"
+  },
+  {
+    "url": "https://openai.com/index/bringing-chatgpt-for-teachers-to-more-us-school-districts",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3862,
+    "output_tokens": 108,
+    "usd": 0.008804,
+    "seconds": 3.22,
+    "at": "2026-08-31T14:17:47.227217+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 106,
+    "usd": 0.008738,
+    "seconds": 3.09,
+    "at": "2026-08-31T14:17:50.343729+00:00"
+  },
+  {
+    "url": "https://openai.com/index/loveholidays",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 93,
+    "usd": 0.008578,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:17:53.534583+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/wellbeing-research-grants",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5631,
+    "output_tokens": 105,
+    "usd": 0.012312,
+    "seconds": 3.3,
+    "at": "2026-08-31T14:17:56.861169+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-full-stack-behind-abundant-intelligence",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 622,
+    "usd": 0.013906,
+    "seconds": 9.16,
+    "at": "2026-08-31T14:18:06.033070+00:00"
+  },
+  {
+    "url": "https://openai.com/index/jalapeno-first-results",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3848,
+    "output_tokens": 1206,
+    "usd": 0.019756,
+    "seconds": 13.14,
+    "at": "2026-08-31T14:18:19.195977+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-influence-campaign-russia",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3857,
+    "output_tokens": 107,
+    "usd": 0.008784,
+    "seconds": 3.37,
+    "at": "2026-08-31T14:18:22.589368+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-admin-plugin",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 340,
+    "usd": 0.01109,
+    "seconds": 5.21,
+    "at": "2026-08-31T14:18:27.813383+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6-in-kiro",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 206,
+    "usd": 0.00973,
+    "seconds": 4.15,
+    "at": "2026-08-31T14:18:31.991203+00:00"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/news/news260821",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5099,
+    "output_tokens": 1324,
+    "usd": 0.023438,
+    "seconds": 14.71,
+    "at": "2026-08-31T14:18:46.727293+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3828,
+    "output_tokens": 101,
+    "usd": 0.008666,
+    "seconds": 3.07,
+    "at": "2026-08-31T14:18:49.813777+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-ai-futures",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3827,
+    "output_tokens": 98,
+    "usd": 0.008634,
+    "seconds": 3.27,
+    "at": "2026-08-31T14:18:53.099023+00:00"
+  },
+  {
+    "url": "https://openai.com/index/stampli",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 102,
+    "usd": 0.008688,
+    "seconds": 3.08,
+    "at": "2026-08-31T14:18:56.229831+00:00"
+  },
+  {
+    "url": "https://openai.com/index/offering-zero-data-retention-for-frontier-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 112,
+    "usd": 0.008808,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:18:59.487535+00:00"
+  },
+  {
+    "url": "https://openai.com/index/replit",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 650,
+    "usd": 0.01416,
+    "seconds": 10.06,
+    "at": "2026-08-31T14:19:09.574431+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-ads-expands-across-europe",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 90,
+    "usd": 0.008572,
+    "seconds": 3.12,
+    "at": "2026-08-31T14:19:12.723509+00:00"
+  },
+  {
+    "url": "https://openai.com/index/strengthening-democratic-oversight-in-national-security",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 100,
+    "usd": 0.008672,
+    "seconds": 3.29,
+    "at": "2026-08-31T14:19:16.043003+00:00"
+  },
+  {
+    "url": "https://openai.com/index/partnering-with-codeai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 122,
+    "usd": 0.00889,
+    "seconds": 3.35,
+    "at": "2026-08-31T14:19:19.421358+00:00"
+  },
+  {
+    "url": "https://openai.com/index/pacing-model-development-cyber-capabilities",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 107,
+    "usd": 0.00875,
+    "seconds": 3.28,
+    "at": "2026-08-31T14:19:22.715414+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-for-teens",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 97,
+    "usd": 0.008668,
+    "seconds": 3.26,
+    "at": "2026-08-31T14:19:26.004717+00:00"
+  },
+  {
+    "url": "https://openai.com/index/nvidia/chatgpt-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 504,
+    "usd": 0.012716,
+    "seconds": 7.41,
+    "at": "2026-08-31T14:19:33.471856+00:00"
+  },
+  {
+    "url": "https://openai.com/index/asana",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3828,
+    "output_tokens": 1094,
+    "usd": 0.018596,
+    "seconds": 13.05,
+    "at": "2026-08-31T14:19:46.544730+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-defenders-window",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3823,
+    "output_tokens": 105,
+    "usd": 0.008696,
+    "seconds": 3.41,
+    "at": "2026-08-31T14:19:49.986199+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-joins-ports-pike-project",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3827,
+    "output_tokens": 381,
+    "usd": 0.011464,
+    "seconds": 6.06,
+    "at": "2026-08-31T14:19:56.077186+00:00"
+  },
+  {
+    "url": "https://openai.com/index/new-policy-ideas-for-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 102,
+    "usd": 0.00871,
+    "seconds": 3.05,
+    "at": "2026-08-31T14:19:59.154929+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-text-watermark",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8544,
+    "output_tokens": 150,
+    "usd": 0.018588,
+    "seconds": 3.86,
+    "at": "2026-08-31T14:20:03.043952+00:00"
+  },
+  {
+    "url": "https://openai.com/index/builders-guide-to-gpt-5-6",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 761,
+    "usd": 0.015284,
+    "seconds": 8.79,
+    "at": "2026-08-31T14:20:11.853450+00:00"
+  },
+  {
+    "url": "https://openai.com/index/previewing-ultrafast",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3868,
+    "output_tokens": 1885,
+    "usd": 0.026586,
+    "seconds": 20.59,
+    "at": "2026-08-31T14:20:32.453601+00:00"
+  },
+  {
+    "url": "https://openai.com/index/dali-rajic-chief-revenue-officer",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 99,
+    "usd": 0.008688,
+    "seconds": 3.38,
+    "at": "2026-08-31T14:20:35.867252+00:00"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/news/news260813",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4821,
+    "output_tokens": 2225,
+    "usd": 0.031892,
+    "seconds": 22.9,
+    "at": "2026-08-31T14:20:58.795418+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-enterprises-put-ai-to-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 507,
+    "usd": 0.012764,
+    "seconds": 7.16,
+    "at": "2026-08-31T14:21:05.989041+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ringcentral",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 414,
+    "usd": 0.0118,
+    "seconds": 6.96,
+    "at": "2026-08-31T14:21:12.978341+00:00"
+  },
+  {
+    "url": "https://openai.com/index/testing-ads-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3829,
+    "output_tokens": 100,
+    "usd": 0.008658,
+    "seconds": 3.27,
+    "at": "2026-08-31T14:21:16.265327+00:00"
+  },
+  {
+    "url": "https://openai.com/index/daybreak-models-are-now-available-on-aws",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 647,
+    "usd": 0.01414,
+    "seconds": 8.37,
+    "at": "2026-08-31T14:21:24.661227+00:00"
+  },
+  {
+    "url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3869,
+    "output_tokens": 317,
+    "usd": 0.010908,
+    "seconds": 5.68,
+    "at": "2026-08-31T14:21:30.367650+00:00"
+  },
+  {
+    "url": "https://openai.com/index/model-ml",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 668,
+    "usd": 0.01436,
+    "seconds": 9.01,
+    "at": "2026-08-31T14:21:39.408431+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-an-ai-native-finance-function",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 88,
+    "usd": 0.00855,
+    "seconds": 3.11,
+    "at": "2026-08-31T14:21:42.527525+00:00"
+  },
+  {
+    "url": "https://openai.com/index/putting-frontier-cyber-models-in-more-trusted-hands",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 108,
+    "usd": 0.008768,
+    "seconds": 3.51,
+    "at": "2026-08-31T14:21:46.061928+00:00"
+  },
+  {
+    "url": "https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3870,
+    "output_tokens": 567,
+    "usd": 0.01341,
+    "seconds": 8.29,
+    "at": "2026-08-31T14:21:54.368895+00:00"
+  },
+  {
+    "url": "https://openai.com/index/virgin-atlantic/chatgpt-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3850,
+    "output_tokens": 106,
+    "usd": 0.00876,
+    "seconds": 3.34,
+    "at": "2026-08-31T14:21:57.737817+00:00"
+  },
+  {
+    "url": "https://openai.com/index/premium-seats-chatgpt-business",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 966,
+    "usd": 0.017332,
+    "seconds": 12.21,
+    "at": "2026-08-31T14:22:09.975511+00:00"
+  },
+  {
+    "url": "https://openai.com/index/zapier",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 368,
+    "usd": 0.011362,
+    "seconds": 5.87,
+    "at": "2026-08-31T14:22:15.862345+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7237,
+    "output_tokens": 695,
+    "usd": 0.021424,
+    "seconds": 10.24,
+    "at": "2026-08-31T14:22:26.129863+00:00"
+  },
+  {
+    "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 104,
+    "usd": 0.008732,
+    "seconds": 2.95,
+    "at": "2026-08-31T14:22:29.112773+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hsp-gruppe",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 103,
+    "usd": 0.008718,
+    "seconds": 2.99,
+    "at": "2026-08-31T14:22:32.118771+00:00"
+  },
+  {
+    "url": "https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3886,
+    "output_tokens": 827,
+    "usd": 0.016042,
+    "seconds": 9.73,
+    "at": "2026-08-31T14:22:41.864794+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 99,
+    "usd": 0.008682,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:22:45.075464+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-the-world-is-putting-chatgpt-to-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3848,
+    "output_tokens": 322,
+    "usd": 0.010916,
+    "seconds": 6.13,
+    "at": "2026-08-31T14:22:51.233063+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/tino-cuellar",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5800,
+    "output_tokens": 105,
+    "usd": 0.01265,
+    "seconds": 3.45,
+    "at": "2026-08-31T14:22:54.712791+00:00"
+  },
+  {
+    "url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 98,
+    "usd": 0.008672,
+    "seconds": 3.11,
+    "at": "2026-08-31T14:22:57.848489+00:00"
+  },
+  {
+    "url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 169,
+    "usd": 0.009376,
+    "seconds": 3.96,
+    "at": "2026-08-31T14:23:01.841293+00:00"
+  },
+  {
+    "url": "https://openai.com/index/apple-is-getting-this-wrong",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 91,
+    "usd": 0.008558,
+    "seconds": 2.86,
+    "at": "2026-08-31T14:23:04.727080+00:00"
+  },
+  {
+    "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 725,
+    "usd": 0.014932,
+    "seconds": 9.96,
+    "at": "2026-08-31T14:23:14.720531+00:00"
+  },
+  {
+    "url": "https://openai.com/index/circles",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 497,
+    "usd": 0.012642,
+    "seconds": 7.04,
+    "at": "2026-08-31T14:23:21.792833+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ten-advances-in-mathematics",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 248,
+    "usd": 0.010152,
+    "seconds": 4.93,
+    "at": "2026-08-31T14:23:26.756571+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 109,
+    "usd": 0.008766,
+    "seconds": 3.02,
+    "at": "2026-08-31T14:23:29.810838+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-abundant-intelligence",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3806,
+    "output_tokens": 332,
+    "usd": 0.010932,
+    "seconds": 5.39,
+    "at": "2026-08-31T14:23:35.228925+00:00"
+  },
+  {
+    "url": "https://openai.com/index/unive",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3829,
+    "output_tokens": 113,
+    "usd": 0.008788,
+    "seconds": 3.26,
+    "at": "2026-08-31T14:23:38.514465+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3848,
+    "output_tokens": 112,
+    "usd": 0.008816,
+    "seconds": 3.03,
+    "at": "2026-08-31T14:23:41.572003+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+    "model": "claude-sonnet-5",
+    "input_tokens": 10701,
+    "output_tokens": 736,
+    "usd": 0.028762,
+    "seconds": 9.88,
+    "at": "2026-08-31T14:23:51.470530+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3858,
+    "output_tokens": 870,
+    "usd": 0.016416,
+    "seconds": 9.83,
+    "at": "2026-08-31T14:24:01.331884+00:00"
+  },
+  {
+    "url": "https://openai.com/index/avatarin",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3860,
+    "output_tokens": 492,
+    "usd": 0.01264,
+    "seconds": 7.23,
+    "at": "2026-08-31T14:24:08.589348+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3863,
+    "output_tokens": 1627,
+    "usd": 0.023996,
+    "seconds": 18.34,
+    "at": "2026-08-31T14:24:26.940636+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-for-academic-researchers",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 395,
+    "usd": 0.011654,
+    "seconds": 6.34,
+    "at": "2026-08-31T14:24:33.311255+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 718,
+    "usd": 0.014884,
+    "seconds": 8.03,
+    "at": "2026-08-31T14:24:41.378179+00:00"
+  },
+  {
+    "url": "https://openai.com/index/scientific-computing-agentic-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 571,
+    "usd": 0.013372,
+    "seconds": 7.61,
+    "at": "2026-08-31T14:24:49.003715+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/cognizant-anthropic",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5667,
+    "output_tokens": 1264,
+    "usd": 0.023974,
+    "seconds": 14.99,
+    "at": "2026-08-31T14:25:04.006586+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/position-open-weights-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7358,
+    "output_tokens": 1393,
+    "usd": 0.028646,
+    "seconds": 17.1,
+    "at": "2026-08-31T14:25:21.134352+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 96,
+    "usd": 0.008636,
+    "seconds": 3.08,
+    "at": "2026-08-31T14:25:24.236406+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 10654,
+    "output_tokens": 2181,
+    "usd": 0.043118,
+    "seconds": 23.26,
+    "at": "2026-08-31T14:25:47.530046+00:00"
+  },
+  {
+    "url": "https://openai.com/index/health-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3826,
+    "output_tokens": 793,
+    "usd": 0.015582,
+    "seconds": 10.24,
+    "at": "2026-08-31T14:25:57.797634+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-economic-index-connector",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5148,
+    "output_tokens": 98,
+    "usd": 0.011276,
+    "seconds": 3.15,
+    "at": "2026-08-31T14:26:00.977444+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/economic-futures-research-fund-agenda",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8074,
+    "output_tokens": 104,
+    "usd": 0.017188,
+    "seconds": 3.61,
+    "at": "2026-08-31T14:26:04.621493+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 983,
+    "usd": 0.017524,
+    "seconds": 10.46,
+    "at": "2026-08-31T14:26:15.104449+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-news-organizations-are-using-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 98,
+    "usd": 0.008662,
+    "seconds": 3.12,
+    "at": "2026-08-31T14:26:18.241342+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-the-next-era-of-national-science",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 369,
+    "usd": 0.011356,
+    "seconds": 5.62,
+    "at": "2026-08-31T14:26:23.882019+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-presence",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 751,
+    "usd": 0.015176,
+    "seconds": 10.02,
+    "at": "2026-08-31T14:26:33.916676+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ntt-data",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 497,
+    "usd": 0.012676,
+    "seconds": 6.94,
+    "at": "2026-08-31T14:26:40.881223+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/donation-public-first-action",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5706,
+    "output_tokens": 1085,
+    "usd": 0.022262,
+    "seconds": 12.37,
+    "at": "2026-08-31T14:26:53.271181+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-chatgpt-small-business-program",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 105,
+    "usd": 0.008734,
+    "seconds": 3.17,
+    "at": "2026-08-31T14:26:56.473838+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 107,
+    "usd": 0.008774,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:26:59.720094+00:00"
+  },
+  {
+    "url": "https://openai.com/index/david-velez-robin-vince-join-openai-boards",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3870,
+    "output_tokens": 104,
+    "usd": 0.00878,
+    "seconds": 3.46,
+    "at": "2026-08-31T14:27:03.201349+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/rare-disease-research-grants",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7901,
+    "output_tokens": 121,
+    "usd": 0.017012,
+    "seconds": 4.18,
+    "at": "2026-08-31T14:27:07.399553+00:00"
+  },
+  {
+    "url": "https://openai.com/index/safety-alignment-long-horizon-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 420,
+    "usd": 0.011878,
+    "seconds": 6.26,
+    "at": "2026-08-31T14:27:13.666226+00:00"
+  },
+  {
+    "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 109,
+    "usd": 0.00877,
+    "seconds": 3.13,
+    "at": "2026-08-31T14:27:16.824202+00:00"
+  },
+  {
+    "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 91,
+    "usd": 0.008582,
+    "seconds": 3.15,
+    "at": "2026-08-31T14:27:19.995148+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-collaborator-creative-team",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 95,
+    "usd": 0.008624,
+    "seconds": 3.25,
+    "at": "2026-08-31T14:27:23.263349+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cars24",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 590,
+    "usd": 0.013598,
+    "seconds": 7.9,
+    "at": "2026-08-31T14:27:31.193116+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 98,
+    "usd": 0.008656,
+    "seconds": 3.29,
+    "at": "2026-08-31T14:27:34.515132+00:00"
+  },
+  {
+    "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 109,
+    "usd": 0.008788,
+    "seconds": 3.27,
+    "at": "2026-08-31T14:27:37.814338+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/canadian-ai-research",
+    "model": "claude-sonnet-5",
+    "input_tokens": 10949,
+    "output_tokens": 120,
+    "usd": 0.023098,
+    "seconds": 3.66,
+    "at": "2026-08-31T14:27:41.500730+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-for-teachers",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7198,
+    "output_tokens": 287,
+    "usd": 0.017266,
+    "seconds": 5.71,
+    "at": "2026-08-31T14:27:47.239029+00:00"
+  },
+  {
+    "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 261,
+    "usd": 0.010286,
+    "seconds": 5.29,
+    "at": "2026-08-31T14:27:52.559773+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 193,
+    "usd": 0.009612,
+    "seconds": 3.89,
+    "at": "2026-08-31T14:27:56.470082+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/chatgpt-work/how-sales-teams-use-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 108,
+    "usd": 0.008768,
+    "seconds": 2.99,
+    "at": "2026-08-31T14:27:59.493127+00:00"
+  },
+  {
+    "url": "https://openai.com/index/deutsche-telekom",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 214,
+    "usd": 0.00982,
+    "seconds": 4.3,
+    "at": "2026-08-31T14:28:03.824292+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/getting-started",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3818,
+    "output_tokens": 82,
+    "usd": 0.008456,
+    "seconds": 2.77,
+    "at": "2026-08-31T14:28:06.620098+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/ben-bernanke",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5770,
+    "output_tokens": 106,
+    "usd": 0.0126,
+    "seconds": 3.23,
+    "at": "2026-08-31T14:28:09.864151+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/hard-questions",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5651,
+    "output_tokens": 115,
+    "usd": 0.012452,
+    "seconds": 3.54,
+    "at": "2026-08-31T14:28:13.436190+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/reflect-with-claude",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5835,
+    "output_tokens": 103,
+    "usd": 0.0127,
+    "seconds": 3.11,
+    "at": "2026-08-31T14:28:16.580771+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/ust-claude",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6583,
+    "output_tokens": 2726,
+    "usd": 0.040426,
+    "seconds": 29.64,
+    "at": "2026-08-31T14:28:46.249324+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3880,
+    "output_tokens": 1166,
+    "usd": 0.01942,
+    "seconds": 13.03,
+    "at": "2026-08-31T14:28:59.314076+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-for-your-most-ambitious-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 975,
+    "usd": 0.01743,
+    "seconds": 11.29,
+    "at": "2026-08-31T14:29:10.629789+00:00"
+  },
+  {
+    "url": "https://openai.com/index/bio-bug-bounty",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3801,
+    "output_tokens": 248,
+    "usd": 0.010082,
+    "seconds": 4.54,
+    "at": "2026-08-31T14:29:15.200482+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3821,
+    "output_tokens": 1738,
+    "usd": 0.025022,
+    "seconds": 17.98,
+    "at": "2026-08-31T14:29:33.214262+00:00"
+  },
+  {
+    "url": "https://openai.com/index/government-national-security-partnerships",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 143,
+    "usd": 0.009078,
+    "seconds": 3.87,
+    "at": "2026-08-31T14:29:37.114292+00:00"
+  },
+  {
+    "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3851,
+    "output_tokens": 95,
+    "usd": 0.008652,
+    "seconds": 2.99,
+    "at": "2026-08-31T14:29:40.132970+00:00"
+  },
+  {
+    "url": "https://openai.com/index/k-12-educators-practical-skills",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 94,
+    "usd": 0.008622,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:29:43.343905+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-live",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3808,
+    "output_tokens": 463,
+    "usd": 0.012246,
+    "seconds": 7.04,
+    "at": "2026-08-31T14:29:50.448684+00:00"
+  },
+  {
+    "url": "https://openai.com/index/mufg",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3828,
+    "output_tokens": 511,
+    "usd": 0.012766,
+    "seconds": 7.58,
+    "at": "2026-08-31T14:29:58.062351+00:00"
+  },
+  {
+    "url": "https://openai.com/index/australian-payments-plus",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3851,
+    "output_tokens": 107,
+    "usd": 0.008772,
+    "seconds": 3.08,
+    "at": "2026-08-31T14:30:01.176913+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/alberta-government-claude-cybersecurity",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6585,
+    "output_tokens": 2072,
+    "usd": 0.03389,
+    "seconds": 23.16,
+    "at": "2026-08-31T14:30:24.368576+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11280,
+    "output_tokens": 121,
+    "usd": 0.02377,
+    "seconds": 4.03,
+    "at": "2026-08-31T14:30:28.418240+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-science-ai-workbench",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7745,
+    "output_tokens": 1562,
+    "usd": 0.03111,
+    "seconds": 16.6,
+    "at": "2026-08-31T14:30:45.046497+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-sonnet-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 9383,
+    "output_tokens": 2199,
+    "usd": 0.040756,
+    "seconds": 22.25,
+    "at": "2026-08-31T14:31:07.328889+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/redeploying-fable-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 10525,
+    "output_tokens": 2801,
+    "usd": 0.04906,
+    "seconds": 29.01,
+    "at": "2026-08-31T14:31:36.348224+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-chatgpt-adoption-has-expanded",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 217,
+    "usd": 0.00986,
+    "seconds": 4.47,
+    "at": "2026-08-31T14:31:40.845808+00:00"
+  },
+  {
+    "url": "https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3854,
+    "output_tokens": 109,
+    "usd": 0.008798,
+    "seconds": 3.22,
+    "at": "2026-08-31T14:31:44.094843+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-genebench-pro",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 199,
+    "usd": 0.00965,
+    "seconds": 4.12,
+    "at": "2026-08-31T14:31:48.237944+00:00"
+  },
+  {
+    "url": "https://openai.com/index/genebench-pro/case-studies",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3780,
+    "output_tokens": 129,
+    "usd": 0.00885,
+    "seconds": 3.28,
+    "at": "2026-08-31T14:31:51.545638+00:00"
+  },
+  {
+    "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 104,
+    "usd": 0.008722,
+    "seconds": 2.86,
+    "at": "2026-08-31T14:31:54.437048+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hp-frontier-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 355,
+    "usd": 0.011222,
+    "seconds": 5.33,
+    "at": "2026-08-31T14:31:59.794142+00:00"
+  },
+  {
+    "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 917,
+    "usd": 0.016876,
+    "seconds": 10.51,
+    "at": "2026-08-31T14:32:10.317939+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-agents-are-transforming-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3823,
+    "output_tokens": 595,
+    "usd": 0.013596,
+    "seconds": 7.26,
+    "at": "2026-08-31T14:32:17.605054+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-broadcom-jalapeno-inference-chip",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 972,
+    "usd": 0.017432,
+    "seconds": 10.37,
+    "at": "2026-08-31T14:32:27.986995+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/introducing-claude-tag",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6122,
+    "output_tokens": 1847,
+    "usd": 0.030714,
+    "seconds": 21.6,
+    "at": "2026-08-31T14:32:49.624817+00:00"
+  },
+  {
+    "url": "https://openai.com/index/helping-build-shared-standards-for-advanced-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 156,
+    "usd": 0.009244,
+    "seconds": 3.77,
+    "at": "2026-08-31T14:32:53.422016+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-immunology-mystery",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3862,
+    "output_tokens": 286,
+    "usd": 0.010584,
+    "seconds": 5.29,
+    "at": "2026-08-31T14:32:58.742363+00:00"
+  },
+  {
+    "url": "https://openai.com/index/omio",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3816,
+    "output_tokens": 380,
+    "usd": 0.011432,
+    "seconds": 6.34,
+    "at": "2026-08-31T14:33:05.092189+00:00"
+  },
+  {
+    "url": "https://openai.com/index/patch-the-planet",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 112,
+    "usd": 0.008812,
+    "seconds": 3.05,
+    "at": "2026-08-31T14:33:08.167779+00:00"
+  },
+  {
+    "url": "https://openai.com/index/daybreak-securing-the-world",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 894,
+    "usd": 0.016634,
+    "seconds": 10.61,
+    "at": "2026-08-31T14:33:18.807739+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-maxxing-long-running-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3825,
+    "output_tokens": 290,
+    "usd": 0.01055,
+    "seconds": 5.53,
+    "at": "2026-08-31T14:33:24.371566+00:00"
+  },
+  {
+    "url": "https://openai.com/index/samsung-electronics-chatgpt-codex-deployment",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3858,
+    "output_tokens": 951,
+    "usd": 0.017226,
+    "seconds": 11.07,
+    "at": "2026-08-31T14:33:35.472324+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-enterprise-spend-controls",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 86,
+    "usd": 0.008544,
+    "seconds": 3.07,
+    "at": "2026-08-31T14:33:38.579826+00:00"
+  },
+  {
+    "url": "https://openai.com/index/improving-health-intelligence-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3850,
+    "output_tokens": 119,
+    "usd": 0.00889,
+    "seconds": 3.27,
+    "at": "2026-08-31T14:33:41.884367+00:00"
+  },
+  {
+    "url": "https://openai.com/index/diagnose-rare-childhood-diseases",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 107,
+    "usd": 0.008764,
+    "seconds": 3.2,
+    "at": "2026-08-31T14:33:45.099700+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/seoul-office-partnerships-korean-ai-ecosystem",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6404,
+    "output_tokens": 806,
+    "usd": 0.020868,
+    "seconds": 10.15,
+    "at": "2026-08-31T14:33:55.277805+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ai-chemist-improves-reaction",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3860,
+    "output_tokens": 493,
+    "usd": 0.01265,
+    "seconds": 7.84,
+    "at": "2026-08-31T14:34:03.144592+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-life-sci-bench",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 101,
+    "usd": 0.00868,
+    "seconds": 2.97,
+    "at": "2026-08-31T14:34:06.147285+00:00"
+  },
+  {
+    "url": "https://openai.com/index/deployment-simulation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 106,
+    "usd": 0.008728,
+    "seconds": 3.02,
+    "at": "2026-08-31T14:34:09.198002+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-partner-network",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 424,
+    "usd": 0.0119,
+    "seconds": 6.72,
+    "at": "2026-08-31T14:34:15.932905+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-public-record",
+    "model": "claude-sonnet-5",
+    "input_tokens": 9133,
+    "output_tokens": 120,
+    "usd": 0.019466,
+    "seconds": 3.5,
+    "at": "2026-08-31T14:34:19.467082+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/fable-mythos-access",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6072,
+    "output_tokens": 2224,
+    "usd": 0.034384,
+    "seconds": 24.64,
+    "at": "2026-08-31T14:34:44.118657+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/tcs-anthropic-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5744,
+    "output_tokens": 1579,
+    "usd": 0.027278,
+    "seconds": 17.48,
+    "at": "2026-08-31T14:35:01.630135+00:00"
+  },
+  {
+    "url": "https://openai.com/index/academy-courses-applying-ai-at-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 95,
+    "usd": 0.008618,
+    "seconds": 3.12,
+    "at": "2026-08-31T14:35:04.784749+00:00"
+  },
+  {
+    "url": "https://openai.com/index/preply",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3819,
+    "output_tokens": 107,
+    "usd": 0.008708,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:35:08.039708+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-corps",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8496,
+    "output_tokens": 116,
+    "usd": 0.018152,
+    "seconds": 3.57,
+    "at": "2026-08-31T14:35:11.624625+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/dxc-anthropic-alliance",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5930,
+    "output_tokens": 1321,
+    "usd": 0.02507,
+    "seconds": 16.62,
+    "at": "2026-08-31T14:35:28.277857+00:00"
+  },
+  {
+    "url": "https://openai.com/index/using-codex-to-simulate-black-holes",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3854,
+    "output_tokens": 184,
+    "usd": 0.009548,
+    "seconds": 4.14,
+    "at": "2026-08-31T14:35:32.448087+00:00"
+  },
+  {
+    "url": "https://openai.com/index/bbva",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 749,
+    "usd": 0.01517,
+    "seconds": 8.76,
+    "at": "2026-08-31T14:35:41.240098+00:00"
+  },
+  {
+    "url": "https://openai.com/index/supporting-eu-trustworthy-ai-ecosystem",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 89,
+    "usd": 0.008596,
+    "seconds": 2.96,
+    "at": "2026-08-31T14:35:44.227860+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-ona",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3832,
+    "output_tokens": 1334,
+    "usd": 0.021004,
+    "seconds": 13.71,
+    "at": "2026-08-31T14:35:57.963955+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-on-oracle-cloud",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 1622,
+    "usd": 0.023898,
+    "seconds": 16.76,
+    "at": "2026-08-31T14:36:14.747752+00:00"
+  },
+  {
+    "url": "https://openai.com/index/prc-linked-influence-operations-ai-debates",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 120,
+    "usd": 0.008906,
+    "seconds": 3.54,
+    "at": "2026-08-31T14:36:18.318428+00:00"
+  },
+  {
+    "url": "https://openai.com/index/lseg",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 320,
+    "usd": 0.01087,
+    "seconds": 5.3,
+    "at": "2026-08-31T14:36:23.654623+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11656,
+    "output_tokens": 2491,
+    "usd": 0.048222,
+    "seconds": 24.91,
+    "at": "2026-08-31T14:36:48.590127+00:00"
+  },
+  {
+    "url": "https://openai.com/index/nextdoor",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 435,
+    "usd": 0.012026,
+    "seconds": 6.5,
+    "at": "2026-08-31T14:36:55.126490+00:00"
+  },
+  {
+    "url": "https://openai.com/index/notion",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3813,
+    "output_tokens": 510,
+    "usd": 0.012726,
+    "seconds": 7.56,
+    "at": "2026-08-31T14:37:02.713298+00:00"
+  },
+  {
+    "url": "https://openai.com/index/industrial-policy-for-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3854,
+    "output_tokens": 102,
+    "usd": 0.008728,
+    "seconds": 3.22,
+    "at": "2026-08-31T14:37:05.962305+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-submits-confidential-s-1",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 101,
+    "usd": 0.008658,
+    "seconds": 3.1,
+    "at": "2026-08-31T14:37:09.096830+00:00"
+  },
+  {
+    "url": "https://openai.com/index/built-to-benefit-everyone-our-plan",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 103,
+    "usd": 0.008696,
+    "seconds": 3.16,
+    "at": "2026-08-31T14:37:12.275978+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 101,
+    "usd": 0.0087,
+    "seconds": 3.13,
+    "at": "2026-08-31T14:37:15.439469+00:00"
+  },
+  {
+    "url": "https://openai.com/index/endava-frontiers",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 797,
+    "usd": 0.015658,
+    "seconds": 9.3,
+    "at": "2026-08-31T14:37:24.772450+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-memory-dreaming",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 440,
+    "usd": 0.01206,
+    "seconds": 6.87,
+    "at": "2026-08-31T14:37:31.665899+00:00"
+  },
+  {
+    "url": "https://openai.com/index/biodefense-in-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3801,
+    "output_tokens": 218,
+    "usd": 0.009782,
+    "seconds": 4.5,
+    "at": "2026-08-31T14:37:36.180140+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6842,
+    "output_tokens": 422,
+    "usd": 0.017904,
+    "seconds": 6.62,
+    "at": "2026-08-31T14:37:42.823937+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/services-track-partner-hub",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6663,
+    "output_tokens": 1439,
+    "usd": 0.027716,
+    "seconds": 16.63,
+    "at": "2026-08-31T14:37:59.487226+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-new-capabilities-to-gpt-rosalind",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 1454,
+    "usd": 0.022252,
+    "seconds": 16.41,
+    "at": "2026-08-31T14:38:15.933439+00:00"
+  },
+  {
+    "url": "https://openai.com/index/wasmer",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 110,
+    "usd": 0.00879,
+    "seconds": 3.2,
+    "at": "2026-08-31T14:38:19.162176+00:00"
+  },
+  {
+    "url": "https://openai.com/index/frontier-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3832,
+    "output_tokens": 95,
+    "usd": 0.008614,
+    "seconds": 3.14,
+    "at": "2026-08-31T14:38:22.334013+00:00"
+  },
+  {
+    "url": "https://openai.com/index/public-policy-agenda",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3825,
+    "output_tokens": 93,
+    "usd": 0.00858,
+    "seconds": 3.06,
+    "at": "2026-08-31T14:38:25.411194+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/expanding-project-glasswing",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6616,
+    "output_tokens": 856,
+    "usd": 0.021792,
+    "seconds": 11.49,
+    "at": "2026-08-31T14:38:36.937351+00:00"
+  },
+  {
+    "url": "https://openai.com/index/travelers",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 462,
+    "usd": 0.012298,
+    "seconds": 6.99,
+    "at": "2026-08-31T14:38:43.942592+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/chatgpt-sites",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3793,
+    "output_tokens": 227,
+    "usd": 0.009856,
+    "seconds": 4.48,
+    "at": "2026-08-31T14:38:48.448872+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-for-every-role-tool-workflow",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 626,
+    "usd": 0.013922,
+    "seconds": 8.91,
+    "at": "2026-08-31T14:38:57.388724+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-youth-safety-and-opportunity-through-global-leadership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 104,
+    "usd": 0.008732,
+    "seconds": 3.11,
+    "at": "2026-08-31T14:39:00.530482+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-for-knowledge-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 517,
+    "usd": 0.012842,
+    "seconds": 7.45,
+    "at": "2026-08-31T14:39:08.007834+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/confidential-draft-s1-sec",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4863,
+    "output_tokens": 349,
+    "usd": 0.013216,
+    "seconds": 5.88,
+    "at": "2026-08-31T14:39:13.918212+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-views-on-ai-policy-and-political-advocacy",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 119,
+    "usd": 0.008882,
+    "seconds": 3.44,
+    "at": "2026-08-31T14:39:17.377007+00:00"
+  },
+  {
+    "url": "https://openai.com/index/stargate-michigan-data-center",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 1033,
+    "usd": 0.01802,
+    "seconds": 10.67,
+    "at": "2026-08-31T14:39:28.082118+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-frontier-models-and-codex-are-now-available-on-aws",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3891,
+    "output_tokens": 881,
+    "usd": 0.016592,
+    "seconds": 10.74,
+    "at": "2026-08-31T14:39:38.854397+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-tech-and-tariffs",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3862,
+    "output_tokens": 113,
+    "usd": 0.008854,
+    "seconds": 3.54,
+    "at": "2026-08-31T14:39:42.411951+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-data-center-bandwagon",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3854,
+    "output_tokens": 108,
+    "usd": 0.008788,
+    "seconds": 3.28,
+    "at": "2026-08-31T14:39:45.703074+00:00"
+  },
+  {
+    "url": "https://openai.com/index/boston-childrens-hospital",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 106,
+    "usd": 0.008742,
+    "seconds": 3.03,
+    "at": "2026-08-31T14:39:48.765705+00:00"
+  },
+  {
+    "url": "https://openai.com/index/braintrust",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3811,
+    "output_tokens": 422,
+    "usd": 0.011842,
+    "seconds": 6.95,
+    "at": "2026-08-31T14:39:55.748981+00:00"
+  },
+  {
+    "url": "https://openai.com/index/strengthening-societal-resilience-with-rosalind-biodefense",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3877,
+    "output_tokens": 118,
+    "usd": 0.008934,
+    "seconds": 3.55,
+    "at": "2026-08-31T14:39:59.324837+00:00"
+  },
+  {
+    "url": "https://openai.com/index/trustworthy-third-party-evaluations-foundations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 95,
+    "usd": 0.008632,
+    "seconds": 3.36,
+    "at": "2026-08-31T14:40:02.713081+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-4-8",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8020,
+    "output_tokens": 2080,
+    "usd": 0.03684,
+    "seconds": 22.1,
+    "at": "2026-08-31T14:40:24.832839+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/series-h",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6057,
+    "output_tokens": 2555,
+    "usd": 0.037664,
+    "seconds": 23.03,
+    "at": "2026-08-31T14:40:47.900603+00:00"
+  },
+  {
+    "url": "https://openai.com/index/endava",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3822,
+    "output_tokens": 677,
+    "usd": 0.014414,
+    "seconds": 8.51,
+    "at": "2026-08-31T14:40:56.421397+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-frontier-governance-framework",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 94,
+    "usd": 0.008608,
+    "seconds": 3.07,
+    "at": "2026-08-31T14:40:59.526595+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/milan-office-opening",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5647,
+    "output_tokens": 91,
+    "usd": 0.012204,
+    "seconds": 3.03,
+    "at": "2026-08-31T14:41:02.593357+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cisco",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 857,
+    "usd": 0.016258,
+    "seconds": 10.77,
+    "at": "2026-08-31T14:41:13.397191+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-self-improving-tax-agents-with-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 887,
+    "usd": 0.016552,
+    "seconds": 11.03,
+    "at": "2026-08-31T14:41:24.460476+00:00"
+  },
+  {
+    "url": "https://openai.com/index/election-safeguards-2026",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3815,
+    "output_tokens": 106,
+    "usd": 0.00869,
+    "seconds": 3.26,
+    "at": "2026-08-31T14:41:27.748713+00:00"
+  },
+  {
+    "url": "https://openai.com/index/warp",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 723,
+    "usd": 0.014878,
+    "seconds": 8.77,
+    "at": "2026-08-31T14:41:36.550973+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/kiyoung-choi-representative-director-anthropic-korea",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5478,
+    "output_tokens": 101,
+    "usd": 0.011966,
+    "seconds": 3.39,
+    "at": "2026-08-31T14:41:39.969542+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/chris-olah-pope-leo-encyclical",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6533,
+    "output_tokens": 132,
+    "usd": 0.014386,
+    "seconds": 3.48,
+    "at": "2026-08-31T14:41:43.479932+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ai-first-hire-small-business",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 282,
+    "usd": 0.010486,
+    "seconds": 5.23,
+    "at": "2026-08-31T14:41:48.734486+00:00"
+  },
+  {
+    "url": "https://openai.com/index/grupo-folha-grupo-uol-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3864,
+    "output_tokens": 115,
+    "usd": 0.008878,
+    "seconds": 2.99,
+    "at": "2026-08-31T14:41:51.749674+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gartner-2026-agentic-coding-leader",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3863,
+    "output_tokens": 111,
+    "usd": 0.008836,
+    "seconds": 3.11,
+    "at": "2026-08-31T14:41:54.887103+00:00"
+  },
+  {
+    "url": "https://openai.com/index/virgin-atlantic",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 99,
+    "usd": 0.008676,
+    "seconds": 3.28,
+    "at": "2026-08-31T14:41:58.199301+00:00"
+  },
+  {
+    "url": "https://openai.com/index/adventhealth",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3827,
+    "output_tokens": 482,
+    "usd": 0.012474,
+    "seconds": 6.83,
+    "at": "2026-08-31T14:42:05.062574+00:00"
+  },
+  {
+    "url": "https://openai.com/index/model-disproves-discrete-geometry-conjecture",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 967,
+    "usd": 0.017382,
+    "seconds": 12.15,
+    "at": "2026-08-31T14:42:17.246094+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-next-phase-of-education-for-countries",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 107,
+    "usd": 0.008752,
+    "seconds": 3.15,
+    "at": "2026-08-31T14:42:20.422966+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ramp",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 448,
+    "usd": 0.012142,
+    "seconds": 6.91,
+    "at": "2026-08-31T14:42:27.373517+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-kpmg",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6557,
+    "output_tokens": 1217,
+    "usd": 0.025284,
+    "seconds": 13.91,
+    "at": "2026-08-31T14:42:41.311672+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/widening-conversation-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6147,
+    "output_tokens": 123,
+    "usd": 0.013524,
+    "seconds": 3.89,
+    "at": "2026-08-31T14:42:45.221630+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-for-singapore",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3829,
+    "output_tokens": 152,
+    "usd": 0.009178,
+    "seconds": 3.84,
+    "at": "2026-08-31T14:42:49.093843+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-content-provenance",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 102,
+    "usd": 0.008694,
+    "seconds": 3.17,
+    "at": "2026-08-31T14:42:52.294013+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-acquires-stainless",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5168,
+    "output_tokens": 611,
+    "usd": 0.016446,
+    "seconds": 7.53,
+    "at": "2026-08-31T14:42:59.832906+00:00"
+  },
+  {
+    "url": "https://openai.com/index/dell-codex-enterprise-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3858,
+    "output_tokens": 957,
+    "usd": 0.017286,
+    "seconds": 11.87,
+    "at": "2026-08-31T14:43:11.739327+00:00"
+  },
+  {
+    "url": "https://openai.com/index/malta-chatgpt-plus-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 103,
+    "usd": 0.008734,
+    "seconds": 3.32,
+    "at": "2026-08-31T14:43:15.092645+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 109,
+    "usd": 0.008764,
+    "seconds": 3.47,
+    "at": "2026-08-31T14:43:18.594923+00:00"
+  },
+  {
+    "url": "https://openai.com/index/databricks",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 1147,
+    "usd": 0.019138,
+    "seconds": 12.64,
+    "at": "2026-08-31T14:43:31.250295+00:00"
+  },
+  {
+    "url": "https://openai.com/index/personal-finance-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 1174,
+    "usd": 0.019446,
+    "seconds": 13.18,
+    "at": "2026-08-31T14:43:44.462948+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/gates-foundation-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6398,
+    "output_tokens": 123,
+    "usd": 0.014026,
+    "seconds": 3.29,
+    "at": "2026-08-31T14:43:47.790563+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/pwc-expanded-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7518,
+    "output_tokens": 1624,
+    "usd": 0.031276,
+    "seconds": 17.23,
+    "at": "2026-08-31T14:44:05.055552+00:00"
+  },
+  {
+    "url": "https://openai.com/index/sea-david-chen",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 384,
+    "usd": 0.0115,
+    "seconds": 6.03,
+    "at": "2026-08-31T14:44:11.111339+00:00"
+  },
+  {
+    "url": "https://openai.com/index/work-with-codex-from-anywhere",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 379,
+    "usd": 0.011452,
+    "seconds": 6.32,
+    "at": "2026-08-31T14:44:17.464699+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-recognize-context-in-sensitive-conversations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 101,
+    "usd": 0.008702,
+    "seconds": 3.16,
+    "at": "2026-08-31T14:44:20.651223+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-for-small-business",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8078,
+    "output_tokens": 1586,
+    "usd": 0.032016,
+    "seconds": 19.31,
+    "at": "2026-08-31T14:44:39.998334+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-codex-windows-sandbox",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3832,
+    "output_tokens": 263,
+    "usd": 0.010294,
+    "seconds": 4.85,
+    "at": "2026-08-31T14:44:44.883464+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-response-to-the-tanstack-npm-supply-chain-attack",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3916,
+    "output_tokens": 105,
+    "usd": 0.008882,
+    "seconds": 3.0,
+    "at": "2026-08-31T14:44:47.919073+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/how-finance-teams-use-codex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 106,
+    "usd": 0.008734,
+    "seconds": 3.31,
+    "at": "2026-08-31T14:44:51.258243+00:00"
+  },
+  {
+    "url": "https://openai.com/index/autoscout24",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 109,
+    "usd": 0.008752,
+    "seconds": 3.16,
+    "at": "2026-08-31T14:44:54.436645+00:00"
+  },
+  {
+    "url": "https://openai.com/index/nvidia",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3817,
+    "output_tokens": 430,
+    "usd": 0.011934,
+    "seconds": 6.56,
+    "at": "2026-08-31T14:45:01.032789+00:00"
+  },
+  {
+    "url": "https://openai.com/index/what-parameter-golf-taught-us",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 109,
+    "usd": 0.008796,
+    "seconds": 3.81,
+    "at": "2026-08-31T14:45:04.879200+00:00"
+  },
+  {
+    "url": "https://openai.com/signals/research/2026q1-update",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 242,
+    "usd": 0.0101,
+    "seconds": 4.69,
+    "at": "2026-08-31T14:45:09.589609+00:00"
+  },
+  {
+    "url": "https://openai.com/business/guides-and-resources/how-enterprises-are-scaling-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 147,
+    "usd": 0.009132,
+    "seconds": 3.67,
+    "at": "2026-08-31T14:45:13.284532+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-campus-network-student-club-interest-form",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 90,
+    "usd": 0.008572,
+    "seconds": 3.07,
+    "at": "2026-08-31T14:45:16.385013+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-launches-the-deployment-company",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 562,
+    "usd": 0.013306,
+    "seconds": 7.83,
+    "at": "2026-08-31T14:45:24.243500+00:00"
+  },
+  {
+    "url": "https://openai.com/index/running-codex-safely",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 366,
+    "usd": 0.01132,
+    "seconds": 5.9,
+    "at": "2026-08-31T14:45:30.174867+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-with-trusted-access-for-cyber",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3884,
+    "output_tokens": 653,
+    "usd": 0.014298,
+    "seconds": 9.29,
+    "at": "2026-08-31T14:45:39.494876+00:00"
+  },
+  {
+    "url": "https://openai.com/index/parloa",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 753,
+    "usd": 0.015204,
+    "seconds": 9.94,
+    "at": "2026-08-31T14:45:49.456708+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 803,
+    "usd": 0.015724,
+    "seconds": 10.39,
+    "at": "2026-08-31T14:45:59.858654+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-trusted-contact-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 105,
+    "usd": 0.008734,
+    "seconds": 3.15,
+    "at": "2026-08-31T14:46:03.038495+00:00"
+  },
+  {
+    "url": "https://openai.com/index/simplex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 314,
+    "usd": 0.010788,
+    "seconds": 5.19,
+    "at": "2026-08-31T14:46:08.266996+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/higher-limits-spacex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5580,
+    "output_tokens": 2421,
+    "usd": 0.03537,
+    "seconds": 22.71,
+    "at": "2026-08-31T14:46:31.007827+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-chatgpt-protects-privacy",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3836,
+    "output_tokens": 103,
+    "usd": 0.008702,
+    "seconds": 3.46,
+    "at": "2026-08-31T14:46:34.481770+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-b2b-signals",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 803,
+    "usd": 0.015708,
+    "seconds": 10.56,
+    "at": "2026-08-31T14:46:45.074170+00:00"
+  },
+  {
+    "url": "https://openai.com/index/singular-bank",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 394,
+    "usd": 0.011646,
+    "seconds": 6.17,
+    "at": "2026-08-31T14:46:51.277708+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-chatgpt-futures-class-of-2026",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3870,
+    "output_tokens": 107,
+    "usd": 0.00881,
+    "seconds": 3.63,
+    "at": "2026-08-31T14:46:54.945141+00:00"
+  },
+  {
+    "url": "https://openai.com/index/uber",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3829,
+    "output_tokens": 829,
+    "usd": 0.015948,
+    "seconds": 8.89,
+    "at": "2026-08-31T14:47:03.870137+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/finance-agents",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8693,
+    "output_tokens": 1802,
+    "usd": 0.035406,
+    "seconds": 20.38,
+    "at": "2026-08-31T14:47:24.269351+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-instant-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3786,
+    "output_tokens": 1714,
+    "usd": 0.024712,
+    "seconds": 19.9,
+    "at": "2026-08-31T14:47:44.203645+00:00"
+  },
+  {
+    "url": "https://openai.com/index/mrc-supercomputer-networking",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3860,
+    "output_tokens": 965,
+    "usd": 0.01737,
+    "seconds": 10.44,
+    "at": "2026-08-31T14:47:54.681494+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-instant",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 483,
+    "usd": 0.01252,
+    "seconds": 7.32,
+    "at": "2026-08-31T14:48:02.035601+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-youth-safety-in-emea",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 110,
+    "usd": 0.008804,
+    "seconds": 3.46,
+    "at": "2026-08-31T14:48:05.530692+00:00"
+  },
+  {
+    "url": "https://openai.com/index/new-ways-to-buy-chatgpt-ads",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 105,
+    "usd": 0.008762,
+    "seconds": 3.53,
+    "at": "2026-08-31T14:48:09.096176+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/enterprise-ai-services-company",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5720,
+    "output_tokens": 991,
+    "usd": 0.02135,
+    "seconds": 12.38,
+    "at": "2026-08-31T14:48:21.492140+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-pwc-finance-collaboration",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3853,
+    "output_tokens": 236,
+    "usd": 0.010066,
+    "seconds": 4.18,
+    "at": "2026-08-31T14:48:25.703463+00:00"
+  },
+  {
+    "url": "https://openai.com/index/delivering-low-latency-voice-ai-at-scale",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 529,
+    "usd": 0.012984,
+    "seconds": 7.53,
+    "at": "2026-08-31T14:48:33.266904+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advanced-account-security",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 92,
+    "usd": 0.008582,
+    "seconds": 3.36,
+    "at": "2026-08-31T14:48:36.645455+00:00"
+  },
+  {
+    "url": "https://openai.com/index/where-the-goblins-came-from",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3823,
+    "output_tokens": 211,
+    "usd": 0.009756,
+    "seconds": 4.18,
+    "at": "2026-08-31T14:48:40.846067+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-the-compute-infrastructure-for-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 931,
+    "usd": 0.016998,
+    "seconds": 10.5,
+    "at": "2026-08-31T14:48:51.374398+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cybersecurity-in-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 100,
+    "usd": 0.008704,
+    "seconds": 3.62,
+    "at": "2026-08-31T14:48:55.028332+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-for-creative-work",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6228,
+    "output_tokens": 622,
+    "usd": 0.018676,
+    "seconds": 9.26,
+    "at": "2026-08-31T14:49:04.300842+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-commitment-to-community-safety",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 114,
+    "usd": 0.0088,
+    "seconds": 3.75,
+    "at": "2026-08-31T14:49:08.083297+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-on-aws",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 1265,
+    "usd": 0.020324,
+    "seconds": 13.14,
+    "at": "2026-08-31T14:49:21.241112+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/theo-hourmouzis-general-manager-australia-new-zealand",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5811,
+    "output_tokens": 129,
+    "usd": 0.012912,
+    "seconds": 3.82,
+    "at": "2026-08-31T14:49:25.089551+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-available-at-fedramp-moderate",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 120,
+    "usd": 0.008904,
+    "seconds": 3.52,
+    "at": "2026-08-31T14:49:28.645649+00:00"
+  },
+  {
+    "url": "https://openai.com/index/next-phase-of-microsoft-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 1610,
+    "usd": 0.023786,
+    "seconds": 17.43,
+    "at": "2026-08-31T14:49:46.106917+00:00"
+  },
+  {
+    "url": "https://openai.com/index/open-source-codex-orchestration-symphony",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3843,
+    "output_tokens": 843,
+    "usd": 0.016116,
+    "seconds": 10.25,
+    "at": "2026-08-31T14:49:56.389848+00:00"
+  },
+  {
+    "url": "https://openai.com/index/choco",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3825,
+    "output_tokens": 469,
+    "usd": 0.01234,
+    "seconds": 7.37,
+    "at": "2026-08-31T14:50:03.793831+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-principles",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3804,
+    "output_tokens": 93,
+    "usd": 0.008538,
+    "seconds": 3.5,
+    "at": "2026-08-31T14:50:07.322061+00:00"
+  },
+  {
+    "url": "https://openai.com/index/modeling-ai-jobs-transition",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 113,
+    "usd": 0.008806,
+    "seconds": 3.7,
+    "at": "2026-08-31T14:50:11.046028+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-nec",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5427,
+    "output_tokens": 1207,
+    "usd": 0.022924,
+    "seconds": 14.45,
+    "at": "2026-08-31T14:50:25.528976+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/election-safeguards-update",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6978,
+    "output_tokens": 368,
+    "usd": 0.017636,
+    "seconds": 6.19,
+    "at": "2026-08-31T14:50:31.749291+00:00"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/news/news260424",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5679,
+    "output_tokens": 2479,
+    "usd": 0.036148,
+    "seconds": 25.01,
+    "at": "2026-08-31T14:50:56.787646+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3780,
+    "output_tokens": 1607,
+    "usd": 0.02363,
+    "seconds": 20.76,
+    "at": "2026-08-31T14:51:17.581929+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3816,
+    "output_tokens": 1181,
+    "usd": 0.019442,
+    "seconds": 13.67,
+    "at": "2026-08-31T14:51:31.287305+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/how-to-use-chatgpt-work-for-everyday-tasks",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3832,
+    "output_tokens": 97,
+    "usd": 0.008634,
+    "seconds": 3.33,
+    "at": "2026-08-31T14:51:34.653606+00:00"
+  },
+  {
+    "url": "https://openai.com/index/making-chatgpt-better-for-clinicians",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3848,
+    "output_tokens": 121,
+    "usd": 0.008906,
+    "seconds": 3.21,
+    "at": "2026-08-31T14:51:37.903236+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-workspace-agents-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 781,
+    "usd": 0.015494,
+    "seconds": 9.53,
+    "at": "2026-08-31T14:51:47.465042+00:00"
+  },
+  {
+    "url": "https://openai.com/index/speeding-up-agentic-workflows-with-websockets",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 931,
+    "usd": 0.017,
+    "seconds": 11.34,
+    "at": "2026-08-31T14:51:58.813395+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/workspace-agents",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3814,
+    "output_tokens": 361,
+    "usd": 0.011238,
+    "seconds": 6.82,
+    "at": "2026-08-31T14:52:05.663811+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-privacy-filter",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 573,
+    "usd": 0.013406,
+    "seconds": 8.15,
+    "at": "2026-08-31T14:52:13.841686+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-chatgpt-images-2-0",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 332,
+    "usd": 0.011002,
+    "seconds": 4.8,
+    "at": "2026-08-31T14:52:18.656762+00:00"
+  },
+  {
+    "url": "https://openai.com/index/scaling-codex-to-enterprises-worldwide",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3863,
+    "output_tokens": 821,
+    "usd": 0.015936,
+    "seconds": 9.29,
+    "at": "2026-08-31T14:52:27.982784+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-amazon-compute",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6023,
+    "output_tokens": 2599,
+    "usd": 0.038036,
+    "seconds": 25.56,
+    "at": "2026-08-31T14:52:53.578066+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hyatt-advances-ai-with-chatgpt-enterprise",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3857,
+    "output_tokens": 110,
+    "usd": 0.008814,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:52:56.854013+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-design-anthropic-labs",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6350,
+    "output_tokens": 971,
+    "usd": 0.02241,
+    "seconds": 14.09,
+    "at": "2026-08-31T14:53:10.971691+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-4-7",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11541,
+    "output_tokens": 1953,
+    "usd": 0.042612,
+    "seconds": 20.87,
+    "at": "2026-08-31T14:53:31.876471+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-for-almost-everything",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3827,
+    "output_tokens": 1054,
+    "usd": 0.018194,
+    "seconds": 12.76,
+    "at": "2026-08-31T14:53:44.674544+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-rosalind",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3850,
+    "output_tokens": 1377,
+    "usd": 0.02147,
+    "seconds": 15.84,
+    "at": "2026-08-31T14:54:00.549540+00:00"
+  },
+  {
+    "url": "https://openai.com/index/accelerating-cyber-defense-ecosystem",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3859,
+    "output_tokens": 120,
+    "usd": 0.008918,
+    "seconds": 3.36,
+    "at": "2026-08-31T14:54:03.938322+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-next-evolution-of-the-agents-sdk",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 682,
+    "usd": 0.014494,
+    "seconds": 8.36,
+    "at": "2026-08-31T14:54:12.335430+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/narasimhan-board",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5694,
+    "output_tokens": 104,
+    "usd": 0.012428,
+    "seconds": 3.21,
+    "at": "2026-08-31T14:54:15.575683+00:00"
+  },
+  {
+    "url": "https://openai.com/index/scaling-trusted-access-for-cyber-defense",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3858,
+    "output_tokens": 389,
+    "usd": 0.011606,
+    "seconds": 5.83,
+    "at": "2026-08-31T14:54:21.435093+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cloudflare-openai-agent-cloud",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3874,
+    "output_tokens": 1118,
+    "usd": 0.018928,
+    "seconds": 11.36,
+    "at": "2026-08-31T14:54:32.819309+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/applications-of-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3825,
+    "output_tokens": 100,
+    "usd": 0.00865,
+    "seconds": 3.33,
+    "at": "2026-08-31T14:54:36.186040+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/financial-services",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3812,
+    "output_tokens": 101,
+    "usd": 0.008634,
+    "seconds": 3.37,
+    "at": "2026-08-31T14:54:39.591965+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/working-with-files",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3815,
+    "output_tokens": 84,
+    "usd": 0.00847,
+    "seconds": 3.01,
+    "at": "2026-08-31T14:54:42.632824+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/sales",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3819,
+    "output_tokens": 113,
+    "usd": 0.008768,
+    "seconds": 3.31,
+    "at": "2026-08-31T14:54:45.971754+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/healthcare",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3816,
+    "output_tokens": 109,
+    "usd": 0.008722,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:54:49.187809+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/research",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3805,
+    "output_tokens": 106,
+    "usd": 0.00867,
+    "seconds": 3.1,
+    "at": "2026-08-31T14:54:52.314547+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/skills",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3814,
+    "output_tokens": 97,
+    "usd": 0.008598,
+    "seconds": 2.95,
+    "at": "2026-08-31T14:54:55.284637+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/image-generation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3819,
+    "output_tokens": 85,
+    "usd": 0.008488,
+    "seconds": 3.15,
+    "at": "2026-08-31T14:54:58.445915+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/data-analysis",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3818,
+    "output_tokens": 100,
+    "usd": 0.008636,
+    "seconds": 3.12,
+    "at": "2026-08-31T14:55:01.578880+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/managers",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3813,
+    "output_tokens": 104,
+    "usd": 0.008666,
+    "seconds": 3.36,
+    "at": "2026-08-31T14:55:04.956175+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/search-and-deep-research",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3817,
+    "output_tokens": 99,
+    "usd": 0.008624,
+    "seconds": 3.05,
+    "at": "2026-08-31T14:55:08.030094+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/operations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3814,
+    "output_tokens": 94,
+    "usd": 0.008568,
+    "seconds": 2.94,
+    "at": "2026-08-31T14:55:10.996465+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/what-is-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3824,
+    "output_tokens": 100,
+    "usd": 0.008648,
+    "seconds": 2.92,
+    "at": "2026-08-31T14:55:13.934193+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/personalization",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3813,
+    "output_tokens": 91,
+    "usd": 0.008536,
+    "seconds": 3.6,
+    "at": "2026-08-31T14:55:17.544131+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/projects",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3817,
+    "output_tokens": 106,
+    "usd": 0.008694,
+    "seconds": 3.1,
+    "at": "2026-08-31T14:55:20.673149+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/marketing",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3822,
+    "output_tokens": 111,
+    "usd": 0.008754,
+    "seconds": 3.05,
+    "at": "2026-08-31T14:55:23.737340+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/writing",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3809,
+    "output_tokens": 96,
+    "usd": 0.008578,
+    "seconds": 2.94,
+    "at": "2026-08-31T14:55:26.691642+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/custom-gpts",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3816,
+    "output_tokens": 99,
+    "usd": 0.008622,
+    "seconds": 3.14,
+    "at": "2026-08-31T14:55:29.863171+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/finance",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3814,
+    "output_tokens": 102,
+    "usd": 0.008648,
+    "seconds": 3.3,
+    "at": "2026-08-31T14:55:33.183021+00:00"
+  },
+  {
+    "url": "https://openai.com/index/axios-developer-tool-compromise",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 114,
+    "usd": 0.008806,
+    "seconds": 3.38,
+    "at": "2026-08-31T14:55:36.592443+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/brainstorming",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3822,
+    "output_tokens": 91,
+    "usd": 0.008554,
+    "seconds": 3.0,
+    "at": "2026-08-31T14:55:39.614580+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/customer-success",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3819,
+    "output_tokens": 95,
+    "usd": 0.008588,
+    "seconds": 3.05,
+    "at": "2026-08-31T14:55:42.679359+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/responsible-and-safe-use",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3820,
+    "output_tokens": 90,
+    "usd": 0.00854,
+    "seconds": 3.0,
+    "at": "2026-08-31T14:55:45.716764+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cyberagent",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 119,
+    "usd": 0.008884,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:55:48.989151+00:00"
+  },
+  {
+    "url": "https://openai.com/index/next-phase-of-enterprise-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3845,
+    "output_tokens": 255,
+    "usd": 0.01024,
+    "seconds": 4.19,
+    "at": "2026-08-31T14:55:53.202710+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-child-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3848,
+    "output_tokens": 104,
+    "usd": 0.008736,
+    "seconds": 3.58,
+    "at": "2026-08-31T14:55:56.816082+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/google-broadcom-partnership-compute",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5348,
+    "output_tokens": 1422,
+    "usd": 0.024916,
+    "seconds": 13.83,
+    "at": "2026-08-31T14:56:10.679907+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-safety-fellowship",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3815,
+    "output_tokens": 90,
+    "usd": 0.00853,
+    "seconds": 3.1,
+    "at": "2026-08-31T14:56:13.811249+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-acquires-tbpn",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 219,
+    "usd": 0.009856,
+    "seconds": 4.43,
+    "at": "2026-08-31T14:56:18.275322+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-flexible-pricing-for-teams",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 432,
+    "usd": 0.012,
+    "seconds": 7.25,
+    "at": "2026-08-31T14:56:25.550689+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gradient-labs",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3839,
+    "output_tokens": 654,
+    "usd": 0.014218,
+    "seconds": 8.15,
+    "at": "2026-08-31T14:56:33.733566+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/australia-MOU",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6235,
+    "output_tokens": 903,
+    "usd": 0.0215,
+    "seconds": 11.24,
+    "at": "2026-08-31T14:56:45.003682+00:00"
+  },
+  {
+    "url": "https://openai.com/index/accelerating-the-next-phase-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3847,
+    "output_tokens": 659,
+    "usd": 0.014284,
+    "seconds": 7.36,
+    "at": "2026-08-31T14:56:52.382046+00:00"
+  },
+  {
+    "url": "https://openai.com/index/helping-disaster-response-teams-asia",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3821,
+    "output_tokens": 94,
+    "usd": 0.008582,
+    "seconds": 2.99,
+    "at": "2026-08-31T14:56:55.406650+00:00"
+  },
+  {
+    "url": "https://openai.com/index/stadler",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3825,
+    "output_tokens": 109,
+    "usd": 0.00874,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:56:58.623169+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-approach-to-the-model-spec",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3835,
+    "output_tokens": 102,
+    "usd": 0.00869,
+    "seconds": 3.04,
+    "at": "2026-08-31T14:57:01.697832+00:00"
+  },
+  {
+    "url": "https://openai.com/index/safety-bug-bounty",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3846,
+    "output_tokens": 116,
+    "usd": 0.008852,
+    "seconds": 3.25,
+    "at": "2026-08-31T14:57:04.973677+00:00"
+  },
+  {
+    "url": "https://openai.com/index/teen-safety-policies-gpt-oss-safeguard",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3844,
+    "output_tokens": 108,
+    "usd": 0.008768,
+    "seconds": 3.18,
+    "at": "2026-08-31T14:57:08.181321+00:00"
+  },
+  {
+    "url": "https://openai.com/index/powering-product-discovery-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 1580,
+    "usd": 0.023498,
+    "seconds": 17.44,
+    "at": "2026-08-31T14:57:25.646106+00:00"
+  },
+  {
+    "url": "https://openai.com/index/update-on-the-openai-foundation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 107,
+    "usd": 0.008732,
+    "seconds": 3.17,
+    "at": "2026-08-31T14:57:28.841215+00:00"
+  },
+  {
+    "url": "https://openai.com/index/creating-with-sora-safely",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 95,
+    "usd": 0.008654,
+    "seconds": 3.23,
+    "at": "2026-08-31T14:57:32.107866+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3856,
+    "output_tokens": 94,
+    "usd": 0.008652,
+    "seconds": 2.85,
+    "at": "2026-08-31T14:57:34.977533+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-astral",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3803,
+    "output_tokens": 1313,
+    "usd": 0.020736,
+    "seconds": 16.04,
+    "at": "2026-08-31T14:57:51.051753+00:00"
+  },
+  {
+    "url": "https://openai.com/index/japan-teen-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3859,
+    "output_tokens": 108,
+    "usd": 0.008798,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:57:54.329769+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3860,
+    "output_tokens": 1360,
+    "usd": 0.02132,
+    "seconds": 13.35,
+    "at": "2026-08-31T14:58:07.706990+00:00"
+  },
+  {
+    "url": "https://openai.com/index/equipping-workers-with-insights-about-compensation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 102,
+    "usd": 0.008688,
+    "seconds": 3.28,
+    "at": "2026-08-31T14:58:11.019347+00:00"
+  },
+  {
+    "url": "https://openai.com/index/why-codex-security-doesnt-include-sast",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3857,
+    "output_tokens": 387,
+    "usd": 0.011584,
+    "seconds": 6.49,
+    "at": "2026-08-31T14:58:17.545740+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-partner-network",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6354,
+    "output_tokens": 1483,
+    "usd": 0.027538,
+    "seconds": 17.83,
+    "at": "2026-08-31T14:58:35.393773+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/the-anthropic-institute",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6154,
+    "output_tokens": 604,
+    "usd": 0.018348,
+    "seconds": 9.09,
+    "at": "2026-08-31T14:58:44.510895+00:00"
+  },
+  {
+    "url": "https://openai.com/index/designing-agents-to-resist-prompt-injection",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3833,
+    "output_tokens": 309,
+    "usd": 0.010756,
+    "seconds": 6.11,
+    "at": "2026-08-31T14:58:50.651436+00:00"
+  },
+  {
+    "url": "https://openai.com/index/equip-responses-api-computer-environment",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 954,
+    "usd": 0.017222,
+    "seconds": 11.46,
+    "at": "2026-08-31T14:59:02.140142+00:00"
+  },
+  {
+    "url": "https://openai.com/index/wayfair",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3841,
+    "output_tokens": 334,
+    "usd": 0.011022,
+    "seconds": 4.86,
+    "at": "2026-08-31T14:59:07.034865+00:00"
+  },
+  {
+    "url": "https://openai.com/index/rakuten",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3781,
+    "output_tokens": 453,
+    "usd": 0.012092,
+    "seconds": 7.1,
+    "at": "2026-08-31T14:59:14.166816+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/sydney-fourth-office-asia-pacific",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5528,
+    "output_tokens": 518,
+    "usd": 0.016236,
+    "seconds": 7.89,
+    "at": "2026-08-31T14:59:22.088346+00:00"
+  },
+  {
+    "url": "https://openai.com/index/instruction-hierarchy-challenge",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 118,
+    "usd": 0.008864,
+    "seconds": 3.24,
+    "at": "2026-08-31T14:59:25.364457+00:00"
+  },
+  {
+    "url": "https://openai.com/index/new-ways-to-learn-math-and-science-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3838,
+    "output_tokens": 96,
+    "usd": 0.008636,
+    "seconds": 3.03,
+    "at": "2026-08-31T14:59:28.410579+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-promptfoo",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3837,
+    "output_tokens": 409,
+    "usd": 0.011764,
+    "seconds": 6.01,
+    "at": "2026-08-31T14:59:34.450669+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/mozilla-firefox-security",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8475,
+    "output_tokens": 1848,
+    "usd": 0.03543,
+    "seconds": 21.24,
+    "at": "2026-08-31T14:59:55.724001+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-security-now-in-research-preview",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3831,
+    "output_tokens": 735,
+    "usd": 0.015012,
+    "seconds": 9.43,
+    "at": "2026-08-31T15:00:05.171719+00:00"
+  },
+  {
+    "url": "https://openai.com/index/descript",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3819,
+    "output_tokens": 256,
+    "usd": 0.010198,
+    "seconds": 4.92,
+    "at": "2026-08-31T15:00:10.130104+00:00"
+  },
+  {
+    "url": "https://openai.com/index/balyasny-asset-management",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3830,
+    "output_tokens": 221,
+    "usd": 0.00987,
+    "seconds": 3.85,
+    "at": "2026-08-31T15:00:14.010123+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/where-stand-department-war",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5684,
+    "output_tokens": 476,
+    "usd": 0.016128,
+    "seconds": 6.74,
+    "at": "2026-08-31T15:00:20.788320+00:00"
+  },
+  {
+    "url": "https://openai.com/index/reasoning-models-chain-of-thought-controllability",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3852,
+    "output_tokens": 230,
+    "usd": 0.010004,
+    "seconds": 4.81,
+    "at": "2026-08-31T15:00:25.637454+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-4",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 1277,
+    "usd": 0.020454,
+    "seconds": 12.94,
+    "at": "2026-08-31T15:00:38.593212+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-4-thinking-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3788,
+    "output_tokens": 790,
+    "usd": 0.015476,
+    "seconds": 9.79,
+    "at": "2026-08-31T15:00:48.415107+00:00"
+  },
+  {
+    "url": "https://openai.com/index/ai-education-opportunity",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3827,
+    "output_tokens": 103,
+    "usd": 0.008684,
+    "seconds": 3.5,
+    "at": "2026-08-31T15:00:51.948349+00:00"
+  },
+  {
+    "url": "https://openai.com/index/vfl-wolfsburg",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3840,
+    "output_tokens": 117,
+    "usd": 0.00885,
+    "seconds": 3.8,
+    "at": "2026-08-31T15:00:55.777591+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-for-excel",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3849,
+    "output_tokens": 577,
+    "usd": 0.013468,
+    "seconds": 7.72,
+    "at": "2026-08-31T15:01:03.526361+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-five-ai-value-models-driving-business-reinvention",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3829,
+    "output_tokens": 104,
+    "usd": 0.008698,
+    "seconds": 3.18,
+    "at": "2026-08-31T15:01:06.742915+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-the-adoption-news-channel",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3805,
+    "output_tokens": 98,
+    "usd": 0.00859,
+    "seconds": 3.05,
+    "at": "2026-08-31T15:01:09.830699+00:00"
+  },
+  {
+    "url": "https://openai.com/index/extending-single-minus-amplitudes-to-gravitons",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3857,
+    "output_tokens": 112,
+    "usd": 0.008834,
+    "seconds": 3.19,
+    "at": "2026-08-31T15:01:13.034937+00:00"
+  },
+  {
+    "url": "https://openai.com/index/understanding-ai-and-learning-outcomes",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3834,
+    "output_tokens": 96,
+    "usd": 0.008628,
+    "seconds": 3.4,
+    "at": "2026-08-31T15:01:16.469204+00:00"
+  },
+  {
+    "url": "https://openai.com/index/axios-allison-murphy",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3842,
+    "output_tokens": 103,
+    "usd": 0.008714,
+    "seconds": 2.98,
+    "at": "2026-08-31T15:01:19.474842+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-3-instant",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3794,
+    "output_tokens": 239,
+    "usd": 0.009978,
+    "seconds": 4.75,
+    "at": "2026-08-31T15:01:24.255975+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-3-instant-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 3786,
+    "output_tokens": 917,
+    "usd": 0.016742,
+    "seconds": 10.76,
+    "at": "2026-08-31T15:01:35.045685+00:00"
+  },
+  {
+    "url": "https://openai.com/index/expanding-access-to-ai-with-chatgpt-ads",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4541,
+    "output_tokens": 648,
+    "usd": 0.015562,
+    "seconds": 8.7,
+    "at": "2026-08-31T18:03:45.286337+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/skills",
+    "model": "claude-sonnet-5",
+    "input_tokens": 9266,
+    "output_tokens": 1337,
+    "usd": 0.031902,
+    "seconds": 16.53,
+    "at": "2026-08-31T18:04:01.848082+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-decision-on-cursor-following-its-acquisition-by-spacex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4541,
+    "output_tokens": 472,
+    "usd": 0.013802,
+    "seconds": 7.52,
+    "at": "2026-08-31T18:04:09.400655+00:00"
+  },
+  {
+    "url": "https://openai.com/index/supporting-next-generation-ai-startups-thailand",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4550,
+    "output_tokens": 102,
+    "usd": 0.01012,
+    "seconds": 3.12,
+    "at": "2026-08-31T18:04:12.556799+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/expanding-support-for-scientists",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6015,
+    "output_tokens": 717,
+    "usd": 0.0192,
+    "seconds": 11.08,
+    "at": "2026-08-31T18:04:23.665314+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11900,
+    "output_tokens": 945,
+    "usd": 0.03325,
+    "seconds": 12.63,
+    "at": "2026-08-31T18:04:36.331916+00:00"
+  },
+  {
+    "url": "https://openai.com/index/what-students-gain-from-chatgpt-critical-thinking-training",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4557,
+    "output_tokens": 103,
+    "usd": 0.010144,
+    "seconds": 3.27,
+    "at": "2026-08-31T18:04:39.616715+00:00"
+  },
+  {
+    "url": "https://openai.com/index/expanding-our-presence-in-brazil",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4536,
+    "output_tokens": 92,
+    "usd": 0.009992,
+    "seconds": 4.17,
+    "at": "2026-08-31T18:04:43.806760+00:00"
+  },
+  {
+    "url": "https://openai.com/index/learning-never-stops",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4527,
+    "output_tokens": 89,
+    "usd": 0.009944,
+    "seconds": 3.11,
+    "at": "2026-08-31T18:04:46.934952+00:00"
+  },
+  {
+    "url": "https://openai.com/index/bringing-chatgpt-for-teachers-to-more-us-school-districts",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4563,
+    "output_tokens": 106,
+    "usd": 0.010186,
+    "seconds": 3.06,
+    "at": "2026-08-31T18:04:50.025794+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4540,
+    "output_tokens": 333,
+    "usd": 0.01241,
+    "seconds": 5.53,
+    "at": "2026-08-31T18:04:55.574994+00:00"
+  },
+  {
+    "url": "https://openai.com/index/loveholidays",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4525,
+    "output_tokens": 427,
+    "usd": 0.01332,
+    "seconds": 7.17,
+    "at": "2026-08-31T18:05:02.777386+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/wellbeing-research-grants",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6332,
+    "output_tokens": 100,
+    "usd": 0.013664,
+    "seconds": 3.24,
+    "at": "2026-08-31T18:05:06.030283+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-full-stack-behind-abundant-intelligence",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4544,
+    "output_tokens": 700,
+    "usd": 0.016088,
+    "seconds": 9.53,
+    "at": "2026-08-31T18:05:15.592262+00:00"
+  },
+  {
+    "url": "https://openai.com/index/new-policy-ideas-for-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4546,
+    "output_tokens": 96,
+    "usd": 0.010052,
+    "seconds": 3.18,
+    "at": "2026-08-31T18:11:56.826018+00:00"
+  },
+  {
+    "url": "https://openai.com/index/the-defenders-window",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4524,
+    "output_tokens": 103,
+    "usd": 0.010078,
+    "seconds": 3.47,
+    "at": "2026-08-31T18:11:57.135435+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-influence-campaign-russia",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4558,
+    "output_tokens": 110,
+    "usd": 0.010216,
+    "seconds": 3.57,
+    "at": "2026-08-31T18:11:57.167901+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-joins-ports-pike-project",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4528,
+    "output_tokens": 179,
+    "usd": 0.010846,
+    "seconds": 4.11,
+    "at": "2026-08-31T18:11:57.761854+00:00"
+  },
+  {
+    "url": "https://openai.com/index/pacing-model-development-cyber-capabilities",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4541,
+    "output_tokens": 422,
+    "usd": 0.013302,
+    "seconds": 6.56,
+    "at": "2026-08-31T18:12:00.219566+00:00"
+  },
+  {
+    "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 102,
+    "usd": 0.010114,
+    "seconds": 3.28,
+    "at": "2026-08-31T18:12:00.442170+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 98,
+    "usd": 0.010074,
+    "seconds": 3.3,
+    "at": "2026-08-31T18:12:00.485731+00:00"
+  },
+  {
+    "url": "https://openai.com/index/offering-zero-data-retention-for-frontier-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4545,
+    "output_tokens": 521,
+    "usd": 0.0143,
+    "seconds": 7.54,
+    "at": "2026-08-31T18:12:01.165975+00:00"
+  },
+  {
+    "url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 98,
+    "usd": 0.010074,
+    "seconds": 3.47,
+    "at": "2026-08-31T18:12:01.263080+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-text-watermark",
+    "model": "claude-sonnet-5",
+    "input_tokens": 9245,
+    "output_tokens": 569,
+    "usd": 0.02418,
+    "seconds": 8.52,
+    "at": "2026-08-31T18:12:02.189819+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4549,
+    "output_tokens": 99,
+    "usd": 0.010088,
+    "seconds": 3.17,
+    "at": "2026-08-31T18:12:03.632013+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4539,
+    "output_tokens": 201,
+    "usd": 0.011088,
+    "seconds": 4.16,
+    "at": "2026-08-31T18:12:04.411681+00:00"
+  },
+  {
+    "url": "https://openai.com/index/jalapeno-first-results",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4549,
+    "output_tokens": 1063,
+    "usd": 0.019728,
+    "seconds": 11.0,
+    "at": "2026-08-31T18:12:04.669235+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7938,
+    "output_tokens": 522,
+    "usd": 0.021096,
+    "seconds": 8.65,
+    "at": "2026-08-31T18:12:05.504515+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6-in-kiro",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4536,
+    "output_tokens": 1062,
+    "usd": 0.019692,
+    "seconds": 13.64,
+    "at": "2026-08-31T18:12:07.237626+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4553,
+    "output_tokens": 794,
+    "usd": 0.017046,
+    "seconds": 9.05,
+    "at": "2026-08-31T18:12:10.246455+00:00"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/news/news260813",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5522,
+    "output_tokens": 1561,
+    "usd": 0.026654,
+    "seconds": 16.61,
+    "at": "2026-08-31T18:12:10.276591+00:00"
+  },
+  {
+    "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4537,
+    "output_tokens": 88,
+    "usd": 0.009954,
+    "seconds": 3.05,
+    "at": "2026-08-31T18:12:10.305631+00:00"
+  },
+  {
+    "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4553,
+    "output_tokens": 356,
+    "usd": 0.012666,
+    "seconds": 6.11,
+    "at": "2026-08-31T18:12:10.809486+00:00"
+  },
+  {
+    "url": "https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4548,
+    "output_tokens": 594,
+    "usd": 0.015036,
+    "seconds": 7.18,
+    "at": "2026-08-31T18:12:10.843690+00:00"
+  },
+  {
+    "url": "https://openai.com/index/safety-alignment-long-horizon-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4540,
+    "output_tokens": 441,
+    "usd": 0.01349,
+    "seconds": 7.26,
+    "at": "2026-08-31T18:12:12.799624+00:00"
+  },
+  {
+    "url": "https://openai.com/index/codex-collaborator-creative-team",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4538,
+    "output_tokens": 88,
+    "usd": 0.009956,
+    "seconds": 3.04,
+    "at": "2026-08-31T18:12:13.324682+00:00"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/news/news260821",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5800,
+    "output_tokens": 1901,
+    "usd": 0.03061,
+    "seconds": 19.92,
+    "at": "2026-08-31T18:12:13.519712+00:00"
+  },
+  {
+    "url": "https://openai.com/index/previewing-ultrafast",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4569,
+    "output_tokens": 1908,
+    "usd": 0.028218,
+    "seconds": 19.99,
+    "at": "2026-08-31T18:12:13.658471+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4539,
+    "output_tokens": 101,
+    "usd": 0.010088,
+    "seconds": 3.37,
+    "at": "2026-08-31T18:12:13.675033+00:00"
+  },
+  {
+    "url": "https://openai.com/index/bio-bug-bounty",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4502,
+    "output_tokens": 258,
+    "usd": 0.011584,
+    "seconds": 4.7,
+    "at": "2026-08-31T18:12:15.548333+00:00"
+  },
+  {
+    "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4550,
+    "output_tokens": 335,
+    "usd": 0.01245,
+    "seconds": 5.28,
+    "at": "2026-08-31T18:12:15.603655+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/donation-public-first-action",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6407,
+    "output_tokens": 923,
+    "usd": 0.022044,
+    "seconds": 11.89,
+    "at": "2026-08-31T18:12:16.332284+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11981,
+    "output_tokens": 111,
+    "usd": 0.025072,
+    "seconds": 3.33,
+    "at": "2026-08-31T18:12:16.688315+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/position-open-weights-models",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8059,
+    "output_tokens": 1236,
+    "usd": 0.028478,
+    "seconds": 16.14,
+    "at": "2026-08-31T18:12:17.421559+00:00"
+  },
+  {
+    "url": "https://openai.com/index/government-national-security-partnerships",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4525,
+    "output_tokens": 262,
+    "usd": 0.01167,
+    "seconds": 4.7,
+    "at": "2026-08-31T18:12:17.528909+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11402,
+    "output_tokens": 1511,
+    "usd": 0.037914,
+    "seconds": 17.79,
+    "at": "2026-08-31T18:12:18.287047+00:00"
+  },
+  {
+    "url": "https://openai.com/index/helping-build-shared-standards-for-advanced-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4543,
+    "output_tokens": 106,
+    "usd": 0.010146,
+    "seconds": 3.11,
+    "at": "2026-08-31T18:12:18.740694+00:00"
+  },
+  {
+    "url": "https://openai.com/index/supporting-eu-trustworthy-ai-ecosystem",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4554,
+    "output_tokens": 108,
+    "usd": 0.010188,
+    "seconds": 3.35,
+    "at": "2026-08-31T18:12:20.910321+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-6",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4522,
+    "output_tokens": 943,
+    "usd": 0.018474,
+    "seconds": 10.43,
+    "at": "2026-08-31T18:12:21.295588+00:00"
+  },
+  {
+    "url": "https://openai.com/index/deployment-simulation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4535,
+    "output_tokens": 287,
+    "usd": 0.01194,
+    "seconds": 5.08,
+    "at": "2026-08-31T18:12:21.448651+00:00"
+  },
+  {
+    "url": "https://openai.com/index/prc-linked-influence-operations-ai-debates",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4554,
+    "output_tokens": 113,
+    "usd": 0.010238,
+    "seconds": 3.49,
+    "at": "2026-08-31T18:12:22.262980+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-partner-network",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4531,
+    "output_tokens": 394,
+    "usd": 0.013002,
+    "seconds": 5.84,
+    "at": "2026-08-31T18:12:22.563845+00:00"
+  },
+  {
+    "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4554,
+    "output_tokens": 869,
+    "usd": 0.017798,
+    "seconds": 10.47,
+    "at": "2026-08-31T18:12:24.156480+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-submits-confidential-s-1",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4525,
+    "output_tokens": 270,
+    "usd": 0.01175,
+    "seconds": 4.95,
+    "at": "2026-08-31T18:12:26.429875+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-broadcom-jalapeno-inference-chip",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4557,
+    "output_tokens": 1033,
+    "usd": 0.019444,
+    "seconds": 11.61,
+    "at": "2026-08-31T18:12:27.179394+00:00"
+  },
+  {
+    "url": "https://openai.com/index/industrial-policy-for-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4555,
+    "output_tokens": 406,
+    "usd": 0.01317,
+    "seconds": 6.58,
+    "at": "2026-08-31T18:12:27.908116+00:00"
+  },
+  {
+    "url": "https://openai.com/index/frontier-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4533,
+    "output_tokens": 232,
+    "usd": 0.011386,
+    "seconds": 4.66,
+    "at": "2026-08-31T18:12:28.832114+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-ona",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4533,
+    "output_tokens": 885,
+    "usd": 0.017916,
+    "seconds": 10.77,
+    "at": "2026-08-31T18:12:29.111226+00:00"
+  },
+  {
+    "url": "https://openai.com/index/biodefense-in-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4502,
+    "output_tokens": 456,
+    "usd": 0.013564,
+    "seconds": 6.83,
+    "at": "2026-08-31T18:12:29.129088+00:00"
+  },
+  {
+    "url": "https://openai.com/index/public-policy-agenda",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4526,
+    "output_tokens": 97,
+    "usd": 0.010022,
+    "seconds": 3.21,
+    "at": "2026-08-31T18:12:29.672828+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11355,
+    "output_tokens": 2688,
+    "usd": 0.04959,
+    "seconds": 27.49,
+    "at": "2026-08-31T18:12:29.707715+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7543,
+    "output_tokens": 543,
+    "usd": 0.020516,
+    "seconds": 8.25,
+    "at": "2026-08-31T18:12:30.827235+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-youth-safety-and-opportunity-through-global-leadership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 93,
+    "usd": 0.010024,
+    "seconds": 3.22,
+    "at": "2026-08-31T18:12:31.149123+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-views-on-ai-policy-and-political-advocacy",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 98,
+    "usd": 0.010074,
+    "seconds": 3.16,
+    "at": "2026-08-31T18:12:32.287518+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-tech-and-tariffs",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4563,
+    "output_tokens": 109,
+    "usd": 0.010216,
+    "seconds": 3.18,
+    "at": "2026-08-31T18:12:32.324601+00:00"
+  },
+  {
+    "url": "https://openai.com/index/trustworthy-third-party-evaluations-foundations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4542,
+    "output_tokens": 98,
+    "usd": 0.010064,
+    "seconds": 3.15,
+    "at": "2026-08-31T18:12:32.875696+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-frontier-governance-framework",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4535,
+    "output_tokens": 101,
+    "usd": 0.01008,
+    "seconds": 3.03,
+    "at": "2026-08-31T18:12:35.358327+00:00"
+  },
+  {
+    "url": "https://openai.com/index/election-safeguards-2026",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4516,
+    "output_tokens": 97,
+    "usd": 0.010002,
+    "seconds": 3.04,
+    "at": "2026-08-31T18:12:35.384837+00:00"
+  },
+  {
+    "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-data-center-bandwagon",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4555,
+    "output_tokens": 359,
+    "usd": 0.0127,
+    "seconds": 6.03,
+    "at": "2026-08-31T18:12:35.740915+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/chris-olah-pope-leo-encyclical",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7234,
+    "output_tokens": 127,
+    "usd": 0.015738,
+    "seconds": 3.55,
+    "at": "2026-08-31T18:12:36.486782+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/confidential-draft-s1-sec",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5564,
+    "output_tokens": 730,
+    "usd": 0.018428,
+    "seconds": 8.8,
+    "at": "2026-08-31T18:12:37.661609+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-content-provenance",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4538,
+    "output_tokens": 105,
+    "usd": 0.010126,
+    "seconds": 2.98,
+    "at": "2026-08-31T18:12:38.380439+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/widening-conversation-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6848,
+    "output_tokens": 134,
+    "usd": 0.015036,
+    "seconds": 3.52,
+    "at": "2026-08-31T18:12:38.907628+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/gates-foundation-partnership",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7099,
+    "output_tokens": 125,
+    "usd": 0.015448,
+    "seconds": 3.44,
+    "at": "2026-08-31T18:12:39.961070+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-sonnet-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 10084,
+    "output_tokens": 2547,
+    "usd": 0.045638,
+    "seconds": 26.6,
+    "at": "2026-08-31T18:12:40.148093+00:00"
+  },
+  {
+    "url": "https://openai.com/index/chatgpt-recognize-context-in-sensitive-conversations",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 100,
+    "usd": 0.010094,
+    "seconds": 3.2,
+    "at": "2026-08-31T18:12:40.893313+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-response-to-the-tanstack-npm-supply-chain-attack",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4617,
+    "output_tokens": 119,
+    "usd": 0.010424,
+    "seconds": 3.4,
+    "at": "2026-08-31T18:12:41.795371+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/fable-mythos-access",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6773,
+    "output_tokens": 2101,
+    "usd": 0.034556,
+    "seconds": 25.02,
+    "at": "2026-08-31T18:12:42.479092+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-trusted-contact-in-chatgpt",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4543,
+    "output_tokens": 105,
+    "usd": 0.010136,
+    "seconds": 3.14,
+    "at": "2026-08-31T18:12:43.297379+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/anthropic-acquires-stainless",
+    "model": "claude-sonnet-5",
+    "input_tokens": 5869,
+    "output_tokens": 662,
+    "usd": 0.018358,
+    "seconds": 9.03,
+    "at": "2026-08-31T18:12:44.783741+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-chatgpt-protects-privacy",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4537,
+    "output_tokens": 111,
+    "usd": 0.010184,
+    "seconds": 3.14,
+    "at": "2026-08-31T18:12:44.956280+00:00"
+  },
+  {
+    "url": "https://openai.com/index/advancing-youth-safety-in-emea",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4553,
+    "output_tokens": 104,
+    "usd": 0.010146,
+    "seconds": 3.15,
+    "at": "2026-08-31T18:12:47.966915+00:00"
+  },
+  {
+    "url": "https://openai.com/index/running-codex-safely",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4531,
+    "output_tokens": 733,
+    "usd": 0.016392,
+    "seconds": 9.89,
+    "at": "2026-08-31T18:12:48.825200+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-instant",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4546,
+    "output_tokens": 443,
+    "usd": 0.013522,
+    "seconds": 6.36,
+    "at": "2026-08-31T18:12:49.694051+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/expanding-project-glasswing",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7317,
+    "output_tokens": 1999,
+    "usd": 0.034624,
+    "seconds": 23.06,
+    "at": "2026-08-31T18:12:50.247636+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-with-trusted-access-for-cyber",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4585,
+    "output_tokens": 866,
+    "usd": 0.01783,
+    "seconds": 10.56,
+    "at": "2026-08-31T18:12:50.559389+00:00"
+  },
+  {
+    "url": "https://openai.com/index/cybersecurity-in-the-intelligence-age",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4553,
+    "output_tokens": 94,
+    "usd": 0.010046,
+    "seconds": 3.17,
+    "at": "2026-08-31T18:12:51.154055+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-4-8",
+    "model": "claude-sonnet-5",
+    "input_tokens": 8721,
+    "output_tokens": 2003,
+    "usd": 0.037472,
+    "seconds": 20.74,
+    "at": "2026-08-31T18:12:51.597777+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 12357,
+    "output_tokens": 3094,
+    "usd": 0.055654,
+    "seconds": 30.89,
+    "at": "2026-08-31T18:12:51.833693+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-commitment-to-community-safety",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4531,
+    "output_tokens": 111,
+    "usd": 0.010172,
+    "seconds": 3.16,
+    "at": "2026-08-31T18:12:52.024425+00:00"
+  },
+  {
+    "url": "https://openai.com/index/where-the-goblins-came-from",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4524,
+    "output_tokens": 578,
+    "usd": 0.014828,
+    "seconds": 7.88,
+    "at": "2026-08-31T18:12:52.846615+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/redeploying-fable-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 11226,
+    "output_tokens": 3373,
+    "usd": 0.056182,
+    "seconds": 39.26,
+    "at": "2026-08-31T18:12:52.936633+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/series-h",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6758,
+    "output_tokens": 2476,
+    "usd": 0.038276,
+    "seconds": 22.37,
+    "at": "2026-08-31T18:12:53.546935+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-instant-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4487,
+    "output_tokens": 935,
+    "usd": 0.018324,
+    "seconds": 12.67,
+    "at": "2026-08-31T18:12:55.168248+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/election-safeguards-update",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7679,
+    "output_tokens": 301,
+    "usd": 0.018368,
+    "seconds": 5.55,
+    "at": "2026-08-31T18:12:55.268640+00:00"
+  },
+  {
+    "url": "https://openai.com/index/scaling-trusted-access-for-cyber-defense",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4559,
+    "output_tokens": 111,
+    "usd": 0.010228,
+    "seconds": 3.24,
+    "at": "2026-08-31T18:12:55.295279+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/custom-gpts",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4517,
+    "output_tokens": 93,
+    "usd": 0.009964,
+    "seconds": 3.11,
+    "at": "2026-08-31T18:12:56.066789+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/personalization",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4514,
+    "output_tokens": 92,
+    "usd": 0.009948,
+    "seconds": 3.24,
+    "at": "2026-08-31T18:12:56.113649+00:00"
+  },
+  {
+    "url": "https://openai.com/academy/responsible-and-safe-use",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4521,
+    "output_tokens": 85,
+    "usd": 0.009892,
+    "seconds": 2.88,
+    "at": "2026-08-31T18:12:58.079444+00:00"
+  },
+  {
+    "url": "https://openai.com/index/axios-developer-tool-compromise",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4534,
+    "output_tokens": 230,
+    "usd": 0.011368,
+    "seconds": 4.63,
+    "at": "2026-08-31T18:12:58.207799+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-child-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4549,
+    "output_tokens": 100,
+    "usd": 0.010098,
+    "seconds": 3.12,
+    "at": "2026-08-31T18:12:58.415874+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-chatgpt-images-2-0",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4542,
+    "output_tokens": 650,
+    "usd": 0.015584,
+    "seconds": 8.29,
+    "at": "2026-08-31T18:12:59.479889+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-acquires-tbpn",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4534,
+    "output_tokens": 192,
+    "usd": 0.010988,
+    "seconds": 3.86,
+    "at": "2026-08-31T18:12:59.987641+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/higher-limits-spacex",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6281,
+    "output_tokens": 1967,
+    "usd": 0.032232,
+    "seconds": 19.28,
+    "at": "2026-08-31T18:13:00.201664+00:00"
+  },
+  {
+    "url": "https://openai.com/index/our-approach-to-the-model-spec",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4536,
+    "output_tokens": 102,
+    "usd": 0.010092,
+    "seconds": 3.14,
+    "at": "2026-08-31T18:13:01.573612+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-rosalind",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4551,
+    "output_tokens": 897,
+    "usd": 0.018072,
+    "seconds": 9.89,
+    "at": "2026-08-31T18:13:01.740008+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-openai-safety-fellowship",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4516,
+    "output_tokens": 352,
+    "usd": 0.012552,
+    "seconds": 5.79,
+    "at": "2026-08-31T18:13:01.867537+00:00"
+  },
+  {
+    "url": "https://openai.com/index/safety-bug-bounty",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4547,
+    "output_tokens": 116,
+    "usd": 0.010254,
+    "seconds": 3.19,
+    "at": "2026-08-31T18:13:02.699546+00:00"
+  },
+  {
+    "url": "https://openai.com/index/teen-safety-policies-gpt-oss-safeguard",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4545,
+    "output_tokens": 103,
+    "usd": 0.01012,
+    "seconds": 3.29,
+    "at": "2026-08-31T18:13:03.315672+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-5",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4517,
+    "output_tokens": 1135,
+    "usd": 0.020384,
+    "seconds": 13.64,
+    "at": "2026-08-31T18:13:04.234640+00:00"
+  },
+  {
+    "url": "https://openai.com/index/update-on-the-openai-foundation",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4532,
+    "output_tokens": 201,
+    "usd": 0.011074,
+    "seconds": 4.27,
+    "at": "2026-08-31T18:13:04.505665+00:00"
+  },
+  {
+    "url": "https://openai.com/index/japan-teen-safety-blueprint",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4560,
+    "output_tokens": 109,
+    "usd": 0.01021,
+    "seconds": 3.2,
+    "at": "2026-08-31T18:13:05.917261+00:00"
+  },
+  {
+    "url": "https://openai.com/index/creating-with-sora-safely",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4553,
+    "output_tokens": 352,
+    "usd": 0.012626,
+    "seconds": 5.96,
+    "at": "2026-08-31T18:13:07.566678+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-5-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4481,
+    "output_tokens": 1500,
+    "usd": 0.023962,
+    "seconds": 17.43,
+    "at": "2026-08-31T18:13:07.705871+00:00"
+  },
+  {
+    "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4557,
+    "output_tokens": 430,
+    "usd": 0.013414,
+    "seconds": 6.81,
+    "at": "2026-08-31T18:13:08.576881+00:00"
+  },
+  {
+    "url": "https://openai.com/index/accelerating-the-next-phase-ai",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4548,
+    "output_tokens": 925,
+    "usd": 0.018346,
+    "seconds": 10.67,
+    "at": "2026-08-31T18:13:08.899689+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-astral",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4504,
+    "output_tokens": 607,
+    "usd": 0.015078,
+    "seconds": 8.37,
+    "at": "2026-08-31T18:13:10.264819+00:00"
+  },
+  {
+    "url": "https://openai.com/index/designing-agents-to-resist-prompt-injection",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4534,
+    "output_tokens": 237,
+    "usd": 0.011438,
+    "seconds": 4.4,
+    "at": "2026-08-31T18:13:10.351713+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/australia-MOU",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6936,
+    "output_tokens": 1008,
+    "usd": 0.023952,
+    "seconds": 12.56,
+    "at": "2026-08-31T18:13:10.672227+00:00"
+  },
+  {
+    "url": "https://openai.com/index/instruction-hierarchy-challenge",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4543,
+    "output_tokens": 114,
+    "usd": 0.010226,
+    "seconds": 3.4,
+    "at": "2026-08-31T18:13:10.998777+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/google-broadcom-partnership-compute",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6049,
+    "output_tokens": 1807,
+    "usd": 0.030168,
+    "seconds": 17.06,
+    "at": "2026-08-31T18:13:12.378120+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4561,
+    "output_tokens": 1047,
+    "usd": 0.019592,
+    "seconds": 10.38,
+    "at": "2026-08-31T18:13:13.729563+00:00"
+  },
+  {
+    "url": "https://openai.com/index/openai-to-acquire-promptfoo",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4538,
+    "output_tokens": 421,
+    "usd": 0.013286,
+    "seconds": 6.28,
+    "at": "2026-08-31T18:13:14.020104+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-partner-network",
+    "model": "claude-sonnet-5",
+    "input_tokens": 7055,
+    "output_tokens": 780,
+    "usd": 0.02191,
+    "seconds": 10.4,
+    "at": "2026-08-31T18:13:14.665606+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/the-anthropic-institute",
+    "model": "claude-sonnet-5",
+    "input_tokens": 6855,
+    "output_tokens": 790,
+    "usd": 0.02161,
+    "seconds": 11.55,
+    "at": "2026-08-31T18:13:16.088178+00:00"
+  },
+  {
+    "url": "https://www.anthropic.com/news/claude-opus-4-7",
+    "model": "claude-sonnet-5",
+    "input_tokens": 12242,
+    "output_tokens": 2441,
+    "usd": 0.048894,
+    "seconds": 24.73,
+    "at": "2026-08-31T18:13:16.356648+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-4-thinking-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4489,
+    "output_tokens": 402,
+    "usd": 0.012998,
+    "seconds": 6.74,
+    "at": "2026-08-31T18:13:17.042417+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-3-instant",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4495,
+    "output_tokens": 514,
+    "usd": 0.01413,
+    "seconds": 7.3,
+    "at": "2026-08-31T18:13:17.682565+00:00"
+  },
+  {
+    "url": "https://openai.com/index/balyasny-asset-management",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4531,
+    "output_tokens": 708,
+    "usd": 0.016142,
+    "seconds": 9.85,
+    "at": "2026-08-31T18:13:18.462131+00:00"
+  },
+  {
+    "url": "https://openai.com/index/gpt-5-3-instant-system-card",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4487,
+    "output_tokens": 750,
+    "usd": 0.016474,
+    "seconds": 10.33,
+    "at": "2026-08-31T18:13:21.043457+00:00"
+  },
+  {
+    "url": "https://openai.com/index/introducing-gpt-5-4",
+    "model": "claude-sonnet-5",
+    "input_tokens": 4543,
+    "output_tokens": 1219,
+    "usd": 0.021276,
+    "seconds": 12.56,
+    "at": "2026-08-31T18:13:21.487266+00:00"
+  }
+]

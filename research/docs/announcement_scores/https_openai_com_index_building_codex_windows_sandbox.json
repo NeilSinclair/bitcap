@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "OpenAI describes how it built a sandboxed environment with controlled file access and network limits to enable its Codex tool to run on Windows.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

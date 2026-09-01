@@ -858,3 +858,162 @@ Anthropic-shaped labs). The two populations barely intersect: 1.7% overlap at An
   is retained in the register but flagged `profile_fetched: false` rather than dropped.
 - *Count `c-openai.com` contractors as staff.* Rejected: "works at the lab" and "is
   employed by the lab" are different claims. Recorded as a separate tier.
+
+---
+
+## Announcement scoring: classify with the LLM, score with a rule
+
+**Decision.** The LLM never emits a score. It classifies an announcement and tags the
+mechanisms and categories it touches, with a verbatim quote required for every tag. The
+score is computed deterministically from `config/scoring.yaml` as
+`event_weight × strongest_mechanism(magnitude × confidence)`.
+
+**Why.** An opaque 1–10 from a model cannot be defended in a room. Every number this rule
+produces can be argued line by line and changed without touching code, which is also what
+the "config, not code" requirement demands. The LLM does what it is good at — reading a
+document and saying what is in it — and the judgment about what matters stays inspectable.
+
+**Alternatives rejected.**
+- *Let the model score directly.* Rejected as indefensible under questioning.
+- *Sum the mechanism tags.* Rejected: six weak tags would out-score one strong one. The
+  rule takes the maximum, pinned by a test.
+- *Hand-score a gold set as the anchor.* Rejected as ground truth (it is opinion), though
+  retained as a tiebreaker. See the evaluation discussion — market-outcome and press-lead
+  anchors are the defensible ones and are not yet built.
+
+**Result on the first run.** 375 announcements over six months; 289 (77%) scored zero.
+Zero is the expected answer for regional expansion, grants, hiring and policy comment, and
+the filter working is the point. The top of the list is what an investor would want:
+Anthropic–Google–Broadcom and Anthropic–Amazon compute commitments, the $65B Series H,
+DeepSeek V4 open weights, and the frontier model releases. $5.25, no failures.
+
+**Four rule failures found by examining disagreements, not by averaging them.** The model
+also emits its own `notable` flag; where that disagrees with the computed score, the score
+is usually wrong:
+
+1. *`corporate_other: 0` is a trap.* "Anthropic confidentially submits draft S-1 to the
+   SEC" scored **0**. An IPO filing by a frontier lab is plainly investment signal. The
+   catch-all bucket swallows corporate finance events.
+2. *Event weight acts as a veto.* Because the rule multiplies, a low-weight event type
+   crushes a high-magnitude mechanism. The first US export control applied to a frontier
+   model's access scored 20, because `safety_policy` is weighted 1 — even though the
+   `export_controls` mechanism fired at high magnitude.
+3. *Routine point releases are over-scored.* Every incremental model release scores 46–67
+   alongside genuine frontier launches. Magnitude should separate them; event weight
+   overrides it.
+4. *The mechanism vocabulary has a hole.* `categories.yaml` explicitly names custom
+   silicon as the thing `accelerator_custom_si` is most exposed to, but no *mechanism*
+   exists for a lab moving to in-house silicon. On "OpenAI and Broadcom unveil LLM-optimized
+   inference chip" the model reached for the category id in the mechanism field; the
+   validity guard dropped it as a hallucination. **The guard was right and the vocabulary
+   was wrong** — the model was expressing something real that the config could not say.
+
+**Consequence — the multiplicative form is the structural bug.** Event type and mechanism
+strength are independent axes and should contribute additively; multiplying lets either
+one veto the other. Not yet changed: it alters every score, and the vocabulary gaps
+(`corporate_finance` event type, a custom-silicon mechanism) should be fixed in the same
+pass.
+
+**Consequence — lab announcements barely reach the fund's largest category.** Category
+reach is concentrated in `hyperscale_platform` (18) and `ai_compute_hosting` (12), while
+`memory_storage` — the fund's *largest* category at 19% — is touched 3 times, and
+`foundry_logic` and `semicap_equipment` once each. Labs announce compute deals and models;
+they do not announce DRAM. Reaching memory and semicap needs the mechanism layer to carry
+the inference (more accelerators ⇒ more HBM), which is exactly what `mechanisms.yaml`
+exists for and what the propagation step must be judged on.
+
+**Source asymmetry, recorded.** openai.com is behind Cloudflare: the news index, article
+pages and WebFetch all return 403. OpenAI items are scored from the official RSS title and
+summary (median ~165 characters) with tag confidence capped at medium; Anthropic and
+DeepSeek are scored on full text. Every item on the page states which it was, so an
+OpenAI score is never silently compared against an Anthropic one.
+
+---
+
+## Model selection for announcement classification, and the variance problem behind it
+
+**The problem, discovered not assumed.** Comparing two full runs over the same 375
+announcements showed 9% of re-classified items flipping their `is_signal` verdict. A
+dedicated probe — same article, same model, same prompt, three times — found only **6 of 12
+borderline items scoring identically**, with one article ranging from **17.8 to 80 across six
+runs**. A score that moves that much cannot be shown to an investment team.
+
+**There is no temperature to turn down.** `temperature` is deprecated on the Claude 5
+family: absent from the SDK signature, and rejected by the API with "`temperature` is
+deprecated for this model". Verified directly rather than assumed. The variance is
+inherent to the model as exposed and has to be handled architecturally.
+
+### What was tested, in order
+
+**1. Remove the `is_signal` field (prompt v3 → v4).** Hypothesis: the flag was an escape
+hatch — when the model set it false it emitted no mechanism tags in 86% of runs, versus 0%
+when true, so a single unstable boolean was discarding the evidence.
+
+| Same 12 items, 3 runs | v3 (with `is_signal`) | v4 (removed) |
+|---|---|---|
+| Score identical across runs | 3/12 | **6/12** |
+| Median score range | 6.7 | **2.2** |
+| Worst range | 35.6 | **17.8** |
+| `event_type` stable | 8/12 | **10/12** |
+
+Adopted, but **the hypothesis was wrong**: empty-tag runs went 39% → 47%, slightly worse.
+The model abandons tagging just as often without the field to justify it. What improved was
+score reproducibility via steadier `event_type`. Recorded because the fix worked for a
+different reason than predicted, and the residual instability is in the tagging step.
+
+**2. Haiku 4.5 instead of Sonnet 5.** More consistent on most items (9/12 identical, median
+range 0.0) and 4.3x cheaper — but a worse tail (worst range 66.7) and only **9/12 modal
+agreement with Sonnet on event type**. Rejected: it scored *both* S-1 filings at 0.0,
+stably. Its apparent stability is partly confident wrongness, and it silently reintroduces
+the exact failure this work existed to fix. Noted as viable in a two-tier design: Haiku for
+bulk classification, Sonnet only near band boundaries or where repeated Haiku runs disagree.
+
+**3. Majority voting, Sonnet 5.** Classify each item 3 times; majority on `event_type`,
+keep a mechanism present in >=2 of 3 runs, median magnitude and confidence. Then run the
+whole voting process **twice** and compare — because voting is worthless unless the reduced
+answer is itself stable.
+
+**Result: 6/6 voted scores identical across two independent passes**, and the vote absorbed
+genuine disagreement on **5 of 6 items** (an event-type split 2:1, tags appearing 3/3 in one
+pass and 0/3 in the next). It converges because the score depends only on `event_type` and
+the *strongest* mechanism, both majority-stable even when the full tag set is not. Taking
+the max rather than the sum is what makes voting cheap here.
+
+**4. GPT-5-mini instead of Sonnet, same prompt, schema and voting rule.** 4.7x cheaper.
+
+| | Sonnet 5 | GPT-5-mini |
+|---|---|---|
+| Voted score reproducible across passes | **6/6** | 4/6 |
+| Mechanism tags dropped by the vote | 1 | 7 |
+| Cost (6 items, 3 votes, 2 passes) | $1.15 | **$0.25** |
+
+Rejected for now. The vote did not converge: on the OpenAI-Broadcom chip the event-type
+majority flipped between passes (`compute_commitment` 2:1, then `product_launch` 2:1) with
+*identical* mechanism tags, so a 40-point swing came from the event vote alone. It also
+disagrees systematically, not just noisily, scoring Claude Opus 4.8 at 40 against Sonnet's
+17.8 in both passes. Seven dropped tags against one means its runs agree with each other far
+less, so majority-of-3 cannot settle them.
+
+**Untested and worth testing:** 5 or 7 votes with GPT-5-mini would still undercut Sonnet at
+3 votes on price. The saving is real; it just needs more votes to reach the same place.
+
+### Decision
+
+**Sonnet 5 with 3-vote majority consensus**, prompt v4. Roughly $0.19 per voted item,
+about $21 for a 375-item backfill uncached and ~$10 batched.
+
+### Consequences
+
+- Consensus is part of the pipeline, not an optimisation. A single classification is not a
+  defensible input to a score that a person will act on.
+- The vote's own disagreement is recorded per item (`vote_notes`: event counts, tags seen,
+  tags dropped), so a reader can see how contested a score was. This feeds the variance
+  reporting required in [planning.md](planning.md) 6a.
+- Provider choice is now a shim (`research/announcements/providers.py`), so re-testing a
+  cheaper model later is a flag, not a rewrite.
+- **Caveat on the evidence:** six items, two passes. Strong evidence that 3-vote consensus
+  stabilises the score, not proof it is stable everywhere. Items sitting exactly on a band
+  boundary are the likely remaining failure and have not been probed.
+- **Caveat on the cost figures:** GPT-5-mini pricing is marked UNVERIFIED in `providers.py`.
+  Token counts are exact from the API; the dollar conversion was not checked against
+  OpenAI's published prices.

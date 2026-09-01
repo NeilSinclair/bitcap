@@ -10,7 +10,7 @@ was 4,000 shares worth $0.2m (0.04% of the book). The real position was built in
 Q1 2023 near the memory-cycle low and has been material since. In Q2 2026 they
 cut shares 40% while the weight still rose — trimming into strength. That reads
 as cycle discipline, not a structural AI holding, and it changes which
-transmission mechanism they are actually trading (`ai_capex_cycle_turns`, not
+transmission mechanism they are actually trading (`ai_capex_investments`, not
 `memory_intensity_up`).
 
 **BIT's own audited report contains an entity-resolution failure.** Page 40 lists

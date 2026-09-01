@@ -75,3 +75,75 @@ LLM extraction across the register at scale.
 Anthropic's publication rate (~17 articles per 3 months) is ~680 articles/year, so
 **~$34/year** for LLM byline extraction alone — cheap in absolute terms, but 100% of it
 is avoidable on channels whose markup is already known.
+
+---
+
+## Announcement scoring — three labs, six months (2026-08-31)
+
+375 announcements classified against `config/mechanisms.yaml` and
+`config/categories.yaml`. Model `claude-sonnet-5`, no thinking, structured output.
+
+| | |
+|---|---|
+| Calls | 375 (0 failed, 0 retried) |
+| Input tokens | 1,661,066 |
+| Output tokens | 192,298 |
+| **Total** | **$5.2451** |
+| Median per call | $0.0111 (3,842 in / 239 out) |
+
+**Where the money goes: the system prompt, not the articles.** Median input is 3,842
+tokens against a median output of 239. The mechanism and category vocabularies are
+re-sent on every call and account for most of that — an OpenAI RSS item is ~100 tokens of
+content carried on ~3,700 tokens of instructions.
+
+**Prompt caching is the obvious saving and was deliberately not done.** The system prompt
+is byte-identical across all 375 calls, so caching it would cut input cost by roughly 80%
+(~$4 saved on this run). At $5 for a full six-month backfill it was not worth the
+complexity, but at register scale it is the first thing to add.
+
+**Extrapolation.** $0.014 per announcement. The three labs produced 375 items in six
+months; ten labs at that rate is ~2,500/year, so **~$35/year** uncached, or ~$8 cached.
+The recurring cost of this pipeline is trivial — the backfill is the only real spend.
+
+**Running total across all workflows: $9.75.**
+
+---
+
+## Model and variance experiments (2026-08-31)
+
+Spend that produced **no register output at all**. It bought answers about reliability and
+model choice, and is recorded separately so the cost of the pipeline is never confused with
+the cost of finding out whether the pipeline can be trusted.
+
+| Experiment | Calls | Cost |
+|---|---|---|
+| Variance probe, prompt v3, Sonnet 5 (12 items x 3) | 36 | $0.92 |
+| Variance probe, prompt v4, Sonnet 5 (12 items x 3) | 36 | $0.87 |
+| Variance probe, prompt v4, Haiku 4.5 (12 items x 3) | 36 | $0.20 |
+| Voting, Sonnet 5 (6 items x 3 votes x 2 passes) | 36 | $1.15 |
+| Voting, GPT-5-mini (6 items x 3 votes x 2 passes) | 36 | $0.25 |
+| **Subtotal** | **180** | **~$3.39** |
+
+Plus an earlier, discarded v3 probe and a partial v2 re-scoring run, both included in the
+running total.
+
+**Per-model unit economics on the same six articles, 3 votes each:**
+
+| Model | Per voted item | Voted score reproducible |
+|---|---|---|
+| Sonnet 5 | $0.19 | 6/6 |
+| GPT-5-mini | $0.04 | 4/6 |
+| Haiku 4.5 | ~$0.05 (single-run probe) | not voted; 9/12 agreement with Sonnet |
+
+GPT-5-mini pricing is **UNVERIFIED** — token counts are exact, the $/token conversion in
+`providers.py` was not checked against OpenAI's published rates.
+
+**Lesson recorded in [planning.md](planning.md) 6a: keep variance samples small.** Probing
+cost ~$3.39 and produced nothing shippable. Future probes use 5-6 items at 5 runs on a
+fixed named sample, never the whole corpus.
+
+**Projected backfill with the chosen configuration** (Sonnet 5, 3-vote consensus, 375
+announcements): ~$21 uncached, ~$10 batched. Recurring incremental runs are a fraction of
+that, since only new announcements are classified.
+
+**Running total across all workflows: $14.18.**

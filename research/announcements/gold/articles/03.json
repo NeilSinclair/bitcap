@@ -1,0 +1,55 @@
+{
+  "id": "03",
+  "lab": "openai",
+  "date": "2026-03-31",
+  "title": "Accelerating the next phase of AI",
+  "url": "https://openai.com/index/accelerating-the-next-phase-ai",
+  "text_source": "rss_summary",
+  "text": "Accelerating the next phase of AI. OpenAI raises $122 billion in new funding to expand frontier AI globally, invest in next-generation compute, and meet growing demand for ChatGPT, Codex, and enterprise AI.",
+  "gold": {
+    "event_type": "corporate_finance",
+    "mechanisms": [
+      {
+        "id": "lab_capital_access",
+        "sign": "positive",
+        "magnitude": "high",
+        "confidence": "medium",
+        "quote": "OpenAI raises $122 billion in new funding to expand frontier AI globally"
+      },
+      {
+        "id": "training_compute_up",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "low",
+        "quote": "invest in next-generation compute"
+      }
+    ],
+    "categories": [
+      {
+        "id": "ai_compute_hosting",
+        "sign": "positive",
+        "confidence": "low",
+        "quote": "invest in next-generation compute"
+      }
+    ],
+    "notes": ""
+  },
+  "review": {
+    "votes": 1,
+    "needs_review": null,
+    "why": "single run: no agreement signal available",
+    "tag_votes": {
+      "lab_capital_access": "1/1",
+      "training_compute_up": "1/1"
+    }
+  },
+  "system": {
+    "score": 53.3,
+    "band": "medium",
+    "summary": "OpenAI announced a $122 billion funding round to expand frontier AI globally and invest in next-generation compute to meet demand for ChatGPT, Codex and enterprise AI.",
+    "model": "claude-sonnet-5",
+    "prompt": "v4",
+    "votes": 1,
+    "note": "The system's own answer, kept for comparison. Edit `gold`, not this."
+  }
+}

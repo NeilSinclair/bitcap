@@ -1,0 +1,40 @@
+{
+  "id": "16",
+  "lab": "openai",
+  "date": "2026-06-26",
+  "title": "Previewing GPT-5.6 Sol: a next-generation model",
+  "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+  "text_source": "rss_summary",
+  "text": "Previewing GPT-5.6 Sol: a next-generation model. OpenAI previews GPT-5.6 Sol, a next-generation model with stronger capabilities in coding, science, and cybersecurity, paired with its most advanced safety stack.",
+  "gold": {
+    "event_type": "frontier_model_release",
+    "mechanisms": [
+      {
+        "id": "capability_jump",
+        "sign": "positive",
+        "magnitude": "low",
+        "confidence": "medium",
+        "quote": "stronger capabilities in coding, science, and cybersecurity"
+      }
+    ],
+    "categories": [],
+    "notes": ""
+  },
+  "review": {
+    "votes": 1,
+    "needs_review": null,
+    "why": "single run: no agreement signal available",
+    "tag_votes": {
+      "capability_jump": "1/1"
+    }
+  },
+  "system": {
+    "score": 22.2,
+    "band": "low",
+    "summary": "OpenAI previews GPT-5.6 Sol, a next-generation model with improved coding, science, and cybersecurity capabilities and an updated safety stack.",
+    "model": "claude-sonnet-5",
+    "prompt": "v4",
+    "votes": 1,
+    "note": "The system's own answer, kept for comparison. Edit `gold`, not this."
+  }
+}

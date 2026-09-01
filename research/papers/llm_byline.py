@@ -38,6 +38,7 @@ PRICES = {
     "claude-sonnet-5": (2.00, 10.00),
     "claude-sonnet-5-list": (3.00, 15.00),
     "claude-haiku-4-5": (1.00, 5.00),
+    "claude-haiku-4-5-20251001": (1.00, 5.00),
 }
 
 # The byline sits at the top of the document. Sending 480KB of appendix per page

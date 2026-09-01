@@ -1,0 +1,56 @@
+# Announcement sources: where each lab publishes, and how reachable it is.
+#
+# Adding a lab or a channel is a config change, not a code change. Each entry
+# names a discovery method that fetch_announcements.py implements; the fetcher
+# refuses an unknown method rather than guessing.
+#
+# `text_source` is not decorative. It records what the scorer actually read, so
+# a score computed from a two-line RSS summary is never compared against one
+# computed from a full article without the difference being visible. Every item
+# on the output page carries this field.
+#
+# Scope: the three labs carried through the papers and GitHub research.
+
+version: 1
+window_months: 3
+
+labs:
+  - id: anthropic
+    label: Anthropic
+    method: sitemap
+    index_url: https://www.anthropic.com/sitemap.xml
+    url_contains: /news/
+    text_source: full_text
+    date_from: page
+    notes: >
+      No RSS feed exists (rss.xml, news/rss.xml and feed.xml all 404). The
+      sitemap carries lastmod, which is a modification date rather than a
+      publication date, so it is used only as a coarse prefilter and the real
+      date is read from the page.
+
+  - id: openai
+    label: OpenAI
+    method: rss
+    index_url: https://openai.com/blog/rss.xml
+    text_source: rss_summary
+    date_from: feed
+    notes: >
+      openai.com is behind Cloudflare bot protection: the news index, article
+      pages and WebFetch all return 403 with "Enable JavaScript and cookies to
+      continue". The RSS feed is served without that check, so items are scored
+      from the official title plus editorial summary (median ~165 characters)
+      rather than full text. The citation is still the resolvable openai.com
+      URL. This asymmetry is a known limitation and is surfaced per item.
+
+  - id: deepseek
+    label: DeepSeek
+    method: sitemap
+    index_url: https://api-docs.deepseek.com/sitemap.xml
+    url_contains: /news
+    text_source: full_text
+    date_from: slug
+    notes: >
+      Publishes release notes to its API docs site. The sitemap has no usable
+      lastmod, but slugs encode the date (news260821 = 2026-08-21; pre-2025
+      slugs are MMDD). Only 17 items exist in total, which matches the sparse
+      publication cadence found in the papers research.

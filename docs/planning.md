@@ -60,6 +60,35 @@ The stated bar: *engineer it like a production system you would be on call for.*
 - **System-failure alerting, distinct from content alerts** — the pipeline tells me when it breaks
 - Expected agent failure modes handled deliberately: malformed output, hallucinated citations, source fetch failure, cost runaway
 - Model choice per task with fallbacks, all recorded
+- **Concurrent and batched LLM calls — decided, not optional.** See below.
+
+### 4a. LLM calls must be concurrent, and backfills batched
+
+Learned the expensive way on the announcement scoring spike. That run classified 375
+articles **serially**, one blocking call at a time: ~5.8s each, ~36 minutes wall clock,
+of which almost all was network wait with an idle CPU. The loop was inherited from the
+byline extractor, where 17 pages made serialism invisible.
+
+Three separate requirements come out of it:
+
+1. **Concurrency for anything interactive.** A thread pool of 10–20 workers turns that
+   36 minutes into 2–3. The SDK client is thread-safe. Two things need care: any
+   run-state or cost file written per iteration must be lock-guarded or collected and
+   written once, and rate-limit backoff must be deliberate rather than incidental.
+2. **The Batches API for backfills.** Half price, and latency is irrelevant when
+   seeding history. The initial register backfill across ten labs is exactly this shape
+   and should never be paid at interactive rates. Recurring incremental runs are small
+   enough to stay synchronous and concurrent.
+3. **Cheap validation before expensive runs.** The deeper error on that spike was not
+   the serialism. Changing the scoring *formula* required no LLM calls at all, because
+   scores are computed from cached tags — the whole change could have been tested for
+   free by recomputing from cache, then re-classifying only the affected slice. Instead
+   a full re-run was launched on a rule that had never been checked on ten items.
+   **Establish the result on the smallest sample that can disprove it, then scale.**
+
+Consequence for the pipeline: ingestion and extraction expose a concurrency limit and a
+batch mode as configuration, and the cost log records which mode a run used, since the
+same workflow costs twice as much interactively as batched.
 
 ## 5. Audiences
 
@@ -78,6 +107,37 @@ Two separate evaluation problems. Both are required; conflating them is a trap.
 **Scoring validation.** A gold set of items with human-assigned importance scores, compared against system output, with the disagreements examined rather than averaged away. Build this early and don't skimp — it makes the difference downstream. Calibrate against history where possible: look at past lab outputs with known market consequences (DeepSeek's effect on NVIDIA and the energy complex is the obvious case) and check whether the scorer would have flagged them.
 
 Where a fully honest ground truth isn't reachable, say so plainly and use a defensible proxy.
+
+### 6a. Variance is a third evaluation problem, and it ships in the product
+
+Extraction quality and scoring validity both assume the system gives the *same answer
+twice*. It does not. Measured on the announcement scorer: the same article, same model,
+same prompt, run three times produced an identical score in only 3 of 12 cases, with a
+worst-case spread of 17.8 to 80 on one item across six runs.
+
+**This is not a temperature setting.** `temperature` is deprecated on the Claude 5 family
+— absent from the SDK signature and rejected by the API with "`temperature` is deprecated
+for this model". The variance is inherent to the model as exposed and has to be handled
+architecturally: repeat and vote, a more constrained per-mechanism yes/no formulation, or
+presenting ranks rather than point scores.
+
+**Requirement: the delivered app reports its own variance.** A score shown without any
+indication of its stability is over-precise and invites exactly the trust the system has
+not earned. Concretely:
+
+- Re-classify a sample on each run and publish the agreement rate as a health metric,
+  alongside cost and coverage.
+- Carry a stability indicator per item where an item was classified more than once, so a
+  reader can see that a 66.7 was reproduced three times out of three and a 44 was not.
+- Alert on drift in the aggregate agreement rate, as a **system-failure** alert rather
+  than a content alert — a scorer that quietly becomes less consistent is the silent
+  degradation this whole design is supposed to catch.
+
+**Keep variance samples small.** Variance probing is pure cost with no output: it produced
+nothing for the register, and at 12 items x 3 runs it cost ~$0.90 a probe, ~$2.80 in
+total. Future probes use **5–6 items at 5 runs**, which is better statistics on the same
+money, chosen to span the failure modes rather than to cover the corpus. Probe on a fixed
+named sample so results are comparable between runs, and never probe the whole set.
 
 ## 7. Open questions
 

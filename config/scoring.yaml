@@ -1,0 +1,100 @@
+# Announcement scoring rule.
+#
+# The LLM classifies and tags with evidence; it does NOT emit a score. The score
+# is computed here, deterministically, from those tags. This split is deliberate
+# (docs/decisions.md): an opaque 1-10 from a model cannot be defended in a room,
+# whereas every number this file produces can be argued line by line and changed
+# without touching code.
+#
+#   strongest = max over mechanism tags of (magnitude * confidence)   # 1..9
+#   score     = 100 * (event_weight/5) * (strongest/9)
+#
+# EVERYTHING MULTIPLIES, AND THAT IS THE POINT.
+#
+# Inside a mechanism tag, magnitude and confidence multiply because the product
+# reads as an expected magnitude: confidence is a probability weight on how large
+# the effect is. "A big thing we are unsure of" (3x1) equals "a small thing we
+# are certain of" (1x3).
+#
+# The two axes then multiply for two reasons.
+#
+# 1. NO MECHANISM, NO SCORE. A product cannot score an item that carries no
+#    quote-backed tag. Every mechanism tag must cite the document verbatim, so
+#    multiplying makes "cites a primary source" a structural property of any
+#    non-zero score rather than a convention. An additive form was tried in v2
+#    and abandoned: it let an item score 40 on its event label alone, with no
+#    tags and no quotes, which the brief does not permit.
+# 2. THE AXES ARE NOT INDEPENDENT. `compute_commitment` is weighted 5 precisely
+#    because it tends to fire training_compute_up at high magnitude. Event weight
+#    is a proxy for expected mechanism strength, so adding the two double-counts
+#    the same quantity. The product reads correctly as "importance of this kind
+#    of event, times the strength of the evidence actually found".
+#
+# WHAT v1 ACTUALLY GOT WRONG was the vocabulary, not the arithmetic. An S-1
+# filing scored 0 because it landed in a weight-0 residual and no mechanism could
+# express it; the first US export control on a frontier model scored 20 because
+# it was classified `safety_policy` (weight 1) rather than as an action taken ON
+# the lab. Both are fixed by `corporate_finance`, `regulatory_action` and the
+# `lab_capital_access` mechanism -- under this multiplicative rule, unchanged.
+
+version: 3
+
+# What kind of announcement it is. Rationale is recorded because these numbers
+# are the most arguable thing in the system.
+event_weight:
+  frontier_model_release: 5    # a new top-of-range model resets expectations
+  compute_commitment: 5        # disclosed clusters and capex, the cleanest signal
+  open_weights: 5              # the DeepSeek-R1 shape: undercuts API rent directly
+  pricing_change: 5            # moves unit economics with no capability change
+  capability_result: 4         # a crossed threshold, transmission slower
+  corporate_finance: 4         # IPO filings, raises, M&A, restructurings
+  regulatory_action: 4         # action taken ON a lab: export controls, rulings
+  research_result: 3           # may precede a capability jump by quarters
+  incremental_model_release: 2 # point releases, distinct from a frontier launch
+  developer_tooling: 2         # application layer; reaches software, not silicon
+  product_launch: 2
+  enterprise_partnership: 2    # adoption evidence, rarely sized in the release
+  safety_policy: 1             # the lab's OWN voluntary policy, not enforcement
+  personnel: 1                 # tracked as an event elsewhere, weak as a score
+  other: 0                     # a true residual - see below
+
+# `other` is deliberately meaningless and weighted 0. Its job is to give the
+# classifier somewhere to put genuinely uncategorisable items so it never
+# force-fits one into a wrong type, where the error would be invisible.
+#
+# ITS SIZE IS A HEALTH METRIC. A residual filling with things that matter means
+# the vocabulary is incomplete. In the v1 run it held 48 of 375 items, and among
+# the noise (office openings, student club forms, "our principles") sat both
+# labs' confidential S-1 filings and three acquisitions, all scoring zero. That
+# is what produced `corporate_finance`. It was named `corporate_other` in v1,
+# which implied a corporate-events bucket and invited exactly that misreading.
+
+magnitude:
+  high: 3
+  medium: 2
+  low: 1
+
+# Same 1-3 scale as magnitude, so neither axis is quietly favoured. v1 used
+# 1.0/0.7/0.4, which is not a constant multiple of thirds: it paid a
+# high-magnitude, low-confidence tag 0.400 where thirds pay 0.333, inflating by
+# up to 20% exactly the tags that deserve it least.
+confidence:
+  high: 3
+  medium: 2
+  low: 1
+
+# Denominators: each axis normalised by its own maximum before multiplying.
+# 5 = top event weight; 9 = magnitude 3 * confidence 3.
+max_event_weight: 5
+max_mechanism: 9
+
+# Bands used for presentation only. They label a score, they do not change it.
+bands:
+  - min: 60
+    label: high
+  - min: 30
+    label: medium
+  - min: 1
+    label: low
+  - min: 0
+    label: none

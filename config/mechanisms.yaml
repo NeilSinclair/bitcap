@@ -23,16 +23,28 @@ mechanisms:
     polarity_note: Positive sign = company benefits when training demand rises.
 
   - id: inference_cost_down
-    label: Cost per unit of inference falls
+    label: Compute and memory needed per token falls
     description: >
-      Distillation, quantisation, sparsity, better serving stacks or cheaper
-      hardware reduce the cost of serving a token. The DeepSeek-R1 shock of
-      January 2025 is the canonical event.
+      Efficiency: the same output takes less hardware. Distillation, quantisation,
+      sparsity, grouped-query attention and better serving stacks reduce the FLOPs
+      and the resident bytes required per token. The DeepSeek-R1 shock of January
+      2025 is the canonical event.
+
+      Tag this only when the *work* per token falls, not whenever a price falls. A
+      cheaper accelerator, a discount, or margin competition lowers the price of a
+      token without changing the hardware content of one; that is a pricing_change
+      event, not this mechanism.
     polarity_note: >
-      Positive sign = company benefits when inference gets cheaper (usually
-      application-layer businesses whose COGS falls, or volume-elastic demand).
-      Negative sign = company is hurt (usually suppliers paid per unit of
-      compute or memory consumed).
+      Positive sign = company benefits, meaning it buys inference as an input and
+      its cost of goods falls. Negative sign = company is hurt, meaning it sells
+      hardware or capacity consumed per unit of work.
+
+      This mechanism is deliberately NOT netted against demand elasticity. Cheaper
+      inference reliably raises total tokens served, and historically that offset
+      has dominated for suppliers -- but that offset is `inference_volume_up` and
+      is tagged separately. An efficiency release should fire both, with opposite
+      signs for a supplier, so the tension is shown rather than pre-resolved into
+      a single guess about elasticity.
 
   - id: inference_volume_up
     label: Inference volume rises
@@ -40,7 +52,7 @@ mechanisms:
       More tokens served in aggregate: consumer adoption, agentic workflows that
       issue many calls per task, or reasoning models that spend more compute at
       test time. Often the second-order offset to inference_cost_down.
-    polarity_note: Positive sign = company benefits when total tokens served rises.
+    polarity_note: Positive sign = company benefits when total tokens served rises. Indicates a potential increase in data center demand, benefiting infrastructure suppliers as well as chip manufacturers.
 
   - id: memory_intensity_up
     label: Memory content per accelerator rises
@@ -72,13 +84,6 @@ mechanisms:
     polarity_note: >
       Positive sign = company benefits from open weights (self-hosters, hardware
       for local inference, application builders avoiding API rent).
-
-  - id: model_commoditisation
-    label: Model layer commoditises
-    description: >
-      Capability converges across providers and pricing power migrates away from
-      model developers toward infrastructure below and applications above.
-    polarity_note: Positive sign = company benefits as the model layer commoditises.
 
   - id: capability_jump
     label: Step change in model capability
@@ -112,14 +117,40 @@ mechanisms:
       Positive sign = company benefits from tightening (protected incumbents,
       onshore capacity). Negative sign = company is hurt by tightening.
 
-  - id: ai_capex_cycle_turns
-    label: AI capital expenditure cycle turns down
+  - id: ai_capex_investments
+    label: AI infrastructure capital expenditure
     description: >
-      Hyperscalers or neoclouds slow accelerator and datacentre spending because
-      of financing cost, depreciation, utilisation, or disappointing returns.
+      Capital committed to AI infrastructure -- datacentre build-outs, accelerator
+      and chip purchases, power and energy supply. A positive sign is spending
+      being committed or accelerated; negative is spending slowed or withdrawn
+      because of financing cost, depreciation, utilisation or weak returns.
     polarity_note: >
-      Positive sign = company benefits when capex slows. Negative sign = company
-      is hurt. Most infrastructure suppliers are negative here.
+      Positive sign = company benefits from capital being spent on AI
+      infrastructure, chips or energy. Most infrastructure suppliers are positive
+      here.
+
+  - id: custom_silicon_substitution
+    label: Labs move to in-house and custom accelerators
+    description: >
+      A frontier lab designs, co-designs or deploys its own inference or training
+      silicon, displacing merchant accelerators. 
+    polarity_note: >
+      Positive sign = company benefits when labs go custom (ASIC and IP vendors
+      designing the parts, and the foundries building them). Negative sign =
+      company is displaced, usually merchant accelerator vendors losing share of
+      a lab's fleet. The direction is not uniform inside one category.
+
+  - id: lab_capital_access
+    label: A lab's access to capital changes
+    description: >
+      Funding rounds, IPO filings, credit facilities and other events that change
+      how much a lab can commit to future compute. The transmission is indirect
+      but real: capital raised is the precondition for the cluster and power
+      commitments that reach suppliers.
+    polarity_note: >
+      Positive sign = company benefits when labs can raise more. Applies to
+      suppliers whose order book depends on lab capex being financeable. Also
+      applies to companies that have a financial investment in the lab.
 
 # Controlled vocabularies used by companies.yaml.
 enums:
