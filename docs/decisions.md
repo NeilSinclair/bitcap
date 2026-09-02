@@ -1614,3 +1614,75 @@ signal.
 under v7; an output cap only bills what is generated). `prefill_gold.py` and
 `run_blind.py` stay pinned to v6 — they are records of how past artefacts were
 produced.
+
+## The database layer, and the join finally implemented (2026-09-02)
+
+**Decision.** A new installable `app/` package persists the pipeline into
+Postgres (SQLAlchemy 2.0, engine-agnostic; sqlite fallback so a clone runs
+without Docker) and implements the article→holding join that the config had
+documented since the vocabularies were written but nothing consumed. Raw-first,
+per Neil's shape: verbatim JSON payloads land in `raw_*` tables, YAML mirrors
+into `ref_*`/`holding*` tables, clean tables derive from raw, and a
+`connections` table materialises the join.
+
+**ELT reads the committed artifacts.** The research scripts keep writing their
+JSON files; the DB load only reads. Zero LLM cost, real data on a fresh clone,
+and the caches stay the idempotency layer for the expensive calls. Rebuild =
+drop + create_all + load, so Alembic is deferred until deployment — the DB is
+fully derived from committed files.
+
+**Four routes, provenance on every row.** mechanism (article tag × company
+edge), category (tag × membership), lab_exposure (article lab × company lab
+edge), named (company literally named in the text — string match on suffix-
+stripped names and ≥3-char tickers). Sign composition multiplies and `mixed`
+dominates; strength reuses scoring.yaml's own magnitude×confidence maps with
+the low-confidence gate, and zero-strength connections are not written. Two
+honesty rules over cleverness: lab_exposure and named connections are always
+`mixed` — the classifier has no lab-sentiment axis and a mention carries no
+polarity, so direction there would be a guess dressed as data.
+
+**What the corpus produces.** 191 articles → 660 connections (529 mechanism,
+84 lab_exposure after the gate below, 40 category, 7 named — all seven named
+are NVIDIA, which is the only holding labs actually name). `ai_score` is
+persisted for the first time: recomputed deterministically from the practice
+tags, 81 of 191 articles carry one. The recomputed investment score reconciles
+with the file register 191/191 — the free end-to-end proof the transform is
+faithful.
+
+**What Postgres caught that sqlite forgave.** Two real bugs surfaced only on
+the real engine: FK-ordering in the ref reload, and a failure path that could
+not record its own failure. sqlite ignores foreign keys by default, so the
+test suite now switches them on (`PRAGMA foreign_keys=ON`) — the dialect gap
+that hid the bugs is closed, not worked around. Consequence of the fix: a ref
+reload wipes the whole derived clean layer and the load rebuilds it; raw
+tables are never touched — the DB's history lives there, which also ends the
+silent disappearance of articles that fall out of fetch's 3-month window.
+
+**The lab_exposure gate (decided the same day).** Ungated, the route connected
+*every* article from an exposed lab — 263 rows, because the edge fires on the
+publisher rather than on what was published. 179 of them came from articles
+scoring zero: "Expanding OpenAI's presence in Brazil" reaching Amazon is not a
+finding. Neil chose a score gate: the route fires only when the article scores
+above zero on the investment axis. One rule, no hand-maintained event-type
+list, and it reuses scoring already trusted elsewhere.
+
+The risk in a score gate is that it kills the case the route exists for — a
+funding round moves TeraWulf while tagging no semiconductor mechanism — so that
+was checked before choosing rather than assumed: Anthropic's S-1 scores 40
+through its `corporate_finance` event weight and survives. A test pins this
+(`test_gate_does_not_block_the_route_it_exists_for`), and another pins that the
+gate touches no other route. Result: 263 lab_exposure rows -> 84, total
+connections 839 -> 660, and what remains at the top is model launches, compute
+commitments and infrastructure builds — the items where a counterparty tie
+genuinely matters.
+
+**Alternatives rejected.** Pipeline writes DB directly (later refactor; loses
+raw-first and free clone data). Alembic now (nothing to migrate). DB enums for
+vocab (YAML is the vocabulary's home; validate.py the gate). ORM relationships
+(FKs without relationship() keep models flat; explicit flush ordering instead).
+
+**Deferred, one line each:** FastAPI read layer; alert notifier behind
+`pipeline_runs.alerted_at`; fetch consuming the recorded watermarks; a
+lab-sentiment axis in the classifier (would give lab_exposure/named a real
+direction); dialect-specific bulk upserts; Railway/Render deploy config;
+gold_snapshots auto-loader beyond the table.

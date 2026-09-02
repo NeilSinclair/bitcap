@@ -1,0 +1,20 @@
+# Local Postgres for the pipeline database. Deployment targets a managed
+# Postgres (Railway/Render); this mirrors it for development.
+#
+#   docker compose up -d
+#   DATABASE_URL=postgresql+psycopg://bitcap:bitcap@localhost:5432/bitcap
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: bitcap
+      POSTGRES_PASSWORD: bitcap
+      POSTGRES_DB: bitcap
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

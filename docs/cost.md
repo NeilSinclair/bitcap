@@ -259,3 +259,8 @@ $1.6M of the 2.3M total input tokens came from cache at 90% off — the measured
 rate is $0.0285/article against $0.0475 uncached ($9.06 projected), so caching
 saved ~$3.60 on this run alone. Note: the script's progress line prints the
 cumulative cost log, not the run; the $12.92 on screen includes prior runs.
+
+### Database layer + join implementation (2026-09-02)
+
+Zero marginal LLM spend: the DB load reads committed artifacts. Full Postgres
+rebuild (191 articles, 839 connections) runs in ~5s locally.
