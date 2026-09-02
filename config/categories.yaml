@@ -22,7 +22,11 @@
 #
 # Scope: BIT Global Technology Leaders only (docs/decisions.md D8).
 
-version: 1
+# v2 (2026-09-02): definitions sharpened against the v6 gold run, where category
+# precision was 0.50 — every spurious tag came from a company or platform being
+# MENTIONED rather than transmitted to. The classifier reads `definition` only,
+# so the tagging boundaries live there; `boundary` remains fund accounting.
+version: 2
 scope:
   fund: BIT Global Technology Leaders
   as_of: 2026-06-30
@@ -62,7 +66,9 @@ categories:
     label: Accelerators and custom silicon
     definition: >
       AI accelerators, custom ASICs, and the controller and interconnect silicon that
-      surrounds them.
+      surrounds them. Tag when demand or supply for the silicon itself moves;
+      software efficiency work (kernels, serving stacks) runs on accelerators
+      without being a signal about them.
     boundary: >
       Fabless designers of compute and data-movement silicon. EXCLUDES NAND
       controllers (memory_storage), whose demand tracks storage volume rather than
@@ -89,8 +95,9 @@ categories:
   - id: ai_compute_hosting
     label: AI compute hosting
     definition: >
-      Operators that host AI compute for third parties - datacentre capacity, power
-      and GPU fleets sold under contract.
+      Operators whose business is hosting AI compute for third parties - datacentre
+      capacity, power and GPU fleets sold under contract (neoclouds). A hyperscale
+      cloud distributing models or apps is hyperscale_platform, not this.
     boundary: >
       The AI demand driver ONLY. These same companies also mine crypto; that side of
       the business is the `crypto` category, not this one. A frontier-lab signal
@@ -115,7 +122,12 @@ categories:
 
   - id: hyperscale_platform
     label: Hyperscale platforms
-    definition: Cloud and platform businesses that both build and buy frontier AI.
+    definition: >
+      Cloud and platform businesses that both build and buy frontier AI. Tag when
+      the platform relationship IS the announcement - models distributed through
+      the platform, the platform buying or selling frontier compute. A platform
+      named as a rollout venue or region ("pricing changes will begin rolling out
+      in AWS") is a mention, not a signal.
     boundary: >
       Care needed: a hyperscaler can be a lab, a compute supplier and a customer at
       once. Amazon is all three. Guard against counting one event three times.
@@ -131,7 +143,11 @@ categories:
 
   - id: health_insurance
     label: Health and insurance
-    definition: Digital health, health insurance and clinical-stage businesses.
+    definition: >
+      Digital health, health insurance and clinical-stage businesses. Tag when a
+      capability or product crosses into clinical, care or underwriting workflows.
+      A lab doing research WITH a pharma or biotech partner is a story about the
+      lab, not a health signal.
     boundary: >
       Application layer in a regulated vertical. Reached when a model crosses a
       clinical or underwriting threshold - cuts both ways, enabling the incumbent or

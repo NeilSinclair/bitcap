@@ -1488,3 +1488,129 @@ because the repo holds no citation for one. IREN's disclosure of "a new
 multi-year AI Cloud contract with a leading frontier AI lab" does not name the
 lab, so it has no joinable id and is deliberately absent — an unjoinable
 placeholder in a join table looks like data and is not.
+
+## Classify raw articles, not summaries (2026-09-02)
+
+**Decision.** The extraction/scoring model reads raw article text. A cheap-model
+summarisation stage ahead of it is rejected. Cost pressure on classification is
+answered with prompt caching instead.
+
+**The experiment** (`research/summarisation_research.md` →
+`research/summarisation_results.md`). The 20 gold articles were summarised by
+both Haiku 4.5 and GPT-5-mini under a prompt (`prompts/summarisation/v1.md`)
+that injects the scoring vocabulary and demands figures verbatim. The v6
+classifier then ran on the summaries, with everything else held constant, and
+the runs were scored against gold. Fable 5 separately read every original
+against both summaries and traced whether the evidence behind each of the 68
+gold tags survived.
+
+**Why rejected.** The saving is small — 12–17% per article — because the
+classifier's fixed prompt is ~7.3k of ~10.8k input tokens and the tagged JSON
+output doesn't shrink. The damage is large and lands on the load-bearing axis:
+mechanism recall 0.81 → 0.63 (Haiku) / 0.56 (GPT). The fidelity read shows why,
+and that it is systematic: both summarisers independently deleted the *same*
+low-salience mechanism-bearing sentences ("high-volume work economical at much
+greater scale", "more token-efficient than past models", "smarter context
+management") while preserving every headline figure. Summaries also flatten
+framing (an opinion piece reads as a model release), and Haiku editorialised —
+twice leaking tag vocabulary into its summary — which the citation gate cannot
+catch, since quotes verify against what the classifier read.
+
+**Alternatives rejected.** Summarise-then-classify (above). Summarise only long
+documents: parked — the corpus median is ~8.5k chars, where the fixed prompt
+dominates anyway; revisit only if 50k+ char papers enter the pipeline.
+
+**Consequence.** Per-article classification stays at the measured raw rate
+(~$0.047 uncached under v6). Prompt caching on the fixed prompt is the sanctioned
+cost lever (~$0.25 saved per 20-article run, no quality cost).
+
+## Prompt caching on the classifier (2026-09-02)
+
+**Decision.** The classifier/scorer caches its system prompt (Anthropic
+ephemeral cache, 5-minute TTL) on every call. Implemented in
+`score_announcements.classify()`; both runners warm the cache with one serial
+call before fanning out; the cost log bills cache traffic at its real rates.
+
+**Why — the key insight from the summarisation experiment.** The experiment
+set out to cut classification cost by compressing the articles, and found the
+cost was never in the articles. The fixed prompt — vocabulary, instructions,
+schema — is ~7.1k of the ~10.8k input tokens per call (measured: 7,059 cached
+tokens), and the tagged JSON output doesn't shrink whatever the input. So
+summarise-first bought only 12–17% while mechanism recall fell 0.81 → 0.56–0.63;
+caching attacks the part of the bill that is actually large, and cannot change
+model output at all — the model reads byte-identical prompts either way.
+Verified live: a cold call wrote 7,059 tokens ($0.0207), the identical warm call
+read them back at 0.1x ($0.0043). Roughly $0.24 of every $0.95 gold run, ~$2.40
+of a 191-article corpus run.
+
+**Two consequences handled, not hoped away.**
+
+1. *The cold-start stampede.* Both runners are parallel (10–12 workers). On a
+   cold cache every first-wave call becomes a 1.25x cache *write* — with 20
+   articles and 10 workers, caching would cost more than not caching. Both
+   runners therefore classify one article serially until a call actually pays
+   (disk-cached articles are free and warm nothing), then fan out into 0.1x
+   reads.
+2. *Honest accounting.* `usage.input_tokens` excludes cache traffic, so the old
+   cost record would have silently under-reported writes (1.25x) and
+   over-reported reads (0.1x). `call_cost()` now bills all three components at
+   their real rates and records write/read tokens per call; unit-tested against
+   the published multipliers.
+
+**Alternatives rejected.** Summarise-first (see previous entry — quality cost on
+the load-bearing axis for a smaller saving). A 1-hour cache TTL (2x write cost;
+pointless when a corpus run refreshes the 5-minute window on every call).
+Caching in the provider A/B shim (`providers.py`) — left uncached so
+cross-vendor cost comparisons stay like-for-like.
+
+**Consequence.** Prompt edits invalidate the cache by construction (the prompt
+is the key), so version bumps cost one extra write per run — nothing to manage.
+Cost records now carry `cache_write_tokens` / `cache_read_tokens`; older records
+simply lack the fields.
+
+## Vocabulary v2 and prompt v7: boundaries from measured confusions (2026-09-02)
+
+**Decision.** `mechanisms.yaml`, `categories.yaml` and `practices.yaml` move to
+v2 and the scoring prompt to v7. No id changed, nothing added or removed — every
+edit is a sharpened boundary, and every boundary corresponds to a specific
+spurious or missed tag in the v6 gold run. The pipeline default is now v7.
+
+**The bug found along the way.** The renderer injected only `description` /
+`definition` into the prompt: the categories' boundaries and the practices'
+per-tag action guidance were written for the classifier but never delivered to
+it. Category precision ran at 0.50 and action agreement at 68% with the model
+never having seen the text meant to fix both. Action guides are now rendered;
+category boundaries were folded into definitions (the `boundary` field carries
+fund accounting that doesn't belong in a prompt).
+
+**The main boundaries added.** Mechanisms: `capability_jump` reserved for the
+step itself, not restatements (4 of 4 false positives were partnership/usage/
+opinion pieces restating a released model); `export_controls` widened to model
+access withdrawn under national-security authority (the one gold miss);
+`inference_volume_up` cuts both ways (a suspension is a negative tag, not no
+tag); marketing copy saying "efficient" is not `inference_cost_down`; a
+performance result discloses no capex. Categories: a mention is not a signal —
+a partner in a case study or a cloud named as rollout venue routes nothing.
+Practices: `evaluation` counts even when secondary to the story (4 of 20 gold
+misses, all this shape); courses, usage stories and marketing are not
+`orchestration`; behaviour observed in incidents is `evaluation`, not
+`model_capability`.
+
+**Measured, same gold set, same model** (single runs; sonnet-5 run variance
+applies, but the tag-level gains held across two v7 runs):
+mechanisms F1 0.77 → 0.88, categories F1 0.67 → 1.00 (20/20 identical),
+practices F1 0.84 → 0.87, investment-score MAE 11.2 → 5.7, rho 0.75 → 0.94.
+
+**What the iteration taught.** The first injection of action guides collapsed
+`watch` (21/11/1 against gold's 10/15/12) and worsened AI-team MAE — guidance
+that enumerates when to act reads as license to act. Rewritten watch-first
+("start every tag at watch; the default wins over the guides"), the mix came
+back to 11/11/9. Per-tag action agreement remains the weakest attribute (~55%,
+disagreements now scattered in both directions); left as an open item rather
+than tuned further, because chasing it on single n=20 runs fits variance, not
+signal.
+
+**Also:** `max_tokens` 8000 → 12000 (two figure-dense gold articles truncated
+under v7; an output cap only bills what is generated). `prefill_gold.py` and
+`run_blind.py` stay pinned to v6 — they are records of how past artefacts were
+produced.

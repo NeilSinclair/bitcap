@@ -208,3 +208,54 @@ against: **191 x $0.0438 = ~$8.40**.
 The rebuild itself (`rebuild_gold.py`, `refresh_gold_text.py`) cost nothing —
 no LLM calls, and the archive is free.
 
+
+### Summarise-before-classify experiment (2026-09-02)
+
+Research question: cheap-model summarisation ahead of extraction/scoring.
+Full results: `research/summarisation_results.md`.
+
+| Step (20 gold articles) | Model | Cost | $/article |
+|---|---|---|---|
+| Summarise | claude-haiku-4-5 | $0.1462 | $0.0073 |
+| Summarise | gpt-5-mini (low effort) | $0.0542 | $0.0027 |
+| Classify raw (baseline, run earlier today) | claude-sonnet-5, v6 | $0.9490 | $0.0475 |
+| Classify Haiku summaries | claude-sonnet-5, v6 | $0.6903 | $0.0345 |
+| Classify GPT summaries | claude-sonnet-5, v6 | $0.7357 | $0.0368 |
+
+Experiment spend this session (excl. the pre-existing raw baseline): **$1.63**.
+
+Outcome: summarise-first saves only 12–17% end-to-end (the v6 fixed prompt is
+~7.3k of the ~10.8k input tokens per call, and output doesn't shrink) while
+mechanism recall drops 0.81 → 0.56–0.63. Rejected; prompt caching on the fixed
+prompt saves more (~$0.25/run of $0.95) at zero quality cost.
+
+### Prompt caching verification (2026-09-02)
+
+Two live `classify()` calls on the smallest gold article to verify the cache
+lands and the accounting is right: cold call 7,059 cache-write tokens $0.0207;
+identical warm call 7,059 cache-read tokens $0.0043. Spend: **$0.025**.
+Measured fixed-prompt size: 7,059 tokens. Expected saving ~$0.24 per 20-article
+gold run, ~$2.40 per 191-article corpus run.
+
+### Vocabulary v2 / prompt v7 validation (2026-09-02)
+
+Three fresh gold runs while sharpening the vocabularies and prompt (one
+truncated-output casualty, one adopt-heavy iteration, one final):
+$0.5552 + $0.7294 + $0.7364 = **$2.02**. Final config: mechanisms F1 0.88,
+categories F1 1.00, investment MAE 5.7 (`gold_run_20260902T080200Z_v7_vocab2c`).
+
+### Full corpus run, v7 prompt + v2 vocab (2026-09-02)
+
+191 articles (2026-06-01 to 2026-08-31), `claude-sonnet-5`, prompt caching live.
+
+| | |
+|---|---|
+| Articles | 191, 0 failures |
+| Cost | **$5.44** ($0.0285/article) |
+| Cache | 1.73M tokens read at 0.1x, 9k written |
+| Wall clock | 6m 52s |
+
+$1.6M of the 2.3M total input tokens came from cache at 90% off — the measured
+rate is $0.0285/article against $0.0475 uncached ($9.06 projected), so caching
+saved ~$3.60 on this run alone. Note: the script's progress line prints the
+cumulative cost log, not the run; the $12.92 on screen includes prior runs.

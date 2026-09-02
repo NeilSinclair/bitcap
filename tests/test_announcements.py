@@ -532,3 +532,52 @@ class TestStripHtmlEntities:
         page = "<article><p>reduced compute &amp; memory costs</p></article>"
         text = strip_html(page)
         assert "reduced compute & memory costs" in text
+
+
+class _Usage:
+    """Stub of an Anthropic usage object, cache fields optional."""
+
+    def __init__(self, input_tokens, output_tokens, write=None, read=None):
+        self.input_tokens = input_tokens
+        self.output_tokens = output_tokens
+        if write is not None:
+            self.cache_creation_input_tokens = write
+        if read is not None:
+            self.cache_read_input_tokens = read
+
+
+class TestCallCost:
+    """The silent failure here: caching lands and the cost log keeps billing
+    every token at the plain input rate — under-reporting writes (1.25x) and
+    over-reporting reads (0.1x)."""
+
+    def cost(self, usage):
+        from score_announcements import call_cost
+
+        return call_cost("claude-sonnet-5", "https://x", usage, 0.0)
+
+    def test_no_cache_fields_bills_plain_rates(self):
+        c = self.cost(_Usage(1_000_000, 100_000))
+        assert c["usd"] == pytest.approx(2.00 + 1.00)
+        assert c["cache_write_tokens"] == 0
+        assert c["cache_read_tokens"] == 0
+
+    def test_cache_write_billed_at_1_25x(self):
+        c = self.cost(_Usage(0, 0, write=1_000_000))
+        assert c["usd"] == pytest.approx(2.50)
+
+    def test_cache_read_billed_at_0_1x(self):
+        c = self.cost(_Usage(0, 0, read=1_000_000))
+        assert c["usd"] == pytest.approx(0.20)
+
+    def test_none_cache_fields_treated_as_zero(self):
+        # The SDK reports None, not 0, on some responses.
+        c = self.cost(_Usage(1_000, 100, write=None, read=None))
+        assert c["cache_write_tokens"] == 0
+        assert c["cache_read_tokens"] == 0
+
+    def test_mixed_call_sums_all_components(self):
+        # Warm-cache call: small uncached preamble, big cached read.
+        c = self.cost(_Usage(3_560, 2_500, write=0, read=7_280))
+        expected = (3_560 * 2.0 + 7_280 * 2.0 * 0.10 + 2_500 * 10.0) / 1e6
+        assert c["usd"] == pytest.approx(round(expected, 6))

@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT / "research" / "papers"))
 from llm_byline import PRICES, load_env  # noqa: E402
 from verbatim import enforce as enforce_quotes  # noqa: E402
 
-PROMPT_VERSION = "v6"
+PROMPT_VERSION = "v7"
 PROMPT = ROOT / "prompts" / "announcement_scoring" / f"{PROMPT_VERSION}.md"
 MECHANISMS = ROOT / "config" / "mechanisms.yaml"
 PRACTICES = ROOT / "config" / "practices.yaml"
@@ -173,6 +173,11 @@ def vocabularies() -> tuple[str, str, str, set[str], set[str], set[str]]:
         prac_lines.append(
             f"- `{p['id']}` — {p['label']}. {' '.join(p['description'].split())}"
         )
+        # The per-practice action guidance was written for the classifier but
+        # was never rendered into the prompt; action agreement ran at 68% while
+        # the model chose among adopt/investigate/watch without it.
+        if p.get("adopt_note"):
+            prac_lines.append(f"    action guide: {' '.join(p['adopt_note'].split())}")
         for name, meaning in (p.get("dimensions") or {}).items():
             prac_lines.append(f"    - dimension `{name}` — {' '.join(meaning.split())}")
     prac_block = "\n".join(prac_lines)
@@ -378,8 +383,19 @@ def classify(
     started = time.time()
     with client.messages.stream(
         model=model,
-        max_tokens=8000,
-        system=system,
+        # 12k: two gold articles hit the old 8000 cap under the v7 prompt.
+        # An output cap only bills what is generated, so headroom is free.
+        max_tokens=12000,
+        # The system prompt (vocab + instructions, ~7.3k tokens) is identical
+        # for every article and dominates input cost, so it is cached. The
+        # summarisation experiment (docs/decisions.md 2026-09-02) found caching
+        # saves more than summarise-first did, at zero quality cost. 5-minute
+        # ephemeral TTL: a corpus run refreshes it on every call.
+        system=[{
+            "type": "text",
+            "text": system,
+            "cache_control": {"type": "ephemeral"},
+        }],
         messages=[{"role": "user", "content": user}],
         # NOTE: there is no temperature to set. `temperature` is deprecated on
         # the Claude 5 family -- absent from the SDK signature, and rejected by
@@ -398,21 +414,49 @@ def classify(
         raise RuntimeError("truncated output; raise max_tokens")
 
     text = next(b.text for b in response.content if b.type == "text")
-    usage = response.usage
+    return json.loads(text), call_cost(model, article["url"], response.usage, started)
+
+
+# Anthropic bills ephemeral cache writes at 1.25x the input rate and cache
+# reads at 0.10x. `usage.input_tokens` excludes both, so billing them at the
+# plain rate would misreport cost in both directions.
+CACHE_WRITE_MULT = 1.25
+CACHE_READ_MULT = 0.10
+
+
+def call_cost(model: str, url: str, usage, started: float) -> dict:
+    """Build a cost record from provider-reported usage, cache-aware.
+
+    Args:
+        model: Model id (a key in PRICES).
+        url: Article URL, so spend is attributable per item.
+        usage: Anthropic usage object; cache fields may be absent or None on
+            responses that touched no cache.
+        started: Wall time the call began.
+
+    Returns:
+        Cost record, with cache write/read tokens broken out.
+    """
     in_rate, out_rate = PRICES[model]
-    cost = {
-        "url": article["url"],
+    cache_write = getattr(usage, "cache_creation_input_tokens", 0) or 0
+    cache_read = getattr(usage, "cache_read_input_tokens", 0) or 0
+    usd = (
+        usage.input_tokens * in_rate
+        + cache_write * in_rate * CACHE_WRITE_MULT
+        + cache_read * in_rate * CACHE_READ_MULT
+        + usage.output_tokens * out_rate
+    ) / 1e6
+    return {
+        "url": url,
         "model": model,
         "input_tokens": usage.input_tokens,
         "output_tokens": usage.output_tokens,
-        "usd": round(
-            usage.input_tokens / 1e6 * in_rate + usage.output_tokens / 1e6 * out_rate,
-            6,
-        ),
+        "cache_write_tokens": cache_write,
+        "cache_read_tokens": cache_read,
+        "usd": round(usd, 6),
         "seconds": round(time.time() - started, 2),
         "at": datetime.now(timezone.utc).isoformat(),
     }
-    return json.loads(text), cost
 
 
 def classify_one(
@@ -502,38 +546,55 @@ def main() -> None:
     done = 0
     started = time.time()
 
+    def record(article: dict, result: dict, cost: dict | None, failure: dict | None) -> None:
+        # One writer at a time: the cost log is rewritten whole, and a
+        # concurrent write would truncate it.
+        nonlocal done
+        with lock:
+            done += 1
+            if failure:
+                failures.append(failure)
+                print(f"  FAIL {failure['url']}: {failure['error']}", flush=True)
+            else:
+                results[article["url"]] = result
+            if cost:
+                costs.append(cost)
+                COST.write_text(json.dumps(costs, indent=2))
+            if done % 50 == 0 or done == len(articles):
+                spent = sum(c["usd"] for c in costs)
+                rate = done / max(time.time() - started, 1e-6)
+                print(
+                    f"  [{done}/{len(articles)}]  ${spent:.3f}  "
+                    f"{rate:.1f}/s",
+                    flush=True,
+                )
+
+    # Warm the prompt cache before fanning out: classify() caches the shared
+    # system prompt, and a cold parallel start would make every first-wave call
+    # a 1.25x cache write instead of a 0.1x read. Serial until the first call
+    # that actually pays (disk-cached articles are free and warm nothing).
+    warm = 0
+    for article in articles:
+        result, cost, failure = classify_one(
+            client, args.model, article, mech_ids, cat_ids, prac_ids, dims, cap
+        )
+        record(article, result, cost, failure)
+        warm += 1
+        if cost is not None:
+            break
+
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = {
             pool.submit(
                 classify_one, client, args.model, article,
                 mech_ids, cat_ids, prac_ids, dims, cap,
             ): article
-            for article in articles
+            for article in articles[warm:]
         }
         for future in as_completed(futures):
             article = futures[future]
             result, cost, failure = future.result()
-
-            # One writer at a time: the cost log is rewritten whole, and a
-            # concurrent write would truncate it.
-            with lock:
-                done += 1
-                if failure:
-                    failures.append(failure)
-                    print(f"  FAIL {failure['url']}: {failure['error']}", flush=True)
-                else:
-                    results[article["url"]] = result
-                if cost:
-                    costs.append(cost)
-                    COST.write_text(json.dumps(costs, indent=2))
-                if done % 50 == 0 or done == len(articles):
-                    spent = sum(c["usd"] for c in costs)
-                    rate = done / max(time.time() - started, 1e-6)
-                    print(
-                        f"  [{done}/{len(articles)}]  ${spent:.3f}  "
-                        f"{rate:.1f}/s",
-                        flush=True,
-                    )
+            record(article, result, cost, failure)
 
     scored = []
     for article in articles:

@@ -34,7 +34,7 @@ from verbatim import enforce as enforce_quotes  # noqa: E402
 GOLD = Path(__file__).parent / "test" / "articles"
 RESULTS = ROOT / "research" / "test_results"
 MODEL = "claude-sonnet-5"
-PROMPT = "v6"
+PROMPT = "v7"
 
 
 def main() -> None:
@@ -43,13 +43,22 @@ def main() -> None:
     parser.add_argument("--fresh", action="store_true", help="ignore the cache")
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--tag", default="", help="suffix for the output file")
+    parser.add_argument("--prompt", default=PROMPT, help="prompt version to run")
+    parser.add_argument(
+        "--summaries", default=None,
+        help="path to a summaries_<model>.json from summarise.py; classify the "
+             "summary text instead of the article text (forces --fresh, since "
+             "the cache is keyed on the article, not its text)",
+    )
     args = parser.parse_args()
+    if args.summaries:
+        args.fresh = True
 
     RESULTS.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out = RESULTS / f"gold_run_{stamp}{('_' + args.tag) if args.tag else ''}.json"
 
-    use_prompt(PROMPT)
+    use_prompt(args.prompt)
     load_env()
     rules = yaml.safe_load(sa.SCORING.read_text())
     _, _, _, mech_ids, cat_ids, prac_ids = sa.vocabularies()
@@ -58,7 +67,20 @@ def main() -> None:
 
     files = sorted(GOLD.glob("*.json"))
     records = [json.loads(f.read_text()) for f in files]
-    print(f"{len(records)} gold articles | {MODEL} | prompt {PROMPT} | "
+    if args.summaries:
+        run = json.loads(Path(args.summaries).read_text())
+        summaries = {r["id"]: r["summary"] for r in run["results"] if "summary" in r}
+        missing = [r["id"] for r in records if r["id"] not in summaries]
+        if missing:
+            sys.exit(f"no summary for gold articles: {missing}")
+        for rec in records:
+            # Keep the original text_source: the rss_summary confidence cap
+            # would otherwise change behaviour and muddy the comparison. This
+            # run measures information loss from summarisation, nothing else.
+            rec["text"] = summaries[rec["id"]]
+        print(f"classifying SUMMARIES from {Path(args.summaries).name} "
+              f"(model {run['model']})")
+    print(f"{len(records)} gold articles | {MODEL} | prompt {args.prompt} | "
           f"{len(mech_ids)} mechanisms, {len(prac_ids)} practices | "
           f"cache {'BYPASSED' if args.fresh else 'used'}")
 
@@ -97,14 +119,18 @@ def main() -> None:
         }
 
     started = time.time()
+    # Warm the prompt cache before fanning out: classify() caches the shared
+    # system prompt, and a cold parallel start would make the whole first wave
+    # 1.25x cache writes instead of 0.1x reads.
+    first = work(records[0])
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        rows = list(pool.map(work, records))
+        rows = [first] + list(pool.map(work, records[1:]))
 
     spend = sum(r["cost"]["usd"] for r in rows if r.get("cost"))
     calls = sum(1 for r in rows if r.get("cost"))
     failures = [r for r in rows if "error" in r]
     out.write_text(json.dumps(
-        {"model": MODEL, "prompt": PROMPT, "mechanisms": sorted(mech_ids),
+        {"model": MODEL, "prompt": args.prompt, "mechanisms": sorted(mech_ids),
          "practices": sorted(prac_ids), "results": rows,
          "usd": round(spend, 4), "calls": calls}, indent=2))
 

@@ -34,7 +34,12 @@
 # OpenAI published 17 safety items to Anthropic's 7 -- Anthropic is only mildly
 # over-represented (29% of safety items against 20% of the corpus).
 
-version: 1
+# v2 (2026-09-02): descriptions sharpened against the v6 gold run. The two
+# systematic errors were tagging training material / usage stories as technique
+# (orchestration precision) and missing `evaluation` when it was secondary to
+# the document's subject (4 of 20 articles). `adopt_note` is now rendered into
+# the prompt — it was written for the classifier but never delivered to it.
+version: 2
 
 practices:
   - id: model_capability
@@ -44,10 +49,13 @@ practices:
       users: better at a task, faster, cheaper per unit of work, broader in
       modality, longer in context, more reliable, or newly self-hostable.
 
-      This is a property of a model, not a technique. Always record which
-      dimensions moved -- an undifferentiated "it got better" cannot be ranked
-      or filtered, and "better at agentic coding" and "better at vision" are
-      different decisions for different teams.
+      This is a property of a model, not a technique. It requires a released or
+      updated model and a stated change in what it can do. Observations of how a
+      model behaved in an incident, an eval or a case study are `evaluation`
+      material, not capability. Always record which dimensions moved -- an
+      undifferentiated "it got better" cannot be ranked or filtered, and "better
+      at agentic coding" and "better at vision" are different decisions for
+      different teams.
 
       Record at most three, and record the ones the document leads with. A
       frontier launch plausibly improves nearly every dimension; on a first run
@@ -82,10 +90,16 @@ practices:
       agent scaffolding, planning and routing loops, multi-agent decomposition,
       context and memory management, tool-use patterns, retrieval design,
       caching strategy, prompt structure that materially changes behaviour.
+      The document must describe a technique an engineering team could build
+      from -- a design with a stated behaviour or gain. Training courses about
+      agents, customer usage stories and product marketing that mentions
+      "workflows" are the standing false positives here; none of them is a
+      technique.
     adopt_note: >
       `adopt` when the technique is described concretely enough to implement and
       the gain is stated. `investigate` when the result is credible but the
-      method is under-specified or the setting differs from ours.
+      method is under-specified or the setting differs from ours. `watch`
+      otherwise -- most orchestration mentions are watch.
     corpus_example: >
       "How enabling two settings tripled our scores on the [benchmark]" --
       scored 0 on the investment rule with no mechanism tag, and is exactly the
@@ -102,10 +116,18 @@ practices:
       tag. A jailbreak defence, a cyber safeguard and a coding benchmark are all
       answers to "how would we know whether this is good enough to ship". Split
       it out only if the human-versus-system disagreements justify it.
+
+      Tag it even when evaluation is not the document's subject. A benchmark
+      used to support a hardware claim, a red-teaming effort disclosed in a
+      statement, a preparedness threshold applied in a release -- if an engineer
+      could learn measurement practice from the quote, it belongs here. This is
+      the most under-tagged practice: it was missed in four of twenty gold
+      articles, every time because it was secondary to the story.
     adopt_note: >
       `adopt` for an eval or method we could run against our own system.
       `investigate` for a result that changes what we should be measuring but
-      does not hand us the instrument.
+      does not hand us the instrument. `watch` when the evaluation is the lab's
+      own internal process, described but not transferable.
     corpus_example: >
       "Separating signal from noise in coding evaluations"; the GeneBench-Pro
       and LifeSciBench releases; "Predicting model behavior before release by
@@ -127,6 +149,8 @@ practices:
     adopt_note: >
       `adopt` when the technique is reproducible on our stack. `investigate`
       when the gain is reported but tied to the lab's own infrastructure.
+      `watch` when the gain is real but the technique is not ours to apply at
+      all (first-party silicon, lab-internal serving).
 
   - id: integration
     label: What you would have to change to use it
@@ -135,7 +159,9 @@ practices:
       and API changes, new protocols and tool interfaces, model deprecations and
       retirements, breaking changes, migration requirements, rate limit and
       quota changes, region availability, data retention and licensing terms
-      that gate production use.
+      that gate production use -- and changes to what third-party services and
+      vendors in the serving path must be integrated, monitored or hardened
+      against.
 
       Deprecations are the reason this tag exists. They are the one category an
       AI team is genuinely angry to have missed, they are cheap to detect, and
@@ -143,7 +169,8 @@ practices:
     adopt_note: >
       `adopt` reads as "schedule the work" here rather than "try this". A
       deprecation with a date is not optional, so it should surface regardless
-      of how interesting it is.
+      of how interesting it is. `watch` when the interface change creates no
+      work for an integration anyone would plausibly run.
     corpus_example: >
       "Offering Zero Data Retention for frontier models" -- a deployment gate
       with no economic transmission, invisible to the investment renderer.
@@ -153,9 +180,19 @@ practices:
 # direction, only a strength and a recommended action.
 enums:
   action:
-    adopt: Concrete enough to implement, and the gain is stated. Schedule it.
-    investigate: Credible and relevant, but under-specified or unproven for our setting.
-    watch: Directionally interesting, no action yet. The default, and it is fine.
+    adopt: >
+      The rare case. The document itself hands over the method or forces the
+      work: a technique stated concretely enough to schedule a ticket from the
+      quote alone, or an obligation (a deprecation with a date, a default
+      change). Importance does not make something adoptable; instructions do.
+      In the gold set roughly a quarter of tagged practices earn adopt.
+    investigate: >
+      Credible and relevant, but a gap remains between the document and our
+      stack -- method under-specified, evidence lab-only, setting different.
+    watch: >
+      Directionally interesting, no action yet. The default: start every tag
+      here and move up only when the text forces you. A big announcement whose
+      practices give us nothing to do is watch, however important it sounds.
   impact:
     high: Would change how we build or evaluate a core part of the platform.
     medium: Would change one component or workflow.
