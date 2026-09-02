@@ -1,0 +1,38 @@
+{
+  "id": "23",
+  "lab": "openai",
+  "date": "2026-06-08",
+  "title": "Confidential submission of draft S-1 to the SEC",
+  "url": "https://openai.com/index/openai-submits-confidential-s-1",
+  "text_source": "full_text_archived",
+  "text": "Confidential submission of draft S-1 to the SEC | OpenAI Research Products Business Developers Company Foundation Log in Try ChatGPT Research Products Business Developers Company Foundation Try ChatGPT Login OpenAI June 8, 2026 Company Confidential submission of draft S-1 to the SEC Share We recently submitted a confidential S-1. We expect it to leak so we’re just announcing it. We have not decided on timing yet; it may be a while because there are things we want to do that are likely easier as a private company. But it’s a complicated set of tradeoffs and this gives us the option to go public sooner if that ends up being best. This announcement is being made pursuant to Rule 135 under the Securities Act of 1933, as amended, and does not constitute an offer to sell or the solicitation of an offer to buy any securities. Any offers, solicitations of offers to buy, or any sales of securities will be made in accordance with the registration requirements of the Securities Act. 2026 Author OpenAI Keep reading View all Built to benefit everyone: our plan Company Jun 8, 2026 Introducing the OpenAI Economic Research Exchange Company Jun 8, 2026 OpenAI and Dell Technologies partner to bring Codex to hybrid and on-premises enterprise environments Company May 18, 2026 Research Research Index Research Overview Economic Research Latest Advancements GPT-5.5 GPT-5.4 GPT-5.3 Instant Safety Safety Approach Deployment Safety Security & Privacy Trust & Transparency Products ChatGPT ChatGPT Business ChatGPT Enterprise ChatGPT for Education Codex Release Notes API Platform Overview API Log In Docs Business Overview Solutions Resources Contact Sales Developers Apps SDK Open Models Docs Resources Developer Forum Company About Us Our Charter Careers News Support Help Center More Stories Academy Livestreams Podcast RSS Terms & Policies Terms of Use Privacy Policy Other Policies OpenAI © 2015–2026 Your privacy choices English United States",
+  "gold": {
+    "event_type": "corporate_finance",
+    "mechanisms": [
+      {
+        "id": "lab_capital_access",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "high",
+        "reason": "A draft S-1 creates the concrete option of public-market capital, though the lab itself frames timing as undecided and possibly distant.",
+        "quote": "We recently submitted a confidential S-1. We expect it to leak so we’re just announcing it."
+      }
+    ],
+    "categories": [],
+    "practices": [],
+    "notes": ""
+  },
+  "review": {
+    "labeller": "claude-fable-5",
+    "method": "independent read of the article text only; existing gold/system labels not consulted",
+    "quote_rule": "every quote snapped to an exact substring of the stored text via verbatim.snap",
+    "caveat": "the labeller adjudicated an earlier gold pass in the same session, so blindness is best-effort, not perfect"
+  },
+  "computed": {
+    "score": 53.3,
+    "band": "medium",
+    "ai_score": 0.0,
+    "ai_band": "none",
+    "note": "Deterministic rule from config/scoring.yaml (score_of / ai_score_of) applied to the fable labels above."
+  }
+}

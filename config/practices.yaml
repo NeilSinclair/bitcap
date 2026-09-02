@@ -1,0 +1,187 @@
+# Practice vocabulary: the join key for the AI-team renderer.
+#
+# Mechanisms answer "what does this do to demand for something?" and route a lab
+# publication to a holding. A technique does not touch demand -- it changes what
+# you would build on Monday -- so forcing it into mechanisms.yaml is a category
+# error. The classifier correctly refused: of 19 technique-like articles in the
+# three-month corpus, 17 scored zero and every one carried an EMPTY mechanism
+# list. Re-weighting cannot fix that, because score = event_weight x max(tag
+# strength) and no weight rescues a zero. Hence a second axis.
+#
+# The same structural guarantee applies here as for mechanisms: no practice tag
+# and a quote, no AI-team score. A technique we cannot quote is a technique we
+# cannot ask an engineer to act on.
+#
+# Deliberately five tags. The brief asks "what should we adopt or investigate?",
+# not for a taxonomy of machine learning.
+#
+# `model_capability` is the odd one out and the reason this file grew by one.
+# The other four ask "how would we build, measure, run or integrate it". None of
+# them answers "should we put this model in front of our users", which is the
+# most common decision an AI team makes. That question used to be served by
+# `capability_jump` and `open_weights_release` in mechanisms.yaml -- but those
+# had one and zero company links respectively, so they routed nowhere and failed
+# the same test that retired model_commoditisation. They have moved here, where
+# they do work, and mechanisms.yaml records why they left.
+#
+# SAMPLING CAVEAT -- read before drawing any conclusion from counts here.
+# The three-month corpus is 79% OpenAI (152 of 192), 20% Anthropic (38) and
+# 2 DeepSeek articles. That reflects publishing volume and what we can fetch
+# (openai.com blocks article bodies, so most OpenAI items are RSS summaries),
+# not the true distribution of frontier lab output. Any frequency claim from
+# this corpus is really a claim about OpenAI's publishing habits. Safety is a
+# specific case worth naming: it looks Anthropic-heavy by reputation, but
+# OpenAI published 17 safety items to Anthropic's 7 -- Anthropic is only mildly
+# over-represented (29% of safety items against 20% of the corpus).
+
+version: 1
+
+practices:
+  - id: model_capability
+    label: A model got better at something we care about
+    description: >
+      A released or updated model changes what is worth putting in front of our
+      users: better at a task, faster, cheaper per unit of work, broader in
+      modality, longer in context, more reliable, or newly self-hostable.
+
+      This is a property of a model, not a technique. Always record which
+      dimensions moved -- an undifferentiated "it got better" cannot be ranked
+      or filtered, and "better at agentic coding" and "better at vision" are
+      different decisions for different teams.
+
+      Record at most three, and record the ones the document leads with. A
+      frontier launch plausibly improves nearly every dimension; on a first run
+      the three big launches in the gold set drew 8, 7 and 7 of 9, which says
+      only "this is a big launch" and destroys the filtering this field exists
+      to provide. Small releases were tagged tightly at 1-2, so the cap costs
+      nothing there. One dimension with a number behind it beats four without.
+    dimensions:
+      coding: Software engineering, code generation, debugging, repo-scale work.
+      reasoning: Multi-step problem solving, maths, planning, knowledge work.
+      agentic_tool_use: Tool calling, longer task horizons, autonomy, memory in production.
+      vision_multimodal: Image, video, audio or document understanding.
+      long_context: Larger usable context, better retrieval or recall within it.
+      latency: Faster response at comparable quality. Distinct from cost -- it changes what is buildable interactively, not what it costs.
+      reliability: Fewer failures, better instruction following, steerability, refusal calibration.
+      cost: Lower price or lower compute per unit of output for the same quality.
+      open_weights: Weights released or licence changed such that we could self-host or fine-tune.
+    adopt_note: >
+      `adopt` when the gain is on a dimension we depend on and is evidenced by a
+      stated result. `investigate` when the gain is real but on a dimension we do
+      not currently use, or when the evaluation is the lab's own and unreplicated.
+      `watch` for a release that moves nothing we build on.
+    corpus_example: >
+      "Introducing Claude Opus 5" -- dimensions coding, agentic_tool_use and
+      cost, with the stated weakness ("it remains behind Mythos 5 on
+      cybersecurity tasks") available as the counter-quote.
+
+  - id: orchestration
+    label: How you would build the pipeline
+    description: >
+      Techniques for structuring work around a model rather than inside it:
+      agent scaffolding, planning and routing loops, multi-agent decomposition,
+      context and memory management, tool-use patterns, retrieval design,
+      caching strategy, prompt structure that materially changes behaviour.
+    adopt_note: >
+      `adopt` when the technique is described concretely enough to implement and
+      the gain is stated. `investigate` when the result is credible but the
+      method is under-specified or the setting differs from ours.
+    corpus_example: >
+      "How enabling two settings tripled our scores on the [benchmark]" --
+      scored 0 on the investment rule with no mechanism tag, and is exactly the
+      article the AI team was promised.
+
+  - id: evaluation
+    label: How you would measure or trust it
+    description: >
+      Benchmarks, eval methodology, judging and grading approaches, red-teaming
+      and adversarial testing methods, safety evaluation technique, monitoring
+      and drift detection, and honest accounts of what an eval does not measure.
+
+      Safety technique is folded in here on purpose rather than given its own
+      tag. A jailbreak defence, a cyber safeguard and a coding benchmark are all
+      answers to "how would we know whether this is good enough to ship". Split
+      it out only if the human-versus-system disagreements justify it.
+    adopt_note: >
+      `adopt` for an eval or method we could run against our own system.
+      `investigate` for a result that changes what we should be measuring but
+      does not hand us the instrument.
+    corpus_example: >
+      "Separating signal from noise in coding evaluations"; the GeneBench-Pro
+      and LifeSciBench releases; "Predicting model behavior before release by
+      simulating..." -- all scored 0 with no mechanism tag.
+
+  - id: serving_efficiency
+    label: How you would run it cheaper or faster
+    description: >
+      Implementation-level techniques that reduce cost or latency for the same
+      output: quantisation and distillation recipes, attention and KV-cache
+      optimisation, batching and scheduling, speculative decoding, kernel and
+      serving-stack improvements, hardware-specific tuning.
+
+      Related to but distinct from the `inference_cost_down` mechanism. That one
+      asks whether the industry's cost per token fell, which transmits to
+      suppliers. This one asks whether there is a technique WE could apply.
+      A lab can move the industry curve without telling us how; it can also hand
+      us a recipe that changes nothing at industry scale.
+    adopt_note: >
+      `adopt` when the technique is reproducible on our stack. `investigate`
+      when the gain is reported but tied to the lab's own infrastructure.
+
+  - id: integration
+    label: What you would have to change to use it
+    description: >
+      Anything that creates or removes engineering work at the interface: SDK
+      and API changes, new protocols and tool interfaces, model deprecations and
+      retirements, breaking changes, migration requirements, rate limit and
+      quota changes, region availability, data retention and licensing terms
+      that gate production use.
+
+      Deprecations are the reason this tag exists. They are the one category an
+      AI team is genuinely angry to have missed, they are cheap to detect, and
+      no other tag in either vocabulary carries them.
+    adopt_note: >
+      `adopt` reads as "schedule the work" here rather than "try this". A
+      deprecation with a date is not optional, so it should surface regardless
+      of how interesting it is.
+    corpus_example: >
+      "Offering Zero Data Retention for frontier models" -- a deployment gate
+      with no economic transmission, invisible to the investment renderer.
+
+# Per-tag fields the classifier must return. Mirrors the mechanism schema so the
+# two axes stay consistent at the LLM boundary, minus `sign`: a technique has no
+# direction, only a strength and a recommended action.
+enums:
+  action:
+    adopt: Concrete enough to implement, and the gain is stated. Schedule it.
+    investigate: Credible and relevant, but under-specified or unproven for our setting.
+    watch: Directionally interesting, no action yet. The default, and it is fine.
+  impact:
+    high: Would change how we build or evaluate a core part of the platform.
+    medium: Would change one component or workflow.
+    low: Worth knowing, marginal to what we do.
+  confidence:
+    high: The document states the technique and the result plainly.
+    medium: Stated, but with gaps we would have to fill in.
+    low: Implied or asserted without support.
+
+required_per_tag:
+  - id
+  - action
+  - impact
+  - confidence
+  - reason
+  - quote  # verbatim. No quote, no tag -- same rule as mechanisms.
+
+# `model_capability` additionally requires a non-empty `dimensions` list drawn
+# from its own vocabulary above. A model_capability tag with no dimension is the
+# undifferentiated "it got better" this tag exists to replace, and is invalid.
+required_per_tag_model_capability:
+  - dimensions
+
+# Enforced in code as well as asked for in the prompt. The prompt already told
+# the model not to over-tag and it over-tagged anyway, so the cap is applied
+# deterministically after extraction. Dimensions past the cap are recorded in
+# `dropped_tags` rather than silently discarded -- the model lists what it leads
+# with first, so keeping the first three keeps its own ranking.
+max_dimensions: 3

@@ -1017,3 +1017,412 @@ about $21 for a 375-item backfill uncached and ~$10 batched.
 - **Caveat on the cost figures:** GPT-5-mini pricing is marked UNVERIFIED in `providers.py`.
   Token counts are exact from the API; the dollar conversion was not checked against
   OpenAI's published prices.
+
+## Confidence becomes a gate, not a discount (2026-09-01)
+
+**Decision.** In `config/scoring.yaml` v4, the confidence scale changes from
+`{high: 3, medium: 2, low: 1}` to `{high: 1.0, medium: 0.5, low: 0.0}`, on both
+the mechanism and practice axes. `max_mechanism` and `max_practice` fall from 9
+to 3 accordingly. A low-confidence tag now contributes nothing to any score.
+
+**Why, and this one is evidence-led rather than argued.** A hand review of a
+20-article gold run (`docs/gold_review.md`) went through every tag against the
+source text. Every tag rejected as unsupported was **already marked low
+confidence by the model**. Two representative cases, both quoting marketing copy
+rather than a claim:
+
+- `inference_volume_up` on OpenAI's $122bn raise, cited to *"meet growing demand
+  for ChatGPT, Codex, and enterprise AI"*
+- `inference_volume_up` on a GPT-5.6 pricing item, cited to *"deploy AI workflows
+  at scale"*
+
+Neither states anything about volume. The model knew — it marked both low — and
+the scale paid for them anyway at 1/3 rather than 0. The filter already existed
+in the output and was being discarded by the arithmetic.
+
+**Consequence, measured before committing.** Across the 192-article register the
+change moves 34 items and drops 5 to zero. All five are `enterprise_partnership`
+items previously scoring 4.4 whose only tags were low magnitude and low
+confidence — *"GPT-5.6 is now the preferred model in Microsoft…"*, *"TCS and
+Anthropic bring Claude to regulated industries"*. Nothing above a score of 5 is
+destroyed. The largest single fall is 66.7 to 50.0, on compute-commitment items
+whose strongest tag is medium confidence.
+
+**Alternatives rejected.**
+
+- *Keep 1-3 and filter low-confidence tags in the renderer.* Rejected: it hides
+  the rule in presentation code, where it cannot be argued or changed in config.
+  The point of a config-driven rule is that the whole thing is on one page.
+- *Drop low-confidence tags at extraction.* Rejected: the tag and its quote are
+  still evidence worth keeping in the register, and a future rule may want them.
+  Scoring them zero keeps the record and removes the influence.
+- *Apply the gate to magnitude too.* Rejected: a small effect is still an effect.
+  Magnitude keeps 1-3. Confidence is the only axis where the low value means
+  "we may be wrong about this", which is the thing that should not be paid for.
+
+**What this gives up.** D-era reasoning argued for equal 1-3 scales on both axes
+so neither was quietly favoured, and for thirds specifically so the split could
+be defended as "it is just thirds". That symmetry is now gone: magnitude runs
+1-3 and confidence runs 0-1. The replacement statement is stronger and just as
+short — *confidence is a probability weight, and we do not score what we are not
+confident the document says*. Under the old scale a high-magnitude,
+low-confidence tag was worth more than a low-magnitude, high-confidence one,
+which is backwards for a system whose main risk is fabricated evidence.
+
+**Applied to both axes deliberately.** The AI-team rule mirrors the investment
+rule so the two numbers are readable side by side; changing one alone would make
+them incomparable. Reversible if the practice axis turns out to need it.
+
+---
+
+## Recover OpenAI article text from the Internet Archive (2026-09-01)
+
+**Decision.** Keep RSS for *discovery* of OpenAI articles, and backfill the
+*text* from the Internet Archive. Recovered articles are marked
+`text_source: full_text_archived` and carry an `archive_snapshot` URL.
+
+**The problem, measured.** openai.com returns 403 to every automated request for
+article HTML. Re-probed on 2026-09-01: plain curl, a browser user agent, a full
+browser header set and Googlebot all 403; `sitemap.xml` and `news/rss.xml`
+return 200. Cloudflare is blocking HTML, not XML. The RSS feed carries a title
+and one sentence — median **205 characters** against ~9,200 for an Anthropic
+page — and OpenAI is 79% of the corpus. Nearly four fifths of what we score was
+being judged on a headline, which is also why so many OpenAI tags come back
+low-confidence and, under the new gate, now score zero.
+
+**Result.** 138 of 149 recovered in one run (**93%**, 0 failures), **1,423,288
+characters** gained. Median recovered length 9,270 characters — comparable to a
+directly fetched Anthropic page. The corpus is now 141 archived, 40 direct,
+**11 RSS summaries**, down from 152.
+
+**Alternatives rejected.**
+
+- *Browser automation (Playwright) against openai.com.* Would probably work, but
+  it is deliberately defeating a block the publisher has put up, it adds a heavy
+  dependency, and it breaks whenever the challenge changes. The archive is a
+  public, citable, stable source that is meant to be read.
+- *Accept the RSS summaries.* Rejected on evidence: the gold review traced
+  several weak and spurious tags directly to the 189-205 character ceiling
+  (`04` GPT-5.6 pricing, `15` Jalapeño). The ceiling was causing the errors.
+- *Third-party news coverage of OpenAI.* Rejected: it breaks the primary-source
+  guarantee. An archived openai.com page is still the primary source.
+
+**Engineering notes, both found the hard way.** Snapshot discovery is *one* bulk
+CDX wildcard query, not 152 lookups. Fetches must be serial with backoff — at
+six concurrent the archive failed 20 of 24 probes; that is the source's rate
+limit and not ours to tune away. Snapshots are fetched with the `id_` modifier
+so we store the originally archived bytes rather than the archive's rewritten
+page with its injected banner; those bytes carry the original Content-Encoding,
+so gzip is handled explicitly.
+
+**What this gives up.** An archived snapshot is a point-in-time capture, not the
+live page, and 11 articles have no snapshot at all. Both are visible rather than
+hidden: the `text_source` distinguishes archived from live text, the snapshot
+URL resolves to the exact capture, and the prompt has a confidence rule for the
+archived source. A recovery is rejected outright if it is shorter than the RSS
+summary we already hold, so a redirect stub or error page can never overwrite
+good text.
+
+---
+
+## Fix the date parser: full month names (2026-09-01)
+
+**Decision.** `date_from_page` accepts full month names as well as
+abbreviations, with the abbreviation prevented from partially matching the full
+name.
+
+**Why, and why it is recorded.** This was found by hand-reading the gold set, not
+by a test. `MONTHS` held only `Jan Feb Mar ...`, so `\bOct` matched the first
+three letters of `October` and `\s+` then failed on `ober` — full-name dates
+could not match at all. Anthropic prints the article's own date in full and its
+"Related posts" footer in abbreviated form, so the parser skipped the real date
+and silently took the date of an unrelated recent article from the footer.
+"Introducing Agent Skills" was dated **316 days late**, putting a ten-month-old
+article inside a three-month window, and it was in the gold set.
+
+**Damage measured before fixing:** 2 of 40 sitemap-dated articles wrong. Both
+corrected; the out-of-window one was dropped and the register is now 191.
+
+**The lesson worth keeping.** `tests/test_announcements.py` states that it exists
+to catch *"a date parser that places an old release inside the window"*, and it
+did not, because every test case used the abbreviated form the code already
+handled. A test written from the implementation cannot catch what the
+implementation never considered. The three regression tests use the real page
+shape — header date in full, footer dates abbreviated.
+
+---
+
+## Rebuild the gold set so it samples the corpus (2026-09-01)
+
+**Decision.** Keep the ten gold articles still in the corpus, replace the other
+ten with a draw that is **random within lab strata**, and move the displaced ten
+to `gold/hard_cases/` — retained for error analysis, excluded from any accuracy
+figure. Re-prefill all twenty at v5 with both axes.
+
+**Why now.** The set had drifted three ways at once, none visible from inside it:
+
+1. The window was cut from six months to three, so **ten of twenty articles were
+   no longer in the corpus at all**.
+2. It was drawn using scores computed from **205-character RSS summaries**.
+   OpenAI is 79.6% of the corpus, so for four fifths of it the selection was
+   effectively blind: any article whose signal was not visible in two sentences
+   could never have been picked. This is the one that matters, and it only
+   became visible after the archive backfill.
+3. Its labels predated the practice axis and were filled at prompt v4, so the
+   set could not measure half the system.
+
+Nothing human was lost: 0 of 20 gold blocks carried a reviewer note.
+
+**Why the replacements are drawn at random.** The folder README already said the
+set "was drawn using the pipeline's own scores, so it cannot reveal a kind of
+signal the system misses entirely". A blind draw is the only part of a gold set
+that can. The cost is that most blind draws are noise — five of the ten score
+zero on both axes — but an empty tag list is the most common correct answer in
+this pipeline, and it was previously untested at all: the old set had **zero**
+articles scoring zero on both axes.
+
+**Why stratified by lab.** An unstratified draw does not fix the mix. The set
+was 45% OpenAI against a 79.6% OpenAI corpus, and the first unstratified draw
+came back five-five and left it at 45%. Lab is a fact about the article, not a
+judgement the pipeline makes, so stratifying on it costs none of the blindness
+that matters. Result: 70/25/5 against a corpus of 79.6/19.4/1.0. Anthropic stays
+over-weighted because five of the ten retained are Anthropic; recorded as a known
+bias rather than smoothed away.
+
+**Alternatives rejected.**
+
+- *Redraw all twenty.* Cleanest sampling story, but it discards the hard cases,
+  and a hand review had just found that all three serious classification errors
+  were on articles of exactly that kind. `hard_cases/` keeps them usable without
+  letting them into an accuracy figure.
+- *Keep the twenty and relabel only.* Cheapest, but leaves a gold set that does
+  not sample the corpus and whose OpenAI half was selected from two-sentence
+  summaries. That is a set that cannot answer the question it exists for.
+- *Stratify the new draw on predicted signal.* Would have reproduced the exact
+  flaw being fixed.
+
+**Cost.** $0.8768 for 20 calls at v5.
+
+---
+
+## Cap `model_capability` dimensions at three (2026-09-01)
+
+**Decision.** At most three dimensions per `model_capability` tag, asked for in
+the prompt and **enforced in code** after extraction. Dimensions past the cap
+are recorded in `dropped_tags`, not silently discarded.
+
+**Evidence.** On the first v5 run the three frontier releases named 8, 7 and 7 of
+9 dimensions. A tag naming almost the whole vocabulary says only "this is a big
+launch", which the headline already said, and it destroys the filtering the
+field exists to provide — the same fan-out problem as a mechanism that reaches
+16 of 26 holdings. Small releases were tagged tightly at 1–2, so the cap costs
+nothing there.
+
+**Measured after the change, on the same ten articles:** dimension counts went
+from `[7, 2, 2, 2, 2, 1]` to `[3, 3, 3, 2]`. The cap holds.
+
+**Why it is enforced in code and not only asked for.** The prompt already told
+the model not to over-tag, and it over-tagged anyway. The same run showed the
+same thing on `action`: the prompt says *"`watch` is the default and the most
+common correct answer"* and the model produced the exact inverse ordering. An
+instruction that has already failed once is not evidence for itself. **`action`
+is still not fixed** — on the same ten articles it went from adopt 8 /
+investigate 8 / watch 7 to adopt 12 / investigate 9 / watch 7, i.e. worse. Only
+the blind-draw half shows the intended shape (adopt 1, investigate 3, watch 8),
+which is the noise articles behaving correctly rather than the calibration
+improving. Recorded as open.
+
+---
+
+## The verbatim quote gate (2026-09-01)
+
+**Decision.** Before anything is scored, code checks that every tag's quote
+appears in the document it cites. A tag whose quote is not there is **dropped**.
+A quote that matches only after normalisation is **snapped** to the exact
+substring of the source and kept.
+
+Wired into all three classification paths (`score_announcements.classify_one`,
+`vote.run_pass`, `run_gold`), so no route into the register bypasses it.
+
+**Why the snap, and why it is safe.** The rewrite happens only when the source
+proves it correct — the value written is a substring of the document, never
+anything the model produced. The result is stronger than rejecting
+hallucinations: **every stored quote is a literal substring of the article**, so
+a reader who searches for it finds it. That is the difference between claiming a
+citation guarantee and having one.
+
+**Why now rather than earlier.** Two things had to be fixed first, both today.
+The stored text held raw `&amp;` entities, so correct quotes looked fabricated —
+an earlier check reported ten failures of which nine were the checker's fault.
+And OpenAI articles were 205-character RSS summaries, so for 79% of the corpus
+there was almost nothing to check against.
+
+**What it accepts, and why each relaxation is not a loophole.**
+
+- *Ellipsis.* `A ... B` passes when both halves are found **and A precedes B**.
+  Ordering is enforced: without it the notation licenses exactly the splice this
+  exists to catch. Segments under 12 characters are refused, so `the ... and`
+  cannot pass.
+- *Literal `\uXXXX` escapes.* Observed once: the model emitted the six
+  characters `’` instead of an apostrophe, so ctrl-F found nothing.
+- *A capitalised first letter.* The source reads "it delivered", the model
+  quoted "It delivered". Beginning a quote mid-sentence and capitalising it is
+  ordinary practice.
+- *Terminal punctuation.* The source reads "universal jailbreaks:", the model
+  ended its quote with a full stop.
+- *Curly quotes, dashes, whitespace, and a space left before punctuation by HTML
+  extraction* ("Terminal-Bench 2.1 ,").
+
+**What it refuses**: any elision from the middle of a quote that is not marked
+with an ellipsis. That is the splice shape — an earlier run produced a quote
+built from the first word of one sentence and the body of another, stating a
+true fact in words the document never used.
+
+**A refusal that was right, and fixed upstream.** The gate initially dropped a
+correct tag on article `20`, because the model had read across
+`(opens in a new window)` — which the prompt tells it to ignore. The gate was
+not wrong; the stored text was. `strip_chrome` now removes link and navigation
+furniture at extraction, and the corpus was repaired: **92,711 characters across
+180 articles**, including 3,603 occurrences of that one phrase. That chrome was
+being paid for on every API call and was corrupting quotes.
+
+**Measured on the gold set.** 69 tags: 58 exact, 8 repaired by snapping, 3
+initially dropped. All three drops were false positives — two capitalised first
+letters and one terminal colon — which is what drove the case and punctuation
+relaxations. After those: **69 of 69 pass, 0 dropped, every quote a literal
+substring.**
+
+**What this gives up.** A relaxed match could in principle let through a quote
+whose meaning was changed by a case difference; no such case exists in English
+worth the strictness. More real: the gate proves a quote is *in* the document,
+not that it *supports the tag*. Article `04`'s `inference_volume_up` cites a
+customer testimonial that is genuinely present and still weak evidence. The gate
+is a floor, not a judgement, and the hand review remains the thing that catches
+a well-quoted wrong tag.
+
+---
+
+## Evaluation has no human ground truth, and says so (2026-09-01)
+
+**Decision.** Drop independent human labelling. Replace the unreviewed pre-fill
+in the gold set with **adjudicated** labels: every tag judged against the full
+article by a different model from the classifier, with a recorded reason, in
+`gold/adjudication.yaml`. Delete `gold_human/`.
+
+**Why.** Human labelling was not going to happen — twenty articles at ~14,000
+characters each is most of a working day, and the person who would do it said
+plainly that they would not. An empty `gold_human/` folder implying otherwise is
+worse than not having one: it lets the design document imply a validation step
+that does not exist.
+
+**Why the previous state was untenable.** The `gold` blocks held pre-fill from
+the pipeline itself, so the reference and the thing being measured were the same
+object. Agreement with it proved only that the classifier repeats itself, and
+the metrics script said so in its own header. That is a reproducibility measure
+wearing an accuracy label.
+
+**What the adjudication is.** Classifier `claude-sonnet-5`; adjudicator
+`claude-opus-5` reading the whole article, the classifier's output, and a second
+independent run of it. Four properties make it worth more than self-grading:
+
+1. Two independent runs are visible, so run-to-run disagreement routes attention
+   to where the classifier was least stable.
+2. Quotes are mechanically verified first, so the judgement is only ever whether
+   a quote *supports* a tag, never whether it exists.
+3. Every verdict carries a reason and is spot-checkable in a minute.
+4. The adjudicator is held to the model's own rule — a quote it supplies goes
+   through the same gate, and the build fails if it is not in the document.
+
+**What it cannot do, stated rather than hidden.** The adjudicator wrote the
+vocabulary it is judging against, so it cannot find a kind of signal both models
+miss. `vocabulary_gaps` records four found this way; a gap nobody thought of
+stays invisible. And the adjudication was built from a run, so *that* run scores
+against it optimistically — the figures are a baseline for the next run, not a
+report card on the one that produced them. Both caveats are printed by
+`gold_metrics.py` on every report so they cannot be quoted without them.
+
+**Alternatives rejected.**
+
+- *Keep `gold_human/` empty in case someone fills it later.* Rejected: an
+  unfilled slot in a repo reads as a plan. It was deleted, and git history
+  keeps it recoverable.
+- *Use a third model as an independent judge.* Attractive, but it substitutes a
+  second opinion for ground truth while sounding more objective than it is. The
+  same blind spot applies — a shared training distribution — and it adds cost
+  and a provider dependency for no gain in what is actually verifiable.
+- *Report agreement with the pre-fill as an accuracy figure.* Rejected as
+  misleading. It was 0.78 mechanism F1 and would have been read as accuracy.
+
+**What it found, which is the argument for doing it at all.** 7 of 20 articles
+confirmed entirely; 13 with departures, 21 tag-level verdicts. The two largest
+corrections were both **under-scoring, on the articles a fund would most want to
+get right**: the US directive forcing a lab to disable two frontier models
+(13.3 → 80.0, a magnitude the model called "low" while quoting a document that
+says the standard would "essentially halt all new model deployments"), and
+OpenAI reaching general availability on AWS with Amazon at 11.03% of the fund
+(0.0 → 26.7, a mechanism one run scored at zero confidence and the other did not
+tag at all). Accuracy is not uniform across the score range, and the errors
+concentrate at the top of it.
+
+---
+
+## Blind test of the adjudicator, and what it found (2026-09-01)
+
+**Why.** The adjudicated gold set is **85% classifier output the adjudicator
+read and let stand** — 58 of 68 tags untouched, 10 changed or added, 9 removed.
+Reviewing is a weaker act than authoring: it is easier to accept a plausible
+wrong tag than to notice a missing one. Agreement measured that way is partly
+just anchoring.
+
+**Protocol.** Five articles drawn at random (seed 5150) from the 171 corpus
+articles in neither the gold set nor `hard_cases`, so the adjudicator had seen
+no tags for any of them. Labels written from the articles alone and **committed
+to git before the classifier was run** (`81bad0e`), so the ordering is checkable
+rather than asserted. Then classified, then compared. Cost $0.1881.
+
+**Result 1 — tag selection agrees almost completely.** All 13 tags the
+adjudicator wrote were also produced by the classifier. Event type agreed on
+3 of 5. This is the reassuring half: the two are not looking in different places.
+
+**Result 2 — the adjudicator is systematically the more aggressive scorer.** Of
+28 ordered-field comparisons on shared tags, 13 matched and **11 of the
+remaining 15 had the adjudicator higher** — higher magnitude, higher confidence,
+more actionable. Attribute agreement was only 59%. The blind scores were 26.7 vs
+6.7 and 26.7 vs 13.3 on two articles where every tag was identical.
+
+This directly qualifies the adjudication. Of its ordered-field changes, **7
+raised a value toward high or added a tag and 1 lowered one** — the same
+direction as the measured bias. The corrections may still be right; article 10's
+document does say the standard would "essentially halt all new model
+deployments". But "the adjudicator raised the score" is now a known tendency
+rather than neutral evidence, and it must be read that way.
+
+**Result 3 — the classifier found two supported tags the adjudicator missed, and
+one miss came with a written rationale that was false about the document.** On
+`B5` (PORTS-Pike, 8GW) the adjudicator recorded: *"training_compute_up was
+considered and rejected. The document says 'data center' and 'gigawatts-IT' and
+never says training."* The document says: *"We are contracting for this capacity
+based on our projected long-term needs for **frontier training** and growing
+demand for our products."* The classifier quoted that sentence. It also found
+`lab_capital_access` from *"fund those commitments through revenue and cash
+flow"*, which the adjudicator did not consider at all.
+
+A confident, reasoned, written-down rejection was wrong on a fact about an
+8,000-word document the adjudicator had just read. On a 191-article corpus that
+failure mode does not stay rare.
+
+**What this changes.**
+
+- The adjudication stays, because 19 tag-level corrections on evidence is worth
+  more than unreviewed pre-fill. But it is now labelled with a measured bias
+  rather than presented as a correction of the model.
+- Where the adjudicator and the classifier disagree only on magnitude or
+  confidence, **the classifier's value is the better prior**, because the
+  adjudicator's bias has a measured direction and the classifier's does not.
+- Tag *selection* disagreements remain worth adjudicating: the blind test found
+  no case of the adjudicator inventing a tag the classifier had no basis for.
+
+**What it cost to learn.** $0.19 and one drawn sample. It is the cheapest
+experiment run on this project and the only one that measured the evaluator
+rather than the thing evaluated. n=5, one run, one adjudicator — enough to
+establish a direction, not to calibrate a correction.

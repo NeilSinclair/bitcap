@@ -76,19 +76,12 @@ mechanisms:
       and the shift of bottleneck from FLOPs to bandwidth.
     polarity_note: Positive sign = company benefits when interconnect demand rises.
 
-  - id: open_weights_release
-    label: Capable open-weight models released
-    description: >
-      A lab publishes weights competitive with closed frontier models, enabling
-      self-hosting and undercutting per-token API pricing.
-    polarity_note: >
-      Positive sign = company benefits from open weights (self-hosters, hardware
-      for local inference, application builders avoiding API rent).
+
 
   - id: capability_jump
     label: Step change in model capability
     description: >
-      A capability threshold is crossed that puts new tasks in reach — long-horizon
+      A capability threshold is crossed that puts new tasks in reach -- long-horizon
       agents, reliable tool use, domain expert performance.
     polarity_note: >
       Positive sign = company benefits. Negative sign = the capability threatens
@@ -153,6 +146,18 @@ mechanisms:
       applies to companies that have a financial investment in the lab.
 
 # Controlled vocabularies used by companies.yaml.
+  # RETIRED: open_weights_release moved to practices.yaml. It reached 0 of 26
+  # holdings -- no company ever declared a link to it -- and the investment side
+  # keeps it through the `open_weights` event weight of 5 in scoring.yaml.
+  #
+  # capability_jump was retired alongside it and then put back. The argument
+  # against was routing: it reaches 1 of 26 holdings. The argument for, which
+  # won, is that a capability step is the headline transmission of a frontier
+  # release and drives the adoption everything else in this file depends on.
+  # It also exists as a `model_capability` dimension in practices.yaml -- the
+  # same event read twice, once as demand and once as a build decision, which
+  # is the point of having two axes.
+
 enums:
   sign: [positive, negative, mixed]
   magnitude: [high, medium, low]

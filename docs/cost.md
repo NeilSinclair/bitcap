@@ -147,3 +147,64 @@ announcements): ~$21 uncached, ~$10 batched. Recurring incremental runs are a fr
 that, since only new announcements are classified.
 
 **Running total across all workflows: $14.18.**
+
+### Gold-set run with both axes (2026-09-01)
+
+20 gold articles, `claude-sonnet-5`, prompt v5, cache bypassed. First run
+carrying the practice axis alongside mechanisms.
+
+| | |
+|---|---|
+| Articles | 20 |
+| Paid calls | 20 |
+| Cost | **$0.8173** ($0.0409/article) |
+| Wall clock | 62s at 10 workers |
+| Failures | 0 |
+
+Per-article cost is ~2.8x the 192-article corpus rate of $0.0148 because v5 adds
+the practice vocabulary and its dimension list to every system prompt. Worth
+knowing before the full re-classification: 192 articles at this rate is ~$7.85,
+not the ~$2.84 estimated from v4 pricing.
+
+Reviewed by hand in [gold_review.md](gold_review.md).
+
+### OpenAI archive backfill (2026-09-01) — €0.00, and it raises the next bill
+
+No LLM calls: 1 CDX query plus 138 archive fetches, all free. The cost entry
+that matters is what it does to the *next* classification run.
+
+| | Before | After |
+|---|---|---|
+| Articles | 192 | 191 (one dropped as out-of-window) |
+| Median OpenAI text | 205 chars | 9,270 chars |
+| Corpus text | ~485k chars | **1,908k chars** |
+| RSS-summary articles | 152 | 11 |
+
+The gold set is 20 full-text articles, so the measured **$0.0409/article** is
+already the full-text rate rather than the summary rate. Re-classifying the
+corpus under v5 is therefore ~**$7.80**, essentially unchanged by the backfill —
+the earlier ~$2.84 figure was the v4-on-summaries rate and is obsolete.
+
+Wall clock for the backfill was ~19 minutes, almost all of it the deliberate
+2s serial delay. That is a rate limit, not inefficiency.
+
+### Gold-set rebuild and re-prefill (2026-09-01)
+
+20 articles, `claude-sonnet-5`, prompt v5, both axes, confidence gate and
+dimension cap live.
+
+| | |
+|---|---|
+| Articles | 20 (10 retained, 10 blind-drawn) |
+| Paid calls | 20 |
+| Cost | **$0.8768** ($0.0438/article) |
+| Failures | 0 |
+
+Up 7% per article on the previous gold run ($0.0409) because nine articles that
+were 200-character RSS summaries are now full archived text. That is the real
+per-article rate for a full-text corpus and is the number to plan the corpus run
+against: **191 x $0.0438 = ~$8.40**.
+
+The rebuild itself (`rebuild_gold.py`, `refresh_gold_text.py`) cost nothing —
+no LLM calls, and the archive is free.
+

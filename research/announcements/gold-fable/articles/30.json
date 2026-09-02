@@ -1,0 +1,46 @@
+{
+  "id": "30",
+  "lab": "openai",
+  "date": "2026-07-09",
+  "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
+  "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+  "text_source": "full_text_archived",
+  "text": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot | OpenAI Research Products Business Developers Company Foundation Log in Try ChatGPT Research Products Business Developers Company Foundation Try ChatGPT Login OpenAI July 9, 2026 Product GPT‑5.6 is now the preferred model in Microsoft 365 Copilot Share Today, OpenAI announced GPT‑5.6, which will become the new preferred model in Microsoft 365 Copilot—in Word, Excel, PowerPoint, Chat and Cowork. For Microsoft 365 customers, the update brings OpenAI's latest flagship model series into productivity tools people use every day, helping them create, analyze, and collaborate with more capable AI assistance across workstreams. GPT‑5.6 is OpenAI’s latest flagship model series, which delivers more useful work from every token, with stronger performance per dollar and on demand capability for the most complex tasks. With GPT‑5.6, Microsoft 365 users will be able to create higher-quality work products with less effort across the apps they already rely on: In Word, GPT‑5.6 can help people draft, edit, and refine documents with fewer rounds of prompting. In Excel, it can support deeper analysis while using tokens more efficiently, helping users move faster from data to insights. In PowerPoint, it can help turn early ideas into more polished, visually compelling presentations with less manual guidance. In Cowork, it can help users complete complex, cross-functional work and produce higher-quality outputs with less manual coordination. “We can’t wait for customers to see what GPT‑5.6 in Microsoft 365 will do, enabling them to work even more effectively with AI in the tools they use every day,” said Nitin Agrawal, President, Copilot & Agents Core, Microsoft. “Using Copilot powered by OpenAI’s latest model, customers will be able to produce more polished outputs in Word, Excel, PowerPoint, Cowork, and Copilot Chat, whether they are drafting documents, analyzing data, creating presentations, or collaborating across teams. We’re excited to continue building with OpenAI to bring more powerful AI experiences to people and organizations around the world.” “Microsoft 365 is where millions of people write, analyze, create, and collaborate every day,” said Nikunj Handa, Head of API Product, OpenAI. “By bringing GPT‑5.6 to Microsoft 365 Copilot through the OpenAI API, we're helping organizations get more useful work from every token, and more value from AI in the tools they already use.” In addition to serving the models natively, Microsoft will also access OpenAI models directly through the API to bring GPT‑5.6 to Microsoft 365 customers. Our partnership with Microsoft has always been about bringing the benefits of advanced AI to more individuals and organizations, and we’re excited to continue building on that shared commitment. 2026 Author OpenAI Keep reading View all GPT-5.6: Frontier intelligence that scales with your ambition Product Jul 9, 2026 ChatGPT is now a partner for your most ambitious work Product Jul 9, 2026 Introducing GPT-Live Product Jul 8, 2026 Research Research Index Research Overview Economic Research Latest Advancements GPT-5.6 GPT-5.5 GPT-5.4 Safety Safety Approach Deployment Safety Security & Privacy Trust & Transparency Products ChatGPT ChatGPT Business ChatGPT Enterprise ChatGPT for Education Codex Release Notes API Platform Overview API Log In Docs Business Overview Solutions Resources Customer Stories Partner Network Contact Sales Developers Apps SDK Open Models Docs Resources Developer Forum Company About Us Our Charter Careers News Support Help Center More Stories Academy Livestreams Podcast RSS Terms & Policies Terms of Use Privacy Policy Other Policies OpenAI © 2015–2026 Manage Cookies English United States",
+  "gold": {
+    "event_type": "enterprise_partnership",
+    "mechanisms": [
+      {
+        "id": "inference_volume_up",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "medium",
+        "reason": "Default placement of the flagship model across M365's very large user base adds serving volume, both natively and via the API; no usage figures are given.",
+        "quote": "Microsoft 365 is where millions of people write, analyze, create, and collaborate every day"
+      }
+    ],
+    "categories": [
+      {
+        "id": "hyperscale_platform",
+        "sign": "positive",
+        "confidence": "high",
+        "reason": "Microsoft's Copilot surfaces get OpenAI's latest flagship as the preferred model, reinforcing the platform's AI offering.",
+        "quote": "OpenAI announced GPT‑5.6, which will become the new preferred model in Microsoft 365 Copilot—in Word, Excel, PowerPoint, Chat and Cowork"
+      }
+    ],
+    "practices": [],
+    "notes": "Efficiency wording ('more useful work from every token') is unquantified marketing here and deliberately not tagged."
+  },
+  "review": {
+    "labeller": "claude-fable-5",
+    "method": "independent read of the article text only; existing gold/system labels not consulted",
+    "quote_rule": "every quote snapped to an exact substring of the stored text via verbatim.snap",
+    "caveat": "the labeller adjudicated an earlier gold pass in the same session, so blindness is best-effort, not perfect"
+  },
+  "computed": {
+    "score": 13.3,
+    "band": "low",
+    "ai_score": 0.0,
+    "ai_band": "none",
+    "note": "Deterministic rule from config/scoring.yaml (score_of / ai_score_of) applied to the fable labels above."
+  }
+}

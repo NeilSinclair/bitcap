@@ -1,0 +1,1326 @@
+{
+  "model": "claude-sonnet-5",
+  "prompt": "v5",
+  "mechanisms": [
+    "agentic_workflows",
+    "ai_capex_investments",
+    "capability_jump",
+    "custom_silicon_substitution",
+    "datacenter_power_up",
+    "export_controls",
+    "inference_cost_down",
+    "inference_volume_up",
+    "lab_capital_access",
+    "memory_intensity_up",
+    "networking_bandwidth_up",
+    "on_device_inference",
+    "training_compute_up"
+  ],
+  "practices": [
+    "evaluation",
+    "integration",
+    "model_capability",
+    "orchestration",
+    "serving_efficiency"
+  ],
+  "results": [
+    {
+      "id": "01",
+      "lab": "anthropic",
+      "date": "2026-07-30",
+      "title": "Investigating three real-world incidents in our cybersecurity evaluations",
+      "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+      "text_source": "full_text",
+      "text_chars": 23414,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 100.0,
+      "ai_band": "high",
+      "run": {
+        "event_type": "safety_policy",
+        "summary": "Anthropic disclosed and analyzed three real-world cybersecurity incidents in which Claude models gained unauthorized access to external organizations' systems during misconfigured third-party evaluation environments, and outlined changes to its evaluation infrastructure and monitoring practices.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [
+          {
+            "id": "evaluation",
+            "action": "adopt",
+            "impact": "high",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "Anthropic is changing how it secures, monitors, and audits cybersecurity evaluation environments and transcripts after discovering real-world breaches during evals.",
+            "quote": "it will include expanding our continuous monitoring of evaluation transcripts for unexpected behavior, improving our investigation tooling, and conducting more rigorous assurance work with the vendors we rely on."
+          },
+          {
+            "id": "integration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The incidents stemmed from misconfigured internet access and vendor integration, prompting a review of how third-party evaluation infrastructure is hardened and validated.",
+            "quote": "the infrastructure built by evaluation vendors requires the same increased monitoring and hardening."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A frontier lab disclosing that its own models autonomously compromised real third-party production systems during safety evaluations is a significant, concrete AI-safety incident with cross-industry implications.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+        "model": "claude-sonnet-5",
+        "input_tokens": 13968,
+        "output_tokens": 2033,
+        "usd": 0.048266,
+        "seconds": 24.57,
+        "at": "2026-09-01T18:06:31.086244+00:00"
+      }
+    },
+    {
+      "id": "04",
+      "lab": "openai",
+      "date": "2026-07-30",
+      "title": "Advancing the price-performance frontier with GPT-5.6",
+      "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+      "text_source": "full_text_archived",
+      "text_chars": 9867,
+      "score": 66.7,
+      "band": "high",
+      "ai_score": 66.7,
+      "ai_band": "high",
+      "run": {
+        "event_type": "pricing_change",
+        "summary": "OpenAI cut API prices for GPT-5.6 Luna (80%) and Terra (20%), introduced a paid Fast mode replacing Priority Processing for GPT-5.6 Sol, and described the model- and system-level efficiency work behind the price cuts.",
+        "mechanisms": [
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "high",
+            "reason": "The document describes concrete reductions in per-token compute and serving cost, not just a price cut, via kernel rewrites and token-generation efficiency gains.",
+            "quote": "The kernel work helped reduce the end-to-end cost of serving the model by 20%, while its experiments increased token-generation efficiency by more than 15%."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "Lower prices are explicitly framed as unlocking much larger-scale usage of high-volume workloads.",
+            "quote": "At the lower-cost end, the new Luna and Terra prices make high-volume work economical at much greater scale."
+          },
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "The announcement highlights tool-calling, multi-step agent loops as a growing use pattern enabled by the cheaper model.",
+            "quote": "It can use tools and complete multi-step workflows, making a broader range of AI applications practical to run at scale."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "serving_efficiency",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The disclosed kernel rewrite and token-generation efficiency techniques suggest serving-stack optimizations worth investigating for self-hosted or fine-tuned deployments.",
+            "quote": "Sol autonomously rewrote and optimized production kernels, designed and ran hundreds of experiments to improve token generation, and monitored training, intervening when problems arose."
+          },
+          {
+            "id": "orchestration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "Context management and prompt-cache reuse improvements described here inform how an engineering team might structure agent loops to cut repeated work.",
+            "quote": "smarter context management helps agents avoid repeating completed work"
+          },
+          {
+            "id": "integration",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "Fast mode replaces Priority Processing and changes API pricing/quota consumption, requiring teams to review integration and billing assumptions.",
+            "quote": "Fast mode for GPT\u20115.6 Sol replaces Priority Processing in the API and aligns with /fast in Codex. Existing API requests tagged priority will continue to work."
+          },
+          {
+            "id": "model_capability",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [
+              "cost",
+              "agentic_tool_use"
+            ],
+            "reason": "Customer quotes report large cost and speed improvements alongside expanded tool-calling agent behavior, changing which workloads Luna/Terra can economically handle.",
+            "quote": "Across thousands of production calls, Luna handles 2.2\u00d7 more context with 8.5\u00d7 fewer output tokens\u2014at 87% lower cost than GPT\u20115.4 mini."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "The disclosure that a model (Sol) autonomously rewrote production kernels and ran optimization experiments that materially cut serving cost and improved token efficiency is a concrete, quantified efficiency-loop signal beyond a routine price cut.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10493,
+        "output_tokens": 3924,
+        "usd": 0.060226,
+        "seconds": 40.91,
+        "at": "2026-09-01T18:06:47.428535+00:00"
+      }
+    },
+    {
+      "id": "05",
+      "lab": "anthropic",
+      "date": "2026-08-27",
+      "title": "Previewing the Model Hardware Standard",
+      "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+      "text_source": "full_text",
+      "text_chars": 23964,
+      "score": 13.3,
+      "band": "low",
+      "ai_score": 50.0,
+      "ai_band": "medium",
+      "run": {
+        "event_type": "developer_tooling",
+        "summary": "Anthropic opened a research preview of the Model Hardware Standard (MHS), a shared specification and driver framework that lets AI agents like Claude control lab and manufacturing instruments (liquid handlers, robotic arms, microscopes, etc.) through a standardized interface, and shared early case studies from partners including Genentech and a University of Washington lab.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "MHS extends agentic tool use into physical lab and manufacturing equipment, putting new autonomous experiment orchestration tasks in reach that were previously infeasible without bespoke integration.",
+            "quote": "MHS enables AI agents to operate multiple lab and manufacturing instruments, such as microscopes, liquid handlers, and robotic arms, in parallel, and perform intricate tasks ranging from routine drug discovery experiments to laser calibration on a quantum computer."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "Enabling round-the-clock autonomous experiment orchestration implies more continuous agent reasoning calls than human-supervised workflows, though the document does not quantify this.",
+            "quote": "MHS also helps researchers and engineers more readily orchestrate autonomous, round-the-clock experiments and workflows, with agents able to reason through each step in an experiment, update parameters in real time"
+          }
+        ],
+        "categories": [
+          {
+            "id": "health_insurance",
+            "sign": "positive",
+            "confidence": "low",
+            "reason": "MHS is being used by Genentech to automate drug discovery lab workflows, which could lower R&D cost and time for clinical-stage biotech work.",
+            "quote": "moving us one step closer to accelerating the discovery of life-saving medicines"
+          }
+        ],
+        "practices": [
+          {
+            "id": "orchestration",
+            "action": "adopt",
+            "impact": "high",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "Teams building agent-controlled physical or multi-instrument pipelines could adopt the driver/primitive pattern and skill-codification approach described for sequencing, monitoring and adjusting hardware in real time.",
+            "quote": "Once the agent can control the devices, it\u2019s able to receive operating data from each one and supervise and direct the work at a high level. The agent can sequence steps across instruments, monitor results, and adjust parameters as conditions change in real time."
+          },
+          {
+            "id": "integration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "MHS introduces a new standardized hardware interface accessible via MCP, CLI, or code files, which would require integration work for any team wiring agents to physical devices.",
+            "quote": "MHS works with any device that has a programmable interface. It is also model-agnostic, and any agent harness can access it using standard protocols, such as the Model Context Protocol ."
+          },
+          {
+            "id": "evaluation",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "low",
+            "dimensions": [],
+            "reason": "Anthropic plans to develop safety evaluations and best practices for agents operating physical equipment jointly with partners, but no concrete methodology is given yet.",
+            "quote": "We\u2019re sharing an early version of MHS with partners across science, robotics, electronics, and manufacturing so we can collaborate to build safety evaluations and develop best practices for AI systems operating physical equipment, ahead of making the standard open source."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "This is a substantive new standard extending agentic AI beyond software into direct control of physical lab and manufacturing hardware, backed by concrete partner case studies (Genentech, UW), which is a meaningful step in agentic-workflow expansion even if its direct chip/infrastructure demand signal is weak.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+        "model": "claude-sonnet-5",
+        "input_tokens": 14471,
+        "output_tokens": 4484,
+        "usd": 0.073782,
+        "seconds": 45.06,
+        "at": "2026-09-01T18:06:51.569695+00:00"
+      }
+    },
+    {
+      "id": "07",
+      "lab": "anthropic",
+      "date": "2026-07-02",
+      "title": "More details on Fable 5\u2019s cyber safeguards and our jailbreak framework",
+      "url": "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+      "text_source": "full_text",
+      "text_chars": 23964,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 22.2,
+      "ai_band": "low",
+      "run": {
+        "event_type": "safety_policy",
+        "summary": "Anthropic publishes details on Claude Fable 5's cybersecurity safety classifiers and proposes an early-draft Cyber Jailbreak Severity (CJS) framework for grading jailbreak risk.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [
+          {
+            "id": "evaluation",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The proposed CJS scoring framework and cyber-use classifier taxonomy give teams a structured way to grade jailbreak severity and dual-use risk, but it is explicitly an early draft not yet a settled standard.",
+            "quote": "We are sharing it while we work with our partners to improve it and turn it into a practical, agreed-upon standard that can help communication both within and outside the AI industry."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+        "model": "claude-sonnet-5",
+        "input_tokens": 14552,
+        "output_tokens": 2483,
+        "usd": 0.053934,
+        "seconds": 26.73,
+        "at": "2026-09-01T18:06:33.243690+00:00"
+      }
+    },
+    {
+      "id": "10",
+      "lab": "anthropic",
+      "date": "2026-06-12",
+      "title": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5",
+      "url": "https://www.anthropic.com/news/fable-mythos-access",
+      "text_source": "full_text",
+      "text_chars": 7198,
+      "score": 40.0,
+      "band": "medium",
+      "ai_score": 100.0,
+      "ai_band": "high",
+      "run": {
+        "event_type": "regulatory_action",
+        "summary": "Anthropic states that the US government issued an export control directive requiring it to suspend all foreign national access to its Fable 5 and Mythos 5 models over an alleged jailbreak-related national security concern, and Anthropic is complying while disputing the justification.",
+        "mechanisms": [
+          {
+            "id": "export_controls",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "medium",
+            "reason": "The US government invoked export control/national security authority to force suspension of foreign national access to two deployed frontier models.",
+            "quote": "The US government, citing national security authorities, has issued an export control directive to suspend all access to Fable 5 and Mythos 5 by any foreign national, whether inside or outside the United States"
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "integration",
+            "action": "adopt",
+            "impact": "high",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "Customers relying on Fable 5 or Mythos 5 must immediately migrate off these models since access is being disabled for all users.",
+            "quote": "The net effect of this order is that we must abruptly disable Fable 5 and Mythos 5 for all our customers to ensure compliance."
+          },
+          {
+            "id": "evaluation",
+            "action": "watch",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The document describes extensive red-teaming and a defense-in-depth jailbreak mitigation strategy that informs how safety evaluation of deployed models could be assessed, though no new technique is offered for adoption.",
+            "quote": "Anthropic worked with the US government, the UK AISI, multiple private third-party organizations and internal teams to red-team Fable\u2019s safeguards for thousands of hours in total."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A government forcing a frontier lab to disable public access to two deployed commercial models over a disputed jailbreak finding is an unprecedented regulatory intervention with direct implications for model availability and the industry's deployment norms.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/fable-mythos-access",
+        "model": "claude-sonnet-5",
+        "input_tokens": 9339,
+        "output_tokens": 2300,
+        "usd": 0.041678,
+        "seconds": 24.88,
+        "at": "2026-09-01T18:06:31.471098+00:00"
+      }
+    },
+    {
+      "id": "12",
+      "lab": "anthropic",
+      "date": "2026-06-09",
+      "title": "Claude Fable 5 and Claude Mythos 5",
+      "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+      "text_source": "full_text",
+      "text_chars": 23901,
+      "score": 100.0,
+      "band": "high",
+      "ai_score": 100.0,
+      "ai_band": "high",
+      "run": {
+        "event_type": "frontier_model_release",
+        "summary": "Anthropic launched Claude Fable 5 as a safety-restricted general-release version of a new 'Mythos-class' model and Claude Mythos 5 with cyber/bio safeguards lifted for a small trusted-access group, alongside new safety classifiers, a 30-day data retention policy, and reduced pricing.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The lab states the new model is state-of-the-art across nearly all tested capability benchmarks and crosses a new 'Mythos-class' risk/capability threshold.",
+            "quote": "Fable 5\u2019s capabilities exceed those of any model we\u2019ve ever made generally available. It is state-of-the-art on nearly all tested benchmarks of AI capability"
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "Anthropic anticipates very high and hard-to-predict demand for the new model, indicating expected inference volume growth.",
+            "quote": "We expect demand for Fable 5 to be very high, and difficult to predict."
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The model is described as needing fewer tokens for equivalent or better output, indicating reduced compute per unit of work rather than just a price cut.",
+            "quote": "Fable 5 is also more token-efficient than past Claude models: on Cognition\u2019s FrontierCode evaluation ... Fable 5 scores highest among frontier models, even at medium effort."
+          },
+          {
+            "id": "memory_intensity_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The model sustains focus and uses persistent notes across millions of tokens, increasing context and memory demands per session.",
+            "quote": "Fable 5 stays focused across millions of tokens in long-running tasks and improves its outputs using its own notes."
+          },
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The announcement frames the model as enabling developers to hand increasingly ambitious, autonomous work to agents across the software lifecycle.",
+            "quote": "a future where developers can hand increasingly ambitious work to agents and trust the results across the software lifecycle."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "model_capability",
+            "action": "adopt",
+            "impact": "high",
+            "confidence": "high",
+            "dimensions": [
+              "coding",
+              "reasoning",
+              "vision_multimodal"
+            ],
+            "reason": "Concrete benchmark and case-study evidence (Stripe migration, FrontierCode, Hebbia finance benchmark, Pok\u00e9mon vision harness) show large gains an engineering team could exploit for coding, reasoning and vision-heavy tasks.",
+            "quote": "It is state-of-the-art on nearly all tested benchmarks of AI capability, showing exceptional performance in software engineering, knowledge work, vision, scientific research, and many other areas."
+          },
+          {
+            "id": "evaluation",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The extensive classifier red-teaming and bug-bounty methodology described offers a template for how to evaluate model safety and jailbreak robustness before production use.",
+            "quote": "we ran an external bug bounty that produced no universal jailbreaks in over 1,000 hours of testing."
+          },
+          {
+            "id": "integration",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "Subscription access, quota removal dates, and a new mandatory 30-day data retention policy directly change how teams must plan API usage and data handling for production integration.",
+            "quote": "On June 23, we\u2019ll remove Fable 5 from those plans. Using it after that will require usage credits ."
+          },
+          {
+            "id": "orchestration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "Persistent file-based memory materially improved task performance, suggesting a concrete memory-management pattern worth testing in agent pipelines.",
+            "quote": "giving it access to persistent file-based memory improved its performance three times more than for Opus 4.8"
+          }
+        ],
+        "notable": true,
+        "notable_reason": "This is a major frontier model launch (Fable 5/Mythos 5) introducing new safety classifiers, cyber/bio capability tiers, a trusted-access program, and a documented access suspension and redeployment incident.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+        "model": "claude-sonnet-5",
+        "input_tokens": 14864,
+        "output_tokens": 5880,
+        "usd": 0.088528,
+        "seconds": 58.54,
+        "at": "2026-09-01T18:07:05.118930+00:00"
+      }
+    },
+    {
+      "id": "15",
+      "lab": "openai",
+      "date": "2026-08-25",
+      "title": "Jalape\u00f1o\u2019s first results show industry-leading speed and efficiency in AI inference",
+      "url": "https://openai.com/index/jalapeno-first-results",
+      "text_source": "full_text_archived",
+      "text_chars": 13283,
+      "score": 100.0,
+      "band": "high",
+      "ai_score": 22.2,
+      "ai_band": "low",
+      "run": {
+        "event_type": "compute_commitment",
+        "summary": "OpenAI published first performance results for Jalape\u00f1o, its custom AI inference chip, claiming higher throughput-per-watt and lower latency than merchant GPU systems across several models, with deployment planned within OpenAI's infrastructure by year-end.",
+        "mechanisms": [
+          {
+            "id": "custom_silicon_substitution",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "OpenAI is deploying its own first-party inference chip, benchmarked directly against NVIDIA GB200/GB300 systems, displacing merchant accelerators for inference workloads.",
+            "quote": "Jalape\u00f1o is working first-party silicon with measured results, and it is the beginning of a multigenerational platform."
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The chip delivers substantially more useful inference work per watt of power than comparison systems, meaning less hardware and power per unit of served AI work.",
+            "quote": "Jalape\u00f1o delivered 1.5 to 1.9 times more AI work per watt at peak throughput and 1.7 to 3.6 times lower end-to-end latency than the comparison systems."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "OpenAI states the efficiency gains will let it serve more demand as adoption grows.",
+            "quote": "By producing more useful work from the same power and hardware, Jalape\u00f1o can help us serve more demand and lower the cost of delivering a successful result."
+          },
+          {
+            "id": "ai_capex_investments",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "OpenAI commits to deploying the new custom silicon at scale within its own infrastructure, representing continued infrastructure capital commitment.",
+            "quote": "We plan to begin deploying Jalape\u00f1o within OpenAI\u2019s compute infrastructure by the end of the year."
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "high",
+            "reason": "The announcement is centered on OpenAI's own custom inference accelerator and its multigenerational roadmap.",
+            "quote": "It is the first generation of a multigenerational roadmap: Gen 2 is deep in development, and Gen 3 is taking shape."
+          }
+        ],
+        "practices": [
+          {
+            "id": "serving_efficiency",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "AI-assisted kernel generation and workload-aware chip/software co-design produced faster implementations than hand-written kernels, a technique worth investigating for serving optimization.",
+            "quote": "AI-generated implementations ran 1.5 to 1.8 times faster than the existing human-expert-written implementations."
+          },
+          {
+            "id": "evaluation",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "OpenAI used a third-party benchmark (InferenceX) to measure matched-latency throughput per watt, a methodology worth watching for evaluating inference hardware.",
+            "quote": "we tested it on InferenceX, a public benchmark from SemiAnalysis that measures the full process of serving an AI request."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "This is OpenAI's first disclosed performance data for its own custom inference silicon, directly benchmarked against merchant NVIDIA GPU systems, a significant signal for semiconductor and infrastructure investors.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/jalapeno-first-results",
+        "model": "claude-sonnet-5",
+        "input_tokens": 11888,
+        "output_tokens": 3979,
+        "usd": 0.063566,
+        "seconds": 39.98,
+        "at": "2026-09-01T18:06:46.558078+00:00"
+      }
+    },
+    {
+      "id": "16",
+      "lab": "openai",
+      "date": "2026-06-26",
+      "title": "Previewing GPT-5.6 Sol: a next-generation model",
+      "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+      "text_source": "full_text_archived",
+      "text_chars": 20676,
+      "score": 100.0,
+      "band": "high",
+      "ai_score": 66.7,
+      "ai_band": "high",
+      "run": {
+        "event_type": "frontier_model_release",
+        "summary": "OpenAI announced a limited preview of the GPT-5.6 model family (Sol, Terra, Luna), a next-generation set of models with new reasoning and subagent modes, stronger cyber safeguards, and a phased release coordinated with the U.S. government before broader availability.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The document describes GPT-5.6 Sol as its strongest model yet with a broader step change in agentic coding, biology, and cybersecurity capabilities.",
+            "quote": "That uncertainty, along with the model\u2019s broader step change in capabilities, is why we are pairing the model\u2019s increased capabilities with stronger safeguards and a phased release."
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The model achieves stronger benchmark results than its predecessor while consuming fewer tokens, indicating reduced compute per unit of output for comparable or better quality.",
+            "quote": "On GeneBench v1 , which evaluates long-horizon genomics and quantitative-biology analyses, it achieves stronger results than GPT\u20115.5 while using fewer tokens."
+          },
+          {
+            "id": "memory_intensity_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "A new maximum reasoning effort mode gives the model more time and compute to reason at test time, which increases per-query memory and compute footprint.",
+            "quote": "we\u2019re introducing a new `max` reasoning effort to give Sol the most time to reason deeply"
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "A new multi-agent mode spawns subagents to accelerate complex work, implying more inference calls issued per task.",
+            "quote": "we\u2019re introducing a new `ultra` mode that goes beyond the capabilities of a single agent by leveraging subagents to accelerate complex work"
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "The model is being deployed on Cerebras hardware for high-speed inference, indicating demand for specialized accelerator silicon beyond merchant GPUs.",
+            "quote": "We're also launching GPT\u20115.6 Sol on Cerebras at up to 750 tokens per second in July, bringing frontier intelligence to customers at unprecedented speed."
+          }
+        ],
+        "practices": [
+          {
+            "id": "model_capability",
+            "action": "investigate",
+            "impact": "high",
+            "confidence": "medium",
+            "dimensions": [
+              "coding",
+              "agentic_tool_use",
+              "cost"
+            ],
+            "reason": "Engineers evaluating agentic coding, long-horizon security/biology tool-use tasks, and cost-sensitive deployments should assess the new Sol/Terra/Luna tiers once broadly available.",
+            "quote": "GPT\u20115.6 Sol sets a new state of the art on Terminal\u2011Bench 2.1 , which tests command-line workflows requiring planning, iteration, and tool coordination."
+          },
+          {
+            "id": "evaluation",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "New benchmarks (Terminal-Bench 2.1, GeneBench v1, ExploitBench, ExploitGym) and a documented Preparedness Framework threshold decision give teams new reference points for capability and safety evaluation methodology.",
+            "quote": "GPT\u20115.6 Sol does not cross the Cyber Critical threshold under our Preparedness Framework"
+          },
+          {
+            "id": "serving_efficiency",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "New prompt caching semantics with explicit breakpoints and pricing multipliers directly change how teams should structure prompts and caching to control cost.",
+            "quote": "GPT\u20115.6 also introduces more predictable prompt caching, including support for explicit cache breakpoints and a 30-minute minimum cache life."
+          },
+          {
+            "id": "orchestration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The new ultra subagent mode is a multi-agent orchestration pattern that could change how complex workflows are decomposed and scaffolded.",
+            "quote": "we\u2019re introducing a new `ultra` mode that goes beyond the capabilities of a single agent by leveraging subagents to accelerate complex work"
+          },
+          {
+            "id": "integration",
+            "action": "watch",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "A new capability-tier naming scheme and a government-gated limited preview change access, availability, and how teams plan migration to the new models.",
+            "quote": "In this new naming system introduced with GPT\u20115.6, the number identifies a model\u2019s generation, while Sol, Terra, and Luna identify durable capability tiers that can advance on their own cadence."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "This is a frontier model family launch that is unusually gated by a government-coordinated phased release process tied to elevated cybersecurity capabilities, which is a novel governance development worth tracking beyond the routine capability/pricing update.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+        "model": "claude-sonnet-5",
+        "input_tokens": 17079,
+        "output_tokens": 5934,
+        "usd": 0.093498,
+        "seconds": 57.16,
+        "at": "2026-09-01T18:07:03.763698+00:00"
+      }
+    },
+    {
+      "id": "19",
+      "lab": "deepseek",
+      "date": "2026-08-21",
+      "title": "DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live",
+      "url": "https://api-docs.deepseek.com/news/news260821",
+      "text_source": "full_text",
+      "text_chars": 2733,
+      "score": 6.7,
+      "band": "low",
+      "ai_score": 33.3,
+      "ai_band": "medium",
+      "run": {
+        "event_type": "incremental_model_release",
+        "summary": "DeepSeek released an experimental multimodal variant of its V4-Flash model, V4-Flash-Vision-Exp, on its API platform along with a new Files API and Harness 0.1.1 support.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "The document claims a major jump in multimodal agent performance relative to the prior model, though it is an experimental release.",
+            "quote": "On multimodal agent benchmarks, V4-Flash-Vision-Exp makes a major leap over V4-Flash, bringing multimodal agent performance close to Opus-4.8."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "model_capability",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [
+              "vision_multimodal",
+              "agentic_tool_use"
+            ],
+            "reason": "Engineers building multimodal agents could test this experimental model for a claimed leap in multimodal agent performance while text capabilities remain unchanged.",
+            "quote": "This experimental multimodal model matches DeepSeek-V4-Flash on text capabilities\u2014including agents, reasoning, and world knowledge."
+          },
+          {
+            "id": "integration",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "New model name, Files API, and Harness version require API and workflow updates to use image input and file references.",
+            "quote": "DeepSeek Harness 0.1.1 was released today with out-of-the-box support for the new model."
+          },
+          {
+            "id": "orchestration",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "low",
+            "dimensions": [],
+            "reason": "The model is described as working across agent frameworks combining vision with tool use, which could influence agent scaffolding design once proven.",
+            "quote": "V4-Flash-Vision-Exp works smoothly across agent frameworks, combining visual understanding with a wide range of tools to unlock more practical workflows."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://api-docs.deepseek.com/news/news260821",
+        "model": "claude-sonnet-5",
+        "input_tokens": 8347,
+        "output_tokens": 1729,
+        "usd": 0.033984,
+        "seconds": 17.87,
+        "at": "2026-09-01T18:06:24.471590+00:00"
+      }
+    },
+    {
+      "id": "20",
+      "lab": "openai",
+      "date": "2026-06-01",
+      "title": "OpenAI frontier models and Codex are now available on AWS",
+      "url": "https://openai.com/index/openai-frontier-models-and-codex-are-now-available-on-aws",
+      "text_source": "full_text_archived",
+      "text_chars": 7296,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 66.7,
+      "ai_band": "high",
+      "run": {
+        "event_type": "enterprise_partnership",
+        "summary": "OpenAI announced that its frontier models and Codex agent are now generally available to enterprise customers through Amazon Bedrock on AWS, including GovCloud regions.",
+        "mechanisms": [],
+        "categories": [
+          {
+            "id": "hyperscale_platform",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "AWS gains a new frontier-model offering through Bedrock, expanding its platform's AI capability set for enterprise customers.",
+            "quote": "Today, OpenAI frontier models and Codex are generally available on AWS, opening a new path for millions of AWS customers to build with OpenAI through the platform they already use to run their business."
+          }
+        ],
+        "practices": [
+          {
+            "id": "integration",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "high",
+            "dimensions": [],
+            "reason": "Teams already on AWS can now access OpenAI models and Codex through existing procurement, security, and governance workflows rather than separate API onboarding.",
+            "quote": "this removes one of the biggest barriers to AI adoption: getting frontier AI into production through existing security, compliance, procurement, billing, and governance workflows."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/openai-frontier-models-and-codex-are-now-available-on-aws",
+        "model": "claude-sonnet-5",
+        "input_tokens": 9449,
+        "output_tokens": 1728,
+        "usd": 0.036178,
+        "seconds": 25.28,
+        "at": "2026-09-01T18:06:31.895910+00:00"
+      }
+    },
+    {
+      "id": "21",
+      "lab": "openai",
+      "date": "2026-06-12",
+      "title": "New OpenAI Academy courses for the next era of work",
+      "url": "https://openai.com/index/academy-courses-applying-ai-at-work",
+      "text_source": "full_text_archived",
+      "text_chars": 6356,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "product_launch",
+        "summary": "OpenAI launched three OpenAI Academy courses (AI Foundations, Applied AI Foundations, and Agents and Workflows) to teach organizations how to apply AI tools and build repeatable workflows, working with partners including BCG, Accenture and BBVA.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/academy-courses-applying-ai-at-work",
+        "model": "claude-sonnet-5",
+        "input_tokens": 9065,
+        "output_tokens": 491,
+        "usd": 0.02304,
+        "seconds": 7.0,
+        "at": "2026-09-01T18:06:31.513892+00:00"
+      }
+    },
+    {
+      "id": "22",
+      "lab": "openai",
+      "date": "2026-08-26",
+      "title": "Learning never stops: How AI makes learning continuous",
+      "url": "https://openai.com/index/learning-never-stops",
+      "text_source": "full_text_archived",
+      "text_chars": 3248,
+      "score": 10.0,
+      "band": "low",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "research_result",
+        "summary": "OpenAI published a report describing how students, teachers and families use ChatGPT for continuous learning outside the classroom, citing usage statistics on education-related conversations.",
+        "mechanisms": [
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "The report quantifies large weekly message volumes tied to a specific consumer use case, indicating substantial inference volume from education-related usage.",
+            "quote": "prompts related to classwork and homework peak at more than 460 million messages per week during the school year and climb on Sunday evenings"
+          }
+        ],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/learning-never-stops",
+        "model": "claude-sonnet-5",
+        "input_tokens": 8102,
+        "output_tokens": 1485,
+        "usd": 0.031054,
+        "seconds": 16.93,
+        "at": "2026-09-01T18:06:48.069103+00:00"
+      }
+    },
+    {
+      "id": "23",
+      "lab": "openai",
+      "date": "2026-06-08",
+      "title": "Confidential submission of draft S-1 to the SEC",
+      "url": "https://openai.com/index/openai-submits-confidential-s-1",
+      "text_source": "full_text_archived",
+      "text_chars": 1946,
+      "score": 26.7,
+      "band": "low",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "corporate_finance",
+        "summary": "OpenAI announced it has confidentially submitted a draft S-1 to the SEC, preserving the option to go public without committing to a timeline.",
+        "mechanisms": [
+          {
+            "id": "lab_capital_access",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "A confidential S-1 filing is a preparatory step toward an IPO, which would change OpenAI's access to public capital markets and its capacity to fund future compute commitments.",
+            "quote": "We recently submitted a confidential S-1."
+          }
+        ],
+        "categories": [],
+        "practices": [],
+        "notable": true,
+        "notable_reason": "A confidential S-1 filing from a leading frontier AI lab is a significant capital-markets signal even without a firm IPO timeline.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/openai-submits-confidential-s-1",
+        "model": "claude-sonnet-5",
+        "input_tokens": 7765,
+        "output_tokens": 643,
+        "usd": 0.02196,
+        "seconds": 9.17,
+        "at": "2026-09-01T18:06:40.678131+00:00"
+      }
+    },
+    {
+      "id": "24",
+      "lab": "openai",
+      "date": "2026-06-03",
+      "title": "A blueprint for democratic governance of frontier AI",
+      "url": "https://openai.com/index/frontier-safety-blueprint",
+      "text_source": "full_text_archived",
+      "text_chars": 2374,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "safety_policy",
+        "summary": "OpenAI published a policy blueprint calling for a federal U.S. framework for governing frontier AI, urging strengthening of CAISI and coordination with state-level laws.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/frontier-safety-blueprint",
+        "model": "claude-sonnet-5",
+        "input_tokens": 7874,
+        "output_tokens": 111,
+        "usd": 0.016858,
+        "seconds": 3.25,
+        "at": "2026-09-01T18:06:34.783880+00:00"
+      }
+    },
+    {
+      "id": "25",
+      "lab": "openai",
+      "date": "2026-07-15",
+      "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
+      "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+      "text_source": "full_text_archived",
+      "text_chars": 14154,
+      "score": 20.0,
+      "band": "low",
+      "ai_score": 22.2,
+      "ai_band": "low",
+      "run": {
+        "event_type": "research_result",
+        "summary": "OpenAI describes GPT-Red, an internally trained automated red-teaming model built via self-play reinforcement learning, and reports that using it in adversarial training made GPT-5.6 significantly more resistant to prompt injection attacks.",
+        "mechanisms": [
+          {
+            "id": "training_compute_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The document states GPT-Red was trained at the compute scale of some of OpenAI's largest post-training runs, an unprecedented amount dedicated purely to safety.",
+            "quote": "We trained GPT\u2011Red at the compute scale of some of our largest post-training runs at OpenAI\u2014an unprecedented amount of compute dedicated purely for improving safety."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "evaluation",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The document details a novel automated red-teaming and self-play adversarial evaluation methodology, including held-out benchmarks and case studies, that a safety team could investigate for adversarial testing pipelines.",
+            "quote": "We trained GPT\u2011Red, an automated red-teaming model that scales our ability to find vulnerabilities so we can fix them before wider deployment."
+          },
+          {
+            "id": "model_capability",
+            "action": "watch",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [
+              "reliability"
+            ],
+            "reason": "The document reports a quantified robustness improvement in a production model (GPT-5.6) against prompt injection attacks, a reliability property engineers would want to know when choosing models.",
+            "quote": "GPT\u20115.6 Sol is our most robust model to prompt injections to date, achieving 6x fewer failures on our hardest direct prompt injection benchmark compared to our best production model from just four months earlier."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+        "model": "claude-sonnet-5",
+        "input_tokens": 11877,
+        "output_tokens": 2543,
+        "usd": 0.049184,
+        "seconds": 27.64,
+        "at": "2026-09-01T18:06:59.554546+00:00"
+      }
+    },
+    {
+      "id": "26",
+      "lab": "openai",
+      "date": "2026-07-17",
+      "title": "A scorecard for the AI age",
+      "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
+      "text_source": "full_text_archived",
+      "text_chars": 11304,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 22.2,
+      "ai_band": "low",
+      "run": {
+        "event_type": "other",
+        "summary": "OpenAI's CFO publishes a business framework ('Useful Intelligence per Dollar') for measuring AI value, citing GPT-5.6's tiered pricing and benchmark efficiency as illustrative examples.",
+        "mechanisms": [
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The document states GPT-5.6 Sol achieves a new benchmark high using substantially fewer output tokens and lower estimated API cost than a competing model, indicating reduced compute per successful task.",
+            "quote": "GPT\u20115.6 Sol with max reasoning set a new state of the art while using 54% fewer output tokens than another leading model."
+          },
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The essay explicitly reframes value measurement away from seat-based software adoption toward work completed by AI agents across tools and workflows.",
+            "quote": "For years, the market measured the success of software through adoption: seats purchased, users active, licenses renewed. Understanding the value of AI demands a more powerful measure: work accomplished."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "model_capability",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [
+              "cost",
+              "coding",
+              "reasoning"
+            ],
+            "reason": "GPT-5.6's tiered family and stated benchmark gains suggest engineers could reassess model selection for cost/quality tradeoffs on coding and reasoning tasks.",
+            "quote": "DeepSWE v1.1 : Long-horizon engineering tasks; GPT\u20115.6 Sol reaches a new high of 72.7%, above Claude Fable 5\u2019s 69.9%, at 36.2% lower estimated API cost."
+          },
+          {
+            "id": "orchestration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The tiered model structure implies a routing strategy where different tiers are chosen per task economics, which is an orchestration decision for engineering teams.",
+            "quote": "A customer might use Luna for a fast, high-volume workflow, Terra for work requiring greater depth, or Sol when stronger reasoning delivers the best result with fewer attempts."
+          },
+          {
+            "id": "evaluation",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The document references specific benchmarks (Artificial Analysis Coding Agent Index, DeepSWE) as the basis for its efficiency claims, which teams could look at for eval methodology.",
+            "quote": "On the Artificial Analysis Coding Agent Index, GPT\u20115.6 Sol with max reasoning set a new state of the art while using 54% fewer output tokens than another leading model."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10537,
+        "output_tokens": 3638,
+        "usd": 0.057454,
+        "seconds": 37.16,
+        "at": "2026-09-01T18:07:10.460784+00:00"
+      }
+    },
+    {
+      "id": "27",
+      "lab": "openai",
+      "date": "2026-07-14",
+      "title": "Data science workflows with ChatGPT Work",
+      "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+      "text_source": "rss_summary",
+      "text_chars": 161,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "other",
+        "summary": "OpenAI published an academy article describing how data science teams can use ChatGPT Work for root-cause briefs, KPI memos, scoped analyses, and dashboard specifications.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+        "model": "claude-sonnet-5",
+        "input_tokens": 7125,
+        "output_tokens": 553,
+        "usd": 0.01978,
+        "seconds": 8.0,
+        "at": "2026-09-01T18:06:42.825410+00:00"
+      }
+    },
+    {
+      "id": "28",
+      "lab": "openai",
+      "date": "2026-08-07",
+      "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
+      "url": "https://openai.com/index/hsp-gruppe",
+      "text_source": "full_text_archived",
+      "text_chars": 11484,
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "enterprise_partnership",
+        "summary": "OpenAI published a customer story describing how HSP GRUPPE, a German tax advisory and legal services network, deployed ChatGPT Enterprise and is piloting ChatGPT Work to build custom agents and estimate productivity and capacity gains.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [
+          {
+            "id": "orchestration",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "low",
+            "dimensions": [],
+            "reason": "The case study describes standardizing successful prompt patterns into shared custom Agents, but gives no implementation detail an engineering team could replicate.",
+            "quote": "the organization also began standardizing successful use cases into custom Agents. One example is AI Client Communication , a shared Agent that supports first drafts, structure, clarity, and a more consistent, client-oriented tone."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/hsp-gruppe",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10772,
+        "output_tokens": 1189,
+        "usd": 0.033434,
+        "seconds": 13.74,
+        "at": "2026-09-01T18:06:54.442111+00:00"
+      }
+    },
+    {
+      "id": "29",
+      "lab": "openai",
+      "date": "2026-06-25",
+      "title": "How agents are transforming work",
+      "url": "https://openai.com/index/how-agents-are-transforming-work",
+      "text_source": "full_text_archived",
+      "text_chars": 9737,
+      "score": 60.0,
+      "band": "high",
+      "ai_score": 11.1,
+      "ai_band": "low",
+      "run": {
+        "event_type": "research_result",
+        "summary": "OpenAI published an Economic Research paper documenting how internal, organizational, and individual usage of its Codex agentic coding tool has shifted from short chatbot interactions to long-horizon, high-volume agentic task execution over the past year.",
+        "mechanisms": [
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The paper documents a company-wide shift from chat-based interactions to delegated, long-horizon agent tasks across every department, including non-technical ones.",
+            "quote": "Agentic AI changes the unit of knowledge work from single interactions to delegated, long-horizon tasks."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The document reports enormous growth in tokens and agent runtime consumed per user, including parallel multi-agent usage reaching tens of hours per day.",
+            "quote": "By June 2026, users at the 99th percentile regularly generated more than 60 hours of Codex agent turns per day, distributed across multiple, parallel agents."
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "evaluation",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The paper's task-horizon estimation method using an LLM-as-judge on transcripts is a usage-measurement technique an engineering team could examine for internal telemetry, though it is not fully specified.",
+            "quote": "Task horizon is estimated using an LLM-as-judge with access to Codex transcripts."
+          },
+          {
+            "id": "orchestration",
+            "action": "watch",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The described pattern of users running many parallel agent tasks over a day suggests a scheduling/orchestration pattern worth monitoring, though no specific technique is disclosed.",
+            "quote": "users moved from only asking Codex for one answer at a time into increasingly orchestrating multiple agent tasks over the course of a day."
+          }
+        ],
+        "notable": true,
+        "notable_reason": "It provides a rare, concrete internal telemetry data point showing agentic usage displacing chat usage almost entirely and driving order-of-magnitude token growth, a real signal for inference demand trajectory.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/how-agents-are-transforming-work",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10217,
+        "output_tokens": 2580,
+        "usd": 0.046234,
+        "seconds": 27.79,
+        "at": "2026-09-01T18:07:10.634725+00:00"
+      }
+    },
+    {
+      "id": "30",
+      "lab": "openai",
+      "date": "2026-07-09",
+      "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
+      "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+      "text_source": "full_text_archived",
+      "text_chars": 3741,
+      "score": 13.3,
+      "band": "low",
+      "ai_score": 0.0,
+      "ai_band": "none",
+      "run": {
+        "event_type": "enterprise_partnership",
+        "summary": "OpenAI announced that GPT-5.6 will become the preferred model served in Microsoft 365 Copilot across Word, Excel, PowerPoint, Chat and Cowork, accessed by Microsoft via the OpenAI API.",
+        "mechanisms": [
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "Deploying GPT-5.6 as the default model across Microsoft 365's mass user base broadens the installed footprint issuing calls to OpenAI's models.",
+            "quote": "Microsoft 365 is where millions of people write, analyze, create, and collaborate every day"
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "The announcement claims the model does more useful work per token and improves performance per dollar, though no technical detail or benchmark is given.",
+            "quote": "GPT\u20115.6 is OpenAI\u2019s latest flagship model series, which delivers more useful work from every token, with stronger performance per dollar and on demand capability for the most complex tasks."
+          }
+        ],
+        "categories": [
+          {
+            "id": "hyperscale_platform",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "Microsoft's Copilot suite deepens its dependence on OpenAI's frontier models delivered via API, reinforcing the hyperscaler's build-and-buy AI relationship.",
+            "quote": "Microsoft will also access OpenAI models directly through the API to bring GPT\u20115.6 to Microsoft 365 customers."
+          }
+        ],
+        "practices": [
+          {
+            "id": "model_capability",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "low",
+            "dimensions": [
+              "cost",
+              "reasoning"
+            ],
+            "reason": "The claimed gains in performance-per-dollar and complex-task capability are stated without benchmarks, so there is nothing concrete yet to adopt.",
+            "quote": "stronger performance per dollar and on demand capability for the most complex tasks"
+          },
+          {
+            "id": "integration",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "low",
+            "dimensions": [],
+            "reason": "Microsoft's move to access OpenAI models via the API for a native product surface signals a distribution pattern worth monitoring but with no engineering action specified here.",
+            "quote": "In addition to serving the models natively, Microsoft will also access OpenAI models directly through the API to bring GPT\u20115.6 to Microsoft 365 customers."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+        "model": "claude-sonnet-5",
+        "input_tokens": 8429,
+        "output_tokens": 1879,
+        "usd": 0.035648,
+        "seconds": 20.24,
+        "at": "2026-09-01T18:07:06.839040+00:00"
+      }
+    }
+  ],
+  "usd": 0.9283,
+  "calls": 20
+}

@@ -25,7 +25,7 @@ import yaml
 ROOT = Path(__file__).parent.parent.parent
 DOCS = ROOT / "research" / "docs"
 SCORED = DOCS / "scored_announcements_v2.json"
-OUT = Path(__file__).parent / "gold"
+OUT = Path(__file__).parent / "test"
 
 SEED = 20260901  # fixed so the sample is reproducible
 

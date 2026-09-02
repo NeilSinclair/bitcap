@@ -79,6 +79,77 @@ def check_registry(root: Path, views: dict) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], list[str]]:
+    """Validate practices.yaml, the AI-team axis.
+
+    Mechanisms and practices are separate vocabularies consumed by separate
+    renderers, so an id present in both is ambiguous at the join: the renderer
+    cannot tell which axis produced a tag. That collision is an error, not a
+    warning.
+
+    Args:
+        root: Directory holding the config files.
+        mechanism_ids: Currently valid mechanism ids, for the collision check.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    path = root / "practices.yaml"
+    errors, warnings = [], []
+    if not path.exists():
+        return [f"{path.name}: missing"], []
+
+    doc = yaml.safe_load(path.read_text())
+    for key in ("version", "practices", "enums", "required_per_tag"):
+        if key not in doc:
+            errors.append(f"practices.yaml: no '{key}' block")
+    if errors:
+        return errors, warnings
+
+    seen = set()
+    for pr in doc["practices"]:
+        pid = pr.get("id", "?")
+        if pid in seen:
+            errors.append(f"practice {pid}: duplicate id")
+        seen.add(pid)
+        if pid in mechanism_ids:
+            errors.append(
+                f"practice {pid}: id also defined in mechanisms.yaml - "
+                "a tag with this id is ambiguous at the join"
+            )
+        for field in ("label", "description", "adopt_note"):
+            if not pr.get(field):
+                errors.append(f"practice {pid}: no '{field}'")
+
+        # An undifferentiated "it got better" is the thing this tag replaced.
+        if pid == "model_capability":
+            dims = pr.get("dimensions")
+            if not dims:
+                errors.append("practice model_capability: no 'dimensions' vocabulary")
+            else:
+                for name, desc in dims.items():
+                    if not desc:
+                        errors.append(f"model_capability/{name}: dimension has no definition")
+
+    for enum in ("action", "impact", "confidence"):
+        if not doc["enums"].get(enum):
+            errors.append(f"practices.yaml: enums.{enum} missing or empty")
+
+    # The citation guarantee has to hold on both axes or the AI-team digest can
+    # surface a recommendation with nothing behind it.
+    if "quote" not in doc["required_per_tag"]:
+        errors.append("practices.yaml: 'quote' not required per tag - no citation guarantee")
+
+    if "model_capability" in seen and "dimensions" not in doc.get(
+        "required_per_tag_model_capability", []
+    ):
+        errors.append(
+            "practices.yaml: model_capability does not require 'dimensions'"
+        )
+
+    return errors, warnings
+
+
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
@@ -136,11 +207,13 @@ def main() -> int:
         print(f"warn    ... and {len(warnings) - 5} more unverified tickers")
 
     reg_errors, reg_warnings = check_registry(ROOT, views)
-    for e in reg_errors:
+    prac_errors, prac_warnings = check_practices(ROOT, valid_ids)
+    for e in reg_errors + prac_errors:
         print(f"ERROR   {e}")
-    for w in reg_warnings:
+    for w in reg_warnings + prac_warnings:
         print(f"warn    {w}")
-    errors += reg_errors
+    errors += reg_errors + prac_errors
+    warnings += prac_warnings
 
     print(f"\n{len(seen)} companies described, {len(errors)} errors, "
           f"{len(warnings) + len(reg_warnings)} warnings")

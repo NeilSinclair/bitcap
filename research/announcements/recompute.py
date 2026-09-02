@@ -178,7 +178,7 @@ def main() -> None:
     rules = yaml.safe_load(SCORING.read_text())
     from score_announcements import score_of, vocabularies
 
-    _, _, mech_ids, cat_ids = vocabularies()
+    _, _, _, mech_ids, cat_ids, _ = vocabularies()
     retired: list[str] = []
     migrated: list[str] = []
 

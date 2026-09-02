@@ -13,6 +13,7 @@ publication date read from the page or the slug.
 from __future__ import annotations
 
 import json
+import html
 import re
 import sys
 import time
@@ -38,6 +39,20 @@ MONTHS = {
         "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(), start=1
     )
 }
+
+# Anthropic prints the article's own date in full ("Date October 16, 2025") and
+# the "Related posts" footer in abbreviated form ("Aug 28, 2026"). Matching only
+# abbreviations therefore skipped the real date and took a footer link's date
+# instead -- see date_from_page. `Oct` must not match the first three letters of
+# `October`, so the remainder of each full name is an optional group.
+_MONTH_TAIL = {
+    "Jan": "uary", "Feb": "ruary", "Mar": "ch", "Apr": "il", "May": "",
+    "Jun": "e", "Jul": "y", "Aug": "ust", "Sep": "t?(?:ember)?", "Oct": "ober",
+    "Nov": "ember", "Dec": "ember",
+}
+MONTH_PATTERN = "|".join(
+    f"({abbr})(?:{tail})?" if tail else f"({abbr})" for abbr, tail in _MONTH_TAIL.items()
+)
 
 
 def fetch(url: str, retries: int = 3) -> str:
@@ -74,24 +89,64 @@ def fetch(url: str, retries: int = 3) -> str:
     raise RuntimeError(f"fetch failed: {url}")
 
 
+# Site furniture that survives tag stripping. It is not content, it costs input
+# tokens on every call, and it breaks quoting: a model that reads across
+# "(opens in a new window)" -- correctly, since the prompt tells it to ignore
+# furniture -- produces a quote that is not a substring of the stored text.
+# 3,603 occurrences across 141 articles when this was added.
+CHROME = re.compile(
+    r"\s*(?:\u2060\s*)?\(opens in a new window\)"
+    r"|\s*Skip to main content"
+    r"|\s*Skip to footer"
+    r"|\s*Loading\u2026",
+    re.I,
+)
+
+
+def strip_chrome(text: str) -> str:
+    """Remove site furniture from already-extracted text.
+
+    Args:
+        text: Extracted page text.
+
+    Returns:
+        The text with navigation and link chrome removed.
+    """
+    return " ".join(CHROME.sub(" ", text).split())
+
+
 def strip_html(page: str) -> str:
     """Reduce an HTML page to readable text.
+
+    Entities are unescaped twice. Anthropic's pages carry double-encoded
+    apostrophes, so a single pass leaves `&#x27;` in the stored text. That is
+    not cosmetic: the model reads the raw text and quotes the decoded form, so
+    an undecoded corpus makes verbatim quote checking report hallucinations that
+    did not happen -- which it did, on 9 of 90 tags, before this was fixed.
 
     Args:
         page: Raw HTML.
 
     Returns:
-        Whitespace-collapsed text with script, style and chrome removed.
+        Whitespace-collapsed text with script, style and chrome removed and
+        HTML entities decoded.
     """
     body = re.sub(r"(?s)<(script|style|noscript|svg).*?</\1>", " ", page)
-    return " ".join(re.sub(r"<[^>]+>", " ", body).split())
+    body = re.sub(r"(?s)<!--.*?-->", " ", body)
+    text = re.sub(r"<[^>]+>", " ", body)
+    return strip_chrome(html.unescape(html.unescape(text)))
 
 
 def date_from_page(text: str) -> str | None:
     """Read a publication date printed in the page body.
 
     Anthropic prints the date next to the headline rather than exposing it in
-    metadata, so the first "Mon D, YYYY" in the text is taken.
+    metadata, so the first "Month D, YYYY" in the text is taken.
+
+    Both full and abbreviated month names are accepted. Accepting only
+    abbreviations silently mis-dated pages that print the full name: the header
+    date was skipped and the first date in the "Related posts" footer was taken
+    instead, which put a ten-month-old article inside a three-month window.
 
     Args:
         text: Stripped page text.
@@ -99,10 +154,12 @@ def date_from_page(text: str) -> str | None:
     Returns:
         ISO date string, or None if no date is present.
     """
-    m = re.search(r"\b(" + "|".join(MONTHS) + r")\s+(\d{1,2}),\s+(20\d{2})\b", text)
+    m = re.search(rf"\b(?:{MONTH_PATTERN})\s+(\d{{1,2}}),\s+(20\d{{2}})\b", text)
     if not m:
         return None
-    return f"{m.group(3)}-{MONTHS[m.group(1)]:02d}-{int(m.group(2)):02d}"
+    abbr = next(g for g in m.groups()[:12] if g)
+    day, year = m.groups()[12], m.groups()[13]
+    return f"{year}-{MONTHS[abbr]:02d}-{int(day):02d}"
 
 
 def date_from_slug(url: str) -> str | None:

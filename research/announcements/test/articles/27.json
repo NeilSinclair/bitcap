@@ -1,0 +1,35 @@
+{
+  "id": "27",
+  "lab": "openai",
+  "date": "2026-07-14",
+  "title": "Data science workflows with ChatGPT Work",
+  "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+  "text_source": "rss_summary",
+  "text": "Data science workflows with ChatGPT Work. Learn practical ChatGPT Work workflows for root-cause briefs, KPI memos, scoped analyses, and dashboard specifications.",
+  "gold": {
+    "event_type": "other",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [],
+    "notes": ""
+  },
+  "review": {
+    "adjudicated": true,
+    "adjudicator": "claude-opus-5",
+    "classifier": "claude-sonnet-5",
+    "runs_compared": 2,
+    "departures": 0,
+    "why_event": ""
+  },
+  "system": {
+    "score": 0.0,
+    "band": "none",
+    "ai_score": 0.0,
+    "ai_band": "none",
+    "summary": "OpenAI published an academy article describing how data science teams can use ChatGPT Work for root-cause briefs, KPI memos, scoped analyses, and dashboard specifications.",
+    "model": "claude-sonnet-5",
+    "prompt": "v5",
+    "votes": 1,
+    "note": "The system's own answer, kept for comparison. Edit `gold`, not this."
+  }
+}

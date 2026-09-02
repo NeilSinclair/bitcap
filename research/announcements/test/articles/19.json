@@ -1,0 +1,66 @@
+{
+  "id": "19",
+  "lab": "deepseek",
+  "date": "2026-08-21",
+  "title": "DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live",
+  "url": "https://api-docs.deepseek.com/news/news260821",
+  "text_source": "full_text",
+  "text": "DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live | DeepSeek API Docs DeepSeek API Docs English English \u4e2d\u6587\uff08\u4e2d\u56fd\uff09 DeepSeek Platform Quick Start Your First API Call Models & Pricing Token & Token Usage Rate Limit & Isolation Error Codes Agent Integrations API Guides Vision Thinking Mode Multi-round Conversation Chat Prefix Completion (Beta) FIM Completion (Beta) JSON Output Tool Calls Files API Context Caching Using the Responses API Using the Anthropic API API Reference News DeepSeek-V4-Flash-Vision-Exp Release 2026/08/21 DeepSeek-V4-Pro GA Release 2026/08/13 DeepSeek-V4 Preview Release 2026/04/24 DeepSeek-V3.2 Release 2025/12/01 DeepSeek-V3.2-Exp Release 2025/09/29 DeepSeek V3.1 Update 2025/09/22 DeepSeek V3.1 Release 2025/08/21 DeepSeek-R1-0528 Release 2025/05/28 DeepSeek-V3-0324 Release 2025/03/25 DeepSeek-R1 Release 2025/01/20 DeepSeek APP 2025/01/15 Introducing DeepSeek-V3 2024/12/26 DeepSeek-V2.5-1210 Release 2024/12/10 DeepSeek-R1-Lite Release 2024/11/20 DeepSeek-V2.5 Release 2024/09/05 Context Caching is Available 2024/08/02 New API Features 2024/07/25 Other Resources FAQ Change Log News DeepSeek-V4-Flash-Vision-Exp Release 2026/08/21 On this page DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live DeepSeek-V4-Flash-Vision-Exp is now live on the DeepSeek API Platform! \ud83d\ude80 \ud83d\udd39 This experimental multimodal model matches DeepSeek-V4-Flash on text capabilities\u2014including agents, reasoning, and world knowledge. \ud83d\udd39 On multimodal agent benchmarks, V4-Flash-Vision-Exp makes a major leap over V4-Flash, bringing multimodal agent performance close to Opus-4.8. Try it with model='deepseek-v4-flash-vision-exp' . DeepSeek Harness 0.1.1 was released today with out-of-the-box support for the new model. Multimodality unlocks more agent use cases \ud83d\udc40 \u200b V4-Flash-Vision-Exp works smoothly across agent frameworks, combining visual understanding with a wide range of tools to unlock more practical workflows. Multimodal API support \ud83d\udd0c \u200b \ud83d\udd39 Set model='deepseek-v4-flash-vision-exp' \ud83d\udd39 Images are tokenized for billing: up to 384 tokens each, at V4-Flash pricing \ud83d\udd39 Supports Chat Completions, Messages & Responses \ud83d\udd39 Supports mixed text + image input; images can be provided via base64, external URLs, or the Files API Docs: API Guides - Vision Files API is now live \ud83d\udcc1 \u200b \ud83d\udd39 Free to use \ud83d\udd39 Upload an image once, then reference it by file_id to save request bandwidth \ud83d\udd39 Reuse the same image across requests\u2014no need to upload it again Learn more: API Guides - Files API Previous Delete File Next DeepSeek-V4-Pro GA Release Multimodality unlocks more agent use cases \ud83d\udc40 Multimodal API support \ud83d\udd0c Files API is now live \ud83d\udcc1 WeChat Official Account Community Email Discord Twitter More GitHub Copyright \u00a9 2026 DeepSeek, Inc.",
+  "gold": {
+    "event_type": "incremental_model_release",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [
+      {
+        "id": "integration",
+        "action": "adopt",
+        "impact": "medium",
+        "confidence": "medium",
+        "dimensions": [],
+        "reason": "New model name, Files API, and Harness version require API and workflow updates to use image input and file references.",
+        "quote": "DeepSeek Harness 0.1.1 was released today with out-of-the-box support for the new model."
+      },
+      {
+        "id": "model_capability",
+        "action": "investigate",
+        "impact": "medium",
+        "confidence": "medium",
+        "dimensions": [
+          "vision_multimodal",
+          "agentic_tool_use"
+        ],
+        "reason": "Engineers building multimodal agents could test this experimental model for a claimed leap in multimodal agent performance while text capabilities remain unchanged.",
+        "quote": "This experimental multimodal model matches DeepSeek-V4-Flash on text capabilities\u2014including agents, reasoning, and world knowledge."
+      },
+      {
+        "id": "orchestration",
+        "action": "watch",
+        "impact": "low",
+        "confidence": "low",
+        "dimensions": [],
+        "reason": "The model is described as working across agent frameworks combining vision with tool use, which could influence agent scaffolding design once proven.",
+        "quote": "V4-Flash-Vision-Exp works smoothly across agent frameworks, combining visual understanding with a wide range of tools to unlock more practical workflows."
+      }
+    ],
+    "notes": ""
+  },
+  "review": {
+    "adjudicated": true,
+    "adjudicator": "claude-opus-5",
+    "classifier": "claude-sonnet-5",
+    "runs_compared": 2,
+    "departures": 1,
+    "why_event": ""
+  },
+  "system": {
+    "score": 0.0,
+    "band": "none",
+    "ai_score": 66.7,
+    "ai_band": "high",
+    "summary": "DeepSeek released an experimental multimodal vision variant of DeepSeek-V4-Flash (V4-Flash-Vision-Exp) via its API, along with a new Files API and Harness update supporting the model.",
+    "model": "claude-sonnet-5",
+    "prompt": "v5",
+    "votes": 1,
+    "note": "The system's own answer, kept for comparison. Edit `gold`, not this."
+  }
+}

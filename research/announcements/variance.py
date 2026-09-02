@@ -128,7 +128,7 @@ def main() -> None:
     use_prompt(args.prompt)
     load_env()
     rules = yaml.safe_load(SCORING.read_text())
-    _, _, mech_ids, cat_ids = vocabularies()
+    _, _, _, mech_ids, cat_ids, _ = vocabularies()
 
     articles = {a["url"]: a for a in json.loads(ARTICLES.read_text())}
     urls = json.loads(Path(args.urls).read_text()) if args.urls else unstable_urls()

@@ -176,8 +176,8 @@
       "notable": true,
       "notable_reason": "A frontier lab disclosing performance results for its own custom inference silicon is a meaningful signal for the accelerator and custom silicon substitution theme, even from a brief summary.",
       "dropped_tags": [],
-      "score": 66.7,
-      "band": "high",
+      "score": 50.0,
+      "band": "medium",
       "provenance": "reclassified_v2"
     },
     {
@@ -213,8 +213,8 @@
       "notable": true,
       "notable_reason": "A named OpenAI-Broadcom custom inference chip is a concrete, high-relevance data point for the custom silicon substitution thesis in the accelerator category.",
       "dropped_tags": [],
-      "score": 66.7,
-      "band": "high",
+      "score": 50.0,
+      "band": "medium",
       "provenance": "reclassified_v2"
     },
     {
@@ -250,8 +250,8 @@
       "notable": true,
       "notable_reason": "A 1GW data center commitment under the Stargate program is a large, concrete infrastructure buildout relevant to power and compute investors.",
       "dropped_tags": [],
-      "score": 66.7,
-      "band": "high",
+      "score": 50.0,
+      "band": "medium",
       "provenance": "rescored_v1_tags"
     },
     {
@@ -279,7 +279,7 @@
       "notable": true,
       "notable_reason": "A confidential S-1 filing signals OpenAI is moving toward a public listing, a major corporate finance milestone that would reshape its capital access for future compute buildout.",
       "dropped_tags": [],
-      "score": 53.3,
+      "score": 40.0,
       "band": "medium",
       "provenance": "reclassified_v2"
     },
@@ -316,7 +316,7 @@
       "notable": true,
       "notable_reason": "A frontier lab lowering pricing on its flagship model line is a direct signal of falling inference costs, relevant to compute demand and pricing dynamics across the AI stack.",
       "dropped_tags": [],
-      "score": 44.4,
+      "score": 33.3,
       "band": "medium",
       "provenance": "rescored_v1_tags"
     },
@@ -353,36 +353,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 44.4,
-      "band": "medium",
-      "provenance": "reclassified_v2"
-    },
-    {
-      "lab": "anthropic",
-      "url": "https://www.anthropic.com/news/fable-mythos-access",
-      "date": "2026-06-12",
-      "title": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5",
-      "text": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5 \\ Anthropic Skip to main content Skip to footer Research Policy Commitments Learn News Try Claude Announcements Statement on the US government directive to suspend access to Fable 5 and Mythos 5 Jun 12, 2026 The US government, citing national security authorities, has issued an export control directive to suspend all access to Fable 5 and Mythos 5 by any foreign national, whether inside or outside the United States, including foreign national Anthropic employees. The net effect of this order is that we must abruptly disable Fable 5 and Mythos 5 for all our customers to ensure compliance. Access to all other Anthropic models will not be affected. We received the directive from the government today at 5:21pm (ET). The letter did not provide specific details of its national security concern. Our understanding is that the government believes it has become aware of a method of bypassing, or \u201cjailbreaking\u201d Fable 5. We reviewed a demonstration of this specific technique being used to identify a small number of previously known, minor vulnerabilities. These vulnerabilities all appear relatively simple, and we have found that other publicly-available models are able to discover them as well without requiring a bypass. Anthropic\u2019s posture with respect to Fable\u2019s safeguards, as laid out in our launch blog post , is the following: We have instituted strong safeguards that greatly reduce the likelihood that Fable is misused for tasks related to cybersecurity (among others). In fact, our safeguards are so strong that many users have complained that they are overly broad. In the weeks leading up to the launch of Fable, Anthropic worked with the US government, the UK AISI, multiple private third-party organizations and internal teams to red-team Fable\u2019s safeguards for thousands of hours in total. These tests showed that Fable\u2019s safeguards are substantially more effective than those of any previously deployed model. No testers have yet been able to find a universal jailbreak \u2014a jailbreak method that can very broadly bypass the model\u2019s safeguards, unblocking a wide range of cyber capabilities. We suspect that perfect jailbreak resistance is not currently possible for any model provider. Every safeguard used in the industry is vulnerable to non-universal jailbreaks (which can elicit some cyber information in specific circumstances), and it is likely that universal jailbreaks will eventually be found in the future. We stated this clearly when we released Fable 5. Given that perfect jailbreak resistance does not appear to be possible today, Anthropic adopted a defense in depth strategy with Fable 5. We aimed to make jailbreaks either narrow (in the case of non-universal jailbreaks) or very expensive to produce (in the case of universal jailbreaks), and to combine this with thorough monitoring to quickly detect and shut down any successful attacks. This is also why Anthropic has required 30-day retention of customer data with Fable\u2014a policy change that carries real costs for us with customers , but that allows us to research and mitigate jailbreaks. We stand by this defense in depth strategy. It reduces the risks posed by Fable, making them comparable to the risks of existing models already deployed across the industry. We have not even received a disclosure of a concerning non-universal potential jailbreak that led to a harmful result. The potential jailbreaks that have been disclosed to us are either entirely benign responses or are minor findings that provide no Mythos-specific uplift. To date, the government has only given us verbal evidence of a potential narrow, non-universal jailbreak, which essentially consists of asking the model to read a specific codebase and fix any software flaws. Our understanding is that one potential jailbreak was shared with the government. We have reviewed a report that we believe is the basis of the government&#x27;s directive and validated that the level of capability displayed there is widely available from other models (including OpenAI\u2019s GPT-5.5 ), and is used every day by the defenders who keep systems safe. We will share more details over the next 24 hours. We are complying with the government\u2019s legal directive and are removing access to Fable 5 and Mythos 5 for all users. However, we disagree that the finding of a narrow potential jailbreak should be cause for recalling a commercial model deployed to hundreds of millions of people. If this standard was applied across the industry, we believe it would essentially halt all new model deployments for all frontier model providers. As we have stated publicly , we believe the government should have the ability to block unsafe deployments, as part of a statutory process that is transparent, fair, clear, and grounded in technical facts. This action does not adhere to those principles. We apologize for this disruption to our customers. We believe this is a misunderstanding and are working to restore access as soon as possible. Related content Previewing the Model Hardware Standard We\u2019re opening a research preview of the Model Hardware Standard (MHS), a shared specification for AI agents to safely operate physical devices, to a first group of scientific research labs and advanced manufacturers. Read more Expanding our support for scientists Starting today, 10,000 scientists around the world can get Claude at no cost to start. Verified principal investigators qualify for a Claude Team subscription plan and then add their research team to Standard seats for free, or Premium seats for $15 per month, for up to a year. Read more Funding better evaluations of AI\u2019s impact on wellbeing We\u2019re launching a $5 million grant program to fund independent research into how AI impacts users\u2019 wellbeing. Read more Products Claude Claude Code Claude Code Enterprise Claude Cowork @Claude Claude Design Claude Science Claude Security Claude in Chrome Claude for Microsoft 365 Skills Download app Pricing Log in to Claude Models Mythos Fable Opus Sonnet Haiku Solutions AI agents Code modernization Coding Customer support Cybersecurity Enterprise Financial services Government Healthcare Higher education K-12 teachers Legal Life sciences Nonprofits Small business Claude Platform Overview Developer docs Pricing Ecosystem Marketplace Regional compliance Claude on AWS Google Cloud Microsoft Foundry Console login Resources Blog Claude partner network Community Connectors Courses Customer stories Engineering at Anthropic Events Plugins Powered by Claude Service partners Tutorials Use cases Programs Startups Research Labs Help and security Availability Status Support center Company Anthropic Careers Leadership Policy Economic Futures Research News Claude\u2019s Constitution Claude Corps Keep thinking Policy on the AI Exponential Responsible Scaling Policy Security and compliance Transparency Terms and policies Privacy policy Consumer health data privacy policy Responsible disclosure policy Terms of service: Commercial Terms of service: Consumer Terms of Service: US K-12 Data Processing Agreement: US K-12 Usage policy \u00a9 2026 Anthropic PBC. Services in the EU are provided by Anthropic Ireland Limited.",
-      "text_source": "full_text",
-      "feed_category": null,
-      "is_signal": true,
-      "event_type": "regulatory_action",
-      "summary": "The US government issued an export control directive requiring Anthropic to suspend all foreign-national access to its Fable 5 and Mythos 5 models over an alleged jailbreak-related national security concern, which Anthropic is complying with while disputing the underlying rationale.",
-      "mechanisms": [
-        {
-          "id": "export_controls",
-          "sign": "positive",
-          "magnitude": "medium",
-          "confidence": "medium",
-          "reason": "A government export control directive is being used to restrict foreign-national access to specific frontier AI models, a new application of export authority to model deployment rather than hardware.",
-          "quote": "The US government, citing national security authorities, has issued an export control directive to suspend all access to Fable 5 and Mythos 5 by any foreign national, whether inside or outside the United States"
-        }
-      ],
-      "categories": [],
-      "notable": true,
-      "notable_reason": "A government has for the first time invoked export control authority to force a frontier lab to pull a deployed commercial model over an alleged jailbreak, a precedent-setting regulatory intervention in AI deployment.",
-      "dropped_tags": [],
-      "score": 35.6,
+      "score": 33.3,
       "band": "medium",
       "provenance": "reclassified_v2"
     },
@@ -477,6 +448,35 @@
       "provenance": "rescored_v1_tags"
     },
     {
+      "lab": "anthropic",
+      "url": "https://www.anthropic.com/news/fable-mythos-access",
+      "date": "2026-06-12",
+      "title": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5",
+      "text": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5 \\ Anthropic Skip to main content Skip to footer Research Policy Commitments Learn News Try Claude Announcements Statement on the US government directive to suspend access to Fable 5 and Mythos 5 Jun 12, 2026 The US government, citing national security authorities, has issued an export control directive to suspend all access to Fable 5 and Mythos 5 by any foreign national, whether inside or outside the United States, including foreign national Anthropic employees. The net effect of this order is that we must abruptly disable Fable 5 and Mythos 5 for all our customers to ensure compliance. Access to all other Anthropic models will not be affected. We received the directive from the government today at 5:21pm (ET). The letter did not provide specific details of its national security concern. Our understanding is that the government believes it has become aware of a method of bypassing, or \u201cjailbreaking\u201d Fable 5. We reviewed a demonstration of this specific technique being used to identify a small number of previously known, minor vulnerabilities. These vulnerabilities all appear relatively simple, and we have found that other publicly-available models are able to discover them as well without requiring a bypass. Anthropic\u2019s posture with respect to Fable\u2019s safeguards, as laid out in our launch blog post , is the following: We have instituted strong safeguards that greatly reduce the likelihood that Fable is misused for tasks related to cybersecurity (among others). In fact, our safeguards are so strong that many users have complained that they are overly broad. In the weeks leading up to the launch of Fable, Anthropic worked with the US government, the UK AISI, multiple private third-party organizations and internal teams to red-team Fable\u2019s safeguards for thousands of hours in total. These tests showed that Fable\u2019s safeguards are substantially more effective than those of any previously deployed model. No testers have yet been able to find a universal jailbreak \u2014a jailbreak method that can very broadly bypass the model\u2019s safeguards, unblocking a wide range of cyber capabilities. We suspect that perfect jailbreak resistance is not currently possible for any model provider. Every safeguard used in the industry is vulnerable to non-universal jailbreaks (which can elicit some cyber information in specific circumstances), and it is likely that universal jailbreaks will eventually be found in the future. We stated this clearly when we released Fable 5. Given that perfect jailbreak resistance does not appear to be possible today, Anthropic adopted a defense in depth strategy with Fable 5. We aimed to make jailbreaks either narrow (in the case of non-universal jailbreaks) or very expensive to produce (in the case of universal jailbreaks), and to combine this with thorough monitoring to quickly detect and shut down any successful attacks. This is also why Anthropic has required 30-day retention of customer data with Fable\u2014a policy change that carries real costs for us with customers , but that allows us to research and mitigate jailbreaks. We stand by this defense in depth strategy. It reduces the risks posed by Fable, making them comparable to the risks of existing models already deployed across the industry. We have not even received a disclosure of a concerning non-universal potential jailbreak that led to a harmful result. The potential jailbreaks that have been disclosed to us are either entirely benign responses or are minor findings that provide no Mythos-specific uplift. To date, the government has only given us verbal evidence of a potential narrow, non-universal jailbreak, which essentially consists of asking the model to read a specific codebase and fix any software flaws. Our understanding is that one potential jailbreak was shared with the government. We have reviewed a report that we believe is the basis of the government&#x27;s directive and validated that the level of capability displayed there is widely available from other models (including OpenAI\u2019s GPT-5.5 ), and is used every day by the defenders who keep systems safe. We will share more details over the next 24 hours. We are complying with the government\u2019s legal directive and are removing access to Fable 5 and Mythos 5 for all users. However, we disagree that the finding of a narrow potential jailbreak should be cause for recalling a commercial model deployed to hundreds of millions of people. If this standard was applied across the industry, we believe it would essentially halt all new model deployments for all frontier model providers. As we have stated publicly , we believe the government should have the ability to block unsafe deployments, as part of a statutory process that is transparent, fair, clear, and grounded in technical facts. This action does not adhere to those principles. We apologize for this disruption to our customers. We believe this is a misunderstanding and are working to restore access as soon as possible. Related content Previewing the Model Hardware Standard We\u2019re opening a research preview of the Model Hardware Standard (MHS), a shared specification for AI agents to safely operate physical devices, to a first group of scientific research labs and advanced manufacturers. Read more Expanding our support for scientists Starting today, 10,000 scientists around the world can get Claude at no cost to start. Verified principal investigators qualify for a Claude Team subscription plan and then add their research team to Standard seats for free, or Premium seats for $15 per month, for up to a year. Read more Funding better evaluations of AI\u2019s impact on wellbeing We\u2019re launching a $5 million grant program to fund independent research into how AI impacts users\u2019 wellbeing. Read more Products Claude Claude Code Claude Code Enterprise Claude Cowork @Claude Claude Design Claude Science Claude Security Claude in Chrome Claude for Microsoft 365 Skills Download app Pricing Log in to Claude Models Mythos Fable Opus Sonnet Haiku Solutions AI agents Code modernization Coding Customer support Cybersecurity Enterprise Financial services Government Healthcare Higher education K-12 teachers Legal Life sciences Nonprofits Small business Claude Platform Overview Developer docs Pricing Ecosystem Marketplace Regional compliance Claude on AWS Google Cloud Microsoft Foundry Console login Resources Blog Claude partner network Community Connectors Courses Customer stories Engineering at Anthropic Events Plugins Powered by Claude Service partners Tutorials Use cases Programs Startups Research Labs Help and security Availability Status Support center Company Anthropic Careers Leadership Policy Economic Futures Research News Claude\u2019s Constitution Claude Corps Keep thinking Policy on the AI Exponential Responsible Scaling Policy Security and compliance Transparency Terms and policies Privacy policy Consumer health data privacy policy Responsible disclosure policy Terms of service: Commercial Terms of service: Consumer Terms of Service: US K-12 Data Processing Agreement: US K-12 Usage policy \u00a9 2026 Anthropic PBC. Services in the EU are provided by Anthropic Ireland Limited.",
+      "text_source": "full_text",
+      "feed_category": null,
+      "is_signal": true,
+      "event_type": "regulatory_action",
+      "summary": "The US government issued an export control directive requiring Anthropic to suspend all foreign-national access to its Fable 5 and Mythos 5 models over an alleged jailbreak-related national security concern, which Anthropic is complying with while disputing the underlying rationale.",
+      "mechanisms": [
+        {
+          "id": "export_controls",
+          "sign": "positive",
+          "magnitude": "medium",
+          "confidence": "medium",
+          "reason": "A government export control directive is being used to restrict foreign-national access to specific frontier AI models, a new application of export authority to model deployment rather than hardware.",
+          "quote": "The US government, citing national security authorities, has issued an export control directive to suspend all access to Fable 5 and Mythos 5 by any foreign national, whether inside or outside the United States"
+        }
+      ],
+      "categories": [],
+      "notable": true,
+      "notable_reason": "A government has for the first time invoked export control authority to force a frontier lab to pull a deployed commercial model over an alleged jailbreak, a precedent-setting regulatory intervention in AI deployment.",
+      "dropped_tags": [],
+      "score": 26.7,
+      "band": "low",
+      "provenance": "reclassified_v2"
+    },
+    {
       "lab": "deepseek",
       "url": "https://api-docs.deepseek.com/news/news260821",
       "date": "2026-08-21",
@@ -509,7 +509,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -554,7 +554,7 @@
       "notable": true,
       "notable_reason": "A major lab publicly running its flagship model on Cerebras rather than GPU infrastructure is a concrete signal of accelerator diversification away from merchant GPUs.",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -591,7 +591,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -643,7 +643,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -680,7 +680,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -733,7 +733,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -762,7 +762,7 @@
       "notable": true,
       "notable_reason": "A globally deployed enterprise rollout at one of the world's largest technology employers signals a meaningful step-up in enterprise AI adoption and inference demand.",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -799,7 +799,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -828,7 +828,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -873,7 +873,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -902,7 +902,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 17.8,
+      "score": 13.3,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -931,7 +931,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 13.3,
+      "score": 10.0,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -960,7 +960,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -989,7 +989,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -1026,7 +1026,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -1055,7 +1055,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -1092,7 +1092,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -1121,7 +1121,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -1158,7 +1158,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -1195,7 +1195,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -1224,7 +1224,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
+      "score": 6.7,
       "band": "low",
       "provenance": "reclassified_v2"
     },
@@ -1261,183 +1261,7 @@
       "notable": false,
       "notable_reason": "",
       "dropped_tags": [],
-      "score": 8.9,
-      "band": "low",
-      "provenance": "rescored_v1_tags"
-    },
-    {
-      "lab": "openai",
-      "url": "https://openai.com/index/deutsche-telekom",
-      "date": "2026-07-10",
-      "title": "How Deutsche Telekom is rewiring telecommunications with AI",
-      "text": "How Deutsche Telekom is rewiring telecommunications with AI. How Deutsche Telekom is becoming an AI-native telco with OpenAI-transforming customer service, employee workflows, network operations, and the future of voice.",
-      "text_source": "rss_summary",
-      "feed_category": null,
-      "is_signal": true,
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI describes Deutsche Telekom's adoption of its AI tools across customer service, employee workflows, network operations and voice.",
-      "mechanisms": [
-        {
-          "id": "agentic_workflows",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "Summary indicates AI is being used to transform customer service and employee workflows, suggesting task automation displacing traditional workflows.",
-          "quote": "transforming customer service, employee workflows, network operations, and the future of voice"
-        }
-      ],
-      "categories": [],
-      "notable": false,
-      "notable_reason": "",
-      "dropped_tags": [],
-      "score": 4.4,
-      "band": "low",
-      "provenance": "rescored_v1_tags"
-    },
-    {
-      "lab": "openai",
-      "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
-      "date": "2026-07-09",
-      "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
-      "text": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot. Learn how GPT-5.6 powers Microsoft 365 Copilot with stronger AI capabilities across Word, Excel, PowerPoint, Chat, and Cowork for faster, higher-quality work.",
-      "text_source": "rss_summary",
-      "feed_category": "Product",
-      "is_signal": true,
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI announced that GPT-5.6 is now the preferred model powering Microsoft 365 Copilot across Word, Excel, PowerPoint, Chat, and Cowork.",
-      "mechanisms": [
-        {
-          "id": "inference_volume_up",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "Deploying GPT-5.6 as the default model across the full Microsoft 365 Copilot suite implies a large expansion of enterprise inference calls, though the summary gives no usage figures.",
-          "quote": "GPT-5.6 powers Microsoft 365 Copilot with stronger AI capabilities across Word, Excel, PowerPoint, Chat, and Cowork"
-        }
-      ],
-      "categories": [
-        {
-          "id": "hyperscale_platform",
-          "sign": "positive",
-          "confidence": "medium",
-          "reason": "Microsoft's flagship productivity platform is gaining a more capable underlying model, reinforcing its AI-driven product stack.",
-          "quote": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot"
-        }
-      ],
-      "notable": true,
-      "notable_reason": "A frontier model becoming the default across Microsoft's entire 365 Copilot suite signals a significant enterprise-scale inference deployment, relevant to compute and infrastructure demand watchers even though details are sparse.",
-      "dropped_tags": [],
-      "score": 4.4,
-      "band": "low",
-      "provenance": "rescored_v1_tags"
-    },
-    {
-      "lab": "anthropic",
-      "url": "https://www.anthropic.com/news/tcs-anthropic-partnership",
-      "date": "2026-06-12",
-      "title": "TCS and Anthropic bring Claude to regulated industries",
-      "text": "TCS and Anthropic bring Claude to regulated industries \\ Anthropic Skip to main content Skip to footer Research Policy Commitments Learn News Try Claude Announcements TCS and Anthropic partner to bring Claude to regulated industries Jun 12, 2026 We\u2019re announcing a partnership with Tata Consultancy Services (TCS), one of the world\u2019s largest technology services companies. TCS will provide Claude to 50,000 of its own employees across 56 countries; build Claude-powered products for clients in financial services, healthcare, the public sector, and other regulated industries; and join the Claude Partner Network, our network of consulting and services firms that help bring Claude to their enterprise clients. Regulated industries need their work to be highly accurate and auditable, and enterprises in these fields already use Claude for that reason. TCS brings decades of experience delivering technology that is compliant with companies\u2019 regulatory requirements\u2014and the reach to bring Claude to thousands of enterprises worldwide. How TCS is using Claude As \u201ccustomer zero,\u201d TCS will put Claude to work across its own engineering, finance, legal, marketing, and sales teams, using what it learns to shape how it brings Claude to clients. It\u2019s also building a dedicated practice for this partnership, bringing together consultants, engineers, and industry specialists who will design and run Claude-based systems for clients. TCS will package Claude into industry-specific offerings, such as claims processing for insurers and lending advisory for banks, and its teams will implement and run them for clients in financial services, public services, life sciences, healthcare, aviation, telecom, and medical technology. This work is already underway. For example: Diligenta , TCS\u2019s UK life and pensions business, will use Claude to improve the customer experience for the more than 22 million policyholders it serves. TCS\u2019s banking and financial services product teams will use Claude Code to boost productivity around software engineering and IT operations. TCS\u2019s engineering teams will add reusable skills and plugins to the Claude Code ecosystem, starting with ones focused on claims adjudication and lending advisory. TCS iON , which conducts more than 75 million assessments each year across 1,500 cities in India, will deliver Claude training and certification. \u201cEnterprise AI value comes from understanding business context, orchestrating complex systems, and applying deep AI engineering talent,\u201d said K. Krithivasan, Chief Executive Officer and Managing Director of TCS. \u201cBy combining Claude with our industry expertise, engineering rigor, and large-scale transformation capabilities, we will help customers move faster to production\u2014especially in industries where trust, resilience, and regulatory discipline are critical. This partnership reflects TCS\u2019s broader strategy to help clients become perpetually adaptive enterprises by turning frontier AI into transformation at enterprise scale.\u201d \u201cWe built Claude to be safe, trusted, and helpful, particularly in contexts where accuracy matters most,\u201d said Dario Amodei, Co-founder and CEO of Anthropic. \u201cThis partnership deepens our commitment to India, our second-largest market, with TCS bringing Claude to enterprises and professionals across the region and globally.\u201d \u201cThis partnership reflects our shared conviction that AI will be foundational and transformative for enterprises worldwide,\u201d said N Chandrasekaran, Chairman, Tata Sons. \u201cBy combining Anthropic&#x27;s capabilities with Tata Group\u2019s scale, trusted relationships, and nation-building commitment, we will accelerate enterprise reinvention and equip India\u2019s youth with the skills to lead in the AI era.\u201d To learn more about the Claude Partner Network, visit anthropic.com/partners . Related content Previewing the Model Hardware Standard We\u2019re opening a research preview of the Model Hardware Standard (MHS), a shared specification for AI agents to safely operate physical devices, to a first group of scientific research labs and advanced manufacturers. Read more Expanding our support for scientists Starting today, 10,000 scientists around the world can get Claude at no cost to start. Verified principal investigators qualify for a Claude Team subscription plan and then add their research team to Standard seats for free, or Premium seats for $15 per month, for up to a year. Read more Funding better evaluations of AI\u2019s impact on wellbeing We\u2019re launching a $5 million grant program to fund independent research into how AI impacts users\u2019 wellbeing. Read more Products Claude Claude Code Claude Code Enterprise Claude Cowork @Claude Claude Design Claude Science Claude Security Claude in Chrome Claude for Microsoft 365 Skills Download app Pricing Log in to Claude Models Mythos Fable Opus Sonnet Haiku Solutions AI agents Code modernization Coding Customer support Cybersecurity Enterprise Financial services Government Healthcare Higher education K-12 teachers Legal Life sciences Nonprofits Small business Claude Platform Overview Developer docs Pricing Ecosystem Marketplace Regional compliance Claude on AWS Google Cloud Microsoft Foundry Console login Resources Blog Claude partner network Community Connectors Courses Customer stories Engineering at Anthropic Events Plugins Powered by Claude Service partners Tutorials Use cases Programs Startups Research Labs Help and security Availability Status Support center Company Anthropic Careers Leadership Policy Economic Futures Research News Claude\u2019s Constitution Claude Corps Keep thinking Policy on the AI Exponential Responsible Scaling Policy Security and compliance Transparency Terms and policies Privacy policy Consumer health data privacy policy Responsible disclosure policy Terms of service: Commercial Terms of service: Consumer Terms of Service: US K-12 Data Processing Agreement: US K-12 Usage policy \u00a9 2026 Anthropic PBC. Services in the EU are provided by Anthropic Ireland Limited.",
-      "text_source": "full_text",
-      "feed_category": null,
-      "is_signal": true,
-      "event_type": "enterprise_partnership",
-      "summary": "Anthropic announced a partnership with Tata Consultancy Services (TCS) to deploy Claude to 50,000 TCS employees, build Claude-powered products for regulated-industry clients, and join the Claude Partner Network.",
-      "mechanisms": [
-        {
-          "id": "inference_volume_up",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "Large-scale enterprise deployment across tens of thousands of employees and tens of millions of end customers implies increased aggregate Claude usage, though no compute figures are given.",
-          "quote": "TCS will provide Claude to 50,000 of its own employees across 56 countries"
-        },
-        {
-          "id": "agentic_workflows",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "TCS is packaging Claude into task-specific offerings like claims processing and lending advisory and using Claude Code for engineering and IT operations, shifting some work from humans to AI-driven tools.",
-          "quote": "TCS will package Claude into industry-specific offerings, such as claims processing for insurers and lending advisory for banks"
-        }
-      ],
-      "categories": [],
-      "notable": false,
-      "notable_reason": "",
-      "dropped_tags": [],
-      "score": 4.4,
-      "band": "low",
-      "provenance": "rescored_v1_tags"
-    },
-    {
-      "lab": "openai",
-      "url": "https://openai.com/index/openai-on-oracle-cloud",
-      "date": "2026-06-10",
-      "title": "Access OpenAI models and Codex through your Oracle cloud commitment",
-      "text": "Access OpenAI models and Codex through your Oracle cloud commitment. Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance.",
-      "text_source": "rss_summary",
-      "feed_category": "Company",
-      "is_signal": true,
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI announced that its models and Codex can be accessed and deployed through Oracle Cloud using customers' existing Oracle cloud commitments.",
-      "mechanisms": [
-        {
-          "id": "inference_volume_up",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "Making OpenAI models deployable via Oracle Cloud commitments could route incremental inference workloads onto Oracle infrastructure.",
-          "quote": "Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance."
-        }
-      ],
-      "categories": [
-        {
-          "id": "ai_compute_hosting",
-          "sign": "positive",
-          "confidence": "low",
-          "reason": "OpenAI model access via Oracle Cloud commitments directs enterprise AI workloads to Oracle's hosted compute capacity.",
-          "quote": "Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance."
-        },
-        {
-          "id": "hyperscale_platform",
-          "sign": "positive",
-          "confidence": "low",
-          "reason": "Oracle Cloud gains a distribution channel for OpenAI's models, tying enterprise cloud spend to AI usage.",
-          "quote": "Access OpenAI models and Codex through your Oracle cloud commitment."
-        }
-      ],
-      "notable": false,
-      "notable_reason": "",
-      "dropped_tags": [],
-      "score": 4.4,
-      "band": "low",
-      "provenance": "rescored_v1_tags"
-    },
-    {
-      "lab": "openai",
-      "url": "https://openai.com/index/endava-frontiers",
-      "date": "2026-06-04",
-      "title": "How Endava is redesigning software delivery around AI agents",
-      "text": "How Endava is redesigning software delivery around AI agents. Learn how Endava is using AI agents, ChatGPT Enterprise, and Codex to accelerate software delivery, automate workflows, and build an AI-native culture across the enterprise.",
-      "text_source": "rss_summary",
-      "feed_category": null,
-      "is_signal": true,
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI published a case study describing how Endava uses ChatGPT Enterprise and Codex-based AI agents to automate software delivery workflows.",
-      "mechanisms": [
-        {
-          "id": "agentic_workflows",
-          "sign": "positive",
-          "magnitude": "low",
-          "confidence": "low",
-          "reason": "The summary describes an enterprise deploying AI agents to automate software delivery workflows, indicating a shift from seat-based tools to agentic task execution.",
-          "quote": "using AI agents, ChatGPT Enterprise, and Codex to accelerate software delivery, automate workflows, and build an AI-native culture"
-        }
-      ],
-      "categories": [],
-      "notable": false,
-      "notable_reason": "",
-      "dropped_tags": [],
-      "score": 4.4,
+      "score": 6.7,
       "band": "low",
       "provenance": "rescored_v1_tags"
     },
@@ -3263,6 +3087,35 @@
     },
     {
       "lab": "openai",
+      "url": "https://openai.com/index/deutsche-telekom",
+      "date": "2026-07-10",
+      "title": "How Deutsche Telekom is rewiring telecommunications with AI",
+      "text": "How Deutsche Telekom is rewiring telecommunications with AI. How Deutsche Telekom is becoming an AI-native telco with OpenAI-transforming customer service, employee workflows, network operations, and the future of voice.",
+      "text_source": "rss_summary",
+      "feed_category": null,
+      "is_signal": true,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI describes Deutsche Telekom's adoption of its AI tools across customer service, employee workflows, network operations and voice.",
+      "mechanisms": [
+        {
+          "id": "agentic_workflows",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "Summary indicates AI is being used to transform customer service and employee workflows, suggesting task automation displacing traditional workflows.",
+          "quote": "transforming customer service, employee workflows, network operations, and the future of voice"
+        }
+      ],
+      "categories": [],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "provenance": "rescored_v1_tags"
+    },
+    {
+      "lab": "openai",
       "url": "https://openai.com/academy/getting-started",
       "date": "2026-07-10",
       "title": "Getting started with ChatGPT",
@@ -3336,6 +3189,43 @@
       "categories": [],
       "notable": false,
       "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "provenance": "rescored_v1_tags"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+      "date": "2026-07-09",
+      "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
+      "text": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot. Learn how GPT-5.6 powers Microsoft 365 Copilot with stronger AI capabilities across Word, Excel, PowerPoint, Chat, and Cowork for faster, higher-quality work.",
+      "text_source": "rss_summary",
+      "feed_category": "Product",
+      "is_signal": true,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI announced that GPT-5.6 is now the preferred model powering Microsoft 365 Copilot across Word, Excel, PowerPoint, Chat, and Cowork.",
+      "mechanisms": [
+        {
+          "id": "inference_volume_up",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "Deploying GPT-5.6 as the default model across the full Microsoft 365 Copilot suite implies a large expansion of enterprise inference calls, though the summary gives no usage figures.",
+          "quote": "GPT-5.6 powers Microsoft 365 Copilot with stronger AI capabilities across Word, Excel, PowerPoint, Chat, and Cowork"
+        }
+      ],
+      "categories": [
+        {
+          "id": "hyperscale_platform",
+          "sign": "positive",
+          "confidence": "medium",
+          "reason": "Microsoft's flagship productivity platform is gaining a more capable underlying model, reinforcing its AI-driven product stack.",
+          "quote": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot"
+        }
+      ],
+      "notable": true,
+      "notable_reason": "A frontier model becoming the default across Microsoft's entire 365 Copilot suite signals a significant enterprise-scale inference deployment, relevant to compute and infrastructure demand watchers even though details are sparse.",
       "dropped_tags": [],
       "score": 0.0,
       "band": "none",
@@ -3951,6 +3841,43 @@
       "provenance": "rescored_v1_tags"
     },
     {
+      "lab": "anthropic",
+      "url": "https://www.anthropic.com/news/tcs-anthropic-partnership",
+      "date": "2026-06-12",
+      "title": "TCS and Anthropic bring Claude to regulated industries",
+      "text": "TCS and Anthropic bring Claude to regulated industries \\ Anthropic Skip to main content Skip to footer Research Policy Commitments Learn News Try Claude Announcements TCS and Anthropic partner to bring Claude to regulated industries Jun 12, 2026 We\u2019re announcing a partnership with Tata Consultancy Services (TCS), one of the world\u2019s largest technology services companies. TCS will provide Claude to 50,000 of its own employees across 56 countries; build Claude-powered products for clients in financial services, healthcare, the public sector, and other regulated industries; and join the Claude Partner Network, our network of consulting and services firms that help bring Claude to their enterprise clients. Regulated industries need their work to be highly accurate and auditable, and enterprises in these fields already use Claude for that reason. TCS brings decades of experience delivering technology that is compliant with companies\u2019 regulatory requirements\u2014and the reach to bring Claude to thousands of enterprises worldwide. How TCS is using Claude As \u201ccustomer zero,\u201d TCS will put Claude to work across its own engineering, finance, legal, marketing, and sales teams, using what it learns to shape how it brings Claude to clients. It\u2019s also building a dedicated practice for this partnership, bringing together consultants, engineers, and industry specialists who will design and run Claude-based systems for clients. TCS will package Claude into industry-specific offerings, such as claims processing for insurers and lending advisory for banks, and its teams will implement and run them for clients in financial services, public services, life sciences, healthcare, aviation, telecom, and medical technology. This work is already underway. For example: Diligenta , TCS\u2019s UK life and pensions business, will use Claude to improve the customer experience for the more than 22 million policyholders it serves. TCS\u2019s banking and financial services product teams will use Claude Code to boost productivity around software engineering and IT operations. TCS\u2019s engineering teams will add reusable skills and plugins to the Claude Code ecosystem, starting with ones focused on claims adjudication and lending advisory. TCS iON , which conducts more than 75 million assessments each year across 1,500 cities in India, will deliver Claude training and certification. \u201cEnterprise AI value comes from understanding business context, orchestrating complex systems, and applying deep AI engineering talent,\u201d said K. Krithivasan, Chief Executive Officer and Managing Director of TCS. \u201cBy combining Claude with our industry expertise, engineering rigor, and large-scale transformation capabilities, we will help customers move faster to production\u2014especially in industries where trust, resilience, and regulatory discipline are critical. This partnership reflects TCS\u2019s broader strategy to help clients become perpetually adaptive enterprises by turning frontier AI into transformation at enterprise scale.\u201d \u201cWe built Claude to be safe, trusted, and helpful, particularly in contexts where accuracy matters most,\u201d said Dario Amodei, Co-founder and CEO of Anthropic. \u201cThis partnership deepens our commitment to India, our second-largest market, with TCS bringing Claude to enterprises and professionals across the region and globally.\u201d \u201cThis partnership reflects our shared conviction that AI will be foundational and transformative for enterprises worldwide,\u201d said N Chandrasekaran, Chairman, Tata Sons. \u201cBy combining Anthropic&#x27;s capabilities with Tata Group\u2019s scale, trusted relationships, and nation-building commitment, we will accelerate enterprise reinvention and equip India\u2019s youth with the skills to lead in the AI era.\u201d To learn more about the Claude Partner Network, visit anthropic.com/partners . Related content Previewing the Model Hardware Standard We\u2019re opening a research preview of the Model Hardware Standard (MHS), a shared specification for AI agents to safely operate physical devices, to a first group of scientific research labs and advanced manufacturers. Read more Expanding our support for scientists Starting today, 10,000 scientists around the world can get Claude at no cost to start. Verified principal investigators qualify for a Claude Team subscription plan and then add their research team to Standard seats for free, or Premium seats for $15 per month, for up to a year. Read more Funding better evaluations of AI\u2019s impact on wellbeing We\u2019re launching a $5 million grant program to fund independent research into how AI impacts users\u2019 wellbeing. Read more Products Claude Claude Code Claude Code Enterprise Claude Cowork @Claude Claude Design Claude Science Claude Security Claude in Chrome Claude for Microsoft 365 Skills Download app Pricing Log in to Claude Models Mythos Fable Opus Sonnet Haiku Solutions AI agents Code modernization Coding Customer support Cybersecurity Enterprise Financial services Government Healthcare Higher education K-12 teachers Legal Life sciences Nonprofits Small business Claude Platform Overview Developer docs Pricing Ecosystem Marketplace Regional compliance Claude on AWS Google Cloud Microsoft Foundry Console login Resources Blog Claude partner network Community Connectors Courses Customer stories Engineering at Anthropic Events Plugins Powered by Claude Service partners Tutorials Use cases Programs Startups Research Labs Help and security Availability Status Support center Company Anthropic Careers Leadership Policy Economic Futures Research News Claude\u2019s Constitution Claude Corps Keep thinking Policy on the AI Exponential Responsible Scaling Policy Security and compliance Transparency Terms and policies Privacy policy Consumer health data privacy policy Responsible disclosure policy Terms of service: Commercial Terms of service: Consumer Terms of Service: US K-12 Data Processing Agreement: US K-12 Usage policy \u00a9 2026 Anthropic PBC. Services in the EU are provided by Anthropic Ireland Limited.",
+      "text_source": "full_text",
+      "feed_category": null,
+      "is_signal": true,
+      "event_type": "enterprise_partnership",
+      "summary": "Anthropic announced a partnership with Tata Consultancy Services (TCS) to deploy Claude to 50,000 TCS employees, build Claude-powered products for regulated-industry clients, and join the Claude Partner Network.",
+      "mechanisms": [
+        {
+          "id": "inference_volume_up",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "Large-scale enterprise deployment across tens of thousands of employees and tens of millions of end customers implies increased aggregate Claude usage, though no compute figures are given.",
+          "quote": "TCS will provide Claude to 50,000 of its own employees across 56 countries"
+        },
+        {
+          "id": "agentic_workflows",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "TCS is packaging Claude into task-specific offerings like claims processing and lending advisory and using Claude Code for engineering and IT operations, shifting some work from humans to AI-driven tools.",
+          "quote": "TCS will package Claude into industry-specific offerings, such as claims processing for insurers and lending advisory for banks"
+        }
+      ],
+      "categories": [],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "provenance": "rescored_v1_tags"
+    },
+    {
       "lab": "openai",
       "url": "https://openai.com/index/academy-courses-applying-ai-at-work",
       "date": "2026-06-12",
@@ -4049,6 +3976,50 @@
       "score": 0.0,
       "band": "none",
       "provenance": "reclassified_v2"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/openai-on-oracle-cloud",
+      "date": "2026-06-10",
+      "title": "Access OpenAI models and Codex through your Oracle cloud commitment",
+      "text": "Access OpenAI models and Codex through your Oracle cloud commitment. Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance.",
+      "text_source": "rss_summary",
+      "feed_category": "Company",
+      "is_signal": true,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI announced that its models and Codex can be accessed and deployed through Oracle Cloud using customers' existing Oracle cloud commitments.",
+      "mechanisms": [
+        {
+          "id": "inference_volume_up",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "Making OpenAI models deployable via Oracle Cloud commitments could route incremental inference workloads onto Oracle infrastructure.",
+          "quote": "Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance."
+        }
+      ],
+      "categories": [
+        {
+          "id": "ai_compute_hosting",
+          "sign": "positive",
+          "confidence": "low",
+          "reason": "OpenAI model access via Oracle Cloud commitments directs enterprise AI workloads to Oracle's hosted compute capacity.",
+          "quote": "Access OpenAI models and Codex through Oracle Cloud, using existing commitments to build and deploy AI with enterprise security and governance."
+        },
+        {
+          "id": "hyperscale_platform",
+          "sign": "positive",
+          "confidence": "low",
+          "reason": "Oracle Cloud gains a distribution channel for OpenAI's models, tying enterprise cloud spend to AI usage.",
+          "quote": "Access OpenAI models and Codex through your Oracle cloud commitment."
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "provenance": "rescored_v1_tags"
     },
     {
       "lab": "openai",
@@ -4182,6 +4153,35 @@
       "event_type": "other",
       "summary": "OpenAI launches an Economic Research Exchange program to fund and support research into AI's impact on jobs, productivity, and the economy.",
       "mechanisms": [],
+      "categories": [],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "provenance": "rescored_v1_tags"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/endava-frontiers",
+      "date": "2026-06-04",
+      "title": "How Endava is redesigning software delivery around AI agents",
+      "text": "How Endava is redesigning software delivery around AI agents. Learn how Endava is using AI agents, ChatGPT Enterprise, and Codex to accelerate software delivery, automate workflows, and build an AI-native culture across the enterprise.",
+      "text_source": "rss_summary",
+      "feed_category": null,
+      "is_signal": true,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI published a case study describing how Endava uses ChatGPT Enterprise and Codex-based AI agents to automate software delivery workflows.",
+      "mechanisms": [
+        {
+          "id": "agentic_workflows",
+          "sign": "positive",
+          "magnitude": "low",
+          "confidence": "low",
+          "reason": "The summary describes an enterprise deploying AI agents to automate software delivery workflows, indicating a shift from seat-based tools to agentic task execution.",
+          "quote": "using AI agents, ChatGPT Enterprise, and Codex to accelerate software delivery, automate workflows, and build an AI-native culture"
+        }
+      ],
       "categories": [],
       "notable": false,
       "notable_reason": "",

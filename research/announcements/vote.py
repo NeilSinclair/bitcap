@@ -33,7 +33,8 @@ import yaml
 
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(Path(__file__).parent))
-import score_announcements as sa  # noqa: E402
+import score_announcements as sa
+from verbatim import enforce as enforce_quotes  # noqa: E402
 from score_announcements import (  # noqa: E402
     SCORING,
     drop_unknown_tags,
@@ -62,6 +63,25 @@ def median_level(values: list[str]) -> str:
     """
     idx = sorted(LEVELS.index(v) for v in values)
     return LEVELS[idx[(len(idx) - 1) // 2]]
+
+
+ACTIONS = ["watch", "investigate", "adopt"]
+
+
+def median_action(values: list[str]) -> str:
+    """Take the median of ordered practice actions.
+
+    Args:
+        values: Labels drawn from ACTIONS.
+
+    Returns:
+        The median label, rounding down on an even split. Rounding down matters
+        more here than for magnitude: the prompt says `watch` is the default and
+        the most common correct answer, and a first run produced the exact
+        inverse ordering (adopt 17, investigate 14, watch 12).
+    """
+    idx = sorted(ACTIONS.index(v) for v in values)
+    return ACTIONS[idx[(len(idx) - 1) // 2]]
 
 
 def vote(runs: list[dict]) -> dict:
@@ -111,12 +131,44 @@ def vote(runs: list[dict]) -> dict:
         if len(tags) >= needed
     ]
 
+    # The practice axis, reduced the same way. Keyed by id, so two tags with
+    # the same id inside one run collapse to one -- which the scorer already
+    # does, since it takes a max over practices rather than a sum.
+    pracs: dict[str, list[dict]] = {}
+    for r in runs:
+        for tag in r.get("practices", []):
+            pracs.setdefault(tag["id"], []).append(tag)
+
+    practices = []
+    for pid, tags in sorted(pracs.items()):
+        if len(tags) < needed:
+            continue
+        seen, dimensions = set(), []
+        for tag in tags:
+            for d in tag.get("dimensions", []):
+                if d not in seen:
+                    seen.add(d)
+                    dimensions.append(d)
+        practices.append(
+            {
+                "id": pid,
+                "action": median_action([t["action"] for t in tags]),
+                "impact": median_level([t["impact"] for t in tags]),
+                "confidence": median_level([t["confidence"] for t in tags]),
+                "dimensions": dimensions,
+                "reason": tags[0]["reason"],
+                "quote": tags[0]["quote"],
+                "votes": f"{len(tags)}/{n}",
+            }
+        )
+
     return {
         "event_type": top,
         "is_signal": True,  # unused by scoring; kept for schema compatibility
         "summary": runs[0]["summary"],
         "mechanisms": mechanisms,
         "categories": categories,
+        "practices": practices,
         "notable": Counter(r["notable"] for r in runs).most_common(1)[0][0],
         "notable_reason": runs[0].get("notable_reason", ""),
         "vote_notes": {
@@ -126,6 +178,10 @@ def vote(runs: list[dict]) -> dict:
             "mechanisms_seen": {k: len(v) for k, v in sorted(tallies.items())},
             "mechanisms_dropped": sorted(
                 k for k, v in tallies.items() if len(v) < needed
+            ),
+            "practices_seen": {k: len(v) for k, v in sorted(pracs.items())},
+            "practices_dropped": sorted(
+                k for k, v in pracs.items() if len(v) < needed
             ),
         },
     }
@@ -139,6 +195,9 @@ def run_pass(
     workers: int,
     mech_ids: set,
     cat_ids: set,
+    prac_ids: set | None = None,
+    dimensions: dict | None = None,
+    max_dimensions: int | None = None,
 ) -> tuple[dict, list[dict]]:
     """Classify every article `votes` times and reduce each by majority.
 
@@ -150,6 +209,9 @@ def run_pass(
         workers: Concurrency.
         mech_ids: Valid mechanism ids.
         cat_ids: Valid category ids.
+        prac_ids: Valid practice ids. Omit to leave the practice axis unchecked.
+        dimensions: Valid dimension names per practice id.
+        max_dimensions: Cap on dimensions per practice tag.
 
     Returns:
         Tuple of (url -> voted result, cost records).
@@ -162,7 +224,10 @@ def run_pass(
         result, cost = provider_classify(
             provider, model, system, user, sa.SCHEMA, article["url"]
         )
-        result["dropped_tags"] = drop_unknown_tags(result, mech_ids, cat_ids)
+        result["dropped_tags"] = drop_unknown_tags(
+            result, mech_ids, cat_ids, prac_ids, dimensions, max_dimensions
+        )
+        result["dropped_tags"] += enforce_quotes(result, article["text"])
         return article["url"], result, cost
 
     collected: dict[str, list[dict]] = {a["url"]: [] for a in articles}
@@ -191,7 +256,7 @@ def main() -> None:
     load_env()
     load_provider_env()
     rules = yaml.safe_load(SCORING.read_text())
-    _, _, mech_ids, cat_ids = vocabularies()
+    _, _, _, mech_ids, cat_ids, _ = vocabularies()
 
     by_url = {a["url"]: a for a in json.loads(ARTICLES.read_text())}
     urls = json.loads(Path(args.urls).read_text())

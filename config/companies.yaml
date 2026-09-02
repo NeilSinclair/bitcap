@@ -2568,11 +2568,10 @@ companies:
         magnitude: low
         confidence: low
         why: >
-          Recorded deliberately at low/low, and as the only company link this
-          mechanism has. A frontier capability step raises the ceiling on what
-          the agents can be trusted to do unsupervised, but Navan buys models
-          rather than making them, so the benefit is diffuse and shared with
-          every competitor.
+          Recorded at low/low, and the only company link this mechanism has. A
+          frontier capability step raises the ceiling on what the agents can be
+          trusted to do unsupervised, but Navan buys models rather than making
+          them, so the benefit is diffuse and shared with every competitor.
 
     tailwinds:
       - claim: >

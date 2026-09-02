@@ -13,6 +13,10 @@ independent ground truth.
 To push back on that, every tag carries how many of the three runs produced it,
 and items where the runs disagreed are flagged `needs_review`. Attention goes
 where the model was least certain rather than being spread evenly.
+
+Fills both axes. A gold block without `practices` cannot measure the half of the
+system that serves the AI team, and the previous fill predates that axis
+entirely.
 """
 
 from __future__ import annotations
@@ -27,18 +31,18 @@ import yaml
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(Path(__file__).parent))
 import score_announcements as sa  # noqa: E402
-from score_announcements import SCORING, score_of, vocabularies  # noqa: E402
+from score_announcements import SCORING, ai_score_of, score_of, vocabularies  # noqa: E402
 from providers import load_env as load_provider_env  # noqa: E402
 from variance import use_prompt  # noqa: E402
 from vote import run_pass  # noqa: E402
 
-GOLD = Path(__file__).parent / "gold" / "articles"
+GOLD = Path(__file__).parent / "test" / "articles"
 DOCS = ROOT / "research" / "docs"
 ARTICLES = DOCS / "announcements.json"
 COST = DOCS / "gold_prefill_cost.json"
 
 MODEL = "claude-sonnet-5"
-PROMPT = "v4"
+PROMPT = "v6"
 
 
 def main() -> None:
@@ -57,7 +61,8 @@ def main() -> None:
     use_prompt(PROMPT)
     load_provider_env()
     rules = yaml.safe_load(SCORING.read_text())
-    _, _, mech_ids, cat_ids = vocabularies()
+    _, _, _, mech_ids, cat_ids, prac_ids = vocabularies()
+    dims, cap = sa.practice_dimensions(), sa.dimension_cap()
 
     files = sorted(GOLD.glob("*.json"))
     records = [json.loads(f.read_text()) for f in files]
@@ -67,10 +72,12 @@ def main() -> None:
     print(f"{len(articles)} articles, {label}, {MODEL}, prompt {PROMPT}")
 
     voted, costs = run_pass(
-        "anthropic", MODEL, articles, votes, 12, mech_ids, cat_ids
+        "anthropic", MODEL, articles, votes, 12,
+        mech_ids, cat_ids, prac_ids, dims, cap,
     )
     for result in voted.values():
         result["score"], result["band"] = score_of(result, rules)
+        result["ai_score"], result["ai_band"] = ai_score_of(result, rules)
 
     COST.write_text(json.dumps(costs, indent=2))
 
@@ -117,6 +124,17 @@ def main() -> None:
                 }
                 for c in result["categories"]
             ],
+            "practices": [
+                {
+                    "id": p["id"],
+                    "action": p["action"],
+                    "impact": p["impact"],
+                    "confidence": p["confidence"],
+                    "dimensions": p.get("dimensions", []),
+                    "quote": p.get("quote", ""),
+                }
+                for p in result["practices"]
+            ],
             "notes": "",
         }
         record["review"] = {
@@ -142,11 +160,16 @@ def main() -> None:
                 )
                 or "all runs agreed"
             ),
-            "tag_votes": {m["id"]: m["votes"] for m in result["mechanisms"]},
+            "tag_votes": {
+                **{m["id"]: m["votes"] for m in result["mechanisms"]},
+                **{p["id"]: p["votes"] for p in result["practices"]},
+            },
         }
         record["system"] = {
             "score": result["score"],
             "band": result["band"],
+            "ai_score": result["ai_score"],
+            "ai_band": result["ai_band"],
             "summary": result["summary"],
             "model": MODEL,
             "prompt": PROMPT,
@@ -157,8 +180,10 @@ def main() -> None:
 
     spend = sum(c["usd"] for c in costs)
     scoring = sum(1 for r in voted.values() if r["score"] > 0)
+    ai_scoring = sum(1 for r in voted.values() if r["ai_score"] > 0)
     print(f"\nprefilled {len(files)} files")
-    print(f"  scoring above zero : {scoring}")
+    print(f"  investment score >0: {scoring}")
+    print(f"  AI-team score >0   : {ai_scoring}")
     if votes > 1:
         print(f"  flagged for review : {contested}")
     print(f"  ${spend:.4f} for {len(costs)} calls")

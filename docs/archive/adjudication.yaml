@@ -1,0 +1,261 @@
+# Adjudicated reference labels for the gold set.
+#
+# WHAT THIS IS. Every tag below was judged by reading the full article against
+# the vocabulary, comparing two independent runs of the classifier, and deciding.
+# It replaces the previous `gold` blocks, which were unreviewed pre-fill.
+#
+# WHAT IT IS NOT. Independent human ground truth. Human labelling was considered
+# and dropped -- twenty articles at ~14,000 characters each was not going to
+# happen, and an empty folder implying it might is worse than none. The
+# adjudicator is Claude Opus reading the articles; the classifier is Sonnet-5.
+# Different models, same family. State it that way in the design document.
+#
+# Three things make this worth more than the model grading itself, and one
+# thing it still cannot do:
+#   - the adjudicator reads the whole article, the classifier's output, and a
+#     second independent run of it, so run-to-run disagreement routes attention
+#   - every quote is now mechanically verified to be in the document, so
+#     judgement is only ever about whether the quote *supports* the tag
+#   - every verdict carries a reason, so any one can be spot-checked in a minute
+#   - it CANNOT find a kind of signal both models miss, because the adjudicator
+#     wrote the vocabulary being judged. That is the standing blind spot.
+#
+# verdict: confirm | adjust | drop | add
+# Only departures from the classifier are listed; anything not mentioned was
+# confirmed as both runs had it.
+
+adjudicator: claude-opus-5
+classifier: claude-sonnet-5
+runs_compared: 2
+date: 2026-09-01
+
+articles:
+
+  "04":
+    mechanisms:
+      - id: inference_cost_down
+        verdict: adjust
+        to: {magnitude: medium, confidence: high}
+        why: >
+          The article states the efficiency claim outright -- serving cost down
+          20%, token-generation efficiency up more than 15%. Under the narrowed
+          definition that is exactly the evidence required, so medium confidence
+          was under-stated. Note the classifier quoted the efficiency sentence
+          and not the 80% price cut, which is the distinction we narrowed the
+          mechanism to enforce.
+      - id: agentic_workflows
+        verdict: drop
+        why: >
+          Quoted from "It can use tools and complete multi-step workflows",
+          which describes what Luna can do, not work moving from humans to
+          agents. The mechanism is about displacing seat-based software.
+
+  "05":
+    mechanisms:
+      - id: agentic_workflows
+        verdict: adjust
+        to: {magnitude: low, confidence: medium}
+        quote: >-
+          agents able to reason through each step in an experiment, update
+          parameters in real time, and, in some cases, recover from hardware
+          errors without intervention
+        why: >
+          Right mechanism, wrong sentence. "MHS reduces this integration work to
+          hours or minutes" is about setup speed; the agentic claim is the one
+          about agents running experiments without intervention.
+      - id: capability_jump
+        verdict: drop
+        why: >
+          MHS is a hardware specification, not a model getting better. Nothing
+          in the document claims a model crossed a threshold.
+    categories:
+      - id: health_insurance
+        verdict: drop
+        why: >
+          Quoted from "accelerating the discovery of life-saving medicines".
+          That is a hoped-for use of the standard, not a claim about any health
+          company. Routing a protocol announcement to clinical-stage businesses
+          on that sentence is a reach.
+
+  "07":
+    practices:
+      - id: integration
+        verdict: drop
+        why: >
+          Quoted from how Anthropic trains its own safety classifiers. That is
+          Anthropic's internal machinery, not work landing on a customer team.
+
+  "10":
+    mechanisms:
+      - id: export_controls
+        verdict: adjust
+        to: {magnitude: high, confidence: high}
+        why: >
+          Both runs said low and medium-high. The document describes a
+          government forcing a lab to disable its two best models for every
+          customer, and says in its own words that the standard applied
+          industry-wide "would essentially halt all new model deployments for
+          all frontier model providers". That is not a low-magnitude event. This
+          single field moves the article from 13.3 to 80 and is the largest
+          scoring error found in the set.
+      - id: inference_volume_up
+        verdict: add
+        sign: negative
+        magnitude: high
+        confidence: high
+        quote: >-
+          The net effect of this order is that we must abruptly disable Fable 5
+          and Mythos 5 for all our customers to ensure compliance.
+        why: >
+          Two frontier models switched off for every customer is a direct,
+          quotable fall in tokens served. Neither run tagged it.
+    note: >
+      lab_capital_access was considered and rejected. The document says nothing
+      about capital, and inferring a revenue hit from another article would
+      break the rule that the model may use only what this document states.
+
+  "15":
+    mechanisms:
+      - id: ai_capex_investments
+        verdict: drop
+        why: >
+          Tagged from the same sentence as custom_silicon_substitution. Deploying
+          your own chip is capex, so the tag is not wrong, but two mechanisms off
+          one clause is the correlation problem we already have -- and
+          ai_capex_investments already reaches 16 of 26 holdings, so it
+          discriminates least of any tag in the vocabulary.
+    categories:
+      - id: accelerator_custom_si
+        verdict: adjust
+        to: {sign: mixed, confidence: medium}
+        why: >
+          The second run flipped this to positive. Mixed is right: the quote is
+          OpenAI committing to keep buying NVIDIA while shipping a competing
+          in-house part. For a bucket that contains NVIDIA, that cuts both ways.
+
+  "16":
+    mechanisms:
+      - id: custom_silicon_substitution
+        verdict: drop
+        why: >
+          Quoted from OpenAI launching on Cerebras. The mechanism is a lab
+          deploying silicon it designed or co-designed; Cerebras is a merchant
+          part OpenAI buys. The economic direction is right, which is what makes
+          it seductive, and there is no mechanism for "lab adopts an NVIDIA
+          alternative it did not build". Recorded as a vocabulary gap.
+      - id: inference_volume_up
+        verdict: adjust
+        to: {magnitude: medium, confidence: medium}
+        why: >
+          A new `max` reasoning effort means more test-time compute per request.
+          The first run said medium, the second low; medium is right.
+    categories:
+      - id: accelerator_custom_si
+        verdict: adjust
+        to: {sign: mixed, confidence: medium}
+        why: Same reasoning as 15 -- a non-NVIDIA deployment inside an NVIDIA bucket.
+
+  "19":
+    mechanisms:
+      - id: capability_jump
+        verdict: drop
+        why: >
+          "Makes a major leap on multimodal agent benchmarks" is a benchmark
+          claim about an experimental point release, not a threshold that puts
+          new tasks in reach. The event type already records it as incremental.
+
+  "20":
+    mechanisms:
+      - id: inference_volume_up
+        verdict: add
+        sign: positive
+        magnitude: medium
+        confidence: high
+        quote: >-
+          opening a new path for millions of AWS customers to build with OpenAI
+          through the platform they already use to run their business
+        why: >
+          The first run tagged this at low confidence, which scores zero under
+          the gate; the second run did not tag it at all. The document states
+          general availability, "millions of AWS customers", and Codex "used by
+          more than 5 million people every week", in Commercial and GovCloud.
+          That is an explicit volume claim, not an inference. Amazon is 11.03%
+          of the fund and inference_volume_up is one of its seven links, so this
+          was the fund's largest position scoring zero on its most direct news.
+
+  "22":
+    event_type: other
+    why_event: >
+      The second run called this research_result. The article is about how
+      people learn with AI and cites usage figures in passing; it does not
+      report a research finding. Consistent with 26, where an article that
+      quotes model benchmarks is still not an article about those models.
+    mechanisms:
+      - id: inference_volume_up
+        verdict: confirm
+        why: >
+          Only the second run tagged it, and it is right: "prompts related to
+          classwork and homework peak at more than 460 million messages per
+          week" is a volume statistic. It scores zero anyway under event type
+          `other`, which is the correct outcome by a different route.
+
+  "23":
+    mechanisms:
+      - id: lab_capital_access
+        verdict: adjust
+        to: {magnitude: high, confidence: medium}
+        why: >
+          An OpenAI S-1 is a high-magnitude capital event. Confidence stays
+          medium because the filing is confidential and the document commits to
+          no timing. The second run's medium magnitude understates the event.
+
+  "24":
+    event_type: safety_policy
+    why_event: >
+      The first run said regulatory_action, which the prompt defines as action
+      taken *on* the lab by a government. This is OpenAI publishing its own
+      policy position. Neither label fits well -- advocacy is not a voluntary
+      safety commitment either -- and safety_policy is the closer of the two.
+      Recorded as a vocabulary gap.
+
+  "26":
+    mechanisms:
+      - id: capability_jump
+        verdict: drop
+        why: >
+          A benchmark comparison inside a CFO's measurement framework is not a
+          capability threshold. The article is about how to measure value.
+      - id: agentic_workflows
+        verdict: confirm
+        why: >
+          Only the second run tagged it, and the quote is the seat-displacement
+          thesis stated almost verbatim -- "the market measured the success of
+          software through adoption: seats purchased". That is precisely what
+          this mechanism describes.
+
+  "30":
+    mechanisms:
+      - id: inference_cost_down
+        verdict: drop
+        why: >
+          "Delivers more useful work from every token, with stronger performance
+          per dollar" is marketing copy. No efficiency claim is made -- no
+          figure, no technique. Under the narrowed definition this fails.
+      - id: inference_volume_up
+        verdict: adjust
+        to: {magnitude: medium, confidence: high}
+        why: >
+          GPT-5.6 becoming the preferred model across Word, Excel, PowerPoint
+          and Chat is a concrete, large volume event. Both runs hedged the
+          confidence; the document is not hedged.
+
+# Confirmed in full, both runs agreeing and the adjudicator agreeing:
+# 01, 12, 21, 25, 27, 28, 29.
+confirmed_entirely: ["01", "12", "21", "25", "27", "28", "29"]
+
+# Gaps the adjudication exposed in the vocabulary itself, not in the model.
+vocabulary_gaps:
+  - "No event type for a security incident (01). Forced into safety_policy at weight 1."
+  - "No mechanism for a lab adopting merchant non-NVIDIA silicon (16, Cerebras)."
+  - "No event type for a lab's policy advocacy (24). safety_policy is the lab's own commitment."
+  - "enterprise_partnership at weight 2 caps distribution deals that reach the largest holdings (20)."

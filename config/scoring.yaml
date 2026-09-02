@@ -6,15 +6,16 @@
 # whereas every number this file produces can be argued line by line and changed
 # without touching code.
 #
-#   strongest = max over mechanism tags of (magnitude * confidence)   # 1..9
-#   score     = 100 * (event_weight/5) * (strongest/9)
+#   strongest = max over mechanism tags of (magnitude * confidence)   # 0..3
+#   score     = 100 * (event_weight/5) * (strongest/3)
 #
 # EVERYTHING MULTIPLIES, AND THAT IS THE POINT.
 #
 # Inside a mechanism tag, magnitude and confidence multiply because the product
 # reads as an expected magnitude: confidence is a probability weight on how large
-# the effect is. "A big thing we are unsure of" (3x1) equals "a small thing we
-# are certain of" (1x3).
+# the effect is. Since v4 that weight runs 0 to 1 and is literally a probability:
+# "a big thing we are not confident of" is worth nothing, "a small thing we are
+# certain of" is worth its size.
 #
 # The two axes then multiply for two reasons.
 #
@@ -37,7 +38,7 @@
 # the lab. Both are fixed by `corporate_finance`, `regulatory_action` and the
 # `lab_capital_access` mechanism -- under this multiplicative rule, unchanged.
 
-version: 3
+version: 4
 
 # What kind of announcement it is. Rationale is recorded because these numbers
 # are the most arguable thing in the system.
@@ -74,19 +75,89 @@ magnitude:
   medium: 2
   low: 1
 
-# Same 1-3 scale as magnitude, so neither axis is quietly favoured. v1 used
-# 1.0/0.7/0.4, which is not a constant multiple of thirds: it paid a
-# high-magnitude, low-confidence tag 0.400 where thirds pay 0.333, inflating by
-# up to 20% exactly the tags that deserve it least.
+# CONFIDENCE IS A GATE, NOT A DISCOUNT (v4, changed on empirical evidence).
+#
+# Low confidence scores ZERO, so a low-confidence tag contributes nothing at all.
+# The statable rule is "we do not score what we are not confident the document
+# says", which is a stronger version of the citation guarantee: a quote that is
+# there but weak now buys nothing.
+#
+# WHY IT CHANGED. A hand review of a 20-article gold run (docs/gold_review.md)
+# found that every tag a human reader rejected as unsupported was low
+# confidence, and the model had already marked them so. Two examples, both
+# quoting marketing copy rather than a claim: `inference_volume_up` on OpenAI's
+# $122bn raise, cited to "meet growing demand for ChatGPT, Codex, and enterprise
+# AI"; and the same tag on a pricing item, cited to "deploy AI workflows at
+# scale". The model's own confidence field was already the correct filter; the
+# scale was paying for it anyway.
+#
+# WHAT IT COSTS. Across the 192-article register the change moves 34 items and
+# drops 5 to zero. All five are `enterprise_partnership` items scoring 4.4 whose
+# only tags were low/low -- precisely the noise the review objected to. No item
+# above 5 is destroyed; the largest fall is 66.7 -> 50.0.
+#
+# This abandons the equal 1-3 scales the v3 file argued for. That symmetry was
+# about not favouring one axis; this is about not scoring evidence we distrust,
+# which is the more important property. Magnitude keeps 1-3 because a small
+# effect is still an effect -- an unsupported claim is not.
 confidence:
-  high: 3
-  medium: 2
-  low: 1
+  high: 1.0
+  medium: 0.5
+  low: 0.0
 
 # Denominators: each axis normalised by its own maximum before multiplying.
-# 5 = top event weight; 9 = magnitude 3 * confidence 3.
+# 5 = top event weight; 3 = magnitude 3 * confidence 1.0.
 max_event_weight: 5
-max_mechanism: 9
+max_mechanism: 3
+
+# ---------------------------------------------------------------------------
+# AI-TEAM RULE. A second renderer over the same extraction, not a second system.
+#
+#   strongest = max over practice tags of (impact * confidence)   # 0..3
+#   ai_score  = 100 * (action_weight/3) * (strongest/3)
+#
+# NO EVENT WEIGHT HERE, DELIBERATELY. `event_weight` above is an investment
+# taxonomy: compute_commitment is 5 because clusters move semiconductor demand,
+# which is worth nothing to an engineer deciding what to build with. The practice
+# tag already says what kind of thing the item is, so an event weight would only
+# import the wrong priorities. This is why the two audiences rank the same corpus
+# differently rather than seeing one list in two colours.
+#
+# NO PRACTICE TAG, NO AI SCORE -- the same structural guarantee as the mechanism
+# side. Every practice tag carries a verbatim quote, so a non-zero AI score
+# cannot exist without a citation an engineer can go and read.
+ai_team:
+  # What the reader should do about it. This replaces event weight as the first
+  # axis because "should we act" is the AI team's actual question.
+  action_weight:
+    adopt: 3        # concrete enough to implement, and the gain is stated
+    investigate: 2  # credible and relevant, but unproven for our setting
+    watch: 1        # directionally interesting, no action yet -- the default
+
+  # Mirrors the investment rule, including the v4 confidence gate: a practice
+  # tag we are not confident of scores zero. Kept identical so the two numbers
+  # are readable side by side; changing one alone would make them incomparable.
+  impact:
+    high: 3
+    medium: 2
+    low: 1
+  confidence:
+    high: 1.0
+    medium: 0.5
+    low: 0.0
+
+  max_action: 3
+  max_practice: 3
+
+  bands:
+    - min: 60
+      label: high
+    - min: 30
+      label: medium
+    - min: 1
+      label: low
+    - min: 0
+      label: none
 
 # Bands used for presentation only. They label a score, they do not change it.
 bands:
