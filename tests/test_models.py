@@ -42,7 +42,8 @@ def test_every_table_round_trips(session):
                       dimensions={"coding": "x"}, config_version=2),
         m.GoldSnapshot(prompt_version="v7", metrics={"f1": 0.88}, run_id=run.id),
     ])
-    session.add(m.Holding(isin="US1", name="Co", ticker="CO", weight_pct=1.0,
+    session.add(m.Holding(isin="US1", name="Co", custodian_name="Co Inc. Reg. Shs",
+                          aliases=["CoCorp"], ticker="CO", weight_pct=1.0,
                           ai_role="primary", holdings_version=1, companies_version=1))
     session.flush()
     session.add_all([

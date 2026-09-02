@@ -39,7 +39,7 @@ def load_refs(session: Session, config_dir: Path = CONFIG, check: bool = True) -
     """Wipe and reload every reference table from the YAML config.
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         config_dir: Directory holding the YAML files (overridable for tests).
         check: Run config/validate.py first. Tests with synthetic configs
             disable this; the real load never should.
@@ -107,8 +107,15 @@ def load_refs(session: Session, config_dir: Path = CONFIG, check: bool = True) -
     for h in holdings["holdings"]:
         company = by_isin.get(h["isin"], {})
         holding_isins.add(h["isin"])
+        # Name and ticker come from companies.yaml, which carries the legal name
+        # and the full ticker set; holdings.yaml carries the custodian's mangled
+        # statement string and has 7 tickers missing. The custodian string is
+        # kept alongside so a row still reconciles to the fund document.
         session.add(m.Holding(
-            isin=h["isin"], name=h["name"], ticker=h.get("ticker"),
+            isin=h["isin"], name=company.get("name") or h["name"],
+            custodian_name=h["name"],
+            aliases=company.get("aliases") or [],
+            ticker=company.get("ticker") or h.get("ticker"),
             ticker_verified=h.get("ticker_verified", False),
             weight_pct=h["weight_pct"],
             ai_role=company.get("ai_role", "none"),
@@ -146,7 +153,9 @@ def load_refs(session: Session, config_dir: Path = CONFIG, check: bool = True) -
                 is_dormant=e["lab"] not in tracked))
             counts["holding_lab_exposure"] += 1
 
-    session.commit()
+    # Flush, don't commit: the caller wraps refs + raw + transform + connect in
+    # one transaction so a later failure rolls the wipe above back with it.
+    session.flush()
     counts.update({
         "ref_labs": len(sources["labs"]),
         "ref_mechanisms": len(mechanisms["mechanisms"]),

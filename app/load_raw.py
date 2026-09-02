@@ -46,7 +46,7 @@ def load_articles(session: Session, path: Path = ARTICLES,
     """Upsert announcements.json into raw_articles.
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         path: The announcements register file.
         run_id: pipeline_runs row to attribute inserts/updates to.
         limit: Load only the first N records (the n=1 proving path).
@@ -63,8 +63,10 @@ def load_articles(session: Session, path: Path = ARTICLES,
         row = existing.get(rec["url"])
         if row is None:
             source = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else path.name
-            session.add(m.RawArticle(url=rec["url"], payload=rec, content_hash=digest,
-                                     source_file=source, load_run_id=run_id))
+            row = m.RawArticle(url=rec["url"], payload=rec, content_hash=digest,
+                               source_file=source, load_run_id=run_id)
+            session.add(row)
+            existing[rec["url"]] = row  # a repeated URL in one file updates, not IntegrityError
             counts["inserted"] += 1
         elif row.content_hash != digest:
             row.payload, row.content_hash = rec, digest
@@ -73,7 +75,7 @@ def load_articles(session: Session, path: Path = ARTICLES,
         else:
             row.last_seen_at = now
             counts["unchanged"] += 1
-    session.commit()
+    session.flush()
     return counts
 
 
@@ -87,7 +89,7 @@ def load_classifications(session: Session, prompt_version: str,
     register, keyed back to the real URL via the cache-key function.
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         prompt_version: Which cache directory to read (e.g. "v7").
         articles_path: Register supplying the URL list.
         scores_dir: Parent of the per-version cache directories.
@@ -113,15 +115,17 @@ def load_classifications(session: Session, prompt_version: str,
         payload = json.loads(file.read_text())
         row = existing.get(url)
         if row is None:
-            session.add(m.RawClassification(url=url, prompt_version=prompt_version,
-                                            payload=payload, load_run_id=run_id))
+            row = m.RawClassification(url=url, prompt_version=prompt_version,
+                                      payload=payload, load_run_id=run_id)
+            session.add(row)
+            existing[url] = row  # same-file duplicates must not abort the load
             counts["inserted"] += 1
         elif row.payload != payload:
             row.payload, row.load_run_id = payload, run_id
             counts["updated"] += 1
         else:
             counts["unchanged"] += 1
-    session.commit()
+    session.flush()
     return counts
 
 
@@ -129,7 +133,7 @@ def load_costs(session: Session, path: Path = COSTS, run_id: int | None = None) 
     """Insert cost-log rows not yet present, keyed on (url, at).
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         path: The append-only cost log.
         run_id: pipeline_runs row to attribute inserts to.
 
@@ -154,6 +158,6 @@ def load_costs(session: Session, path: Path = COSTS, run_id: int | None = None) 
                               load_run_id=run_id))
         counts["inserted"] += 1
         counts["new_usd"] += r["usd"]
-    session.commit()
+    session.flush()
     counts["new_usd"] = round(counts["new_usd"], 6)
     return counts

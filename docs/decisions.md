@@ -1641,9 +1641,8 @@ honesty rules over cleverness: lab_exposure and named connections are always
 `mixed` — the classifier has no lab-sentiment axis and a mention carries no
 polarity, so direction there would be a guess dressed as data.
 
-**What the corpus produces.** 191 articles → 660 connections (529 mechanism,
-84 lab_exposure after the gate below, 40 category, 7 named — all seven named
-are NVIDIA, which is the only holding labs actually name). `ai_score` is
+**What the corpus produces.** 191 articles → 706 connections (529 mechanism,
+84 lab_exposure after the gate below, 53 named, 40 category). `ai_score` is
 persisted for the first time: recomputed deterministically from the practice
 tags, 81 of 191 articles carry one. The recomputed investment score reconciles
 with the file register 191/191 — the free end-to-end proof the transform is
@@ -1686,3 +1685,73 @@ vocab (YAML is the vocabulary's home; validate.py the gate). ORM relationships
 lab-sentiment axis in the classifier (would give lab_exposure/named a real
 direction); dialect-specific bulk upserts; Railway/Render deploy config;
 gold_snapshots auto-loader beyond the table.
+
+## The first code review, and what it changed (2026-09-02)
+
+Wrote a review subagent (`.claude/agents/bitcap-reviewer.md`) and pointed it at
+the ETL commit. It wraps the existing `code-reviewer` skill — same severity
+ladder and tone — and adds two sections a general reviewer cannot supply: the
+CLAUDE.md contract as checkable items, and the hazards that have already bitten
+this repo (sqlite hiding Postgres FK behaviour, missing version bumps, derived-
+table drift, `max_tokens` truncation as silent data loss). It reports and never
+edits: a reviewer that patches its own findings stops being an independent
+check. Eight findings, no criticals, all verified against the committed data
+before being accepted. Three were worth acting on immediately.
+
+**A load committed the destruction of the derived layer before rebuilding it.**
+`load_refs` opens by deleting `connections`, the tag tables, `classifications`
+and `articles` — correct, since all four are derived — and then committed. Every
+later stage committed separately, so nothing spanned the wipe and the rebuild:
+one bad payload in `transform` and the database was left *empty*, not stale.
+Fixed by making every stage flush and giving `tracked` the single commit, so a
+failure rolls the wipe back with it. `stats` is now filled stage by stage and
+recorded on the failure path too — a run that dies in `transform` says so
+instead of reporting `{}`. The regression test was checked against the old code
+first: it fails there and passes here, which is the only way to know a test for
+a fixed bug is worth keeping.
+
+**The `named` route was matching custodian strings.** `Holding.name` was loaded
+from `holdings.yaml`, whose names come from the fund's Vermoegensaufstellung and
+are mangled — "FT Inter Inc. Reg. Shares Cl. Ao. N.", "Taiwan Semiconduct.
+Manufact.". Eight of 26 could never match prose. `companies.yaml` already
+carried the legal name *and* seven tickers `holdings.yaml` was missing, so the
+fix was to load the naming authority from the right file rather than to invent
+an alias for every position; the custodian string is kept as `custodian_name`
+for the tie back to the fund document. Four companies still need an `aliases:`
+list (Amazon → AWS, TSMC, Besi, SQM), which is config, not code. Deliberately
+*not* aliased: "Figure" (a common word) and "Hyperliquid" (the protocol, not the
+treasury vehicle holding it) — both would be entity-resolution collisions, a
+named failure mode, and the restraint matters more than the coverage.
+
+Result: the named route goes 7 → 53, and Amazon — a holding with an Anthropic
+lab edge — becomes reachable at all (43 via `AWS`, 3 via `Amazon`, 0 via the
+registered "Amazon.com"). The old figure had already been written up here as
+"all seven named are NVIDIA, which is the only holding labs actually name."
+That was a fact about the matcher, not about the corpus, and it has been
+corrected above. A silent extractor bug that reaches the design document as a
+finding about the world is the exact failure this project is meant to catch.
+
+**`strength` was four incomparable scales in one column.** The mechanism route
+multiplies two quoted, signed sides; `named` was a hardcoded 1.0 with no quote,
+no reason and no `why`. 123 of 660 rows sat at exactly 1.0, and the README's own
+example sorts on the column. Added `join.route_ceiling` to `scoring.yaml` —
+mechanism 1.0, category and lab_exposure 0.6, named 0.3 — so each route is
+capped at what it can actually prove. Judgement, not measurement, which is
+precisely why it belongs in config where it can be argued.
+
+**Also fixed:** an in-run duplicate-URL guard in the raw loaders (`load_costs`
+already had the pattern; the other two would have raised `IntegrityError` and,
+before the transaction fix, emptied the database); `pipeline_runs.kind` now
+records `rebuild` distinctly from `load` instead of writing `"load"` for both;
+`_load_env` no longer imports the research LLM providers just to run
+`bitcap-db status`; and the wheel force-includes `config/` and `research/docs/`,
+which it reads at runtime but did not ship.
+
+**Not fixed, deliberately.** The reviewer proposed enforcing its own "never
+mutate the database" rule with a `permissions.deny` entry. A project-level deny
+would also block Neil and the README's documented workflow, so the honest
+position is that the tools list enforces "never edits code" and the database
+rule is prose — stated as a limitation in the definition rather than papered
+over with a rule that blocks the wrong people. `aliases:` for IREN's former
+name ("Iris Energy") is left out pending a source, per the no-unsourced-claims
+rule.

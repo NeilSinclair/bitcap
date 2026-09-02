@@ -14,13 +14,18 @@ on every row):
   exists for — a funding round moves TeraWulf without tagging a semiconductor
   mechanism — because such articles still score through their event weight.
   The classifier has no lab-sentiment axis, so direction is always ``mixed``.
-* ``named`` — the holding's name or ticker appears in the article text.
-  A mention carries no polarity: direction ``mixed``, strength 1.0.
+* ``named`` — the holding's name, a configured alias, or its ticker appears in
+  the article text. A mention carries no polarity: direction ``mixed``.
 
 Sign composition multiplies (+·+=+, +·-=-, -·-=+) and ``mixed`` on either side
 propagates ``mixed``. Strength reuses scoring.yaml's own magnitude/confidence
 maps; low confidence is a gate (0.0), and a zero-strength connection is not
 written — same philosophy as the v4 scoring rule.
+
+Each route's strength is then capped by ``join.route_ceiling`` in scoring.yaml,
+because the routes do not carry comparable evidence and the digest sorts on one
+column: a bare name match cannot be allowed to outrank a doubly-quoted mechanism
+tag. The ceilings are judgement and live in config so they can be argued.
 """
 
 from __future__ import annotations
@@ -40,13 +45,17 @@ SCORING = ROOT / "config" / "scoring.yaml"
 # Trailing tokens that carry no identity, stripped (repeatedly) from display
 # names before matching: "Micron Technology, Inc." -> "Micron".
 LEGAL_SUFFIXES = {
-    "inc", "inc.", "corp", "corp.", "corporation", "ltd", "ltd.", "limited",
-    "plc", "ag", "se", "co", "co.", "company", "technologies", "technology",
-    "manufacturing", "markets", "holdings", "group", "cl", "cl.", "a", "reg",
-    "shs", "ad", "rs", "spons.",
+    "inc", "corp", "corporation", "ltd", "limited", "plc", "ag", "se", "sa",
+    "nv", "co", "company", "technologies", "technology", "manufacturing",
+    "markets", "holdings", "group", "cl", "a", "reg", "shs", "ad", "rs",
+    "spons", "registered", "shares", "",
 }
 MIN_NAME_LEN = 4
 MIN_TICKER_LEN = 3
+# An alias is hand-curated in config, so it is trusted below MIN_NAME_LEN —
+# "AWS" and "SQM" are the point of the field. Three characters is still the
+# floor; validate.py enforces it.
+MIN_ALIAS_LEN = 3
 
 
 def sign_product(a: str, b: str) -> str:
@@ -82,6 +91,11 @@ def weight(magnitude: str, confidence: str, rules: dict) -> float:
 def match_name(holding_name: str) -> str | None:
     """Distinctive display name for mention matching.
 
+    Trailing tokens are compared on their letters alone, so the dotted forms a
+    registry uses ("N.V.", "S.A.", "Inc.") strip as readily as the bare ones.
+    The empty string is a suffix by construction: a trailing "/4" reduces to
+    nothing, and halting there used to strand the whole tail behind it.
+
     Args:
         holding_name: The registered name, e.g. "Micron Technology, Inc.".
 
@@ -90,7 +104,7 @@ def match_name(holding_name: str) -> str | None:
         distinctive enough remains.
     """
     tokens = holding_name.replace(",", " ").replace("(", " ").replace(")", " ").split()
-    while tokens and tokens[-1].lower().strip("/0123456789") in LEGAL_SUFFIXES:
+    while tokens and re.sub(r"[^a-z]", "", tokens[-1].lower()) in LEGAL_SUFFIXES:
         tokens.pop()
     name = " ".join(tokens)
     return name if len(name) >= MIN_NAME_LEN else None
@@ -101,19 +115,27 @@ def mentions(text: str, holdings: list) -> list[tuple[str, str]]:
 
     Args:
         text: Title plus body of one article.
-        holdings: Rows with ``isin``, ``name``, ``ticker``.
+        holdings: Rows with ``isin``, ``name``, ``aliases``, ``ticker``.
 
     Returns:
-        (isin, via) pairs; ``via`` records what matched, e.g. ``name:Micron``.
-        Names match case-insensitively on word boundaries; tickers match
-        uppercase-exact with a minimum length so "MU" or "ON" cannot fire on
-        ordinary prose.
+        (isin, via) pairs; ``via`` records what matched, e.g. ``name:Micron``
+        or ``alias:AWS``. Names and aliases match case-insensitively on word
+        boundaries; tickers match uppercase-exact with a minimum length so "MU"
+        or "ON" cannot fire on ordinary prose. At most one hit per holding —
+        the first of name, alias, ticker.
     """
     found = []
     for h in holdings:
-        name = match_name(h.name)
-        if name and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", text, re.IGNORECASE):
-            found.append((h.isin, f"name:{name}"))
+        candidates = [("name", match_name(h.name))]
+        candidates += [("alias", a) for a in (h.aliases or [])
+                       if len(a) >= MIN_ALIAS_LEN]
+        hit = next(
+            ((kind, c) for kind, c in candidates
+             if c and re.search(rf"(?<!\w){re.escape(c)}(?!\w)", text, re.IGNORECASE)),
+            None,
+        )
+        if hit:
+            found.append((h.isin, f"{hit[0]}:{hit[1]}"))
             continue
         ticker = (h.ticker or "").strip()
         if len(ticker) >= MIN_TICKER_LEN and re.search(rf"(?<!\w){re.escape(ticker)}(?!\w)", text):
@@ -140,6 +162,7 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
         Connection rows with strength > 0, unwritten.
     """
     out: list[m.Connection] = []
+    ceiling = rules["join"]["route_ceiling"]
 
     edges_by_mech: dict[str, list] = {}
     for e in refs["holding_mechanisms"]:
@@ -148,7 +171,8 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
     for t in cls_tags["mechanisms"]:
         for e in edges_by_mech.get(t.mechanism_id, []):
             strength = (weight(t.magnitude, t.confidence, rules)
-                        * weight(e.magnitude, e.confidence, rules))
+                        * weight(e.magnitude, e.confidence, rules)
+                        * ceiling["mechanism"])
             if strength == 0:
                 continue
             out.append(m.Connection(
@@ -165,20 +189,20 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
     for t in cls_tags["categories"]:
         if t.category_id not in refs["routable"]:
             continue  # defensive: crypto never appears in the prompt anyway
-        strength = rules["confidence"][t.confidence]
+        strength = rules["confidence"][t.confidence] * ceiling["category"]
         if strength == 0:
             continue
         for isin in refs["holding_categories"].get(t.category_id, []):
             out.append(m.Connection(
                 article_id=article.id, isin=isin, route="category",
-                via=t.category_id, direction=t.sign, strength=strength,
+                via=t.category_id, direction=t.sign, strength=round(strength, 4),
                 article_sign=t.sign, article_confidence=t.confidence,
                 article_reason=t.reason, article_quote=t.quote))
 
     for e in refs["lab_edges"] if score > 0 else []:
         if e.is_dormant or e.lab != article.lab:
             continue
-        strength = weight(e.magnitude, e.confidence, rules)
+        strength = weight(e.magnitude, e.confidence, rules) * ceiling["lab_exposure"]
         if strength == 0:
             continue
         out.append(m.Connection(
@@ -192,7 +216,7 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
     for isin, via in mentions(text, refs["holdings"]):
         out.append(m.Connection(
             article_id=article.id, isin=isin, route="named", via=via,
-            direction="mixed", strength=1.0))
+            direction="mixed", strength=ceiling["named"]))
 
     # The classifier may tag the same mechanism twice on one article (distinct
     # quotes). One connection per join key: the strongest evidence wins; the
@@ -212,7 +236,7 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
     the idempotency story and denormalized copies cannot drift.
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         prompt_version: Which classifications to join from.
         run_id: Accepted for CLI uniformity; connections carry no run column.
 
@@ -253,6 +277,6 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
             articles_hit.add(article.id)
             isins_hit.add(r.isin)
 
-    session.commit()
+    session.flush()
     counts.update({"articles_connected": len(articles_hit), "holdings_reached": len(isins_hit)})
     return counts

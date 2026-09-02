@@ -53,7 +53,7 @@ def transform(session: Session, prompt_version: str, run_id: int | None = None) 
     """Raw articles + classifications → clean articles, classifications, tags.
 
     Args:
-        session: Open session; this function commits.
+        session: Open session; this function flushes, the caller commits.
         prompt_version: Which raw classifications to derive from.
         run_id: Unused here (clean rows carry no run column); accepted so the
             CLI can call every stage uniformly.
@@ -123,5 +123,5 @@ def transform(session: Session, prompt_version: str, run_id: int | None = None) 
         counts["classifications"] += 1
         counts["tags"] += len(rows)
 
-    session.commit()
+    session.flush()
     return counts

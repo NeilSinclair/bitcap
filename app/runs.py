@@ -18,16 +18,25 @@ from app.models import utcnow
 
 
 @contextmanager
-def tracked(session: Session, kind: str) -> Iterator[m.PipelineRun]:
-    """Open a pipeline_runs row around a unit of work.
+def tracked(session: Session, kind: str, stats: dict | None = None) -> Iterator[m.PipelineRun]:
+    """Open a pipeline_runs row around a unit of work, as one transaction.
+
+    The body's stages flush rather than commit, so this context manager owns the
+    single commit. That matters because a load begins by deleting the whole
+    derived layer: without one transaction spanning the wipe and the rebuild, a
+    failure anywhere downstream would leave the database empty rather than
+    stale, and empty is the worse of the two.
 
     Args:
         session: Open session; the run row is committed on entry so a crash
             leaves a visible `running` corpse rather than nothing.
-        kind: One of load_refs | load_raw | transform | connect | rebuild.
+        kind: What ran — load | rebuild | connect.
+        stats: Mutable dict the caller fills stage by stage. Recorded on both
+            the success and the failure path, so a failed run says how far it
+            got instead of reporting an empty `{}`.
 
     Yields:
-        The run row; the caller fills `stats`, `watermarks`, `cost_usd`.
+        The run row; the caller fills `watermarks` and `cost_usd`.
 
     Raises:
         Whatever the body raised, after recording it on the run row.
@@ -38,14 +47,18 @@ def tracked(session: Session, kind: str) -> Iterator[m.PipelineRun]:
     try:
         yield run
     except Exception as exc:
-        # The session may hold an aborted transaction; recording the failure
-        # needs a clean one. The run row itself survives — it was committed
-        # on entry.
+        # Rolling back discards the body's whole transaction — including the
+        # ref wipe — so the previous good state survives the failure. The run
+        # row itself is safe: it was committed on entry.
         session.rollback()
         run.status, run.error, run.finished_at = "failed", str(exc), utcnow()
+        if stats is not None:
+            run.stats = dict(stats)
         session.commit()
         raise
     run.status, run.finished_at = "succeeded", utcnow()
+    if stats is not None:
+        run.stats = dict(stats)
     session.commit()
 
 

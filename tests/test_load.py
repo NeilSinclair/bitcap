@@ -94,3 +94,24 @@ class TestLoadRaw:
         assert load_costs(session, costs)["inserted"] == 1
         again = load_costs(session, costs)
         assert again["inserted"] == 0 and again["new_usd"] == 0.0
+
+    def test_a_duplicate_url_within_one_file_does_not_abort_the_load(self, session, artifacts):
+        """"Duplicate content across sources" is a named failure mode.
+
+        Without an in-run guard the second record hits the UNIQUE constraint and
+        the whole load raises — which, combined with the ref wipe, used to mean
+        an empty database rather than a stale one.
+        """
+        reg, _, _ = artifacts
+        records = json.loads(reg.read_text())
+        records.append({**records[0], "title": "duplicate arrival"})
+        reg.write_text(json.dumps(records))
+
+        counts = load_articles(session, reg)
+        assert counts["inserted"] == 2 and counts["updated"] == 1
+        rows = session.scalars(select(m.RawArticle)).all()
+        assert len(rows) == 2
+        assert {r.url for r in rows} == {r["url"] for r in records}
+        # last write wins, as it does for a repeat across runs
+        assert next(r for r in rows if r.url == records[0]["url"]).payload["title"] == \
+            "duplicate arrival"

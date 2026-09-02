@@ -25,9 +25,11 @@
 # `unverified`. Fabricated financial detail is the one error class that would
 # discredit the whole tool.
 
-version: 1
+version: 2
 schema:
   isin: "Primary key, taken from the fund Vermoegensaufstellung."
+  name: "Legal name. This -- not the custodian string in holdings.yaml -- is what the\n    named-mention join matches against."
+  aliases: "Other names the company is called in prose, for the named-mention join.\n    Only add a name that unambiguously means this company: 'AWS' qualifies, 'Figure'\n    and 'Hyperliquid' do not (a common word and a protocol of the same name).\n    Minimum 3 characters; validate.py enforces it."
   ticker: "Best-effort. ticker_verified stays false until a security master confirms it."
   ai_role: "primary | secondary | none - see mechanisms.yaml enums."
   mechanisms: "List of {id, sign, magnitude, confidence, why, source}."
@@ -351,6 +353,7 @@ companies:
 
   - isin: US8740391003
     name: Taiwan Semiconductor Manufacturing Company Limited
+    aliases: [TSMC]
     ticker: TSM
     ticker_verified: false
     exchange: NYSE (ADR); Taiwan Stock Exchange 2330
@@ -1143,6 +1146,7 @@ companies:
 
   - isin: NL0012866412
     name: BE Semiconductor Industries N.V.
+    aliases: [Besi]
     ticker: BESI
     ticker_verified: false
     exchange: Euronext Amsterdam
@@ -1407,6 +1411,7 @@ companies:
 
   - isin: US0231351067
     name: Amazon.com, Inc.
+    aliases: [Amazon, AWS, Amazon Web Services]
     ticker: AMZN
     ticker_verified: false
     exchange: Nasdaq
@@ -3003,6 +3008,7 @@ companies:
 
   - isin: US8336351056
     name: Sociedad Quimica y Minera de Chile S.A.
+    aliases: [SQM]
     ticker: SQM
     ticker_verified: false
     exchange: NYSE (ADR); Santiago Stock Exchange

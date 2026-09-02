@@ -24,6 +24,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+# app/ reads these at runtime (config is the source of truth for the refs;
+# research/docs holds the committed artifacts the loaders read), so an
+# installed wheel without them would import fine and then fail on first use.
+force-include = { "config" = "config", "research/docs" = "research/docs" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

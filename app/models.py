@@ -50,7 +50,7 @@ class PipelineRun(Base):
     __tablename__ = "pipeline_runs"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    kind: Mapped[str]  # load_refs | load_raw | transform | connect | rebuild
+    kind: Mapped[str]  # load | rebuild | connect — what main() actually writes
     started_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
     finished_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
     status: Mapped[str] = mapped_column(default="running")  # running | succeeded | failed
@@ -182,7 +182,12 @@ class Holding(Base):
     __tablename__ = "holdings"
 
     isin: Mapped[str] = mapped_column(primary_key=True)
+    # The legal name from companies.yaml, not the custodian string in
+    # holdings.yaml: the latter is a mangled statement field ("FT Inter Inc.
+    # Reg. Shares Cl. Ao. N.") that no article will ever contain.
     name: Mapped[str]
+    custodian_name: Mapped[str]  # kept: the tie back to the Vermoegensaufstellung
+    aliases: Mapped[list] = mapped_column(JSONVariant, default=list)
     ticker: Mapped[str | None]
     ticker_verified: Mapped[bool] = mapped_column(default=False)
     weight_pct: Mapped[float]

@@ -61,7 +61,23 @@ class TestReviewAgent:
         assert path in body, f"{path} is no longer referenced -- update this test too"
         assert (ROOT / path).exists(), f"the agent points at a missing {path}"
 
-    def test_it_is_forbidden_from_mutating_the_database(self):
-        """An independent reviewer that rebuilds the DB is not independent."""
+    def test_it_cannot_edit_the_code_it_reviews(self):
+        """This one is enforced, not merely stated: the tools list omits both.
+
+        A reviewer that patches its own findings stops being an independent
+        check, so the guarantee has to come from the grant rather than the prose.
+        """
+        fields, _ = frontmatter(AGENT)
+        granted = {t.strip() for t in fields["tools"].split(",")}
+        assert not granted & {"Write", "Edit", "NotebookEdit"}
+
+    def test_the_unenforceable_rule_is_declared_as_unenforceable(self):
+        """The DB prohibition is prose — Bash is unrestricted and stays that way.
+
+        A project-level deny on `bitcap-db` would block the README's documented
+        workflow for everyone. The definition must therefore say plainly that
+        this rule is not enforced, so nobody reads it as a guarantee.
+        """
         _, body = frontmatter(AGENT)
         assert "bitcap-db" in body and "never run them" in body
+        assert "not** enforced" in body, "the limit must be stated, not implied"

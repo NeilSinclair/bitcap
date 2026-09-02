@@ -263,4 +263,4 @@ cumulative cost log, not the run; the $12.92 on screen includes prior runs.
 ### Database layer + join implementation (2026-09-02)
 
 Zero marginal LLM spend: the DB load reads committed artifacts. Full Postgres
-rebuild (191 articles, 839 connections) runs in ~5s locally.
+rebuild (191 articles, 706 connections) runs in ~6s locally.

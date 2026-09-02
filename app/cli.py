@@ -11,6 +11,7 @@ Commands:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -28,36 +29,57 @@ PROMPT_VERSION = "v7"
 
 
 def _load_env() -> None:
-    """Read .env for DATABASE_URL without overriding the environment."""
-    sys.path.insert(0, str(Path(__file__).parent.parent / "research" / "announcements"))
-    from providers import load_env
+    """Read .env for DATABASE_URL without overriding the environment.
 
-    load_env()
+    Deliberately duplicates providers.load_env rather than importing it: that
+    module lives under research/, is not shipped in the wheel, and pulls in the
+    LLM SDKs. `bitcap-db status` should not need an API client to read a
+    database.
+    """
+    path = Path(__file__).parent.parent / ".env"
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip() and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
 
 
-def cmd_load(session, prompt_version: str) -> None:
-    """Run refs + raw + transform + connect under one tracked run.
+def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
+    """Run refs + raw + transform + connect as one tracked transaction.
 
     Connect is chained deliberately: the ref reload deletes the connections
     (they reference holdings and are derived), so a load that stopped before
     the join would leave the table empty and looking like a finding.
+
+    `stats` is filled stage by stage and handed to `tracked`, which records it
+    on either path — so a run that dies in `transform` says so, rather than
+    leaving an operator to guess from an empty stats blob.
+
+    Args:
+        session: Open session; `tracked` owns the commit.
+        prompt_version: Which classifications to derive and join from.
+        kind: Recorded on the run row — `rebuild` when the schema was dropped
+            first, `load` when it was not. The two are not interchangeable in
+            a run history.
     """
-    with tracked(session, "load") as run:
-        stats = {"refs": load_refs(session)}
+    stats: dict = {}
+    with tracked(session, kind, stats) as run:
+        stats["refs"] = load_refs(session)
         stats["articles"] = load_articles(session, run_id=run.id)
         stats["classifications"] = load_classifications(session, prompt_version, run_id=run.id)
-        costs = load_costs(session, run_id=run.id)
-        stats["costs"] = costs
+        stats["costs"] = costs = load_costs(session, run_id=run.id)
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
         stats["connections"] = run_connect(session, prompt_version, run_id=run.id)
-        run.stats, run.cost_usd = stats, costs["new_usd"]
+        run.cost_usd = costs["new_usd"]
         run.watermarks = watermarks(session)
 
 
 def cmd_connect(session, prompt_version: str) -> None:
     """Rebuild connections under a tracked run."""
-    with tracked(session, "connect") as run:
-        run.stats = {"connections": run_connect(session, prompt_version, run_id=run.id)}
+    stats: dict = {}
+    with tracked(session, "connect", stats) as run:
+        stats["connections"] = run_connect(session, prompt_version, run_id=run.id)
         run.watermarks = watermarks(session)
 
 
@@ -100,7 +122,7 @@ def main() -> int:
     if args.command == "rebuild":
         drop_all(engine)
         create_all(engine)
-        cmd_load(session, args.prompt)
+        cmd_load(session, args.prompt, kind="rebuild")
         cmd_status(session)
     elif args.command == "load":
         create_all(engine)

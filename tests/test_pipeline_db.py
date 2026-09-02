@@ -114,3 +114,69 @@ def test_runs_recorded_with_watermarks(session):
     assert all(r.status == "succeeded" for r in runs)
     latest = max((r for r in runs if r.watermarks), key=lambda r: r.id)
     assert set(latest.watermarks) == {"openai", "anthropic", "deepseek"}
+
+
+class TestFailureLeavesTheDatabaseUsable:
+    """A load that dies must not leave the database emptier than it found it.
+
+    `load_refs` opens by deleting the whole derived layer. Before the stages
+    stopped committing individually, that deletion was already durable by the
+    time anything downstream could fail, so one bad payload emptied `articles`,
+    `classifications` and `connections` until a human noticed.
+    """
+
+    def _loaded(self):
+        engine = create_engine("sqlite:///:memory:")
+        create_all(engine)
+        s = Session(engine)
+        cmd_load(s, "v7")
+        return s
+
+    def test_a_failed_reload_keeps_the_previous_good_state(self, monkeypatch):
+        s = self._loaded()
+        before = session_counts(s)
+        assert before["articles"] == 191 and before["connections"] > 0
+
+        import app.cli as cli
+
+        def boom(*a, **kw):
+            raise RuntimeError("transform exploded")
+
+        monkeypatch.setattr(cli, "transform", boom)
+        with pytest.raises(RuntimeError):
+            cmd_load(s, "v7")
+
+        assert session_counts(s) == before
+        s.close()
+
+    def test_the_failed_run_records_how_far_it_got(self, monkeypatch):
+        s = self._loaded()
+        import app.cli as cli
+
+        monkeypatch.setattr(cli, "transform", lambda *a, **kw: (_ for _ in ()).throw(ValueError("nope")))
+        with pytest.raises(ValueError):
+            cmd_load(s, "v7")
+
+        run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
+        assert run.status == "failed" and "nope" in run.error
+        # Not `{}`: an operator must be able to see which stage died.
+        assert set(run.stats) == {"refs", "articles", "classifications", "costs"}
+        assert "transform" not in run.stats
+        s.close()
+
+    def test_rebuild_and_load_are_distinguishable_in_the_history(self):
+        s = self._loaded()
+        cmd_load(s, "v7", kind="rebuild")
+        kinds = [r.kind for r in s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id))]
+        assert kinds == ["load", "rebuild"]
+        s.close()
+
+
+def session_counts(s) -> dict:
+    """Row counts for the tables a failed load would have wiped."""
+    return {
+        "articles": s.scalar(select(func.count()).select_from(m.Article)),
+        "classifications": s.scalar(select(func.count()).select_from(m.Classification)),
+        "connections": s.scalar(select(func.count()).select_from(m.Connection)),
+        "holdings": s.scalar(select(func.count()).select_from(m.Holding)),
+    }

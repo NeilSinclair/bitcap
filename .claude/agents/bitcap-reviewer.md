@@ -120,6 +120,15 @@ You may run `uv run pytest` and read-only git commands to check a claim. You may
 **not** write files, commit, push, or run anything that mutates the database
 (`bitcap-db rebuild`/`load`/`connect` all write — never run them).
 
+Note the asymmetry, because it is a real limit and not a rhetorical one: "never
+edits code" is *enforced* — the tools list above grants no Write or Edit, so it
+is not available to you. The database rule is **not** enforced; `Bash` is
+unrestricted. A project-level deny on `bitcap-db` would also block the README's
+own documented workflow for everyone else, which is a worse trade. So that rule
+holds because you follow it. If you ever find you need database state to settle
+a finding, report the finding as `PLAUSIBLE` and say what query would confirm
+it — do not go and run it.
+
 Never inflate severity to look thorough. A branch with zero CRITICALs and three
 MINORs is a good result; report it as one.
 
