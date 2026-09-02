@@ -190,3 +190,117 @@ class TestGoldReadmeVocabulary:
                          "serving_efficiency", "integration"):
             assert f"`{practice}`" in text
 
+
+class TestLabExposure:
+    """The lab-keyed join: a holding exposed to one named lab directly.
+
+    The point of the field is that it routes an announcement carrying no
+    mechanism at all -- an Anthropic funding round tags nothing and still moves
+    TeraWulf. These tests guard the two ways it would degrade silently: an edge
+    that no longer resolves to a lab, and an exposure claim with no citation.
+    """
+
+    ENUMS = {
+        "sign": ["positive", "negative", "mixed"],
+        "magnitude": ["high", "medium", "low"],
+        "confidence": ["high", "medium", "low"],
+    }
+
+    def good(self, **over):
+        """One valid exposure entry, overridable field by field."""
+        entry = {
+            "lab": "anthropic",
+            "kind": "equity",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "why": "A stake whose mark lands in the income statement.",
+            "source": "https://www.sec.gov/example",
+        }
+        entry.update(over)
+        return {"name": "Test Corp", "lab_exposure": [entry]}
+
+    def test_a_well_formed_edge_passes(self):
+        errors, warnings = validate.check_lab_exposure(
+            self.good(), self.ENUMS, {"anthropic"})
+        assert not errors and not warnings
+
+    def test_an_unregistered_lab_is_dormant_not_an_error(self):
+        """The exposure is real before the lab is ingestible. Warn, never fail."""
+        errors, warnings = validate.check_lab_exposure(
+            self.good(lab="microsoft"), self.ENUMS, {"anthropic"})
+        assert not errors
+        assert len(warnings) == 1 and "microsoft" in warnings[0]
+
+    def test_adding_a_lab_to_the_register_activates_its_edges(self):
+        """The property the design turns on: no code or config edit needed."""
+        company = self.good(lab="microsoft")
+        _, before = validate.check_lab_exposure(company, self.ENUMS, {"anthropic"})
+        _, after = validate.check_lab_exposure(
+            company, self.ENUMS, {"anthropic", "microsoft"})
+        assert before and not after
+
+    def test_an_uncited_exposure_is_an_error(self):
+        entry = self.good()
+        del entry["lab_exposure"][0]["source"]
+        errors, _ = validate.check_lab_exposure(entry, self.ENUMS, {"anthropic"})
+        assert any("source" in e for e in errors)
+
+    def test_an_explicit_unverified_note_stands_in_for_a_source(self):
+        entry = self.good()
+        del entry["lab_exposure"][0]["source"]
+        entry["lab_exposure"][0]["unverified"] = "Prose only; needs a filing."
+        errors, _ = validate.check_lab_exposure(entry, self.ENUMS, {"anthropic"})
+        assert not errors
+
+    def test_an_unknown_kind_is_an_error(self):
+        errors, _ = validate.check_lab_exposure(
+            self.good(kind="vibes"), self.ENUMS, {"anthropic"})
+        assert any("kind=" in e for e in errors)
+
+    def test_an_edge_without_a_why_is_an_error(self):
+        errors, _ = validate.check_lab_exposure(
+            self.good(why=""), self.ENUMS, {"anthropic"})
+        assert any("why" in e for e in errors)
+
+    @pytest.mark.parametrize("field", ["sign", "magnitude", "confidence"])
+    def test_an_off_vocabulary_value_is_an_error(self, field):
+        errors, _ = validate.check_lab_exposure(
+            self.good(**{field: "enormous"}), self.ENUMS, {"anthropic"})
+        assert any(field in e for e in errors)
+
+    def test_two_edges_of_the_same_kind_to_one_lab_are_a_duplicate(self):
+        company = self.good()
+        company["lab_exposure"].append(dict(company["lab_exposure"][0]))
+        errors, _ = validate.check_lab_exposure(company, self.ENUMS, {"anthropic"})
+        assert any("duplicate" in e for e in errors)
+
+    def test_a_stake_and_a_contract_with_one_lab_coexist(self):
+        """Different exposures with different failure modes, not a duplicate."""
+        company = self.good()
+        second = dict(company["lab_exposure"][0], kind="revenue_contract")
+        company["lab_exposure"].append(second)
+        errors, _ = validate.check_lab_exposure(company, self.ENUMS, {"anthropic"})
+        assert not errors
+
+    def test_the_committed_config_declares_the_known_lab_exposures(self):
+        """Amazon, TeraWulf and IREN each carry a documented direct lab link.
+
+        Recorded as prose in every one of them before this field existed, which
+        meant no code could reach it.
+        """
+        comp = yaml.safe_load((ROOT / "config" / "companies.yaml").read_text())
+        by_ticker = {c["ticker"]: c for c in comp["companies"]}
+        for ticker in ("AMZN", "WULF", "IREN"):
+            assert by_ticker[ticker].get("lab_exposure"), f"{ticker}: no lab_exposure"
+
+    def test_every_committed_edge_is_cited(self):
+        """The citation guarantee, applied to the second join key too."""
+        comp = yaml.safe_load((ROOT / "config" / "companies.yaml").read_text())
+        uncited = [
+            (c["ticker"], x["lab"])
+            for c in comp["companies"]
+            for x in c.get("lab_exposure", [])
+            if not x.get("source") and not x.get("unverified")
+        ]
+        assert not uncited, f"uncited lab exposure: {uncited}"

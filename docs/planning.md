@@ -338,3 +338,58 @@ Worth confirming coverage per lab before relying on it.
 **Relationship to the byline register.** Complementary, not a replacement. A person can
 appear in both, and the union is the register. Entity resolution between the two is the
 obvious failure point and needs the same alias treatment as `config/aliases.yaml`.
+
+## 13. Parked backlog — do not action without an explicit instruction
+
+**Read this before touching anything below.** These are recorded so they are not
+lost, not queued. An agent reading this file must **not** pick any of them up as
+part of unrelated work, must not treat one as implied by a nearby task, and must
+not "helpfully" do a small piece of one while in the area. Each is actioned only
+when Neil names it directly. Noticing that an item is still outstanding is not an
+instruction to do it.
+
+### 13.1 Near-miss detection on `lab_exposure` ids
+
+`validate.py` resolves `lab` against `sources.yaml` dynamically (see
+decisions.md, 2026-09-02). An unregistered id is a *dormant edge* — a warning,
+never an error — so that a real exposure can be recorded before the lab is
+ingestible. IREN/`microsoft` and WULF/`google` are dormant today.
+
+**The hole.** A typo produces the identical signal. `anthorpic` warns rather than
+errors, silently converting a live routing edge into a dead one while the
+validator still reports 0 errors. Amazon would stop receiving Anthropic news and
+nothing would say so. The only thing catching it is a human reading the dormant
+list and noticing a misspelling — a hope, not a check.
+
+**The fix.** The distinction the validator should draw is not *registered vs.
+unregistered* but *deliberately untracked vs. mistyped*, and those are separable
+by edit distance. `microsoft` is nowhere near any registered id; `anthorpic` is
+one transposition from `anthropic`. `difflib.get_close_matches` promotes a
+near-miss to an error naming the likely intended id, and leaves everything else a
+dormant warning. Open vocabulary kept, typo hole closed. Roughly four lines plus
+tests.
+
+### 13.2 Improving the classification model
+
+Parked deliberately on 2026-09-01: *"We need to park this for now and come back
+to tuning the model again later."* State at the point of parking — v6 did not fix
+quote quality (median 23.0w → 22.0w, max 44w → 60w, four tags dropped as
+unverifiable), the 83-row reconciliation worksheet is unanswered except two rows,
+and article 10 still returns `regulatory_action` with an empty mechanism list.
+
+Two approaches worth trying, neither started:
+
+- **Run the classifier in a loop with Claude Code.** Let an agent iterate on the
+  prompt against the `test/articles` set with `gold-fable` as the reference,
+  reading its own disagreements between passes. The open question is whether the
+  loop improves the prompt or merely overfits twenty articles — so the success
+  criterion has to be fixed *before* the loop starts, on a held-out slice that
+  the loop never sees.
+- **Try different language models.** Only Sonnet 5 has run against v6. Variance
+  work already exists for Haiku 4.5 and GPT-5-mini
+  (`research/docs/variance_v4_*.json`, `vote_v4_3x2_*.json`) but not on the
+  current prompt. Cheapest real comparison available, and it would establish
+  whether the remaining error is the prompt or the model.
+
+Neither should start until the reconciliation is answered — otherwise there is no
+agreed reference to improve against, and any measured gain is unattributable.

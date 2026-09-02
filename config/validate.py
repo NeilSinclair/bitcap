@@ -79,6 +79,59 @@ def check_registry(root: Path, views: dict) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def check_lab_exposure(company: dict, enums: dict, tracked: set[str]) -> tuple[list[str], list[str]]:
+    """Validate one company's direct-to-lab exposure links.
+
+    `lab` is resolved against sources.yaml rather than a list held here, so a lab
+    added to the register activates its edges without touching this file. An id
+    the register does not carry is a dormant edge, not an error: the exposure is
+    real and worth recording before the lab is ingestible. Dormant edges are
+    reported by name, which is also how a typo'd id surfaces.
+
+    Args:
+        company: One entry from companies.yaml.
+        enums: The shared sign/magnitude/confidence vocabularies.
+        tracked: Lab ids currently in sources.yaml.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    kinds = {"equity", "revenue_contract", "cloud_partnership", "supply", "credit_support"}
+    name = company.get("name", "?")
+    errors, warnings = [], []
+    seen = set()
+
+    for x in company.get("lab_exposure", []):
+        lab, kind = x.get("lab"), x.get("kind")
+        tag = f"{name}/lab_exposure/{lab or '?'}"
+        if not lab:
+            errors.append(f"{name}/lab_exposure: entry has no 'lab'")
+            continue
+        if kind not in kinds:
+            errors.append(f"{tag}: kind='{kind}' not in {sorted(kinds)}")
+        # One edge per (lab, kind): an equity stake and a supply contract with the
+        # same lab are different exposures, two equity entries are a duplicate.
+        if (lab, kind) in seen:
+            errors.append(f"{tag}: duplicate ({lab}, {kind}) exposure")
+        seen.add((lab, kind))
+
+        for field in ("sign", "magnitude", "confidence"):
+            if x.get(field) not in enums[field]:
+                errors.append(f"{tag}: {field}='{x.get(field)}' not in vocabulary")
+        if not x.get("why"):
+            errors.append(f"{tag}: no 'why' — every link must explain itself")
+        if not x.get("source") and not x.get("unverified"):
+            errors.append(f"{tag}: neither source nor 'unverified' note")
+
+        if lab not in tracked:
+            warnings.append(
+                f"{tag}: dormant — '{lab}' is not in sources.yaml, so this edge "
+                "routes nothing until the lab is added to the register"
+            )
+
+    return errors, warnings
+
+
 def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], list[str]]:
     """Validate practices.yaml, the AI-team axis.
 
@@ -153,11 +206,16 @@ def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], lis
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
+    srcs = yaml.safe_load((ROOT / "sources.yaml").read_text())
     views = json.loads(PORTFOLIOS.read_text())
 
     valid_ids = {m["id"] for m in mech["mechanisms"]}
+    tracked_labs = {lab["id"] for lab in srcs["labs"]}
     enums = mech["enums"]
     held = {p["isin"]: p for p in views["positions"]}
+    # Kept out of `warnings`: the ticker warnings are truncated at five, and a
+    # dormant lab edge is the one thing this file is asked to make visible.
+    lab_warnings: list[str] = []
     # A security can sit in several funds, so keep the Technology Leaders set
     # separately rather than relying on whichever row landed in `held` last.
     tech_leaders = {
@@ -189,6 +247,10 @@ def main() -> int:
             if not m.get("why"):
                 errors.append(f"{name}/{m['id']}: no 'why' — every link must explain itself")
 
+        le_errors, le_warnings = check_lab_exposure(c, enums, tracked_labs)
+        errors += le_errors
+        lab_warnings += le_warnings
+
         for bucket in ("tailwinds", "headwinds"):
             for item in c.get(bucket, []):
                 if not item.get("source") and not item.get("unverified"):
@@ -206,6 +268,13 @@ def main() -> int:
     if len(warnings) > 5:
         print(f"warn    ... and {len(warnings) - 5} more unverified tickers")
 
+    if lab_warnings:
+        print(f"\n{len(lab_warnings)} dormant lab edge(s) — "
+              f"register carries {len(tracked_labs)}: {', '.join(sorted(tracked_labs))}")
+        for w in lab_warnings:
+            print(f"dormant {w}")
+        print()
+
     reg_errors, reg_warnings = check_registry(ROOT, views)
     prac_errors, prac_warnings = check_practices(ROOT, valid_ids)
     for e in reg_errors + prac_errors:
@@ -216,7 +285,8 @@ def main() -> int:
     warnings += prac_warnings
 
     print(f"\n{len(seen)} companies described, {len(errors)} errors, "
-          f"{len(warnings) + len(reg_warnings)} warnings")
+          f"{len(warnings) + len(reg_warnings)} warnings, "
+          f"{len(lab_warnings)} dormant lab edges")
     if missing:
         print(f"{len(missing)} Technology Leaders holdings still undescribed:")
         for i, n in sorted(missing, key=lambda x: x[1])[:30]:

@@ -1426,3 +1426,65 @@ failure mode does not stay rare.
 experiment run on this project and the only one that measured the evaluator
 rather than the thing evaluated. n=5, one run, one adjudicator — enough to
 establish a direction, not to calibrate a correction.
+
+## A second join key: lab exposure, keyed on the lab not the mechanism (2026-09-02)
+
+**The gap.** Three holdings have a direct, disclosed relationship with a named
+frontier lab. All three were recorded only as prose:
+
+| Holding | Relationship | Where it lived |
+|---|---|---|
+| AMZN | Equity stake in Anthropic — $53.4bn of pre-tax other income in Q2 2026 | `what_it_does`, `financials.derived.note`, `headwinds[].claim` |
+| WULF | 20-year, ~401 MW Anthropic lease, ~$19bn contracted | `ai_role_reason`, `tailwinds[0].claim` |
+| IREN | Multi-year AI Cloud contracts; Microsoft named | `mechanisms[1].why` |
+
+Cited, accurate, and unreachable by code.
+
+**Why it matters.** Routing was mechanism-only. An announcement reaches a
+holding when the LLM tags a mechanism the holding also carries. A lab's
+corporate-finance news — a funding round, a burn disclosure, a counterparty
+credit event — tags no mechanism, so under mechanism-only routing it reaches
+nobody. Yet TeraWulf is an unsecured 20-year bet on one private lab's solvency,
+and Amazon books that lab's valuation in its income statement. The highest-value
+lab-specific items were precisely the ones that could not route.
+
+**Decision.** Add `lab_exposure` to companies.yaml: a list of
+`{lab, kind, sign, magnitude, confidence, why, source}`. `kind` is
+`equity | revenue_contract | cloud_partnership | supply | credit_support`.
+Uniqueness is on `(lab, kind)` — a stake and a supply contract with the same lab
+are different exposures with different failure modes, and both should route.
+
+**Alternative rejected: `lab_equity` only.** The literal reading of "does this
+holding own a piece of a lab". It captures AMZN and nothing else, and misses
+TeraWulf, whose contractual exposure is larger than most equity stakes in the
+book. The routing behaviour is identical for both; `kind` keeps the economics
+distinct without splitting the join.
+
+**Alternative rejected: make it a scoring input now.** Deferred. This is a
+routing edge, not a score term. Wiring exposure magnitude into the score formula
+touches scoring.yaml and needs its own calibration.
+
+**`lab` resolves against sources.yaml, dynamically.** No lab list is held in
+code. An id the register does not carry is a **dormant edge**: a warning naming
+the lab, never an error. This keeps two things true at once — the exposure is
+recorded before the lab is ingestible, and adding the lab to sources.yaml
+activates its edges with no edit to companies.yaml or validate.py. The register
+carries three labs today; IREN/Microsoft and WULF/Google are dormant. Dormant
+edges print in their own section because the ticker warnings truncate at five,
+and a buried warning is not a warning.
+
+**Consequence — a typo is a dormant edge, not an error.** `anthorpic` would warn
+rather than fail. Accepted: the alternative is a closed vocabulary that cannot
+express IREN's largest disclosed counterparty. The warning names the id, so a
+lab nobody recognises is visible in the output.
+
+**Sourcing.** Same rule as tailwinds: a `source` or an explicit `unverified`.
+Four of the five committed edges cite an SEC filing. WULF/Google carries
+`unverified` — the ~$600m Fluidstack credit support came from mechanism prose
+with no filing behind it, and it is recorded as needing one rather than dropped.
+
+**Still missing.** NVDA has no lab exposure recorded despite obvious candidates,
+because the repo holds no citation for one. IREN's disclosure of "a new
+multi-year AI Cloud contract with a leading frontier AI lab" does not name the
+lab, so it has no joinable id and is deliberately absent — an unjoinable
+placeholder in a join table looks like data and is not.

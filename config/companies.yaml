@@ -9,6 +9,17 @@
 # the `why` string as the explanation the UI shows. Ids must exist in
 # mechanisms.yaml — validate.py enforces this.
 #
+# `lab_exposure` is the second joinable key, and it is keyed on the lab rather
+# than the mechanism. Some holdings are exposed to a specific lab directly: an
+# equity stake whose mark lands in the income statement, or a contract whose
+# counterparty is one lab. That exposure survives a publication carrying no
+# mechanism at all — an Anthropic funding round tags nothing, and still moves
+# TeraWulf. Mechanism-only routing drops exactly those items.
+#
+# `lab` ids resolve against sources.yaml. An id not yet in the register is
+# allowed and reported as a dormant edge, so adding the lab to sources.yaml
+# activates it with no change here.
+#
 # Sourcing rule: any number that could move a decision carries a `source`. Where
 # a fact is model knowledge rather than a cited filing, it says so in
 # `unverified`. Fabricated financial detail is the one error class that would
@@ -20,6 +31,11 @@ schema:
   ticker: "Best-effort. ticker_verified stays false until a security master confirms it."
   ai_role: "primary | secondary | none - see mechanisms.yaml enums."
   mechanisms: "List of {id, sign, magnitude, confidence, why, source}."
+  lab_exposure: >
+    Direct exposure to one named lab. List of {lab, kind, sign, magnitude,
+    confidence, why, source}. `lab` resolves against sources.yaml; `kind` is
+    equity | revenue_contract | cloud_partnership | supply | credit_support.
+    Same sourcing rule as tailwinds: a source, or an explicit `unverified`.
   held_by: "Short fund names holding it, from portfolio_views.json."
 
 companies:
@@ -1501,6 +1517,39 @@ companies:
           volume and improves the margin on capacity already built. Genuinely
           two-sided, and the release does not settle it.
 
+    lab_exposure:
+      - lab: anthropic
+        kind: equity
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The only holding where a lab's own valuation lands in the income
+          statement. Q2 2026 net income of $62.6bn includes $53.4bn of
+          non-operating pre-tax other income, primarily from the Anthropic
+          investment. The mark is non-cash and can reverse, so Anthropic's
+          funding rounds and valuation moves read directly into reported EPS.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - lab: anthropic
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Separate from the stake: Anthropic is also an AWS customer committing
+          capacity on Trainium. "Continued gaining momentum with Trainium, with
+          the two leading AI labs in the world, Anthropic and OpenAI, making
+          multi-year, multi-gigawatt commitments."
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - lab: openai
+        kind: revenue_contract
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Named in the same Trainium commitment as Anthropic. No equity link,
+          so the exposure is contracted capacity revenue alone.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
     tailwinds:
       - claim: >
           AWS net sales grew 37% year on year to $42.2 billion, its fastest growth
@@ -1648,6 +1697,19 @@ companies:
           able to raise capital sign longer leases and prepay; a funding freeze
           would hit the contracted ARR before it hit the operating ARR.
 
+    lab_exposure:
+      - lab: microsoft
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          $3.6bn of investment grade GPU financing was raised specifically for
+          the Microsoft contract at 6.0%, which together with prepayments funds
+          96% of the associated GPU capex. The financing spread prices the
+          counterparty: $2.4bn for non-investment grade customer deployments
+          costs 9.0%, three points more.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
     tailwinds:
       - claim: >
           $4bn contracted ARR for 2026 capacity against $1bn operating today, with
@@ -1781,6 +1843,32 @@ companies:
           Google credit support of $600m behind Fluidstack's obligations shows
           the market pricing exactly this risk on the earlier contract.
 
+    lab_exposure:
+      - lab: anthropic
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          A 20-year lease for approximately 401 MW of critical IT capacity,
+          approximately $19bn of contracted revenue over the initial term and up
+          to approximately $33bn if both five-year extensions are exercised. The
+          exposure is asymmetric: TeraWulf captures none of Anthropic's upside
+          beyond the contracted rent, and the whole position is an unsecured
+          20-year view on one private counterparty's solvency.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - lab: google
+        kind: credit_support
+        sign: positive
+        magnitude: medium
+        confidence: low
+        unverified: >
+          Carried over from the mechanisms prose, which cites no filing for it.
+          Needs a primary source before it is used for anything.
+        why: >
+          Google credit support of approximately $600m is understood to sit
+          behind Fluidstack's obligations on the earlier contract, which is the
+          market pricing the same counterparty risk the Anthropic lease carries.
     tailwinds:
       - claim: >
           Entered a 20-year data center lease with Anthropic for approximately

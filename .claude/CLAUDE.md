@@ -145,3 +145,9 @@ Where honest ground truth isn't reachable, say so plainly and use a defensible p
 Pre-implementation. Next: research BIT Capital's disclosed positions (at least one fund document lists holdings to ~95% of portfolio), then enumerate the labs.
 
 Open questions live in [docs/planning.md](docs/planning.md) §7 — positions coverage, whether X/Twitter earns its cost, digest cadence, register breadth and depth. Each is decided on evidence and the reasoning recorded, not settled by assumption.
+
+**Parked backlog: [docs/planning.md](docs/planning.md) §13.** Recorded so it is not
+lost, *not* queued. Never pick up a §13 item as part of unrelated work, never treat
+one as implied by a nearby task, and never do a small piece of one while in the area.
+Each is actioned only when Neil names it directly. Noticing that an item is still
+outstanding is not an instruction to do it — flag it and move on.
