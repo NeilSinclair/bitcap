@@ -26,6 +26,18 @@ Each route's strength is then capped by ``join.route_ceiling`` in scoring.yaml,
 because the routes do not carry comparable evidence and the digest sorts on one
 column: a bare name match cannot be allowed to outrank a doubly-quoted mechanism
 tag. The ceilings are judgement and live in config so they can be argued.
+
+A category tag is a claim about the group ("chip demand rises"); a mechanism
+edge is evidence about one company. The two can disagree — OpenAI shipping its
+own inference accelerator reads positive for the accelerator category and
+negative for NVIDIA specifically, via NVIDIA's own mechanism edge — and when a
+holding has both on the same article, showing the group claim next to the
+company-specific one it contradicts is confusing rather than informative.
+``_drop_contradicted_category_rows`` removes a holding's category row wherever
+its own mechanism row on the same article points the opposite way; the
+mechanism row, being company-specific, stays. Only strict opposites count —
+"mixed" contradicts nothing, and agreement between the two routes is left
+alone (docs/decisions.md).
 """
 
 from __future__ import annotations
@@ -56,6 +68,8 @@ MIN_TICKER_LEN = 3
 # "AWS" and "SQM" are the point of the field. Three characters is still the
 # floor; validate.py enforces it.
 MIN_ALIAS_LEN = 3
+
+OPPOSITE_DIRECTION = {"positive": "negative", "negative": "positive"}
 
 
 def sign_product(a: str, b: str) -> str:
@@ -143,6 +157,34 @@ def mentions(text: str, holdings: list) -> list[tuple[str, str]]:
     return found
 
 
+def _drop_contradicted_category_rows(rows: list[m.Connection]) -> list[m.Connection]:
+    """Drop a holding's category row where its own mechanism row disagrees.
+
+    Both routes are for the same article, so this is "does this company's
+    specific evidence contradict the group claim", never a cross-article
+    comparison.
+
+    Args:
+        rows: One article's connection rows, across all routes.
+
+    Returns:
+        The same rows, minus any category row whose isin also has a
+        mechanism row with the strictly opposite direction. A holding with
+        mechanism rows on both sides (a genuinely mixed picture) still loses
+        the category row — its own mechanism rows are the more specific
+        story either way.
+    """
+    mech_directions: dict[str, set[str]] = {}
+    for r in rows:
+        if r.route == "mechanism":
+            mech_directions.setdefault(r.isin, set()).add(r.direction)
+    return [
+        r for r in rows
+        if not (r.route == "category"
+                and OPPOSITE_DIRECTION.get(r.direction) in mech_directions.get(r.isin, ()))
+    ]
+
+
 def connections_for(article, cls_tags: dict, score: float, refs: dict,
                     rules: dict) -> list[m.Connection]:
     """All connections for one article, across the four routes.
@@ -159,7 +201,9 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
         rules: Parsed config/scoring.yaml.
 
     Returns:
-        Connection rows with strength > 0, unwritten.
+        Connection rows with strength > 0, unwritten, minus any category row
+        contradicted by the same holding's mechanism row
+        (``_drop_contradicted_category_rows``).
     """
     out: list[m.Connection] = []
     ceiling = rules["join"]["route_ceiling"]
@@ -226,7 +270,7 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
         key = (c.isin, c.route, c.via)
         if key not in best or c.strength > best[key].strength:
             best[key] = c
-    return list(best.values())
+    return _drop_contradicted_category_rows(list(best.values()))
 
 
 def connect(session: Session, prompt_version: str, run_id: int | None = None) -> dict:
@@ -241,7 +285,9 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
         run_id: Accepted for CLI uniformity; connections carry no run column.
 
     Returns:
-        Counts per route plus articles and holdings touched.
+        Counts per route (the ``category`` count is post-suppression — it
+        does not include rows a same-holding mechanism row contradicted)
+        plus articles and holdings touched.
     """
     rules = yaml.safe_load(SCORING.read_text())
     refs = {
