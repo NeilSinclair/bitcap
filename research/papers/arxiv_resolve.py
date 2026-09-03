@@ -155,10 +155,15 @@ def resolve_title(title: str, desc: str) -> dict | None:
     for e in exact:
         if _normalise(e["title"]) == _normalise(title):
             return dict(e, resolution="exact_title")
-    if len(exact) == 1:
+    if len(exact) == 1 and overlap(title, exact[0]["title"]) >= OVERLAP_THRESHOLD:
         # A single ti: hit that doesn't string-match exactly is still a
         # narrow field-scoped match (whitespace/punctuation only) -- trust it
-        # rather than falling through to the noisier relaxed pass.
+        # rather than falling through to the noisier relaxed pass. But `ti:`
+        # is a token match, not a phrase match: confirmed live, `ti:"HyperAgents"`
+        # returns an unrelated paper alongside the real one in the very same
+        # response, so a single hit is not automatically the right paper --
+        # it still has to clear the same title-overlap bar the relaxed pass
+        # already required, or it falls through instead of being trusted blind.
         return dict(exact[0], resolution="exact_title")
 
     relaxed = arxiv_query(f"all:{title}", max_results=5)

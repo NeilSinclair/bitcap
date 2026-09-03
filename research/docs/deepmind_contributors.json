@@ -203,7 +203,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/118955/",
@@ -212,7 +213,8 @@
       "date": "2026-08-05",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/264392/",
@@ -320,7 +322,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/203490/",
@@ -329,7 +332,8 @@
       "date": "2026-07-02",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/118251/",
@@ -456,7 +460,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/149262/",
@@ -465,7 +470,8 @@
       "date": "2026-06-26",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/224397/",
@@ -474,7 +480,8 @@
       "date": "2026-06-25",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/139779/",
@@ -483,7 +490,8 @@
       "date": "2025-07-21",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/225819/",
@@ -520,7 +528,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/224297/",
@@ -529,7 +538,8 @@
       "date": "2026-06-26",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/248131/",
@@ -538,7 +548,8 @@
       "date": "2026-06-15",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/239849/",
@@ -567,7 +578,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/239142/",
@@ -706,7 +718,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/146950/",
@@ -715,7 +728,8 @@
       "date": "2026-03-22",
       "authors": [],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "url": "https://deepmind.google/research/publications/231466/",
@@ -771,7 +785,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     }
   ],
   "people": [

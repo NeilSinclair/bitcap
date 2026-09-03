@@ -13,7 +13,16 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "research" / "github"))
 
-from aggregate_github import PRIVATE_DOMAIN, aggregate, alias_pairs, is_bot
+from aggregate_github import NEVER_MATCHES, PRIVATE_DOMAIN, aggregate, alias_pairs, is_bot
+
+# aggregate() takes org_domain/work_suffix as required args (bitcap-reviewer
+# finding #8 -- they used to default to these exact values, which is what
+# made a caller that omitted them silently score any org as if it were
+# Anthropic). Most of this file's fixtures use Anthropic-shaped example data
+# on purpose, so tests that aren't specifically exercising a different lab's
+# domain/suffix pass these explicitly rather than relying on a default.
+ANTHROPIC_DOMAIN = "anthropic.com"
+ANTHROPIC_SUFFIX = r"[-_](ant|anthropic)$"
 
 
 def person(commits, emails=(), **kw):
@@ -141,7 +150,7 @@ class TestAggregate:
                 }
             }
         )
-        r = aggregate("testorg")
+        r = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)
         assert r["totals"]["bot_commits"] == 2
         assert [p["login"] for p in r["people"]] == ["human"]
 
@@ -159,7 +168,7 @@ class TestAggregate:
                 }
             }
         )
-        assert aggregate("testorg")["totals"]["unattributed_commits"] == 1
+        assert aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["totals"]["unattributed_commits"] == 1
 
     def test_employment_confirmed_only_from_corp_email(self, harvest):
         harvest(
@@ -177,7 +186,7 @@ class TestAggregate:
                 }
             }
         )
-        by = {p["login"]: p["employment"] for p in aggregate("testorg")["people"]}
+        by = {p["login"]: p["employment"] for p in aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["people"]}
         assert by == {
             "staff": "confirmed",
             "guess-ant": "handle",
@@ -200,7 +209,7 @@ class TestAggregate:
                 }
             }
         )
-        p = aggregate("testorg", "google.com", domain_shared=True)["people"][0]
+        p = aggregate("testorg", "google.com", NEVER_MATCHES, domain_shared=True)["people"][0]
         assert p["employment"] == "confirmed_org_wide"
 
     def test_multiple_org_domains_both_evidence_employment(self, harvest):
@@ -220,7 +229,10 @@ class TestAggregate:
                 }
             }
         )
-        by = {p["login"]: p["employment"] for p in aggregate("testorg", ["meta.com", "fb.com"])["people"]}
+        by = {
+            p["login"]: p["employment"]
+            for p in aggregate("testorg", ["meta.com", "fb.com"], NEVER_MATCHES)["people"]
+        }
         assert by == {"new-staff": "confirmed", "old-staff": "confirmed"}
 
     def test_domain_shared_false_keeps_plain_confirmed(self, harvest):
@@ -235,7 +247,7 @@ class TestAggregate:
                 }
             }
         )
-        p = aggregate("testorg", "anthropic.com", domain_shared=False)["people"][0]
+        p = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX, domain_shared=False)["people"][0]
         assert p["employment"] == "confirmed"
 
     def test_vendor_domain_flagged_separately(self, harvest):
@@ -250,7 +262,7 @@ class TestAggregate:
                 }
             }
         )
-        p = aggregate("testorg")["people"][0]
+        p = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["people"][0]
         assert p["employment"] == "vendor"
         assert p["vendor_domains"] == ["stainless.com"]
 
@@ -273,7 +285,7 @@ class TestAggregate:
                 },
             }
         )
-        people = aggregate("testorg")["people"]
+        people = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["people"]
         assert len(people) == 1
         p = people[0]
         assert p["commits"] == 2
@@ -296,7 +308,7 @@ class TestAggregate:
                 }
             }
         )
-        r = aggregate("testorg")
+        r = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)
         assert len(r["people"]) == 1
         assert r["people"][0]["commits"] == 4
 
@@ -339,7 +351,7 @@ class TestMirrorExclusion:
                                      "Read-only mirror of Upstream/thing"),
             }
         )
-        r = aggregate("testorg")
+        r = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)
         assert r["mirrors_excluded"] == ["mirror"]
         assert [p["login"] for p in r["people"]] == ["staff"]
         assert r["totals"]["repos"] == 1
@@ -354,18 +366,18 @@ class TestMirrorExclusion:
                 "real": self._repo("staff", 3, "The real one"),
             }
         )
-        r = aggregate("testorg")
+        r = aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)
         assert r["mirrors_excluded"] == ["base"]
         assert r["people"][0]["commits"] == 3
 
     def test_missing_description_is_not_a_mirror(self, harvest):
         harvest({"r": self._repo("staff", 2, None)})
-        assert aggregate("testorg")["mirrors_excluded"] == []
+        assert aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["mirrors_excluded"] == []
 
     def test_word_mirror_alone_does_not_exclude(self, harvest):
         """'mirror' appears in ordinary descriptions; only 'mirror of' counts."""
         harvest({"r": self._repo("staff", 2, "A mirror ball rendering demo")})
-        assert aggregate("testorg")["mirrors_excluded"] == []
+        assert aggregate("testorg", ANTHROPIC_DOMAIN, ANTHROPIC_SUFFIX)["mirrors_excluded"] == []
 
 
 class TestPerLabWorkSuffix:

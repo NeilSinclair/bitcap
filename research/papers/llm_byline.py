@@ -145,7 +145,7 @@ def load_env() -> None:
 
 def extract_page(
     raw_html: str, model: str = "claude-sonnet-5", lab_label: str | None = None
-) -> tuple[dict, dict]:
+) -> tuple[dict, dict, bool]:
     """Extract a byline from one raw page.
 
     Args:
@@ -158,11 +158,17 @@ def extract_page(
             was -- v2 is additive, not a replacement.
 
     Returns:
-        Tuple of (parsed byline, cost record).
+        Tuple of (parsed byline, cost record, whether the page was
+        truncated to fit HTML_BUDGET). `prepare_html`'s own truncation flag
+        used to be silently discarded here -- a caller had no way to tell a
+        complete extraction from one where the source was cut and a
+        contributor section past the window was never sent to the model at
+        all. Store this on whatever record the byline ends up on.
     """
     load_env()
-    html, _ = prepare_html(raw_html)
-    return extract(anthropic.Anthropic(), model, html, lab_label=lab_label)
+    html, truncated = prepare_html(raw_html)
+    parsed, cost = extract(anthropic.Anthropic(), model, html, lab_label=lab_label)
+    return parsed, cost, truncated
 
 
 def cache_path(url: str) -> Path:
@@ -222,6 +228,15 @@ def prepare_html(raw: str) -> tuple[str, bool]:
     # budget) finds it directly instead of guessing where it might be.
     section = AUTHOR_SECTION.search(body)
     if section:
+        # If the heading falls inside the head slice already sent
+        # (body[:head_budget]), starting the section window at its own
+        # start would re-send that overlap -- the model would see the same
+        # author list twice, and every harvester's aggregate() counts
+        # authors blindly, so a duplicate inflates a person's appearance
+        # count. Not live on either real Mistral paper today (their
+        # headings sit at 70,607 and 135,070, both past head_budget), but
+        # a page whose heading falls earlier must not double-send it.
+        start = max(section.start(), head_budget)
         window_end = section.start() + tail_budget
         # The section itself is usually short (a few thousand characters);
         # a flat tail_budget window run against a real Shieldstral paper
@@ -234,7 +249,7 @@ def prepare_html(raw: str) -> tuple[str, bool]:
         boundary = re.search(r"<h[1-3][ >]|</section>", body[section.end() : window_end])
         if boundary:
             window_end = section.end() + boundary.start()
-        return body[:head_budget] + body[section.start() : window_end], True
+        return body[:head_budget] + body[start:window_end], True
     # No named section found -- fall back to a blind tail. Harmless for the
     # common case (DeepMind's and Meta's papers, confirmed unaffected since
     # their byline sits within the first few hundred characters of
@@ -294,6 +309,14 @@ def extract(
 
     if response.stop_reason == "refusal":
         raise RuntimeError(f"refused: {response.stop_details}")
+    if response.stop_reason == "max_tokens":
+        # Without this, a truncated response falls straight through to
+        # json.loads() below, fails to parse, and gets misreported as
+        # "malformed JSON from model" -- true in effect, but it hides the
+        # actual fix (raise max_tokens), same distinction
+        # score_announcements.py's classify() already draws for this exact
+        # stop_reason.
+        raise RuntimeError("truncated output; raise max_tokens")
 
     text = next(b.text for b in response.content if b.type == "text")
     usage = response.usage

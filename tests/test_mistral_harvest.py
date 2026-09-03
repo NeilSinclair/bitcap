@@ -242,6 +242,39 @@ class TestCollectResilience:
         assert papers[0].authors == [{"name": "Cached Author"}]
         assert unresolved == []
 
+    def test_truncated_flag_flows_from_extraction_to_the_paper_record(self, monkeypatch, tmp_path):
+        # Real gap found by code review: extract_page's own truncated flag
+        # was discarded, so a byline extracted from a cut-off page was
+        # indistinguishable from a complete one. Both real Mistral papers
+        # checked live are truncated (D17) -- this is not a hypothetical.
+        self._base_patches(
+            monkeypatch,
+            tmp_path,
+            [{"title": "Shieldstral", "date": "2026-07-28", "announcement_url": "https://x/1"}],
+        )
+        monkeypatch.setattr(
+            mh,
+            "resolve_title",
+            lambda title, desc: {"arxiv_id": "2607.25857", "date": "2026-07-28", "resolution": "exact_title"},
+        )
+        monkeypatch.setattr(mh, "fetch", lambda url, **kw: "<html>page</html>")
+
+        import llm_byline
+
+        def fake_extract_page(*a, **kw):
+            parsed = {"authors": [{"name": "Alice"}], "order_meaningful": True, "star_means": None}
+            cost = {"model": "claude-sonnet-5", "usd": 0.05}
+            return parsed, cost, True  # truncated
+
+        monkeypatch.setattr(llm_byline, "extract_page", fake_extract_page)
+
+        papers, unresolved = mh.collect(months=3, model="claude-sonnet-5")
+        assert len(papers) == 1
+        assert papers[0].truncated is True
+
+        cached = json.loads((tmp_path / "extraction_cache.json").read_text())
+        assert cached["https://x/1"]["truncated"] is True
+
     def test_arxiv_html_unavailable_is_recorded_not_raised(self, monkeypatch, tmp_path):
         self._base_patches(
             monkeypatch,

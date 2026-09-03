@@ -497,6 +497,19 @@ def run_batch(
     by_custom_id: dict[str, dict] = {}
     requests = []
 
+    def bill(url: str, usage) -> None:
+        # Written to disk immediately, one item at a time -- the same
+        # incremental-write guarantee the interactive path's `record()`
+        # closure already has. A batch can be hundreds of items; without
+        # this, a crash partway through the results loop below would lose
+        # every already-billed item's cost record, not just the one that
+        # crashed it.
+        cost = call_cost(model, url, usage, started, mode="batch")
+        costs.append(cost)
+        history = json.loads(COST.read_text()) if COST.exists() else []
+        history.append(cost)
+        COST.write_text(json.dumps(history, indent=2))
+
     for article in articles:
         key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
         cached = CACHE / key
@@ -557,29 +570,45 @@ def run_batch(
     for item in client.messages.batches.results(batch.id):
         article = by_custom_id[item.custom_id]
         if item.result.type != "succeeded":
+            # Batch-level failure (expired/errored/canceled) -- no `message`
+            # exists at all here, so nothing was billed to record.
             failures.append({"url": article["url"], "error": f"batch {item.result.type}"})
             continue
         message = item.result.message
         if message.stop_reason == "refusal":
+            # Still billed: `message.usage` reflects real tokens the API
+            # charged for before it refused.
+            bill(article["url"], message.usage)
             failures.append(
                 {"url": article["url"], "error": f"refused: {message.stop_details}"}
             )
             continue
         if message.stop_reason == "max_tokens":
+            bill(article["url"], message.usage)
             failures.append(
                 {"url": article["url"], "error": "truncated output; raise max_tokens"}
             )
             continue
-        text = next(b.text for b in message.content if b.type == "text")
-        result = json.loads(text)
-        result["dropped_tags"] = drop_unknown_tags(
-            result, mech_ids, cat_ids, prac_ids, dimensions, max_dimensions
-        )
-        result["dropped_tags"] += enforce_quotes(result, article["text"])
+
+        try:
+            text = next(b.text for b in message.content if b.type == "text")
+            result = json.loads(text)
+            result["dropped_tags"] = drop_unknown_tags(
+                result, mech_ids, cat_ids, prac_ids, dimensions, max_dimensions
+            )
+            result["dropped_tags"] += enforce_quotes(result, article["text"])
+        except (StopIteration, json.JSONDecodeError) as exc:
+            # Also billed -- the model produced *some* output, it just
+            # wasn't parseable JSON. One bad item must not abort the whole
+            # batch loop and take every already-billed item's cost with it.
+            bill(article["url"], message.usage)
+            failures.append({"url": article["url"], "error": f"{type(exc).__name__}: {exc}"})
+            continue
+
         key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
         (CACHE / key).write_text(json.dumps(result))
         results[article["url"]] = result
-        costs.append(call_cost(model, article["url"], message.usage, started, mode="batch"))
+        bill(article["url"], message.usage)
 
     return results, failures, costs
 
@@ -637,14 +666,15 @@ def main() -> None:
         articles = articles[: args.limit]
 
     client = anthropic.Anthropic()
-    costs = json.loads(COST.read_text()) if COST.exists() else []
 
     if args.batch:
+        # run_batch writes each item's cost to COST as it processes results
+        # (see `bill()` inside it) -- nothing left to persist here, and
+        # re-reading + re-appending batch_costs on top would duplicate every
+        # entry it already wrote.
         results, failures, batch_costs = run_batch(
             client, args.model, articles, mech_ids, cat_ids, prac_ids, dims, cap
         )
-        costs.extend(batch_costs)
-        COST.write_text(json.dumps(costs, indent=2))
         scored = []
         for article in articles:
             result = results.get(article["url"])
@@ -662,6 +692,7 @@ def main() -> None:
 
     results: dict[str, dict] = {}
     failures: list[dict] = []
+    costs = json.loads(COST.read_text()) if COST.exists() else []
     lock = threading.Lock()
     done = 0
     started = time.time()

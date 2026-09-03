@@ -59,6 +59,27 @@ class TestResolveTitle:
         match = resolve_title("GIM: Evaluating models", "desc")
         assert match["resolution"] == "exact_title"
 
+    def test_single_ti_hit_rejected_when_title_is_unrelated(self, monkeypatch):
+        # Real case: arxiv_cache/...ti_3A_22HyperAgents_22... shows a live
+        # `ti:"HyperAgents"` query returning an unrelated paper alongside the
+        # real one in the same response -- `ti:` is a token match, not a
+        # phrase match. A single hit must still be checked against the query
+        # title, not trusted purely because there's only one of it.
+        def fake_query(expr, max_results=5):
+            if expr.startswith("ti:"):
+                return [
+                    {
+                        "arxiv_id": "9999.99999",
+                        "title": "HyperAgent: Leveraging Hypergraphs for Topology Optimization",
+                        "date": "2026-01-01",
+                        "summary": "unrelated topic",
+                    }
+                ]
+            return []  # relaxed pass also finds nothing here
+
+        monkeypatch.setattr(ar, "arxiv_query", fake_query)
+        assert resolve_title("HyperAgents", "desc") is None
+
     def test_relaxed_match_accepted_above_threshold(self, monkeypatch):
         calls = []
 

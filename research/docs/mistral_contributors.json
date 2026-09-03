@@ -111,7 +111,8 @@
         }
       ],
       "order_meaningful": false,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "announcement_url": "https://mistral.ai/news/robostral-navigate/",
@@ -249,7 +250,8 @@
         }
       ],
       "order_meaningful": false,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     }
   ],
   "people": [

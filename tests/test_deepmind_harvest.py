@@ -327,3 +327,44 @@ class TestCollectResilience:
         assert len(papers) == 1
         assert papers[0].authors == [{"name": "Cached Author"}]
         assert not cost_path.exists()  # nothing new billed
+
+    def test_truncated_flag_flows_from_extraction_to_the_paper_record(self, monkeypatch, tmp_path):
+        # Real gap found by code review: extract_page's own truncated flag
+        # was discarded, so a byline extracted from a cut-off page was
+        # indistinguishable from a complete one.
+        monkeypatch.setattr(dh, "CACHE", tmp_path)
+        monkeypatch.setattr(dh, "COST", tmp_path / "cost.json")
+        monkeypatch.setattr(dh, "EXTRACTION_CACHE", tmp_path / "extraction_cache.json")
+        monkeypatch.setattr(
+            dh,
+            "list_publication_urls",
+            lambda months: [("https://deepmind.google/research/publications/1/", "2026-08-01")],
+        )
+        monkeypatch.setattr(dh, "fetch", lambda url, pause=1.5: "<html>page</html>")
+        monkeypatch.setattr(
+            dh,
+            "detail_page_info",
+            lambda html: {"title": "T", "date": "2026-08-01", "source_url": None},
+        )
+
+        import llm_byline
+
+        def fake_extract_page(*a, **kw):
+            parsed = {
+                "authors": [{"name": "Alice"}],
+                "date": "2026-08-01",
+                "order_meaningful": True,
+                "star_means": None,
+            }
+            cost = {"model": "claude-sonnet-5", "usd": 0.05}
+            return parsed, cost, True  # truncated
+
+        monkeypatch.setattr(llm_byline, "extract_page", fake_extract_page)
+        monkeypatch.setattr(llm_byline, "load_env", lambda: None)
+
+        papers = dh.collect(months=3, model="claude-sonnet-5")
+        assert len(papers) == 1
+        assert papers[0].truncated is True
+
+        cached = json.loads((tmp_path / "extraction_cache.json").read_text())
+        assert cached["https://deepmind.google/research/publications/1/"]["truncated"] is True

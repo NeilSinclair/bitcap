@@ -86,6 +86,10 @@ class Paper:
         authors: Author records from the LLM extractor.
         order_meaningful: Whether author order carries seniority information.
         star_means: What the page's own footnote says '*' denotes, if any.
+        truncated: Whether the source page had to be cut to fit
+            HTML_BUDGET. A byline extracted from a truncated page cannot be
+            distinguished from a complete one without this -- see
+            llm_byline.py::prepare_html.
     """
 
     url: str
@@ -95,6 +99,7 @@ class Paper:
     authors: list[dict] = field(default_factory=list)
     order_meaningful: bool = True
     star_means: str | None = None
+    truncated: bool = False
 
 
 def fetch(url: str, pause: float = 1.5, retries: int = 3) -> str:
@@ -257,7 +262,7 @@ def collect(months: int, model: str, limit: int | None = None) -> list[Paper]:
             parsed = extraction_cache[url]
         else:
             try:
-                parsed, cost = extract_page(target_html, model, lab_label=LAB_LABEL)
+                parsed, cost, truncated = extract_page(target_html, model, lab_label=LAB_LABEL)
             except Exception as exc:  # refusal, malformed JSON, network error
                 print(f"  ! extraction failed, skipping ({type(exc).__name__}): {url}")
                 failed_cost = getattr(exc, "cost", None)
@@ -273,6 +278,7 @@ def collect(months: int, model: str, limit: int | None = None) -> list[Paper]:
             history.append(cost)
             COST.write_text(json.dumps(history, indent=2))
 
+            parsed["truncated"] = truncated  # round-tripped through the cache below
             extraction_cache[url] = parsed
             EXTRACTION_CACHE.write_text(json.dumps(extraction_cache, indent=2))
 
@@ -284,6 +290,7 @@ def collect(months: int, model: str, limit: int | None = None) -> list[Paper]:
             authors=parsed["authors"],
             order_meaningful=parsed.get("order_meaningful", True),
             star_means=parsed.get("star_means"),
+            truncated=parsed.get("truncated", False),
         )
         papers.append(paper)
         usd = f"${cost['usd']:.4f}" if cost else "cached "

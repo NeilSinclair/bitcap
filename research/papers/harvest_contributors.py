@@ -233,7 +233,7 @@ def _llm_fallback(art: Article, raw_html: str, model: str) -> Article:
     from llm_byline import extract_page
 
     try:
-        parsed, cost = extract_page(raw_html, model)
+        parsed, cost, _truncated = extract_page(raw_html, model)
     except Exception as exc:  # a fallback failure must not abort the harvest
         print(f"  ! no byline parsed, fallback failed ({type(exc).__name__}): {art.url}")
         return art

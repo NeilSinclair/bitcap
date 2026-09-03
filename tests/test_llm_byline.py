@@ -15,6 +15,7 @@ import pytest
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "research" / "papers"))
 
+import llm_byline
 from llm_byline import HTML_BUDGET, SCHEMA, SCHEMA_V2, ExtractionError, build_prompt, prepare_html
 
 
@@ -150,6 +151,22 @@ class TestPrepareHtml:
         assert truncated is False
         assert html == "x" * HTML_BUDGET
 
+    def test_author_section_inside_head_slice_is_not_duplicated(self):
+        # Real gap found by code review: when the heading falls inside the
+        # head slice already sent (body[:head_budget]), starting the
+        # section window at its own start re-sent that overlap -- the model
+        # would see the same author list twice, and every harvester's
+        # aggregate() counts appearances blindly, so a duplicate inflates a
+        # person's count.
+        html, truncated = prepare_html(
+            "HEAD_MARKER"
+            + "x" * 5_000
+            + "Contributors</h3>REAL_NAMES_HERE"
+            + "y" * 200_000
+        )
+        assert truncated is True
+        assert html.count("REAL_NAMES_HERE") == 1
+
 
 class TestExtractionError:
     def test_carries_cost_for_a_call_that_was_billed_but_failed_to_parse(self):
@@ -160,3 +177,91 @@ class TestExtractionError:
         exc = ExtractionError("malformed JSON from model: ...", cost)
         assert exc.cost == cost
         assert isinstance(exc, RuntimeError)
+
+
+class _Usage:
+    def __init__(self, input_tokens=100, output_tokens=10):
+        self.input_tokens = input_tokens
+        self.output_tokens = output_tokens
+
+
+class _ContentBlock:
+    def __init__(self, type, text=None):
+        self.type = type
+        self.text = text
+
+
+class _Response:
+    def __init__(self, stop_reason, content, usage=None, stop_details=None):
+        self.stop_reason = stop_reason
+        self.content = content
+        self.usage = usage or _Usage()
+        self.stop_details = stop_details
+
+
+class _Stream:
+    def __init__(self, response):
+        self._response = response
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+    def get_final_message(self):
+        return self._response
+
+
+class _FakeClient:
+    def __init__(self, response):
+        self._response = response
+        self.messages = type("_Messages", (), {"stream": lambda _self, **kw: _Stream(self._response)})()
+
+
+class TestExtractMaxTokens:
+    """Real gap found by code review: a truncated response fell through to
+    json.loads() and got reported as "malformed JSON from model" -- true in
+    effect, but hiding the actual fix (raise max_tokens)."""
+
+    def test_max_tokens_raises_with_a_diagnosable_message_not_a_parse_error(self):
+        response = _Response("max_tokens", [_ContentBlock("text", "{not json")])
+        client = _FakeClient(response)
+        with pytest.raises(RuntimeError, match="raise max_tokens"):
+            llm_byline.extract(client, "claude-sonnet-5", "<html></html>")
+
+    def test_refusal_still_raises_as_before(self):
+        response = _Response("refusal", [], stop_details="policy")
+        client = _FakeClient(response)
+        with pytest.raises(RuntimeError, match="refused"):
+            llm_byline.extract(client, "claude-sonnet-5", "<html></html>")
+
+    def test_malformed_json_still_carries_cost_via_extraction_error(self):
+        response = _Response("end_turn", [_ContentBlock("text", "not valid json")])
+        client = _FakeClient(response)
+        with pytest.raises(ExtractionError) as excinfo:
+            llm_byline.extract(client, "claude-sonnet-5", "<html></html>")
+        assert excinfo.value.cost["usd"] > 0
+
+
+class TestExtractPageReturnsTruncated:
+    def test_short_page_returns_truncated_false(self, monkeypatch):
+        response = _Response(
+            "end_turn",
+            [_ContentBlock("text", '{"authors": [], "date": null, "star_means": null, "order_meaningful": true, "no_byline": true}')],
+        )
+        monkeypatch.setattr(llm_byline.anthropic, "Anthropic", lambda: _FakeClient(response))
+        monkeypatch.setattr(llm_byline, "load_env", lambda: None)
+        parsed, cost, truncated = llm_byline.extract_page("<p>short page</p>")
+        assert truncated is False
+        assert parsed["authors"] == []
+
+    def test_long_page_returns_truncated_true(self, monkeypatch):
+        response = _Response(
+            "end_turn",
+            [_ContentBlock("text", '{"authors": [], "date": null, "star_means": null, "order_meaningful": true, "no_byline": true}')],
+        )
+        monkeypatch.setattr(llm_byline.anthropic, "Anthropic", lambda: _FakeClient(response))
+        monkeypatch.setattr(llm_byline, "load_env", lambda: None)
+        parsed, cost, truncated = llm_byline.extract_page("<p>" + "x" * 100_000 + "</p>")
+        assert truncated is True

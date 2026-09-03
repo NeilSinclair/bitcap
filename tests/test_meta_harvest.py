@@ -267,3 +267,35 @@ class TestCollectResilience:
         assert len(papers) == 1
         assert papers[0].authors == [{"name": "Cached Author"}]
         assert unresolved == []
+
+    def test_truncated_flag_flows_from_extraction_to_the_paper_record(self, monkeypatch, tmp_path):
+        # Real gap found by code review: extract_page's own truncated flag
+        # was discarded, so a byline extracted from a cut-off page was
+        # indistinguishable from a complete one.
+        self._base_patches(monkeypatch, tmp_path, [("p1", "https://ai.meta.com/research/publications/p1/")])
+        monkeypatch.setattr(mh, "fetch", lambda url, **kw: "<html><title>T | Research - AI at Meta</title></html>")
+        monkeypatch.setattr(
+            mh,
+            "resolve_title",
+            lambda title, desc: {
+                "arxiv_id": "2608.00001",
+                "date": "2026-08-01",
+                "resolution": "exact_title",
+            },
+        )
+
+        import llm_byline
+
+        def fake_extract_page(*a, **kw):
+            parsed = {"authors": [{"name": "Alice"}], "order_meaningful": True, "star_means": None}
+            cost = {"model": "claude-sonnet-5", "usd": 0.05}
+            return parsed, cost, True  # truncated
+
+        monkeypatch.setattr(llm_byline, "extract_page", fake_extract_page)
+
+        papers, unresolved = mh.collect(months=3, model="claude-sonnet-5")
+        assert len(papers) == 1
+        assert papers[0].truncated is True
+
+        cached = json.loads((tmp_path / "extraction_cache.json").read_text())
+        assert cached["https://ai.meta.com/research/publications/p1/"]["truncated"] is True

@@ -6,6 +6,7 @@ rule that quietly stops distinguishing signal from noise, and a date parser
 that places an old release inside the window.
 """
 
+import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -1156,3 +1157,179 @@ class TestScoringEnabledGate:
             mod = self._prepare(monkeypatch, {"SCORING_ENABLED": value}, [])
             with pytest.raises(self._Proceeded):
                 mod.main()
+
+
+class _Content:
+    """Stub of one content block in a batch result message."""
+
+    def __init__(self, type, text=None):
+        self.type = type
+        self.text = text
+
+
+class _Message:
+    """Stub of a batch item's `result.message`."""
+
+    def __init__(self, stop_reason, content, usage):
+        self.stop_reason = stop_reason
+        self.content = content
+        self.usage = usage
+        self.stop_details = None
+
+
+class _Result:
+    def __init__(self, type, message=None):
+        self.type = type
+        self.message = message
+
+
+class _ResultItem:
+    def __init__(self, custom_id, result):
+        self.custom_id = custom_id
+        self.result = result
+
+
+class _Batch:
+    def __init__(self, id, processing_status, succeeded=0, errored=0):
+        self.id = id
+        self.processing_status = processing_status
+        self.request_counts = type("_Counts", (), {"processing": 0, "succeeded": succeeded, "errored": errored})()
+
+
+class _FakeBatches:
+    """Stub of `client.messages.batches` -- create/retrieve/results only."""
+
+    def __init__(self, result_items):
+        self._result_items = result_items
+
+    def create(self, requests):
+        return _Batch("batch_1", "ended", succeeded=len(self._result_items))
+
+    def retrieve(self, batch_id):
+        return _Batch(batch_id, "ended", succeeded=len(self._result_items))
+
+    def results(self, batch_id):
+        return iter(self._result_items)
+
+
+class _FakeClient:
+    def __init__(self, result_items):
+        self.messages = type("_Messages", (), {"batches": _FakeBatches(result_items)})()
+
+
+class TestRunBatch:
+    """The silent failure this suite exists to catch: one bad item in a
+    hundred-item batch either loses the cost record of every already-billed
+    item ahead of it, or a genuinely billed refusal/truncation contributes
+    no cost row at all -- both real bugs found by code review, not by a
+    test written in advance.
+    """
+
+    def _article(self, url):
+        return {
+            "url": url,
+            "text": "some article text",
+            "date": "2026-01-01",
+            "title": "T",
+            "lab": "anthropic",
+            "text_source": "full_text",
+        }
+
+    def _run(self, monkeypatch, tmp_path, result_items, articles):
+        import score_announcements as sa
+
+        monkeypatch.setattr(sa, "CACHE", tmp_path / "cache")
+        (tmp_path / "cache").mkdir()
+        cost_path = tmp_path / "cost.json"
+        monkeypatch.setattr(sa, "COST", cost_path)
+        client = _FakeClient(result_items)
+        results, failures, costs = sa.run_batch(
+            client, "claude-sonnet-5", articles, set(), set(), None, None, None, poll_seconds=0
+        )
+        return results, failures, costs, cost_path
+
+    def test_malformed_json_item_does_not_abort_remaining_items(self, monkeypatch, tmp_path):
+        good_content = [_Content("text", '{"mechanisms": [], "categories": []}')]
+        bad_content = [_Content("text", "not valid json")]
+        items = [
+            _ResultItem("c1", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10)))),
+            _ResultItem("c2", _Result("succeeded", _Message("end_turn", good_content, _Usage(100, 10)))),
+        ]
+        articles = [self._article("https://x/1"), self._article("https://x/2")]
+        # by_custom_id is built from articles in the order run_batch iterates
+        # them, keyed by a sha1 of the url -- reach in via the real hashing
+        # so the fake custom_ids line up.
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+        items[1].custom_id = hashlib.sha1(b"https://x/2").hexdigest()
+
+        results, failures, costs, _ = self._run(monkeypatch, tmp_path, items, articles)
+        assert results == {"https://x/2": {"mechanisms": [], "categories": [], "dropped_tags": []}}
+        assert failures[0]["url"] == "https://x/1"
+        assert "JSONDecodeError" in failures[0]["error"]
+        # The malformed item did not abort the loop -- item 2 was still scored.
+
+    def test_malformed_json_item_still_records_its_cost(self, monkeypatch, tmp_path):
+        bad_content = [_Content("text", "not valid json")]
+        items = [_ResultItem("", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert len(costs) == 1
+        assert costs[0]["usd"] > 0
+        assert json.loads(cost_path.read_text()) == costs  # persisted to disk, not just returned
+
+    def test_refusal_is_billed_not_dropped(self, monkeypatch, tmp_path):
+        items = [_ResultItem("", _Result("succeeded", _Message("refusal", [], _Usage(50, 5))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert failures[0]["error"].startswith("refused")
+        assert len(costs) == 1
+        assert json.loads(cost_path.read_text()) == costs
+
+    def test_max_tokens_truncation_is_billed_not_dropped(self, monkeypatch, tmp_path):
+        items = [_ResultItem("", _Result("succeeded", _Message("max_tokens", [], _Usage(50, 12000))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert "max_tokens" in failures[0]["error"]
+        assert len(costs) == 1
+        assert json.loads(cost_path.read_text()) == costs
+
+    def test_batch_level_failure_records_no_cost(self, monkeypatch, tmp_path):
+        # No `message` exists at all for a batch-level error (expired etc.)
+        # -- nothing was billed, so nothing should be recorded.
+        items = [_ResultItem("", _Result("errored", None))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert failures[0]["error"] == "batch errored"
+        assert costs == []
+
+    def test_cost_written_incrementally_survives_a_later_item_crashing(self, monkeypatch, tmp_path):
+        # The core of the fix: item 1 succeeds and must be persisted to disk
+        # before item 2 (malformed) is even processed -- not batched up and
+        # written only after the whole loop returns.
+        good_content = [_Content("text", '{"mechanisms": [], "categories": []}')]
+        bad_content = [_Content("text", "not valid json")]
+        items = [
+            _ResultItem("", _Result("succeeded", _Message("end_turn", good_content, _Usage(100, 10)))),
+            _ResultItem("", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10)))),
+        ]
+        articles = [self._article("https://x/1"), self._article("https://x/2")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+        items[1].custom_id = hashlib.sha1(b"https://x/2").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert len(costs) == 2  # both items billed, including the failed one
+        assert json.loads(cost_path.read_text()) == costs

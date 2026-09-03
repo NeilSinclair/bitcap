@@ -2489,3 +2489,100 @@ top of this file's earlier header comment is closed.
 `tests/test_pipeline_db.py`'s pinned counts updated (201→236 articles,
 watermark set gains `xai`) to match the real corpus, same recurring
 pattern as every prior register addition this session.
+
+## D21 — Independent code review (bitcap-reviewer) of this session's diff, all 9 findings fixed
+
+**Decision.** Ran the `bitcap-reviewer` subagent against the real
+committed diff (26 source/config/test/doc files, the ~1,280 auto-generated
+cache/output files excluded from scope). Verdict: "Ship after fixes," 9
+CONFIRMED findings, most-severe first. Fixed all 9 rather than triaging a
+subset — none were speculative, each was traced end to end against real
+code or real cached data before being reported.
+
+**1. `arxiv_resolve.py` accepted a lone `ti:` hit as an exact match with no
+similarity check at all.** arXiv's `ti:` field is a token match, not a
+phrase match — the repo's own cached response for `ti:"HyperAgents"`
+already proved this (an unrelated paper returned alongside the real one),
+but the single-hit branch never checked it. Fixed by gating on the same
+`overlap()` function already used for the relaxed pass, against
+`OVERLAP_THRESHOLD`.
+
+**2 & 3. `score_announcements.py`'s `run_batch` lost cost records on
+failure, two distinct ways.** Cost was only written to disk after the
+*entire* batch's results loop finished, so one malformed item partway
+through a hundred-item batch would throw before any of it was persisted —
+losing every already-billed item's cost, not just the failing one. And
+refused/`max_tokens`-truncated items were billed by the API but skipped
+`call_cost()` entirely before their `continue`. Fixed by moving cost
+recording inside the loop (a `bill()` closure, same incremental-write
+guarantee the interactive path's `record()` already had) and calling it
+on every path that consumes real tokens, including the two failure paths.
+Zero test coverage existed for `run_batch` before this — added 6 tests
+using stub Anthropic Batches API objects.
+
+**4. `llm_byline.py::prepare_html`'s head+tail window could duplicate the
+author section.** When a contributor heading falls inside the first 30K
+characters already sent as the head slice, starting the section window at
+its own start re-sent that overlap — the model would see the same author
+list twice, inflating appearance counts in every harvester's `aggregate()`.
+Not live on either real Mistral paper (both headings sit well past
+head_budget), but latent. Fixed with `start = max(section.start(),
+head_budget)`.
+
+**5. The `truncated` flag `prepare_html` already computed was silently
+discarded by `extract_page`.** All three papers harvesters built this
+session stored bylines with no record of whether the source page was cut
+— a future paper whose contributor section falls outside the window would
+look identical to a complete extraction. `extract_page` now returns a
+3-tuple; each harvester's `Paper` dataclass gained a `truncated` field,
+round-tripped through the extraction cache so a cache hit reports it
+correctly too. Touched `deepmind_harvest.py`, `meta_harvest.py`,
+`mistral_harvest.py`, and the superseded `harvest_contributors.py` (kept
+functionally correct, not actively run).
+
+**6. `extract()` never checked for `stop_reason == "max_tokens"`.** A
+truncated-by-length response fell through to `json.loads()`, failed to
+parse, and got reported as "malformed JSON from model" — true in effect,
+hiding the actual fix. Added the same two-line check
+`score_announcements.py`'s `classify()` already has for this exact
+`stop_reason`.
+
+**7. New config keys were unvalidated.** `sources.yaml`'s method-specific
+keys (`page_param` for `listing_pagination`, etc.) were indexed directly
+by each discovery function with no defensive `.get()` — a missing one
+would `KeyError` deep into a live `collect()` run, after every earlier
+lab had already finished, with no output written for any of them.
+`github_sources.yaml` was not read by `validate.py` at all. Added
+`check_sources()` (per-method required-key sets, mirroring `METHODS`) and
+`check_github_sources()` (cross-references `lab:` against `sources.yaml`'s
+real ids, validates `domain_shared` is a bool and `work_suffix` compiles)
+to `config/validate.py`. New `tests/test_validate.py`, 11 tests including
+"the real committed config passes with zero errors" for both.
+
+**8. `aggregate_github.py` kept an Anthropic-only docstring and hardcoded
+defaults after `LABS` moved to config.** `aggregate(org, org_domain=
+"anthropic.com", work_suffix=r"[-_](ant|anthropic)$")` meant a caller that
+omitted them — an orchestrator following `docs/handover.md` §7 partially,
+or a new test — would silently score any org against Anthropic's domain
+and return an all-`unknown` (or wrongly `confirmed`) column indistinguishable
+from clean data. Made both required (no default); `domain_shared` keeps its
+safe `False` default, which doesn't point at a specific wrong answer the
+way the other two did. Updated the module docstring to describe the
+per-org, config-driven reality instead of one hardcoded org. ~10 test call
+sites in `test_aggregate_github.py` that relied on the old defaults now
+pass Anthropic's values explicitly, or `NEVER_MATCHES` where a test
+doesn't care about handle-suffix merging at all.
+
+**9. Unused `import sys` in `meta_harvest.py`.** Dead weight, evidently
+carried over from `deepmind_harvest.py` (which does need `sys` for a
+`sys.path.insert`). Removed.
+
+**Verified, not just applied.** Every harvester was re-run live against
+its real cached data after the fixes (Meta: 5 papers/41 authors/$0.4327,
+Mistral: 2 papers/23 authors/$0.0891, DeepMind: 15 papers/65 authors/
+$0.8569, `aggregate_github.py anthropics`: 455 people/178 confirmed) —
+identical to the pre-fix baseline in every case, confirming the fixes are
+behavior-neutral for already-correct data and only change behavior on the
+specific failure paths each one targets. Full test suite: 483 passed, 1
+skipped (up from 456 before this pass — 27 new tests, one new file,
+`tests/test_validate.py`).

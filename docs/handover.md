@@ -6,9 +6,92 @@ Written for whoever builds the actual scheduled pipeline (`app/orchestrator.py`,
 way it is, and what's still missing before it can run unattended.
 
 This is a map, not the source of truth. Rationale for individual decisions
-lives in [`docs/decisions.md`](decisions.md) (D1–D19) — this document
+lives in [`docs/decisions.md`](decisions.md) (D1–D20) — this document
 summarizes and points there rather than repeating it. Cost figures live in
 [`docs/cost.md`](cost.md).
+
+## 0. What got built, concretely, and how to use it (read this first)
+
+**You have a handful of standalone Python scripts — not a pipeline.** Nothing
+calls them on a schedule. Each does one narrow job: given a lab, go get one
+specific kind of data about it, and write the answer to a JSON file. None of
+them is exotic — each one is an ordinary Python function you can `import`
+and call, or run as `python script.py` from a terminal.
+
+Three kinds of script, one per "leg":
+
+1. **Announcements** — one script,
+   [`fetch_announcements.py`](../research/announcements/fetch_announcements.py),
+   covers all seven labs. Reads `config/sources.yaml`, and for every lab
+   listed there, goes and fetches whatever that lab has published recently
+   (blog posts, news pages). Writes one combined file:
+   `research/docs/announcements.json`.
+2. **Papers** — one script *per lab* (`meta_harvest.py`, `deepmind_harvest.py`,
+   `mistral_harvest.py`, `deepseek_harvest.py`, `openai_harvest.py`, plus
+   Anthropic's original `byline.py`/`llm_byline.py` pair — six scripts,
+   one lab, xAI, has no script because it's confirmed to publish no papers
+   at all, see §2). Each finds that lab's recent research papers and uses an
+   LLM to read off who wrote each one. Writes to
+   `research/docs/<lab>_contributors.json`.
+3. **GitHub** — two scripts,
+   [`harvest_github.py`](../research/github/harvest_github.py) and
+   [`aggregate_github.py`](../research/github/aggregate_github.py), cover
+   all seven labs (nine GitHub orgs — Meta AI alone needs two). Given a
+   GitHub org name, the first pulls every commit from the last 12 months;
+   the second works out who's genuinely lab staff, an outside contributor,
+   or an automated bot. Writes to `research/docs/github_people_<org>.json`.
+
+That's the entire inventory: **9 harvester scripts total** (1 + 6 + 2),
+plus two small shared helper modules the papers scripts import from
+(`llm_byline.py`, `arxiv_resolve.py` — not run directly). All seven labs in
+the deep-coverage register (Anthropic, OpenAI, DeepSeek, Google DeepMind,
+Mistral, xAI, Meta AI) now have all three legs' data sitting in
+`research/docs/` as JSON files, produced by running these scripts by hand,
+once each, this session.
+
+**What does not exist: anything that calls these scripts automatically.**
+No scheduler, no cron job, no "run every night," no logic to retry a source
+that's down for an entire run, no alert when something breaks. You run each
+script yourself, right now, from a terminal, and it does its job once. A
+production pipeline is specifically the layer that would call these on a
+timer and handle it when one of them fails — that layer is **entirely
+unbuilt**. Nothing under `research/` needs to be rewritten to add it; it
+needs to be built on top.
+
+**How a production pipeline actually uses this code:**
+
+- **Every script's real logic is one plain function, not CLI glue.** The
+  `if __name__ == "__main__":` block at the bottom of each file is a thin
+  wrapper — argparse, then call the function, then write the file. Your
+  orchestrator imports the function directly (see §7 for exact names and
+  import paths) and calls it in-process; it never needs to shell out to
+  `python script.py`.
+- **Every function takes plain arguments and returns plain data** — a lab's
+  config dict, a cutoff date, a model name in; a list of dicts back out. It
+  does not talk to a database and does not know a production pipeline
+  exists. Your orchestrator decides what happens to the returned data —
+  write it to the same JSON files these scripts already write (simplest,
+  works today), or hand it to a new Postgres-writing step instead (see §3
+  for why that schema doesn't exist yet for papers/GitHub).
+- **Every function is already safe to call on a schedule, unmodified.**
+  Every fetch is cached to disk keyed by URL, so calling the same function
+  every hour costs nothing extra for anything it's already seen. "Run this
+  leg every N hours" needs zero changes to the functions themselves —
+  that's the one big piece of "production-readiness" that's already done.
+- **What your orchestrator has to add on top, that isn't here today:**
+  looping over (lab, leg) pairs and catching one lab's failure so it
+  doesn't take the whole run down (every script already does this
+  *within* itself, per-item — see §5 — but nothing does it *across*
+  sources yet); writing a record of each run (succeeded / failed / how far
+  it got); and alerting someone when a source has been broken for more
+  than one run in a row, distinct from a "we found something interesting"
+  content alert. None of that exists in any form yet — it's the actual
+  scope of "build the production pipeline," not a refinement of what's
+  here.
+
+The rest of this document is the detailed map — per-leg config file shapes,
+output JSON shapes, known gotchas, and the exact functions to call. Skip to
+§7 for the copy-pasteable import list if that's all you need right now.
 
 ## 1. What exists, in one paragraph
 

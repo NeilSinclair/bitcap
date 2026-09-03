@@ -118,7 +118,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "meta_url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
@@ -194,7 +195,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "meta_url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
@@ -256,7 +258,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": "other"
+      "star_means": "other",
+      "truncated": false
     },
     {
       "meta_url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
@@ -358,7 +361,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     },
     {
       "meta_url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
@@ -435,7 +439,8 @@
         }
       ],
       "order_meaningful": true,
-      "star_means": null
+      "star_means": null,
+      "truncated": false
     }
   ],
   "people": [

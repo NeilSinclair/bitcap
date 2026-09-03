@@ -11,10 +11,14 @@ Three jobs, in order:
    papers research established that a single computed importance number does
    not survive scrutiny; the same applies here.
 
-Employment is read from the commit email domain. Roughly three fifths of human
-commits in this org carry an ``@anthropic.com`` address, which is direct
-evidence rather than inference; the ``-ant`` handle convention is kept only as
-a fallback for people who commit with a private address.
+Employment is read from the commit email domain, per org, configured in
+config/github_sources.yaml -- not hardcoded here. How much of an org's human
+commits carry a domain match, and how reliable a work-handle convention is,
+both vary a great deal by lab: Anthropic's own org evidences roughly three
+fifths of human commits via `@anthropic.com` directly; Mistral evidences
+close to none (near-universal use of GitHub's noreply-relay addresses, a
+real finding about that org, not a harvesting gap; see that config file's
+own notes per org for what to expect from each one).
 """
 
 from __future__ import annotations
@@ -201,11 +205,20 @@ def alias_pairs(people: dict, work_suffix: re.Pattern = WORK_SUFFIX) -> dict[str
 
 def aggregate(
     org: str,
-    org_domain: str | list[str] | None = "anthropic.com",
-    work_suffix: str = r"[-_](ant|anthropic)$",
+    org_domain: str | list[str] | None,
+    work_suffix: str,
     domain_shared: bool = False,
 ) -> dict:
     """Build the per-person register for one organisation.
+
+    `org_domain` and `work_suffix` are required, not defaulted to
+    Anthropic's own values -- a caller that omitted them used to silently
+    score whatever org it named against Anthropic's domain and handle
+    convention, returning an all-`unknown` (or worse, wrongly `confirmed`)
+    employment column that looks like clean data rather than a
+    misconfiguration (bitcap-reviewer finding #8). Look the real values up
+    per org from `config/github_sources.yaml` (`load_labs()` below), never
+    guess them.
 
     Args:
         org: GitHub organisation login, used to locate the harvest file.
