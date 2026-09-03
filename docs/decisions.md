@@ -3352,3 +3352,57 @@ would still pass green. And on a cold cron container `announcements.json` resets
 to the image copy, so an article pending in `raw_articles` but absent from the
 reset corpus would never be classified and no rule alerts on that shape. Both
 are recorded rather than fixed.
+
+---
+
+## D30 — The people leg: `config/people.yaml`, sourced per person, with departures as a first-class field (2026-09-03)
+
+The register tracks labs. Labs do not post — people do. `config/people.yaml`
+adds the missing leg: 36 senior figures across all seven registered labs, each
+with their X handle and blog where one exists, keyed on the same lab ids as
+`sources.yaml` and joined by `config/validate.py` like every other lab-keyed
+config file.
+
+**Nothing in it comes from model knowledge**, on the same rule as
+`research/labs/frontier_labs.md`. Everything was fetched on 2026-09-03 and the
+fetch is cited at the field it supports. That was not ceremony: re-researching
+from scratch contradicted what recall would have produced on four of the seven
+labs. Yann LeCun left Meta in November 2025 (AMI Labs, announced 2026-03-10).
+Jeff Dean, Oriol Vinyals, Quoc Le and Sanjay Ghemawat left Google on 2026-08-05
+for Discovery Loop. Demis Hassabis moved off GDM CEO to Chair + Alphabet Chief
+Scientist on the same day, with Koray Kavukcuoglu taking day-to-day as SVP. All
+twelve xAI co-founders were gone by 2026-03-28. Every one of those would have
+been a confident, wrong attribution.
+
+**So `departed` is a field, not a footnote.** It is the guard against this
+file's most likely failure — rendering someone as a voice of a lab they left —
+and `validate.py` fails if a name appears in both lists.
+
+**X handles are not fetch-verified and the file says so.** x.com returns HTTP
+402 to the fetcher, so no profile page was read. Each handle carries an
+`x_evidence` tier instead — `own_site` (their site links it), `self_post` (a
+post from the handle in which they state their own role), `lab_post` (the lab's
+account names them), `search_index` (the profile URL appears in search and
+nowhere better). `search_index` is explicitly the weak tier and must be
+promoted before anything ships on it. The alternative — asserting handles at a
+uniform confidence — is the shape of error this project exists to avoid.
+
+**A source recorded but not read must admit it.** One CNBC URL (2026-06-14,
+Wang still in post) is cited with `fetched: null` and "NOT FETCHED" in its
+note, because cnbc.com 403s here. A test fails on any unfetched source without
+that admission: a URL nobody read, sitting unflagged in a citation list, gets
+promoted to verified by nothing more than being in the list.
+
+**Two findings worth keeping.** DeepSeek has effectively no people leg — its
+researchers do not run public personal channels, and the two handles found sit
+on the weak tier; for that lab the papers *are* the channel. And xAI's people
+leg mostly reports an absence: the entire founding research bench is gone,
+replaced by SpaceX operators with no public research channel, three of four
+with no findable handle and none with a blog. That is consistent with D16/D17's
+decision not to run a papers harvester for xAI, and it is a signal about the
+lab rather than a gap in the research.
+
+Also recorded: Jan Leike's own site still states he leads Alignment Science
+while a secondary aggregator reports he stepped back in May 2026. Both were
+live on the research date. The entry carries the conflict rather than picking a
+side.

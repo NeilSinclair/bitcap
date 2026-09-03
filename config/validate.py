@@ -396,6 +396,56 @@ def check_papers_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     return errors
 
 
+
+def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Check people.yaml joins the register and cites everything it claims.
+
+    The people leg's failure mode is not a crash but a stale attribution: a
+    researcher who has left still rendered as a voice of the lab. So the join
+    to sources.yaml is enforced, and so is the rule that a claim without a
+    citation does not belong in the file.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids in sources.yaml.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "people.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    tiers = {"own_site", "self_post", "lab_post", "search_index"}
+
+    for lab, entry in (doc.get("labs") or {}).items():
+        if lab not in tracked_labs:
+            errors.append(f"people.yaml/{lab}: lab not in sources.yaml")
+        current = {p.get("name") for p in entry.get("people", [])}
+        for person in entry.get("people", []):
+            who = f"people.yaml/{lab}/{person.get('name', '?')}"
+            if not person.get("role"):
+                errors.append(f"{who}: no role")
+            if not person.get("sources"):
+                errors.append(f"{who}: no citation -- every claim here needs one")
+            if person.get("x_handle") and person.get("x_evidence") not in tiers:
+                errors.append(
+                    f"{who}: x_handle with x_evidence {person.get('x_evidence')!r} not in "
+                    f"{sorted(tiers)} -- an unattributed handle is a guess"
+                )
+        for gone in entry.get("departed") or []:
+            if gone.get("name") in current:
+                errors.append(
+                    f"people.yaml/{lab}/{gone['name']}: listed as both current and departed"
+                )
+            if not str(gone.get("source", "")).startswith("https://"):
+                errors.append(f"people.yaml/{lab}/{gone.get('name')}: departure with no source")
+    for lab in tracked_labs - set(doc.get("labs") or {}):
+        errors.append(f"people.yaml/{lab}: registered lab with no people entry")
+    return errors
+
+
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
@@ -486,8 +536,9 @@ def main() -> int:
     gh_errors = check_github_sources(ROOT, tracked_labs)
     pipe_errors = check_pipeline(ROOT)
     papers_errors = check_papers_sources(ROOT, tracked_labs)
+    people_errors = check_people(ROOT, tracked_labs)
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
-                  + pipe_errors + papers_errors)
+                  + pipe_errors + papers_errors + people_errors)
     for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:
