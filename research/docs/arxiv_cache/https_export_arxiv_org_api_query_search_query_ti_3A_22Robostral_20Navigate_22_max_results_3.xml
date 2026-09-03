@@ -1,0 +1,850 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/LeqQC7Ykr/Ui1DDn3z/RzGQBZog</id>
+  <title>arXiv Query: search_query=ti:"Robostral Navigate"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:25:58Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Robostral+Navigate%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2607.20785v3</id>
+    <title>Robostral Navigate</title>
+    <updated>2026-07-31T20:03:01Z</updated>
+    <link href="https://arxiv.org/abs/2607.20785v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.20785v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Deploying navigation systems at scale requires a recipe that minimizes sensor assumptions, generalizes across robot embodiments, and trains efficiently. Yet, today's best systems depend on depth sensors, multi-camera rigs, or pre-built maps, limiting the hardware they support and increasing deployment cost. We introduce Robostral Navigate, an 8B vision-language model built around this scalability objective. The model consumes only a stream of monocular RGB images - the most ubiquitous sensor across robotic platforms and predicts waypoints by pointing to the next target location in the current camera view. Operating purely in image space, rather than robot-specific coordinates, makes the policy naturally robust to changes in camera intrinsics and scene scale, enabling deployment across wheeled, legged, and aerial robots without recalibration. We generate 2.4 million trajectories across 350k simulated scenes to reduce the reliance on real-world data collection and scale easily. We further introduce a prefix-caching training recipe that packs entire episodes into single training sequences, reducing training tokens by 22x and cutting training time from months to days. A tree-based attention mask prevents conditioning on previous ground-truth actions, encouraging visually grounded action prediction, and reinforcement learning is used to further improve exploration and recovery capabilities. On the Room-to-Room and Room-Across-Room in Continuous Environments (R2R-CE and RxR-CE) benchmarks, Robostral Navigate sets a new state of the art. On R2R-CE, it achieves a 77.4% success rate, surpassing the best monocular method by 10.5 points and the strongest depth- or multi-camera system by 5.3 points despite using only a single RGB camera. On RxR-CE, it reaches 75.1% success rate, outperforming all monocular baselines.</summary>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-22T23:13:05Z</published>
+    <arxiv:primary_category term="cs.RO"/>
+    <author>
+      <name>Abdelaziz Bounhar</name>
+    </author>
+    <author>
+      <name>Abhijeet Somani</name>
+    </author>
+    <author>
+      <name>Aditi Kabra</name>
+    </author>
+    <author>
+      <name>Adrian Valente</name>
+    </author>
+    <author>
+      <name>Adrien Petralia</name>
+    </author>
+    <author>
+      <name>Adrien Sade</name>
+    </author>
+    <author>
+      <name>Alan Jeffares</name>
+    </author>
+    <author>
+      <name>Albert Jiang</name>
+    </author>
+    <author>
+      <name>Aleksandr Timashov</name>
+    </author>
+    <author>
+      <name>Alexandre Cahill</name>
+    </author>
+    <author>
+      <name>Alexandre Gavaudan</name>
+    </author>
+    <author>
+      <name>Alexandre Laval</name>
+    </author>
+    <author>
+      <name>Alexandre Sablayrolles</name>
+    </author>
+    <author>
+      <name>Amelie Heliou</name>
+    </author>
+    <author>
+      <name>Amos You</name>
+    </author>
+    <author>
+      <name>Andre Jonasson</name>
+    </author>
+    <author>
+      <name>Andrew Bai</name>
+    </author>
+    <author>
+      <name>Andrew Ehrenberg</name>
+    </author>
+    <author>
+      <name>Andrew Zhao</name>
+    </author>
+    <author>
+      <name>Angele Lenglemetz</name>
+    </author>
+    <author>
+      <name>Anmol Agarwal</name>
+    </author>
+    <author>
+      <name>Antonia Calvi</name>
+    </author>
+    <author>
+      <name>Arata Suzuki</name>
+    </author>
+    <author>
+      <name>Arjun Majumdar</name>
+    </author>
+    <author>
+      <name>Arthur Fournier</name>
+    </author>
+    <author>
+      <name>Artjom Joosen</name>
+    </author>
+    <author>
+      <name>Avinash Sooriyarachchi</name>
+    </author>
+    <author>
+      <name>Aylin Guliz Akkus</name>
+    </author>
+    <author>
+      <name>Aysenur Karaduman</name>
+    </author>
+    <author>
+      <name>Baptiste Bout</name>
+    </author>
+    <author>
+      <name>Baptiste Roziere</name>
+    </author>
+    <author>
+      <name>Baudouin De Monicault</name>
+    </author>
+    <author>
+      <name>Benjamin Holzschuh</name>
+    </author>
+    <author>
+      <name>Benjamin Lefaudeux</name>
+    </author>
+    <author>
+      <name>Benjamin Tibi</name>
+    </author>
+    <author>
+      <name>Bernhard Stadlbauer</name>
+    </author>
+    <author>
+      <name>Blazej Osinski</name>
+    </author>
+    <author>
+      <name>Camille Le Scao</name>
+    </author>
+    <author>
+      <name>Chaoran Yu</name>
+    </author>
+    <author>
+      <name>Charlotte Cronjager</name>
+    </author>
+    <author>
+      <name>Chen-Yo Sun</name>
+    </author>
+    <author>
+      <name>Chris Bamford</name>
+    </author>
+    <author>
+      <name>Christian Wallenwein</name>
+    </author>
+    <author>
+      <name>Christophe Renaudin</name>
+    </author>
+    <author>
+      <name>Clemence Lanfranchi</name>
+    </author>
+    <author>
+      <name>Corentin Barreau</name>
+    </author>
+    <author>
+      <name>Corentin Sautier</name>
+    </author>
+    <author>
+      <name>Cristiana-Diana Diaconu</name>
+    </author>
+    <author>
+      <name>Cyprien Courtot</name>
+    </author>
+    <author>
+      <name>Daniel Marczak</name>
+    </author>
+    <author>
+      <name>Darius Dabert</name>
+    </author>
+    <author>
+      <name>Diego de Las Casas</name>
+    </author>
+    <author>
+      <name>Dominik Nuss</name>
+    </author>
+    <author>
+      <name>Dylan Rubini</name>
+    </author>
+    <author>
+      <name>Dzmitry Soupel</name>
+    </author>
+    <author>
+      <name>Elizaveta Demyanenko</name>
+    </author>
+    <author>
+      <name>Elliot Chane-Sane</name>
+    </author>
+    <author>
+      <name>Emilien Fugier</name>
+    </author>
+    <author>
+      <name>Emmanuel Gottlob</name>
+    </author>
+    <author>
+      <name>Erik Aas</name>
+    </author>
+    <author>
+      <name>Etienne Goffinet</name>
+    </author>
+    <author>
+      <name>Etienne Millon</name>
+    </author>
+    <author>
+      <name>Eujeong Choi</name>
+    </author>
+    <author>
+      <name>Fabian Paischer</name>
+    </author>
+    <author>
+      <name>Fabian Schlager</name>
+    </author>
+    <author>
+      <name>Faruk Ahmed</name>
+    </author>
+    <author>
+      <name>Federico Baldassarre</name>
+    </author>
+    <author>
+      <name>Filip Szatkowski</name>
+    </author>
+    <author>
+      <name>Florian Wiesner</name>
+    </author>
+    <author>
+      <name>Gabrielle Berrada</name>
+    </author>
+    <author>
+      <name>Gaetan Ecrepont</name>
+    </author>
+    <author>
+      <name>Gaetan Lepage</name>
+    </author>
+    <author>
+      <name>Gaspard Blanchet</name>
+    </author>
+    <author>
+      <name>Gaspard Donada-Vidal</name>
+    </author>
+    <author>
+      <name>Gauthier Delerce</name>
+    </author>
+    <author>
+      <name>Gauthier Guinet</name>
+    </author>
+    <author>
+      <name>Genevieve Hayes</name>
+    </author>
+    <author>
+      <name>Georgii Novikov</name>
+    </author>
+    <author>
+      <name>Giada Pistilli</name>
+    </author>
+    <author>
+      <name>Gianluca Galletti</name>
+    </author>
+    <author>
+      <name>Guillaume Breton</name>
+    </author>
+    <author>
+      <name>Guillaume Kunsch</name>
+    </author>
+    <author>
+      <name>Guillaume Lample</name>
+    </author>
+    <author>
+      <name>Guillaume Martin</name>
+    </author>
+    <author>
+      <name>Guillaume Raille</name>
+    </author>
+    <author>
+      <name>Gunjan Dhanuka</name>
+    </author>
+    <author>
+      <name>Gunshi Gupta</name>
+    </author>
+    <author>
+      <name>Han Zhou</name>
+    </author>
+    <author>
+      <name>Harshil Shah</name>
+    </author>
+    <author>
+      <name>Hasan Furkan Vural</name>
+    </author>
+    <author>
+      <name>Hedi Hadiji</name>
+    </author>
+    <author>
+      <name>Hope McGovern</name>
+    </author>
+    <author>
+      <name>Hugo Cisneros</name>
+    </author>
+    <author>
+      <name>Hugo Thimonier</name>
+    </author>
+    <author>
+      <name>Indraneel Mukherjee</name>
+    </author>
+    <author>
+      <name>Ivan Cuevas Salazar</name>
+    </author>
+    <author>
+      <name>Jacques Sun</name>
+    </author>
+    <author>
+      <name>Jan Ludziejewski</name>
+    </author>
+    <author>
+      <name>Jason Rute</name>
+    </author>
+    <author>
+      <name>Jean Quentin</name>
+    </author>
+    <author>
+      <name>Jean-Hadrien Chabran</name>
+    </author>
+    <author>
+      <name>Jean-Malo Delignon</name>
+    </author>
+    <author>
+      <name>Jie Zhang</name>
+    </author>
+    <author>
+      <name>Joachim Studnia</name>
+    </author>
+    <author>
+      <name>Joep Barmentlo</name>
+    </author>
+    <author>
+      <name>Johannes Brandstetter</name>
+    </author>
+    <author>
+      <name>John Harvill</name>
+    </author>
+    <author>
+      <name>Jonas Amar</name>
+    </author>
+    <author>
+      <name>Jonas Schweizer</name>
+    </author>
+    <author>
+      <name>Josephine Delas</name>
+    </author>
+    <author>
+      <name>Josselin Somerville</name>
+    </author>
+    <author>
+      <name>Julien Denize</name>
+    </author>
+    <author>
+      <name>Julien Tauran</name>
+    </author>
+    <author>
+      <name>Kartik Khandelwal</name>
+    </author>
+    <author>
+      <name>Khyathi Raghavi Chandu</name>
+    </author>
+    <author>
+      <name>Kilian Tep</name>
+    </author>
+    <author>
+      <name>Kush Jain</name>
+    </author>
+    <author>
+      <name>Larissa Laich</name>
+    </author>
+    <author>
+      <name>Laura Calem</name>
+    </author>
+    <author>
+      <name>Laurence Aitchison</name>
+    </author>
+    <author>
+      <name>Laurent Callot</name>
+    </author>
+    <author>
+      <name>Laurent Fainsin</name>
+    </author>
+    <author>
+      <name>Leo Cotteleer</name>
+    </author>
+    <author>
+      <name>Leonard Blier</name>
+    </author>
+    <author>
+      <name>Lingxiao Zhao</name>
+    </author>
+    <author>
+      <name>Louis Martin</name>
+    </author>
+    <author>
+      <name>Louis Serrano</name>
+    </author>
+    <author>
+      <name>Lucile Saulnier</name>
+    </author>
+    <author>
+      <name>Ludovic Ho Fuh</name>
+    </author>
+    <author>
+      <name>Luis Montero</name>
+    </author>
+    <author>
+      <name>Maarten Buyl</name>
+    </author>
+    <author>
+      <name>Manon Chossegros</name>
+    </author>
+    <author>
+      <name>Marcin Mozejko</name>
+    </author>
+    <author>
+      <name>Margaret Jennings</name>
+    </author>
+    <author>
+      <name>Markus Hennerbichler</name>
+    </author>
+    <author>
+      <name>Martin Alexandre</name>
+    </author>
+    <author>
+      <name>Mathieu Poiree</name>
+    </author>
+    <author>
+      <name>Mathieu Schmitt</name>
+    </author>
+    <author>
+      <name>Mathilde Guillaumin</name>
+    </author>
+    <author>
+      <name>Matthieu Andre</name>
+    </author>
+    <author>
+      <name>Matthieu Dinot</name>
+    </author>
+    <author>
+      <name>Matthieu Futeral</name>
+    </author>
+    <author>
+      <name>Maurits Bleeker</name>
+    </author>
+    <author>
+      <name>Mauro Comi</name>
+    </author>
+    <author>
+      <name>Max Mynter</name>
+    </author>
+    <author>
+      <name>Maxim Berman</name>
+    </author>
+    <author>
+      <name>Maxime Darrin</name>
+    </author>
+    <author>
+      <name>Maxime Louis</name>
+    </author>
+    <author>
+      <name>Maximilian Augustin</name>
+    </author>
+    <author>
+      <name>Maximilian Muller</name>
+    </author>
+    <author>
+      <name>Melina Jingting Laimon</name>
+    </author>
+    <author>
+      <name>Mert Unsal</name>
+    </author>
+    <author>
+      <name>Mia Chiquier</name>
+    </author>
+    <author>
+      <name>Michael Pilcer</name>
+    </author>
+    <author>
+      <name>Michal Pietruszka</name>
+    </author>
+    <author>
+      <name>Michal Zajac</name>
+    </author>
+    <author>
+      <name>Mikhail Biriuchinskii</name>
+    </author>
+    <author>
+      <name>Minh-Quang Pham</name>
+    </author>
+    <author>
+      <name>Minwoo Kang</name>
+    </author>
+    <author>
+      <name>Morgane Riviere</name>
+    </author>
+    <author>
+      <name>Namit Katariya</name>
+    </author>
+    <author>
+      <name>Nathan Grinsztajn</name>
+    </author>
+    <author>
+      <name>Nathan Simpson</name>
+    </author>
+    <author>
+      <name>Neeraj Aggarwal</name>
+    </author>
+    <author>
+      <name>Neha Gupta</name>
+    </author>
+    <author>
+      <name>Ola Mysiak</name>
+    </author>
+    <author>
+      <name>Oliver Leicht</name>
+    </author>
+    <author>
+      <name>Olivier Bousquet</name>
+    </author>
+    <author>
+      <name>Olivier Duchenne</name>
+    </author>
+    <author>
+      <name>Parag Jain</name>
+    </author>
+    <author>
+      <name>Patricia Wang</name>
+    </author>
+    <author>
+      <name>Patrick Blies</name>
+    </author>
+    <author>
+      <name>Patrick von Platen</name>
+    </author>
+    <author>
+      <name>Paul Jacob</name>
+    </author>
+    <author>
+      <name>Paul Wambergue</name>
+    </author>
+    <author>
+      <name>Paula Kurylowicz</name>
+    </author>
+    <author>
+      <name>Pavan Kumar Reddy</name>
+    </author>
+    <author>
+      <name>Pavel Kuksa</name>
+    </author>
+    <author>
+      <name>Philippe Pinel</name>
+    </author>
+    <author>
+      <name>Philomene Chagniot</name>
+    </author>
+    <author>
+      <name>Pierre Stock</name>
+    </author>
+    <author>
+      <name>Pierre-Andre Savalle</name>
+    </author>
+    <author>
+      <name>Piotr Milos</name>
+    </author>
+    <author>
+      <name>Prateek Gupta</name>
+    </author>
+    <author>
+      <name>Pravesh Agrawal</name>
+    </author>
+    <author>
+      <name>Quentin Desreumaux</name>
+    </author>
+    <author>
+      <name>Quentin Torroba</name>
+    </author>
+    <author>
+      <name>Quercus Hernandez</name>
+    </author>
+    <author>
+      <name>Ram Ramrakhya</name>
+    </author>
+    <author>
+      <name>Randall Isenhour</name>
+    </author>
+    <author>
+      <name>Ranjit Parva</name>
+    </author>
+    <author>
+      <name>Raul Perez Pelaez</name>
+    </author>
+    <author>
+      <name>Reinhard Sonnleitner</name>
+    </author>
+    <author>
+      <name>Remi Delacourt</name>
+    </author>
+    <author>
+      <name>Richard Kurle</name>
+    </author>
+    <author>
+      <name>Rishi Shah</name>
+    </author>
+    <author>
+      <name>Rob Romijnders</name>
+    </author>
+    <author>
+      <name>Rohin Arora</name>
+    </author>
+    <author>
+      <name>Romain Sauvestre</name>
+    </author>
+    <author>
+      <name>Roman Soletskyi</name>
+    </author>
+    <author>
+      <name>Rosalie Millner</name>
+    </author>
+    <author>
+      <name>Rupert Menneer</name>
+    </author>
+    <author>
+      <name>Sagar Vaze</name>
+    </author>
+    <author>
+      <name>Samuel Barry</name>
+    </author>
+    <author>
+      <name>Samuel Belkadi</name>
+    </author>
+    <author>
+      <name>Samuel Humeau</name>
+    </author>
+    <author>
+      <name>Sanchit Gandhi</name>
+    </author>
+    <author>
+      <name>Sandeep Subramanian</name>
+    </author>
+    <author>
+      <name>Sarthak Mittal</name>
+    </author>
+    <author>
+      <name>Saskia Adaime</name>
+    </author>
+    <author>
+      <name>Sean Cha</name>
+    </author>
+    <author>
+      <name>Sebastian Kaltenbach</name>
+    </author>
+    <author>
+      <name>Shashwat Dalal</name>
+    </author>
+    <author>
+      <name>Shashwat Verma</name>
+    </author>
+    <author>
+      <name>Sherif Waly</name>
+    </author>
+    <author>
+      <name>Shrimai Prabhumoye</name>
+    </author>
+    <author>
+      <name>Siddhant Waghjale</name>
+    </author>
+    <author>
+      <name>Siddharth Gandhi</name>
+    </author>
+    <author>
+      <name>Simon Lepage</name>
+    </author>
+    <author>
+      <name>Simon Sorg</name>
+    </author>
+    <author>
+      <name>Soham Ghosh</name>
+    </author>
+    <author>
+      <name>Sophie Marbach</name>
+    </author>
+    <author>
+      <name>Srijan Mishra</name>
+    </author>
+    <author>
+      <name>Stanislas Lange</name>
+    </author>
+    <author>
+      <name>Steve Hong</name>
+    </author>
+    <author>
+      <name>Sumukh Aithal</name>
+    </author>
+    <author>
+      <name>Szymon Antoniak</name>
+    </author>
+    <author>
+      <name>Tarun Kumar Vangani</name>
+    </author>
+    <author>
+      <name>Teven Le Scao</name>
+    </author>
+    <author>
+      <name>Theo Cachet</name>
+    </author>
+    <author>
+      <name>Thibaut Lavril</name>
+    </author>
+    <author>
+      <name>Thomas Chabal</name>
+    </author>
+    <author>
+      <name>Thomas Coste</name>
+    </author>
+    <author>
+      <name>Thomas Defard</name>
+    </author>
+    <author>
+      <name>Thomas Foubert</name>
+    </author>
+    <author>
+      <name>Thomas Robert</name>
+    </author>
+    <author>
+      <name>Thomas Wang</name>
+    </author>
+    <author>
+      <name>Tianyu Zhang</name>
+    </author>
+    <author>
+      <name>Tim Lawson</name>
+    </author>
+    <author>
+      <name>Timothee Lacroix</name>
+    </author>
+    <author>
+      <name>Tobias Kronlachner</name>
+    </author>
+    <author>
+      <name>Tom Bewley</name>
+    </author>
+    <author>
+      <name>Tom Edwards</name>
+    </author>
+    <author>
+      <name>Tomas Hodan</name>
+    </author>
+    <author>
+      <name>Tuhin Das</name>
+    </author>
+    <author>
+      <name>Tyler Wang</name>
+    </author>
+    <author>
+      <name>Ulrick BLE</name>
+    </author>
+    <author>
+      <name>Umar Jamil</name>
+    </author>
+    <author>
+      <name>Umberto Tomasini</name>
+    </author>
+    <author>
+      <name>Valentin Mace</name>
+    </author>
+    <author>
+      <name>Van Phung</name>
+    </author>
+    <author>
+      <name>Vedant Nanda</name>
+    </author>
+    <author>
+      <name>Victor Jouault</name>
+    </author>
+    <author>
+      <name>Victor Letzelter</name>
+    </author>
+    <author>
+      <name>Victor Paltz</name>
+    </author>
+    <author>
+      <name>Victor Poucheret</name>
+    </author>
+    <author>
+      <name>Vincent Maladiere</name>
+    </author>
+    <author>
+      <name>Vincent Pfister</name>
+    </author>
+    <author>
+      <name>Virgile Richard</name>
+    </author>
+    <author>
+      <name>Vladislav Bataev</name>
+    </author>
+    <author>
+      <name>Wassim Bouaziz</name>
+    </author>
+    <author>
+      <name>Wen Ding Li</name>
+    </author>
+    <author>
+      <name>William Havard</name>
+    </author>
+    <author>
+      <name>William Marshall</name>
+    </author>
+    <author>
+      <name>Xinghui Li</name>
+    </author>
+    <author>
+      <name>Xingran Guo</name>
+    </author>
+    <author>
+      <name>Xinyu Yang</name>
+    </author>
+    <author>
+      <name>Yann Dreze</name>
+    </author>
+    <author>
+      <name>Yassine El Ouahidi</name>
+    </author>
+    <author>
+      <name>Yassir Bendou</name>
+    </author>
+    <author>
+      <name>Yihan Wang</name>
+    </author>
+    <author>
+      <name>Yimu Pan</name>
+    </author>
+    <author>
+      <name>Yves Martin des Taillades</name>
+    </author>
+    <author>
+      <name>Zaccharie Ramzi</name>
+    </author>
+    <author>
+      <name>Zhenlin Xu</name>
+    </author>
+    <author>
+      <name>Zsofia Csakany</name>
+    </author>
+  </entry>
+</feed>

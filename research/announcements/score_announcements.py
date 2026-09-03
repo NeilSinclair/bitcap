@@ -17,7 +17,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import sys
 import threading
@@ -354,8 +356,13 @@ def classify(
 CACHE_WRITE_MULT = 1.25
 CACHE_READ_MULT = 0.10
 
+# The Batches API bills every token at half the interactive rate. Applied on
+# top of the cache multipliers above, not instead of them -- a batched,
+# cache-read token is still 0.10x input, then halved again.
+BATCH_MULT = 0.5
 
-def call_cost(model: str, url: str, usage, started: float) -> dict:
+
+def call_cost(model: str, url: str, usage, started: float, mode: str = "interactive") -> dict:
     """Build a cost record from provider-reported usage, cache-aware.
 
     Args:
@@ -364,6 +371,11 @@ def call_cost(model: str, url: str, usage, started: float) -> dict:
         usage: Anthropic usage object; cache fields may be absent or None on
             responses that touched no cache.
         started: Wall time the call began.
+        mode: "interactive" or "batch" -- recorded on every row so a run's cost
+            is never averaged across the two rates without the mode being
+            visible (planning.md 4a: "the cost log records which mode a run
+            used, since the same workflow costs twice as much interactively as
+            batched").
 
     Returns:
         Cost record, with cache write/read tokens broken out.
@@ -377,9 +389,12 @@ def call_cost(model: str, url: str, usage, started: float) -> dict:
         + cache_read * in_rate * CACHE_READ_MULT
         + usage.output_tokens * out_rate
     ) / 1e6
+    if mode == "batch":
+        usd *= BATCH_MULT
     return {
         "url": url,
         "model": model,
+        "mode": mode,
         "input_tokens": usage.input_tokens,
         "output_tokens": usage.output_tokens,
         "cache_write_tokens": cache_write,
@@ -438,6 +453,166 @@ def classify_one(
     return result, cost, None
 
 
+def run_batch(
+    client: anthropic.Anthropic,
+    model: str,
+    articles: list[dict],
+    mech_ids: set[str],
+    cat_ids: set[str],
+    prac_ids: set[str] | None,
+    dimensions: dict[str, set[str]] | None,
+    max_dimensions: int | None,
+    poll_seconds: int = 30,
+) -> tuple[dict[str, dict], list[dict], list[dict]]:
+    """Classify every uncached article in one Message Batches job.
+
+    Half the interactive price (planning.md 4a: "the Batches API for
+    backfills ... latency is irrelevant when seeding history"), at the cost
+    of the batch's own latency -- most finish within an hour, the API's own
+    ceiling is 24h. The right tradeoff for a scheduled run nobody is waiting
+    on. Cached articles are skipped exactly as `classify_one` skips them, so
+    a re-run only ever bills the genuinely new items, same idempotency
+    guarantee as the interactive path.
+
+    Args:
+        client: Anthropic client.
+        model: Model id.
+        articles: Full article list; already-cached ones are skipped.
+        mech_ids: Valid mechanism ids.
+        cat_ids: Valid category ids.
+        prac_ids: Valid practice ids.
+        dimensions: Valid dimension names per practice id.
+        max_dimensions: Cap on dimensions per tag.
+        poll_seconds: Delay between batch status checks.
+
+    Returns:
+        Tuple of (results keyed by url, failures, cost records).
+    """
+    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+    from anthropic.types.messages.batch_create_params import Request
+
+    results: dict[str, dict] = {}
+    failures: list[dict] = []
+    costs: list[dict] = []
+    by_custom_id: dict[str, dict] = {}
+    requests = []
+
+    def bill(url: str, usage) -> None:
+        # Written to disk immediately, one item at a time -- the same
+        # incremental-write guarantee the interactive path's `record()`
+        # closure already has. A batch can be hundreds of items; without
+        # this, a crash partway through the results loop below would lose
+        # every already-billed item's cost record, not just the one that
+        # crashed it.
+        cost = call_cost(model, url, usage, started, mode="batch")
+        costs.append(cost)
+        history = json.loads(COST.read_text()) if COST.exists() else []
+        history.append(cost)
+        COST.write_text(json.dumps(history, indent=2))
+
+    for article in articles:
+        key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
+        cached = CACHE / key
+        if cached.exists():
+            results[article["url"]] = json.loads(cached.read_text())
+            continue
+        system, user = build_prompt(article)
+        # A hash, not the truncated-slug cache key: two distinct URLs can
+        # share a truncated slug, and custom_id is what results() uses to
+        # route an answer back to its article -- a collision here would
+        # silently misattribute a classification.
+        custom_id = hashlib.sha1(article["url"].encode()).hexdigest()
+        by_custom_id[custom_id] = article
+        requests.append(
+            Request(
+                custom_id=custom_id,
+                params=MessageCreateParamsNonStreaming(
+                    model=model,
+                    max_tokens=12000,
+                    system=[{
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }],
+                    messages=[{"role": "user", "content": user}],
+                    output_config={"format": {"type": "json_schema", "schema": SCHEMA}},
+                ),
+            )
+        )
+
+    if not requests:
+        print("  batch: nothing new to score, all articles cached")
+        return results, failures, costs
+
+    print(f"  batch: submitting {len(requests)} requests", flush=True)
+    started = time.time()
+    batch = client.messages.batches.create(requests=requests)
+    print(f"  batch: {batch.id}, status {batch.processing_status}", flush=True)
+
+    while True:
+        batch = client.messages.batches.retrieve(batch.id)
+        if batch.processing_status == "ended":
+            break
+        print(
+            f"  batch: {batch.processing_status}, "
+            f"processing={batch.request_counts.processing}",
+            flush=True,
+        )
+        time.sleep(poll_seconds)
+
+    print(
+        f"  batch: ended after {time.time() - started:.0f}s, "
+        f"succeeded={batch.request_counts.succeeded} "
+        f"errored={batch.request_counts.errored}",
+        flush=True,
+    )
+
+    for item in client.messages.batches.results(batch.id):
+        article = by_custom_id[item.custom_id]
+        if item.result.type != "succeeded":
+            # Batch-level failure (expired/errored/canceled) -- no `message`
+            # exists at all here, so nothing was billed to record.
+            failures.append({"url": article["url"], "error": f"batch {item.result.type}"})
+            continue
+        message = item.result.message
+        if message.stop_reason == "refusal":
+            # Still billed: `message.usage` reflects real tokens the API
+            # charged for before it refused.
+            bill(article["url"], message.usage)
+            failures.append(
+                {"url": article["url"], "error": f"refused: {message.stop_details}"}
+            )
+            continue
+        if message.stop_reason == "max_tokens":
+            bill(article["url"], message.usage)
+            failures.append(
+                {"url": article["url"], "error": "truncated output; raise max_tokens"}
+            )
+            continue
+
+        try:
+            text = next(b.text for b in message.content if b.type == "text")
+            result = json.loads(text)
+            result["dropped_tags"] = drop_unknown_tags(
+                result, mech_ids, cat_ids, prac_ids, dimensions, max_dimensions
+            )
+            result["dropped_tags"] += enforce_quotes(result, article["text"])
+        except (StopIteration, json.JSONDecodeError) as exc:
+            # Also billed -- the model produced *some* output, it just
+            # wasn't parseable JSON. One bad item must not abort the whole
+            # batch loop and take every already-billed item's cost with it.
+            bill(article["url"], message.usage)
+            failures.append({"url": article["url"], "error": f"{type(exc).__name__}: {exc}"})
+            continue
+
+        key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
+        (CACHE / key).write_text(json.dumps(result))
+        results[article["url"]] = result
+        bill(article["url"], message.usage)
+
+    return results, failures, costs
+
+
 def main() -> None:
     """Score every fetched announcement and write the register."""
     parser = argparse.ArgumentParser()
@@ -453,7 +628,28 @@ def main() -> None:
         "--only",
         help="path to a JSON list of URLs; classify only these",
     )
+    parser.add_argument(
+        "--batch",
+        action="store_true",
+        help="use the Message Batches API (half price, async) instead of "
+             "interactive concurrent calls",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="run even if SCORING_ENABLED is unset or false",
+    )
     args = parser.parse_args()
+
+    # Deactivation switch. Extraction (announcements/papers/github) runs on
+    # its own; scoring is a separate, later phase and stays off until this is
+    # explicitly flipped on -- see docs/decisions.md for the rationale. A
+    # human running the script directly can still force a single run with
+    # --force without changing the default for anything scheduled.
+    if os.environ.get("SCORING_ENABLED", "").lower() not in ("1", "true", "yes") and not args.force:
+        print("SCORING_ENABLED is not set -- scoring is deactivated. "
+              "Set SCORING_ENABLED=true or pass --force to run anyway.")
+        return
 
     load_env()
     CACHE.mkdir(parents=True, exist_ok=True)
@@ -470,9 +666,33 @@ def main() -> None:
         articles = articles[: args.limit]
 
     client = anthropic.Anthropic()
-    costs = json.loads(COST.read_text()) if COST.exists() else []
+
+    if args.batch:
+        # run_batch writes each item's cost to COST as it processes results
+        # (see `bill()` inside it) -- nothing left to persist here, and
+        # re-reading + re-appending batch_costs on top would duplicate every
+        # entry it already wrote.
+        results, failures, batch_costs = run_batch(
+            client, args.model, articles, mech_ids, cat_ids, prac_ids, dims, cap
+        )
+        scored = []
+        for article in articles:
+            result = results.get(article["url"])
+            if not result:
+                continue
+            result["score"], result["band"] = score_of(result, rules)
+            scored.append({**article, **result})
+        scored.sort(key=lambda a: -a["score"])
+        OUT.write_text(json.dumps({"scored": scored, "failures": failures}, indent=2))
+        spent = sum(c["usd"] for c in batch_costs)
+        print(f"\nscored {len(scored)}, failed {len(failures)}, ${spent:.4f} (batch)")
+        for band in ("high", "medium", "low", "none"):
+            print(f"  {band:<7} {sum(1 for s in scored if s['band'] == band)}")
+        return
+
     results: dict[str, dict] = {}
     failures: list[dict] = []
+    costs = json.loads(COST.read_text()) if COST.exists() else []
     lock = threading.Lock()
     done = 0
     started = time.time()

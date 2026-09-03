@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/tk0cTyhlrN7XGs7e4pfUaJf9fGM</id>
+  <title>arXiv Query: search_query=ti:"Reinforcement Learning for Code Optimization"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:04:45Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Reinforcement+Learning+for+Code+Optimization%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2607.25970v1</id>
+    <title>Reinforcement Learning for Code Optimization</title>
+    <updated>2026-07-28T16:52:31Z</updated>
+    <link href="https://arxiv.org/abs/2607.25970v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.25970v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>RL for code correctness is now established: have the model generate a program, run it against hidden test cases, and reward solutions that pass. Extending this to code optimization seems straightforward: just add execution time to the reward. But in practice, once timing drives the reward, small problems in measurement noise, reward sparsity, or GRPO instability overwhelm the signal and make RL fail: generated solutions are barely faster, and more of them can fail. We make execution time learnable through three stages: (1) how code is tested, by building DMC-Optim with large optimization tests and a calibrated sandbox; (2) how speed is turned into reward, by composing correctness and speed in the RL environment and using an offline simulator to predict the most promising configurations; and (3) how the model learns from that reward, by adapting GRPO and evaluation to the sparser, noisier timed-execution setting. On DMC-Optim, the strongest optimization-aware configurations improve strict top-50% pass@1 from 18.0% to 31.3% on Qwen 2.5 7B and from 30.7% to 50.4% on CWM 32B. These gains further increase at stricter percentiles such as top-30%, with 125% relative improvement for CWM 32B, while preserving pure-correctness scores. When the timing sandbox is degraded, robust optimization RL reaches 100% to 200% improvement over standard RLVR, depending on the evaluation criterion. On LCB, CWM 32B wins up to 83% of median-sample speed comparisons against standard RLVR. Relative to the fastest correct human submissions per problem, it reaches about half the human rate of complexity-class improvements (14% vs. 28%).</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-28T16:52:31Z</published>
+    <arxiv:comment>125 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Pierre Chambon</name>
+    </author>
+    <author>
+      <name>Kunhao Zheng</name>
+    </author>
+    <author>
+      <name>Juliette Decugis</name>
+    </author>
+    <author>
+      <name>Benoit Sagot</name>
+    </author>
+    <author>
+      <name>Gabriel Synnaeve</name>
+    </author>
+  </entry>
+</feed>

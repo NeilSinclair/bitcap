@@ -6,7 +6,9 @@ rule that quietly stops distinguishing signal from noise, and a date parser
 that places an old release inside the window.
 """
 
+import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -15,7 +17,15 @@ import yaml
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "research" / "announcements"))
 
-from fetch_announcements import date_from_page, date_from_slug, strip_html
+import fetch_announcements
+from fetch_announcements import (
+    date_from_page,
+    date_from_slug,
+    from_listing_pagination,
+    from_rss,
+    from_wayback_cdx,
+    strip_html,
+)
 
 
 @pytest.fixture(scope="module")
@@ -113,6 +123,490 @@ class TestStripHtml:
 
     def test_collapses_whitespace(self):
         assert strip_html("<p>a</p>\n\n   <p>b</p>") == "a b"
+
+
+def _rss_xml(title="Example headline", summary="A short summary.", link="https://x.example/a"):
+    return f"""<rss><channel><item>
+        <title>{title}</title>
+        <description>{summary}</description>
+        <link>{link}</link>
+        <pubDate>Mon, 01 Sep 2025 00:00:00 GMT</pubDate>
+    </item></channel></rss>"""
+
+
+class TestFromRssTextSource:
+    """The silent failure this suite exists to catch: `text_source` in the
+    output claims a page was fully read when the RSS path actually only ever
+    saw the feed's own title+summary (or the reverse) -- a downstream score
+    then can't be trusted to mean what its `text_source` field says it means.
+    """
+
+    def test_rss_summary_never_fetches_the_article_page(self, monkeypatch):
+        calls = {"index": 0, "article": 0}
+
+        def fake_fetch(url):
+            calls["index" if url == "https://feed.example/rss" else "article"] += 1
+            return _rss_xml()
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "openai", "index_url": "https://feed.example/rss", "text_source": "rss_summary"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+
+        assert calls["article"] == 0
+        assert out[0]["text_source"] == "rss_summary"
+        assert out[0]["text"] == "Example headline. A short summary."
+
+    def test_full_text_fetches_and_strips_the_article_page(self, monkeypatch):
+        def fake_fetch(url):
+            if url == "https://feed.example/rss":
+                return _rss_xml(link="https://x.example/a")
+            assert url == "https://x.example/a"
+            return "<html><body><p>The real article body.</p></body></html>"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss", "text_source": "full_text"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+
+        assert out[0]["text_source"] == "full_text"
+        assert out[0]["text"] == "The real article body."
+
+    def test_full_text_falls_back_to_summary_on_fetch_failure(self, monkeypatch, capsys):
+        # A source declared full_text but temporarily unreachable must not
+        # crash the whole run, and must not silently mislabel the fallback
+        # text as full_text either.
+        def fake_fetch(url):
+            if url == "https://feed.example/rss":
+                return _rss_xml()
+            raise RuntimeError("fetch failed: 500")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "mistral", "index_url": "https://feed.example/rss", "text_source": "full_text"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+
+        assert out[0]["text_source"] == "rss_summary"
+        assert out[0]["text"] == "Example headline. A short summary."
+        assert "SKIP full text" in capsys.readouterr().out
+
+
+def _listing_html(*slugs):
+    links = "".join(f'<a href="https://ai.example/blog/{s}/">{s}</a>' for s in slugs)
+    return f"<html><body>{links}</body></html>"
+
+
+def _article_html(date_text, title="An Article Title"):
+    return (
+        f"<html><title>{title}</title><body>Some article body. "
+        f"{date_text} More body text.</body></html>"
+    )
+
+
+class TestFromListingPagination:
+    """The silent failure this suite exists to catch: a listing page that
+    changes shape or stops paginating cleanly turns into either an
+    unbounded fetch loop, or a run that silently stops one page early and
+    never notices it missed real in-window articles.
+    """
+
+    def _lab(self, **overrides):
+        lab = {
+            "id": "meta-ai",
+            "index_url": "https://ai.example/blog/",
+            "page_param": "page",
+            "url_contains": "/blog/",
+            "text_source": "full_text",
+        }
+        lab.update(overrides)
+        return lab
+
+    def test_single_page_all_in_window(self, monkeypatch):
+        pages = {
+            "https://ai.example/blog/": _listing_html("a", "b"),
+            "https://ai.example/blog/a/": _article_html("September 1, 2026"),
+            "https://ai.example/blog/b/": _article_html("August 20, 2026"),
+            "https://ai.example/blog/?page=2": _listing_html(),  # empty -> stop
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert {a["url"] for a in out} == {
+            "https://ai.example/blog/a/",
+            "https://ai.example/blog/b/",
+        }
+
+    def test_stops_when_a_page_is_entirely_out_of_window(self, monkeypatch):
+        pages = {
+            "https://ai.example/blog/": _listing_html("new"),
+            "https://ai.example/blog/new/": _article_html("September 1, 2026"),
+            "https://ai.example/blog/?page=2": _listing_html("old"),
+            "https://ai.example/blog/old/": _article_html("January 1, 2020"),
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert [a["url"] for a in out] == ["https://ai.example/blog/new/"]
+
+    def test_listing_index_url_is_excluded_from_its_own_candidates(self, monkeypatch):
+        # Caught live: the listing page links to itself (nav/logo/home
+        # link), which trivially contains url_contains -- it was scraped as
+        # an "article" with a date lifted from its own featured-item text.
+        html = (
+            '<html><body><a href="https://ai.example/blog/">Home</a>'
+            '<a href="https://ai.example/blog/real/">real</a></body></html>'
+        )
+        pages = {
+            "https://ai.example/blog/": html,
+            "https://ai.example/blog/real/": _article_html("September 1, 2026"),
+            "https://ai.example/blog/?page=2": _listing_html(),
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert [a["url"] for a in out] == ["https://ai.example/blog/real/"]
+
+    def test_title_read_from_title_tag_not_body_text_split(self, monkeypatch):
+        pages = {
+            "https://ai.example/blog/": _listing_html("real"),
+            "https://ai.example/blog/real/": _article_html(
+                "September 1, 2026", title="The Real Headline"
+            ),
+            "https://ai.example/blog/?page=2": _listing_html(),
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert out[0]["title"] == "The Real Headline"
+
+    def test_title_tag_with_attributes_still_matches(self, monkeypatch):
+        # Confirmed live: Meta AI's real pages use <title id="pageTitle">,
+        # not a bare <title> -- an exact-match regex silently found nothing
+        # on every single article before this was caught and fixed.
+        article = (
+            '<html><title id="pageTitle">Attributed Title</title><body>'
+            "September 1, 2026</body></html>"
+        )
+        pages = {
+            "https://ai.example/blog/": _listing_html("real"),
+            "https://ai.example/blog/real/": article,
+            "https://ai.example/blog/?page=2": _listing_html(),
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert out[0]["title"] == "Attributed Title"
+
+    def test_url_contains_filters_non_article_links(self, monkeypatch):
+        html = (
+            '<html><body><a href="https://ai.example/blog/real/">x</a>'
+            '<a href="https://ai.example/careers/">not an article</a></body></html>'
+        )
+        pages = {
+            "https://ai.example/blog/": html,
+            "https://ai.example/blog/real/": _article_html("September 1, 2026"),
+        }
+        monkeypatch.setattr(
+            "fetch_announcements.fetch", lambda url, user_agent=None: pages.get(url, "")
+        )
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert [a["url"] for a in out] == ["https://ai.example/blog/real/"]
+
+    def test_max_pages_is_a_hard_cap(self, monkeypatch):
+        # Every page yields exactly one new, in-window article -- without a
+        # cap this listing would paginate forever.
+        def fake_fetch(url, user_agent=None):
+            if "?page=" in url:
+                n = url.split("page=")[-1]
+                return _listing_html(f"p{n}")
+            if url == "https://ai.example/blog/":
+                return _listing_html("p1")
+            return _article_html("September 1, 2026")  # an article page
+
+        monkeypatch.setattr("fetch_announcements.fetch", fake_fetch)
+        out = from_listing_pagination(self._lab(max_pages=3), datetime(2026, 1, 1))
+        assert len(out) == 3  # capped, not infinite
+
+    def test_single_article_fetch_failure_does_not_abort_the_page(self, monkeypatch):
+        def fake_fetch(url, user_agent=None):
+            if url.endswith("broken/"):
+                raise RuntimeError("fetch failed: 500")
+            pages = {
+                "https://ai.example/blog/": _listing_html("broken", "ok"),
+                "https://ai.example/blog/ok/": _article_html("September 1, 2026"),
+                "https://ai.example/blog/?page=2": _listing_html(),
+            }
+            return pages[url]
+
+        monkeypatch.setattr("fetch_announcements.fetch", fake_fetch)
+        out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
+        assert [a["url"] for a in out] == ["https://ai.example/blog/ok/"]
+
+    def test_user_agent_is_threaded_through_to_fetch(self, monkeypatch):
+        seen_uas = []
+
+        def fake_fetch(url, user_agent=None):
+            seen_uas.append(user_agent)
+            if url == "https://ai.example/blog/":
+                return _listing_html("a")
+            if url.endswith("a/"):
+                return _article_html("September 1, 2026")
+            return _listing_html()
+
+        monkeypatch.setattr("fetch_announcements.fetch", fake_fetch)
+        from_listing_pagination(self._lab(user_agent=""), datetime(2026, 1, 1))
+        assert all(ua is None for ua in seen_uas)  # "" normalizes to None, never sent as-is
+
+
+def _cdx_rows(*pairs):
+    """Build a CDX JSON response body: pairs of (url, timestamp)."""
+    import json as _json
+
+    return _json.dumps([["original", "timestamp"], *[list(p) for p in pairs]])
+
+
+def _xai_page(date_iso=None, title="An Announcement", body_date_text=None):
+    """A minimal archived x.ai page, JSON-LD date optional."""
+    jsonld = (
+        f'<script type="application/ld+json">{{"datePublished": "{date_iso}T00:00:00Z"}}</script>'
+        if date_iso
+        else ""
+    )
+    body_date = body_date_text or ""
+    return (
+        f"<html><head><title>{title} | SpaceXAI</title>{jsonld}</head>"
+        f"<body>Back to news {body_date} {title} is now available.</body></html>"
+    )
+
+
+class TestFromWaybackCdx:
+    """The silent failure this suite exists to catch: trusting a snapshot's
+    crawl date as the article's publish date, which would place an old,
+    merely-recrawled page inside the window -- confirmed live, a real
+    2024-dated xAI page was recrawled in August 2026.
+    """
+
+    def _lab(self, **overrides):
+        lab = {
+            "id": "xai",
+            "index_url": "https://x.ai/news",
+            "url_contains": "/news/",
+            "text_source": "full_text_archived",
+        }
+        lab.update(overrides)
+        return lab
+
+    def test_dates_from_jsonld_not_crawl_timestamp(self, monkeypatch):
+        # The CDX timestamp (20260828, August) is recent; the article's own
+        # JSON-LD date (2024-05-26) is not -- the crawl date must never be
+        # used as a stand-in.
+        pages = {
+            "https://x.ai/news/series-b": _xai_page(date_iso="2024-05-26", title="Series B"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(("https://x.ai/news/series-b", "20260828141342"))
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert out == []  # 2024 is outside a June-2026 cutoff, despite the fresh crawl
+
+    def test_in_window_article_kept_with_archive_snapshot_recorded(self, monkeypatch):
+        pages = {
+            "https://x.ai/news/composer-2-5": _xai_page(date_iso="2026-07-15", title="Composer 2.5"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(("https://x.ai/news/composer-2-5", "20260828151426"))
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert len(out) == 1
+        art = out[0]
+        assert art["url"] == "https://x.ai/news/composer-2-5"  # live URL preserved, not replaced
+        assert art["date"] == "2026-07-15"
+        assert art["archive_snapshot"].startswith("http://web.archive.org/web/20260828151426id_/")
+        assert art["text_source"] == "full_text_archived"
+
+    def test_title_site_suffix_stripped_both_brand_variants(self, monkeypatch):
+        pages = {
+            "https://x.ai/news/a": _xai_page(date_iso="2026-07-01", title="Grok 5"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(("https://x.ai/news/a", "20260801000000"))
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert out[0]["title"] == "Grok 5"  # " | SpaceXAI" suffix stripped
+
+    def test_missing_jsonld_falls_back_to_visible_page_date(self, monkeypatch):
+        pages = {
+            "https://x.ai/news/a": _xai_page(title="Old-style Page", body_date_text="Jun 15, 2026"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(("https://x.ai/news/a", "20260801000000"))
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert out[0]["date"] == "2026-06-15"
+
+    def test_index_url_and_image_assets_excluded_from_candidates(self, monkeypatch):
+        pages = {
+            "https://x.ai/news/real": _xai_page(date_iso="2026-07-01", title="Real Article"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(
+                    ("https://x.ai/news", "20260801000000"),  # bare index -- excluded
+                    ("https://x.ai/news/real/opengraph-image-abc.png", "20260801000000"),
+                    ("https://x.ai/news/real", "20260801000000"),
+                )
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert [a["url"] for a in out] == ["https://x.ai/news/real"]
+
+    def test_query_string_variants_dedupe_to_the_latest_snapshot(self, monkeypatch):
+        calls = []
+        pages = {
+            "https://x.ai/news/real": _xai_page(date_iso="2026-07-01", title="Real Article"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(
+                    ("https://x.ai/news/real?_rsc=abc", "20260601000000"),
+                    ("https://x.ai/news/real?utm_source=x", "20260615000000"),
+                    ("https://x.ai/news/real", "20260828000000"),  # latest -- must win
+                )
+            calls.append(url)
+            return pages[url.split("id_/", 1)[1]]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert len(out) == 1  # one article, not three near-duplicate query-string rows
+        assert len(calls) == 1  # only the winning (latest) snapshot was ever fetched
+        assert "20260828000000" in calls[0]
+
+    def test_one_snapshot_fetch_failure_does_not_abort_the_run(self, monkeypatch):
+        pages = {
+            "https://x.ai/news/good": _xai_page(date_iso="2026-07-01", title="Good"),
+        }
+
+        def fake_fetch(url):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(
+                    ("https://x.ai/news/bad", "20260801000000"),
+                    ("https://x.ai/news/good", "20260801000000"),
+                )
+            real_url = url.split("id_/", 1)[1]
+            if real_url == "https://x.ai/news/bad":
+                raise RuntimeError("wayback fetch failed: 503")
+            return pages[real_url]
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        out = from_wayback_cdx(self._lab(), datetime(2026, 6, 1))
+        assert [a["url"] for a in out] == ["https://x.ai/news/good"]
+
+
+class TestWaybackDecompress:
+    def test_uncompressed_body_passed_through(self):
+        body = b"<html>plain</html>"
+        assert fetch_announcements._wayback_decompress(body, "") == body
+
+    def test_gzip_body_decoded(self):
+        import gzip as _gzip
+
+        raw = b"<html>gzipped</html>"
+        compressed = _gzip.compress(raw)
+        assert fetch_announcements._wayback_decompress(compressed, "gzip") == raw
+
+    def test_gzip_magic_bytes_detected_even_without_header_saying_so(self):
+        # Confirmed in backfill_openai.py: the declared Content-Encoding and
+        # the actual bytes disagree often enough that both are checked.
+        import gzip as _gzip
+
+        raw = b"<html>gzipped</html>"
+        compressed = _gzip.compress(raw)
+        assert fetch_announcements._wayback_decompress(compressed, "") == raw
+
+
+class TestFetchUserAgentOverride:
+    def test_default_user_agent_is_the_module_constant(self, monkeypatch):
+        captured = {}
+
+        class FakeResponse:
+            def read(self):
+                return b"body"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake_urlopen(req, timeout=45):
+            captured["headers"] = dict(req.header_items())
+            return FakeResponse()
+
+        import fetch_announcements as fa
+
+        monkeypatch.setattr(fa.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(fa, "CACHE", fa.CACHE.parent / "test_cache_nonexistent")
+        import shutil
+
+        shutil.rmtree(fa.CACHE, ignore_errors=True)
+        try:
+            fa.fetch("https://example.com/x")
+            assert captured["headers"].get("User-agent") == fa.UA
+        finally:
+            shutil.rmtree(fa.CACHE, ignore_errors=True)
+
+    def test_empty_user_agent_sends_no_override(self, monkeypatch):
+        captured = {}
+
+        class FakeResponse:
+            def read(self):
+                return b"body"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake_urlopen(req, timeout=45):
+            captured["headers"] = dict(req.header_items())
+            return FakeResponse()
+
+        import fetch_announcements as fa
+
+        monkeypatch.setattr(fa.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(fa, "CACHE", fa.CACHE.parent / "test_cache_nonexistent2")
+        import shutil
+
+        shutil.rmtree(fa.CACHE, ignore_errors=True)
+        try:
+            fa.fetch("https://example.com/y", user_agent=None)
+            # Confirmed live against ai.meta.com's actual block behaviour:
+            # the module's browser-style UA must not be the one sent.
+            assert captured["headers"].get("User-agent") != fa.UA
+        finally:
+            shutil.rmtree(fa.CACHE, ignore_errors=True)
 
 
 class TestScore:
@@ -282,8 +776,8 @@ class TestConfigIntegrity:
     def test_sources_declare_a_known_method(self):
         cfg = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
         for lab in cfg["labs"]:
-            assert lab["method"] in {"sitemap", "rss"}
-            assert lab["text_source"] in {"full_text", "rss_summary"}
+            assert lab["method"] in {"sitemap", "rss", "listing_pagination", "wayback_cdx"}
+            assert lab["text_source"] in {"full_text", "rss_summary", "full_text_archived"}
 
 
 class _LazyScoreAnnouncements:
@@ -581,3 +1075,261 @@ class TestCallCost:
         c = self.cost(_Usage(3_560, 2_500, write=0, read=7_280))
         expected = (3_560 * 2.0 + 7_280 * 2.0 * 0.10 + 2_500 * 10.0) / 1e6
         assert c["usd"] == pytest.approx(round(expected, 6))
+
+    def test_default_mode_is_interactive(self):
+        c = self.cost(_Usage(1_000_000, 100_000))
+        assert c["mode"] == "interactive"
+
+
+class TestCallCostBatchMode:
+    """The silent failure here: a batch run's cost log looks identical to an
+    interactive run's, so a cost dashboard can't separate the two rates the
+    workflow actually paid -- planning.md 4a requires the mode be recorded,
+    not just the number."""
+
+    def cost(self, usage, mode):
+        from score_announcements import call_cost
+
+        return call_cost("claude-sonnet-5", "https://x", usage, 0.0, mode=mode)
+
+    def test_batch_mode_halves_the_price(self):
+        interactive = self.cost(_Usage(1_000_000, 100_000), "interactive")
+        batch = self.cost(_Usage(1_000_000, 100_000), "batch")
+        assert batch["usd"] == pytest.approx(interactive["usd"] * 0.5)
+
+    def test_batch_mode_halves_cache_components_too(self):
+        # The 0.5x must apply to the already cache-adjusted total, not just
+        # the plain input/output tokens -- a batch call that mostly reads
+        # from cache should still be half the interactive equivalent.
+        interactive = self.cost(_Usage(0, 0, write=1_000_000), "interactive")
+        batch = self.cost(_Usage(0, 0, write=1_000_000), "batch")
+        assert batch["usd"] == pytest.approx(interactive["usd"] * 0.5)
+
+    def test_mode_is_recorded_on_the_row(self):
+        assert self.cost(_Usage(100, 10), "batch")["mode"] == "batch"
+
+
+class TestScoringEnabledGate:
+    """The silent failure here: a scheduled invocation of this script spends
+    real money the moment it exists, with no explicit switch a human decided
+    to flip. The gate must be off by default and never bypassed silently."""
+
+    class _Proceeded(Exception):
+        """Raised by the patched load_env() to prove control passed the gate."""
+
+    def _prepare(self, monkeypatch, env, argv):
+        import score_announcements as mod
+
+        monkeypatch.delenv("SCORING_ENABLED", raising=False)
+        for k, v in env.items():
+            monkeypatch.setenv(k, v)
+        monkeypatch.setattr(mod.sys, "argv", ["score_announcements.py", *argv])
+
+        def fake_load_env():
+            raise self._Proceeded
+
+        monkeypatch.setattr(mod, "load_env", fake_load_env)
+        return mod
+
+    def test_unset_env_var_blocks_the_run(self, monkeypatch, capsys):
+        mod = self._prepare(monkeypatch, {}, [])
+        mod.main()  # returns quietly; load_env is never reached
+        assert "deactivated" in capsys.readouterr().out
+
+    def test_false_env_var_blocks_the_run(self, monkeypatch):
+        mod = self._prepare(monkeypatch, {"SCORING_ENABLED": "false"}, [])
+        mod.main()
+
+    def test_force_flag_bypasses_the_gate_even_when_unset(self, monkeypatch):
+        # --force is an explicit, visible human decision at the call site,
+        # not a silent default -- that distinction is the point of the gate.
+        mod = self._prepare(monkeypatch, {}, ["--force"])
+        with pytest.raises(self._Proceeded):
+            mod.main()
+
+    def test_true_env_var_lets_it_proceed_past_the_gate(self, monkeypatch):
+        mod = self._prepare(monkeypatch, {"SCORING_ENABLED": "true"}, [])
+        with pytest.raises(self._Proceeded):
+            mod.main()
+
+    def test_case_insensitive_true_values_accepted(self, monkeypatch):
+        for value in ("1", "True", "YES"):
+            mod = self._prepare(monkeypatch, {"SCORING_ENABLED": value}, [])
+            with pytest.raises(self._Proceeded):
+                mod.main()
+
+
+class _Content:
+    """Stub of one content block in a batch result message."""
+
+    def __init__(self, type, text=None):
+        self.type = type
+        self.text = text
+
+
+class _Message:
+    """Stub of a batch item's `result.message`."""
+
+    def __init__(self, stop_reason, content, usage):
+        self.stop_reason = stop_reason
+        self.content = content
+        self.usage = usage
+        self.stop_details = None
+
+
+class _Result:
+    def __init__(self, type, message=None):
+        self.type = type
+        self.message = message
+
+
+class _ResultItem:
+    def __init__(self, custom_id, result):
+        self.custom_id = custom_id
+        self.result = result
+
+
+class _Batch:
+    def __init__(self, id, processing_status, succeeded=0, errored=0):
+        self.id = id
+        self.processing_status = processing_status
+        self.request_counts = type("_Counts", (), {"processing": 0, "succeeded": succeeded, "errored": errored})()
+
+
+class _FakeBatches:
+    """Stub of `client.messages.batches` -- create/retrieve/results only."""
+
+    def __init__(self, result_items):
+        self._result_items = result_items
+
+    def create(self, requests):
+        return _Batch("batch_1", "ended", succeeded=len(self._result_items))
+
+    def retrieve(self, batch_id):
+        return _Batch(batch_id, "ended", succeeded=len(self._result_items))
+
+    def results(self, batch_id):
+        return iter(self._result_items)
+
+
+class _FakeClient:
+    def __init__(self, result_items):
+        self.messages = type("_Messages", (), {"batches": _FakeBatches(result_items)})()
+
+
+class TestRunBatch:
+    """The silent failure this suite exists to catch: one bad item in a
+    hundred-item batch either loses the cost record of every already-billed
+    item ahead of it, or a genuinely billed refusal/truncation contributes
+    no cost row at all -- both real bugs found by code review, not by a
+    test written in advance.
+    """
+
+    def _article(self, url):
+        return {
+            "url": url,
+            "text": "some article text",
+            "date": "2026-01-01",
+            "title": "T",
+            "lab": "anthropic",
+            "text_source": "full_text",
+        }
+
+    def _run(self, monkeypatch, tmp_path, result_items, articles):
+        import score_announcements as sa
+
+        monkeypatch.setattr(sa, "CACHE", tmp_path / "cache")
+        (tmp_path / "cache").mkdir()
+        cost_path = tmp_path / "cost.json"
+        monkeypatch.setattr(sa, "COST", cost_path)
+        client = _FakeClient(result_items)
+        results, failures, costs = sa.run_batch(
+            client, "claude-sonnet-5", articles, set(), set(), None, None, None, poll_seconds=0
+        )
+        return results, failures, costs, cost_path
+
+    def test_malformed_json_item_does_not_abort_remaining_items(self, monkeypatch, tmp_path):
+        good_content = [_Content("text", '{"mechanisms": [], "categories": []}')]
+        bad_content = [_Content("text", "not valid json")]
+        items = [
+            _ResultItem("c1", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10)))),
+            _ResultItem("c2", _Result("succeeded", _Message("end_turn", good_content, _Usage(100, 10)))),
+        ]
+        articles = [self._article("https://x/1"), self._article("https://x/2")]
+        # by_custom_id is built from articles in the order run_batch iterates
+        # them, keyed by a sha1 of the url -- reach in via the real hashing
+        # so the fake custom_ids line up.
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+        items[1].custom_id = hashlib.sha1(b"https://x/2").hexdigest()
+
+        results, failures, costs, _ = self._run(monkeypatch, tmp_path, items, articles)
+        assert results == {"https://x/2": {"mechanisms": [], "categories": [], "dropped_tags": []}}
+        assert failures[0]["url"] == "https://x/1"
+        assert "JSONDecodeError" in failures[0]["error"]
+        # The malformed item did not abort the loop -- item 2 was still scored.
+
+    def test_malformed_json_item_still_records_its_cost(self, monkeypatch, tmp_path):
+        bad_content = [_Content("text", "not valid json")]
+        items = [_ResultItem("", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert len(costs) == 1
+        assert costs[0]["usd"] > 0
+        assert json.loads(cost_path.read_text()) == costs  # persisted to disk, not just returned
+
+    def test_refusal_is_billed_not_dropped(self, monkeypatch, tmp_path):
+        items = [_ResultItem("", _Result("succeeded", _Message("refusal", [], _Usage(50, 5))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert failures[0]["error"].startswith("refused")
+        assert len(costs) == 1
+        assert json.loads(cost_path.read_text()) == costs
+
+    def test_max_tokens_truncation_is_billed_not_dropped(self, monkeypatch, tmp_path):
+        items = [_ResultItem("", _Result("succeeded", _Message("max_tokens", [], _Usage(50, 12000))))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert "max_tokens" in failures[0]["error"]
+        assert len(costs) == 1
+        assert json.loads(cost_path.read_text()) == costs
+
+    def test_batch_level_failure_records_no_cost(self, monkeypatch, tmp_path):
+        # No `message` exists at all for a batch-level error (expired etc.)
+        # -- nothing was billed, so nothing should be recorded.
+        items = [_ResultItem("", _Result("errored", None))]
+        articles = [self._article("https://x/1")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert failures[0]["error"] == "batch errored"
+        assert costs == []
+
+    def test_cost_written_incrementally_survives_a_later_item_crashing(self, monkeypatch, tmp_path):
+        # The core of the fix: item 1 succeeds and must be persisted to disk
+        # before item 2 (malformed) is even processed -- not batched up and
+        # written only after the whole loop returns.
+        good_content = [_Content("text", '{"mechanisms": [], "categories": []}')]
+        bad_content = [_Content("text", "not valid json")]
+        items = [
+            _ResultItem("", _Result("succeeded", _Message("end_turn", good_content, _Usage(100, 10)))),
+            _ResultItem("", _Result("succeeded", _Message("end_turn", bad_content, _Usage(100, 10)))),
+        ]
+        articles = [self._article("https://x/1"), self._article("https://x/2")]
+        import hashlib
+        items[0].custom_id = hashlib.sha1(b"https://x/1").hexdigest()
+        items[1].custom_id = hashlib.sha1(b"https://x/2").hexdigest()
+
+        _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
+        assert len(costs) == 2  # both items billed, including the failed one
+        assert json.loads(cost_path.read_text()) == costs

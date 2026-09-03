@@ -11,10 +11,14 @@ Three jobs, in order:
    papers research established that a single computed importance number does
    not survive scrutiny; the same applies here.
 
-Employment is read from the commit email domain. Roughly three fifths of human
-commits in this org carry an ``@anthropic.com`` address, which is direct
-evidence rather than inference; the ``-ant`` handle convention is kept only as
-a fallback for people who commit with a private address.
+Employment is read from the commit email domain, per org, configured in
+config/github_sources.yaml -- not hardcoded here. How much of an org's human
+commits carry a domain match, and how reliable a work-handle convention is,
+both vary a great deal by lab: Anthropic's own org evidences roughly three
+fifths of human commits via `@anthropic.com` directly; Mistral evidences
+close to none (near-universal use of GitHub's noreply-relay addresses, a
+real finding about that org, not a harvesting gap; see that config file's
+own notes per org for what to expect from each one).
 """
 
 from __future__ import annotations
@@ -24,8 +28,11 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).parent.parent.parent
 DOCS = ROOT / "research" / "docs"
+GITHUB_SOURCES = ROOT / "config" / "github_sources.yaml"
 
 # Machine accounts. Matched exactly, in addition to the [bot] suffix that
 # GitHub App accounts always carry.
@@ -38,6 +45,41 @@ BOT_LOGINS = {
     "renovate",
     "claude",
     "web-flow",
+    # Google's internal source-of-truth sync tool. Found via the
+    # google-deepmind harvest: 199 commits across 11 repos under the display
+    # name "Copybara-Service", uncaught by BOT_PATTERNS since its login ends
+    # in "-github", not "-bot" or "[bot]" -- it would otherwise have ranked
+    # in the top 10 committers by volume, ahead of real staff.
+    "copybara-github",
+    # GitHub's own Copilot coding agent. Found via the facebookresearch
+    # harvest: 43 commits across 3 repos, committing under the resolved
+    # login "Copilot" even though one of its own commit `name` fields is
+    # literally "copilot-swe-agent[bot]" and its email domain is GitHub's
+    # noreply relay -- uncaught by BOT_PATTERNS because "copilot" contains
+    # neither "-bot" (no hyphen before "bot") nor "[bot]" at the login level.
+    "copilot",
+    # Speakeasy's SDK-generation automation. Found via the mistralai
+    # harvest: 20 commits across 2 repos under the resolved login
+    # "speakeasybot" -- profile confirms it live ("Speakeasy Bot", bio "I'm
+    # a helpful bot that automates Speakeasy operations"), but the login
+    # ends in "bot" with no hyphen, so BOT_PATTERNS' `-bot$` doesn't match
+    # it -- same class of miss as copybara-github and copilot above.
+    "speakeasybot",
+    # Mistral's own CI automation. Found via the same harvest: 50 commits
+    # across 4 repos under the resolved login "maiengineering" -- a blank
+    # profile (no name, bio or company), a role-based team mailbox
+    # (engineering@mistral.ai, not a personal address) rather than a
+    # personal one, and half its commits carry the raw commit `name`
+    # "Buildkite CI" (a named CI tool) instead of a person's name. No
+    # pattern in the login itself suggests a bot at all -- this one was
+    # only caught by checking the commit-level `name`/`email` fields, not
+    # the login string.
+    "maiengineering",
+    # GoReleaser's own release automation. Found via the openai harvest: 1
+    # commit, profile confirms it live ("GoReleaser Bot", bio "I'm a bot,
+    # do not @ me."), login ends in "bot" with no hyphen so `-bot$` doesn't
+    # match -- same class of miss as speakeasybot.
+    "goreleaserbot",
 }
 
 BOT_PATTERNS = re.compile(r"(\[bot\]$|^bot-|-bot$|^stainless)", re.I)
@@ -48,10 +90,33 @@ BOT_PATTERNS = re.compile(r"(\[bot\]$|^bot-|-bot$|^stainless)", re.I)
 # rather than an error.
 WORK_SUFFIX = re.compile(r"[-_](ant|anthropic)$", re.I)
 
-LABS = {
-    "anthropics": ("anthropic.com", r"[-_](ant|anthropic)$"),
-    "openai": ("openai.com", r"[-_](oai|openai)$"),
-}
+# A regex that matches nothing: the explicit "no known work-handle
+# convention" sentinel for config/github_sources.yaml entries that omit
+# work_suffix, so an absent convention yields zero merges rather than
+# silently reusing another lab's pattern.
+NEVER_MATCHES = r"(?!)"
+
+
+def load_labs() -> dict[str, tuple[str | list[str] | None, str, bool]]:
+    """Load per-org GitHub config from config/github_sources.yaml.
+
+    Returns:
+        Dict keyed by GitHub org login, each value a
+        (domain, work_suffix, domain_shared) tuple -- `domain` is a string,
+        a list of strings (a lab with more than one active corporate
+        domain), or None (no reliable domain). `domain_shared` marks a
+        commit-email domain that belongs to the parent company rather than
+        the lab itself (see the file's own header comment).
+    """
+    data = yaml.safe_load(GITHUB_SOURCES.read_text())
+    return {
+        org: (entry.get("domain"), entry.get("work_suffix") or NEVER_MATCHES,
+              entry.get("domain_shared", False))
+        for org, entry in data["orgs"].items()
+    }
+
+
+LABS = load_labs()
 
 # GitHub substitutes this domain when a user hides their address, so it
 # identifies nobody and must never be used to link accounts.
@@ -140,21 +205,41 @@ def alias_pairs(people: dict, work_suffix: re.Pattern = WORK_SUFFIX) -> dict[str
 
 def aggregate(
     org: str,
-    org_domain: str = "anthropic.com",
-    work_suffix: str = r"[-_](ant|anthropic)$",
+    org_domain: str | list[str] | None,
+    work_suffix: str,
+    domain_shared: bool = False,
 ) -> dict:
     """Build the per-person register for one organisation.
 
+    `org_domain` and `work_suffix` are required, not defaulted to
+    Anthropic's own values -- a caller that omitted them used to silently
+    score whatever org it named against Anthropic's domain and handle
+    convention, returning an all-`unknown` (or worse, wrongly `confirmed`)
+    employment column that looks like clean data rather than a
+    misconfiguration (bitcap-reviewer finding #8). Look the real values up
+    per org from `config/github_sources.yaml` (`load_labs()` below), never
+    guess them.
+
     Args:
         org: GitHub organisation login, used to locate the harvest file.
-        org_domain: Email domain that evidences employment at the lab.
+        org_domain: Email domain(s) that evidence employment at the lab. A
+            single string for the common case; a list where a lab genuinely
+            uses more than one (Meta: both @meta.com and @fb.com are active
+            in real commits, confirmed live). `None` when no reliable domain
+            exists at all (Mistral).
         work_suffix: Regex for this lab's work-account handle convention.
+        domain_shared: True when `org_domain` belongs to the parent company
+            rather than the lab specifically (e.g. @google.com is
+            Alphabet-wide, not DeepMind-specific). A corp-email match then
+            tags `confirmed_org_wide` instead of `confirmed`, so the two
+            evidence strengths are never conflated downstream.
 
     Returns:
         Dict with 'people' (list of per-person records, most commits first),
         'aliases' (merges applied) and 'totals' (run-level counts).
     """
     suffix = re.compile(work_suffix, re.I)
+    org_domains = {org_domain} if isinstance(org_domain, str) else set(org_domain or [])
     raw = json.loads((DOCS / f"github_commits_{org}.json").read_text())
 
     people = defaultdict(
@@ -219,11 +304,13 @@ def aggregate(
     for login, rec in people.items():
         handles = [login] + rec.get("merged_from", [])
         domains = dict(sorted(rec["domains"].items(), key=lambda kv: -kv[1]))
-        corp = sum(n for d, n in domains.items() if d == org_domain)
+        corp = sum(n for d, n in domains.items() if d in org_domains)
         vendor = sorted(d for d in domains if d in VENDOR_DOMAINS)
 
         if corp:
-            employment = "confirmed"  # committed under a lab address
+            # committed under a lab address; org-wide domains (Alphabet,
+            # etc.) are real but weaker evidence than a lab-owned one
+            employment = "confirmed_org_wide" if domain_shared else "confirmed"
         elif vendor:
             employment = "vendor"
         elif any(suffix.search(h) for h in handles):
@@ -263,7 +350,7 @@ def aggregate(
             "unattributed_commits": unattributed,
             "employment": {
                 k: sum(1 for p in out if p["employment"] == k)
-                for k in ("confirmed", "handle", "vendor", "unknown")
+                for k in ("confirmed", "confirmed_org_wide", "handle", "vendor", "unknown")
             },
         },
     }
@@ -274,9 +361,9 @@ if __name__ == "__main__":
 
     org = sys.argv[1] if len(sys.argv) > 1 else "anthropics"
     if org not in LABS:
-        sys.exit(f"no lab config for {org}; add it to LABS")
-    domain, suffix = LABS[org]
-    result = aggregate(org, domain, suffix)
+        sys.exit(f"no lab config for {org}; add it to config/github_sources.yaml")
+    domain, suffix, domain_shared = LABS[org]
+    result = aggregate(org, domain, suffix, domain_shared)
     dest = DOCS / f"github_people_{org}.json"
     dest.write_text(json.dumps(result, indent=2))
 
@@ -290,10 +377,17 @@ if __name__ == "__main__":
     for k, v in t["employment"].items():
         print(f"  {k:<19} {v}")
     print(f"aliases merged        {len(result['aliases'])}")
-    print("\ntop 30 (E=employment: c confirmed, h handle, v vendor, ? unknown):")
+    # Not p["employment"][0]: "confirmed" and "confirmed_org_wide" share a
+    # first letter, and collapsing them here would silently erase the one
+    # distinction domain_shared exists to preserve.
+    legend = {"confirmed": "c", "confirmed_org_wide": "C", "handle": "h",
+              "vendor": "v", "unknown": "?"}
+    print("\ntop 30 (E=employment: c confirmed, C confirmed org-wide, "
+          "h handle, v vendor, ? unknown):")
     for p in result["people"][:30]:
         name = p["names"][0] if p["names"] else ""
         print(
-            f"  {p['commits']:>5} {p['repo_count']:>3}r  {p['employment'][0]}  "
+            f"  {p['commits']:>5} {p['repo_count']:>3}r  "
+            f"{legend.get(p['employment'], '?')}  "
             f"{p['login']:<24} {name[:30]}"
         )

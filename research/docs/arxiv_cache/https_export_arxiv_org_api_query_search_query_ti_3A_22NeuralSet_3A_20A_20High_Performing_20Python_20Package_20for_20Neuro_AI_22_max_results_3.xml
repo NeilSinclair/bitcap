@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/nCV0SHip8oLblK3Z1ipE9ieq48Q</id>
+  <title>arXiv Query: search_query=ti:"NeuralSet: A High-Performing Python Package for Neuro-AI"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:04:39Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22NeuralSet:+A+High-Performing+Python+Package+for+Neuro-AI%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.03169v2</id>
+    <title>NeuralSet: A High-Performing Python Package for Neuro-AI</title>
+    <updated>2026-05-08T12:20:40Z</updated>
+    <link href="https://arxiv.org/abs/2605.03169v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.03169v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Artificial intelligence (AI) is increasingly central to understanding how the brain processes information. However, the integration of neuroscience and modern AI is bottlenecked by a fragmented software ecosystem. Current tools are siloed by recording modality and optimized for small-scale, in-memory workflows, limiting the use of massive, naturalistic datasets. Here, we introduce NeuralSet, a Python framework that efficiently unifies the processing of diverse neural recordings (including fMRI, M/EEG, and spikes) and complex experimental stimuli (such as text, audio, and video). By decoupling experimental metadata from lazy, memory-efficient data extraction, NeuralSet harmonizes standard neuroscientific preprocessing pipelines with pretrained deep learning embeddings. This approach provides a single PyTorch-ready interface that scales seamlessly from local prototyping to high-performance cluster execution. By eliminating manual data wrangling and ensuring full computational provenance, NeuralSet establishes a scalable, unified infrastructure for the next generation of neuro-AI research.</summary>
+    <category term="q-bio.NC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-04T21:28:48Z</published>
+    <arxiv:primary_category term="q-bio.NC"/>
+    <author>
+      <name>Jean-Rémi King</name>
+    </author>
+    <author>
+      <name>Corentin Bel</name>
+    </author>
+    <author>
+      <name>Linnea Evanson</name>
+    </author>
+    <author>
+      <name>Julien Gadonneix</name>
+    </author>
+    <author>
+      <name>Sophia Houhamdi</name>
+    </author>
+    <author>
+      <name>Jarod Lévy</name>
+    </author>
+    <author>
+      <name>Josephine Raugel</name>
+    </author>
+    <author>
+      <name>Andrea Santos Revilla</name>
+    </author>
+    <author>
+      <name>Mingfang Zhang</name>
+    </author>
+    <author>
+      <name>Julie Bonnaire</name>
+    </author>
+    <author>
+      <name>Charlotte Caucheteux</name>
+    </author>
+    <author>
+      <name>Alexandre Défossez</name>
+    </author>
+    <author>
+      <name>Théo Desbordes</name>
+    </author>
+    <author>
+      <name>Pablo Diego-Simón</name>
+    </author>
+    <author>
+      <name>Shubh Khanna</name>
+    </author>
+    <author>
+      <name>Juliette Millet</name>
+    </author>
+    <author>
+      <name>Pierre Orhan</name>
+    </author>
+    <author>
+      <name>Saarang Panchavati</name>
+    </author>
+    <author>
+      <name>Antoine Ratouchniak</name>
+    </author>
+    <author>
+      <name>Alexis Thual</name>
+    </author>
+    <author>
+      <name>Teon L. Brooks</name>
+    </author>
+    <author>
+      <name>Katelyn Begany</name>
+    </author>
+    <author>
+      <name>Yohann Benchetrit</name>
+    </author>
+    <author>
+      <name>Marlène Careil</name>
+    </author>
+    <author>
+      <name>Hubert Banville</name>
+    </author>
+    <author>
+      <name>Stéphane d'Ascoli</name>
+    </author>
+    <author>
+      <name>Simon Dahan</name>
+    </author>
+    <author>
+      <name>Jérémy Rapin</name>
+    </author>
+  </entry>
+</feed>

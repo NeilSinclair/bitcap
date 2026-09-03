@@ -90,6 +90,42 @@ Consequence for the pipeline: ingestion and extraction expose a concurrency limi
 batch mode as configuration, and the cost log records which mode a run used, since the
 same workflow costs twice as much interactively as batched.
 
+### 4b. Retry cadence needs a layer above per-request backoff
+
+Found live, not hypothetically: while researching the xAI announcements source (which
+depends on the Internet Archive, being the only way in to a Cloudflare-blocked site), the
+Archive's own CDX API returned `503` for several minutes straight — re-checked twice,
+same result both times. Not a single flaky request; the whole upstream service was down.
+
+Per-request exponential backoff (already a stated requirement above, and already
+implemented in every fetcher — 3-4 attempts, seconds to tens of seconds) is the right
+answer to a single bad request, but it is the wrong tool for a source that is down for
+minutes to hours: it either exhausts and gives up within the run, or — if tuned generous
+enough to ride out a real outage — blocks a scheduled run for an unacceptably long time.
+Neither is actually what's needed here.
+
+**What's actually needed is a second, slower layer, above the per-request one:**
+
+- **Within a run:** per-request backoff as already specified. When it's exhausted, that
+  source is marked failed *for this run* and the run moves on — a dead source must not
+  abort other sources, which is already the orchestrator's job.
+- **Across runs:** the cadence question is really "how many consecutive scheduled runs
+  can one source fail before that stops being noise and starts being an incident." A
+  source down for one cron firing and back up for the next is exactly what per-request
+  retry inside a single run cannot and should not absorb — the next firing's own
+  per-request retries just try again naturally. A source still down after N *consecutive*
+  scheduled firings is a different thing and should trip the system-failure alert
+  (distinct from content alerts, already a non-negotiable), not stay silent in a log
+  nobody is reading.
+
+This only works because run state persists per source (§4's persisted watermarks/run
+state), so "how many consecutive runs has this source failed" is a query against history,
+not something invented per run. Consequence for the pipeline: `run_sources`-shaped state
+needs a consecutive-failure counter per source, and the alerting config needs a threshold
+(e.g. N=3 consecutive failures) that fires the system-failure alert — a decision still
+open, not yet made, and worth deciding alongside the alerting design rather than bolted
+on afterward.
+
 ## 5. Audiences
 
 **Investment team (PMs, analysts).** What does this mean for our positions? A star researcher leaving to found a startup; a capability jump threatening a holding's moat or validating a thesis; shifts in the competitive map of public companies exposed to AI. Framed in implications, tickers, and theses — including companies BIT could take a position in, not only those it holds.

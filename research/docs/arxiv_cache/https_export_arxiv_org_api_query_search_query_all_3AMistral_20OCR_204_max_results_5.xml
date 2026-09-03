@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/uckh2g3DIV+9ScWfxOHF77xBu1c</id>
+  <title>arXiv Query: search_query=all:Mistral OR all:OCR OR all:4&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-09-03T07:28:33Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:Mistral+OR+(all:OCR+OR+all:4)&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>433714</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/1303.4033v1</id>
+    <title>Two-dimensional magnetic interactions in LaFeAsO</title>
+    <updated>2013-03-17T05:50:14Z</updated>
+    <link href="https://arxiv.org/abs/1303.4033v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1303.4033v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Inelastic neutron scattering measurements demonstrate that the magnetic interactions in antiferromagnetic LaFeAsO are two-dimensional. Spin wave velocities within the Fe layer and the magnitude of the spin gap are similar to the \textit{A}Fe$_2$As$_2$ based materials. However, the ratio of interlayer and intralayer exchange is found to be less than $\sim 10^{-4}$ in LaFeAsO, very similar to the cuprates, and $\sim$ 100 times smaller than that found in \textit{A}Fe$_2$As$_2$ compounds. The results suggest that the effective dimensionality of the magnetic system is highly variable in the parent compounds of the iron arsenides and weak 3-D interactions may limit the maximum attainable superconducting $T_{c}$.</summary>
+    <category term="cond-mat.supr-con" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2013-03-17T05:50:14Z</published>
+    <arxiv:comment>4 pages 4 figures</arxiv:comment>
+    <arxiv:primary_category term="cond-mat.supr-con"/>
+    <author>
+      <name>M. Ramazanoglu</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 J. Lamsal</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 G. S. Tucker</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 J. -Q. Yan</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>3 S. Calder</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>3 T. Guidi</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>4 T. Perring</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>4 R. W. McCallum</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 T. A. Lograsso</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 A. Kreyssig</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 A. I. Goldman</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 2</name>
+      <arxiv:affiliation>Iowa State University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>R. J. McQueeney1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name>2 1</name>
+      <arxiv:affiliation>Ames Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 2</name>
+      <arxiv:affiliation>Iowa State University</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 3</name>
+      <arxiv:affiliation>Oak Ridge National Laboratory</arxiv:affiliation>
+    </author>
+    <author>
+      <name> 4</name>
+      <arxiv:affiliation>Rutherford Appleton Laboratory</arxiv:affiliation>
+    </author>
+    <arxiv:doi>10.1103/PhysRevB.87.140509</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1103/PhysRevB.87.140509" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/nucl-ex/0511007v1</id>
+    <title>Accurate mass measurements of $^{26}$Ne, $^{26-30}$Na, $^{29-33}$Mg performed with the {\sc Mistral} spectrometer</title>
+    <updated>2005-11-02T10:40:37Z</updated>
+    <link href="https://arxiv.org/abs/nucl-ex/0511007v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/nucl-ex/0511007v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>  The minuteness of the nuclear binding energy requires that mass measurements be highly precise and accurate. Here we report on new measurements $^{29-33}$Mg and $^{26}$Na performed with the {\sc Mistral} mass spectrometer at {\sc Cern}'s {\sc Isolde} facility. Since mass measurements are prone to systematic errors, considerable effort has been devoted to their evaluation and elimination in order to achieve accuracy and not only precision. We have therefore conducted a campaign of measurements for calibration and error evaluation. As a result, we now have a satisfactory description of the {\sc Mistral} calibration laws and error budget. We have applied our new understanding to previous measurements of $^{26}$Ne, $^{26-30}$Na and $^{29,32}$Mg for which re-evaluated values are reported.</summary>
+    <category term="nucl-ex" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2005-11-02T10:40:37Z</published>
+    <arxiv:comment>submitted to Nuclear Physics A</arxiv:comment>
+    <arxiv:primary_category term="nucl-ex"/>
+    <arxiv:journal_ref>Nucl.Phys. A766 (2006) 52-73</arxiv:journal_ref>
+    <author>
+      <name>C. Gaulard</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>G. Audi</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>C. Bachelet</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>D. Lunney</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>M. De Saint Simon</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>C. Thibault</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>N. Vieira</name>
+      <arxiv:affiliation>CSNSM</arxiv:affiliation>
+    </author>
+    <author>
+      <name>the Mistral Collaboration</name>
+    </author>
+    <arxiv:doi>10.1016/j.nuclphysa.2005.12.007</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1016/j.nuclphysa.2005.12.007" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2310.06825v1</id>
+    <title>Mistral 7B</title>
+    <updated>2023-10-10T17:54:58Z</updated>
+    <link href="https://arxiv.org/abs/2310.06825v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2310.06825v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce Mistral 7B v0.1, a 7-billion-parameter language model engineered for superior performance and efficiency. Mistral 7B outperforms Llama 2 13B across all evaluated benchmarks, and Llama 1 34B in reasoning, mathematics, and code generation. Our model leverages grouped-query attention (GQA) for faster inference, coupled with sliding window attention (SWA) to effectively handle sequences of arbitrary length with a reduced inference cost. We also provide a model fine-tuned to follow instructions, Mistral 7B -- Instruct, that surpasses the Llama 2 13B -- Chat model both on human and automated benchmarks. Our models are released under the Apache 2.0 license.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-10-10T17:54:58Z</published>
+    <arxiv:comment>Models and code are available at https://mistral.ai/news/announcing-mistral-7b/</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Albert Q. Jiang</name>
+    </author>
+    <author>
+      <name>Alexandre Sablayrolles</name>
+    </author>
+    <author>
+      <name>Arthur Mensch</name>
+    </author>
+    <author>
+      <name>Chris Bamford</name>
+    </author>
+    <author>
+      <name>Devendra Singh Chaplot</name>
+    </author>
+    <author>
+      <name>Diego de las Casas</name>
+    </author>
+    <author>
+      <name>Florian Bressand</name>
+    </author>
+    <author>
+      <name>Gianna Lengyel</name>
+    </author>
+    <author>
+      <name>Guillaume Lample</name>
+    </author>
+    <author>
+      <name>Lucile Saulnier</name>
+    </author>
+    <author>
+      <name>Lélio Renard Lavaud</name>
+    </author>
+    <author>
+      <name>Marie-Anne Lachaux</name>
+    </author>
+    <author>
+      <name>Pierre Stock</name>
+    </author>
+    <author>
+      <name>Teven Le Scao</name>
+    </author>
+    <author>
+      <name>Thibaut Lavril</name>
+    </author>
+    <author>
+      <name>Thomas Wang</name>
+    </author>
+    <author>
+      <name>Timothée Lacroix</name>
+    </author>
+    <author>
+      <name>William El Sayed</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1908.08674v1</id>
+    <title>A BLSTM Network for Printed Bengali OCR System with High Accuracy</title>
+    <updated>2019-08-23T05:45:27Z</updated>
+    <link href="https://arxiv.org/abs/1908.08674v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1908.08674v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper presents a printed Bengali and English text OCR system developed by us using a single hidden BLSTM-CTC architecture having 128 units. Here, we did not use any peephole connection and dropout in the BLSTM, which helped us in getting better accuracy. This architecture was trained by 47,720 text lines that include English words also. When tested over 20 different Bengali fonts, it has produced character level accuracy of 99.32% and word level accuracy of 96.65%. A good Indic multi script OCR system is also developed by Google. It sometimes recognizes a character of Bengali into the same character of a non-Bengali script, especially Assamese, which has no distinction from Bengali, except for a few characters. For example, Bengali character for 'RA' is sometimes recognized as that of Assamese, mainly in conjunct consonant forms. Our OCR is free from such errors. This OCR system is available online at https://banglaocr.nltr.org</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2019-08-23T05:45:27Z</published>
+    <arxiv:comment>6 pages, 6 figures, This OCR system is available online at https://banglaocr.nltr.org</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Debabrata Paul</name>
+    </author>
+    <author>
+      <name>Bidyut Baran Chaudhuri</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.21693v1</id>
+    <title>Why Stop at Words? Unveiling the Bigger Picture through Line-Level OCR</title>
+    <updated>2025-08-29T15:02:11Z</updated>
+    <link href="https://arxiv.org/abs/2508.21693v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.21693v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Conventional optical character recognition (OCR) techniques segmented each character and then recognized. This made them prone to error in character segmentation, and devoid of context to exploit language models. Advances in sequence to sequence translation in last decade led to modern techniques first detecting words and then inputting one word at a time to a model to directly output full words as sequence of characters. This allowed better utilization of language models and bypass error-prone character segmentation step. We observe that the above transition in style has moved the bottleneck in accuracy to word segmentation. Hence, in this paper, we propose a natural and logical progression from word level OCR to line-level OCR. The proposal allows to bypass errors in word detection, and provides larger sentence context for better utilization of language models. We show that the proposed technique not only improves the accuracy but also efficiency of OCR. Despite our thorough literature survey, we did not find any public dataset to train and benchmark such shift from word to line-level OCR. Hence, we also contribute a meticulously curated dataset of 251 English page images with line-level annotations. Our experimentation revealed a notable end-to-end accuracy improvement of 5.4%, underscoring the potential benefits of transitioning towards line-level OCR, especially for document images. We also report a 4 times improvement in efficiency compared to word-based pipelines. With continuous improvements in large language models, our methodology also holds potential to exploit such advances. Project Website: https://nishitanand.github.io/line-level-ocr-website</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-29T15:02:11Z</published>
+    <arxiv:comment>11 pages. Project Website: https://nishitanand.github.io/line-level-ocr-website</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Shashank Vempati</name>
+    </author>
+    <author>
+      <name>Nishit Anand</name>
+    </author>
+    <author>
+      <name>Gaurav Talebailkar</name>
+    </author>
+    <author>
+      <name>Arpan Garai</name>
+    </author>
+    <author>
+      <name>Chetan Arora</name>
+    </author>
+  </entry>
+</feed>

@@ -9,6 +9,7 @@ Scope is BIT Global Technology Leaders alone (docs/decisions.md D8).
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -16,6 +17,19 @@ import yaml
 
 ROOT = Path(__file__).parent
 PORTFOLIOS = ROOT.parent / "research" / "docs" / "portfolio_views.json"
+
+# Mirrors research/announcements/fetch_announcements.py's METHODS dict: each
+# discovery function indexes these keys directly (lab["page_param"], etc.)
+# rather than reading them defensively, so a missing one does not fail at
+# config-load time -- it fails deep into a live run, after every earlier lab
+# in the loop has already done its work, with no output written for any of
+# them (bitcap-reviewer finding #7, confirmed by tracing collect()'s loop).
+SOURCE_METHOD_REQUIRED_KEYS = {
+    "sitemap": {"index_url", "url_contains", "text_source", "date_from"},
+    "rss": {"index_url"},
+    "listing_pagination": {"index_url", "page_param", "url_contains", "text_source"},
+    "wayback_cdx": {"index_url", "url_contains"},
+}
 
 
 def check_registry(root: Path, views: dict) -> tuple[list[str], list[str]]:
@@ -203,6 +217,68 @@ def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], lis
     return errors, warnings
 
 
+def check_sources(root: Path) -> list[str]:
+    """Validate sources.yaml: every lab carries the keys its method needs.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    errors = []
+    srcs = yaml.safe_load((root / "sources.yaml").read_text())
+    for lab in srcs["labs"]:
+        lab_id = lab.get("id", "?")
+        method = lab.get("method")
+        if method not in SOURCE_METHOD_REQUIRED_KEYS:
+            errors.append(f"sources.yaml/{lab_id}: unknown method '{method}'")
+            continue
+        for key in sorted(SOURCE_METHOD_REQUIRED_KEYS[method]):
+            if key not in lab:
+                errors.append(
+                    f"sources.yaml/{lab_id}: method '{method}' requires '{key}', missing"
+                )
+    return errors
+
+
+def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Validate github_sources.yaml, previously not read by this file at all.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids currently in sources.yaml, to catch a `lab:`
+            typo here that would otherwise silently misfile a whole org's
+            worth of GitHub-derived people under no register entry at all.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "github_sources.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+
+    doc = yaml.safe_load(path.read_text())
+    errors = []
+    for org, entry in doc.get("orgs", {}).items():
+        lab = entry.get("lab")
+        if not lab:
+            errors.append(f"github_sources.yaml/{org}: no 'lab'")
+        elif lab not in tracked_labs:
+            errors.append(f"github_sources.yaml/{org}: lab '{lab}' not in sources.yaml")
+
+        if not isinstance(entry.get("domain_shared", False), bool):
+            errors.append(f"github_sources.yaml/{org}: domain_shared is not a bool")
+
+        suffix = entry.get("work_suffix")
+        if suffix is not None:
+            try:
+                re.compile(suffix)
+            except re.error as exc:
+                errors.append(f"github_sources.yaml/{org}: work_suffix does not compile: {exc}")
+    return errors
+
+
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
@@ -289,11 +365,13 @@ def main() -> int:
 
     reg_errors, reg_warnings = check_registry(ROOT, views)
     prac_errors, prac_warnings = check_practices(ROOT, valid_ids)
-    for e in reg_errors + prac_errors:
+    src_errors = check_sources(ROOT)
+    gh_errors = check_github_sources(ROOT, tracked_labs)
+    for e in reg_errors + prac_errors + src_errors + gh_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:
         print(f"warn    {w}")
-    errors += reg_errors + prac_errors
+    errors += reg_errors + prac_errors + src_errors + gh_errors
     warnings += prac_warnings
 
     print(f"\n{len(seen)} companies described, {len(errors)} errors, "

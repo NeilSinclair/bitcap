@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/Mw/fuCNK6K/snVpIno/4S0nZpnc</id>
+  <title>arXiv Query: search_query=ti:"Mistral x HUMAIN"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:27:34Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Mistral+x+HUMAIN%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>0</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+</feed>

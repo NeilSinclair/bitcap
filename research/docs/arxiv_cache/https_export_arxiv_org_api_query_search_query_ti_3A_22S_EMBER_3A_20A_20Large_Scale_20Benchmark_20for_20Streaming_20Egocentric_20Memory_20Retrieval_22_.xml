@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/1LpbvvSdBHw1H2IImJVXZ1x5pUA</id>
+  <title>arXiv Query: search_query=ti:"S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:04:57Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22S-EMBER:+A+Large-Scale+Benchmark+for+Streaming+Egocentric+Memory+Retrieval%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2607.02689v2</id>
+    <title>S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</title>
+    <updated>2026-08-26T04:54:09Z</updated>
+    <link href="https://arxiv.org/abs/2607.02689v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.02689v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As wearable devices enable continuous first-person recording, AI assistants must reason across long time horizons to recall past experiences-a capability known as episodic memory. Current benchmarks often rely on offline evaluation with access to entire video files, failing to simulate the streaming reality of wearable intelligence. We introduce S-EMBER (Streaming Egocentric Memory Benchmark for Episodic Retrieval), a large-scale benchmark comprising 3,141 videos totaling 388 hours of organic activity captured via Ray-Ban Meta smart glasses. S-EMBER formalizes grounded streaming episodic retrieval, a paradigm shift from global offline search to causal, active recall triggered by visual events in a continuous stream. We provide 9,448 QA pairs requiring manual visual proof through precise temporal localization and supporting flexible response lengths to simulate natural human-AI interaction. Our extensive benchmarking of frontier models reveals a grounded recall gap: models answer and localize with moderate competence in isolation, yet fall furthest short of human performance when both must hold for the same query, the strongest reaching less than half the human rate. S-EMBER establishes a hardware-authentic foundation for developing grounded, reliable episodic memory in the next generation of wearable AI agents.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-02T18:29:20Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Xiaodong Wang</name>
+    </author>
+    <author>
+      <name>Xuanyi Zhao</name>
+    </author>
+    <author>
+      <name>Pedro Rodriguez</name>
+    </author>
+    <author>
+      <name>Devendra Singh Sachan</name>
+    </author>
+    <author>
+      <name>Barlas Oguz</name>
+    </author>
+    <author>
+      <name>Seungwhan Moon</name>
+    </author>
+    <author>
+      <name>Shang-Wen Li</name>
+    </author>
+    <author>
+      <name>Gargi Ghosh</name>
+    </author>
+    <author>
+      <name>Xin Dong</name>
+    </author>
+    <author>
+      <name>Wen-Tau Yih</name>
+    </author>
+  </entry>
+</feed>

@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/m0QulEYT56P9Rt4cxYaxvvFfgFg</id>
+  <title>arXiv Query: search_query=all:Bringing OR all:more OR all:control OR all:over OR all:your OR all:connectors&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-09-03T07:28:26Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:Bringing+OR+(all:more+OR+(all:control+OR+(all:over+OR+(all:your+OR+all:connectors))))&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>1031347</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2412.00736v1</id>
+    <title>Bringing Quantum Systems under Control: A Tutorial Invitation to Quantum Computing and Its Relation to Bilinear Control Systems</title>
+    <updated>2024-12-01T09:02:13Z</updated>
+    <link href="https://arxiv.org/abs/2412.00736v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.00736v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Quantum computing comes with the potential to push computational boundaries in various domains including, e.g., cryptography, simulation, optimization, and machine learning. Exploiting the principles of quantum mechanics, new algorithms can be developed with capabilities that are unprecedented by classical computers. However, the experimental realization of quantum devices is an active field of research with enormous open challenges, including robustness against noise and scalability. While systems and control theory plays a crucial role in tackling these challenges, the principles of quantum physics lead to a (perceived) high entry barrier for entering the field of quantum computing. This tutorial paper aims at lowering the barrier by introducing basic concepts required to understand and solve research problems in quantum systems. First, we introduce fundamentals of quantum algorithms, ranging from basic ingredients such as qubits and quantum logic gates to prominent examples and more advanced concepts, e.g., variational quantum algorithms. Next, we formalize some engineering questions for building quantum devices in the real world, which requires the careful manipulation of microscopic quantities obeying quantum effects. To this end for N-level systems, we introduce basic concepts of (bilinear) quantum systems and control theory including controllability, observability, and optimal control in a unified frame. Finally, we address the problem of noise in real-world quantum systems via robust quantum control, which relies on a set-membership uncertainty description frequently employed in control.</summary>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-01T09:02:13Z</published>
+    <arxiv:comment>Final version, accepted for publication in Proc. Conference on Decision and Control (CDC), 2024</arxiv:comment>
+    <arxiv:primary_category term="eess.SY"/>
+    <arxiv:journal_ref>in Proc. Conference on Decision and Control, 2024, pp. 5231-5247</arxiv:journal_ref>
+    <author>
+      <name>Julian Berberich</name>
+    </author>
+    <author>
+      <name>Robert L. Kosut</name>
+    </author>
+    <author>
+      <name>Thomas Schulte-Herbrüggen</name>
+    </author>
+    <arxiv:doi>10.1109/CDC56724.2024.10886787</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/CDC56724.2024.10886787" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2411.03875v6</id>
+    <title>Koopman-based control using sum-of-squares optimization: Improved stability guarantees and data efficiency</title>
+    <updated>2025-09-27T07:07:38Z</updated>
+    <link href="https://arxiv.org/abs/2411.03875v6" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2411.03875v6" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In this paper, we propose a novel controller design approach for unknown nonlinear systems using the Koopman operator. In particular, we use the recently proposed stability- and feedback-oriented extended dynamic mode decomposition (SafEDMD) architecture to generate a data-driven bilinear surrogate model with certified error bounds. Then, by accounting for the obtained error bounds in a controller design based on the bilinear system, one can guarantee closed-loop stability for the true nonlinear system. While existing approaches over-approximate the bilinearity of the surrogate model, thus introducing conservatism and providing only local guarantees, we explicitly account for the bilinearity by using sum-of-squares (SOS) optimization in the controller design. More precisely, we parametrize a rational controller stabilizing the error-affected bilinear surrogate model and, consequently, the underlying nonlinear system. The resulting SOS optimization problem provides explicit data-driven controller design conditions for unknown nonlinear systems based on semidefinite programming. Our approach significantly reduces conservatism by establishing a larger region of attraction and improved data efficiency. The proposed method is evaluated using numerical examples, demonstrating its advantages over existing approaches.</summary>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-11-06T12:44:41Z</published>
+    <arxiv:comment>Accepted for publication in the European Journal of Control, 2025</arxiv:comment>
+    <arxiv:primary_category term="eess.SY"/>
+    <arxiv:journal_ref>European Journal of Control, 2025, S. 101367</arxiv:journal_ref>
+    <author>
+      <name>Robin Strässer</name>
+    </author>
+    <author>
+      <name>Julian Berberich</name>
+    </author>
+    <author>
+      <name>Frank Allgöwer</name>
+    </author>
+    <arxiv:doi>10.1016/j.ejcon.2025.101367</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1016/j.ejcon.2025.101367" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2006.11141v1</id>
+    <title>Control of a Rigid Wing Pumping Airborne Wind Energy System in all Operational Phases</title>
+    <updated>2020-06-19T13:52:38Z</updated>
+    <link href="https://arxiv.org/abs/2006.11141v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2006.11141v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The control design of an airborne wind energy system with rigid aircraft, vertical take-off and landing, and pumping operation is described. A hierarchical control structure is implemented, in order to address all operational phases: take-off, transition to power generation, pumping energy generation cycles, transition to hovering, and landing. Control design at all hierarchical levels is described. The design approach is conceived and developed with real-world applicability as main driver. Aircraft design considerations in light of system maneuverability are presented, too, as well as three possible alternative strategies for the retraction phase of the pumping cycle. The automatic control approach is assessed in simulation with a realistic model of the overall system, and the results yield a comparison among the three retraction strategies, clearly indicating the most efficient one. The presented results allow one to simulate the dynamical behavior of an AWE system in all operational phases, enabling further studies on all-round system automation, towards fully autonomous and reliable operation.</summary>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2020-06-19T13:52:38Z</published>
+    <arxiv:comment>This is the preprint of a paper submitted to Control Engineering Practice</arxiv:comment>
+    <arxiv:primary_category term="eess.SY"/>
+    <arxiv:journal_ref>Control Engineering Practice, 2021</arxiv:journal_ref>
+    <author>
+      <name>Davide Todeschini</name>
+    </author>
+    <author>
+      <name>Lorenzo Fagiano</name>
+    </author>
+    <author>
+      <name>Claudio Micheli</name>
+    </author>
+    <author>
+      <name>Aldo Cattano</name>
+    </author>
+    <arxiv:doi>10.1016/j.conengprac.2021.104794</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1016/j.conengprac.2021.104794" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2104.01704v1</id>
+    <title>Safe Control Synthesis via Input Constrained Control Barrier Functions</title>
+    <updated>2021-04-04T21:50:42Z</updated>
+    <link href="https://arxiv.org/abs/2104.01704v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2104.01704v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper introduces the notion of an Input Constrained Control Barrier Function (ICCBF), as a method to synthesize safety-critical controllers for non-linear control affine systems with input constraints. The method identifies a subset of the safe set of states, and constructs a controller to render the subset forward invariant. The feedback controller is represented as the solution to a quadratic program, which can be solved efficiently for real-time implementation. Furthermore, we show that ICCBFs are a generalization of Higher Order Control Barrier Functions, and thus are applicable to systems of non-uniform relative degree. Simulation results are presented for the adaptive cruise control problem, and a spacecraft rendezvous problem.</summary>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2021-04-04T21:50:42Z</published>
+    <arxiv:comment>8 pages, 3 figures, submitted to Conference on Decision and Control 2021</arxiv:comment>
+    <arxiv:primary_category term="math.OC"/>
+    <arxiv:journal_ref>2021 60th IEEE Conference on Decision and Control (CDC). IEEE, 2021</arxiv:journal_ref>
+    <author>
+      <name>Devansh Agrawal</name>
+    </author>
+    <author>
+      <name>Dimitra Panagou</name>
+    </author>
+    <arxiv:doi>10.1109/CDC45484.2021.9682938</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/CDC45484.2021.9682938" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2003.05711v1</id>
+    <title>Exponential input-to-state stabilization of a class of diagonal boundary control systems with delay boundary control</title>
+    <updated>2020-03-12T11:22:00Z</updated>
+    <link href="https://arxiv.org/abs/2003.05711v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2003.05711v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper deals with the exponential input-to-state stabilization with respect to boundary disturbances of a class of diagonal infinite-dimensional systems via delay boundary control. The considered input delays are uncertain and time-varying. The proposed control strategy consists of a constant-delay predictor feedback controller designed on a truncated finite-dimensional model capturing the unstable modes of the original infinite-dimensional system. We show that the resulting closed-loop system is exponentially input-to-state stable with fading memory of both additive boundary input perturbations and disturbances in the computation of the predictor feedback.</summary>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2020-03-12T11:22:00Z</published>
+    <arxiv:comment>Published in Systems &amp; Control Letters</arxiv:comment>
+    <arxiv:primary_category term="math.OC"/>
+    <arxiv:journal_ref>Systems &amp; Control Letters, Volume 138, April 2020, 104651</arxiv:journal_ref>
+    <author>
+      <name>Hugo Lhachemi</name>
+    </author>
+    <author>
+      <name>Robert Shorten</name>
+    </author>
+    <author>
+      <name>Christophe Prieur</name>
+    </author>
+    <arxiv:doi>10.1016/j.sysconle.2020.104651</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1016/j.sysconle.2020.104651" title="doi"/>
+  </entry>
+</feed>

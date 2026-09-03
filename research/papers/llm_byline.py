@@ -25,6 +25,7 @@ import anthropic
 
 ROOT = Path(__file__).parent.parent.parent
 PROMPT = ROOT / "prompts" / "byline_extraction" / "v1.md"
+PROMPT_V2 = ROOT / "prompts" / "byline_extraction" / "v2.md"
 CACHE = ROOT / "research" / "docs" / "contributor_cache"
 GOLD = ROOT / "research" / "docs" / "anthropic_contributors.json"
 OUT = ROOT / "research" / "docs" / "byline_llm.json"
@@ -46,6 +47,18 @@ PRICES = {
 # after this many characters -- and the cut is recorded per page, so a miss caused
 # by truncation is never mistaken for a model error.
 HTML_BUDGET = 60_000
+
+# Section headings that carry an author/contributor list positioned well
+# into the document rather than at the top -- confirmed live on two real
+# Mistral AI papers (docs/decisions.md D17): a "Contributors" heading sat
+# 70KB-135KB past <article>, itself well before the document's end (a large
+# references/bibliography section follows it), so neither a head-only nor a
+# head+tail budget reliably reaches it. A blind head+tail split was tried
+# first and still missed both real cases, because the tail it grabbed was
+# bibliography, not the contributor list. `parse_author_list` in
+# deepseek_harvest.py already special-cases the same "Author List" heading
+# shape with an unbounded regex search, for the same underlying reason.
+AUTHOR_SECTION = re.compile(r"(?:Contributors|Author List)\s*</h[1-6]>", re.I)
 
 SCHEMA = {
     "type": "object",
@@ -74,6 +87,50 @@ SCHEMA = {
     "additionalProperties": False,
 }
 
+# v2: generalizes SCHEMA away from Anthropic. `is_anthropic` -> `is_lab_staff`, and the
+# prompt's default-affiliation rule interpolates `{lab_label}` from config instead of a
+# hardcoded `["Anthropic"]` -- see prompts/byline_extraction/v2.md for the full diff and
+# why (DeepMind, Meta and Mistral all lack reliable affiliation markup, so this path is
+# their primary extractor, not a rare fallback, and it has to work for any lab).
+SCHEMA_V2 = {
+    "type": "object",
+    "properties": {
+        "authors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "affiliations": {"type": "array", "items": {"type": "string"}},
+                    "marks": {"type": "array", "items": {"type": "string"}},
+                    "is_fellow": {"type": "boolean"},
+                    "is_lab_staff": {"type": "boolean"},
+                },
+                "required": ["name", "affiliations", "marks", "is_fellow", "is_lab_staff"],
+                "additionalProperties": False,
+            },
+        },
+        "date": {"type": ["string", "null"]},
+        "star_means": {"type": ["string", "null"]},
+        "order_meaningful": {"type": "boolean"},
+        "no_byline": {"type": "boolean"},
+    },
+    "required": ["authors", "date", "star_means", "order_meaningful", "no_byline"],
+    "additionalProperties": False,
+}
+
+
+class ExtractionError(RuntimeError):
+    """A byline call that was billed but whose output could not be parsed.
+
+    Carries `cost` so a caller can still record the genuine API spend on a
+    failed extraction, rather than losing it -- see `extract()`.
+    """
+
+    def __init__(self, message: str, cost: dict):
+        super().__init__(message)
+        self.cost = cost
+
 
 def load_env() -> None:
     """Load .env into the process environment without overriding what is set."""
@@ -86,19 +143,32 @@ def load_env() -> None:
             os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
 
 
-def extract_page(raw_html: str, model: str = "claude-sonnet-5") -> tuple[dict, dict]:
-    """Extract a byline from one raw page, for use as a parser fallback.
+def extract_page(
+    raw_html: str, model: str = "claude-sonnet-5", lab_label: str | None = None
+) -> tuple[dict, dict, bool]:
+    """Extract a byline from one raw page.
 
     Args:
         raw_html: Raw HTML of the article.
         model: Model id.
+        lab_label: When set, uses the generalized v2 prompt and schema
+            (``is_lab_staff``, affiliation defaults to this label) instead of
+            the Anthropic-specific v1 prompt. Anthropic's own harvest keeps
+            calling this with `lab_label` unset, so v1 stays exactly what it
+            was -- v2 is additive, not a replacement.
 
     Returns:
-        Tuple of (parsed byline, cost record).
+        Tuple of (parsed byline, cost record, whether the page was
+        truncated to fit HTML_BUDGET). `prepare_html`'s own truncation flag
+        used to be silently discarded here -- a caller had no way to tell a
+        complete extraction from one where the source was cut and a
+        contributor section past the window was never sent to the model at
+        all. Store this on whatever record the byline ends up on.
     """
     load_env()
-    html, _ = prepare_html(raw_html)
-    return extract(anthropic.Anthropic(), model, html)
+    html, truncated = prepare_html(raw_html)
+    parsed, cost = extract(anthropic.Anthropic(), model, html, lab_label=lab_label)
+    return parsed, cost, truncated
 
 
 def cache_path(url: str) -> Path:
@@ -126,36 +196,106 @@ def prepare_html(raw: str) -> tuple[str, bool]:
     body = re.sub(r"(?is)<(script|style|svg|noscript).*?</\1>", " ", raw)
     body = re.sub(r"(?is)<!--.*?-->", " ", body)
     body = re.sub(r"[ \t]+", " ", body)
-    return body[:HTML_BUDGET], len(body) > HTML_BUDGET
+    # arXiv's HTML template ships a large amount of site chrome (search
+    # modal, "Report Issue" widget, license banner) before the article's own
+    # content. Confirmed live on a real Meta AI paper (research/meta_harvest
+    # via research/docs/decisions.md D16): 66KB of chrome preceded
+    # `<article`, past the entire HTML_BUDGET, so the byline -- which
+    # LaTeXML places right at the top of `<article>` -- was never sent to the
+    # model at all, and came back as a false `no_byline`. Starting the
+    # window at `<article>` when present spends the budget on the document,
+    # not the wrapper around it. Checked live against every DeepMind arXiv
+    # page already cached: none had `<article>` past this offset, so this is
+    # additive, not a correction to prior DeepMind results. Pages with no
+    # `<article>` tag (lab blog pages, not arXiv) are unaffected.
+    article_start = body.find("<article")
+    if article_start > 0:
+        body = body[article_start:]
+    if len(body) <= HTML_BUDGET:
+        return body, False
+    head_budget = HTML_BUDGET // 2
+    tail_budget = HTML_BUDGET - head_budget
+    # Confirmed live on two real Mistral AI papers (docs/decisions.md D17):
+    # arXiv's LaTeXML rendering can put a large flat "Contributors" list,
+    # not a `<div class="ltx_authors">` byline, well into the document --
+    # 70KB-135KB past `<article>`. A blind head+tail split was tried first
+    # and still missed both real cases: the tail it grabbed was a
+    # references/bibliography section following the contributor list, not
+    # the list itself, which sits closer to the middle of the document than
+    # either end. Locating the heading first and windowing around it (same
+    # heading shape `deepseek_harvest.py::parse_author_list` already
+    # special-cases, there via an unbounded regex search rather than an LLM
+    # budget) finds it directly instead of guessing where it might be.
+    section = AUTHOR_SECTION.search(body)
+    if section:
+        # If the heading falls inside the head slice already sent
+        # (body[:head_budget]), starting the section window at its own
+        # start would re-send that overlap -- the model would see the same
+        # author list twice, and every harvester's aggregate() counts
+        # authors blindly, so a duplicate inflates a person's appearance
+        # count. Not live on either real Mistral paper today (their
+        # headings sit at 70,607 and 135,070, both past head_budget), but
+        # a page whose heading falls earlier must not double-send it.
+        start = max(section.start(), head_budget)
+        window_end = section.start() + tail_budget
+        # The section itself is usually short (a few thousand characters);
+        # a flat tail_budget window run against a real Shieldstral paper
+        # (docs/decisions.md D17) ran straight past it into the references
+        # section that followed, which has its own dense comma-separated
+        # author names per citation -- the model tried to enumerate all of
+        # it as the byline and produced truncated, invalid JSON. Stopping at
+        # the next heading or section close, when one appears inside the
+        # window, keeps the extraction scoped to the section actually named.
+        boundary = re.search(r"<h[1-3][ >]|</section>", body[section.end() : window_end])
+        if boundary:
+            window_end = section.end() + boundary.start()
+        return body[:head_budget] + body[start:window_end], True
+    # No named section found -- fall back to a blind tail. Harmless for the
+    # common case (DeepMind's and Meta's papers, confirmed unaffected since
+    # their byline sits within the first few hundred characters of
+    # `<article>`, well inside head_budget already) and better than nothing
+    # for an unknown future document shape.
+    return body[:head_budget] + body[-tail_budget:], True
 
 
-def build_prompt(html: str) -> tuple[str, str]:
+def build_prompt(html: str, lab_label: str | None = None) -> tuple[str, str]:
     """Split the versioned prompt file into its system and user halves.
 
     Args:
         html: Prepared article HTML to interpolate.
+        lab_label: When set, loads v2 and interpolates it into the user
+            prompt's `{lab_label}` placeholders; when unset, loads v1
+            unchanged.
 
     Returns:
         Tuple of (system prompt, user prompt).
     """
-    text = PROMPT.read_text(encoding="utf-8")
+    path = PROMPT_V2 if lab_label else PROMPT
+    text = path.read_text(encoding="utf-8")
     system = text.split("## System", 1)[1].split("## User", 1)[0].strip()
-    user = text.split("## User", 1)[1].strip()
-    return system, user.replace("{html}", html)
+    user = text.split("## User", 1)[1].strip().replace("{html}", html)
+    if lab_label:
+        user = user.replace("{lab_label}", lab_label)
+    return system, user
 
 
-def extract(client: anthropic.Anthropic, model: str, html: str) -> tuple[dict, dict]:
+def extract(
+    client: anthropic.Anthropic, model: str, html: str, lab_label: str | None = None
+) -> tuple[dict, dict]:
     """Extract one byline and return the result alongside its cost record.
 
     Args:
         client: Anthropic client.
         model: Model id.
         html: Prepared article HTML.
+        lab_label: When set, uses the generalized v2 prompt and schema; see
+            `extract_page`.
 
     Returns:
         Tuple of (parsed byline, cost record for this single call).
     """
-    system, user = build_prompt(html)
+    system, user = build_prompt(html, lab_label)
+    schema = SCHEMA_V2 if lab_label else SCHEMA
     started = time.time()
     with client.messages.stream(
         model=model,
@@ -163,18 +303,27 @@ def extract(client: anthropic.Anthropic, model: str, html: str) -> tuple[dict, d
         system=system,
         messages=[{"role": "user", "content": user}],
         thinking={"type": "adaptive"},
-        output_config={"format": {"type": "json_schema", "schema": SCHEMA}},
+        output_config={"format": {"type": "json_schema", "schema": schema}},
     ) as stream:
         response = stream.get_final_message()
 
     if response.stop_reason == "refusal":
         raise RuntimeError(f"refused: {response.stop_details}")
+    if response.stop_reason == "max_tokens":
+        # Without this, a truncated response falls straight through to
+        # json.loads() below, fails to parse, and gets misreported as
+        # "malformed JSON from model" -- true in effect, but it hides the
+        # actual fix (raise max_tokens), same distinction
+        # score_announcements.py's classify() already draws for this exact
+        # stop_reason.
+        raise RuntimeError("truncated output; raise max_tokens")
 
     text = next(b.text for b in response.content if b.type == "text")
     usage = response.usage
     in_rate, out_rate = PRICES[model]
     cost = {
         "model": model,
+        "prompt_version": "v2" if lab_label else "v1",
         "input_tokens": usage.input_tokens,
         "output_tokens": usage.output_tokens,
         "cache_read_input_tokens": getattr(usage, "cache_read_input_tokens", 0) or 0,
@@ -185,7 +334,17 @@ def extract(client: anthropic.Anthropic, model: str, html: str) -> tuple[dict, d
         "seconds": round(time.time() - started, 2),
         "stop_reason": response.stop_reason,
     }
-    return json.loads(text), cost
+    try:
+        return json.loads(text), cost
+    except json.JSONDecodeError as exc:
+        # The call was genuinely billed by the API before the parse failed --
+        # confirmed live (docs/decisions.md D17) that a plain re-raise here
+        # silently lost that cost record, since `cost` never reached the
+        # caller when json.loads() raised inside the return expression.
+        # Carrying it on the exception lets a caller record real spend even
+        # on a failed extraction, instead of a gap in "cost instrumented at
+        # the call site."
+        raise ExtractionError(f"malformed JSON from model: {exc}", cost) from exc
 
 
 def main() -> None:

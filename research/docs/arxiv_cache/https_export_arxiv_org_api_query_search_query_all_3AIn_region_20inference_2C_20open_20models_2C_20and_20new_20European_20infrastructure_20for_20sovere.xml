@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/aazz78psCJhGeRa/ZOOpRthNhUQ</id>
+  <title>arXiv Query: search_query=all:In-region OR all:inference, OR all:open OR all:models, OR all:and OR all:new OR all:European OR all:infrastructure OR all:for OR all:sovereign OR all:AI&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-09-03T07:27:53Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:In-region+OR+(all:inference,+OR+(all:open+OR+(all:models,+OR+(all:and+OR+(all:new+OR+(all:European+OR+(all:infrastructure+OR+(all:for+OR+(all:sovereign+OR+all:AI)))))))))&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>1782168</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2307.12479v2</id>
+    <title>Cloud and AI Infrastructure Cost Optimization: A Comprehensive Review of Strategies and Case Studies</title>
+    <updated>2026-01-27T04:24:03Z</updated>
+    <link href="https://arxiv.org/abs/2307.12479v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2307.12479v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Cloud computing has revolutionized the way organizations manage their IT infrastructure, but it has also introduced new challenges, such as managing cloud costs. The rapid adoption of artificial intelligence (AI) and machine learning (ML) workloads has further amplified these challenges, with GPU compute now representing 40-60\% of technical budgets for AI-focused organizations. This paper provides a comprehensive review of cloud and AI infrastructure cost optimization techniques, covering traditional cloud pricing models, resource allocation strategies, and emerging approaches for managing AI/ML workloads. We examine the dramatic cost reductions in large language model (LLM) inference which has decreased by approximately 10x annually since 2021 and explore techniques such as model quantization, GPU instance selection, and inference optimization. Real-world case studies from Amazon Prime Video, Pinterest, Cloudflare, and Netflix showcase practical application of these techniques. Our analysis reveals that organizations can achieve 50-90% cost savings through strategic optimization approaches. Future research directions in automated optimization, sustainability, and AI-specific cost management are proposed to advance the state of the art in this rapidly evolving field.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="econ.GN" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-07-24T02:28:35Z</published>
+    <arxiv:comment>Version 2. Significantly expanded to include AI/ML infrastructure and GPU cost optimization. Updated with 2025 industry data and new case studies on LLM inference costs. Title updated from "Cloud Cost Optimization: A Comprehensive Review of Strategies and Case Studies" to reflect broader scope</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Saurabh Deochake</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.28944v2</id>
+    <title>Faith in AI can narrow the futures individuals consider</title>
+    <updated>2026-07-03T09:41:30Z</updated>
+    <link href="https://arxiv.org/abs/2603.28944v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.28944v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Artificial intelligence (AI) predictions are increasingly used to inform human decisions. Here, using a behavioral implementation of the classic Newcomb's paradox in 1,305 participants, we show that AI predictions can also shape the reasoning people use to make a decision. In this paradigm, perceived predictive authority can alter how people reason about their future actions, leading them to forgo a guaranteed reward. Over 40% of participants treated AI as such a predictive authority about their own behavior, significantly increasing the odds of forgoing the guaranteed reward by a factor of 3.39 (95% CI: 2.45-4.70) and reducing earnings by 10.7-42.9%. The effect appeared across AI presentations and decision contexts and remained detectable even when predictions repeatedly failed. When people perceive AI as capable of predicting their personal behavior, the mere presence of AI predictions may shape their decision-making, narrowing the futures they consider.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-30T19:36:10Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Aoi Naito</name>
+    </author>
+    <author>
+      <name>Hirokazu Shirado</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.02842v1</id>
+    <title>Foundations of GenIR</title>
+    <updated>2025-01-06T08:38:29Z</updated>
+    <link href="https://arxiv.org/abs/2501.02842v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.02842v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The chapter discusses the foundational impact of modern generative AI models on information access (IA) systems. In contrast to traditional AI, the large-scale training and superior data modeling of generative AI models enable them to produce high-quality, human-like responses, which brings brand new opportunities for the development of IA paradigms. In this chapter, we identify and introduce two of them in details, i.e., information generation and information synthesis. Information generation allows AI to create tailored content addressing user needs directly, enhancing user experience with immediate, relevant outputs. Information synthesis leverages the ability of generative AI to integrate and reorganize existing information, providing grounded responses and mitigating issues like model hallucination, which is particularly valuable in scenarios requiring precision and external knowledge. This chapter delves into the foundational aspects of generative models, including architecture, scaling, and training, and discusses their applications in multi-modal scenarios. Additionally, it examines the retrieval-augmented generation paradigm and other methods for corpus modeling and understanding, demonstrating how generative AI can enhance information access systems. It also summarizes potential challenges and fruitful directions for future studies.</summary>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-06T08:38:29Z</published>
+    <arxiv:comment>Chapter 2 of the book on Information Access in the Era of Generative AI</arxiv:comment>
+    <arxiv:primary_category term="cs.IR"/>
+    <author>
+      <name>Qingyao Ai</name>
+    </author>
+    <author>
+      <name>Jingtao Zhan</name>
+    </author>
+    <author>
+      <name>Yiqun Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.16513v1</id>
+    <title>Competing Visions of Ethical AI: A Case Study of OpenAI</title>
+    <updated>2026-01-23T07:26:45Z</updated>
+    <link href="https://arxiv.org/abs/2601.16513v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.16513v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Introduction. AI Ethics is framed distinctly across actors and stakeholder groups. We report results from a case study of OpenAI analysing ethical AI discourse. Method. Research addressed: How has OpenAI's public discourse leveraged 'ethics', 'safety', 'alignment' and adjacent related concepts over time, and what does discourse signal about framing in practice? A structured corpus, differentiating between communication for a general audience and communication with an academic audience, was assembled from public documentation. Analysis. Qualitative content analysis of ethical themes combined inductively derived and deductively applied codes. Quantitative analysis leveraged computational content analysis methods via NLP to model topics and quantify changes in rhetoric over time. Visualizations report aggregate results. For reproducible results, we have released our code at https://github.com/famous-blue-raincoat/AI_Ethics_Discourse. Results. Results indicate that safety and risk discourse dominate OpenAI's public communication and documentation, without applying academic and advocacy ethics frameworks or vocabularies. Conclusions. Implications for governance are presented, along with discussion of ethics-washing practices in industry.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-23T07:26:45Z</published>
+    <arxiv:comment>iConference 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Melissa Wilfley</name>
+    </author>
+    <author>
+      <name>Mengting Ai</name>
+    </author>
+    <author>
+      <name>Madelyn Rose Sanfilippo</name>
+    </author>
+    <arxiv:doi>10.47989/ir31iConf64115</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.47989/ir31iConf64115" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.06217v1</id>
+    <title>The End of the Foundation Model Era: Open-Weight Models, Sovereign AI, and Inference as Infrastructure</title>
+    <updated>2026-03-18T04:49:10Z</updated>
+    <link href="https://arxiv.org/abs/2604.06217v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.06217v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The foundation model era -- roughly 2020 to 2025 -- is over. The forces that defined it have inverted. Open source models have reached frontier performance while inference costs approach zero, exposing what was always structurally true: pre-training large language models at scale is not a durable competitive moat. The US government's formal designation of Anthropic as a supply chain risk in February 2026 accelerated a transition already underway -- but did not cause it. The paper argues that the AI industry is restructuring simultaneously along four axes: economic, as the circular financing structure that inflated foundation model valuations collapses; technical, as the pre-training scaling paradigm gives way to post-training optimization and agentic composition; commercial, as application-layer integrators displace the foundation model companies whose commodity they now consume; and political, as the government asserts its historic role as gatekeeper of strategic technology. These are not separate disruptions. They are one structural shift, arriving together. The paper further argues that open-weight models are the counterintuitive instrument of sovereign control: a government that holds the weights commands the capability on its own terms, without dependence on vendor policy, financial continuity, or personnel clearance.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-18T04:49:10Z</published>
+    <arxiv:comment>44 pages, 75 references, 5 endnotes. Version 1.0, events covered through March 9, 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Jared James Grogan</name>
+    </author>
+  </entry>
+</feed>

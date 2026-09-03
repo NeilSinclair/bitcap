@@ -1,0 +1,644 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/Yl/mQgh1ZkQU5YhYRTlUtLoGUYQ</id>
+  <title>arXiv Query: search_query=all:Leanstral OR all:1.5: OR all:Proof OR all:Abundance OR all:for OR all:All&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-09-03T07:28:19Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:Leanstral+OR+(all:1.5:+OR+(all:Proof+OR+(all:Abundance+OR+(all:for+OR+all:All))))&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>600618</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/1511.06778v1</id>
+    <title>The 1st Fermi Lat Supernova Remnant Catalog</title>
+    <updated>2015-11-20T21:26:57Z</updated>
+    <link href="https://arxiv.org/abs/1511.06778v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1511.06778v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>To uniformly determine the properties of supernova remnants (SNRs) at high energies, we have developed the first systematic survey at energies from 1 to 100 GeV using data from the Fermi Large Area Telescope. Based on the spatial overlap of sources detected at GeV energies with SNRs known from radio surveys, we classify 30 sources as likely GeV SNRs. We also report 14 marginal associations and 245 flux upper limits. A mock catalog in which the positions of known remnants are scrambled in Galactic longitude, allows us to determine an upper limit of 22% on the number of GeV candidates falsely identified as SNRs. We have also developed a method to estimate spectral and spatial systematic errors arising from the diffuse interstellar emission model, a key component of all Galactic Fermi LAT analyses. By studying remnants uniformly in aggregate, we measure the GeV properties common to these objects and provide a crucial context for the detailed modeling of individual SNRs. Combining our GeV results with multiwavelength (MW) data, including radio, X-ray, and TeV, demonstrates the need for improvements to previously sufficient, simple models describing the GeV and radio emission from these objects. We model the GeV and MW emission from SNRs in aggregate to constrain their maximal contribution to observed Galactic cosmic rays.</summary>
+    <category term="astro-ph.HE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="astro-ph.IM" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2015-11-20T21:26:57Z</published>
+    <arxiv:comment>Resubmitted to ApJS</arxiv:comment>
+    <arxiv:primary_category term="astro-ph.HE"/>
+    <arxiv:journal_ref>ApJS 224 8 (2016)</arxiv:journal_ref>
+    <author>
+      <name>Fabio Acero</name>
+    </author>
+    <author>
+      <name>Markus Ackermann</name>
+    </author>
+    <author>
+      <name>Marco Ajello</name>
+    </author>
+    <author>
+      <name>Luca Baldini</name>
+    </author>
+    <author>
+      <name>Jean Ballet</name>
+    </author>
+    <author>
+      <name>Guido Barbiellini</name>
+    </author>
+    <author>
+      <name>Denis Bastieri</name>
+    </author>
+    <author>
+      <name>Ronaldo Bellazzini</name>
+    </author>
+    <author>
+      <name>E. Bissaldi</name>
+    </author>
+    <author>
+      <name>Roger Blandford</name>
+    </author>
+    <author>
+      <name>E. D. Bloom</name>
+    </author>
+    <author>
+      <name>Raffaella Bonino</name>
+    </author>
+    <author>
+      <name>Eugenio Bottacini</name>
+    </author>
+    <author>
+      <name>J. Bregeon</name>
+    </author>
+    <author>
+      <name>Philippe Bruel</name>
+    </author>
+    <author>
+      <name>Rolf Buehler</name>
+    </author>
+    <author>
+      <name>S. Buson</name>
+    </author>
+    <author>
+      <name>G. A. Caliandro</name>
+    </author>
+    <author>
+      <name>Rob A. Cameron</name>
+    </author>
+    <author>
+      <name>R Caputo</name>
+    </author>
+    <author>
+      <name>Micaela Caragiulo</name>
+    </author>
+    <author>
+      <name>Patrizia A. Caraveo</name>
+    </author>
+    <author>
+      <name>Jean Marc Casandjian</name>
+    </author>
+    <author>
+      <name>Elisabetta Cavazzuti</name>
+    </author>
+    <author>
+      <name>Claudia Cecchi</name>
+    </author>
+    <author>
+      <name>A. Chekhtman</name>
+    </author>
+    <author>
+      <name>J. Chiang</name>
+    </author>
+    <author>
+      <name>G. Chiaro</name>
+    </author>
+    <author>
+      <name>Stefano Ciprini</name>
+    </author>
+    <author>
+      <name>R. Claus</name>
+    </author>
+    <author>
+      <name>J. M. Cohen</name>
+    </author>
+    <author>
+      <name>Johann Cohen-Tanugi</name>
+    </author>
+    <author>
+      <name>L. R. Cominsky</name>
+    </author>
+    <author>
+      <name>B. Condon</name>
+    </author>
+    <author>
+      <name>Jan Conrad</name>
+    </author>
+    <author>
+      <name>S. Cutini</name>
+    </author>
+    <author>
+      <name>F. D'Ammando</name>
+    </author>
+    <author>
+      <name>A. Angelis</name>
+    </author>
+    <author>
+      <name>F. Palma</name>
+    </author>
+    <author>
+      <name>Rachele Desiante</name>
+    </author>
+    <author>
+      <name>S. W. Digel</name>
+    </author>
+    <author>
+      <name>L. Venere</name>
+    </author>
+    <author>
+      <name>Persis S Drell</name>
+    </author>
+    <author>
+      <name>Alex Drlica-Wagner</name>
+    </author>
+    <author>
+      <name>C. Favuzzi</name>
+    </author>
+    <author>
+      <name>E. C. Ferrara</name>
+    </author>
+    <author>
+      <name>Anna Franckowiak</name>
+    </author>
+    <author>
+      <name>Prof. Yasushi Fukazawa</name>
+    </author>
+    <author>
+      <name>Prof. Stefan Funk</name>
+    </author>
+    <author>
+      <name>P. Fusco</name>
+    </author>
+    <author>
+      <name>Fabio Gargano</name>
+    </author>
+    <author>
+      <name>Dario Gasparrini</name>
+    </author>
+    <author>
+      <name>Nicola Giglietto</name>
+    </author>
+    <author>
+      <name>Paolo Giommi</name>
+    </author>
+    <author>
+      <name>Francesco Giordano</name>
+    </author>
+    <author>
+      <name>Marcello Giroletti</name>
+    </author>
+    <author>
+      <name>Tom Glanzman</name>
+    </author>
+    <author>
+      <name>Gary Godfrey</name>
+    </author>
+    <author>
+      <name>G A. Gomez-Vargas</name>
+    </author>
+    <author>
+      <name>I. A. Grenier</name>
+    </author>
+    <author>
+      <name>M. -H. Grondin</name>
+    </author>
+    <author>
+      <name>L. Guillemot</name>
+    </author>
+    <author>
+      <name>Sylvain Guiriec</name>
+    </author>
+    <author>
+      <name>M Gustafsson</name>
+    </author>
+    <author>
+      <name>D. Hadasch</name>
+    </author>
+    <author>
+      <name>A. K. Harding</name>
+    </author>
+    <author>
+      <name>M. Hayashida</name>
+    </author>
+    <author>
+      <name>Elizabeth Hays</name>
+    </author>
+    <author>
+      <name>J. W. Hewitt</name>
+    </author>
+    <author>
+      <name>A. B. Hill</name>
+    </author>
+    <author>
+      <name>Deirdre Horan</name>
+    </author>
+    <author>
+      <name>X. Hou</name>
+    </author>
+    <author>
+      <name>Giulia Iafrate</name>
+    </author>
+    <author>
+      <name>Tobias Jogler</name>
+    </author>
+    <author>
+      <name>G. J'ohannesson</name>
+    </author>
+    <author>
+      <name>Anthony S. Johnson</name>
+    </author>
+    <author>
+      <name>T. Kamae</name>
+    </author>
+    <author>
+      <name>Hideaki Katagiri</name>
+    </author>
+    <author>
+      <name>Prof. Jun Kataoka</name>
+    </author>
+    <author>
+      <name>Junichiro Katsuta</name>
+    </author>
+    <author>
+      <name>Matthew Kerr</name>
+    </author>
+    <author>
+      <name>J. Knodlseder</name>
+    </author>
+    <author>
+      <name>Prof. Dale Kocevski</name>
+    </author>
+    <author>
+      <name>M. Kuss</name>
+    </author>
+    <author>
+      <name>Helene Laffon</name>
+    </author>
+    <author>
+      <name>J. Lande</name>
+    </author>
+    <author>
+      <name>S. Larsson</name>
+    </author>
+    <author>
+      <name>Luca Latronico</name>
+    </author>
+    <author>
+      <name>Marianne Lemoine-Goumard</name>
+    </author>
+    <author>
+      <name>J. Li</name>
+    </author>
+    <author>
+      <name>L. Li</name>
+    </author>
+    <author>
+      <name>Francesco Longo</name>
+    </author>
+    <author>
+      <name>Francesco Loparco</name>
+    </author>
+    <author>
+      <name>Michael N. Lovellette</name>
+    </author>
+    <author>
+      <name>Pasquale Lubrano</name>
+    </author>
+    <author>
+      <name>J. Magill</name>
+    </author>
+    <author>
+      <name>S. Maldera</name>
+    </author>
+    <author>
+      <name>Martino Marelli</name>
+    </author>
+    <author>
+      <name>Michael Mayer</name>
+    </author>
+    <author>
+      <name>M. N. Mazziotta</name>
+    </author>
+    <author>
+      <name>Peter F. Michelson</name>
+    </author>
+    <author>
+      <name>Warit Mitthumsiri</name>
+    </author>
+    <author>
+      <name>Tsunefumi Mizuno</name>
+    </author>
+    <author>
+      <name>Alexander A. Moiseev</name>
+    </author>
+    <author>
+      <name>Maria Elena Monzani</name>
+    </author>
+    <author>
+      <name>E. Moretti</name>
+    </author>
+    <author>
+      <name>Aldo Morselli</name>
+    </author>
+    <author>
+      <name>Igor V. Moskalenko</name>
+    </author>
+    <author>
+      <name>Prof. Simona Murgia</name>
+    </author>
+    <author>
+      <name>Prof. Rodrigo Nemmen</name>
+    </author>
+    <author>
+      <name>Eric Nuss</name>
+    </author>
+    <author>
+      <name>Takashi Ohsugi</name>
+    </author>
+    <author>
+      <name>Nicola Omodei</name>
+    </author>
+    <author>
+      <name>Monica Orienti</name>
+    </author>
+    <author>
+      <name>Elena Orlando</name>
+    </author>
+    <author>
+      <name>Jonathan F. Ormes</name>
+    </author>
+    <author>
+      <name>David Paneque</name>
+    </author>
+    <author>
+      <name>J. S. Perkins</name>
+    </author>
+    <author>
+      <name>Melissa Pesce-Rollins</name>
+    </author>
+    <author>
+      <name>Prof. Vahe' Petrosian</name>
+    </author>
+    <author>
+      <name>Frederic Piron</name>
+    </author>
+    <author>
+      <name>Giovanna Pivato</name>
+    </author>
+    <author>
+      <name>Troy Porter</name>
+    </author>
+    <author>
+      <name>S. Rain`o</name>
+    </author>
+    <author>
+      <name>Riccardo Rando</name>
+    </author>
+    <author>
+      <name>Massimiliano Razzano</name>
+    </author>
+    <author>
+      <name>Soebur Razzaque</name>
+    </author>
+    <author>
+      <name>Anita Reimer</name>
+    </author>
+    <author>
+      <name>Prof. Olaf Reimer</name>
+    </author>
+    <author>
+      <name>Matthieu Renaud</name>
+    </author>
+    <author>
+      <name>Thierry Reposeur</name>
+    </author>
+    <author>
+      <name>Mr. Romain Rousseau</name>
+    </author>
+    <author>
+      <name>P. M. Parkinson</name>
+    </author>
+    <author>
+      <name>J. Schmid</name>
+    </author>
+    <author>
+      <name>A. Schulz</name>
+    </author>
+    <author>
+      <name>C. Sgr`o</name>
+    </author>
+    <author>
+      <name>Eric J Siskind</name>
+    </author>
+    <author>
+      <name>Francesca Spada</name>
+    </author>
+    <author>
+      <name>Gloria Spandre</name>
+    </author>
+    <author>
+      <name>Paolo Spinelli</name>
+    </author>
+    <author>
+      <name>Andrew W. Strong</name>
+    </author>
+    <author>
+      <name>Daniel Suson</name>
+    </author>
+    <author>
+      <name>Hiro Tajima</name>
+    </author>
+    <author>
+      <name>Hiromitsu Takahashi</name>
+    </author>
+    <author>
+      <name>T. Tanaka</name>
+    </author>
+    <author>
+      <name>Jana B. Thayer</name>
+    </author>
+    <author>
+      <name>D. J. Thompson</name>
+    </author>
+    <author>
+      <name>L. Tibaldo</name>
+    </author>
+    <author>
+      <name>Omar Tibolla</name>
+    </author>
+    <author>
+      <name>Prof. Diego F. Torres</name>
+    </author>
+    <author>
+      <name>Gino Tosti</name>
+    </author>
+    <author>
+      <name>Eleonora Troja</name>
+    </author>
+    <author>
+      <name>Yasunobu Uchiyama</name>
+    </author>
+    <author>
+      <name>G. Vianello</name>
+    </author>
+    <author>
+      <name>B. Wells</name>
+    </author>
+    <author>
+      <name>Kent Wood</name>
+    </author>
+    <author>
+      <name>M. Wood</name>
+    </author>
+    <author>
+      <name>Manal Yassine</name>
+    </author>
+    <author>
+      <name>Stephan Zimmer</name>
+    </author>
+    <arxiv:doi>10.3847/0067-0049/224/1/8</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.3847/0067-0049/224/1/8" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.23661v3</id>
+    <title>LLaVA-OneVision-1.5: Fully Open Framework for Democratized Multimodal Training</title>
+    <updated>2025-12-14T14:18:43Z</updated>
+    <link href="https://arxiv.org/abs/2509.23661v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.23661v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present LLaVA-OneVision-1.5, a novel family of Large Multimodal Models (LMMs) that achieve state-of-the-art performance with significantly reduced computational and financial costs. Different from the existing works, LLaVA-OneVision-1.5 provides an open, efficient, and reproducible framework for building high-quality vision-language models entirely from scratch. The LLaVA-OneVision-1.5 release comprises three primary components: (1) Large-Scale Curated Datasets: We construct an 85M concept-balanced pretraining dataset LLaVA-OneVision-1.5-Mid-Traning and a meticulously curated 22M instruction dataset LLaVA-OneVision-1.5-Instruct. (2) Efficient Training Framework: We develop a complete end-to-end efficient training framework leveraging an offline parallel data packing strategy to facilitate the training of LLaVA-OneVision-1.5 within a $16,000 budget. (3) State-of-the-art Performance: Experimental results demonstrate that LLaVA-OneVision-1.5 yields exceptionally competitive performance across a broad range of downstream tasks. Specifically, LLaVA-OneVision-1.5-8B outperforms Qwen2.5-VL-7B on 18 of 27 benchmarks, and LLaVA-OneVision-1.5-4B surpasses Qwen2.5-VL-3B on all 27 benchmarks. (4) RL-based Post-training: We unlock the model's latent potential through a lightweight RL stage, effectively eliciting robust chain-of-thought reasoning to significantly boost performance on complex multimodal reasoning tasks.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-28T05:52:55Z</published>
+    <arxiv:comment>LLaVA-OneVision-1.5 Technical Report</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Xiang An</name>
+    </author>
+    <author>
+      <name>Yin Xie</name>
+    </author>
+    <author>
+      <name>Kaicheng Yang</name>
+    </author>
+    <author>
+      <name>Wenkang Zhang</name>
+    </author>
+    <author>
+      <name>Xiuwei Zhao</name>
+    </author>
+    <author>
+      <name>Zheng Cheng</name>
+    </author>
+    <author>
+      <name>Yirui Wang</name>
+    </author>
+    <author>
+      <name>Songcen Xu</name>
+    </author>
+    <author>
+      <name>Changrui Chen</name>
+    </author>
+    <author>
+      <name>Didi Zhu</name>
+    </author>
+    <author>
+      <name>Chunsheng Wu</name>
+    </author>
+    <author>
+      <name>Huajie Tan</name>
+    </author>
+    <author>
+      <name>Chunyuan Li</name>
+    </author>
+    <author>
+      <name>Jing Yang</name>
+    </author>
+    <author>
+      <name>Jie Yu</name>
+    </author>
+    <author>
+      <name>Xiyao Wang</name>
+    </author>
+    <author>
+      <name>Bin Qin</name>
+    </author>
+    <author>
+      <name>Yumeng Wang</name>
+    </author>
+    <author>
+      <name>Zizhen Yan</name>
+    </author>
+    <author>
+      <name>Ziyong Feng</name>
+    </author>
+    <author>
+      <name>Ziwei Liu</name>
+    </author>
+    <author>
+      <name>Bo Li</name>
+    </author>
+    <author>
+      <name>Jiankang Deng</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2412.16166v1</id>
+    <title>Unveiling the Role of Artificial Intelligence and Stock Market Growth in Achieving Carbon Neutrality in the United States: An ARDL Model Analysis</title>
+    <updated>2024-12-04T17:07:04Z</updated>
+    <link href="https://arxiv.org/abs/2412.16166v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.16166v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Given the fact that climate change has become one of the most pressing problems in many countries in recent years, specialized research on how to mitigate climate change has been adopted by many countries. Within this discussion, the influence of advanced technologies in achieving carbon neutrality has been discussed. While several studies investigated how AI and Digital innovations could be used to reduce the environmental footprint, the actual influence of AI in reducing CO2 emissions (a proxy measuring carbon footprint) has yet to be investigated. This paper studies the role of advanced technologies in general, and Artificial Intelligence (AI) and ICT use in particular, in advancing carbon neutrality in the United States, between 2021. Secondly, this paper examines how Stock Market Growth, ICT use, Gross Domestic Product (GDP), and Population affect CO2 emissions using the STIRPAT model. After examining stationarity among the variables using a variety of unit root tests, this study concluded that there are no unit root problems across all the variables, with a mixed order of integration. The ARDL bounds test for cointegration revealed that variables in this study have a long-run relationship. Moreover, the estimates revealed from the ARDL model in the short- and long-run indicated that economic growth, stock market capitalization, and population significantly contributed to the carbon emissions in both the short-run and long-run. Conversely, AI and ICT use significantly reduced carbon emissions over both periods. Furthermore, findings were confirmed to be robust using FMOLS, DOLS, and CCR estimations. Furthermore, diagnostic tests indicated the absence of serial correlation, heteroscedasticity, and specification errors and, thus, the model was robust.</summary>
+    <category term="econ.GN" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-04T17:07:04Z</published>
+    <arxiv:comment>26 pages, 8 tables</arxiv:comment>
+    <arxiv:primary_category term="econ.GN"/>
+    <arxiv:journal_ref>Journal of Environmental Science and Economics, 2024</arxiv:journal_ref>
+    <author>
+      <name>Azizul Hakim Rafi</name>
+    </author>
+    <author>
+      <name>Abdullah Al Abrar Chowdhury</name>
+    </author>
+    <author>
+      <name>Adita Sultana</name>
+    </author>
+    <author>
+      <name>Abdulla All Noman</name>
+    </author>
+    <arxiv:doi>10.56556/jescae.v3i4.1073</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.56556/jescae.v3i4.1073" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1309.5845v1</id>
+    <title>Constructing a Proof of the Riemann Hypothesis</title>
+    <updated>2013-08-30T07:06:17Z</updated>
+    <link href="https://arxiv.org/abs/1309.5845v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1309.5845v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper compares the distribution of zeros of the Riemann zeta function $ζ(s)$ with those of a symmetric combination of zeta functions, denoted ${\cal T}_+(s)$, known to have all its zeros located on the critical line $\Re(s)=1/2$. Criteria are described for constructing a suitable quotient function of these, with properties advantageous for establishing an accessible proof that $ζ(s)$ must also have all its zeros on the critical line: the celebrated Riemann hypothesis. While the argument put forward is not at the level of rigour required to constitute a full proof of the Riemann hypothesis, it should convince non-specialists that it must hold.</summary>
+    <category term="math.NT" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2013-08-30T07:06:17Z</published>
+    <arxiv:comment>15 pages, 7 figures. arXiv admin note: substantial text overlap with arXiv:1308.6431</arxiv:comment>
+    <arxiv:primary_category term="math.NT"/>
+    <author>
+      <name>Ross C. McPhedran</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1110.4780v3</id>
+    <title>A proof for the decidability of HD0L ultimate periodicity</title>
+    <updated>2012-07-17T20:11:09Z</updated>
+    <link href="https://arxiv.org/abs/1110.4780v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1110.4780v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We give a proof for the decidability of the HD0L ultimate periodicity problem.</summary>
+    <category term="math.CO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.LO" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2011-10-21T12:52:47Z</published>
+    <arxiv:comment>33 pages, in Russian</arxiv:comment>
+    <arxiv:primary_category term="math.CO"/>
+    <author>
+      <name>Ivan Mitrofanov</name>
+    </author>
+  </entry>
+</feed>

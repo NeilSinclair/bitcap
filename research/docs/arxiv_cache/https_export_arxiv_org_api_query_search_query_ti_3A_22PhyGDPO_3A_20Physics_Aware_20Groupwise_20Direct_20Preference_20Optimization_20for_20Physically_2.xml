@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/nOhR+D6tzZi9QID9kLwV9ah0fqY</id>
+  <title>arXiv Query: search_query=ti:"PhyGDPO: Physics-Aware Groupwise Direct Preference Optimization for Physically Consistent Text-to-Video Generation"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:07:22Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22PhyGDPO:+Physics-Aware+Groupwise+Direct+Preference+Optimization+for+Physically+Consistent+Text-to-Video+Generation%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2512.24551v4</id>
+    <title>PhyGDPO: Physics-Aware Groupwise Direct Preference Optimization for Physically Consistent Text-to-Video Generation</title>
+    <updated>2026-06-18T22:13:10Z</updated>
+    <link href="https://arxiv.org/abs/2512.24551v4" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.24551v4" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in text-to-video (T2V) generation have achieved good visual quality, yet synthesizing videos that faithfully follow physical laws remains an open challenge. Existing methods mainly based on graphics or prompt extension struggle to generalize beyond simple simulated environments or learn implicit physical reasoning. The scarcity of training data with rich physics interactions and phenomena is also a problem. In this paper, we first introduce a Physics-Augmented video data construction Pipeline, PhyAugPipe, that leverages a vision-language model (VLM) with chain-of-thought reasoning to collect a large-scale training dataset, PhyVidGen-135K. Then we formulate a principled Physics-aware Groupwise Direct Preference Optimization, PhyGDPO, framework that uses real-world video as winning case to guarantee correct physics learning and builds upon the groupwise Plackett-Luce probabilistic model to capture holistic preferences beyond pairwise comparisons. In PhyGDPO, we design a Physics-Guided Rewarding (PGR) scheme that leverages VLM-based physical rewards to direct the optimization to focus on challenging physics cases. In addition, we propose a LoRA-Switch Reference (LoRA-SR) scheme that avoids full-model duplication as reference for efficient DPO training. Experiments show that our method significantly outperforms state-of-the-art open-source methods on PhyGenBench and VideoPhy2. Please check our project page at https://caiyuanhao1998.github.io/project/PhyGDPO for more video results. Our code, data, and models are publicly available at https://github.com/caiyuanhao1998/Open-PhyGDPO</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-31T01:19:14Z</published>
+    <arxiv:comment>ECCV 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Yuanhao Cai</name>
+    </author>
+    <author>
+      <name>Kunpeng Li</name>
+    </author>
+    <author>
+      <name>Menglin Jia</name>
+    </author>
+    <author>
+      <name>Jialiang Wang</name>
+    </author>
+    <author>
+      <name>Junzhe Sun</name>
+    </author>
+    <author>
+      <name>Feng Liang</name>
+    </author>
+    <author>
+      <name>Weifeng Chen</name>
+    </author>
+    <author>
+      <name>Felix Juefei-Xu</name>
+    </author>
+    <author>
+      <name>Chu Wang</name>
+    </author>
+    <author>
+      <name>Ali Thabet</name>
+    </author>
+    <author>
+      <name>Xiaoliang Dai</name>
+    </author>
+    <author>
+      <name>Xuan Ju</name>
+    </author>
+    <author>
+      <name>Alan Yuille</name>
+    </author>
+    <author>
+      <name>Ji Hou</name>
+    </author>
+  </entry>
+</feed>

@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/0GioZ5gctq5SFMzXeZ6Gnd6VIAY</id>
+  <title>arXiv Query: search_query=ti:"A foundation model of vision, audition, and language for in-silico neuroscience"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:05:54Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22A+foundation+model+of+vision,+audition,+and+language+for+in-silico+neuroscience%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.04326v1</id>
+    <title>A foundation model of vision, audition, and language for in-silico neuroscience</title>
+    <updated>2026-05-05T22:13:48Z</updated>
+    <link href="https://arxiv.org/abs/2605.04326v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.04326v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Cognitive neuroscience is fragmented into specialized models, each tailored to specific experimental paradigms, hence preventing a unified model of cognition in the human brain. Here, we introduce TRIBE v2, a tri-modal (video, audio and language) foundation model capable of predicting human brain activity in a variety of naturalistic and experimental conditions. Leveraging a unified dataset of over 1,000 hours of fMRI across 720 subjects, we demonstrate that our model accurately predicts high-resolution brain responses for novel stimuli, tasks and subjects, superseding traditional linear encoding models, delivering several-fold improvements in accuracy. Critically, TRIBE v2 enables in silico experimentation: tested on seminal visual and neuro-linguistic paradigms, it recovers a variety of results established by decades of empirical research. Finally, by extracting interpretable latent features, TRIBE v2 reveals the fine-grained topography of multisensory integration. These results establish artificial intelligence as a unifying framework for exploring the functional organization of the human brain.</summary>
+    <category term="q-bio.NC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-05T22:13:48Z</published>
+    <arxiv:primary_category term="q-bio.NC"/>
+    <author>
+      <name>Stéphane d'Ascoli</name>
+    </author>
+    <author>
+      <name>Jérémy Rapin</name>
+    </author>
+    <author>
+      <name>Yohann Benchetrit</name>
+    </author>
+    <author>
+      <name>Teon Brooks</name>
+    </author>
+    <author>
+      <name>Katelyn Begany</name>
+    </author>
+    <author>
+      <name>Joséphine Raugel</name>
+    </author>
+    <author>
+      <name>Hubert Banville</name>
+    </author>
+    <author>
+      <name>Jean-Rémi King</name>
+    </author>
+  </entry>
+</feed>

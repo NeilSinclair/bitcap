@@ -264,3 +264,108 @@ cumulative cost log, not the run; the $12.92 on screen includes prior runs.
 
 Zero marginal LLM spend: the DB load reads committed artifacts. Full Postgres
 rebuild (191 articles, 706 connections) runs in ~6s locally.
+
+### Google DeepMind papers harvest (2026-09-02)
+
+`research/papers/deepmind_harvest.py`, prompt `prompts/byline_extraction/v2.md`
+(generalized from v1 — see that prompt's own diff note), `claude-sonnet-5`.
+Cost written per call to `research/docs/deepmind_llm_cost.json`.
+
+| | |
+|---|---|
+| Window | 3 months, 17 candidate papers from the sitemap |
+| Papers processed | 15 (2 skipped — genuine source-fetch failures, not billed) |
+| Distinct authors | 65 (38 tagged `is_lab_staff`) |
+| Cost | **$0.8569** (~$0.057/paper) |
+| First proving run (--limit 3, discarded — see below) | $0.1534 |
+
+Two live bugs found and fixed mid-run, both from hand-checking actual output rather
+than from a test written in advance: (1) DeepMind's HTML renders attributes unquoted
+(`href=https://...`), which a quote-only regex silently matched nothing against — the
+first 3-paper proving run returned 0 authors on 3/3 papers before this was caught,
+and that $0.1534 is discarded, not representative. (2) `fetch()` had no retry/backoff;
+a transient 403 from arXiv mid-batch crashed the whole run until fixed to match
+`fetch_announcements.py`'s existing pattern. Full account in
+[`research/papers/README.md`](../research/papers/README.md).
+
+Extraction results are cached per-paper URL (`deepmind_extraction_cache.json`), so
+re-running this script — e.g. to extend the window — only bills genuinely new papers.
+
+### Meta AI papers harvest (2026-09-03)
+
+`research/papers/meta_harvest.py`, same v2 prompt and model as DeepMind. Cost
+written per call to `research/docs/meta_llm_cost.json`.
+
+| | |
+|---|---|
+| Window | 3 months, 27 candidate papers (2026, the only year the window touches) |
+| Papers processed | 5 in-window after arXiv-date resolution (1 more resolved but correctly out-of-window) |
+| Distinct authors | 41 |
+| Cost | **$0.4327** (6 calls — one paper re-extracted after a truncation fix, see below) |
+| Discovery proving run (5 papers, discarded — see below) | $0.4771 |
+
+Meta's detail pages carry no resolvable arXiv link or date in server HTML (JS-populated,
+confirmed live), so every paper is resolved to arXiv by title match first, before any
+extraction call — the $0.4771 proving-run figure predates the real 3-month window and is
+not representative; it proved the resolution design, not the corpus.
+
+Two live bugs found and fixed after hand-checking output against the real arXiv HTML,
+both in `llm_byline.py`/`meta_harvest.py` shared code, not Meta-specific: (1) the
+60,000-char `HTML_BUDGET` cut from byte 0 of the page, and one paper's real byline sat
+past ~66KB of arXiv's own site chrome — the model correctly reported `no_byline` on a
+page it had never actually seen, at a cost of $0.0591 for a wasted call. Fixed by
+starting the budget window at `<article>`; re-extraction cost $0.0604. (2) the
+relaxed-search arXiv fallback checked only the top-ranked candidate — the correct match
+for one real paper ranked second, behind an unrelated paper that shared only an acronym.
+Fixed to score every candidate and take the best. Full account in
+[`docs/decisions.md`](decisions.md) D16.
+
+Extraction results are cached per-paper URL (`meta_extraction_cache.json`); unresolved
+candidates are recorded to `meta_unresolved.json` with a reason rather than billed or
+guessed at.
+
+### Mistral AI papers harvest (2026-09-03)
+
+`research/papers/mistral_harvest.py`, same v2 prompt and model as DeepMind/Meta. Cost
+written per call to `research/docs/mistral_llm_cost.json`.
+
+| | |
+|---|---|
+| Window | 3 months, 9 candidate titles (Mistral's own in-window announcements) |
+| Papers processed | 2 resolved (Shieldstral, Robostral Navigate), 7 correctly unresolved |
+| Distinct authors | 23 |
+| Cost | **$0.0891** (final, correct run) |
+| Discarded debugging spend (see below) | ~$0.34 |
+
+Three head-only/head+tail extraction attempts on the same two real papers returned 0
+authors each before a correct fix was found — each is real, billed spend, not a proving
+run predating the corpus this time, so it's disclosed rather than folded into the final
+figure: $0.1208, then $0.1250 after a first (insufficient) fix, then $0.0925 for one
+correct call plus one call whose JSON output failed to parse after hitting the output
+truncation the still-too-wide window caused. That failed call's own cost was billed by
+the API but did not reach `mistral_llm_cost.json` at the time — `extract()` built the
+cost record before parsing the model's JSON, but only returned it alongside a
+successfully parsed result, so a `JSONDecodeError` lost it. Fixed the same session it was
+found: `llm_byline.py` now raises `ExtractionError` carrying the cost record on a parse
+failure, and all three papers harvesters (`meta_harvest.py`, `mistral_harvest.py`,
+`deepmind_harvest.py`) record it before treating the paper as unresolved, instead of
+losing it. Not reconstructable after the fact, so worth being exact that this is what
+happened rather than rounding it away.
+
+Full account of what caused three attempts -- a "Contributors" heading positioned deep in
+the document rather than near the top or the true end, and a still-too-wide window that
+first overran into a references section -- in [`docs/decisions.md`](decisions.md) D17.
+
+Extraction results are cached per-announcement URL (`mistral_extraction_cache.json`);
+unresolved candidates are recorded to `mistral_unresolved.json` with a reason rather than
+billed or guessed at.
+
+### xAI announcements leg (2026-09-03)
+
+`research/announcements/fetch_announcements.py`'s `wayback_cdx` method (D20). **$0.00** --
+no LLM involved, same as the GitHub leg. All cost here is wall-clock, not money: the
+Internet Archive's own rate limit (`WAYBACK_DELAY_SECONDS = 2.0`, matching
+`backfill_openai.py`'s existing pacing) makes a cold run of ~35-80 candidate snapshot
+fetches take a few minutes; a re-run is near-instant once cached (confirmed live: 2.1s for
+a fully-cached re-run of all seven labs combined, versus several minutes for the first
+xAI run).

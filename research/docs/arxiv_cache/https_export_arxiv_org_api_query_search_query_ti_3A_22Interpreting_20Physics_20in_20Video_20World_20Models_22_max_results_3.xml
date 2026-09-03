@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/t+UDiG7cgjjwqFIB+J4UT/3ALWc</id>
+  <title>arXiv Query: search_query=ti:"Interpreting Physics in Video World Models"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:03:50Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Interpreting+Physics+in+Video+World+Models%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2602.07050v1</id>
+    <title>Interpreting Physics in Video World Models</title>
+    <updated>2026-02-04T15:19:19Z</updated>
+    <link href="https://arxiv.org/abs/2602.07050v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.07050v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>A long-standing question in physical reasoning is whether video-based models need to rely on factorized representations of physical variables in order to make physically accurate predictions, or whether they can implicitly represent such variables in a task-specific, distributed manner. While modern video world models achieve strong performance on intuitive physics benchmarks, it remains unclear which of these representational regimes they implement internally. Here, we present the first interpretability study to directly examine physical representations inside large-scale video encoders. Using layerwise probing, subspace geometry, patch-level decoding, and targeted attention ablations, we characterize where physical information becomes accessible and how it is organized within encoder-based video transformers.
+  Across architectures, we identify a sharp intermediate-depth transition -- which we call the Physics Emergence Zone -- at which physical variables become accessible. Physics-related representations peak shortly after this transition and degrade toward the output layers. Decomposing motion into explicit variables, we find that scalar quantities such as speed and acceleration are available from early layers onwards, whereas motion direction becomes accessible only at the Physics Emergence Zone. Notably, we find that direction is encoded through a high-dimensional population structure with circular geometry, requiring coordinated multi-feature intervention to control. These findings suggest that modern video models do not use factorized representations of physical variables like a classical physics engine. Instead, they use a distributed representation that is nonetheless sufficient for making physical predictions.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-04T15:19:19Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Sonia Joseph</name>
+    </author>
+    <author>
+      <name>Quentin Garrido</name>
+    </author>
+    <author>
+      <name>Randall Balestriero</name>
+    </author>
+    <author>
+      <name>Matthew Kowal</name>
+    </author>
+    <author>
+      <name>Thomas Fel</name>
+    </author>
+    <author>
+      <name>Shahab Bakhtiari</name>
+    </author>
+    <author>
+      <name>Blake Richards</name>
+    </author>
+    <author>
+      <name>Mike Rabbat</name>
+    </author>
+  </entry>
+</feed>

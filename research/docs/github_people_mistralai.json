@@ -1,0 +1,1944 @@
+{
+  "people": [
+    {
+      "login": "grebett",
+      "commits": 144,
+      "repo_count": 2,
+      "repos": {
+        "platform-docs-public": 138,
+        "cookbook": 6
+      },
+      "first_commit": "2026-04-08T16:40:21Z",
+      "last_commit": "2026-08-14T09:30:06Z",
+      "names": [
+        "Gr\u00e9gory B.",
+        "grebett"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "grebett.com": 81,
+        "users.noreply.github.com": 52,
+        "mistral.ai": 11
+      }
+    },
+    {
+      "login": "jaccolor2",
+      "commits": 141,
+      "repo_count": 2,
+      "repos": {
+        "platform-docs-public": 113,
+        "cookbook": 28
+      },
+      "first_commit": "2025-09-23T08:46:18Z",
+      "last_commit": "2026-09-02T13:30:32Z",
+      "names": [
+        "jaccolor",
+        "jaccolor2"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 127,
+        "protonmail.com": 14
+      }
+    },
+    {
+      "login": "jenperson",
+      "commits": 103,
+      "repo_count": 2,
+      "repos": {
+        "cookbook": 97,
+        "workflows-starter-app": 6
+      },
+      "first_commit": "2026-04-14T12:00:09Z",
+      "last_commit": "2026-08-24T09:52:04Z",
+      "names": [
+        "Jen Person"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 102,
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "pandora-s-git",
+      "commits": 71,
+      "repo_count": 2,
+      "repos": {
+        "platform-docs-public": 64,
+        "cookbook": 7
+      },
+      "first_commit": "2025-09-08T15:57:22Z",
+      "last_commit": "2026-04-02T18:20:11Z",
+      "names": [
+        "pandora"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 63,
+        "gmail.com": 8
+      }
+    },
+    {
+      "login": "juliendenize",
+      "commits": 67,
+      "repo_count": 2,
+      "repos": {
+        "mistral-common": 66,
+        "mistral-evals": 1
+      },
+      "first_commit": "2025-09-11T20:27:23Z",
+      "last_commit": "2026-09-02T14:25:53Z",
+      "names": [
+        "Julien Denize"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 67
+      }
+    },
+    {
+      "login": "andreaonofrei01",
+      "commits": 53,
+      "repo_count": 2,
+      "repos": {
+        "client-ts": 49,
+        "client-python": 4
+      },
+      "first_commit": "2026-03-09T12:29:08Z",
+      "last_commit": "2026-08-14T09:52:11Z",
+      "names": [
+        "andreaonofrei01"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 53
+      }
+    },
+    {
+      "login": "louis-sanna-dev",
+      "commits": 45,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 36,
+        "client-ts": 9
+      },
+      "first_commit": "2026-02-09T15:11:08Z",
+      "last_commit": "2026-05-06T15:53:58Z",
+      "names": [
+        "Louis Sanna"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 23,
+        "users.noreply.github.com": 22
+      }
+    },
+    {
+      "login": "Nelson-PROIA",
+      "commits": 43,
+      "repo_count": 3,
+      "repos": {
+        "client-python": 21,
+        "client-ts": 21,
+        "platform-docs-public": 1
+      },
+      "first_commit": "2026-02-13T09:46:17Z",
+      "last_commit": "2026-09-02T10:09:20Z",
+      "names": [
+        "Nelson PROIA",
+        "Nelson Proia"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 35,
+        "mistral.ai": 8
+      }
+    },
+    {
+      "login": "mgesbert",
+      "commits": 37,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 37
+      },
+      "first_commit": "2025-12-09T13:56:45Z",
+      "last_commit": "2026-06-30T13:03:21Z",
+      "names": [
+        "Mathias Gesbert"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 31,
+        "ext.mistral.ai": 3,
+        "gmail.com": 3
+      }
+    },
+    {
+      "login": "jean-malo",
+      "commits": 34,
+      "repo_count": 3,
+      "repos": {
+        "platform-docs-public": 16,
+        "client-ts": 10,
+        "client-python": 8
+      },
+      "first_commit": "2025-12-29T08:16:30Z",
+      "last_commit": "2026-05-12T16:05:47Z",
+      "names": [
+        "Jean-Malo Delignon",
+        "jean-malo"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 22,
+        "users.noreply.github.com": 12
+      }
+    },
+    {
+      "login": "PeriLara",
+      "commits": 31,
+      "repo_count": 1,
+      "repos": {
+        "search-starter-app": 31
+      },
+      "first_commit": "2026-05-20T15:37:13Z",
+      "last_commit": "2026-07-08T11:54:07Z",
+      "names": [
+        "Lara Perinetti"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 31
+      }
+    },
+    {
+      "login": "peymanmohajerian",
+      "commits": 30,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 30
+      },
+      "first_commit": "2026-06-10T18:13:25Z",
+      "last_commit": "2026-08-24T02:31:56Z",
+      "names": [
+        "peymanmohajerian"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 30
+      }
+    },
+    {
+      "login": "anth2o",
+      "commits": 24,
+      "repo_count": 2,
+      "repos": {
+        "workflows-starter-app": 17,
+        "client-python": 7
+      },
+      "first_commit": "2026-03-20T15:35:31Z",
+      "last_commit": "2026-07-21T08:27:05Z",
+      "names": [
+        "Antoine",
+        "Antoine Hoorelbeke"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 12,
+        "users.noreply.github.com": 12
+      }
+    },
+    {
+      "login": "MartinDevi",
+      "commits": 19,
+      "repo_count": 1,
+      "repos": {
+        "search-starter-app": 19
+      },
+      "first_commit": "2026-07-08T14:55:29Z",
+      "last_commit": "2026-08-31T13:42:06Z",
+      "names": [
+        "Martin Devillers"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 16,
+        "devillers.xyz": 3
+      }
+    },
+    {
+      "login": "HenriChabert",
+      "commits": 17,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 17
+      },
+      "first_commit": "2026-05-27T11:26:19Z",
+      "last_commit": "2026-07-10T07:22:05Z",
+      "names": [
+        "Henri Chabert"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 17
+      }
+    },
+    {
+      "login": "afoucret",
+      "commits": 11,
+      "repo_count": 1,
+      "repos": {
+        "search-starter-app": 11
+      },
+      "first_commit": "2026-05-26T09:20:48Z",
+      "last_commit": "2026-09-02T11:14:08Z",
+      "names": [
+        "Aurelien Foucret",
+        "Aur\u00e9lien FOUCRET"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 11
+      }
+    },
+    {
+      "login": "aac228",
+      "commits": 11,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 7,
+        "client-ts": 4
+      },
+      "first_commit": "2025-12-16T09:06:04Z",
+      "last_commit": "2026-02-04T14:47:59Z",
+      "names": [
+        "Alexandre Abou Chahine",
+        "alexandre.abouchahine"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 11
+      }
+    },
+    {
+      "login": "HHK1",
+      "commits": 11,
+      "repo_count": 1,
+      "repos": {
+        "workflows-starter-app": 11
+      },
+      "first_commit": "2026-03-27T20:51:33Z",
+      "last_commit": "2026-04-29T11:32:06Z",
+      "names": [
+        "HHK1",
+        "Henry Huck"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "hotmail.fr": 11
+      }
+    },
+    {
+      "login": "Nemtecl",
+      "commits": 11,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 11
+      },
+      "first_commit": "2025-12-24T15:06:13Z",
+      "last_commit": "2026-06-19T15:39:44Z",
+      "names": [
+        "Cl\u00e9ment Drouin"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 11
+      }
+    },
+    {
+      "login": "aetaix",
+      "commits": 10,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 10
+      },
+      "first_commit": "2025-10-20T13:35:16Z",
+      "last_commit": "2026-08-31T07:42:10Z",
+      "names": [
+        "Adrien",
+        "Adrien Etaix",
+        "aetaix"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 8,
+        "hotmail.com": 2
+      }
+    },
+    {
+      "login": "patrickvonplaten",
+      "commits": 9,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 9
+      },
+      "first_commit": "2025-11-14T08:28:07Z",
+      "last_commit": "2026-03-05T11:24:34Z",
+      "names": [
+        "Patrick von Platen"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 9
+      }
+    },
+    {
+      "login": "rbarbadillo",
+      "commits": 9,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 6,
+        "client-ts": 3
+      },
+      "first_commit": "2026-05-07T08:13:21Z",
+      "last_commit": "2026-08-21T13:04:12Z",
+      "names": [
+        "Raquel Barbadillo"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "pm.me": 8,
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "simonvdk-mistral",
+      "commits": 9,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 7,
+        "client-ts": 2
+      },
+      "first_commit": "2026-03-10T08:46:36Z",
+      "last_commit": "2026-07-16T13:14:43Z",
+      "names": [
+        "Simon Van de Kerckhove"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 9
+      }
+    },
+    {
+      "login": "qtrrb",
+      "commits": 8,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 8
+      },
+      "first_commit": "2025-12-09T12:13:22Z",
+      "last_commit": "2026-05-25T14:05:26Z",
+      "names": [
+        "Quentin",
+        "Quentin Torroba"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 6,
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "arcanis",
+      "commits": 7,
+      "repo_count": 5,
+      "repos": {
+        "platform-docs-public": 2,
+        "client-ts": 2,
+        "cookbook": 1,
+        "mistral-common": 1,
+        "client-python": 1
+      },
+      "first_commit": "2025-11-17T12:21:37Z",
+      "last_commit": "2025-11-19T13:12:41Z",
+      "names": [
+        "Ma\u00ebl Nison"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 7
+      }
+    },
+    {
+      "login": "mistralai-nfau",
+      "commits": 7,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 7
+      },
+      "first_commit": "2026-04-14T11:33:04Z",
+      "last_commit": "2026-07-23T10:04:53Z",
+      "names": [
+        "Nicolas Faurie"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 7
+      }
+    },
+    {
+      "login": "dumontg",
+      "commits": 7,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 6,
+        "client-ts": 1
+      },
+      "first_commit": "2026-01-12T10:46:05Z",
+      "last_commit": "2026-01-29T13:01:38Z",
+      "names": [
+        "Guillaume Dumont"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 7
+      }
+    },
+    {
+      "login": "jhujhul",
+      "commits": 5,
+      "repo_count": 2,
+      "repos": {
+        "client-ts": 4,
+        "cookbook": 1
+      },
+      "first_commit": "2026-04-08T16:30:30Z",
+      "last_commit": "2026-08-31T15:52:25Z",
+      "names": [
+        "Julien Birgand",
+        "Julien Brgnd"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 3,
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "ravi03071991",
+      "commits": 5,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 5
+      },
+      "first_commit": "2025-09-12T12:45:04Z",
+      "last_commit": "2025-10-23T15:49:02Z",
+      "names": [
+        "Ravi Theja Desetty"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 5
+      }
+    },
+    {
+      "login": "kirillsolovyov-mistralai",
+      "commits": 5,
+      "repo_count": 1,
+      "repos": {
+        "workflows-starter-app": 5
+      },
+      "first_commit": "2026-03-31T12:31:53Z",
+      "last_commit": "2026-05-18T10:06:00Z",
+      "names": [
+        "Kirill Solovyov",
+        "kirillsolovyov-mistralai"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 5
+      }
+    },
+    {
+      "login": "Jofthomas",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 4
+      },
+      "first_commit": "2026-05-28T12:37:22Z",
+      "last_commit": "2026-06-23T09:22:03Z",
+      "names": [
+        "Joffrey Thomas",
+        "Jofthomas"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 3,
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "davidlee-mistral",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 4
+      },
+      "first_commit": "2025-12-11T14:59:34Z",
+      "last_commit": "2025-12-18T15:53:23Z",
+      "names": [
+        "davidlee-afk"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 4
+      }
+    },
+    {
+      "login": "sarathfrancis90",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 4
+      },
+      "first_commit": "2026-06-22T13:54:16Z",
+      "last_commit": "2026-07-21T09:14:19Z",
+      "names": [
+        "Sarath Francis"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 4
+      }
+    },
+    {
+      "login": "IxayWolf",
+      "commits": 4,
+      "repo_count": 3,
+      "repos": {
+        "client-ts": 2,
+        "platform-docs-public": 1,
+        "client-python": 1
+      },
+      "first_commit": "2026-03-16T17:26:43Z",
+      "last_commit": "2026-05-20T15:31:05Z",
+      "names": [
+        "Ivana Dunisijevic"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 2,
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "alexandretamborrino",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "search-starter-app": 4
+      },
+      "first_commit": "2026-06-12T08:58:02Z",
+      "last_commit": "2026-06-12T09:40:17Z",
+      "names": [
+        "Alexandre Tamborrino"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 4
+      }
+    },
+    {
+      "login": "amenasria",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 4
+      },
+      "first_commit": "2025-10-02T15:37:27Z",
+      "last_commit": "2025-12-02T13:40:08Z",
+      "names": [
+        "Alexandre Menasria"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 4
+      }
+    },
+    {
+      "login": "CorentinAndre",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "workflows-starter-app": 4
+      },
+      "first_commit": "2026-03-19T09:03:46Z",
+      "last_commit": "2026-03-31T12:41:07Z",
+      "names": [
+        "Corentin Andre",
+        "Corentin Andr\u00e9"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 3,
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "clementsirieix",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 4
+      },
+      "first_commit": "2026-04-21T13:19:59Z",
+      "last_commit": "2026-05-27T19:39:06Z",
+      "names": [
+        "Cl\u00e9ment Sirieix"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 4
+      }
+    },
+    {
+      "login": "michelTho",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 4
+      },
+      "first_commit": "2025-12-09T15:49:30Z",
+      "last_commit": "2025-12-11T11:02:27Z",
+      "names": [
+        "Michel Thomazo"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 4
+      }
+    },
+    {
+      "login": "mdolr",
+      "commits": 3,
+      "repo_count": 2,
+      "repos": {
+        "cookbook": 2,
+        "client-python": 1
+      },
+      "first_commit": "2026-04-10T13:40:45Z",
+      "last_commit": "2026-04-15T09:05:55Z",
+      "names": [
+        "Maxime Dolores",
+        "maxime"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "ext.mistral.ai": 3
+      }
+    },
+    {
+      "login": "rodolphe-bejot",
+      "commits": 3,
+      "repo_count": 2,
+      "repos": {
+        "client-ts": 2,
+        "client-python": 1
+      },
+      "first_commit": "2026-03-13T13:35:03Z",
+      "last_commit": "2026-07-03T13:26:54Z",
+      "names": [
+        "Rodolphe B\u00e9jot",
+        "rodolphe-bejot"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 3
+      }
+    },
+    {
+      "login": "fosaboi",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 2
+      },
+      "first_commit": "2026-04-16T22:32:44Z",
+      "last_commit": "2026-04-20T19:30:29Z",
+      "names": [
+        "Matthieu Marchal"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "tchardonnens",
+      "commits": 2,
+      "repo_count": 2,
+      "repos": {
+        "cookbook": 1,
+        "client-python": 1
+      },
+      "first_commit": "2026-04-10T12:55:05Z",
+      "last_commit": "2026-04-17T12:52:07Z",
+      "names": [
+        "Thomas Chardonnens"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 2
+      }
+    },
+    {
+      "login": "sophiamyang",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 2
+      },
+      "first_commit": "2025-09-12T13:44:04Z",
+      "last_commit": "2025-09-12T13:57:52Z",
+      "names": [
+        "Sophia Yang"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 2
+      }
+    },
+    {
+      "login": "shoemoney",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 2
+      },
+      "first_commit": "2026-08-25T10:45:11Z",
+      "last_commit": "2026-08-26T13:13:50Z",
+      "names": [
+        "Jeremy Schoemaker"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "shoemoney.com": 2
+      }
+    },
+    {
+      "login": "framsouza",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 2
+      },
+      "first_commit": "2026-02-23T11:04:15Z",
+      "last_commit": "2026-02-23T11:37:22Z",
+      "names": [
+        "framsouza"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "lerela",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 2
+      },
+      "first_commit": "2026-05-14T10:08:59Z",
+      "last_commit": "2026-05-14T10:53:26Z",
+      "names": [
+        "L\u00e9"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 2
+      }
+    },
+    {
+      "login": "fuegoio",
+      "commits": 2,
+      "repo_count": 2,
+      "repos": {
+        "client-python": 1,
+        "client-ts": 1
+      },
+      "first_commit": "2026-03-23T14:24:01Z",
+      "last_commit": "2026-03-23T14:58:17Z",
+      "names": [
+        "Alexis Tacnet"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1,
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "Yousria",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 2
+      },
+      "first_commit": "2026-06-23T12:39:14Z",
+      "last_commit": "2026-06-23T13:00:39Z",
+      "names": [
+        "Yousria"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 2
+      }
+    },
+    {
+      "login": "sorgfresser",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "LeanstralSafeVerify": 2
+      },
+      "first_commit": "2026-07-01T14:34:40Z",
+      "last_commit": "2026-07-03T07:32:13Z",
+      "names": [
+        "Simon Sorg"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "AY-Mis",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "cookbook": 1
+      },
+      "first_commit": "2026-01-09T11:36:12Z",
+      "last_commit": "2026-01-09T11:36:12Z",
+      "names": [
+        "AY"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "arthi-arumugam-git",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-08-25T09:03:32Z",
+      "last_commit": "2026-08-25T09:03:32Z",
+      "names": [
+        "Arthi Arumugam"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "Mr-Neutr0n",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-08-03T13:07:17Z",
+      "last_commit": "2026-08-03T13:07:17Z",
+      "names": [
+        "hari"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "winklemad",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-07-15T13:25:18Z",
+      "last_commit": "2026-07-15T13:25:18Z",
+      "names": [
+        "WinkleMad"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "outlook.com": 1
+      }
+    },
+    {
+      "login": "CharlesCNorton",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-06-26T15:58:24Z",
+      "last_commit": "2026-06-26T15:58:24Z",
+      "names": [
+        "CharlesCNorton"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "haoruilee",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-06-16T14:49:41Z",
+      "last_commit": "2026-06-16T14:49:41Z",
+      "names": [
+        "0x4C33"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "matdou",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-06-03T14:46:29Z",
+      "last_commit": "2026-06-03T14:46:29Z",
+      "names": [
+        "Mathis Doutre"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "NishchayMahor",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-06-01T10:50:13Z",
+      "last_commit": "2026-06-01T10:50:13Z",
+      "names": [
+        "Nishchay Mahor"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "pragnyanramtha",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-05-18T15:51:56Z",
+      "last_commit": "2026-05-18T15:51:56Z",
+      "names": [
+        "Pragnyan Ramtha"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "abdelhadi703",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-03-04T20:30:58Z",
+      "last_commit": "2026-03-04T20:30:58Z",
+      "names": [
+        "abdelhadi703"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "outlook.fr": 1
+      }
+    },
+    {
+      "login": "thecaptain789",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-02-11T21:42:58Z",
+      "last_commit": "2026-02-11T21:42:58Z",
+      "names": [
+        "thecaptain789"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "amosyou",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2026-01-28T09:39:26Z",
+      "last_commit": "2026-01-28T09:39:26Z",
+      "names": [
+        "Amos You"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "tobrun",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2025-12-11T16:47:12Z",
+      "last_commit": "2025-12-11T16:47:12Z",
+      "names": [
+        "Tobrun"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "PrasanaaV",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2025-10-24T13:39:49Z",
+      "last_commit": "2025-10-24T13:39:49Z",
+      "names": [
+        "Ichan"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "mingfang",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-common": 1
+      },
+      "first_commit": "2025-09-11T20:28:19Z",
+      "last_commit": "2025-09-11T20:28:19Z",
+      "names": [
+        "Ming Fang"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mac.com": 1
+      }
+    },
+    {
+      "login": "aMahanna",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 1
+      },
+      "first_commit": "2026-03-31T17:23:04Z",
+      "last_commit": "2026-03-31T17:23:04Z",
+      "names": [
+        "Anthony Mahanna"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "MathisGit",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 1
+      },
+      "first_commit": "2025-11-26T10:33:45Z",
+      "last_commit": "2025-11-26T10:33:45Z",
+      "names": [
+        "MathisGit"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "Nowaha",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "platform-docs-public": 1
+      },
+      "first_commit": "2025-11-06T08:17:58Z",
+      "last_commit": "2025-11-06T08:17:58Z",
+      "names": [
+        "Noah Verkaik"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "p88h",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "search-starter-app": 1
+      },
+      "first_commit": "2026-08-13T12:34:45Z",
+      "last_commit": "2026-08-13T12:34:45Z",
+      "names": [
+        "Staszek Pa\u015bko"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "Deimos28",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-08-11T13:12:43Z",
+      "last_commit": "2026-08-11T13:12:43Z",
+      "names": [
+        "Charles-Edouard Cady"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "verdie-g",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-08-10T14:38:34Z",
+      "last_commit": "2026-08-10T14:38:34Z",
+      "names": [
+        "Gr\u00e9goire"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "adrienduchemin",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-07-28T11:12:18Z",
+      "last_commit": "2026-07-28T11:12:18Z",
+      "names": [
+        "Adrien Duchemin"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "jsurloppe",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-06-12T04:42:19Z",
+      "last_commit": "2026-06-12T04:42:19Z",
+      "names": [
+        "Julien Surloppe"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "lucasmrdt",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-05-25T15:59:41Z",
+      "last_commit": "2026-05-25T15:59:41Z",
+      "names": [
+        "Lucas Marandat"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "AkhilGNair",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-05-21T14:18:58Z",
+      "last_commit": "2026-05-21T14:18:58Z",
+      "names": [
+        "Akhil Nair"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "DylanGriffith",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-04-30T12:21:18Z",
+      "last_commit": "2026-04-30T12:21:18Z",
+      "names": [
+        "Dylan"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "pevers",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-04-23T11:32:17Z",
+      "last_commit": "2026-04-23T11:32:17Z",
+      "names": [
+        "Peter Evers"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "jjovalle99",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-04-04T17:37:35Z",
+      "last_commit": "2026-04-04T17:37:35Z",
+      "names": [
+        "Juan Ovalle"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "arnaudde",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-03-31T08:20:19Z",
+      "last_commit": "2026-03-31T08:20:19Z",
+      "names": [
+        "Arnaud dE"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "hotmail.fr": 1
+      }
+    },
+    {
+      "login": "yurekami",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-03-09T22:15:14Z",
+      "last_commit": "2026-03-09T22:15:14Z",
+      "names": [
+        "\u3086\u308a"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "oli5679",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-python": 1
+      },
+      "first_commit": "2026-03-09T22:11:39Z",
+      "last_commit": "2026-03-09T22:11:39Z",
+      "names": [
+        "Oli Cairns"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "mana-byte",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 1
+      },
+      "first_commit": "2026-08-04T09:29:34Z",
+      "last_commit": "2026-08-04T09:29:34Z",
+      "names": [
+        "mana-byte"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "flandrecorentin",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 1
+      },
+      "first_commit": "2026-07-15T09:15:11Z",
+      "last_commit": "2026-07-15T09:15:11Z",
+      "names": [
+        "Corentin Flandre"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "Gaetan35",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 1
+      },
+      "first_commit": "2026-06-23T10:48:59Z",
+      "last_commit": "2026-06-23T10:48:59Z",
+      "names": [
+        "Ga\u00ebtan Gelineau"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "th-ch",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 1
+      },
+      "first_commit": "2026-06-16T08:39:40Z",
+      "last_commit": "2026-06-16T08:39:40Z",
+      "names": [
+        "th-ch"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "salome-voltz",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "client-ts": 1
+      },
+      "first_commit": "2026-03-20T08:51:57Z",
+      "last_commit": "2026-03-20T08:51:57Z",
+      "names": [
+        "Salom\u00e9 VOLTZ"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "AntonKluge",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "workflows-starter-app": 1
+      },
+      "first_commit": "2026-06-16T16:17:35Z",
+      "last_commit": "2026-06-16T16:17:35Z",
+      "names": [
+        "Anton Kluge"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "laure0303",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 1
+      },
+      "first_commit": "2026-06-25T14:08:45Z",
+      "last_commit": "2026-06-25T14:08:45Z",
+      "names": [
+        "Laure Hugo"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "guillaumelgf",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 1
+      },
+      "first_commit": "2026-06-12T11:16:04Z",
+      "last_commit": "2026-06-12T11:16:04Z",
+      "names": [
+        "Guillaume LE GOFF"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "RossinesP",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 1
+      },
+      "first_commit": "2026-04-16T09:10:26Z",
+      "last_commit": "2026-04-16T09:10:26Z",
+      "names": [
+        "Pierre Rossin\u00e8s"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "VinceOPS",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "mistral-vibe": 1
+      },
+      "first_commit": "2025-12-10T09:43:24Z",
+      "last_commit": "2025-12-10T09:43:24Z",
+      "names": [
+        "Vincent G"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "Diallo",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "cli": 1
+      },
+      "first_commit": "2026-08-17T10:27:30Z",
+      "last_commit": "2026-08-17T10:27:30Z",
+      "names": [
+        "Madiou Diallo"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    },
+    {
+      "login": "romasoletskyi",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "FLTEval": 1
+      },
+      "first_commit": "2026-07-02T15:35:16Z",
+      "last_commit": "2026-07-02T15:35:16Z",
+      "names": [
+        "Roman Soletskyi"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "mistral.ai": 1
+      }
+    }
+  ],
+  "aliases": {},
+  "mirrors_excluded": [],
+  "totals": {
+    "repos": 12,
+    "commits": 1366,
+    "people": 93,
+    "bot_commits": 109,
+    "unattributed_commits": 170,
+    "employment": {
+      "confirmed": 0,
+      "confirmed_org_wide": 0,
+      "handle": 0,
+      "vendor": 0,
+      "unknown": 93
+    }
+  }
+}

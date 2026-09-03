@@ -126,6 +126,10 @@ single blob, so this cost nothing in repo weight and was never about size.
 
 ## D7 — Register admission is decided by transmission path, not by lab prominence
 
+**Amended 2026-09-02 — see D14.** Meta AI added as a seventh deep-coverage lab. The
+"six labs" language below is the original decision as made; it is superseded, not
+rewritten, so the reasoning that produced it stays legible.
+
 **Decision.** A lab earns a register slot only if a path can be written from its
 publications to a BIT position through a defined mechanism. Six labs get deep,
 person-level coverage first: **Anthropic, OpenAI, Google DeepMind, DeepSeek,
@@ -1756,6 +1760,832 @@ over with a rule that blocks the wrong people. `aliases:` for IREN's former
 name ("Iris Energy") is left out pending a source, per the no-unsourced-claims
 rule.
 
+## D10 — Scoring runs in batch mode and is off by default
+
+**Decision.** `score_announcements.py` gained a `--batch` path using the
+Anthropic Message Batches API alongside the existing interactive
+(`ThreadPoolExecutor`) path, and a `SCORING_ENABLED` env-var gate that makes
+`main()` a no-op — printing why, not silently exiting — unless
+`SCORING_ENABLED` is truthy or `--force` is passed.
+
+**Rationale.** Two separate asks, addressed together because they touch the
+same call site. Batch: planning.md §4a already named the Batches API as the
+right mode for non-interactive work — half price, latency irrelevant when
+nobody is waiting synchronously on the result. Gate: the register expansion
+in progress (Google DeepMind, Mistral, xAI — see D7) is scoped to
+**extraction only** for now — raw announcements, papers/bylines, GitHub
+contributors landing in the database — not classification. Nothing schedules
+`score_announcements.py` yet, so the gate is currently redundant with "nobody
+calls it" — but it makes the deactivated state explicit, visible, and
+documented rather than an implicit property of what hasn't been wired up.
+When a scheduler is built, it inherits an already-off switch by construction
+instead of needing scoring left out of its own logic.
+
+**Consequence.** `call_cost()` takes a `mode` parameter (`"interactive"` |
+`"batch"`) and halves the computed price for `"batch"` — applied after the
+existing cache-write/cache-read multipliers, not instead of them. Every cost
+row now carries `mode`, so a future cost dashboard can't average the two
+rates together without the split being visible in the data itself. Batch
+`custom_id`s are a SHA-1 of the article URL, not the truncated cache-key
+slug already used for on-disk caching — two distinct URLs can share a
+truncated slug, and `custom_id` is the only thing `batches.results()` uses
+to route an answer back to its article; a collision there would silently
+misattribute a classification, which the existing on-disk cache key was
+never exposed to since it's a full filename, not a wire identifier. Tests:
+`tests/test_announcements.py::TestCallCostBatchMode`,
+`::TestScoringEnabledGate`.
+
+## D11 — Register expanded to Google DeepMind and Mistral; a pre-existing register/DB reconciliation gap surfaced along the way
+
+**Decision.** Added `google-deepmind` (sitemap method, verified live) and
+`mistral` (RSS method, verified live) to `config/sources.yaml` — both
+config-only, no new discovery method needed. `fetch_announcements.py` was
+run live end-to-end and confirmed idempotent (second run in ~2s, all-cache
+hit, identical counts). One real code fix went in alongside: `from_rss` was
+labelling every RSS-discovered item `text_source` however the config said,
+regardless of what was actually fetched — the function never fetched the
+linked page at all, so a lab configured `full_text` over RSS would have
+silently shipped title+summary text mislabelled as a full article. `from_rss`
+now fetches and strips the linked page when `text_source: full_text` is
+configured, and downgrades a single item to `rss_summary` on a per-item fetch
+failure rather than crashing the run or mislabelling the fallback.
+
+**xAI is not in this batch.** Live `x.ai` is Cloudflare-blocked on every
+path including `sitemap.xml` itself (see D7 register, still pending its own
+`wayback_sitemap` discovery method) — deliberately sequenced last, per the
+approved plan's "prove n=1 on the safe cases first."
+
+**Surfaced, not fixed: `app/`'s DB reconciliation tests assumed a closed
+world that the register additions broke open.** `tests/test_pipeline_db.py`
+compares the live DB (loaded from `research/docs/announcements.json`, a
+rolling `window_months: 3` window) against
+`research/docs/scored_announcements_v7.json` (a point-in-time scoring
+snapshot). Before this session, register size and window contents happened
+to make `len(DB rows) == len(register)` true; after loading the two new
+labs' raw articles (unscored, per D10's extraction-only scope) that ceased
+to hold, and a check of the raw numbers by hand showed 16 URLs are missing
+**from the DB entirely** relative to the register — pre-existing time-window
+rollover between when the register snapshot was generated and now, present
+regardless of anything this session touched. Changed the two affected tests
+(`test_scores_reconcile_with_register`, `test_tag_rows_match_register_totals`)
+from asserting equal set *size* to reconciling only the shared URLs, which is
+what their own docstrings already claimed to check ("if the DB and the
+register ever say different numbers about the same article"). Mechanical
+count updates elsewhere (`ref_labs`, article/classification counts,
+watermark set) are a direct, expected consequence of the register growing
+and are not signs of anything wrong.
+
+**Consequence.** The underlying staleness — a scoring snapshot that silently
+drifts out of sync with the rolling raw-article window — is not resolved,
+only stopped from masquerading as a false test failure. It will recur and
+grow as more time passes with `SCORING_ENABLED` off. Whoever re-enables
+scoring should regenerate `scored_announcements_v7.json` against the current
+window rather than trusting the old snapshot.
+
+## D12 — GitHub register extended to Google DeepMind, Mistral, xAI; a new `confirmed_org_wide` evidence tier
+
+**Decision.** `aggregate_github.py`'s hardcoded `LABS` dict moved to
+`config/github_sources.yaml` (fixing a pre-existing "adding a lab is a
+config change" violation for the two labs it already covered), and gained a
+`domain_shared` field: true when a commit-email domain belongs to the
+parent company rather than the lab itself. A `domain_shared` match now tags
+`confirmed_org_wide`, not `confirmed` — a fourth employment tier alongside
+the existing three, never conflated with them in the totals breakdown or
+the console legend (the two share a first letter, so the legend needed an
+explicit code table rather than `employment[0]`).
+
+**Why it's needed, with real numbers.** Ran live against all three new
+orgs. `google-deepmind`: 168 repos, 9,870 commits, 632 people, **221 tagged
+`confirmed_org_wide`** via `@google.com` — Alphabet-wide, not
+DeepMind-specific, so calling this `confirmed` the way `@anthropic.com` or
+`@openai.com` are would silently overstate the evidence. `mistralai`: 0
+people evidenced by email at all — recent commits are almost universally
+GitHub's privacy-relay noreply addresses; a real finding about the org, not
+a harvesting gap. `xai-org`: 12 of 33 people confirmed via a genuinely
+lab-specific `@x.ai` domain, still in use as of Sept 2026 despite the Feb
+2026 SpaceX acquisition — the cleanest signal of the three.
+
+**Bot list gained one entry from real data.** `copybara-github` (Google's
+internal source-sync tool) ranked top-10 by commit volume on the DeepMind
+harvest (199 commits, 11 repos, display name "Copybara-Service") and wasn't
+caught by the existing `[bot]`/`-bot`/`stainless` patterns. Added to
+`BOT_LOGINS` by name, not generalized into a new pattern — one
+Google-specific tool doesn't imply a rule that should catch others by
+resemblance.
+
+**Not done: DeepSeek's GitHub org.** Still "not yet attempted" per the
+README, unchanged by this pass — out of scope for the current register
+work, which targeted the labs D7 added (DeepMind, Mistral, xAI), not the
+existing gap on DeepSeek. Left for a future explicit ask.
+
+## D13 — Papers leg extended to Google DeepMind, on a generalized v2 extractor
+
+**Decision.** Built `research/papers/deepmind_harvest.py` against the
+generalized `prompts/byline_extraction/v2.md` (see D-adjacent prompt diff
+note in that file) rather than a third bespoke deterministic parser. No
+deterministic path is feasible for DeepMind — confirmed live, its arXiv
+HTML carries no reliable affiliation markup. Corpus enumeration reuses
+`deepmind.google/sitemap.xml`, already fetched for the announcements leg:
+it lists all 262 current publication pages with a `<lastmod>`, which
+sidesteps the publications *listing* page being JS-rendered — no headless
+browser or rendering step needed.
+
+**Real run: 17 candidate papers (3-month window), 15 processed, 65 distinct
+authors, $0.86.** Two skipped as genuine, honestly-recorded source-fetch
+failures (one links to PLOS ONE rather than arXiv/OpenReview; one arXiv id
+has no `/html/` rendering). Hand-checked the largest result: a 21-author
+white paper where only one author was tagged DeepMind staff, correctly —
+the other 20 are named collaborators from AIST, Oxford's VGG, OpenAI,
+Cambridge and eight further institutions, and the model attributed every
+one of those affiliations correctly rather than assuming DeepMind
+authorship from appearing on DeepMind's own publications page.
+
+**Two real bugs, both found by hand-checking output, neither caught by a
+test written in advance.**
+1. DeepMind renders HTML attributes unquoted wherever the value has no
+   whitespace (`href=https://...`, valid HTML5, not what a
+   `href="..."`-only regex expects) — the first proving run (`--limit 3`)
+   returned 0 authors on 3 of 3 papers before this was caught by reading
+   the raw cached page. Fixed by also trying the page's own JSON-LD
+   `sameAs` field first (normal JSON quoting, more robust regardless), with
+   the quote-flexible href regex as a second path.
+2. `fetch()` had no retry/backoff. A transient 403 from arXiv mid-batch
+   crashed the entire run rather than being one paper's problem. Fixed to
+   match the existing pattern in `fetch_announcements.py` (exponential
+   backoff, 3 attempts), and source-fetch failures are now recorded and
+   skipped exactly like LLM extraction failures already were — matching
+   CLAUDE.md's named failure mode "source fetch failure and partial runs."
+
+**Idempotent by construction.** Extraction results are cached per-paper URL
+(`deepmind_extraction_cache.json`) separately from the raw-page disk cache,
+so re-running the script — including after fixing bug (1) mid-session —
+never re-bills a paper whose byline was already extracted successfully.
+
+**Not done: Mistral's papers leg, xAI's `wayback_sitemap` announcements
+method.** Both remain from the approved plan's sequencing; DeepMind was the
+only one of the three new labs with enough real paper volume to build and
+prove the extractor against this pass (Mistral: ~5-7 total papers
+identified via title search, none in-window; xAI: zero papers found under
+any method tried).
+
+## D14 — D7 amended: Meta AI added as a seventh deep-coverage lab
+
+**Decision.** Meta AI joins the deep-coverage register alongside D7's
+original six (Anthropic, OpenAI, Google DeepMind, DeepSeek, Mistral,
+xAI/SpaceXAI). Neil's call, made directly, overriding D7 rather than
+re-deriving it from the transmission-path test D7 used to pick the
+original six.
+
+**Rationale, as given.**
+- Meta AI is simply a large, consequential lab — size alone is a reason to
+  track it that D7's transmission-path test doesn't fully capture.
+- It has published a genuine mix of open-weight and closed models, and is
+  now visibly moving from open toward closed — already sourced in
+  `research/labs/frontier_labs.md`'s Meta AI entry: "Reporting describes a
+  shift away from open weights toward proprietary models," and flagged
+  there as "directly relevant to the `open_weights_release` mechanism: the
+  largest Western open-weights publisher stepping back." That shift is
+  itself the kind of register-worthy event D7 was built to catch — not a
+  single model release, but a change in *posture* with mechanism-level
+  consequences (Llama's open weights are a standing input to several
+  mechanisms; a step back from that changes the mechanism, not just the
+  model).
+- D7 already surfaces evidence in Meta's favor and didn't act on it: its
+  own event table cites a Meta-driven market move ("Report Meta may adopt
+  Google TPUs" → NVDA −4.3%, ~$243bn erased) that stopped short of
+  admission because the *repeatable* mechanism D7 selected on is the
+  compute contract, and Meta hadn't been the named party in one. This
+  amendment doesn't relitigate that test — it adds a lab on a basis D7
+  deliberately didn't use (size, and a structural posture shift), which is
+  exactly what an override is for.
+
+**Standing policy, stated explicitly so it doesn't need re-deriving next
+time:** the register is expected to keep growing as the pipeline matures.
+D7's "six is affordable, 21 is not" reasoning was about person-level
+coverage cost at the time, not a ceiling. Adding a lab remains what D7
+already established it should be — a deliberate, recorded call — not
+something that requires re-running the whole transmission-path test from
+scratch each time.
+
+**Consequence — what this does and does not change.** Meta AI's factual
+entry in `research/labs/frontier_labs.md` already exists and is sourced;
+no change needed there beyond this register-status note. It is **not**
+yet in `config/sources.yaml`: unlike DeepMind and Mistral (config-only
+additions, both live and verified this session), Meta AI's announcements
+channel needs a discovery method that doesn't exist yet in
+`fetch_announcements.py` — its site blocks the sitemap to all but named
+crawler user-agents, has no RSS feed, and needs a paginated-listing scrape
+plus a UA-override (confirmed live earlier this session: a plain fetch
+with no custom User-Agent succeeds; any browser-style UA gets a 400 —
+the opposite of every other lab configured so far). That is a genuinely
+new piece of code, not a config edit, and building it is a separate task
+from this decision.
+
+**Update — the separate task above is now done. See D15.**
+
+## D15 — Meta AI's GitHub and announcements legs built and run live
+
+**Decision.** Built the two legs D14 deferred: GitHub (config-only
+extension, plus one real code change to support a lab with more than one
+corporate domain) and announcements (a genuinely new discovery method,
+`listing_pagination`, plus the UA-override already flagged in D14).
+Papers is not attempted — Meta's own publications page returns a 500, and
+the working alternative found in earlier discovery populates its arXiv
+link via client-side JS with no href in server HTML, making enumeration
+materially harder than DeepMind's sitemap-based path; not pursued this
+pass.
+
+**GitHub: two orgs, one `lab` id, a schema change.** `facebookresearch`
+(general FAIR/research, 395 in-window repos, 10,943 commits, 736 people)
+and `meta-llama` (Llama-specific, 8 repos, 351 commits, 28 people) both
+map to `lab: meta-ai` in `config/github_sources.yaml`. A third candidate,
+`meta-ai` itself, was checked and confirmed dead/squatted (0 repos) —
+excluded. Both `@meta.com` and `@fb.com` are active corporate domains in
+real recent commits (fb.com is legacy, not retired), so `aggregate()`'s
+`org_domain` parameter now accepts a list as well as a single string,
+matched by set membership rather than equality — a genuine, evidence-based
+extension, not speculative generality. Both domains are Meta-wide, not
+AI-org-specific, so both tag `confirmed_org_wide`: 347 of 736 at
+`facebookresearch`, 16 of 28 at `meta-llama`.
+
+**A second bot slipped through, same class of bug as D12's
+`copybara-github`.** GitHub's own Copilot coding agent commits under the
+resolved login `Copilot` (43 commits, 3 repos, `users.noreply.github.com`)
+even though one of its own commit `name` fields is literally
+`copilot-swe-agent[bot]` — uncaught by `BOT_PATTERNS` because the *login*
+has no hyphen before "bot" and no bracket suffix. Added to `BOT_LOGINS` by
+name, same reasoning as before: one account's resemblance to a pattern
+doesn't justify generalizing the pattern itself.
+
+**Announcements: 5 real articles, and three bugs caught by hand-checking
+output before trusting it — none caught by a test written in advance.**
+`from_listing_pagination` paginates `ai.meta.com/blog/?page=N` (no RSS, no
+reachable sitemap) and sends no `User-Agent` override, per D14's finding
+that a browser-style UA gets a 400 there.
+1. The listing page links to itself (nav/logo/home link), which trivially
+   contains the `/blog/` filter — the bare index URL was scraped as an
+   "article," with a date lifted from its own featured-item text. First
+   live run returned 6 "articles," one of them the index page itself, a
+   1KB stub of nav chrome. Fixed by excluding `lab["index_url"]` from
+   candidates explicitly.
+2. Title extraction split the stripped body text on a separator (`" \ "`,
+   `" | "`) that doesn't exist in this site's rendered text — titles came
+   back with the full nav chrome appended (e.g. "Introducing Muse Spark
+   1.1 Products AI Research Resources About AI Developers Try Meta AI
+   Open Source..."). Fixed by reading the page's own `<title>` tag
+   instead, same fix DeepMind's harvester already used.
+3. That fix then returned **empty** titles on every single article — worse
+   than the bug it replaced. Meta's `<title>` tags carry an `id` attribute
+   (`<title id="pageTitle">...`), and an exact `<title>(.*?)</title>`
+   match silently finds nothing against any attributed tag. Fixed the
+   regex to `<title[^>]*>` in both `fetch_announcements.py` and
+   `deepmind_harvest.py` — the latter was never actually exercised against
+   an attributed `<title>` tag before this, so it was an unconfirmed,
+   equally-live bug there too, just not yet triggered.
+
+Final verified state: 5 articles, June 29 – July 27 2026, `text_source:
+full_text`, 3.6k-11k chars each, clean titles, correct dates. Tests added
+for every one of the three bugs above, plus the multi-domain GitHub
+change and pagination edge cases (empty page stop, out-of-window early
+stop, `max_pages` hard cap, per-article fetch failure not aborting the
+page). 393 tests pass.
+
+**Consequence.** `config/sources.yaml`'s register is now six labs
+configured (xAI's `wayback_sitemap` remains the one gap). No LLM cost on
+this leg — announcements and GitHub are both zero-marginal-cost, unlike
+the papers leg.
+
+## D16 — Meta AI's papers leg, on title-based arXiv resolution instead of a direct link
+
+**Decision.** D15 deferred papers because Meta's own publications page
+500s and the working alternative (a paginated search endpoint,
+`ai.meta.com/results/?content_types[0]=publication&years[0]=<YEAR>`)
+populates its arXiv link via client-side JS — confirmed live, no href in
+server HTML on any detail page checked. Built
+`research/papers/meta_harvest.py` around resolving each Meta title to
+arXiv externally rather than scraping a link that isn't there, after a
+small proving run (5 papers) to check the resolution rate before
+committing to the design: 4/5 resolved on an exact title match once
+Meta's own `" | Research - AI at Meta"` site suffix is stripped; the 5th
+needed a relaxed all-fields search, accepted only when the top candidate's
+abstract shared enough vocabulary with Meta's own meta-description to
+rule out a title collision (calibrated on two real papers: the correct
+match scored 1.00 overlap both times, the closest false positive 0.19 —
+threshold set at 0.3). Meta's detail pages also carry no date anywhere in
+the server HTML, confirmed live — window filtering happens after arXiv
+resolution, using the arXiv entry's own `published` date, not Meta's page.
+
+**Real run: 27 candidate papers (2026, the only year the 3-month window
+touches), 6 in-window after arXiv-date filtering, 5 processed (1 correctly
+excluded as published outside the window once resolved), 41 distinct
+authors, $0.43, 6/6 real candidates resolved — no unresolved papers in
+this window.** Better than the proving run suggested, once two bugs below
+were fixed.
+
+**Two real bugs, both found by hand-checking output against the live
+arXiv HTML, neither caught by a test written in advance — both in shared
+code every papers leg depends on, not Meta-specific.**
+1. `llm_byline.py::prepare_html`'s `HTML_BUDGET` (60,000 chars) cuts from
+   byte 0 of the page. One real paper ("Reinforcement Learning for Code
+   Optimization") came back with 0 authors despite a real, visible byline
+   (Pierre Chambon, Kunhao Zheng, Juliette Decugis, ...) confirmed by hand
+   in the raw HTML. Cause: arXiv's HTML template ships ~66KB of site
+   chrome (search modal, "Report Issue" widget, license banner) before
+   `<article>` even starts — past the entire budget, so the byline was
+   never sent to the model, and it correctly reported `no_byline` on a
+   page it had never actually seen. Fixed by starting the budget window at
+   `<article>` when present. Checked live against every DeepMind paper
+   already cached (D13) before trusting this as safe: all 7 of DeepMind's
+   cached arXiv/OpenReview pages had `<article>` well inside the old
+   budget, so this is additive, not a silent correction to D13's numbers —
+   stated here because that question needed an answer, not an assumption.
+2. `resolve_arxiv`'s relaxed-search fallback checked only `relaxed[0]`.
+   For "AIRA$_2$: Overcoming Bottlenecks in AI Research Agents" (Meta's
+   page renders the subscript as a Unicode glyph, `AIRA₂`, that doesn't
+   text-match arXiv's plain `AIRA_2`), the correct paper scored 1.00
+   overlap but ranked *second* in arXiv's own relevance ordering, behind
+   an unrelated risk-audit paper that only shared the "AIRA" acronym
+   (0.11 overlap). Checking only the top-ranked result missed a paper that
+   was sitting right there in the candidate list. Fixed to score every
+   candidate and take the best, not the first.
+
+**Idempotent by construction**, same pattern as D13: extraction keyed by
+Meta URL (`meta_extraction_cache.json`), unresolved candidates recorded to
+`meta_unresolved.json` with a reason rather than silently dropped (empty
+in this run, since all 6 resolved) — the project's "no citation, no
+insight" non-negotiable meant a paper that fails both resolution passes
+is excluded, not force-fit to the nearest-sounding arXiv result.
+
+**Not done:** the earlier discovery pass's full historical corpus (~2,400
+papers across Meta's history, unsorted, would need per-year pagination
+back through most of the site's lifetime) — this pass covers the
+configured 3-month window only, same scope as every other lab's papers
+leg.
+
+## D17 — Mistral's papers leg (title-list-from-announcements, not a maintained list), xAI's ruled out again, arXiv resolution extracted to a shared module
+
+**Decision.** Built `research/papers/mistral_harvest.py`. Re-checked
+xAI live first and confirmed there is still nothing to build for it.
+
+**xAI: reconfirmed zero papers, not attempted again.** `x.ai/research`
+and `x.ai/sitemap.xml` are still fully Cloudflare-blocked (403, live).
+arXiv search for `au:xAI`, `all:"x.ai"`, `all:xAI`, `ti:Grok`, `all:Grok`,
+`ti:"Grok 4"` returns either nothing or acronym/word collisions (XAI =
+eXplainable AI dominates every "xAI" query; "Grok" collides with
+"grokking," an unrelated ML phenomenon) and third-party papers
+*evaluating* Grok, never one *published by* xAI. Matches D7's own
+rationale (xAI's register-worthy events are compute contracts, not
+papers) and D15's earlier finding. No code written — a harvester with a
+guaranteed-empty corpus is not a leg, it's a stub, and CLAUDE.md's
+"no features beyond what was asked" applies to building things that
+produce nothing as much as it applies to anything else.
+
+**Resolution logic extracted to `arxiv_resolve.py`, shared with
+`meta_harvest.py`.** Mistral needs the identical title-based arXiv
+resolution D16 built for Meta, and that logic had already needed two real
+bug fixes there. Duplicating ~100 lines of matching logic into a second
+file would mean applying every future fix twice; extracted instead, with
+`meta_harvest.py` updated to import from it and its own copies removed.
+Re-ran Meta's harvest afterward against the real cache to confirm
+identical output post-refactor (same 5 papers, 41 authors, zero
+re-billing) before trusting the extraction.
+
+**Discovery: Mistral's own announcements, not a maintained model-name
+list.** Mistral has no publications listing page at all (every path
+tried 404s), and no arXiv query enumerates its output (`all:Mistral`
+collides with the "MISTRAL" acronym in unrelated astronomy/plasma-physics
+papers; arXiv has no affiliation-search field at all — confirmed live
+against its own API docs, see the discussion earlier this session). The
+plan going into this session was a manually maintained list of known
+model names (`Mistral 7B`, `Mixtral`, `Pixtral`, `Magistral`, `Voxtral`,
+`Devstral`), the same shape as `deepseek_harvest.py`'s `EXTRA_TITLES`. It
+was already stale before being used: live-checking Mistral's own recent
+announcements (already fetched for the announcements leg, zero extra
+cost) surfaced two real 2026 model launches — "Shieldstral" and
+"Robostral Navigate" — that were not on that list and both turned out to
+have real arXiv papers. Built on the announcements corpus instead:
+every in-window Mistral announcement title is a resolution candidate,
+over-generating on purpose (most are product posts, not model releases —
+7 of 9 in the real window correctly resolved to nothing) and letting
+`arxiv_resolve.resolve_title` be the actual filter, same design as
+Meta's. This also means the leg needs no separate maintenance as Mistral
+ships new models — the announcements leg (already scheduled) is the
+discovery source.
+
+**No disambiguation signal, so relaxed matching is effectively disabled
+here.** Meta's detail pages have a real meta-description usable for
+`resolve_title`'s relaxed-match overlap check; Mistral's announcement
+pages don't produce anything comparable (`text` is the full page
+including nav chrome, not a summary). `mistral_harvest.py` passes `desc=""`
+to `resolve_title`, which makes the relaxed fallback always score 0.0
+overlap and never accept — every paper here is either an exact title
+match or unresolved, nothing guessed at from a weak signal. Both real
+papers in the current window resolve on exact match, so this hasn't cost
+anything yet; recorded as a real, load-bearing limitation, not
+discovered-then-hidden, in case a future title diverges from arXiv's the
+way Meta's did.
+
+**Third real HTML_BUDGET bug, found the same way as the first two: by
+hand-checking output, not by a test written in advance.** Both real
+Mistral papers came back with 0 authors despite real bylines confirmed by
+hand in the raw arXiv HTML. Cause: unlike DeepMind's and Meta's papers,
+whose byline sits in a `<div class="ltx_authors">` right after the title,
+Mistral's papers carry their contributor list as a plain "Contributors"
+section heading positioned 70KB-135KB into the document — not near the
+top (D16's `<article>` fix didn't help) and not near the end either (a
+references/bibliography section follows it, so a blind head+tail split,
+tried first, grabbed the bibliography instead and still returned 0
+authors). Fixed `llm_byline.py::prepare_html` to locate a
+"Contributors"/"Author List" heading (the same shape
+`deepseek_harvest.py::parse_author_list` already special-cases,
+there via an unbounded regex search rather than an LLM budget) and window
+around it, stopping at the next heading or section close rather than
+grabbing a flat `tail_budget` — the first version of this fix still
+overran into the references section and produced truncated, invalid JSON
+on the larger paper. Checked live that DeepMind's and Meta's already-cached
+pages are unaffected (their byline sits in the first few hundred
+characters of `<article>`, inside `head_budget` regardless).
+
+One more finding surfaced by this fix, not a bug: Shieldstral's paper has
+*two* adjacent sections, "Core contributors" (11 names, specific to this
+paper) and "Contributors" (400+ names, an apparent company-wide
+boilerplate list). The heading search matches "Core contributors" first
+(it appears earlier in the document) and correctly stops there — which
+also happens to be the higher-signal answer, not a workaround for it.
+
+**Real run: 9 in-window Mistral announcements, 2 resolved to real papers
+(Shieldstral, Robostral Navigate), 7 correctly unresolved, 23 distinct
+authors, $0.09.** Hand-checked both author lists against the raw arXiv
+HTML directly — exact match, not approximately-right.
+
+**Fourth bug, in cost instrumentation, found while chasing the third.** One
+of the failed attempts above billed the API, then failed to parse the
+model's JSON — and `llm_byline.py::extract()` built the cost record before
+parsing, but only returned it alongside a successfully parsed result, so
+the `JSONDecodeError` silently lost it. Directly against CLAUDE.md's "cost
+is instrumented at the call site... cannot be reconstructed later," so
+fixed rather than left as a disclosed gap: `extract()` now raises
+`ExtractionError(message, cost)` on a parse failure, and all three papers
+harvesters (`meta_harvest.py`, `mistral_harvest.py`, `deepmind_harvest.py`)
+record that cost before treating the paper as unresolved. Exact spend
+figures for the debugging arc that found this are in
+[`docs/cost.md`](cost.md).
+
+**Consequence.** `docs/planning.md`'s papers-leg register now covers
+Anthropic, OpenAI, DeepSeek (pre-existing), DeepMind (D13), Meta AI (D16)
+and Mistral (this decision) — six of the seven deep-coverage labs. xAI is
+the one gap, and it is a gap in the source material, not the harness:
+confirmed twice now that the lab publishes nothing findable by any method
+tried.
+
+## D18 — Mistral's GitHub leg refreshed; two more bots caught, one uncatchable by login pattern
+
+**Decision.** Re-ran `harvest_github.py`/`aggregate_github.py` against
+`mistralai` (D12 built this leg originally) after clearing its per-repo
+disk cache, rather than trusting the day-old cached numbers as still
+current — same live-over-stale-data discipline used throughout this
+session. Confirmed no second Mistral-affiliated org exists to add (the
+Meta AI pattern from D15): `mistral-ai` exists on GitHub but has 0 public
+repos, dead/squatted, same as `meta-ai` was for Meta.
+
+**Numbers essentially unchanged from D12** (1 day apart, expected): 12
+repos, 1366 commits, same repo list. `D12`'s core finding stands exactly:
+0 people evidenced via corporate email, 93 (was 95, see below) contributors
+all `unknown` tier — almost every commit uses GitHub's noreply-relay
+address, not `@mistral.ai`.
+
+**Two more bots caught while hand-checking the "top 30" list, same class
+of bug as D12's `copybara-github` and D15's `copilot` — logins that don't
+match `BOT_PATTERNS`' hyphen/bracket assumptions.**
+1. `speakeasybot` (Speakeasy's SDK-generation automation, 20 commits/2
+   repos) — confirmed live via its own GitHub profile ("Speakeasy Bot",
+   bio "I'm a helpful bot that automates Speakeasy operations"). Login
+   ends in "bot" with no hyphen before it, so `-bot$` doesn't match.
+2. `maiengineering` (Mistral's own CI automation, 50 commits/4 repos) —
+   caught by a different signal entirely, since the login itself gives no
+   hint of being a bot at all: a blank profile (no name, bio, or
+   company), a role-based team mailbox (`engineering@mistral.ai`, not a
+   personal address), and half its commits carry the raw commit `name`
+   field "Buildkite CI" rather than a person's name. Found by checking
+   commit-level `name`/`email` fields directly, not the login string —
+   the first bot this session that no login-pattern generalization would
+   ever have caught.
+
+Both added to `BOT_LOGINS` by exact name, same policy as every prior bot
+fix this session: a specific found account, not a generalized pattern
+that might catch (or miss) others by resemblance.
+
+**Consequence.** People count corrected 95 → 93 (both bots removed), bot
+commit count corrected 39 → 109. Employment tiers unaffected — removing
+bots doesn't create email evidence for the remaining humans, so
+`confirmed`/`confirmed_org_wide` both stay at 0, consistent with D12.
+
+**Same check re-run against `xai-org`, no additional bots found.** Cache
+cleared and re-harvested live: 8 repos, 307 commits (306 previously, one
+new commit since last harvest — a real, small change, unlike Mistral's
+exact match). Checked every commit's `login`/`name`/`email` by hand, not
+just the top-30 display, the same way `maiengineering` was found for
+Mistral: `grokkybara[bot]` (42 commits) and `github-actions[bot]` (24)
+are both already caught by `BOT_PATTERNS`' `\[bot\]$`, and 21 commits
+under an unresolved login with commit name "CI agent" and email
+`support@x.ai` are already correctly bucketed as `unattributed`, not
+miscounted as a person. 66 bot + 21 unattributed + 33 real people
+accounts for all 307 commits exactly — no gap. `confirmed: 12` unchanged.
+No second xAI-affiliated org exists to add either (`xai`, `x-ai`,
+`spacexai`, `xai-labs`, `grok`, `xaicorp` all checked live, none exist).
+
+**Same check re-run against `google-deepmind`, the largest source by far
+(168 repos), no additional bots found.** Cache cleared and re-harvested
+live: 168 repos, 9,883 commits (9,870 previously — 13 new since the last
+harvest). Full commit-level scan (login, name, email — not just the
+top-30 display) across all 638 distinct logins found nothing beyond the
+5 bot logins already caught: `copybara-github` (199 commits, via
+`BOT_LOGINS`) and `dependabot[bot]`/`google-labs-jules[bot]`/
+`copybara-service[bot]`/`github-actions[bot]` (108 combined, via the
+`[bot]` bracket pattern). Bot (311) + unattributed (881, commits with no
+resolvable GitHub login at all — a mix of real staff committing under
+unlinked emails and library-release identities like `RLaxDev`,
+`DistraxDev`, `KfacJaxDev`; correctly excluded from the people count
+either way since none has a login) + real people (632, commits 8,691)
+accounts for all 9,883 commits exactly. `confirmed_org_wide: 221`
+unchanged. No second DeepMind org exists either: `deepmind` itself is
+confirmed dead (0 repos, redirect stub, matches the original discovery);
+`google-research`/`google-research-datasets` are real and large but are
+Google-wide research orgs, not DeepMind-specific — the same Alphabet-vs-
+DeepMind distinction that makes `@google.com` `confirmed_org_wide` and
+not `confirmed` applies to not adding them here either.
+
+**Same check re-run against `openai`, one more bot caught.** Cache
+cleared and re-harvested live: 99 repos, 19,964 commits (19,705
+previously — real growth). Full commit-level scan found one new leak:
+`goreleaserbot` (1 commit, "GoReleaser Bot", bio "I'm a bot, do not @ me"
+— confirmed live), same class of miss as `speakeasybot` (login ends in
+"bot" with no hyphen). Added to `BOT_LOGINS`. One other flagged account,
+`Traccia-Official` (1 commit, `support@traccia.ai`), checked and left
+alone: a blank-but-plausible external business account contributing to
+`openai-agents-js`, no bot indicator anywhere in its profile — correctly
+`unknown` tier already, not force-excluded on suspicion alone. People
+1150 → 1149, bot 2485 → 2486, `confirmed: 428` unchanged. `openai-labs`
+and `openai-community` (nonzero repos, worth checking) confirmed
+unaffiliated: the former is entirely forks of other orgs' repos with a
+`.edu.ge` blog domain, the latter an unrelated third-party API wrapper.
+
+**Same check re-run against `anthropics`, no new bots found.** Cache
+cleared and re-harvested live: 63 repos (61 after mirror exclusion,
+unchanged: `OpenROAD-flow-scripts`, `claude-code-base-action`), 20,611
+commits (16,896 previously — real growth, driven largely by one new
+large repo, `claudes-c-compiler`). Full scan flagged two accounts,
+both checked and left alone, not new leaks: `msegner-bot` (1 commit,
+real `msegner@anthropic.com` staff email, but the login already matches
+`BOT_PATTERNS`' `-bot$` and is correctly excluded — likely a personal
+service-account identity, not a gap); `WeAreResilience` (2 commits to
+`claude-code-action`, a real external software agency's account, no
+bot indicators — correctly `unknown` tier). `confirmed: 178` (was 176,
+consistent growth). No second Anthropic org exists: `Anthropic-AI` is
+dead (0 repos), `claude-ai` is an unaffiliated joke repo, `anthropic-labs`
+is entirely forks of other orgs' content, none original.
+
+## D19 — DeepSeek's GitHub leg built for the first time, and a legitimate 97%-of-commits repo that looks exactly like an undetected mirror but isn't
+
+**Decision.** DeepSeek's GitHub leg was explicitly left unbuilt at D12
+("not yet attempted... left for a future explicit ask"). Built it now
+following the same procedure as every other lab's leg this session: find
+the real org live, rule out a second one, harvest, aggregate, hand-check
+the top contributors at the commit level (login/name/email), not just
+the top-30 display.
+
+**Org: `deepseek-ai`, confirmed live, no second org.** `deepseek` itself
+is a dead redirect stub (0 repos), same pattern as `deepmind`/`meta-ai`/
+`mistral-ai`. `deepseek.com` is confirmed as a genuine, lab-specific,
+actively-used commit-email domain (3,274 commits) with no shared-parent-
+company ambiguity to resolve, unlike Google's or Meta's domains. No
+work-handle convention found (`work_suffix: null`, same as Mistral) —
+staff use personal-looking logins, not a `-ds` suffix or similar.
+
+**A single repo, `deepseek-harness`, is 97.5% of the entire corpus and
+initially looked exactly like the `OpenROAD-flow-scripts` mirror problem
+(D-prior, `github/README.md`) — checked properly rather than assumed
+either way.** Created 2026-08-13 (three weeks before this check),
+14,981 of 15,359 total commits, 210,256 stars, 24,586 forks. GitHub's
+API reports `fork: false`, `mirror_url: null` for it — exactly what
+`OpenROAD-flow-scripts` also reported despite being a real mirror,
+so those fields alone prove nothing either way (the known caveat: GitHub
+only sets `fork: true` for repos created via its own Fork button, not a
+manual clone-and-push). Distinguished by checking who actually committed
+to it: 31 distinct contributors, top commit emails are `@deepseek.com`
+(a real staff address, `jczhai@deepseek.com` among them) and Chinese
+personal-email providers (`qq.com`, `sina.com`) consistent with a
+DeepSeek-internal team, not the sprawling external-maintainer population
+`OpenROAD-flow-scripts` had (43 EDA engineers with no lab connection).
+Read as a genuinely fast-viral DeepSeek release — plausible given the
+lab's history of high-profile launches (the same effect this project's
+own DeepSeek-vs-NVIDIA calibration point is about) — not a mirror.
+**Not excluded, but recorded in `config/github_sources.yaml`'s own notes**
+so a future reader checking why one repo dominates the raw numbers finds
+the reasoning already worked out, not a fresh investigation.
+
+**Real run: 19 repos, 15,359 commits, 129 people, 12 confirmed (all
+`@deepseek.com`), 11 bot commits (8 `dependabot[bot]`, 3 `Copilot`, both
+already caught), 387 unattributed.** Full commit-level scan found zero
+new bot leaks — the cleanest result of any lab checked this session.
+Bot + unattributed + people-attributed commits (11 + 387 + 14,961)
+accounts for all 15,359 exactly.
+
+**Consequence.** All seven deep-coverage labs now have a GitHub leg:
+Anthropic, OpenAI, DeepSeek (this decision), Google DeepMind, Mistral,
+xAI, Meta AI. `research/github/README.md`'s "DeepSeek not yet attempted"
+line is now stale and updated alongside this entry.
+
+**Same check re-run against both Meta AI orgs, no new bots found —
+completing the sweep across all seven labs.** Both caches cleared and
+re-harvested live. `meta-llama`: 8 repos, 351 commits (unchanged exactly
+— stable corpus), 28 people, `confirmed_org_wide: 16`, matching D15
+exactly. `facebookresearch`: 395 repos (the largest single org checked
+this session), 10,944 commits (10,943 previously), 734 people (was 736),
+`confirmed_org_wide: 347`, matching D15 within noise. Full commit-level
+scan on both found only `facebook-github-bot` ("Facebook Community Bot",
+144 commits/24 repos on `facebookresearch`, a handful more on
+`meta-llama`) — already caught by `BOT_PATTERNS`' `-bot$`, not a new
+leak. Bot + unattributed + people-attributed commits accounts for the
+full total exactly on both orgs (823 + 1,861 + 8,260 = 10,944 on
+`facebookresearch`; 54 + 29 + 268 = 351 on `meta-llama`).
+
+**One new org candidate found and excluded: `facebookincubator`
+("Meta Incubator," 104 repos, genuinely real and active).** Checked its
+repo list before deciding: predominantly general systems/infrastructure
+engineering (C++ execution engines, Linux kernels, TLS implementations,
+load balancers), not AI-research-specific — the same category `google-
+research`/`google-research-datasets` were excluded from DeepMind's
+register for (D-prior, this file). Including it would dilute the
+`meta-ai` register with general engineering contributors unrelated to AI
+research output, so it was left out, not added — the register boundary
+is "AI-research-specific org," not "any org Meta owns."
+
+With this, every one of the seven deep-coverage labs' GitHub legs has now
+been re-verified live against fresh data in this session, not just
+trusted from its original build.
+
+## D20 — xAI's announcements leg built: Wayback CDX discovery, not sitemap-via-Wayback as originally planned
+
+**Decision.** xAI's announcements leg was the one register gap left after
+D18/D19's sweep — never built, blocked on live `x.ai` being fully
+Cloudflare-blocked on every path including `sitemap.xml` itself. The
+Internet Archive, which had been returning 503 earlier in this session
+(the original motivation for planning.md §4b's retry-cadence note), was
+re-checked live and confirmed back up. Built on that.
+
+**The originally planned method doesn't work, found out by checking
+before building, not after.** The plan was to fetch x.ai's own sitemap
+through its archived copy on Wayback, then parse it exactly like
+`from_sitemap` already does. Checked live first: `x.ai/sitemap.xml` has
+not been re-archived since February 2026 — seven months stale relative
+to today, meaning its URL list would miss every article actually inside
+the 3-month announcements window. A sitemap that exists but is
+structurally too old to help is a different failure mode from a sitemap
+that doesn't exist at all, and it would have looked like a working
+integration returning zero results, not an obvious break.
+
+**What works instead: a direct CDX wildcard query on the article path**
+(`x.ai/news*`), the same bulk-query technique `backfill_openai.py`
+already uses for text recovery, here used for *discovery* itself rather
+than recovering text for an already-known URL. This finds real, recent
+article snapshots regardless of whether the sitemap itself was ever
+re-crawled — confirmed live, articles from August 2026 were found this
+way.
+
+**A snapshot's crawl date has no relationship to the article's publish
+date, and trusting it would have been a real, silent bug.** Confirmed
+live: a 2024-dated funding-round page (`series-b`) was recrawled by the
+Archive in August 2026 — completely ordinary Wayback behaviour (it
+recrawls existing pages on its own schedule, unrelated to when the
+underlying content changed), but if the crawl timestamp had been used as
+the article's date, that 2024 page would have landed inside a June-2026
+window. Every candidate is instead dated from its own JSON-LD
+`datePublished` field (confirmed present and reliable across six real
+pages spanning 2023–2026, from the original Grok announcement to
+Composer 2.5), with the existing visible-text date regex as a fallback
+for pages that lack it.
+
+**Real run: 78 raw distinct article URLs discovered (broad, unbounded
+check during investigation) narrowed by a 60-day-buffered CDX date bound
+to avoid wasted fetches on years of evergreen pages; 35 landed inside the
+real 3-month window** — Grok 4.5/4.6 releases, a dozen third-party
+integrations (Amazon Bedrock, GitHub Copilot, Databricks, Interactive
+Brokers, eToro), Grok Build tooling. Hand-checked several titles and dates
+against the live announcement list — real, current, correctly dated.
+Zero marginal cost: no LLM involved in this leg, same as GitHub's.
+
+**Site branding is "SpaceXAI," rendered even on old pages' titles.**
+Confirmed the `series-b` (2024) and `grok` (original 2023 announcement)
+pages both render "SpaceXAI" in their `<title>` when crawled in August
+2026 — a page's `<title>` is generated at crawl time from the site's
+*current* branding, not frozen at original-publish-time branding. Both
+"SpaceXAI" and the earlier "xAI" suffix are stripped from titles
+unconditionally, not conditioned on article age.
+
+**Consequence.** `config/sources.yaml` now configures all seven
+deep-coverage labs for announcements — the register gap flagged at the
+top of this file's earlier header comment is closed.
+`tests/test_pipeline_db.py`'s pinned counts updated (201→236 articles,
+watermark set gains `xai`) to match the real corpus, same recurring
+pattern as every prior register addition this session.
+
+## D21 — Independent code review (bitcap-reviewer) of this session's diff, all 9 findings fixed
+
+**Decision.** Ran the `bitcap-reviewer` subagent against the real
+committed diff (26 source/config/test/doc files, the ~1,280 auto-generated
+cache/output files excluded from scope). Verdict: "Ship after fixes," 9
+CONFIRMED findings, most-severe first. Fixed all 9 rather than triaging a
+subset — none were speculative, each was traced end to end against real
+code or real cached data before being reported.
+
+**1. `arxiv_resolve.py` accepted a lone `ti:` hit as an exact match with no
+similarity check at all.** arXiv's `ti:` field is a token match, not a
+phrase match — the repo's own cached response for `ti:"HyperAgents"`
+already proved this (an unrelated paper returned alongside the real one),
+but the single-hit branch never checked it. Fixed by gating on the same
+`overlap()` function already used for the relaxed pass, against
+`OVERLAP_THRESHOLD`.
+
+**2 & 3. `score_announcements.py`'s `run_batch` lost cost records on
+failure, two distinct ways.** Cost was only written to disk after the
+*entire* batch's results loop finished, so one malformed item partway
+through a hundred-item batch would throw before any of it was persisted —
+losing every already-billed item's cost, not just the failing one. And
+refused/`max_tokens`-truncated items were billed by the API but skipped
+`call_cost()` entirely before their `continue`. Fixed by moving cost
+recording inside the loop (a `bill()` closure, same incremental-write
+guarantee the interactive path's `record()` already had) and calling it
+on every path that consumes real tokens, including the two failure paths.
+Zero test coverage existed for `run_batch` before this — added 6 tests
+using stub Anthropic Batches API objects.
+
+**4. `llm_byline.py::prepare_html`'s head+tail window could duplicate the
+author section.** When a contributor heading falls inside the first 30K
+characters already sent as the head slice, starting the section window at
+its own start re-sent that overlap — the model would see the same author
+list twice, inflating appearance counts in every harvester's `aggregate()`.
+Not live on either real Mistral paper (both headings sit well past
+head_budget), but latent. Fixed with `start = max(section.start(),
+head_budget)`.
+
+**5. The `truncated` flag `prepare_html` already computed was silently
+discarded by `extract_page`.** All three papers harvesters built this
+session stored bylines with no record of whether the source page was cut
+— a future paper whose contributor section falls outside the window would
+look identical to a complete extraction. `extract_page` now returns a
+3-tuple; each harvester's `Paper` dataclass gained a `truncated` field,
+round-tripped through the extraction cache so a cache hit reports it
+correctly too. Touched `deepmind_harvest.py`, `meta_harvest.py`,
+`mistral_harvest.py`, and the superseded `harvest_contributors.py` (kept
+functionally correct, not actively run).
+
+**6. `extract()` never checked for `stop_reason == "max_tokens"`.** A
+truncated-by-length response fell through to `json.loads()`, failed to
+parse, and got reported as "malformed JSON from model" — true in effect,
+hiding the actual fix. Added the same two-line check
+`score_announcements.py`'s `classify()` already has for this exact
+`stop_reason`.
+
+**7. New config keys were unvalidated.** `sources.yaml`'s method-specific
+keys (`page_param` for `listing_pagination`, etc.) were indexed directly
+by each discovery function with no defensive `.get()` — a missing one
+would `KeyError` deep into a live `collect()` run, after every earlier
+lab had already finished, with no output written for any of them.
+`github_sources.yaml` was not read by `validate.py` at all. Added
+`check_sources()` (per-method required-key sets, mirroring `METHODS`) and
+`check_github_sources()` (cross-references `lab:` against `sources.yaml`'s
+real ids, validates `domain_shared` is a bool and `work_suffix` compiles)
+to `config/validate.py`. New `tests/test_validate.py`, 11 tests including
+"the real committed config passes with zero errors" for both.
+
+**8. `aggregate_github.py` kept an Anthropic-only docstring and hardcoded
+defaults after `LABS` moved to config.** `aggregate(org, org_domain=
+"anthropic.com", work_suffix=r"[-_](ant|anthropic)$")` meant a caller that
+omitted them — an orchestrator following `docs/handover.md` §7 partially,
+or a new test — would silently score any org against Anthropic's domain
+and return an all-`unknown` (or wrongly `confirmed`) column indistinguishable
+from clean data. Made both required (no default); `domain_shared` keeps its
+safe `False` default, which doesn't point at a specific wrong answer the
+way the other two did. Updated the module docstring to describe the
+per-org, config-driven reality instead of one hardcoded org. ~10 test call
+sites in `test_aggregate_github.py` that relied on the old defaults now
+pass Anthropic's values explicitly, or `NEVER_MATCHES` where a test
+doesn't care about handle-suffix merging at all.
+
+**9. Unused `import sys` in `meta_harvest.py`.** Dead weight, evidently
+carried over from `deepmind_harvest.py` (which does need `sys` for a
+`sys.path.insert`). Removed.
+
+**Verified, not just applied.** Every harvester was re-run live against
+its real cached data after the fixes (Meta: 5 papers/41 authors/$0.4327,
+Mistral: 2 papers/23 authors/$0.0891, DeepMind: 15 papers/65 authors/
+$0.8569, `aggregate_github.py anthropics`: 455 people/178 confirmed) —
+identical to the pre-fix baseline in every case, confirming the fixes are
+behavior-neutral for already-correct data and only change behavior on the
+specific failure paths each one targets. Full test suite: 483 passed, 1
+skipped (up from 456 before this pass — 27 new tests, one new file,
+`tests/test_validate.py`).
 ## A category row loses to a contradicting mechanism row on the same holding (2026-09-02)
 
 Real case, surfaced by Neil while using the frontend: OpenAI shipping its own

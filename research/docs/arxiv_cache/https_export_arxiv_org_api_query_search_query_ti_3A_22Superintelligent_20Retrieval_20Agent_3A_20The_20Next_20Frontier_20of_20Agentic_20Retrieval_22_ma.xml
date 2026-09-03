@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/WmWJkH/lmDpQBxrutx136bodSZE</id>
+  <title>arXiv Query: search_query=ti:"Superintelligent Retrieval Agent: The Next Frontier of Agentic Retrieval"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:05:27Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Superintelligent+Retrieval+Agent:+The+Next+Frontier+of+Agentic+Retrieval%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.06647v3</id>
+    <title>Superintelligent Retrieval Agent: The Next Frontier of Agentic Retrieval</title>
+    <updated>2026-08-24T18:13:31Z</updated>
+    <link href="https://arxiv.org/abs/2605.06647v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.06647v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Retrieval-augmented agents are increasingly the interface to large knowledge bases, yet most treat retrieval as a black box: they issue exploratory queries, inspect snippets, and reformulate until evidence emerges. This resembles how a newcomer searches an unfamiliar database rather than how an expert navigates it with strong priors about terminology and likely evidence, causing extra retrieval rounds, latency, and poor recall.
+  We introduce \textit{Superintelligent Retrieval Agent} (SIRA), which casts \emph{superintelligence} in retrieval as compressing multi-round exploratory search into a single corpus-discriminative retrieval action. SIRA does not merely ask which terms are relevant; it asks which terms separate the desired evidence from corpus-level confusers. Offline, an LLM enriches each document with missing search vocabulary; at query time, it predicts evidence vocabulary the query omits; and corpus statistics serve as tool calls that filter terms that are absent, overly common, or unlikely to create retrieval margin. The final step is a single weighted BM25 call combining the query with the validated expansion.
+  Across ten BEIR benchmarks, SIRA achieves the strongest average retrieval performance in our comparison, beating dense retrievers, learned sparse retrievers, and LLM search-agent baselines while using no relevance labels or retriever fine-tuning. On downstream QA, its retrieval-only answer coverage exceeds recent RL-trained agentic QA systems on NQ and HotpotQA. We also introduce \textbf{BrowseComp-Wikipedia}, a hard-search benchmark of 232 BrowseComp-derived queries over a 25,587,229-document Wikipedia index. Even without index-time enrichment, using only grounded Wikipedia categories, SIRA outperforms multi-round Perplexity agents at every budget, reaching 9.70% Recall@1, 15.27% Recall@10, and 36.14% Recall@100.</summary>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-07T17:54:29Z</published>
+    <arxiv:primary_category term="cs.IR"/>
+    <author>
+      <name>Zeyu Yang</name>
+    </author>
+    <author>
+      <name>Xu Han</name>
+    </author>
+    <author>
+      <name>Qi Ma</name>
+    </author>
+    <author>
+      <name>Jason Chen</name>
+    </author>
+    <author>
+      <name>Anshumali Shrivastava</name>
+    </author>
+  </entry>
+</feed>

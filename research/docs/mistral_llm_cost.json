@@ -1,0 +1,26 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 15894,
+    "output_tokens": 1191,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.043698,
+    "seconds": 11.01,
+    "stop_reason": "end_turn",
+    "url": "https://mistral.ai/news/shieldstral/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 14795,
+    "output_tokens": 1582,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.04541,
+    "seconds": 12.72,
+    "stop_reason": "end_turn",
+    "url": "https://mistral.ai/news/robostral-navigate/"
+  }
+]

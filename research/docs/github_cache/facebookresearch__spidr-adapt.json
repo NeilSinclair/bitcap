@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2025-12-25T13:57:15Z", "login": null, "name": "mahiluthra user", "email": "mahiluthra@mahiluthra-gpu-login-0.mahiluthra-gpu-login.tenant-slurm.svc.cluster.local"}], "stars": 24, "description": "This repository contains the checkpoints and training code for the few-shot adaptation speech models in the SpidR-Adapt paper."}

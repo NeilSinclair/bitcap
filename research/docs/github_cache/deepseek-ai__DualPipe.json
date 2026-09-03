@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-01-14T06:34:58Z", "login": "yurekami", "name": "yurekami", "email": "yurekami@users.noreply.github.com"}], "stars": 3004, "description": "A bidirectional pipeline parallelism algorithm for computation-communication overlap in DeepSeek V3/R1 training."}
