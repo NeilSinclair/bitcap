@@ -1,0 +1,504 @@
+# Fidelity review: original article vs cheap-model summaries, judged by Fable 5
+# (in-session, reading the full original text, the gold tags, and both summaries).
+#
+# Per summary:
+#   gold_evidence: for each gold tag, is the evidence supporting it present in
+#     the summary? present / partial / absent
+#   missing: material information absent from the summary (figures, mechanism-
+#     bearing claims), with severity: high = would likely change a tag or score,
+#     medium = weakens confidence/attribution, low = colour
+#   errors: statements in the summary the original does not support
+#
+# method note: severities are judged against the classifier's task (v6 prompt),
+# not general reading interest.
+
+reviewer: claude-fable-5 (in-session)
+date: 2026-09-02
+summariser_prompt: summarisation/v1
+
+articles:
+  "01":
+    title: Investigating three real-world incidents in our cybersecurity evaluations
+    gold_tags: [prac:evaluation, prac:integration]
+    haiku:
+      gold_evidence:
+        prac:evaluation: present   # transcript monitoring, vendor assurance retained
+        prac:integration: partial  # "evaluation infrastructure hardening" retained, vendor-infrastructure framing thinned
+      missing:
+        - {item: "package live for roughly one hour", severity: low}
+        - {item: "earliest incidents date to April", severity: low}
+        - {item: "planned release of redacted transcript", severity: low}
+        - {item: "GA safeguards would have blocked the behaviours; harness vs alignment failure framing", severity: medium}
+      errors:
+        - "'obtaining a phone number through extended effort' — the model tried and FAILED to obtain a phone number, then backtracked to a free email provider"
+    gpt:
+      gold_evidence:
+        prac:evaluation: present
+        prac:integration: partial  # vendor collaboration retained, "same monitoring and hardening" claim thinned
+      missing:
+        - {item: "three models responded differently once targets looked real (the behavioural comparison)", severity: medium}
+        - {item: "defense-in-depth lessons / GA safeguards would have blocked", severity: medium}
+      errors: []
+    note: >
+      Both summaries keep the incident mechanics but compress the *policy
+      response* framing; the classifier read both as "other" rather than
+      safety_policy, which the raw run got right.
+
+  "04":
+    title: Advancing the price-performance frontier with GPT-5.6
+    gold_tags: [mech:inference_cost_down, mech:inference_volume_up,
+                prac:integration, prac:model_capability, prac:orchestration,
+                prac:serving_efficiency]
+    haiku:
+      gold_evidence:
+        mech:inference_cost_down: present   # kernel 20%, token-gen 15%, price cuts
+        mech:inference_volume_up: absent    # "high-volume work economical at much greater scale" sentence dropped
+        prac:integration: present           # Fast mode replaces Priority Processing, backward compatible
+        prac:model_capability: partial      # 2.2x/8.5x kept but "87% lower cost than GPT-5.4 mini" dropped ("than prior models")
+        prac:orchestration: absent          # "smarter context management helps agents avoid repeating completed work" dropped
+        prac:serving_efficiency: present    # Sol kernel/experiment/monitoring work retained
+      missing:
+        - {item: "the Luna/Terra scale claim (volume mechanism evidence)", severity: high}
+        - {item: "smarter context management sentence (orchestration evidence)", severity: high}
+        - {item: "87% vs GPT-5.4 mini figure", severity: medium}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:inference_cost_down: present
+        mech:inference_volume_up: absent    # same sentence dropped
+        prac:integration: present
+        prac:model_capability: present      # 87% quote kept verbatim
+        prac:orchestration: absent          # context-management sentence dropped ("agentic harnesses" mention only)
+        prac:serving_efficiency: present
+      missing:
+        - {item: "the Luna/Terra scale claim (volume mechanism evidence)", severity: high}
+        - {item: "smarter context management sentence (orchestration evidence)", severity: high}
+        - {item: "Notion half-cost/60%-faster and Dust 40%/40% customer figures", severity: low}
+      errors: []
+    note: >
+      Both summarisers kept every headline price figure but dropped the same two
+      low-salience, mechanism-bearing sentences (volume-at-scale,
+      context management). This is the characteristic failure: figures survive,
+      quiet mechanism evidence does not.
+
+  "05":
+    title: Previewing the Model Hardware Standard
+    gold_tags: [mech:agentic_workflows, mech:inference_volume_up,
+                prac:evaluation, prac:integration, prac:orchestration]
+    haiku:
+      gold_evidence:
+        mech:agentic_workflows: present     # autonomous error recovery, agent-run experiments
+        mech:inference_volume_up: partial   # "round-the-clock" orchestration claim dropped; autonomous experiments retained
+        prac:evaluation: present            # safety evaluations with partners before open-sourcing
+        prac:integration: present           # model-agnostic, MCP, programmable interface
+        prac:orchestration: present         # chaining driver commands, multi-device orchestration
+      missing:
+        - {item: "round-the-clock experiments claim", severity: medium}
+        - {item: "protein-design cost figures ($0.01 design vs $100 + week per candidate, 1,000 at a time)", severity: low}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:agentic_workflows: present
+        mech:inference_volume_up: partial   # same round-the-clock omission
+        prac:evaluation: present
+        prac:integration: present
+        prac:orchestration: present
+      missing:
+        - {item: "round-the-clock experiments claim", severity: medium}
+        - {item: "UW case-study detail (qPCR supervision outcomes)", severity: low}
+      errors: []
+
+  "07":
+    title: More details on Fable 5's cyber safeguards and our jailbreak framework
+    gold_tags: [prac:evaluation]
+    haiku:
+      gold_evidence:
+        prac:evaluation: present  # framework proposed for cross-industry standardisation, HackerOne
+      missing:
+        - {item: "Fable 5 has been RE-DEPLOYED and is available globally — the lede fact of the announcement", severity: high}
+        - {item: "feedback email / explicit early-draft framing", severity: low}
+      errors: []
+    gpt:
+      gold_evidence:
+        prac:evaluation: present
+      missing: []
+      errors: []
+      note: very long, quote-heavy summary (low compression) but high fidelity;
+        retained the redeployment lede that Haiku dropped
+
+  "10":
+    title: Statement on the US government directive to suspend access to Fable 5 and Mythos 5
+    gold_tags: [mech:export_controls, mech:inference_volume_up, prac:evaluation, prac:integration]
+    haiku:
+      gold_evidence:
+        mech:export_controls: present
+        mech:inference_volume_up: present   # abrupt disable for all customers retained
+        prac:evaluation: absent             # US gov / UK AISI / thousands-of-hours red-teaming sentence dropped entirely
+        prac:integration: present
+      missing:
+        - {item: "red-teaming with US government, UK AISI, third parties for thousands of hours (gold evaluation evidence)", severity: high}
+        - {item: "'recalling a commercial model deployed to hundreds of millions of people'", severity: medium}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:export_controls: present
+        mech:inference_volume_up: present
+        prac:evaluation: present            # thousands-of-hours quote verbatim
+        prac:integration: present
+      missing: []
+      errors: []
+
+  "12":
+    title: Claude Fable 5 and Claude Mythos 5
+    gold_tags: [mech:agentic_workflows, mech:capability_jump, mech:inference_cost_down,
+                mech:inference_volume_up, mech:memory_intensity_up,
+                prac:evaluation, prac:integration, prac:model_capability, prac:orchestration]
+    haiku:
+      gold_evidence:
+        mech:agentic_workflows: partial     # "autonomous long-horizon tasks" retained; GitHub hand-work-to-agents quote gone
+        mech:capability_jump: present
+        mech:inference_cost_down: partial   # FrontierCode "scores highest" kept but the "more token-efficient than past Claude models" claim dropped
+        mech:inference_volume_up: partial   # staged rollout kept; "demand very high, difficult to predict" dropped
+        mech:memory_intensity_up: present   # "stays focused across millions of tokens" retained
+        prac:evaluation: present            # 1,000-hour bug bounty retained
+        prac:integration: present           # June 23 plan removal, usage credits
+        prac:model_capability: present
+        prac:orchestration: present         # file-based memory 3x retained
+      missing:
+        - {item: "token-efficiency claim (cost mechanism evidence)", severity: high}
+        - {item: "demand expectation sentence (volume mechanism evidence)", severity: medium}
+        - {item: "Mythos science results (10x drug design, 9/14 targets, ~80% preference, 100x-smaller genomics model)", severity: medium}
+      errors:
+        - "presents a customer's 'core analytics benchmark' 90% claim as a general benchmark result (attribution slip)"
+        - "'external red-teaming over 1,000 hours' — original says an external bug bounty produced no universal jailbreaks in over 1,000 hours"
+    gpt:
+      gold_evidence:
+        mech:agentic_workflows: partial
+        mech:capability_jump: present
+        mech:inference_cost_down: partial   # same token-efficiency omission
+        mech:inference_volume_up: absent    # demand sentence and capacity framing both dropped
+        mech:memory_intensity_up: partial   # Slay the Spire 3x kept; "millions of tokens" claim dropped
+        prac:evaluation: present
+        prac:integration: present           # June 23 quote verbatim
+        prac:model_capability: present
+        prac:orchestration: partial         # kept final-act half of the memory result, not the file-based-memory-3x half
+      missing:
+        - {item: "token-efficiency claim (cost mechanism evidence)", severity: high}
+        - {item: "demand expectation sentence (volume mechanism evidence)", severity: high}
+        - {item: "'stays focused across millions of tokens' (memory mechanism evidence)", severity: medium}
+      errors: []
+    note: >
+      Both summaries kept every headline figure but dropped the same quiet
+      mechanism-bearing sentences (token efficiency, demand outlook). The
+      pattern from article 04 repeats on the biggest release of the set.
+
+  "15":
+    title: Jalapeño's first results show industry-leading speed and efficiency in AI inference
+    gold_tags: [mech:custom_silicon_substitution, mech:inference_cost_down, mech:inference_volume_up,
+                cate:accelerator_custom_si, prac:evaluation, prac:serving_efficiency]
+    haiku:
+      gold_evidence:
+        mech:custom_silicon_substitution: present
+        mech:inference_cost_down: present
+        mech:inference_volume_up: partial   # "serve more demand, lower cost per result" sentence dropped; per-watt claims retained
+        cate:accelerator_custom_si: present # Gen 2 / Gen 3 roadmap retained
+        prac:evaluation: present            # InferenceX / SemiAnalysis retained
+        prac:serving_efficiency: present    # AI-generated kernels 1.5-1.8x retained
+      missing:
+        - {item: "appendix per-model figures (85,448 vs 44,960 TPS/kW etc.)", severity: low}
+        - {item: "internal testing: advantage widened on frontier OpenAI models", severity: low}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:custom_silicon_substitution: present
+        mech:inference_cost_down: present
+        mech:inference_volume_up: partial
+        cate:accelerator_custom_si: present
+        prac:evaluation: present
+        prac:serving_efficiency: present
+      missing:
+        - {item: "'we will continue to widely deploy accelerators from NVIDIA and other partners' — bears on the sign/magnitude of substitution", severity: medium}
+      errors: []
+      note: kept the full appendix figures verbatim; Haiku kept the NVIDIA
+        complement sentence that GPT dropped
+
+  "16":
+    title: "Previewing GPT-5.6 Sol: a next-generation model"
+    gold_tags: [mech:capability_jump, mech:inference_cost_down, mech:inference_volume_up,
+                mech:memory_intensity_up, cate:accelerator_custom_si,
+                prac:evaluation, prac:integration, prac:model_capability,
+                prac:orchestration, prac:serving_efficiency]
+    haiku:
+      gold_evidence:
+        mech:capability_jump: partial       # step-change-plus-safeguards framing thinned
+        mech:inference_cost_down: present   # GeneBench fewer-tokens quote retained
+        mech:inference_volume_up: present   # ultra mode subagents retained
+        mech:memory_intensity_up: present   # max reasoning effort retained
+        cate:accelerator_custom_si: present # Cerebras 750 tok/s retained
+        prac:evaluation: present            # Cyber Critical threshold verbatim
+        prac:integration: partial           # tiers named; naming-system explanation dropped
+        prac:model_capability: present
+        prac:orchestration: present
+        prac:serving_efficiency: present    # caching, breakpoints, 30-min life retained
+      missing:
+        - {item: "naming-system explanation (integration evidence)", severity: low}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:capability_jump: present
+        mech:inference_cost_down: present
+        mech:inference_volume_up: present
+        mech:memory_intensity_up: present
+        cate:accelerator_custom_si: present
+        prac:evaluation: present
+        prac:integration: partial           # same naming-system omission
+        prac:model_capability: present
+        prac:orchestration: present
+        prac:serving_efficiency: present
+      missing: []
+      errors: []
+    note: both summaries near-complete here; dense benchmark/pricing announcements
+      survive summarisation much better than discursive ones.
+
+  "19":
+    title: "DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live"
+    gold_tags: [prac:integration, prac:model_capability, prac:orchestration]
+    haiku:
+      gold_evidence:
+        prac:integration: present           # Harness 0.1.1 retained
+        prac:model_capability: present
+        prac:orchestration: absent          # "works smoothly across agent frameworks... tools" sentence dropped
+      missing:
+        - {item: "agent-frameworks sentence (orchestration evidence)", severity: high}
+      errors: []
+    gpt:
+      gold_evidence:
+        prac:integration: present
+        prac:model_capability: present
+        prac:orchestration: absent          # same sentence dropped
+      missing:
+        - {item: "agent-frameworks sentence (orchestration evidence)", severity: high}
+      errors: []
+    note: even on a 2.7k-char article both summarisers dropped the same
+      mechanism-bearing sentence.
+
+  "20":
+    title: OpenAI frontier models and Codex are now available on AWS
+    gold_tags: [mech:inference_volume_up, cate:hyperscale_platform, prac:integration]
+    haiku:
+      gold_evidence:
+        mech:inference_volume_up: partial   # "millions of AWS customers" scale phrase dropped
+        cate:hyperscale_platform: present
+        prac:integration: present
+      missing:
+        - {item: "'millions of AWS customers' (volume evidence)", severity: medium}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:inference_volume_up: partial   # same phrase dropped
+        cate:hyperscale_platform: present
+        prac:integration: present
+      missing:
+        - {item: "'millions of AWS customers' (volume evidence)", severity: medium}
+      errors: []
+
+  "21":
+    title: New OpenAI Academy courses for the next era of work
+    gold_tags: []   # noise article, correctly empty
+    haiku: {gold_evidence: {}, missing: [], errors: []}
+    gpt: {gold_evidence: {}, missing: [], errors: []}
+    note: both summaries handled a no-signal article correctly.
+
+  "22":
+    title: "Learning never stops: How AI makes learning continuous"
+    gold_tags: [mech:inference_volume_up]
+    haiku:
+      gold_evidence:
+        mech:inference_volume_up: present   # 70M / 460M / 180M all retained
+      missing: []
+      errors:
+        - "presents 'ChatGPT for Teachers expanding to districts' as an accompanying announcement — that is a navigation link, not article content"
+        - "closing paragraph editorialises about what the report 'does not disclose' (instruction violation, mild)"
+    gpt:
+      gold_evidence:
+        mech:inference_volume_up: present
+      missing: []
+      errors: []
+
+  "23":
+    title: Confidential submission of draft S-1 to the SEC
+    gold_tags: [mech:lab_capital_access]
+    haiku:
+      gold_evidence:
+        mech:lab_capital_access: present
+      missing: []
+      errors:
+        - "appends a '**Transmission:** lab_capital_access' paragraph — the summariser leaked the tagging vocabulary into the summary and pre-judged the classification (serious instruction violation: could bias the downstream classifier)"
+        - "'signalling preparation for a potential IPO' and 'accessing public capital markets' are interpretation, not document content"
+        - "presents Economic Research Exchange and Dell partnership as accompanying announcements — those are navigation links"
+    gpt:
+      gold_evidence:
+        mech:lab_capital_access: present
+      missing: []
+      errors: []
+
+  "24":
+    title: A blueprint for democratic governance of frontier AI
+    gold_tags: []   # noise (safety_policy event, no tags)
+    haiku:
+      gold_evidence: {}
+      missing: []
+      errors:
+        - "final paragraph names 'export_controls' and discusses what 'the classifier is designed to surface' — vocabulary leakage and meta-commentary again"
+    gpt: {gold_evidence: {}, missing: [], errors: []}
+
+  "25":
+    title: "GPT-Red: Unlocking Self-Improvement for Robustness"
+    gold_tags: [mech:training_compute_up, prac:evaluation, prac:model_capability]
+    haiku:
+      gold_evidence:
+        mech:training_compute_up: present   # largest-post-training-runs scale retained
+        prac:evaluation: present
+        prac:model_capability: present      # 6x fewer failures retained
+      missing:
+        - {item: "'unprecedented amount of compute dedicated purely for improving safety' phrasing", severity: low}
+      errors:
+        - "output starts with a markdown heading despite the no-headings instruction (format slip only)"
+    gpt:
+      gold_evidence:
+        mech:training_compute_up: present
+        prac:evaluation: present
+        prac:model_capability: present
+      missing: []
+      errors: []
+    note: figure retention essentially perfect in both (84%/13%, 95%->10%, 0.05%, >97%, 6x).
+
+  "26":
+    title: A scorecard for the AI age
+    gold_tags: [mech:agentic_workflows, mech:inference_cost_down,
+                prac:evaluation, prac:model_capability, prac:orchestration]
+    haiku:
+      gold_evidence:
+        mech:agentic_workflows: present     # adoption-vs-work-accomplished framing retained in paraphrase
+        mech:inference_cost_down: present   # 54% fewer tokens verbatim
+        prac:evaluation: present
+        prac:model_capability: present      # 72.7 / 69.9 / 36.2% retained
+        prac:orchestration: partial         # tier descriptions kept, per-workflow usage sentence dropped
+      missing:
+        - {item: "author (Sarah Friar) and position-paper framing — summary reads like a product/benchmark announcement", severity: high}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:agentic_workflows: present
+        mech:inference_cost_down: present
+        prac:evaluation: present
+        prac:model_capability: present
+        prac:orchestration: partial
+      missing: []
+      errors: []
+    note: >
+      The classifier called this "frontier_model_release" (haiku summary) /
+      "research_result" (gpt summary) where the raw run got "other" right for
+      the haiku case. Compressing an opinion piece foregrounds its embedded
+      benchmark claims and changes the apparent event type — a framing loss,
+      not a figure loss.
+
+  "27":
+    title: Data science workflows with ChatGPT Work (rss_summary, 161 chars)
+    gold_tags: []
+    haiku:
+      gold_evidence: {}
+      missing: []
+      errors:
+        - "inflates a 161-char abstract into three paragraphs of editorial ('signals continued investment...'), violating the compress-hard rule; summary is longer than the source"
+    gpt: {gold_evidence: {}, missing: [], errors: []}
+
+  "28":
+    title: How HSP GRUPPE builds AI capabilities for tax advisory
+    gold_tags: [prac:orchestration]
+    haiku:
+      gold_evidence:
+        prac:orchestration: present   # custom shared Agents standardisation retained
+      missing: []
+      errors: []
+    gpt:
+      gold_evidence:
+        prac:orchestration: present
+      missing: []
+      errors: []
+    note: figure retention essentially perfect in both (500k+, 84%, 98.6%, 40,000h,
+      28k/12k split, EUR 3.8M, nine-hours-to-two, 88 opportunities).
+
+  "29":
+    title: How agents are transforming work
+    gold_tags: [mech:agentic_workflows, mech:inference_volume_up, prac:evaluation, prac:orchestration]
+    haiku:
+      gold_evidence:
+        mech:agentic_workflows: present
+        mech:inference_volume_up: present   # 60h/day 99th percentile retained
+        prac:evaluation: absent             # LLM-as-judge methodology footnote dropped
+        prac:orchestration: present
+      missing:
+        - {item: "task-horizon methodology (LLM-as-judge, 0.1% sample, directional) — gold evaluation evidence", severity: high}
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:agentic_workflows: present
+        mech:inference_volume_up: present
+        prac:evaluation: present            # methodology footnotes retained verbatim
+        prac:orchestration: present
+      missing: []
+      errors: []
+
+  "30":
+    title: GPT-5.6 is now the preferred model in Microsoft 365 Copilot
+    gold_tags: [mech:inference_volume_up, cate:hyperscale_platform, prac:integration, prac:model_capability]
+    haiku:
+      gold_evidence:
+        mech:inference_volume_up: present   # millions-of-users claim retained in paraphrase
+        cate:hyperscale_platform: present
+        prac:integration: present           # native + API access retained
+        prac:model_capability: present
+      missing: []
+      errors: []
+    gpt:
+      gold_evidence:
+        mech:inference_volume_up: present
+        cate:hyperscale_platform: present
+        prac:integration: present
+        prac:model_capability: present
+      missing: []
+      errors:
+        - "opens 'This is a model release' — it is a distribution/partnership announcement (framing slip only)"
+
+# ---------------------------------------------------------------------------
+# Aggregate: survival of the evidence behind each of the 68 gold tags
+# (present / partial / absent, counted from the per-article assessments above)
+#
+#             present   partial   absent   retention (partial = 0.5)
+#   haiku       52        11        5          85%  (57.5/68)
+#   gpt-5-mini  54        10        4          87%  (59/68)
+#
+# Unsupported-content incidents (errors lists above):
+#   haiku       8 incidents across 6 articles, including two cases of tagging-
+#               vocabulary leakage into the summary (23, 24), two cases of
+#               navigation links reported as article content (22, 23), one
+#               factual distortion (01: "obtained a phone number" — it failed
+#               to), one attribution slip (12), and editorial inflation of a
+#               161-char abstract (27).
+#   gpt-5-mini  1 incident (30: "model release" framing slip). No fabricated
+#               facts, no vocabulary leakage, no furniture scraped as content.
+#
+# Reading of the pattern:
+#   - Headline figures survive summarisation almost perfectly in both models.
+#   - What dies is the low-salience, mechanism-bearing sentence: "high-volume
+#     work economical at much greater scale", "more token-efficient than past
+#     models", "smarter context management", "works smoothly across agent
+#     frameworks", "we expect demand to be very high", methodology footnotes.
+#     Both summarisers dropped several of the SAME sentences independently —
+#     the loss is systematic (these read as filler to a summariser), not noise.
+#   - Framing loss is real: an opinion piece compressed to its embedded
+#     benchmarks reads as a release (26); an incident writeup compressed to its
+#     mechanics loses its policy-response character (01).
+#   - Haiku editorialises and occasionally injects the tag vocabulary itself;
+#     GPT-5-mini at low reasoning effort is strictly extractive and quote-heavy.

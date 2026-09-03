@@ -159,6 +159,38 @@ ai_team:
     - min: 0
       label: none
 
+# ---------------------------------------------------------------------------
+# JOIN RULE. Connection strength, for the article -> holding routes in
+# app/connect.py.
+#
+# THE FOUR ROUTES DO NOT CARRY THE SAME EVIDENCE, so their raw strengths were
+# never comparable, yet they share one column that the digest sorts on. A bare
+# name mention was landing at 1.0 alongside a mechanism tag corroborated on both
+# sides -- the two look identical to anything doing ORDER BY strength DESC.
+#
+# Each route is therefore capped at what it can actually prove. The ceiling is
+# the score a perfect instance of that route earns:
+#
+#   mechanism    both sides quoted, signed and sized. The only route with
+#     1.00       evidence on the article AND the holding. Full credit.
+#   category     the article's tag is quoted, but category membership carries
+#     0.60       no sign and no magnitude -- one side of the argument only.
+#   lab_exposure the holding edge is sourced, but nothing ties THIS article to
+#     0.60       it beyond the publisher, and there is no lab-sentiment axis.
+#   named        a string matched. No quote, no reason, no `why`. It says "this
+#     0.30       article mentions the company" and nothing more.
+#
+# These are judgement, not measurement, and they are here rather than in code so
+# the ordering can be argued and changed without a deploy. A renderer may still
+# filter by route; the ceiling only stops one route from dominating another by
+# construction.
+join:
+  route_ceiling:
+    mechanism: 1.0
+    category: 0.6
+    lab_exposure: 0.6
+    named: 0.3
+
 # Bands used for presentation only. They label a score, they do not change it.
 bands:
   - min: 60

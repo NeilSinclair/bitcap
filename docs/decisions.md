@@ -1488,3 +1488,320 @@ because the repo holds no citation for one. IREN's disclosure of "a new
 multi-year AI Cloud contract with a leading frontier AI lab" does not name the
 lab, so it has no joinable id and is deliberately absent — an unjoinable
 placeholder in a join table looks like data and is not.
+
+## Classify raw articles, not summaries (2026-09-02)
+
+**Decision.** The extraction/scoring model reads raw article text. A cheap-model
+summarisation stage ahead of it is rejected. Cost pressure on classification is
+answered with prompt caching instead.
+
+**The experiment** (`research/summarisation_research.md` →
+`research/summarisation_results.md`). The 20 gold articles were summarised by
+both Haiku 4.5 and GPT-5-mini under a prompt (`prompts/summarisation/v1.md`)
+that injects the scoring vocabulary and demands figures verbatim. The v6
+classifier then ran on the summaries, with everything else held constant, and
+the runs were scored against gold. Fable 5 separately read every original
+against both summaries and traced whether the evidence behind each of the 68
+gold tags survived.
+
+**Why rejected.** The saving is small — 12–17% per article — because the
+classifier's fixed prompt is ~7.3k of ~10.8k input tokens and the tagged JSON
+output doesn't shrink. The damage is large and lands on the load-bearing axis:
+mechanism recall 0.81 → 0.63 (Haiku) / 0.56 (GPT). The fidelity read shows why,
+and that it is systematic: both summarisers independently deleted the *same*
+low-salience mechanism-bearing sentences ("high-volume work economical at much
+greater scale", "more token-efficient than past models", "smarter context
+management") while preserving every headline figure. Summaries also flatten
+framing (an opinion piece reads as a model release), and Haiku editorialised —
+twice leaking tag vocabulary into its summary — which the citation gate cannot
+catch, since quotes verify against what the classifier read.
+
+**Alternatives rejected.** Summarise-then-classify (above). Summarise only long
+documents: parked — the corpus median is ~8.5k chars, where the fixed prompt
+dominates anyway; revisit only if 50k+ char papers enter the pipeline.
+
+**Consequence.** Per-article classification stays at the measured raw rate
+(~$0.047 uncached under v6). Prompt caching on the fixed prompt is the sanctioned
+cost lever (~$0.25 saved per 20-article run, no quality cost).
+
+## Prompt caching on the classifier (2026-09-02)
+
+**Decision.** The classifier/scorer caches its system prompt (Anthropic
+ephemeral cache, 5-minute TTL) on every call. Implemented in
+`score_announcements.classify()`; both runners warm the cache with one serial
+call before fanning out; the cost log bills cache traffic at its real rates.
+
+**Why — the key insight from the summarisation experiment.** The experiment
+set out to cut classification cost by compressing the articles, and found the
+cost was never in the articles. The fixed prompt — vocabulary, instructions,
+schema — is ~7.1k of the ~10.8k input tokens per call (measured: 7,059 cached
+tokens), and the tagged JSON output doesn't shrink whatever the input. So
+summarise-first bought only 12–17% while mechanism recall fell 0.81 → 0.56–0.63;
+caching attacks the part of the bill that is actually large, and cannot change
+model output at all — the model reads byte-identical prompts either way.
+Verified live: a cold call wrote 7,059 tokens ($0.0207), the identical warm call
+read them back at 0.1x ($0.0043). Roughly $0.24 of every $0.95 gold run, ~$2.40
+of a 191-article corpus run.
+
+**Two consequences handled, not hoped away.**
+
+1. *The cold-start stampede.* Both runners are parallel (10–12 workers). On a
+   cold cache every first-wave call becomes a 1.25x cache *write* — with 20
+   articles and 10 workers, caching would cost more than not caching. Both
+   runners therefore classify one article serially until a call actually pays
+   (disk-cached articles are free and warm nothing), then fan out into 0.1x
+   reads.
+2. *Honest accounting.* `usage.input_tokens` excludes cache traffic, so the old
+   cost record would have silently under-reported writes (1.25x) and
+   over-reported reads (0.1x). `call_cost()` now bills all three components at
+   their real rates and records write/read tokens per call; unit-tested against
+   the published multipliers.
+
+**Alternatives rejected.** Summarise-first (see previous entry — quality cost on
+the load-bearing axis for a smaller saving). A 1-hour cache TTL (2x write cost;
+pointless when a corpus run refreshes the 5-minute window on every call).
+Caching in the provider A/B shim (`providers.py`) — left uncached so
+cross-vendor cost comparisons stay like-for-like.
+
+**Consequence.** Prompt edits invalidate the cache by construction (the prompt
+is the key), so version bumps cost one extra write per run — nothing to manage.
+Cost records now carry `cache_write_tokens` / `cache_read_tokens`; older records
+simply lack the fields.
+
+## Vocabulary v2 and prompt v7: boundaries from measured confusions (2026-09-02)
+
+**Decision.** `mechanisms.yaml`, `categories.yaml` and `practices.yaml` move to
+v2 and the scoring prompt to v7. No id changed, nothing added or removed — every
+edit is a sharpened boundary, and every boundary corresponds to a specific
+spurious or missed tag in the v6 gold run. The pipeline default is now v7.
+
+**The bug found along the way.** The renderer injected only `description` /
+`definition` into the prompt: the categories' boundaries and the practices'
+per-tag action guidance were written for the classifier but never delivered to
+it. Category precision ran at 0.50 and action agreement at 68% with the model
+never having seen the text meant to fix both. Action guides are now rendered;
+category boundaries were folded into definitions (the `boundary` field carries
+fund accounting that doesn't belong in a prompt).
+
+**The main boundaries added.** Mechanisms: `capability_jump` reserved for the
+step itself, not restatements (4 of 4 false positives were partnership/usage/
+opinion pieces restating a released model); `export_controls` widened to model
+access withdrawn under national-security authority (the one gold miss);
+`inference_volume_up` cuts both ways (a suspension is a negative tag, not no
+tag); marketing copy saying "efficient" is not `inference_cost_down`; a
+performance result discloses no capex. Categories: a mention is not a signal —
+a partner in a case study or a cloud named as rollout venue routes nothing.
+Practices: `evaluation` counts even when secondary to the story (4 of 20 gold
+misses, all this shape); courses, usage stories and marketing are not
+`orchestration`; behaviour observed in incidents is `evaluation`, not
+`model_capability`.
+
+**Measured, same gold set, same model** (single runs; sonnet-5 run variance
+applies, but the tag-level gains held across two v7 runs):
+mechanisms F1 0.77 → 0.88, categories F1 0.67 → 1.00 (20/20 identical),
+practices F1 0.84 → 0.87, investment-score MAE 11.2 → 5.7, rho 0.75 → 0.94.
+
+**What the iteration taught.** The first injection of action guides collapsed
+`watch` (21/11/1 against gold's 10/15/12) and worsened AI-team MAE — guidance
+that enumerates when to act reads as license to act. Rewritten watch-first
+("start every tag at watch; the default wins over the guides"), the mix came
+back to 11/11/9. Per-tag action agreement remains the weakest attribute (~55%,
+disagreements now scattered in both directions); left as an open item rather
+than tuned further, because chasing it on single n=20 runs fits variance, not
+signal.
+
+**Also:** `max_tokens` 8000 → 12000 (two figure-dense gold articles truncated
+under v7; an output cap only bills what is generated). `prefill_gold.py` and
+`run_blind.py` stay pinned to v6 — they are records of how past artefacts were
+produced.
+
+## The database layer, and the join finally implemented (2026-09-02)
+
+**Decision.** A new installable `app/` package persists the pipeline into
+Postgres (SQLAlchemy 2.0, engine-agnostic; sqlite fallback so a clone runs
+without Docker) and implements the article→holding join that the config had
+documented since the vocabularies were written but nothing consumed. Raw-first,
+per Neil's shape: verbatim JSON payloads land in `raw_*` tables, YAML mirrors
+into `ref_*`/`holding*` tables, clean tables derive from raw, and a
+`connections` table materialises the join.
+
+**ELT reads the committed artifacts.** The research scripts keep writing their
+JSON files; the DB load only reads. Zero LLM cost, real data on a fresh clone,
+and the caches stay the idempotency layer for the expensive calls. Rebuild =
+drop + create_all + load, so Alembic is deferred until deployment — the DB is
+fully derived from committed files.
+
+**Four routes, provenance on every row.** mechanism (article tag × company
+edge), category (tag × membership), lab_exposure (article lab × company lab
+edge), named (company literally named in the text — string match on suffix-
+stripped names and ≥3-char tickers). Sign composition multiplies and `mixed`
+dominates; strength reuses scoring.yaml's own magnitude×confidence maps with
+the low-confidence gate, and zero-strength connections are not written. Two
+honesty rules over cleverness: lab_exposure and named connections are always
+`mixed` — the classifier has no lab-sentiment axis and a mention carries no
+polarity, so direction there would be a guess dressed as data.
+
+**What the corpus produces.** 191 articles → 706 connections (529 mechanism,
+84 lab_exposure after the gate below, 53 named, 40 category). `ai_score` is
+persisted for the first time: recomputed deterministically from the practice
+tags, 81 of 191 articles carry one. The recomputed investment score reconciles
+with the file register 191/191 — the free end-to-end proof the transform is
+faithful.
+
+**What Postgres caught that sqlite forgave.** Two real bugs surfaced only on
+the real engine: FK-ordering in the ref reload, and a failure path that could
+not record its own failure. sqlite ignores foreign keys by default, so the
+test suite now switches them on (`PRAGMA foreign_keys=ON`) — the dialect gap
+that hid the bugs is closed, not worked around. Consequence of the fix: a ref
+reload wipes the whole derived clean layer and the load rebuilds it; raw
+tables are never touched — the DB's history lives there, which also ends the
+silent disappearance of articles that fall out of fetch's 3-month window.
+
+**The lab_exposure gate (decided the same day).** Ungated, the route connected
+*every* article from an exposed lab — 263 rows, because the edge fires on the
+publisher rather than on what was published. 179 of them came from articles
+scoring zero: "Expanding OpenAI's presence in Brazil" reaching Amazon is not a
+finding. Neil chose a score gate: the route fires only when the article scores
+above zero on the investment axis. One rule, no hand-maintained event-type
+list, and it reuses scoring already trusted elsewhere.
+
+The risk in a score gate is that it kills the case the route exists for — a
+funding round moves TeraWulf while tagging no semiconductor mechanism — so that
+was checked before choosing rather than assumed: Anthropic's S-1 scores 40
+through its `corporate_finance` event weight and survives. A test pins this
+(`test_gate_does_not_block_the_route_it_exists_for`), and another pins that the
+gate touches no other route. Result: 263 lab_exposure rows -> 84, total
+connections 839 -> 660, and what remains at the top is model launches, compute
+commitments and infrastructure builds — the items where a counterparty tie
+genuinely matters.
+
+**Alternatives rejected.** Pipeline writes DB directly (later refactor; loses
+raw-first and free clone data). Alembic now (nothing to migrate). DB enums for
+vocab (YAML is the vocabulary's home; validate.py the gate). ORM relationships
+(FKs without relationship() keep models flat; explicit flush ordering instead).
+
+**Deferred, one line each:** FastAPI read layer; alert notifier behind
+`pipeline_runs.alerted_at`; fetch consuming the recorded watermarks; a
+lab-sentiment axis in the classifier (would give lab_exposure/named a real
+direction); dialect-specific bulk upserts; Railway/Render deploy config;
+gold_snapshots auto-loader beyond the table.
+
+## The first code review, and what it changed (2026-09-02)
+
+Wrote a review subagent (`.claude/agents/bitcap-reviewer.md`) and pointed it at
+the ETL commit. It wraps the existing `code-reviewer` skill — same severity
+ladder and tone — and adds two sections a general reviewer cannot supply: the
+CLAUDE.md contract as checkable items, and the hazards that have already bitten
+this repo (sqlite hiding Postgres FK behaviour, missing version bumps, derived-
+table drift, `max_tokens` truncation as silent data loss). It reports and never
+edits: a reviewer that patches its own findings stops being an independent
+check. Eight findings, no criticals, all verified against the committed data
+before being accepted. Three were worth acting on immediately.
+
+**A load committed the destruction of the derived layer before rebuilding it.**
+`load_refs` opens by deleting `connections`, the tag tables, `classifications`
+and `articles` — correct, since all four are derived — and then committed. Every
+later stage committed separately, so nothing spanned the wipe and the rebuild:
+one bad payload in `transform` and the database was left *empty*, not stale.
+Fixed by making every stage flush and giving `tracked` the single commit, so a
+failure rolls the wipe back with it. `stats` is now filled stage by stage and
+recorded on the failure path too — a run that dies in `transform` says so
+instead of reporting `{}`. The regression test was checked against the old code
+first: it fails there and passes here, which is the only way to know a test for
+a fixed bug is worth keeping.
+
+**The `named` route was matching custodian strings.** `Holding.name` was loaded
+from `holdings.yaml`, whose names come from the fund's Vermoegensaufstellung and
+are mangled — "FT Inter Inc. Reg. Shares Cl. Ao. N.", "Taiwan Semiconduct.
+Manufact.". Eight of 26 could never match prose. `companies.yaml` already
+carried the legal name *and* seven tickers `holdings.yaml` was missing, so the
+fix was to load the naming authority from the right file rather than to invent
+an alias for every position; the custodian string is kept as `custodian_name`
+for the tie back to the fund document. Four companies still need an `aliases:`
+list (Amazon → AWS, TSMC, Besi, SQM), which is config, not code. Deliberately
+*not* aliased: "Figure" (a common word) and "Hyperliquid" (the protocol, not the
+treasury vehicle holding it) — both would be entity-resolution collisions, a
+named failure mode, and the restraint matters more than the coverage.
+
+Result: the named route goes 7 → 53, and Amazon — a holding with an Anthropic
+lab edge — becomes reachable at all (43 via `AWS`, 3 via `Amazon`, 0 via the
+registered "Amazon.com"). The old figure had already been written up here as
+"all seven named are NVIDIA, which is the only holding labs actually name."
+That was a fact about the matcher, not about the corpus, and it has been
+corrected above. A silent extractor bug that reaches the design document as a
+finding about the world is the exact failure this project is meant to catch.
+
+**`strength` was four incomparable scales in one column.** The mechanism route
+multiplies two quoted, signed sides; `named` was a hardcoded 1.0 with no quote,
+no reason and no `why`. 123 of 660 rows sat at exactly 1.0, and the README's own
+example sorts on the column. Added `join.route_ceiling` to `scoring.yaml` —
+mechanism 1.0, category and lab_exposure 0.6, named 0.3 — so each route is
+capped at what it can actually prove. Judgement, not measurement, which is
+precisely why it belongs in config where it can be argued.
+
+**Also fixed:** an in-run duplicate-URL guard in the raw loaders (`load_costs`
+already had the pattern; the other two would have raised `IntegrityError` and,
+before the transaction fix, emptied the database); `pipeline_runs.kind` now
+records `rebuild` distinctly from `load` instead of writing `"load"` for both;
+`_load_env` no longer imports the research LLM providers just to run
+`bitcap-db status`; and the wheel force-includes `config/` and `research/docs/`,
+which it reads at runtime but did not ship.
+
+**Not fixed, deliberately.** The reviewer proposed enforcing its own "never
+mutate the database" rule with a `permissions.deny` entry. A project-level deny
+would also block Neil and the README's documented workflow, so the honest
+position is that the tools list enforces "never edits code" and the database
+rule is prose — stated as a limitation in the definition rather than papered
+over with a rule that blocks the wrong people. `aliases:` for IREN's former
+name ("Iris Energy") is left out pending a source, per the no-unsourced-claims
+rule.
+
+## A category row loses to a contradicting mechanism row on the same holding (2026-09-02)
+
+Real case, surfaced by Neil while using the frontend: OpenAI shipping its own
+inference accelerator tags `category: accelerator_custom_si` positive (good for
+the group) and, via NVIDIA's own `custom_silicon_substitution` mechanism edge,
+`mechanism` negative for NVIDIA specifically (a socket it loses). Both routes
+fired on the same article, so NVIDIA showed "chips ↑" and "chips ↓" side by
+side — not wrong individually, but presented together it reads as the system
+contradicting itself rather than as two different kinds of evidence.
+
+**Decision.** In `app/connect.py`, `_drop_contradicted_category_rows` drops a
+holding's category-route row when that same holding has a mechanism-route row
+on the same article with the strictly opposite direction (positive vs
+negative). `mixed` contradicts nothing, so it never suppresses. A holding with
+mechanism rows on *both* sides (a genuinely mixed picture) still loses the
+category row — its own mechanism evidence is more specific either way, so the
+group-level claim adds nothing.
+
+**Alternative rejected: keep both rows, let the frontend pick one.** Pushes a
+data-quality decision into a rendering layer, and every future consumer of
+`connections` (a second frontend, an alert digest, an export) would have to
+reimplement the same rule or reproduce the same contradiction. The suppression
+belongs where the join is computed, once.
+
+**Alternative rejected: average or net the two directions.** A synthetic
+"slightly positive" for NVIDIA would be worse than either input — it asserts a
+number nobody's evidence actually supports, exactly the "arbitrary weighted sum
+dressed up as a score" the scoring rule already refuses to do (`scoring.yaml`).
+
+**Consequence.** `connect()`'s per-route counts are now post-suppression —
+a category count can drop between runs with no config change if more articles
+land in this shape. Category route only affected; `lab_exposure` and `named`
+are hardcoded `mixed` and can't contradict anything. Tested in
+`TestCategoryMechanismContradiction` (`tests/test_connect.py`): the NVIDIA
+shape, agreement (both rows kept), no mechanism row (category row kept),
+`mixed` mechanism (no suppression), and a holding with mechanism rows on both
+sides (still suppressed).
+
+**Also recorded here:** the frontend's Portfolio-impact panel groups
+connections by holding instead of listing every route flat, and every
+connection row now carries a resolved label (the mechanism/category name, or a
+humanized lab-relationship/named-mention phrase) instead of the bare route
+word — the flat, unlabeled list was unreadable on an article that hit a dozen
+holdings across several routes each. `api/queries.py` computes the label and
+the holding/article-side magnitude and confidence; `frontend/app/page.js`
+groups and sorts. A row's reason text is shown only when it says something
+Evidence doesn't already — true for `mechanism`/`lab_exposure`/`named` (their
+`note` prefers the holding-specific `why`), not for `category` (which has no
+holding-side text and would just repeat the tag's own reason).

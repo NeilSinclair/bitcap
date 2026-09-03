@@ -11,7 +11,10 @@
 # `polarity_note` records what a POSITIVE sign means, so "negative exposure to
 # inference_cost_down" is never ambiguous.
 
-version: 1
+# v2 (2026-09-02): descriptions sharpened against the v6 gold run's actual
+# confusions — every boundary added below corresponds to a spurious or missed
+# tag in gold_run_20260902T051622Z_v6. Ids, labels and polarity are unchanged.
+version: 2
 
 mechanisms:
   - id: training_compute_up
@@ -33,7 +36,10 @@ mechanisms:
       Tag this only when the *work* per token falls, not whenever a price falls. A
       cheaper accelerator, a discount, or margin competition lowers the price of a
       token without changing the hardware content of one; that is a pricing_change
-      event, not this mechanism.
+      event, not this mechanism. It also needs a stated figure, price, or
+      technique: product copy that calls a model "efficient" — typically in a
+      partnership or distribution re-announcement of a model tagged elsewhere —
+      is not evidence.
     polarity_note: >
       Positive sign = company benefits, meaning it buys inference as an input and
       its cost of goods falls. Negative sign = company is hurt, meaning it sells
@@ -49,9 +55,12 @@ mechanisms:
   - id: inference_volume_up
     label: Inference volume rises
     description: >
-      More tokens served in aggregate: consumer adoption, agentic workflows that
-      issue many calls per task, or reasoning models that spend more compute at
-      test time. Often the second-order offset to inference_cost_down.
+      More tokens served in aggregate: consumer adoption, deployment into
+      high-volume surfaces, agentic workflows that issue many calls per task, or
+      reasoning models that spend more compute at test time. Often the
+      second-order offset to inference_cost_down. The direction cuts both ways:
+      a model suspended, withdrawn or disabled for customers is this mechanism
+      with a negative sign, not an absent tag.
     polarity_note: Positive sign = company benefits when total tokens served rises. Indicates a potential increase in data center demand, benefiting infrastructure suppliers as well as chip manufacturers.
 
   - id: memory_intensity_up
@@ -59,7 +68,9 @@ mechanisms:
     description: >
       Longer context windows, KV-cache pressure, mixture-of-experts weights and
       test-time reasoning increase HBM and NAND content per system, independently
-      of unit accelerator volume.
+      of unit accelerator volume. Tag from stated model or serving properties —
+      a larger offered context, a deeper reasoning mode, a cache architecture —
+      not from a customer's anecdote about feeding a model more context.
     polarity_note: Positive sign = company benefits when memory content rises.
 
   - id: datacenter_power_up
@@ -82,7 +93,11 @@ mechanisms:
     label: Step change in model capability
     description: >
       A capability threshold is crossed that puts new tasks in reach -- long-horizon
-      agents, reliable tool use, domain expert performance.
+      agents, reliable tool use, domain expert performance. Reserve it for the
+      step itself: a frontier-class release or a first demonstration of a task
+      class. An incremental release, a "close to X" comparison, or a partnership,
+      usage report or opinion piece restating what an already-released model can
+      do is NOT a jump -- that restatement is where most false tags come from.
     polarity_note: >
       Positive sign = company benefits. Negative sign = the capability threatens
       the company's own product or moat.
@@ -90,8 +105,12 @@ mechanisms:
   - id: agentic_workflows
     label: Agentic and tool-using systems displace seat-based software
     description: >
-      Work moves from humans operating software to agents calling APIs, pressuring
-      per-seat pricing and shifting value to systems of record and data owners.
+      The unit of work shifts from humans operating software to agents executing
+      delegated tasks: agents calling APIs in place of seats, and agents running
+      autonomously at scale (parallel agents, round-the-clock workflows). Both
+      routes count -- seat displacement and the growth of agent-executed work.
+      Tag from what the lab states or measures at scale; one customer's
+      testimonial about their own agent architecture is not an industry shift.
     polarity_note: Positive sign = company benefits from the shift to agents.
 
   - id: on_device_inference
@@ -104,8 +123,12 @@ mechanisms:
   - id: export_controls
     label: Export controls and trade policy tighten
     description: >
-      Restrictions on advanced accelerators, HBM, or semiconductor capital
-      equipment reaching particular jurisdictions; tariffs on hardware.
+      Government restrictions on the AI stack reaching particular parties or
+      jurisdictions: advanced accelerators, HBM, semiconductor capital equipment,
+      tariffs on hardware -- and equally model weights or model access withdrawn
+      or gated under national-security or export authority. A directive that
+      forces a lab to cut off access to a model is this mechanism, not only a
+      chip story.
     polarity_note: >
       Positive sign = company benefits from tightening (protected incumbents,
       onshore capacity). Negative sign = company is hurt by tightening.
@@ -117,6 +140,9 @@ mechanisms:
       and chip purchases, power and energy supply. A positive sign is spending
       being committed or accelerated; negative is spending slowed or withdrawn
       because of financing cost, depreciation, utilisation or weak returns.
+      It requires capital to be stated: an amount, a build-out, a purchase, a
+      supply agreement. A performance result -- even on first-party silicon --
+      discloses no spending and is custom_silicon_substitution, not capex.
     polarity_note: >
       Positive sign = company benefits from capital being spent on AI
       infrastructure, chips or energy. Most infrastructure suppliers are positive

@@ -72,10 +72,11 @@ ipython_config.py
 
 
 # UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-uv.lock
+#   uv.lock is committed: this is an application and clone-to-running is a
+#   graded deliverable, so the resolved environment must be reproducible.
+
+# Local pipeline database (sqlite fallback when DATABASE_URL is unset)
+bitcap.db
 
 
 
@@ -138,3 +139,9 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+.claude/worktrees/
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local

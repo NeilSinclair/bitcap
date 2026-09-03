@@ -369,27 +369,3 @@ near-miss to an error naming the likely intended id, and leaves everything else 
 dormant warning. Open vocabulary kept, typo hole closed. Roughly four lines plus
 tests.
 
-### 13.2 Improving the classification model
-
-Parked deliberately on 2026-09-01: *"We need to park this for now and come back
-to tuning the model again later."* State at the point of parking — v6 did not fix
-quote quality (median 23.0w → 22.0w, max 44w → 60w, four tags dropped as
-unverifiable), the 83-row reconciliation worksheet is unanswered except two rows,
-and article 10 still returns `regulatory_action` with an empty mechanism list.
-
-Two approaches worth trying, neither started:
-
-- **Run the classifier in a loop with Claude Code.** Let an agent iterate on the
-  prompt against the `test/articles` set with `gold-fable` as the reference,
-  reading its own disagreements between passes. The open question is whether the
-  loop improves the prompt or merely overfits twenty articles — so the success
-  criterion has to be fixed *before* the loop starts, on a held-out slice that
-  the loop never sees.
-- **Try different language models.** Only Sonnet 5 has run against v6. Variance
-  work already exists for Haiku 4.5 and GPT-5-mini
-  (`research/docs/variance_v4_*.json`, `vote_v4_3x2_*.json`) but not on the
-  current prompt. Cheapest real comparison available, and it would establish
-  whether the remaining error is the prompt or the model.
-
-Neither should start until the reconciliation is answered — otherwise there is no
-agreed reference to improve against, and any measured gain is unattributable.

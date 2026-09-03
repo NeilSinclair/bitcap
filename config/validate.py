@@ -224,7 +224,8 @@ def main() -> int:
     }
     errors, warnings = [], []
 
-    seen = set()
+    seen: set = set()
+    alias_owner: dict[str, str] = {}  # an alias must mean exactly one company
     for c in comp["companies"]:
         isin, name = c.get("isin"), c.get("name", "?")
         if not isin:
@@ -237,6 +238,17 @@ def main() -> int:
             errors.append(f"{isin} ({name}): not held by any fund in portfolio_views.json")
         if c.get("ai_role") not in enums["ai_role"]:
             errors.append(f"{name}: ai_role '{c.get('ai_role')}' not in vocabulary")
+
+        # Aliases feed the named-mention join directly. A two-character alias
+        # ("ON", "SE") would fire on ordinary prose and attribute an article to
+        # a company nobody wrote about, so the floor is enforced here.
+        for alias in c.get("aliases", []):
+            if not isinstance(alias, str) or len(alias.strip()) < 3:
+                errors.append(f"{name}: alias {alias!r} shorter than 3 characters")
+            elif alias in alias_owner and alias_owner[alias] != isin:
+                errors.append(f"{name}: alias '{alias}' also claimed by {alias_owner[alias]}")
+            else:
+                alias_owner[alias] = isin
 
         for m in c.get("mechanisms", []):
             if m["id"] not in valid_ids:

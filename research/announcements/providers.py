@@ -20,14 +20,13 @@ from datetime import datetime, timezone
 # USD per million tokens (input, output).
 #
 # Anthropic figures are from the model table used elsewhere in this repo.
-# The OpenAI figure is UNVERIFIED against OpenAI's published pricing and is
-# recorded here so the number the pipeline reports is at least explicit. Token
-# counts in the cost log are exact; only this conversion is uncertain.
+# The OpenAI figure was verified against OpenAI's published pricing page
+# (developers.openai.com/api/docs/pricing) on 2026-09-02.
 PRICES = {
     "claude-opus-5": (5.00, 25.00),
     "claude-sonnet-5": (2.00, 10.00),
     "claude-haiku-4-5-20251001": (1.00, 5.00),
-    "gpt-5-mini": (0.25, 2.00),  # UNVERIFIED
+    "gpt-5-mini": (0.25, 2.00),
 }
 
 
