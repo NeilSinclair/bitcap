@@ -123,16 +123,24 @@ docker build -t bitcap .
 docker run --rm -e DATABASE_URL=... bitcap bitcap-worker --dry-run
 ```
 
-**A persistent volume at `/app/research/docs` is optional.** The per-URL fetch
-caches live there (~250 MB today), but the cache that costs money is in
-Postgres: `classify.py` takes its work list from `raw_articles LEFT JOIN
-raw_classifications`, so an article already classified at the current prompt
-version never reaches the API however cold the container starts. A lost volume
-costs time, not money and not correctness — the papers leg re-extracts bylines
-and the github leg re-harvests its 12-month window.
+**A persistent volume at `/app/research/docs` is optional.** Every cache worth
+keeping is in Postgres, so a cold container repeats work but never pays twice
+for the same answer:
 
-Render cron jobs cannot mount a disk, so the blueprint runs without one. Mount
-one on any platform that allows it if those re-harvests become the bottleneck.
+| Cache | Where | A cold start... |
+|---|---|---|
+| Classifier output | `raw_classifications`, keyed on prompt version | never re-classifies |
+| GitHub commit history | `raw_github_repos`, keyed on `pushed_at` | walks only repos that were pushed to |
+| Fetched pages, extracted bylines | `research/docs/` on disk | re-fetches and re-extracts |
+
+The disk row barely fires. Each leg narrows its window to what has happened
+since its last successful run (full window the first time, against an empty
+database), and the announcements leg additionally skips any article already
+stored and classified — it does not request the page at all, which beats caching
+it. What is left on disk is a local convenience for re-running a harvester over
+a window on purpose.
+
+Render cron jobs cannot mount a disk, and the blueprint does not ask for one.
 
 Secrets, none of which are in the repo:
 

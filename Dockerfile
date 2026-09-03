@@ -38,11 +38,11 @@ RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
 
-# The per-URL fetch caches live here. A volume is optional, not required: the
-# cache that costs money is in Postgres (classify.py's work list is a DB join),
-# so a cold start re-fetches and re-extracts bylines but never re-classifies.
-# Mount one to save time on the papers and github legs; Render's cron jobs
-# cannot, and run without (see README, "Deploying").
+# The per-URL fetch caches live here, and production does not depend on them.
+# Everything expensive is in Postgres — classifications, GitHub commit history —
+# and an article already stored and classified is never requested again, so
+# there is nothing for a page cache to save. Mounting a volume is optional;
+# Render's cron jobs cannot, and do not need to (see README, "Deploying").
 VOLUME ["/app/research/docs"]
 
 CMD ["bitcap-worker"]

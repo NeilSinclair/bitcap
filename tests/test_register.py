@@ -365,3 +365,47 @@ class TestAliasesMergeRetroactively:
 
         assert first["people"] == 1
         assert second["people"] == 0  # same author, already known
+
+
+class TestGithubRepoBronze:
+    """The commits behind the people aggregate, kept so the next run can skip them.
+
+    `raw_github_people` holds counts and domains — the answer, not the working.
+    Without this table the register cannot be rebuilt from the database, and a
+    container with no disk re-walks twelve months of history nightly (D32).
+    """
+
+    def repo(self, **overrides):
+        item = {"org": "xai-org", "repo": "grok", "pushed_at": "2026-08-20T00:00:00Z",
+                "payload": {"total": 1, "commits": [{"login": "ada"}]}}
+        item.update(overrides)
+        return item
+
+    def test_a_repo_is_stored_with_its_pushed_at(self, session):
+        register.load_github_repos(session, [self.repo()])
+        row = session.scalars(select(m.RawGithubRepo)).one()
+        assert (row.org, row.repo) == ("xai-org", "grok")
+        assert row.pushed_at == "2026-08-20T00:00:00Z"
+        assert row.payload["commits"] == [{"login": "ada"}]
+
+    def test_a_second_harvest_updates_rather_than_duplicates(self, session):
+        register.load_github_repos(session, [self.repo()])
+        register.load_github_repos(session, [self.repo(
+            pushed_at="2026-08-28T00:00:00Z",
+            payload={"total": 2, "commits": [{"login": "ada"}, {"login": "bob"}]},
+        )])
+
+        row = session.scalars(select(m.RawGithubRepo)).one()
+        assert row.pushed_at == "2026-08-28T00:00:00Z"
+        assert row.payload["total"] == 2
+
+    def test_a_repo_not_harvested_this_run_is_left_alone(self, session):
+        """Upsert-only. A quiet repo is absent from the run, not deleted from bronze."""
+        register.load_github_repos(session, [self.repo(), self.repo(repo="quiet")])
+        register.load_github_repos(session, [self.repo()])
+        assert session.scalar(select(func.count()).select_from(m.RawGithubRepo)) == 2
+
+    def test_the_same_repo_name_in_two_orgs_is_two_rows(self, session):
+        """Keyed on (org, repo): a lab can own more than one org."""
+        register.load_github_repos(session, [self.repo(), self.repo(org="xai")])
+        assert session.scalar(select(func.count()).select_from(m.RawGithubRepo)) == 2

@@ -206,16 +206,20 @@ def date_from_slug(url: str) -> str | None:
     return f"20{yy}-{mm}-{dd}"
 
 
-def from_sitemap(lab: dict, cutoff: datetime) -> list[dict]:
+def from_sitemap(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[dict]:
     """Discover in-window articles from a sitemap.
 
     Args:
         lab: Lab entry from sources.yaml.
         cutoff: Earliest publication date to keep.
+        skip: URLs already stored and already classified, which must not be
+            downloaded again. The pipeline passes them in; running this as a
+            script does not, so a manual sweep still refetches everything.
 
     Returns:
         List of article dicts with url, date, title and text.
     """
+    skip = skip or set()
     xml = fetch(lab["index_url"])
     entries = re.findall(r"<url>(.*?)</url>", xml, re.S)
 
@@ -240,6 +244,8 @@ def from_sitemap(lab: dict, cutoff: datetime) -> list[dict]:
 
     out = []
     for url, known_date in candidates:
+        if url in skip:
+            continue
         try:
             text = strip_html(fetch(url))
         except RuntimeError as exc:
@@ -265,7 +271,7 @@ def from_sitemap(lab: dict, cutoff: datetime) -> list[dict]:
     return out
 
 
-def from_rss(lab: dict, cutoff: datetime) -> list[dict]:
+def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[dict]:
     """Discover in-window articles from an RSS feed.
 
     The feed's title and summary are always the fallback text. When a source
@@ -281,10 +287,14 @@ def from_rss(lab: dict, cutoff: datetime) -> list[dict]:
     Args:
         lab: Lab entry from sources.yaml.
         cutoff: Earliest publication date to keep.
+        skip: URLs already stored and already classified, which must not be
+            downloaded again. The pipeline passes them in; running this as a
+            script does not, so a manual sweep still refetches everything.
 
     Returns:
         List of article dicts.
     """
+    skip = skip or set()
     xml = fetch(lab["index_url"])
     out = []
     for item in re.findall(r"<item>(.*?)</item>", xml, re.S):
@@ -310,6 +320,8 @@ def from_rss(lab: dict, cutoff: datetime) -> list[dict]:
         title = field("title") or ""
         summary = field("description") or ""
         url = field("link")
+        if url in skip:
+            continue
         text, text_source = f"{title}. {summary}", "rss_summary"
 
         if lab.get("text_source") == "full_text" and url:
@@ -333,7 +345,9 @@ def from_rss(lab: dict, cutoff: datetime) -> list[dict]:
     return out
 
 
-def from_listing_pagination(lab: dict, cutoff: datetime) -> list[dict]:
+def from_listing_pagination(
+    lab: dict, cutoff: datetime, skip: set[str] | None = None
+) -> list[dict]:
     """Discover in-window articles by paginating an HTML listing page.
 
     Used where neither a sitemap nor an RSS feed is reachable -- confirmed
@@ -353,10 +367,14 @@ def from_listing_pagination(lab: dict, cutoff: datetime) -> list[dict]:
             parameter name); may carry `user_agent` (see `fetch` -- Meta
             specifically needs this cleared, the opposite of every other
             lab) and `max_pages` (default 20).
+        skip: URLs already stored and already classified, which must not be
+            downloaded again. The pipeline passes them in; running this as a
+            script does not, so a manual sweep still refetches everything.
 
     Returns:
         List of article dicts.
     """
+    skip = skip or set()
     user_agent = lab.get("user_agent") or None
     max_pages = lab.get("max_pages", 20)
     seen_urls: set[str] = set()
@@ -392,6 +410,12 @@ def from_listing_pagination(lab: dict, cutoff: datetime) -> list[dict]:
 
         found_in_window = False
         for article_url in new_candidates:
+            # Already stored and classified. Not fetching it also ends the
+            # pagination below, which is right: the listing is
+            # reverse-chronological, so a page of articles we already have
+            # means every page after it is older and we have those too.
+            if article_url in skip:
+                continue
             try:
                 article_html = fetch(article_url, user_agent=user_agent)
             except RuntimeError as exc:
@@ -517,7 +541,9 @@ def fetch_wayback(url: str, retries: int = 4) -> str:
     raise RuntimeError(f"wayback fetch failed: {url}")
 
 
-def from_wayback_cdx(lab: dict, cutoff: datetime) -> list[dict]:
+def from_wayback_cdx(
+    lab: dict, cutoff: datetime, skip: set[str] | None = None
+) -> list[dict]:
     """Discover in-window articles via the Internet Archive, bypassing the live site.
 
     Built for xAI: `x.ai` is fully Cloudflare-blocked on every live path,
@@ -543,6 +569,9 @@ def from_wayback_cdx(lab: dict, cutoff: datetime) -> list[dict]:
             derive both the CDX URL pattern and to exclude the bare listing
             page) and `url_contains` (the article path filter, e.g.
             `/news/`).
+        skip: URLs already stored and already classified, which must not be
+            downloaded again. The pipeline passes them in; running this as a
+            script does not, so a manual sweep still refetches everything.
 
     Returns:
         List of article dicts, `text_source: "full_text_archived"`, each
@@ -551,6 +580,7 @@ def from_wayback_cdx(lab: dict, cutoff: datetime) -> list[dict]:
         automated fetches; a human following the link still reaches the
         real page.
     """
+    skip = skip or set()
     netloc_and_path = lab["index_url"].split("://", 1)[-1]
     # Bounded to reduce wasted snapshot fetches, not for correctness: an
     # unbounded query on x.ai/news* returns ~2,900 rows going back to 2023,
@@ -580,6 +610,11 @@ def from_wayback_cdx(lab: dict, cutoff: datetime) -> list[dict]:
 
     out = []
     for url, timestamp in latest_snapshot.items():
+        # Worth the most here of anywhere: a snapshot has to be fetched, at two
+        # seconds a request, purely to read the publication date out of it —
+        # the CDX timestamp is a crawl date and says nothing about age.
+        if url in skip:
+            continue
         snapshot_url = f"http://web.archive.org/web/{timestamp}id_/{url}"
         try:
             page = fetch_wayback(snapshot_url)

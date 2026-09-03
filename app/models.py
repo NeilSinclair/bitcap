@@ -251,6 +251,37 @@ class RawGithubPerson(Base):
     load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
+class RawGithubRepo(Base):
+    """One repository's commit history for one org, verbatim from `harvest_github`.
+
+    The bronze layer this leg was missing. `raw_github_people` holds the
+    *aggregate* — one row per person, already reduced to counts and domains —
+    so the commits it was computed from lived only in the on-disk
+    `github_cache/`. That made the people register unrebuildable from the
+    database and forced a full 12-month re-harvest on any container without a
+    disk, which is the deployed shape (D32).
+
+    `pushed_at` is the REST listing's value for the repo, and it is the
+    incremental key: a repository whose `pushed_at` has not moved cannot have
+    new commits, so it is never re-walked. That also closes a staleness bug in
+    the disk cache it replaces, which had no max-age at all — once a repo was
+    cached it was never refetched, however many commits it gained.
+    """
+
+    __tablename__ = "raw_github_repos"
+    __table_args__ = (sa.UniqueConstraint("org", "repo"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    org: Mapped[str]
+    repo: Mapped[str]
+    pushed_at: Mapped[str]
+    payload: Mapped[dict] = mapped_column(JSONVariant)
+    content_hash: Mapped[str]
+    first_loaded_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
 # --------------------------------------------------------------------------
 # Reference layer (mirrors of config/*.yaml)
 # --------------------------------------------------------------------------

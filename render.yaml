@@ -29,12 +29,16 @@ services:
     # so an article already classified at this prompt version never reaches
     # the API however cold the container starts.
     #
-    # What a cold start does cost is time, on the two legs that still cache to
-    # /app/research/docs: papers re-runs byline extraction (cadence 3) and
-    # github re-harvests its 12-month window (cadence 7, the slowest leg).
-    # Both are bounded by budget.per_run_usd. If those re-harvests become the
-    # bottleneck, the fix is a background worker with a disk that sleeps to its
-    # own schedule, billed 24/7 — not worth it until the time is actually felt.
+    # No disk needed, rather than merely survivable without one. Every cache
+    # that costs anything to rebuild now lives in Postgres: classifications in
+    # `raw_classifications` (D24), and commit history in `raw_github_repos`
+    # (D32). Announcements and papers narrow their window to what has happened
+    # since the last successful run (D31), and GitHub re-walks only the
+    # repositories whose `pushed_at` has moved.
+    #
+    # What is left on /app/research/docs is per-URL fetch cache, and a cold
+    # start barely touches it: an article already stored and classified is not
+    # requested at all (D33), so there is nothing for the cache to save.
     envVars:
       - key: DATABASE_URL
         fromDatabase:

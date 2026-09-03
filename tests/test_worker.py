@@ -47,7 +47,7 @@ def quiet(monkeypatch, tmp_path):
         for leg in legs
     ])
     monkeypatch.setattr(
-        "app.pipeline.orchestrator.adapter_for", lambda source: lambda s, st: FetchResult()
+        "app.pipeline.orchestrator.adapter_for", lambda source: lambda s, st, sess=None: FetchResult()
     )
     monkeypatch.setattr(worker, "merge_announcements",
                         lambda items, *a, **k: {"added": 0, "kept": 0, "total": 0})
@@ -105,8 +105,8 @@ class TestADeadSourceIsNotADeadRun:
         """D26: source_down escalates it after N runs; this run still completed."""
         def adapter(source):
             if source.leg == "papers":
-                return lambda s, st: (_ for _ in ()).throw(RuntimeError("503"))
-            return lambda s, st: FetchResult()
+                return lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("503"))
+            return lambda s, st, sess=None: FetchResult()
 
         monkeypatch.setattr("app.pipeline.orchestrator.adapter_for", adapter)
 
@@ -122,7 +122,7 @@ class TestADeadSourceIsNotADeadRun:
     def test_the_failed_source_is_still_recorded(self, session, quiet, monkeypatch):
         monkeypatch.setattr(
             "app.pipeline.orchestrator.adapter_for",
-            lambda source: lambda s, st: (_ for _ in ()).throw(RuntimeError("503")),
+            lambda source: lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("503")),
         )
         worker.run_once(session, legs=("announcements",),
                         config_path=config_file(quiet), spend=False, deliver=False)
@@ -136,7 +136,7 @@ class TestADeadSourceIsNotADeadRun:
         """A nightly red cron for a transient outage makes the platform the noisy channel."""
         monkeypatch.setattr(
             "app.pipeline.orchestrator.adapter_for",
-            lambda source: lambda s, st: (_ for _ in ()).throw(RuntimeError("503")),
+            lambda source: lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("503")),
         )
         monkeypatch.setattr(worker, "get_session", lambda engine: session)
         monkeypatch.setattr(worker, "get_engine", lambda: session.get_bind())
@@ -171,7 +171,7 @@ class TestAFiringThatBrokeFails:
         """The fetches happened. Re-doing them costs money on the LLM legs."""
         monkeypatch.setattr(
             "app.pipeline.orchestrator.adapter_for",
-            lambda source: lambda s, st: FetchResult(items=[{"url": "https://a/1"}]),
+            lambda source: lambda s, st, sess=None: FetchResult(items=[{"url": "https://a/1"}]),
         )
         monkeypatch.setattr(worker, "_etl", lambda *a: (_ for _ in ()).throw(RuntimeError("boom")))
 
@@ -253,7 +253,7 @@ class TestSystemExitIsNotAnEscapeHatch:
 
         monkeypatch.setattr(
             "app.pipeline.orchestrator.adapter_for",
-            lambda source: lambda s, st: _sys.exit("GITHUB_TOKEN not set"),
+            lambda source: lambda s, st, sess=None: _sys.exit("GITHUB_TOKEN not set"),
         )
 
         run, stats = worker.run_once(session, legs=("github",),
@@ -286,7 +286,7 @@ class TestSystemExitIsNotAnEscapeHatch:
         """Ctrl-C means stop, not 'mark this source failed'."""
         monkeypatch.setattr(
             "app.pipeline.orchestrator.adapter_for",
-            lambda source: lambda s, st: (_ for _ in ()).throw(KeyboardInterrupt()),
+            lambda source: lambda s, st, sess=None: (_ for _ in ()).throw(KeyboardInterrupt()),
         )
         with pytest.raises(KeyboardInterrupt):
             worker.run_once(session, legs=("announcements",),

@@ -208,6 +208,7 @@ def aggregate(
     org_domain: str | list[str] | None,
     work_suffix: str,
     domain_shared: bool = False,
+    raw: dict | None = None,
 ) -> dict:
     """Build the per-person register for one organisation.
 
@@ -228,6 +229,12 @@ def aggregate(
             in real commits, confirmed live). `None` when no reliable domain
             exists at all (Mistral).
         work_suffix: Regex for this lab's work-account handle convention.
+        raw: The harvest, as ``{repo: {commits, description, ...}}``. Read from
+            `github_commits_<org>.json` when omitted, which is how the CLI runs.
+            The pipeline passes it in from `raw_github_repos` instead: the
+            deployed container has no disk, so the file it would read is
+            whatever was committed to the image rather than what was harvested
+            (D32).
         domain_shared: True when `org_domain` belongs to the parent company
             rather than the lab specifically (e.g. @google.com is
             Alphabet-wide, not DeepMind-specific). A corp-email match then
@@ -240,7 +247,8 @@ def aggregate(
     """
     suffix = re.compile(work_suffix, re.I)
     org_domains = {org_domain} if isinstance(org_domain, str) else set(org_domain or [])
-    raw = json.loads((DOCS / f"github_commits_{org}.json").read_text())
+    if raw is None:
+        raw = json.loads((DOCS / f"github_commits_{org}.json").read_text())
 
     people = defaultdict(
         lambda: {

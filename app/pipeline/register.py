@@ -308,6 +308,48 @@ def load_papers(
     return stats
 
 
+def load_github_repos(
+    session: Session, items: list[dict], run_id: int | None = None
+) -> int:
+    """Upsert freshly harvested repository histories into bronze.
+
+    Keyed on (org, repo) and upsert-only, like every other raw table: a
+    repository the adapter did not fetch this run — because its `pushed_at` had
+    not moved — keeps the row it already had rather than being deleted as
+    missing.
+
+    Args:
+        session: Open session; the caller owns the commit.
+        items: ``{org, repo, pushed_at, payload}`` records from the adapter.
+        run_id: Run to attribute the load to.
+
+    Returns:
+        How many repository rows were written or refreshed.
+    """
+    for item in items:
+        org, repo = item.get("org"), item.get("repo")
+        if not org or not repo:
+            continue
+        payload = item.get("payload") or {}
+        row = session.scalar(
+            select(m.RawGithubRepo).where(
+                m.RawGithubRepo.org == org, m.RawGithubRepo.repo == repo
+            )
+        )
+        if row is None:
+            session.add(m.RawGithubRepo(
+                org=org, repo=repo, pushed_at=item.get("pushed_at") or "",
+                payload=payload, content_hash=_hash(payload), load_run_id=run_id,
+            ))
+        else:
+            row.payload, row.content_hash = payload, _hash(payload)
+            row.pushed_at = item.get("pushed_at") or row.pushed_at
+            row.last_seen_at = utcnow()
+
+    session.flush()
+    return len(items)
+
+
 def load_github(
     session: Session, items: list[dict], run_id: int | None = None
 ) -> dict:
@@ -434,6 +476,9 @@ def load_report(session: Session, report, run_id: int | None = None) -> dict:
     github = report.items_for("github")
     stats = {
         "papers": load_papers(session, papers, run_id),
+        # Bronze before the aggregate that was built from it: a run that dies
+        # between the two should leave the commits it paid to fetch behind.
+        "github_repos": load_github_repos(session, report.raw_repos(), run_id),
         "github": load_github(session, github, run_id),
         "unresolved": 0,
     }

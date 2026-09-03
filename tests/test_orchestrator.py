@@ -56,7 +56,7 @@ def adapters(monkeypatch):
     scripted = {}
 
     def fake_adapter_for(source):
-        return scripted.get(source.id, lambda s, st: FetchResult())
+        return scripted.get(source.id, lambda s, st, sess=None: FetchResult())
 
     monkeypatch.setattr("app.pipeline.orchestrator.adapter_for", fake_adapter_for)
     return scripted
@@ -64,12 +64,12 @@ def adapters(monkeypatch):
 
 class TestOneDeadSourceDoesNotEndTheRun:
     def test_the_other_sources_still_complete(self, session, adapters):
-        def boom(source, st):
+        def boom(source, st, sess=None):
             raise RuntimeError("503 from the archive")
 
         adapters["openai"] = boom
-        adapters["anthropic"] = lambda s, st: FetchResult(items=[{"url": "https://a/1"}])
-        adapters["deepseek"] = lambda s, st: FetchResult(items=[{"url": "https://d/1"}])
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(items=[{"url": "https://a/1"}])
+        adapters["deepseek"] = lambda s, st, sess=None: FetchResult(items=[{"url": "https://d/1"}])
 
         report = ingest(session, [make_source(id=x) for x in ("anthropic", "openai", "deepseek")])
 
@@ -78,7 +78,7 @@ class TestOneDeadSourceDoesNotEndTheRun:
         assert report.ok is False
 
     def test_the_failure_reason_is_kept_not_swallowed(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("503 from the archive"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("503 from the archive"))
 
         report = ingest(session, [make_source(id="openai")])
 
@@ -95,7 +95,7 @@ class TestOneDeadSourceDoesNotEndTheRun:
         """
         seen = []
 
-        def recorder(source, st):
+        def recorder(source, st, sess=None):
             seen.append(source.id)
             return FetchResult()
 
@@ -109,7 +109,7 @@ class TestOneDeadSourceDoesNotEndTheRun:
 
 class TestFailureStreaks:
     def test_consecutive_failures_accumulate(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         source = make_source(id="openai")
 
         for _ in range(3):
@@ -119,11 +119,11 @@ class TestFailureStreaks:
 
     def test_a_success_resets_the_streak(self, session, adapters):
         source = make_source(id="openai")
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         run_source(session, source)
         run_source(session, source)
 
-        adapters["openai"] = lambda s, st: FetchResult(items=[{"url": "u"}])
+        adapters["openai"] = lambda s, st, sess=None: FetchResult(items=[{"url": "u"}])
         run_source(session, source)
 
         st = session.get(m.SourceState, ("announcements", "openai"))
@@ -132,8 +132,8 @@ class TestFailureStreaks:
         assert st.last_success_at is not None
 
     def test_failing_lists_only_sources_at_or_past_the_threshold(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
-        adapters["mistral"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["mistral"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         for _ in range(3):
             run_source(session, make_source(id="openai"))
         run_source(session, make_source(id="mistral"))
@@ -143,7 +143,7 @@ class TestFailureStreaks:
         assert [s.source_id for s in incidents] == ["openai"]
 
     def test_a_disabled_source_is_never_an_incident(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         for _ in range(3):
             run_source(session, make_source(id="openai"))
         session.get(m.SourceState, ("announcements", "openai")).disabled = True
@@ -154,7 +154,7 @@ class TestFailureStreaks:
 
 class TestWatermarks:
     def test_success_advances_the_watermark(self, session, adapters):
-        adapters["anthropic"] = lambda s, st: FetchResult(
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(
             items=[{"url": "u"}], watermark={"max_published": "2026-08-27"}
         )
         run_source(session, make_source(id="anthropic"))
@@ -164,10 +164,10 @@ class TestWatermarks:
 
     def test_failure_leaves_the_previous_watermark_alone(self, session, adapters):
         source = make_source(id="anthropic")
-        adapters["anthropic"] = lambda s, st: FetchResult(watermark={"max_published": "2026-08-27"})
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(watermark={"max_published": "2026-08-27"})
         run_source(session, source)
 
-        adapters["anthropic"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["anthropic"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         run_source(session, source)
 
         st = session.get(m.SourceState, ("announcements", "anthropic"))
@@ -181,7 +181,7 @@ class TestWatermarks:
         state_mod.record_success(state, {"max_published": "2026-08-27"}, now=NOW)
         session.commit()
 
-        adapters["anthropic"] = lambda s, st: FetchResult(items=[], watermark={})
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(items=[], watermark={})
         run_source(session, source)
 
         assert session.get(m.SourceState, ("announcements", "anthropic")).watermark == {
@@ -192,7 +192,7 @@ class TestWatermarks:
 class TestDisabledSources:
     def test_a_config_disabled_source_is_skipped_not_failed(self, session, adapters):
         """xAI publishes no papers. That is a finding, not an outage."""
-        adapters["xai"] = lambda s, st: (_ for _ in ()).throw(AssertionError("must not be called"))
+        adapters["xai"] = lambda s, st, sess=None: (_ for _ in ()).throw(AssertionError("must not be called"))
 
         report = ingest(session, [make_source(leg="papers", id="xai", enabled=False)])
 
@@ -201,7 +201,7 @@ class TestDisabledSources:
         assert session.get(m.SourceState, ("papers", "xai")).consecutive_failures == 0
 
     def test_an_operator_disabled_source_is_skipped(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(AssertionError("must not be called"))
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(AssertionError("must not be called"))
         state_mod.load(session, "announcements", "openai").disabled = True
         session.commit()
 
@@ -217,8 +217,8 @@ class TestRunRecording:
         session.add(run)
         session.commit()
 
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
-        adapters["anthropic"] = lambda s, st: FetchResult(items=[{"url": "u"}], cost_usd=0.25)
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(items=[{"url": "u"}], cost_usd=0.25)
         ingest(session, [make_source(id="anthropic"), make_source(id="openai")], run_id=run.id)
 
         rows = {r.source_id: r for r in session.scalars(select(m.RunSource)).all()}
@@ -238,8 +238,8 @@ class TestRunRecording:
         session.add(run)
         session.commit()
 
-        adapters["anthropic"] = lambda s, st: FetchResult(items=[{"url": "u"}])
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(items=[{"url": "u"}])
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
         ingest(session, [make_source(id="anthropic"), make_source(id="openai")], run_id=run.id)
 
         # A brand-new session sees only what was actually committed.
@@ -249,8 +249,8 @@ class TestRunRecording:
             assert fresh.scalars(select(m.RunSource)).all() != []
 
     def test_stats_summarise_the_run(self, session, adapters):
-        adapters["openai"] = lambda s, st: (_ for _ in ()).throw(RuntimeError("down"))
-        adapters["anthropic"] = lambda s, st: FetchResult(items=[{"url": "a"}, {"url": "b"}])
+        adapters["openai"] = lambda s, st, sess=None: (_ for _ in ()).throw(RuntimeError("down"))
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(items=[{"url": "a"}, {"url": "b"}])
 
         report = ingest(session, [
             make_source(id="anthropic"),

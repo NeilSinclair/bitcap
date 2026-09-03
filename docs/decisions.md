@@ -3406,3 +3406,158 @@ Also recorded: Jan Leike's own site still states he leads Alignment Science
 while a secondary aggregator reports he stepped back in May 2026. Both were
 live on the research date. The entry carries the conflict rather than picking a
 side.
+
+## D31 — Ingestion becomes incremental, because the deployed shape has no disk (2026-09-03)
+
+Every adapter took a `state` argument and every adapter ignored it. The three
+docstrings said why, and all three said the same thing: a full re-derive of the
+window is nearly free, because every page is cached on disk. `SourceState.watermark`
+was written on every success and never once read back.
+
+That reasoning was sound when the only deployment was a laptop. It is false on
+the one that ships. Render cron jobs cannot mount a disk, so each firing starts
+from the image and every page in the window is a live fetch — roughly 500
+announcement pages, nightly, to discover the two articles that are new. The
+earlier framing of a cold start as costing "time, not money" was true and beside
+the point: re-scraping a three-month window every night is wrong regardless of
+what it costs.
+
+**The window is now anchored to the last success, with a 48-hour floor.** A
+source that has never succeeded fetches its full configured window — that is the
+first firing against an empty database, and it is a newly-added lab backfilling
+itself without dragging the other six through a re-harvest. Everything after
+that fetches since `last_success_at`, never less than 48 hours and never wider
+than the configured window.
+
+Two alternatives rejected. **A fixed 48-hour window** — what was first proposed —
+loses articles permanently to any outage longer than two nights, and nothing in
+the system would report the gap: no failed source, no budget breach, just a
+quieter digest. Anchoring to the last success costs one comparison and makes a
+missed night self-healing. **A URL anti-join against `raw_articles`**, the same
+shape `classify_new` uses, is more precise still and needs no clock, but it
+wants a session inside the adapter; `last_success_at` is already threaded
+through `run_source` and is the same fact in every path that exists today.
+
+The 48-hour floor is not slack. Labs backdate posts and correct dates after
+publishing, and a window pulled tight to the last run would never see them.
+
+**The papers leg gets whole months, not hours.** Three harvesters compute
+`timedelta(days=months * 30.5)` and would take any float. `harvest_contributors`
+does calendar arithmetic — `today.month - months`, formatted `{y:04d}` — which
+raises on a float and cannot express a sub-month window at all. So papers is
+floored at one month rather than 48 hours: about a third of the fetches back
+instead of all of them, which is the right trade at cadence 3 for a leg where a
+one-month floor cannot miss a paper. Buying the rest means rewriting six
+harvesters' notion of a window.
+
+**GitHub is left alone, and not because it was forgotten.** Its window is not a
+feed of new items but a rolling 12-month aggregate: `aggregate_github.aggregate`
+builds the people register by reading `github_commits_<org>.json` whole.
+Narrowing the window there does not produce fewer fetches and the same answer,
+it produces a different answer. Making that leg incremental means persisting
+per-repo commit history in Postgres to replace the disk cache, which is a bronze
+table and a migration, not an argument change. Recorded here rather than done.
+
+Consequence: the steady state of the announcements leg becomes one index fetch
+per lab plus the bodies of whatever is actually new. The cold-container
+behaviour that §13.3 describes is unchanged — this narrows what gets fetched,
+not where the text lives.
+
+## D32 — GitHub gets the bronze layer it never had, and stops re-walking a year of commits (2026-09-03)
+
+D31 made announcements and papers incremental and left GitHub alone, because
+narrowing its window is not the same operation. The other two legs fetch a feed:
+ask for less, get less, keep the rest in bronze. This one builds a rolling
+12-month *aggregate* — `aggregate_github` reduces every commit in the window to
+one row per person — so a narrower window does not return the same answer for
+less work, it returns a different and wrong answer.
+
+**The actual gap was a missing table.** `raw_github_people` stores the
+aggregate: counts, date range, email domains. The commits it was computed from
+were never in Postgres at all; they lived in `research/docs/github_cache/`, 772
+files on disk. Bronze skipped a layer for this leg, which is why the register
+could not be rebuilt from the database and why a container without a disk had to
+re-walk twelve months of history to recompute a summary it already had.
+
+`raw_github_repos` is that layer — one row per (org, repo), history verbatim,
+`pushed_at` alongside it. The listing call returns every repo the org has pushed
+to in the window and is one cheap REST page; a repo whose `pushed_at` has not
+moved since bronze last saw it *cannot* have new commits, so it is never walked
+again. Only genuinely changed repositories cost a GraphQL walk.
+
+**`pushed_at` rather than a per-source watermark.** One watermark for the whole
+org would be wrong in both directions: too coarse to skip the 90% of repos that
+did not change, and useless for deciding which did. The right granularity is per
+repository and it belongs in bronze next to the payload, not in `source_state` —
+which is why `fetch_github` still takes `state` and still ignores it.
+
+**Two bugs fell out of this rather than being hunted.** First, `collect()`
+returns the harvest but only `__main__` ever wrote `github_commits_<org>.json`,
+and `aggregate()` read that file — so on the deployed path the harvest was
+discarded and the register was rebuilt from whatever JSON was committed to the
+image. Passing the harvest to `aggregate(raw=...)` closes it. Second, the disk
+cache had no max-age: once a repo was cached it was never refetched however many
+commits it gained. `pushed_at` is a real freshness check, so the replacement is
+more correct than the thing it replaces, not just portable.
+
+**Stored commits are trimmed to the window before aggregation.** A quiet repo is
+never re-walked, so its stored commits were fetched against an older, wider
+`since` and still carry commits that have aged out. Counting them would turn the
+12-month register into an all-time one, one night at a time, with nothing
+reporting it. `_in_window` drops them; the drift is the kind of silent
+degradation that only shows up months later as a number nobody can explain.
+
+Consequence: the adapter signature gains a `session`, since deciding what *not*
+to fetch requires reading what is already stored. All three adapters take it so
+there is one signature; only this one uses it. Persistence stays in
+`register.load_github_repos`, ordered before the aggregate load so a run that
+dies between the two keeps the commits it paid to fetch.
+
+## D33 — Don't cache the page; don't ask for it twice (2026-09-03)
+
+The proposal was to move the ~250 MB of cached HTML under `research/docs/` into
+Postgres, so that production would not depend on a disk it does not have. The
+premise was right and the remedy was not.
+
+Nothing reads that HTML after ingestion. `fetch()` downloads a page,
+`strip_html()` pulls the text out, and the text lands in `raw_articles.payload`.
+Scoring, transform, quote verification and the API all work off the stored text;
+the HTML is never opened again. It is not data being kept, it is a receipt for an
+HTTP request, kept only so the request is not repeated.
+
+That makes it different in kind from the two caches that *were* moved into
+Postgres. A classification costs $0.029 to recreate and a year of commit history
+costs a GraphQL walk and a rate limit, so both earn a row. A page costs one GET.
+Relocating a quarter of a gigabyte of the cheapest, most disposable bytes in the
+system into a 1 GB database is paying storage rates for rubbish.
+
+**So the fix is not to make the second request cheap, it is not to make it.**
+`_settled_urls` is the same anti-join `classify_new` already uses, one layer
+earlier: an article already in `raw_articles` yields nothing by being fetched
+again. Every discovery method takes it and filters candidates before the body
+fetch. Strictly better than any cache — no request, no bytes, no rate limit, and
+nothing lost when the container is discarded.
+
+**Stored is not sufficient; it has to be classified as well.** This is the part
+that is easy to get wrong. `classify_new` reads article *text* from the corpus
+file rather than from the database, and on a disk-less container that file resets
+to the image copy every firing. Skipping an article that was stored but still
+pending would leave it pending for ever with nothing able to classify it — which
+is planning.md §13.3 promoted from a rare edge case to the normal path. The skip
+set is therefore "ingested **and** classified at the current prompt version",
+which leaves every straggler being refetched until it is scored.
+
+That is a coupling between ingestion and classification state, and it is the
+price of not touching §13.3 here. The cleaner fix remains the one recorded
+there: put the text where the classifier can read it, and this condition
+collapses back to "is it in `raw_articles`".
+
+Where it pays most is xAI. `from_wayback_cdx` fetches every archived snapshot at
+two seconds a request purely to read a publication date out of it, because the
+CDX timestamp is a crawl date and says nothing about age. Those are now fetched
+once each, ever.
+
+Consequence: the announcement disk cache stops mattering in production, because
+production stops asking for pages it already has. It stays useful locally, where
+re-running a harvester over a window on purpose is a normal thing to do. Running
+any harvester as a script passes no skip set and still refetches everything.

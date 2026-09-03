@@ -67,6 +67,19 @@ class RunReport:
             for item in o.items
         ]
 
+    def raw_repos(self) -> list[dict]:
+        """Repository histories fetched this run, from every successful source.
+
+        Bronze for the github leg. `items_for` returns the people aggregate,
+        which is derived; this is the material it was derived from (D32).
+        """
+        return [
+            repo
+            for o in self.outcomes
+            if o.status == SUCCEEDED and o.result
+            for repo in o.result.raw_repos
+        ]
+
     @property
     def stats(self) -> dict:
         """Counts suitable for `pipeline_runs.stats`."""
@@ -136,7 +149,7 @@ def run_source(
     state_mod.record_attempt(st)
     started = time.monotonic()
     try:
-        result = adapter_for(source)(source, st)
+        result = adapter_for(source)(source, st, session)
     except (Exception, SystemExit) as exc:  # noqa: BLE001
         state_mod.record_failure(st, exc)
         outcome = SourceOutcome(
