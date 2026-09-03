@@ -369,3 +369,41 @@ Internet Archive's own rate limit (`WAYBACK_DELAY_SECONDS = 2.0`, matching
 fetches take a few minutes; a re-run is near-instant once cached (confirmed live: 2.1s for
 a fully-cached re-run of all seven labs combined, versus several minutes for the first
 xAI run).
+
+## Scheduled-pipeline classification and drift (2026-09-03)
+
+First spend under the budget governor (`config/pipeline.yaml`, D24). Everything
+here is from `raw_costs` / `announcement_cost.json`, recorded per call as the
+runs proceeded.
+
+| Workflow | Calls | $ | Note |
+|---|---:|---:|---|
+| Budget-guard probe #1 (ceiling $0.08) | 15 | 0.5315 | Overshot 6.6x — the finding, see below |
+| Budget-guard probe #2 (ceiling $0.20) | 7 | 0.2112 | Overshot 5.6% after the fix |
+| Backlog classification (61 articles) | 39 | 1.0762 | The four newest labs, first time scored |
+| First drift measurement (6 gold items) | 6 | 0.1949 | Uncached by design |
+| Register rebuild (236 articles) | 0 | 0.0000 | Fully cached — idempotence, demonstrated |
+
+**Subtotal this session: $2.014.** Running total across all workflows: **$16.19**.
+
+**$0.53 of that was the price of finding a real bug, and it was worth it.** The
+first probe set a deliberately tiny $0.08 ceiling to prove the guard stopped a
+live run. It did stop it — after spending $0.53. With 12 concurrent workers,
+every worker tested a running total none of its peers had contributed to yet, so
+the fan-out overshot by roughly `workers x per-call cost`. At the real $3.00
+ceiling that would have been a ~14% overrun and probably never noticed; at $0.08
+it was unmissable. The guard now counts in-flight calls (`begin_call`/`end_call`)
+and the second probe overshot by 5.6%.
+
+**Calibration.** 61 articles cost $1.0762 across 39 paid calls (22 were already
+cached from the probes) = **$0.0276 per article**, against the $0.029 seed in
+`budget.DEFAULT_CALL_USD` taken from the v7 corpus. Drift ran $0.0325 per item,
+higher because it bypasses the cache and pays a cache *write* on its first call.
+
+**Standing cost of drift monitoring.** 6 uncached items per firing at ~$0.195.
+Daily, that is ~$5.85/month against the $20 monthly ceiling — the single largest
+recurring cost in the pipeline, and it buys no product output at all. It is
+here because planning.md §6a requires the app to report its own variance, and
+because a scorer that quietly degrades is the failure this system exists to
+catch. If the monthly budget ever binds, `cadence.drift` is the first dial to
+turn.

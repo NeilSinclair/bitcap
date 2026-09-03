@@ -33,14 +33,17 @@ def session():
 
 
 def test_corpus_fully_loaded(session):
-    # 236 raw articles now that xAI's wayback_cdx leg is configured
-    # (35 in-window articles, this leg's own live run); 175 classified,
-    # unchanged -- scoring is deliberately deactivated for every lab added
-    # after the original three (D10), so their articles load with no
-    # Classification row, same as any unscored article already does (see
-    # transform.py's `no_classification` counter).
+    # 236 raw articles now that xAI's wayback_cdx leg is configured (35
+    # in-window articles), and all 236 classified as of D24.
+    #
+    # This count was 175 while scoring stayed deactivated for every lab added
+    # after the original three (D10) -- their articles loaded with no
+    # Classification row at all. D10's switch was a *safety* measure against an
+    # uncontrolled LLM run; the per-run and per-month ceilings in
+    # config/pipeline.yaml replace it, so the four newest labs (xAI, DeepMind,
+    # Mistral, Meta AI) are now scored like the rest. Full corpus: $1.08.
     assert session.scalar(select(func.count()).select_from(m.Article)) == 236
-    assert session.scalar(select(func.count()).select_from(m.Classification)) == 175
+    assert session.scalar(select(func.count()).select_from(m.Classification)) == 236
     assert session.scalar(select(func.count()).select_from(m.Holding)) == 26
 
 

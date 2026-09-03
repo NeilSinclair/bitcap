@@ -613,6 +613,207 @@ def run_batch(
     return results, failures, costs
 
 
+def run(
+    articles: list[dict],
+    model: str = "claude-sonnet-5",
+    workers: int = 12,
+    batch: bool = False,
+    budget=None,
+) -> dict:
+    """Classify the given articles, score them, and write the register.
+
+    Extracted from `main()` so the scheduled pipeline and a human at a terminal
+    take the same path. Duplicating this loop would mean duplicating the
+    cache-warming rule and the locked cost-log write, both of which are subtle
+    and both of which cost real money to get wrong.
+
+    Args:
+        articles: Article records to classify. Already-cached ones cost nothing.
+        model: Model id.
+        workers: Concurrent requests; the work is network-bound.
+        batch: Use the Message Batches API (half price, polls to completion).
+        budget: Optional object with `.exhausted`, `.spend(usd)` and
+            `.snapshot()`. Checked before each item is started, so a fan-out
+            already in flight stops taking new work rather than being killed
+            mid-call — a cancelled call is billed and produces nothing.
+
+    Returns:
+        ``{scored, failures, cost_usd, bands, classified, skipped_for_budget}``.
+        `skipped_for_budget` is non-zero only when the ceiling was reached, and
+        is what distinguishes "nothing left to classify" from "stopped early".
+    """
+    CACHE.mkdir(parents=True, exist_ok=True)
+    rules = yaml.safe_load(SCORING.read_text())
+    _, _, _, mech_ids, cat_ids, prac_ids = vocabularies()
+    dims, cap = practice_dimensions(), dimension_cap()
+
+    client = anthropic.Anthropic()
+
+    if batch:
+        # A batch is submitted as one job, so the ceiling cannot be applied
+        # mid-flight the way it is interactively. It is applied to the *size of
+        # the submission* instead: submit only as many articles as the remaining
+        # budget can pay for at the observed per-call rate. Submitting the whole
+        # set and calling `spend()` afterwards enforced nothing while still
+        # recording a budget snapshot on the run -- a control that reported
+        # itself as working and was not.
+        if budget is not None:
+            affordable = int(budget.remaining / max(budget.expected_per_call, 1e-9))
+            # Batch is half price (BATCH_MULT), so the same money buys twice as
+            # many items; still a floor, never an estimate used to bill.
+            affordable = int(affordable / BATCH_MULT)
+            if affordable < len(articles):
+                print(f"budget allows {affordable} of {len(articles)} articles this run",
+                      flush=True)
+            submitted = articles[:max(0, affordable)]
+        else:
+            submitted = articles
+        skipped = len(articles) - len(submitted)
+
+        # run_batch writes each item's cost to COST as it processes results
+        # (see `bill()` inside it) -- nothing left to persist here, and
+        # re-reading + re-appending batch_costs on top would duplicate every
+        # entry it already wrote.
+        results, failures, batch_costs = run_batch(
+            client, model, submitted, mech_ids, cat_ids, prac_ids, dims, cap
+        ) if submitted else ({}, [], [])
+        for cost in batch_costs:
+            if budget is not None:
+                budget.spend(cost["usd"])
+        spent = sum(c["usd"] for c in batch_costs)
+    else:
+        results, failures, spent, skipped = _run_interactive(
+            client, model, articles, workers, budget,
+            mech_ids, cat_ids, prac_ids, dims, cap,
+        )
+
+    scored = []
+    for article in articles:
+        result = results.get(article["url"])
+        if not result:
+            continue
+        result["score"], result["band"] = score_of(result, rules)
+        scored.append({**article, **result})
+
+    # Merge into the register rather than replace it. A full sweep writes every
+    # article and merging is then a no-op, but a partial run -- the scheduled
+    # pipeline classifying only what is new, or a human passing --limit -- would
+    # otherwise truncate the committed register to whatever subset it happened
+    # to be given. `failures` is this run's, deliberately: it describes this
+    # attempt, where `scored` describes the corpus.
+    merged = {}
+    if OUT.exists():
+        merged = {r["url"]: r for r in json.loads(OUT.read_text()).get("scored", [])}
+    merged.update({r["url"]: r for r in scored})
+    register = sorted(merged.values(), key=lambda a: -a["score"])
+
+    OUT.write_text(json.dumps({"scored": register, "failures": failures}, indent=2))
+
+    return {
+        "scored": scored,
+        "failures": failures,
+        "cost_usd": round(spent, 6),
+        "classified": len(scored),
+        "skipped_for_budget": skipped,
+        "bands": {b: sum(1 for s in scored if s["band"] == b)
+                  for b in ("high", "medium", "low", "none")},
+    }
+
+
+def _run_interactive(
+    client, model, articles, workers, budget,
+    mech_ids, cat_ids, prac_ids, dims, cap,
+):
+    """The concurrent path: warm the prompt cache, then fan out.
+
+    Returns:
+        Tuple of (results by url, failures, usd spent this call, items skipped
+        because the budget ran out).
+    """
+    results: dict[str, dict] = {}
+    failures: list[dict] = []
+    costs = json.loads(COST.read_text()) if COST.exists() else []
+    baseline = sum(c["usd"] for c in costs)
+    lock = threading.Lock()
+    done = 0
+    skipped = 0
+    started = time.time()
+
+    def record(article: dict, result: dict, cost: dict | None, failure: dict | None) -> None:
+        # One writer at a time: the cost log is rewritten whole, and a
+        # concurrent write would truncate it.
+        nonlocal done
+        with lock:
+            done += 1
+            if failure:
+                failures.append(failure)
+                print(f"  FAIL {failure['url']}: {failure['error']}", flush=True)
+            elif result:
+                results[article["url"]] = result
+            if cost:
+                costs.append(cost)
+                COST.write_text(json.dumps(costs, indent=2))
+            if done % 50 == 0 or done == len(articles):
+                spent = sum(c["usd"] for c in costs)
+                rate = done / max(time.time() - started, 1e-6)
+                print(
+                    f"  [{done}/{len(articles)}]  ${spent:.3f}  "
+                    f"{rate:.1f}/s",
+                    flush=True,
+                )
+
+    def classify_guarded(article):
+        """Skip rather than start once the ceiling is reached.
+
+        `begin_call`/`end_call` bracket the call so the budget can count work in
+        flight. Checking a plain running total instead lets a fan-out of N
+        workers overshoot by up to N calls, since none of them can see what the
+        others are about to spend.
+        """
+        nonlocal skipped
+        if budget is None:
+            return classify_one(
+                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap
+            )
+        if not budget.begin_call():
+            with lock:
+                skipped += 1
+            return {}, None, None
+        cost = None
+        try:
+            out = classify_one(
+                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap
+            )
+            cost = out[1]
+            return out
+        finally:
+            budget.end_call(cost["usd"] if cost else 0.0)
+
+    # Warm the prompt cache before fanning out: classify() caches the shared
+    # system prompt, and a cold parallel start would make every first-wave call
+    # a 1.25x cache write instead of a 0.1x read. Serial until the first call
+    # that actually pays (disk-cached articles are free and warm nothing).
+    warm = 0
+    for article in articles:
+        result, cost, failure = classify_guarded(article)
+        record(article, result, cost, failure)
+        warm += 1
+        if cost is not None:
+            break
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {
+            pool.submit(classify_guarded, article): article
+            for article in articles[warm:]
+        }
+        for future in as_completed(futures):
+            article = futures[future]
+            result, cost, failure = future.result()
+            record(article, result, cost, failure)
+
+    return results, failures, sum(c["usd"] for c in costs) - baseline, skipped
+
+
 def main() -> None:
     """Score every fetched announcement and write the register."""
     parser = argparse.ArgumentParser()
@@ -652,10 +853,6 @@ def main() -> None:
         return
 
     load_env()
-    CACHE.mkdir(parents=True, exist_ok=True)
-    rules = yaml.safe_load(SCORING.read_text())
-    _, _, _, mech_ids, cat_ids, prac_ids = vocabularies()
-    dims, cap = practice_dimensions(), dimension_cap()
 
     articles = json.loads(ARTICLES.read_text())
     if args.only:
@@ -665,107 +862,20 @@ def main() -> None:
     if args.limit:
         articles = articles[: args.limit]
 
-    client = anthropic.Anthropic()
-
-    if args.batch:
-        # run_batch writes each item's cost to COST as it processes results
-        # (see `bill()` inside it) -- nothing left to persist here, and
-        # re-reading + re-appending batch_costs on top would duplicate every
-        # entry it already wrote.
-        results, failures, batch_costs = run_batch(
-            client, args.model, articles, mech_ids, cat_ids, prac_ids, dims, cap
-        )
-        scored = []
-        for article in articles:
-            result = results.get(article["url"])
-            if not result:
-                continue
-            result["score"], result["band"] = score_of(result, rules)
-            scored.append({**article, **result})
-        scored.sort(key=lambda a: -a["score"])
-        OUT.write_text(json.dumps({"scored": scored, "failures": failures}, indent=2))
-        spent = sum(c["usd"] for c in batch_costs)
-        print(f"\nscored {len(scored)}, failed {len(failures)}, ${spent:.4f} (batch)")
-        for band in ("high", "medium", "low", "none"):
-            print(f"  {band:<7} {sum(1 for s in scored if s['band'] == band)}")
-        return
-
-    results: dict[str, dict] = {}
-    failures: list[dict] = []
-    costs = json.loads(COST.read_text()) if COST.exists() else []
-    lock = threading.Lock()
-    done = 0
-    started = time.time()
-
-    def record(article: dict, result: dict, cost: dict | None, failure: dict | None) -> None:
-        # One writer at a time: the cost log is rewritten whole, and a
-        # concurrent write would truncate it.
-        nonlocal done
-        with lock:
-            done += 1
-            if failure:
-                failures.append(failure)
-                print(f"  FAIL {failure['url']}: {failure['error']}", flush=True)
-            else:
-                results[article["url"]] = result
-            if cost:
-                costs.append(cost)
-                COST.write_text(json.dumps(costs, indent=2))
-            if done % 50 == 0 or done == len(articles):
-                spent = sum(c["usd"] for c in costs)
-                rate = done / max(time.time() - started, 1e-6)
-                print(
-                    f"  [{done}/{len(articles)}]  ${spent:.3f}  "
-                    f"{rate:.1f}/s",
-                    flush=True,
-                )
-
-    # Warm the prompt cache before fanning out: classify() caches the shared
-    # system prompt, and a cold parallel start would make every first-wave call
-    # a 1.25x cache write instead of a 0.1x read. Serial until the first call
-    # that actually pays (disk-cached articles are free and warm nothing).
-    warm = 0
-    for article in articles:
-        result, cost, failure = classify_one(
-            client, args.model, article, mech_ids, cat_ids, prac_ids, dims, cap
-        )
-        record(article, result, cost, failure)
-        warm += 1
-        if cost is not None:
-            break
-
-    with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {
-            pool.submit(
-                classify_one, client, args.model, article,
-                mech_ids, cat_ids, prac_ids, dims, cap,
-            ): article
-            for article in articles[warm:]
-        }
-        for future in as_completed(futures):
-            article = futures[future]
-            result, cost, failure = future.result()
-            record(article, result, cost, failure)
-
-    scored = []
-    for article in articles:
-        result = results.get(article["url"])
-        if not result:
-            continue
-        result["score"], result["band"] = score_of(result, rules)
-        scored.append({**article, **result})
-    scored.sort(key=lambda a: -a["score"])
-
-    OUT.write_text(json.dumps({"scored": scored, "failures": failures}, indent=2))
-
-    spent = sum(c["usd"] for c in costs)
-    elapsed = time.time() - started
-    print(
-        f"\nscored {len(scored)}, failed {len(failures)}, "
-        f"${spent:.4f}, {elapsed:.0f}s wall"
+    summary = run(
+        articles,
+        model=args.model,
+        workers=args.workers,
+        batch=args.batch,
     )
-    for band in ("high", "medium", "low", "none"):
-        print(f"  {band:<7} {sum(1 for s in scored if s['band'] == band)}")
+
+    mode = " (batch)" if args.batch else ""
+    print(
+        f"\nscored {summary['classified']}, failed {len(summary['failures'])}, "
+        f"${summary['cost_usd']:.4f}{mode}"
+    )
+    for band, n in summary["bands"].items():
+        print(f"  {band:<7} {n}")
 
 
 if __name__ == "__main__":

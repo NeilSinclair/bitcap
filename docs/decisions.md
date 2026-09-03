@@ -2586,6 +2586,79 @@ behavior-neutral for already-correct data and only change behavior on the
 specific failure paths each one targets. Full test suite: 483 passed, 1
 skipped (up from 456 before this pass — 27 new tests, one new file,
 `tests/test_validate.py`).
+
+## D22 — Research pages extended to every lab; the Anthropic-shaped prose they carried was asserting evidence that does not exist
+
+**Decision.** Built the missing per-lab research pages (six GitHub orgs, three
+papers registers) plus a cross-lab survey, `research/corpus_survey.html`. The
+work was supposed to be renderer-only. It was not: both builders had been
+written against Anthropic and hardcoded its assumptions, so pointing them at
+another lab produced pages that were confidently wrong.
+
+**1. `build_github_page.py` hardcoded a two-lab `LABS` dict, Anthropic's
+`-ant` handle convention, and a mirror-exclusion sentence describing
+Anthropic's two specific mirrors.** Run against Mistral — which evidences
+*nobody* by commit email (D18) — it rendered "a commit made from an `@None`
+address is direct evidence and outranks everything else (0 people)". Now reads
+label, domain and convention from `config/github_sources.yaml` and generates
+one of three different evidence paragraphs: lab-owned domain, parent-company
+domain, or no domain at all. Where no work-handle convention exists it says so
+rather than implying one was used.
+
+**2. `enrich_github.py` predated the `confirmed_org_wide` tier and silently
+skipped it.** `worth_fetching()` listed the evidenced tiers by hand, so a
+DeepMind or Meta staffer evidenced by an `@google.com`/`@meta.com` commit but
+below the two-commit threshold was never fetched — 8 of meta-llama's 16
+evidenced staff. Its totals recount omitted the tier too, reporting it as 0.
+Both fixed; `EVIDENCED` and `TIERS` are now named constants, and
+`build_github_page.py`'s `EVIDENCE` dict would have raised `KeyError` on the
+tier had the page ever been built for those orgs.
+
+**3. The profile route recovers Mistral's register, which commit email could
+not.** D18 recorded Mistral as evidencing zero people by email and treated that
+as a real finding about the org rather than a harvesting gap. That still holds
+— but running the profile pass identifies **22 people** by the profile company
+field, with 9 blogs, 5 X handles and 322 personal repos among them. The finding
+was right; the conclusion that Mistral was therefore unreachable was not. Same
+pass on the other three small orgs: DeepSeek 12 → 23 identified, meta-llama 16
+→ 21, xAI 12 (no gain; all already had email evidence).
+
+**4. A claim written into this entry's first draft was wrong, and checking it
+produced a better finding.** The draft said the three older registers "do not
+record a primary source" because they lack `source_url`. They do record one —
+under a different key. OpenAI and DeepSeek put the arXiv abstract URL in `url`
+and also keep `arxiv_id`; Anthropic's `url` is the publishing venue itself
+(`alignment.anthropic.com`, `transformer-circuits.pub`), which is the primary
+source for work it never puts on arXiv, not a weaker substitute. **Citation
+coverage is 54/54, 7/7, 8/8, 15/15, 5/5, 2/2 — every paper in every register.**
+The real cost is that three key shapes must be normalised by anything reading
+across registers, done once in `build_corpus_survey.primary_source()` and
+asserted per-register in the tests so a future drop below full coverage fails
+loudly.
+
+**Alternative rejected: build the new pages from a copy of the Anthropic
+builder.** Three near-identical scripts diverging on the exact prose that is
+wrong for two of the three labs. The papers side does use one builder for
+DeepMind/Meta/Mistral, but only because those three genuinely share a register
+schema; the older three do not, and are left on their own builders rather than
+forced into a shared one.
+
+**Alternative rejected: merge the affiliation strings in the survey's
+candidate-source table.** "MATS", "MATS Program" and "ML Alignment and Theory
+Scholars" are one organisation counted three times. Merging needs an alias map
+— the same entity-resolution problem the people register already solves — and
+guessing at it inline would bury the collision. The page states the counts are
+a floor and names the collision instead.
+
+**Consequence.** `config/github_sources.yaml` gains `label` and
+`company_pattern` per org, so adding a lab stays a config change. Enrichment
+was run for the four small orgs only (~156 profiles); `google-deepmind` and
+`facebookresearch` are still unenriched — 568 evidenced staff whose channels
+have not been fetched — which both their own pages and the survey state
+explicitly rather than showing an empty column. No LLM cost: GitHub REST only.
+`tests/test_research_pages.py` adds 61 tests, four load-bearing ones verified
+by mutation to fail when the fix they cover is reverted.
+
 ## A category row loses to a contradicting mechanism row on the same holding (2026-09-02)
 
 Real case, surfaced by Neil while using the frontend: OpenAI shipping its own
@@ -2635,3 +2708,647 @@ groups and sorts. A row's reason text is shown only when it says something
 Evidence doesn't already — true for `mechanism`/`lab_exposure`/`named` (their
 `note` prefers the holding-specific `why`), not for `category` (which has no
 holding-side text and would just repeat the tag's own reason).
+
+## D22 — Migrations become necessary the moment the pipeline persists state (2026-09-03)
+
+**Decision.** Adopt Alembic, and stop `bitcap-db rebuild` from dropping the
+operational tables.
+
+**Why now, and not before.** `app/db.py` said, correctly, that there were no
+migrations *because the database is fully derived from committed files*: every
+table was a pure function of `config/*.yaml` and `research/docs/*.json`, so
+drop-and-reload was always safe and always cheap. That claim stops being true
+with the scheduled pipeline. `source_state` (how many consecutive runs a source
+has failed), `run_sources` (what each run did per source) and `alerts` (what was
+raised, and whether it was delivered) record things that *happened*. No file
+reproduces them. The argument for migrations here is not tidiness — it is that
+`create_all` cannot alter a table that already holds data nobody can regenerate.
+
+**The bug this exposed, already present.** `rebuild` dropped `pipeline_runs`
+too. Every reload silently discarded the run history that
+`status='failed' AND alerted_at IS NULL` — the standing query `app/runs.py` was
+written around — depends on. Nothing errored and no table looked wrong, because
+a freshly reloaded run history looks exactly like a young one. `drop_all` now
+drops only the derived, reference and raw layers; `models.OPS_TABLES` names the
+five that survive. Verified live: a `rebuild` against the working Postgres kept
+runs [1] and [2] and appended [3].
+
+**Alternative rejected: keep `create_all` and version the schema by hand.**
+Workable while the schema is only ever created, not altered — which is exactly
+what stops being true here. The first `ALTER` against a database holding real
+run history would have to be written by hand anyway, without the safety of
+`upgrade`/`downgrade` or a recorded history of what shape the deployed database
+is actually in.
+
+**Alternative rejected: a separate operational database.** Genuinely separates
+derived-from-files from recorded-by-runs, and removes the need for migrations on
+the main one. Rejected because the alerting and the run views need to join run
+state against content (`connections` above a threshold, gold snapshots against
+`prompt_version`), and a cross-database join is a worse problem than a migration
+directory.
+
+**Consequence.**
+- `alembic/versions/0001` is the 19-table schema as it stood before this work,
+  so an existing database is stamped and upgraded rather than rebuilt; `0002`
+  adds the three ops tables. An existing deployment migrates with
+  `alembic stamp 0001 && alembic upgrade head`.
+- `app/db.ensure_schema()` replaces bare `create_all` in the CLI. A database
+  Alembic has never seen (a fresh clone, or one built before this) is created
+  and stamped `head`; anything else is upgraded. Without the stamp such a
+  database would be permanently unmigratable — Alembic would try to create
+  tables that already exist.
+- `tests/test_migrations.py` asserts `upgrade head` and `create_all` produce an
+  identical schema. That is the test that fails when a column is added to
+  `models.py` without a migration, which is otherwise invisible: the suite and a
+  fresh clone both keep passing on `create_all` while every deployed database
+  drifts a column behind.
+- `alembic/env.py` prefers a URL set explicitly on the `Config` over
+  `DATABASE_URL`. Found by the tests, which without it ran their migrations
+  against the developer's live Postgres instead of their own temp database.
+
+## D23 — The orchestrator drives labs, not legs, and counts failures rather than backing off (2026-09-03)
+
+**Decision.** One `Source` per (leg, independently-failing thing) — a lab for
+announcements and papers, a GitHub org for github — driven through per-leg
+adapters, with cross-run state per source. Two sub-decisions inside that are
+worth recording separately.
+
+**1. Lab granularity, not leg granularity.** `fetch_announcements.collect()`
+loops over all seven labs in one call with no error handling between them, and
+`sys.exit`s on an unknown method. Calling it from an orchestrator would mean one
+Cloudflare-blocked lab costing six working ones — the exact failure the
+orchestrator exists to prevent. The module already exposes its `METHODS`
+dispatch table, so the adapter calls the per-lab discovery function directly and
+`collect()` is left untouched for hand-running. Demonstrated live: with
+Anthropic pointed at a non-existent host, the run returns 201 articles from six
+labs and records one failure, where previously it would have returned nothing.
+
+GitHub is keyed on the org login rather than the lab id, because Meta AI owns
+two orgs and they fail independently. Harvest and aggregate run as one source,
+not two: they are strictly sequential for a given org and neither is useful
+alone, so splitting them would buy a cross-source dependency and nothing else.
+
+**2. No cross-run backoff. Count, don't skip.** The obvious design — back a
+failing source off exponentially across firings — was considered and rejected.
+It contradicts what planning.md §4b actually concluded: a source down for one
+firing and up for the next is *exactly* what the next run's own per-request
+retries handle, and skipping it would convert a ten-minute outage into a
+self-inflicted multi-hour one. The retries are cheap (every fetch is disk-cached)
+and the failing case is rare. What the cross-run layer is genuinely for is
+*counting*: `consecutive_failures` makes "down for N scheduled runs" a query
+instead of a guess, which is what the `source_down` alert needs. `disabled` is
+the kill switch for a source that should truly stop being called, and a human
+sets it.
+
+`consecutive_failures` resets to zero on any success, deliberately. The question
+it answers is "is this source down *now*", not "how unreliable has it been" — a
+source that fails every other run is a different problem, visible in
+`run_sources`, and conflating them would make the alert fire on flakiness rather
+than on outages.
+
+**3. Ingestion commits per source; the ETL stays atomic.** `app.runs.tracked`
+wraps the load in one transaction on purpose, so a mid-load failure leaves the
+database stale rather than empty. Ingestion is the opposite case: a fetch that
+succeeded is a fact about the world, and on the LLM legs it was paid for.
+Rolling it back because a *later* source failed would discard real work and
+re-spend money to redo it. So the orchestrator commits each source's state and
+run row as it goes, and the ETL keeps its single transaction.
+
+**Alternative rejected: rewrite the harvesters to a common interface.** Cleaner
+on paper and wrong in practice. Their differences are real — the labs publish
+differently (D13, D16, D17), and the signatures reflect that. Rewriting them
+would risk reintroducing bugs each one encodes a fix for (the HTML-budget
+windowing of D16/D17, D20's snapshot-vs-publish date trap) to buy uniformity the
+adapter layer provides for ~40 lines. Nothing under `research/` was modified.
+
+**Consequence.**
+- `config/papers_sources.yaml` is new, and makes the papers register
+  enumerable. Coverage used to be encoded in which files existed under
+  `research/papers/`, which made xAI's *deliberate* absence (D16, reconfirmed
+  D17) indistinguishable from work nobody had done. xAI is now an explicit
+  `enabled: false` carrying its reason. `tests/test_registry.py` asserts every
+  deep-coverage lab is either covered or explicitly ruled out in all three
+  registers — the silent failure being a lab added to one register and not
+  another, which ingests less than anyone thinks and looks like a decision.
+- The registry tests also check that every declared module, entry function and
+  argument list actually matches the real harvester signature. Config naming a
+  function that does not exist would otherwise fail one lab at a time, in
+  production.
+- **Bug found by running it at n=1:** the GitHub adapter first read its
+  aggregation arguments straight off the YAML, which passed `work_suffix: null`
+  into `re` and raised for every org without a handle convention.
+  `aggregate_github.load_labs()` is not a passthrough — it substitutes a
+  deliberately never-matching pattern so a lab with no known convention yields
+  zero alias merges instead of borrowing another lab's. The adapter now goes
+  through it. Regression test in `tests/test_adapters.py`.
+- `merge_announcements` merges the corpus by URL rather than rewriting it. The
+  harvester writes the file from a full sweep; the orchestrator only has the
+  sources that worked, so writing the same way would delete a failed lab's
+  articles and present an outage as a shrinking corpus. Verified: two
+  consecutive full runs produce `added 0, updated 0, cost $0` across all 236
+  articles.
+
+## D24 — A budget ceiling replaces the scoring off-switch, and the guard has to count in-flight calls (2026-09-03)
+
+**Decision.** Bound LLM spend with a per-run and per-month ceiling in
+`config/pipeline.yaml`, and let the scheduled run classify. D10's
+`SCORING_ENABLED` switch stays, but as a manual kill switch rather than as the
+safety mechanism.
+
+**Why the switch had to go.** D10 turned scoring off because an uncontrolled
+scoring run was genuinely dangerous against a EUR 100 budget, and that was the
+right call with no other control available. But a pipeline whose most valuable
+stage is permanently disabled is not a pipeline, and the cost of leaving it off
+turned out to be larger than it looked: **61 articles across four labs — xAI,
+DeepMind, Mistral, Meta AI — had been fetched and never classified.** The
+register claimed seven labs; the product could see three. Classifying them cost
+$1.08 and took connections from 612 to 809. A safety switch with no bounded
+alternative had quietly become a coverage gap that looked like a finished
+register.
+
+Two ceilings, because they catch different things. `per_run_usd` catches a loop
+or a prompt regression inside one firing; `per_month_usd` catches the slow leak
+of thirty individually-reasonable runs. Month-to-date is read from `raw_costs`,
+not assumed zero — seeded wrong, thirty "in-budget" runs spend thirty monthly
+limits.
+
+**On exceeding: abort the LLM stage, not the run.** Everything already ingested
+still commits and the ETL still finishes. Failing the whole run would discard
+fetches that already happened and, on the LLM legs, were already paid for.
+
+**The bug this found, which is the interesting part.** The first live probe set
+a deliberately tiny $0.08 ceiling to check the guard actually stopped a real run.
+It stopped it — after spending **$0.53, 6.6x the ceiling**. The guard tested a
+running total, and with 12 concurrent workers every worker saw a figure none of
+its peers had yet contributed to; a dozen calls were already in flight when the
+limit tripped, and a cancelled call is billed anyway. The overshoot is bounded by
+`workers x per-call cost`, so at the real $3.00 ceiling it would have been ~14%
+and almost certainly never noticed.
+
+Fixed by making the guard predictive rather than reactive: `begin_call()` asks
+whether *this* call would breach the ceiling counting everything in flight, and
+`end_call()` settles it. The per-call estimate is seeded from the measured
+$0.029 average and replaced by the run's own observed mean. Re-probed live at a
+$0.20 ceiling: **$0.2112 spent, 5.6% over**. This is the argument for probing a
+control at a value where its failure is visible — at a realistic ceiling the bug
+was within noise.
+
+**A second bug, same class as one already fixed.** `run()` writes the register
+from the articles it was handed, so classifying only what is new rewrote a
+236-article `scored_announcements_v7.json` down to the 61 rows that run touched.
+Identical in shape to the announcements-corpus overwrite that `sink.py` already
+guards against, and identically silent — the register simply becomes a record of
+the last run instead of the corpus. `run()` now merges by URL. `failures` is
+still this-run-only, deliberately: it describes the attempt, where `scored`
+describes the corpus.
+
+**Alternative rejected: estimate cost before each call and refuse ahead of
+time.** Would remove the overshoot entirely, but requires trusting a token
+estimate rather than the provider's own usage figures, which is the thing this
+project's cost instrumentation exists to avoid. Reserving against a *measured*
+running average keeps every recorded number provider-reported.
+
+**Alternative rejected: run the scheduled classification in batch mode.** Half
+price, and latency is irrelevant for a 48h digest. Rejected for now because
+`run_batch` polls to completion, which turns a scheduled firing into an
+open-ended wait; it stays available via `classification.batch` for backfills,
+which is the shape planning.md §4a actually recommends it for.
+
+**Consequence.**
+- Drift monitoring now has a writer, and `gold_snapshots` its first row.
+  First measurement: mechanism F1 **0.947** against a 0.80 floor, event-type
+  agreement 0.833, $0.195 for six items.
+- **Drift deliberately bypasses the cache**, and that is the whole design.
+  `classify_one` returns a cached result keyed on the article URL, so a drift
+  check reading through it would report perfect agreement forever — the one
+  failure mode indistinguishable from success. It therefore costs money every
+  run, which is why the sample is six fixed items rather than the corpus
+  (planning.md §6a), chosen to span richly-tagged and zero-tag articles, both
+  scoring axes, and two labs.
+- The headline metric is **mechanism micro-F1**, not a composite. Under
+  `scoring.yaml` an article with no mechanism tag scores zero by construction,
+  so mechanism agreement is score agreement; blending axes would be the
+  arbitrary weighted sum the scoring rule already refuses to be.
+- Month-to-date lags until `bitcap-db load` copies the cost log into
+  `raw_costs`. The worker loads on every firing, so the next run is always
+  current; several classification runs *within* one firing would undercount.
+- `score_announcements.main()` is now argparse plus a call to `run()`. One code
+  path for the CLI and the scheduler, so the cache-warming rule and the locked
+  cost-log write exist once. All 101 existing tests for that module still pass
+  unchanged.
+
+## D25 — Papers and GitHub become a register of people, and its design is a set of refusals (2026-09-03)
+
+**Decision.** Papers and GitHub land in Postgres as `people`,
+`person_identity`, `person_evidence` and `unresolved_items` — a register of
+*who works at a lab and since when* — not as a second insight stream with its
+own scoring and holdings join.
+
+**Why a register rather than a second pipeline.** Both legs have been harvested
+for weeks and nothing has ever read them: no tables, no product surface. The
+tempting move is to treat a paper like an announcement — classify it, score it,
+join it to holdings. That is a second full pipeline (its own prompts, its own
+scoring rule, its own gold set) and it answers a question announcements already
+answer better. What papers and GitHub uniquely answer is *who is inside the
+lab*, which is what a departure or a stealth-startup formation — the brief's own
+top-tier signal, and something nothing in this system currently produces — is
+measured against. So they become people, evidence and dates.
+
+**The design is three refusals, and each is enforced structurally rather than by
+convention.** Over-merging is the dangerous direction here: two people collapsed
+into one yields a register that looks *cleaner* and is wrong, with nothing to
+notice.
+
+1. **No cross-lab merge.** `people` is keyed on lab. Two researchers sharing a
+   name at DeepSeek and DeepMind are two people; merging them asserts that
+   somebody changed employer, which is a finding, not a default.
+2. **No cross-leg merge.** A GitHub login and a paper byline are different kinds
+   of identifier, and matching them on a string is precisely the
+   entity-resolution collision CLAUDE.md names as a failure mode.
+3. **No LLM-asserted employment.** A byline affiliation read by a model is
+   recorded at tier `model_asserted` and can never appear as `confirmed`. This
+   is planning.md §11's hard rule made structural: on Anthropic the extractor
+   asserted fellowship status for four people whose pages state no affiliation
+   at all.
+
+**The bug the tests caught, which is the reason refusal #2 needed schema
+support.** `people` was first keyed on (lab, canonical_name), and person lookup
+went through the name. That silently merged a GitHub login `Ada` with a paper
+byline `Ada` at the same lab — the exact cross-leg guess the module's docstring
+claimed to refuse. A comment asserting a property the schema permits is not a
+control. Fixed by adding `source_kind` to the person key and resolving through
+`person_identity` rather than through the name, so the collision is impossible
+rather than merely discouraged.
+
+**`person_identity` is unique on (kind, value, lab), not (kind, value).** A
+GitHub login really is globally one account, so the stricter key would correctly
+merge someone committing to two of *one* lab's orgs — which matters, since Meta
+owns both `facebookresearch` and `meta-llama`. But it would equally merge
+someone committing to two *different* labs' orgs into one person, which is a
+cross-lab employment claim commit data cannot support. Including `lab` keeps the
+common case right and refuses the interesting one, which is the correct
+direction to be wrong in.
+
+**What *is* merged:** human-confirmed aliases from `config/aliases.yaml`
+(`confirmed: true` only — a proposal is a question, not an answer), and the
+evidence-based alias merges `aggregate_github` has already computed from commit
+emails within an org.
+
+**Alternative rejected: fuzzy-match names across legs and record a confidence.**
+Attractive because the union is the genuinely useful register (planning.md §12:
+"a person can appear in both, and the union is the register"). Rejected for now
+because a confidence score on an identity claim invites exactly the treatment
+this project refuses elsewhere — a number nobody can defend, quietly hardening
+into a fact downstream. The right shape is `aliases_proposed.yaml`: propose,
+have a human confirm, then merge. That is a follow-on, not part of this stage.
+
+**Consequence.**
+- `unresolved_items` gives the harvesters' existing "record failures, don't drop
+  them" discipline a table. It is not optional scope: "we found 27 Meta
+  candidates and resolved 6" is a materially different claim from "Meta
+  published 6 papers", and a register whose gaps are invisible reads as
+  complete.
+- Every person carries at least one `ref_url`. A byline with no paper URL behind
+  it produces no person at all — "no citation, no insight" applied to people.
+- The lab's own page is the citation, never the arXiv page the byline was
+  scraped from (`meta_url`, `announcement_url`), consistent with the adapter.
+- Migration `0003`. `people`/`person_*` are derived and are dropped by a
+  rebuild; they are reproducible from the raw layer, unlike the ops tables.
+
+**Run live, all 14 sources, $0.00** (fully cached): 3,253 GitHub person-records
+across 8 orgs collapsing to 3,250 people — the 3-row difference is exactly the
+three logins committing to both of Meta's orgs — plus 49 papers and 1,674
+paper-derived people. Re-running changes nothing. Every one of the 4,927 people
+carries at least one resolvable `ref_url`; zero orphans.
+
+**Known limitation, pinned rather than fixed: `unresolved_items` is a floor, not
+a census.** Only Meta and Mistral return the candidates they could not resolve;
+the other four papers harvesters drop failures internally and hand back only
+what worked. Observed in the live run — DeepMind lost two papers to a 403 and a
+404, Anthropic one to an unparseable byline, and none left a record anywhere. So
+a lab absent from `unresolved_items` has either lost nothing or cannot say, and
+today those look identical. Closing it means changing four harvesters' return
+signatures under `research/`, which is more surgery than this stage warrants;
+`tests/test_registry.py::TestUnresolvedReportingCoverage` pins the count at two
+of six so it cannot drift in either direction unnoticed.
+
+## D26 — Two kinds of alert, and the dedupe key is the actual design (2026-09-03)
+
+**Decision.** One `alerts` table, two `kind`s (`system` | `content`), pure-function
+rules, one dispatcher, and a dedupe key per rule chosen so that one *incident*
+produces one alert.
+
+**The kinds are not cosmetic.** CLAUDE.md requires system-failure alerting
+distinct from content alerting. `system` means the pipeline is broken and
+someone has to fix it; `content` means the pipeline is working and found
+something. They share a table because they share a lifecycle — raise, record,
+deliver — and nothing else. Every consumer filters on `kind`, and a degrading
+classifier is filed under `system`, not as a finding about the world.
+
+**The dedupe key is where the engineering is.** Rules re-run every firing, so the
+naive version alerts about the same dead source nightly and trains everyone to
+mute the channel — at which point the alerter is worse than nothing, because the
+real alert is now also muted. Each rule keys on what identifies the *episode*:
+
+- `source_down` keys on `last_success_at` — the moment the outage began, which
+  does not move while it continues. **Proven live: six consecutive firings
+  against a dead source produced exactly one alert.** A recovery followed by a
+  new failure produces a genuinely new key, so a real second incident is not
+  suppressed.
+- Content rules key on the item, so an article alerts once, not once per firing
+  for the three months it sits in the rolling window.
+- `budget_exceeded` keys on the run for a per-run breach and on the *month* for
+  a per-month one — the monthly ceiling stays breached until it resets, and
+  re-alerting on every subsequent run would be the same mistake.
+
+**Recording and delivery are separate, and only delivery is capped.** Evaluated
+live against the real corpus, the rules produce **135 content candidates** (16
+high-band articles, 119 holding impacts). Firing 135 notifications on the first
+run would guarantee the channel is ignored. Everything raised is recorded and
+visible in the app; delivery stops at `max_deliveries_per_run` (10) and the rest
+carry `delivery_error: suppressed`, so they read as deliberate rather than
+failed. Measured: `raised 135, delivered 10, suppressed 125`, then
+`duplicate 135` on the next dispatch.
+
+**Delivery failure is never fatal and never loses an alert.** The row is the
+record of truth; the channel is a courtesy. A dead webhook records the exception
+on the alert and the run continues. A `webhook` channel with no
+`ALERT_WEBHOOK_URL` raises rather than no-oping — a silent no-op looks exactly
+like a working alerter, which is the worst possible failure for this component.
+
+**Alternative rejected: alert on every failed source immediately.** Simpler, and
+it is what "the pipeline tells me when it breaks" sounds like it means. Rejected
+because a source down for one firing and back the next is exactly what the next
+run's own per-request retries handle (planning.md §4b) — alerting on it converts
+normal transient behaviour into a page.
+
+**Consequence — a design point the live test exposed, for the worker to settle.**
+Marking a run `failed` whenever any single source fails produces a `critical`
+`run_failed` alert on *every* firing while that source stays down, duplicating
+what `source_down` already reports once. Observed directly: three firings with
+one dead source gave three critical alerts plus one warning, for one problem.
+So `worker.py` must distinguish **"the run completed but a source failed"**
+(run `succeeded`; `source_down` owns it) from **"the run itself broke"** (run
+`failed`). The orchestrator already isolates sources precisely so a dead source
+is not a dead run; the run status has to say the same thing, or the alerting
+contradicts the design one layer down.
+
+**Consequence — the fan-out shows up here too.** 119 of the 135 content
+candidates are `holding_impact`, because one compute-buildout sentence reaches a
+dozen holdings (see docs/insights.md). The rule already collapses an article's
+several routes to one alert per holding, which is why it is 119 rather than 400+.
+Grouping by *event* rather than by holding is the remaining lever, and is a
+digest-design decision rather than an alerting one — not taken here.
+
+## D27 — What "failed" means for a firing, and a dedupe key that did not survive a rebuild (2026-09-03)
+
+**Decision.** `bitcap-worker` is one firing recorded as one `pipeline_runs` row,
+spanning ingestion (which commits per source) and the ETL (which stays atomic).
+`app.runs.tracked` gained an optional `run=` parameter so both phases record
+against the same row rather than opening two.
+
+**A dead source is not a dead run, and the exit code says so.** This is D26's
+open question, settled. The orchestrator isolates sources precisely so one
+broken lab does not cost the other six; if the run status contradicted that, the
+alerting would contradict the design one layer down — measured in D26, three
+firings with one dead source produced three `critical` `run_failed` alerts plus
+one `source_down` warning, for a single problem. So:
+
+- a firing that completes is `succeeded`, even with sources down, and exits `0`
+- `source_down` escalates a source after N consecutive firings, once per outage
+- non-zero exit means the *firing* broke, keeping the platform's own cron
+  alerting a signal rather than a nightly red light
+
+**Cadence is counted in firings, not dates**, so a platform that misses a night
+does not also skip a leg's turn. `(firing - 1) % cadence == 0`, which makes
+firing 1 run everything — a fresh deployment gets a full sweep instead of
+waiting six days for its first GitHub harvest.
+
+**The bug, and it is the interesting one.** Running the worker live, the second
+firing raised all 135 content alerts again with zero duplicates. The dedupe was
+correct; the *key* was not. Content rules keyed on `article_id`, and `articles`
+is a derived table — `load_refs` wipes the entire clean layer on every load and
+`transform` rebuilds it, handing every article a fresh autoincrement id. So each
+firing invented new dedupe keys and re-raised everything, which is exactly the
+"alerts nightly forever" failure the dedupe exists to prevent, reached by a
+different route and invisible to every unit test because none of them rebuilt
+the clean layer.
+
+Fixed by keying on the article **URL**, which survives the rebuild and is also
+the citation. `tests/test_alerts.py::TestDedupeKeysSurviveARebuild` reproduces
+the wipe-and-rebuild explicitly rather than trusting the id to be stable.
+Verified live: firing 2 raised 135, firing 3 raised 0 and deduplicated 135.
+
+**The general lesson, worth stating in the design doc.** Anything derived is not
+an identifier. This project deliberately rebuilds its clean layer wholesale so
+denormalised copies cannot drift (D-"the database layer"), and the cost of that
+choice is that no row id from it can be used as a stable key by anything
+outside. Two other things already key on derived ids — nothing else persists
+across runs today, but any future consumer of `connections` or `classifications`
+inherits the same trap.
+
+**Two smaller bugs found by the worker's own tests**, both of which would have
+produced a run that looks fine and is not: `firing_number()` was called after
+the firing's own row was committed and so counted itself, putting every firing
+one ahead; and a failure anywhere outside the ETL (the sink, the register load,
+the classifier) left the run row at `running` forever — a corpse the
+`run_failed` rule never matches and no operator can tell from a firing still in
+progress. `run_once` now closes the run out on any exception.
+
+**Alternative rejected: a second run row per phase.** Would avoid extending
+`tracked` and keeps each transaction's lifecycle self-contained. Rejected
+because "how many firings have there been" and "how many sources failed in the
+firing on the 3rd" both become joins across two row kinds, and the ops view
+would show every night twice.
+
+**Deployment.** One `Dockerfile`, two entrypoints — the cron overrides `CMD`
+with `bitcap-worker`, the web service with uvicorn. Building them separately
+would mean two Dockerfiles that must not drift. `render.yaml` declares the
+database, schedule and volume so the deployment is reviewable in the diff rather
+than clicked together in a dashboard. **The volume at `/app/research/docs` is
+not optional**: the per-URL caches are what make a re-run nearly free, and
+without it every firing starts cold and re-pays for LLM extraction. Verified by
+building the image and running the worker inside it against Postgres.
+
+## D28 — The operational surface, and a chart that had to choose its own axis (2026-09-03)
+
+**Decision.** Four read-only endpoints (`/api/runs`, `/api/alerts`,
+`/api/health`, `/api/drift`) and a separate `/ops` route, plus a system-alert
+badge on the dashboard header.
+
+**Why it exists at all.** `pipeline_runs`, `source_state`, `run_sources` and
+`alerts` were all being written and none of it was reachable outside psql. That
+makes "system-failure alerting distinct from content alerting" true in the
+schema and false in practice — a pipeline that reports its health into a table
+nobody opens is not reporting its health.
+
+**A separate route, not a tab.** The dashboard answers "what did we learn";
+`/ops` answers "can I trust what the dashboard is showing". Different readers,
+different question. It also leaves `frontend/app/page.js` as the single-file
+prototype it was deliberately built as, rather than growing three more views
+into a 700-line component.
+
+**The badge counts system alerts only.** Content alerts are the product
+*working* — 135 of them today. Putting those on a badge meant to be noticed
+would make it permanently red and therefore meaningless.
+
+**`run_sources` is joined into the run history, and that is the point.** D27
+made a firing that lost one source `succeeded`. Correct for the alerting, but it
+means the run row alone reports a green night on a broken source. `sources` and
+`sources_failed` are what make "the run completed" and "everything worked"
+separable in the UI, exactly as they are in the schema.
+
+**The chart made two decisions worth recording.**
+
+*It refuses to draw itself below two points.* There is one drift measurement
+today; a line through one point is a trend line implying history that does not
+exist. Under two measurements it renders the number and says how many there are.
+
+*Its y-axis starts at 0.5, not 0.* Agreement clusters near 1.0, so a full 0–1
+axis squashes every real movement into the top quarter — measured: 20px of
+travel in a 160px chart for a realistic series, versus 40px on the chosen
+domain. Truncating an axis is a genuine anti-pattern for bars, where area
+encodes magnitude; for a line, position encodes value and a labelled axis is
+honest. The domain extends *downward* if a measurement falls below it, so it
+never truncates data, only empty space.
+
+Colours are the existing brand tokens. Run through the palette validator they
+pass CVD separation (ΔE 20.1 deutan) and contrast (≥3:1) against the dark
+surface, and fail only the categorical lightness band — a check scoped to
+multi-series categorical palettes, which this is not: one series and one
+labelled threshold line.
+
+**Two bugs found by reading the code back rather than by a test.** The alerts
+filter built `/api/alerts&limit=40` — no `?` — whenever "all" was selected, so
+the unfiltered view would silently return the default instead. And the chart's
+multi-point branch had never rendered, since only one snapshot exists; its
+geometry was checked directly for NaN and viewBox overflow across four series
+shapes instead of being assumed.
+
+**Consequence.** `api/ops.py` is a separate read model from `api/queries.py` on
+purpose: that one builds the content view, this one answers whether the pipeline
+is healthy. Endpoint limits are clamped (max 200) — an unbounded `limit` on a
+shared database is a denial of service, and the existing `/api/items` returning
+the whole corpus unpaginated is already flagged in the frontend handoff as the
+thing to fix before the row count grows.
+
+## D29 — Independent review of the pipeline work: one CRITICAL, eleven MAJOR, all fixed (2026-09-03)
+
+Two `bitcap-reviewer` passes over the staged change set before commit — one on
+the pipeline core, one on the API/frontend/tests, both briefed to be adversarial
+and told that test quality mattered more than anything else. 20 findings. Every
+one is fixed, and the ones worth recording are below.
+
+**CRITICAL — `ensure_schema` failed on exactly the case its docstring claimed to
+handle.** It called `create_all` unconditionally *before* `command.upgrade`.
+`op.create_table` has no `checkfirst`, so pre-creating the tables a pending
+migration is about to add made that migration die on "table already exists" —
+on every firing, until a human stamped the database by hand. Reproduced by the
+reviewer against a throwaway sqlite file. The existing test only covered the
+never-migrated and at-head cases, so it stayed green. `create_all` now runs only
+when the database is unstamped, or *after* the upgrade on the rebuild path;
+`test_a_database_behind_head_upgrades_instead_of_colliding` upgrades to N-1 and
+then calls it.
+
+**The cost instrumentation had three holes, and cost is a graded section.**
+
+1. *Double counting.* The worker added the classifier's own figure to
+   `run.cost_usd`, then the ETL added `load_costs`' `new_usd` — the same money,
+   because the classifier writes those very rows to the log the loader reads. A
+   20-article firing would have reported $1.16 against $0.58 of real spend.
+   Fixed by making the ETL the single accounting point (assign, never
+   accumulate, as `cmd_load` already did) and moving both LLM stages before it
+   so their records are in the log by the time it reads.
+2. *Drift spend was never recorded.* `measure()` took `cost["usd"]` and threw the
+   record away, so ~$5/month of real, nightly spend never reached `raw_costs`
+   and the monthly ceiling could not see it. It now writes to the same
+   append-only log at the call site, per call.
+3. *The papers leg was outside the budget entirely.* Its harvesters do spend on
+   LLM byline extraction, but into per-lab logs that carry **no timestamp** — so
+   those rows cannot key into `raw_costs` (unique on url+at) without one being
+   invented. Rather than fabricate a field, the adapter reads its lab's log total
+   before and after the call and reports the delta, which lands on
+   `run_sources.cost_usd`, is charged to the `Budget`, and is summed into
+   `month_to_date` alongside the timestamped rows. Non-overlapping by
+   construction: classification and drift never write `run_sources.cost_usd`.
+   `render.yaml`'s claim that the papers leg was "bounded by budget.per_run_usd"
+   had been false.
+
+**`SystemExit` walked through both isolation layers.** `harvest_github.load_token`
+calls `sys.exit()` when `GITHUB_TOKEN` is unset — and `SystemExit` derives from
+`BaseException`, so `except Exception` caught it in neither the orchestrator nor
+the worker. The result was the worst combination available: the firing aborted
+mid-ingest, the run stayed `running` forever, `record_failure` was never reached
+so `consecutive_failures` stayed 0, and *neither* `run_failed` (which matches
+`failed`) nor `source_down` could ever see it. Both layers now catch it;
+`KeyboardInterrupt` deliberately still propagates, because ctrl-C means stop.
+
+**A confirmed alias added after first load did nothing.** `_person` resolved on
+the identity row before consulting the alias map, so once both spellings existed
+the merge was inert — and that is the operator's *only* entity-resolution
+control ("notice a duplicate, confirm it, re-run"). Reproduced by the reviewer.
+Merging is now retroactive: `_absorb` moves identities and evidence onto the
+canonical person, widens the seen-span, and deletes the duplicate.
+
+**The batch classification path enforced no ceiling at all** while still
+recording a budget snapshot on the run — a control that reported itself as
+working. `classification.batch: true` is a one-line config change. A batch is
+one submission, so the ceiling now bounds the *size of the submission* against
+the remaining budget (at half rate, since batch is half price) instead of being
+applied after the fact.
+
+**Two new config files had no validator**, and every value in them fails
+silently: `content_band: High` raises **zero content alerts forever**, a mistyped
+`cadence` key means that leg never runs, and a mistyped `url_field` makes every
+paper resolve to a null citation and be dropped while the source still reports
+SUCCEEDED with a healthy `items_seen`. `check_pipeline` and
+`check_papers_sources` now cover both, and their tests assert each named typo is
+caught *and* that the committed files pass.
+
+**The drift alert re-fired every firing.** It keyed on the snapshot id, and a
+snapshot is written every run — 14 warnings for a fortnight of one degradation,
+the exact failure `source_down` avoids. Now keyed on the last snapshot that was
+*above* the floor, which is the episode's start and the direct analogue of
+`last_success_at`.
+
+**The health page lied when the backend was down.** `sources_failing` was read
+with `|| []`, so a failed `/api/health` rendered a calm blue `0` and the words
+"all healthy" — on the one page whose job is to be trusted. And a 500 has a
+valid JSON body, so `r.json()` *resolved*, `.catch` never fired, and the page
+then crashed on `runs.map` and went blank. Both fixed, plus the API now calls
+`ensure_schema` at startup: a fresh Render deploy provisions an empty database,
+so `/api/status` would have 500'd and failed the platform health check before
+the first cron ever fired.
+
+**One of my tests was tautological and the reviewer proved it.** `test_limits_are_clamped`
+asserted only `status_code == 200`; the reviewer re-registered the endpoint with
+the clamp removed and both assertions still passed. It now asserts row counts,
+and every listing endpoint is covered. Two other assertions that could not fail
+were removed. The migration/model comparison also only compared columns, so a
+`UniqueConstraint` present in a model and missing from its migration was a false
+green — and `alerts.dedupe_key`'s uniqueness is what the whole alerting design
+rests on; it now compares unique constraints and foreign keys too.
+
+**My own tests corrupted a committed artifact.** The new drift tests stubbed
+`sa.classify` to return `{"usd": 0.01}` with no `url`/`at`, and `_record_cost`
+appended that to the *real* `announcement_cost.json` — after which `load_costs`
+crashed on it. Three fixes, because one was not enough: the drift tests now
+redirect `COST` to a temp file (autouse), `_record_cost` refuses to write a
+record that cannot be keyed, and `load_costs` counts and reports a malformed row
+rather than dying on it.
+
+**What the reviews found working**, recorded because it is the evidence the
+design decisions were right: `Budget`'s in-flight accounting is sound under
+fan-out with no leak on the exception path; `tracked(run=...)` keeps correct
+transaction semantics for both callers; `drop_all` preserving `OPS_TABLES`;
+`run_history`'s two-query join; and `TestDedupeKeysSurviveARebuild` /
+`test_the_uncached_path_is_used`, both of which encode a measured production
+failure as a property.
+
+**Two limitations both reviewers named and neither I nor they resolved.** Every
+test runs on sqlite while production is Postgres and Alembic — the CRITICAL above
+is a concrete instance of that gap biting, and a `JSON` vs `JSONB` divergence
+would still pass green. And on a cold cron container `announcements.json` resets
+to the image copy, so an article pending in `raw_articles` but absent from the
+reset corpus would never be classified and no rule alerts on that shape. Both
+are recorded rather than fixed.

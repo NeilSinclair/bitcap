@@ -54,6 +54,10 @@ export default function Page() {
 
   const [items, setItems] = useState([]);
   const [runStatus, setRunStatus] = useState(null);
+  // Count of raised system alerts, for the header badge. Content alerts are the
+  // product working; system alerts mean it is broken, and only those belong on
+  // a badge that is meant to be noticed.
+  const [systemAlerts, setSystemAlerts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -71,6 +75,16 @@ export default function Page() {
         setError(String(e));
         setLoading(false);
       });
+
+    // Separate and failure-tolerant: a badge that cannot load must not stop the
+    // dashboard rendering the corpus.
+    // Reads the windowed count from /api/health rather than pulling up to 200
+    // full alert bodies to render one integer — and an all-time count could
+    // never fall back to zero once anything had ever broken.
+    fetch(`${API}/api/health`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((h) => setSystemAlerts(h?.recent_system_alerts ?? 0))
+      .catch(() => setSystemAlerts(0));
   }, []);
 
   const decorated = useMemo(() => {
@@ -217,9 +231,15 @@ export default function Page() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--muted)" }}>
-              <span style={{ width: 6, height: 6, background: ACCENT, display: "inline-block" }} />
+              <span style={{ width: 6, height: 6, background: runStatus?.status === "failed" ? NEGATIVE : ACCENT, display: "inline-block" }} />
               {loading ? "Loading…" : lastRunLabel}
             </div>
+            {/* The health surface is a link rather than a tab: the dashboard
+                answers "what did we learn", /ops answers "can I trust it". */}
+            <a className="btn btn-ghost" href="/ops" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
+              Health
+              {systemAlerts ? <span style={{ fontSize: 11 }}>{systemAlerts}</span> : null}
+            </a>
             <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={() => setScreen("login")}>Sign out</button>
           </div>
         </div>

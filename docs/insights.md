@@ -35,3 +35,47 @@ BIT look like relentless sellers of their top names; over twelve they are net
 accumulators of the same names — IREN shares +57%, Amazon +479%, TSMC +9,579%.
 They build for years, then cut hard once a name goes vertical. Any scoring input
 derived from position changes has to state its horizon or it is meaningless.
+
+**Four frontier labs were invisible to the product until the ceiling replaced
+the off-switch.** xAI, Google DeepMind, Mistral and Meta AI had their
+announcements fetched months ago and sitting in the corpus — 61 articles — but
+none were ever classified, because scoring was deactivated wholesale (D10) as a
+guard against an uncontrolled LLM run. The register said seven labs; the
+dashboard could only see three. Classifying them cost $1.08 and moved the
+corpus from 175 scored articles to 236, mechanism tags from 101 to 141, and
+holding connections from 612 to **809**. The lesson is not about the labs — it
+is that a safety switch with no bounded alternative quietly becomes a coverage
+gap that looks like a completed register.
+
+**One xAI announcement fans out to seven holdings on a single sentence.**
+"Grok 4.5 was trained across tens of thousands of NVIDIA GB300 GPUs" fires
+`training_compute_up` at strength 0.67 against NVIDIA, TSMC, Micron, Marvell,
+Amazon, IREN and TeraWulf simultaneously — the accelerator, the foundry, the
+memory, the interconnect, the cloud and two power/datacenter names, each with
+the same verbatim quote as evidence. That is the mapping layer doing exactly
+what it was built for: a private lab's model release priced through to seven
+public positions. It is also the clearest noise risk in the product — one
+sentence producing seven digest rows — and the argument for grouping a digest by
+*event* rather than by connection.
+
+**The register found four possible researcher moves without being asked to.**
+Building the people register surfaced four names appearing on papers at two
+different labs inside the same three-month window — Jeffrey Wu (OpenAI and
+Anthropic), Yonglong Tian (OpenAI and Google DeepMind), Jason Chen (OpenAI and
+Meta AI), Yao Li (OpenAI and DeepSeek). Researcher departures are what the brief
+calls top-tier signal, and nothing in the system produced them before. They fall
+out of the register precisely *because* it refuses to merge people across labs:
+had the design silently glued matching names together, each of these would have
+become one tidy row and the signal would have been destroyed by the cleanup.
+They are candidates, not confirmed moves — same name is not same person — but a
+candidate list of four is a tractable thing to check by hand.
+
+**The people register is 4,927 people and most of them do not work at the labs.**
+Of 6,415 evidence rows, 1,996 are `unknown` — a GitHub account that touched a
+lab's repo with no evidence of employment. `shoemoney` has one or two commits
+across five different labs; `winklemad` the same. Drive-by open-source
+contributors, not staff. Only 630 rows are `confirmed` (a commit from a
+lab-owned email domain) and 583 `confirmed_org_wide` (a parent-company domain
+like @google.com, which covers all of Alphabet). The lesson for the design doc:
+a raw contributor count is nearly meaningless as a measure of a lab, and any
+figure quoted has to carry its evidence tier or it is just repo popularity.

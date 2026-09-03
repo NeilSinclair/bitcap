@@ -279,6 +279,123 @@ def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     return errors
 
 
+def check_pipeline(root: Path) -> list[str]:
+    """Validate pipeline.yaml — the file that decides what the cron spends.
+
+    Every value here fails *silently* when wrong, because each is read with a
+    `.get(..., default)` or fed straight into a comparison:
+
+    * `content_band: High` (capitalised) makes the band filter match nothing, so
+      **zero content alerts are raised, forever**, with no error anywhere.
+    * a mistyped `cadence` key means that leg never runs, and the register
+      quietly covers less than anyone thinks.
+    * a `channel` with no delivery function, or a `budget` that is absent or
+      non-numeric, is not discovered until a cron fires unattended.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "pipeline.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+
+    budget = doc.get("budget") or {}
+    for key in ("per_run_usd", "per_month_usd"):
+        value = budget.get(key)
+        if not isinstance(value, (int, float)) or value <= 0:
+            errors.append(f"pipeline.yaml/budget: '{key}' must be a positive number")
+    if all(isinstance(budget.get(k), (int, float)) for k in ("per_run_usd", "per_month_usd")):
+        if budget["per_month_usd"] < budget["per_run_usd"]:
+            errors.append(
+                "pipeline.yaml/budget: per_month_usd is below per_run_usd, so a single "
+                "run can never complete inside the monthly ceiling"
+            )
+
+    legs = {"announcements", "papers", "github"}
+    for key, value in (doc.get("cadence") or {}).items():
+        if key not in legs | {"drift"}:
+            errors.append(
+                f"pipeline.yaml/cadence: '{key}' is not a leg {sorted(legs)} or 'drift'"
+            )
+        if not isinstance(value, int) or value < 1:
+            errors.append(f"pipeline.yaml/cadence/{key}: must be an integer >= 1")
+
+    alerts = doc.get("alerts") or {}
+    bands = ("none", "low", "medium", "high")
+    if alerts.get("content_band") not in bands:
+        errors.append(
+            f"pipeline.yaml/alerts: content_band {alerts.get('content_band')!r} is not "
+            f"one of {list(bands)} -- a mismatch silently raises no content alerts"
+        )
+    if alerts.get("channel") not in ("stdout", "webhook"):
+        errors.append(
+            f"pipeline.yaml/alerts: channel {alerts.get('channel')!r} is not stdout|webhook"
+        )
+    floor = alerts.get("drift_agreement_floor")
+    if not isinstance(floor, (int, float)) or not 0 <= floor <= 1:
+        errors.append("pipeline.yaml/alerts: drift_agreement_floor must be between 0 and 1")
+    for key in ("source_down_runs", "max_deliveries_per_run"):
+        if key in alerts and (not isinstance(alerts[key], int) or alerts[key] < 1):
+            errors.append(f"pipeline.yaml/alerts/{key}: must be an integer >= 1")
+
+    classification = doc.get("classification") or {}
+    if not classification.get("model"):
+        errors.append("pipeline.yaml/classification: no 'model'")
+    if not isinstance(classification.get("workers", 1), int) or classification.get("workers", 1) < 1:
+        errors.append("pipeline.yaml/classification: workers must be an integer >= 1")
+    return errors
+
+
+def check_papers_sources(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Validate papers_sources.yaml — the papers register.
+
+    The silent failure this catches: a mistyped `url_field`. Every paper then
+    resolves to `url: None`, the register drops the lot as `skipped_no_url`, and
+    the source is still recorded SUCCEEDED with a healthy `items_seen`. A whole
+    lab's papers and people vanish and the run looks fine.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids in sources.yaml.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "papers_sources.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    url_fields = {"url", "meta_url", "announcement_url"}
+    returns = {"papers", "papers_and_unresolved"}
+
+    for entry in doc.get("labs", []):
+        lab = entry.get("lab", "?")
+        if lab not in tracked_labs:
+            errors.append(f"papers_sources.yaml/{lab}: lab not in sources.yaml")
+        if entry.get("url_field") not in url_fields:
+            errors.append(
+                f"papers_sources.yaml/{lab}: url_field {entry.get('url_field')!r} not in "
+                f"{sorted(url_fields)} -- every paper would resolve to a null citation "
+                "and be dropped while the source still reports success"
+            )
+        if entry.get("returns") not in returns:
+            errors.append(f"papers_sources.yaml/{lab}: returns must be one of {sorted(returns)}")
+        if entry.get("enabled", True):
+            if not entry.get("module") or not entry.get("entry"):
+                errors.append(f"papers_sources.yaml/{lab}: enabled but names no module/entry")
+        elif not (entry.get("notes") or "").strip():
+            # A lab that is off must say why, or a deliberate exclusion is
+            # indistinguishable from an oversight.
+            errors.append(f"papers_sources.yaml/{lab}: disabled with no note explaining why")
+    return errors
+
+
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
@@ -367,11 +484,15 @@ def main() -> int:
     prac_errors, prac_warnings = check_practices(ROOT, valid_ids)
     src_errors = check_sources(ROOT)
     gh_errors = check_github_sources(ROOT, tracked_labs)
-    for e in reg_errors + prac_errors + src_errors + gh_errors:
+    pipe_errors = check_pipeline(ROOT)
+    papers_errors = check_papers_sources(ROOT, tracked_labs)
+    new_errors = (reg_errors + prac_errors + src_errors + gh_errors
+                  + pipe_errors + papers_errors)
+    for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:
         print(f"warn    {w}")
-    errors += reg_errors + prac_errors + src_errors + gh_errors
+    errors += new_errors
     warnings += prac_warnings
 
     print(f"\n{len(seen)} companies described, {len(errors)} errors, "

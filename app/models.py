@@ -73,6 +73,96 @@ class GoldSnapshot(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
+class RunSource(Base):
+    """One (leg, source) attempt inside one run.
+
+    `pipeline_runs` is the summary; this is the detail behind it. A run that
+    ingested six sources and lost one says so here, which is what makes
+    "the run succeeded" and "every source succeeded" separable claims.
+    """
+
+    __tablename__ = "run_sources"
+    __table_args__ = (sa.UniqueConstraint("run_id", "leg", "source_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[int] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+    leg: Mapped[str]  # announcements | papers | github
+    source_id: Mapped[str]
+    status: Mapped[str]  # succeeded | failed | skipped
+    items_seen: Mapped[int] = mapped_column(default=0)
+    items_new: Mapped[int] = mapped_column(default=0)
+    cost_usd: Mapped[float] = mapped_column(default=0.0)
+    duration_s: Mapped[float] = mapped_column(default=0.0)
+    error: Mapped[str | None]
+
+
+class SourceState(Base):
+    """Cross-run state for one ingestion source.
+
+    Per-request backoff answers a single bad request; it is the wrong tool for a
+    source that is down for hours (docs/planning.md §4b). This table is the
+    slower layer above it: `consecutive_failures` makes "down for N scheduled
+    runs" a query rather than a guess, and `watermark` is what lets a fetch be
+    incremental instead of re-deriving its window every time.
+
+    `disabled` is a manual kill switch — an operator turning a source off is a
+    different state from a source that keeps failing, and the two must not be
+    confused in the alerting.
+    """
+
+    __tablename__ = "source_state"
+
+    leg: Mapped[str] = mapped_column(primary_key=True)
+    source_id: Mapped[str] = mapped_column(primary_key=True)
+    last_attempt_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+    last_success_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+    consecutive_failures: Mapped[int] = mapped_column(default=0)
+    watermark: Mapped[dict] = mapped_column(JSONVariant, default=dict)
+    last_error: Mapped[str | None]
+    disabled: Mapped[bool] = mapped_column(default=False)
+
+
+class Alert(Base):
+    """One raised alert, of either kind, whether or not delivery succeeded.
+
+    `kind` is the distinction CLAUDE.md requires: `system` means the pipeline
+    broke, `content` means the pipeline found something. They share a table
+    because they share a lifecycle (raise, deliver, record), not because they
+    are the same thing — every consumer filters on `kind`.
+
+    `dedupe_key` is what stops a week-long outage alerting on every firing. Each
+    rule owns its key and builds it from whatever identifies the *episode* — the
+    moment an outage began, the item an alert is about, the month a ceiling was
+    breached in — never from the check itself, which repeats every run. The
+    unique constraint is what actually enforces it.
+    """
+
+    __tablename__ = "alerts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str]  # system | content
+    rule: Mapped[str]
+    severity: Mapped[str]  # info | warning | critical
+    subject: Mapped[str]
+    body: Mapped[str]
+    payload: Mapped[dict] = mapped_column(JSONVariant, default=dict)
+    dedupe_key: Mapped[str] = mapped_column(unique=True)
+    created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+    sent_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+    delivery_error: Mapped[str | None]
+
+
+# Tables that survive a rebuild. Everything else in this schema is a pure
+# function of committed files, so dropping it loses nothing; these five are not
+# — run history, per-source failure counts, raised alerts and drift snapshots
+# are only ever produced by a run that actually happened. `rebuild` dropping
+# `pipeline_runs` was a real (if quiet) loss of history before this existed.
+OPS_TABLES = frozenset(
+    {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts"}
+)
+
+
 # --------------------------------------------------------------------------
 # Raw layer
 # --------------------------------------------------------------------------
@@ -122,6 +212,42 @@ class RawCost(Base):
     usd: Mapped[float]
     seconds: Mapped[float]
     at: Mapped[str]  # ISO string as recorded; precision is the log's, not ours
+    load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
+class RawPaper(Base):
+    """One harvested paper, payload verbatim from a `<lab>_contributors.json`."""
+
+    __tablename__ = "raw_papers"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(unique=True)  # the lab's own page, not arXiv
+    lab: Mapped[str]
+    payload: Mapped[dict] = mapped_column(JSONVariant)
+    content_hash: Mapped[str]
+    first_loaded_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
+class RawGithubPerson(Base):
+    """One person's aggregate for one org, verbatim from `aggregate_github`.
+
+    Keyed on (org, login) rather than login alone: a lab can own more than one
+    org, and the same login's contribution differs per org.
+    """
+
+    __tablename__ = "raw_github_people"
+    __table_args__ = (sa.UniqueConstraint("org", "login"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    org: Mapped[str]
+    login: Mapped[str]
+    lab: Mapped[str]
+    payload: Mapped[dict] = mapped_column(JSONVariant)
+    content_hash: Mapped[str]
+    first_loaded_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
     load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
@@ -336,6 +462,118 @@ class ArticlePractice(Base):
     quote: Mapped[str]
     quote_repaired: Mapped[bool] = mapped_column(default=False)
     ordinal: Mapped[int]
+
+
+class Person(Base):
+    """One person at one lab.
+
+    **Scoped to a lab, deliberately.** "Same name, different person" is a named
+    failure mode for this project, and two researchers called Wei Zhang at
+    DeepSeek and at DeepMind are two people until something says otherwise.
+    Merging them across labs is a claim that needs evidence, so it is recorded
+    as a proposal rather than performed silently — the same discipline
+    `config/aliases.yaml` already applies within a lab.
+
+    `lab` is not a foreign key, for the reason `HoldingLabExposure` gives: a
+    person harvested from a lab later dropped from `sources.yaml` should survive
+    as a record, not block the load.
+
+    `source_kind` is part of the key, not decoration. Without it a GitHub login
+    and a paper byline that happen to be the same string ("Ada") collapse into
+    one person — the cross-leg guess this register explicitly refuses to make.
+    Identity is resolved through :class:`PersonIdentity`, so the union of a
+    person's leg-scoped rows is an evidence-based step, not a string match.
+    """
+
+    __tablename__ = "people"
+    __table_args__ = (sa.UniqueConstraint("lab", "source_kind", "canonical_name"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    lab: Mapped[str]
+    source_kind: Mapped[str]  # paper | github
+    canonical_name: Mapped[str]
+    first_seen: Mapped[date | None]
+    last_seen: Mapped[date | None]
+    created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+
+
+class PersonIdentity(Base):
+    """One identifier that resolves to a person — the entity-resolution surface.
+
+    Unique on (kind, value, lab), not (kind, value). A GitHub login really is
+    globally one account, so the stricter key would correctly merge someone
+    committing to two of *one* lab's orgs — but it would also merge someone
+    committing to two *different* labs' orgs into a single person, which is a
+    cross-lab employment claim this register is not entitled to make from commit
+    data alone. Including `lab` keeps the common case right and refuses the
+    interesting one, which is the correct direction to be wrong in.
+    """
+
+    __tablename__ = "person_identity"
+    __table_args__ = (sa.UniqueConstraint("kind", "value", "lab"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    person_id: Mapped[int] = mapped_column(sa.ForeignKey("people.id"))
+    kind: Mapped[str]  # paper_name | github_login
+    value: Mapped[str]
+    lab: Mapped[str]
+
+
+class PersonEvidence(Base):
+    """What proves a person exists, and how strongly they are tied to the lab.
+
+    `ref_url` is required and is the project's "no citation, no insight" rule
+    applied to people: a person with no resolvable source is not recorded.
+
+    `tier` keeps evidence strengths apart that must never be conflated:
+
+    * ``confirmed`` — a commit from a lab-owned email domain.
+    * ``confirmed_org_wide`` — a parent-company domain (@google.com covers all
+      of Alphabet, not DeepMind specifically), so real but weaker.
+    * ``handle`` — matched the lab's work-account naming convention.
+    * ``vendor`` — a real person, but a contractor rather than lab staff.
+    * ``model_asserted`` — an LLM read the affiliation off a paper's byline.
+      Kept structurally separate from every `confirmed` tier because of the hard
+      rule in planning.md §11: an LLM must never populate an employment field
+      unchecked. On Anthropic it asserted fellowship status for four people
+      whose pages state no affiliation at all. This tier is a lead, not a fact.
+    * ``unknown`` — seen, unattributed.
+    """
+
+    __tablename__ = "person_evidence"
+    __table_args__ = (sa.UniqueConstraint("person_id", "source_kind", "ref_url"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    person_id: Mapped[int] = mapped_column(sa.ForeignKey("people.id"))
+    source_kind: Mapped[str]  # paper | github
+    ref_url: Mapped[str]
+    observed_on: Mapped[date | None]
+    tier: Mapped[str]
+    payload: Mapped[dict] = mapped_column(JSONVariant, default=dict)
+
+
+class UnresolvedItem(Base):
+    """Something a source found and could not resolve, kept with its reason.
+
+    Every harvester already records these rather than dropping them
+    (docs/handover.md §5). Giving them a table makes that structural instead of
+    conventional: a register whose gaps are invisible reads as complete, and
+    "we found 27 Meta candidates and resolved 6" is a materially different claim
+    from "Meta published 6 papers".
+    """
+
+    __tablename__ = "unresolved_items"
+    __table_args__ = (sa.UniqueConstraint("leg", "source_id", "identifier"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    leg: Mapped[str]
+    source_id: Mapped[str]
+    kind: Mapped[str]  # paper | person
+    identifier: Mapped[str]  # title, url or name — whatever the source had
+    reason: Mapped[str]
+    first_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
 class Connection(Base):

@@ -11,15 +11,13 @@ Commands:
 from __future__ import annotations
 
 import argparse
-import os
 import sys
-from pathlib import Path
 
 from sqlalchemy import func, select
 
 from app import models as m
 from app.connect import connect as run_connect
-from app.db import create_all, drop_all, get_engine, get_session
+from app.db import drop_all, ensure_schema, get_engine, get_session, load_env
 from app.load_raw import load_articles, load_classifications, load_costs
 from app.load_refs import load_refs
 from app.runs import tracked, watermarks
@@ -28,21 +26,7 @@ from app.transform import transform
 PROMPT_VERSION = "v7"
 
 
-def _load_env() -> None:
-    """Read .env for DATABASE_URL without overriding the environment.
-
-    Deliberately duplicates providers.load_env rather than importing it: that
-    module lives under research/, is not shipped in the wheel, and pulls in the
-    LLM SDKs. `bitcap-db status` should not need an API client to read a
-    database.
-    """
-    path = Path(__file__).parent.parent / ".env"
-    if not path.exists():
-        return
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if line.strip() and not line.startswith("#") and "=" in line:
-            key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+_load_env = load_env  # kept as a name here; the implementation lives in app.db
 
 
 def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
@@ -121,11 +105,11 @@ def main() -> int:
 
     if args.command == "rebuild":
         drop_all(engine)
-        create_all(engine)
+        ensure_schema(engine)
         cmd_load(session, args.prompt, kind="rebuild")
         cmd_status(session)
     elif args.command == "load":
-        create_all(engine)
+        ensure_schema(engine)
         cmd_load(session, args.prompt)
     elif args.command == "connect":
         cmd_connect(session, args.prompt)
