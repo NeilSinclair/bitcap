@@ -54,17 +54,51 @@ def _sqlite_foreign_keys(dbapi_connection, connection_record) -> None:
         dbapi_connection.execute("PRAGMA foreign_keys=ON")
 
 
+# Bare Postgres schemes, and what SQLAlchemy does with them. `postgresql://`
+# resolves to psycopg2, which is not a dependency of this project and never has
+# been — `pyproject.toml` pins psycopg 3. `postgres://` SQLAlchemy 2.0 refuses
+# outright. Managed providers hand out one or the other.
+_BARE_POSTGRES = ("postgres://", "postgresql://")
+_DRIVER = "postgresql+psycopg://"
+
+
+def normalise_url(url: str) -> str:
+    """Point a bare Postgres URL at the driver that is actually installed.
+
+    Render's `fromDatabase` (and every other managed Postgres) supplies a
+    connection string with no driver in it. SQLAlchemy then picks its default,
+    psycopg2, and the container dies at first connect with
+    `ModuleNotFoundError: No module named 'psycopg2'` — a deploy-time failure
+    that nothing local reproduces, because a developer following the README
+    types `postgresql+psycopg://` by hand and never sees it.
+
+    A URL that names its own driver is left alone: `postgresql+psycopg2://`
+    from someone who installed psycopg2 deliberately still means that, and so
+    does `+asyncpg`. Only the ambiguous case is resolved.
+
+    Args:
+        url: Any SQLAlchemy URL. sqlite and everything else pass through.
+
+    Returns:
+        The URL, with a bare Postgres scheme replaced by an explicit psycopg 3 one.
+    """
+    for scheme in _BARE_POSTGRES:
+        if url.startswith(scheme):
+            return _DRIVER + url[len(scheme):]
+    return url
+
+
 def database_url() -> str:
     """Resolve the database URL.
 
     Returns:
         ``DATABASE_URL`` from the environment (loaded from .env by the caller),
-        falling back to a local sqlite file with a printed note — silence here
-        would look like Postgres and not be.
+        normalised onto psycopg 3, falling back to a local sqlite file with a
+        printed note — silence here would look like Postgres and not be.
     """
     url = os.environ.get("DATABASE_URL")
     if url:
-        return url
+        return normalise_url(url)
     print(f"DATABASE_URL not set; using {DEFAULT_URL}", file=sys.stderr)
     return DEFAULT_URL
 
@@ -78,7 +112,7 @@ def get_engine(url: str | None = None) -> Engine:
     Returns:
         SQLAlchemy engine.
     """
-    return create_engine(url or database_url())
+    return create_engine(normalise_url(url) if url else database_url())
 
 
 def get_session(engine: Engine) -> Session:

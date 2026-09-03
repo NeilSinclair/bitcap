@@ -3561,3 +3561,33 @@ Consequence: the announcement disk cache stops mattering in production, because
 production stops asking for pages it already has. It stays useful locally, where
 re-running a harvester over a window on purpose is a normal thing to do. Running
 any harvester as a script passes no skip set and still refetches everything.
+
+## D34 — A managed Postgres URL names no driver, and SQLAlchemy's default is one we do not install (2026-09-03)
+
+The API died on its first Render deploy with `ModuleNotFoundError: No module
+named 'psycopg2'`, at `get_engine()`, before serving a request.
+
+`pyproject.toml` pins `psycopg[binary]>=3.2` and always has. The README tells a
+developer to write `postgresql+psycopg://`, so every local run names the driver
+explicitly and works. Render's `fromDatabase` supplies a bare `postgresql://`,
+SQLAlchemy resolves that to its historical default of psycopg2, and nothing
+local reproduces it — the one environment that hits the bug is the one nobody
+can run before deploying.
+
+`normalise_url` rewrites a bare `postgres://` or `postgresql://` onto
+`postgresql+psycopg://`, in `app.db`, which is the single place both paths to an
+engine already pass through (`get_engine`, and `alembic/env.py` via
+`database_url`). A URL that names its own driver is left alone: `+psycopg2` from
+someone who installed it deliberately still means that, and so does `+asyncpg`.
+Only the ambiguous case is decided.
+
+Rejected: setting `DATABASE_URL` by hand on the service with the driver spliced
+in. It works, and it silently unpicks `fromDatabase` — the password stops
+rotating with the database and the blueprint stops describing the deployment.
+Also rejected: adding psycopg2 to the dependencies, which would make the default
+work by installing a second Postgres driver nothing else uses.
+
+The gap this exposes is that no test ever fed the code a URL in the shape a
+platform actually emits. `tests/test_db.py` now does, including asserting the
+resolved dialect is psycopg — `create_engine` resolves the DBAPI eagerly, so a
+regression fails in CI rather than on deploy.
