@@ -65,3 +65,19 @@ services:
           property: connectionString
       - key: FRONTEND_ORIGIN
         sync: false
+
+  # The dashboard. A static site, not a Node service: both routes are client
+  # components that fetch the API in the browser, so `next build` with
+  # output: "export" produces a folder of files with no server to keep warm.
+  #
+  # NEXT_PUBLIC_API_URL is inlined into the bundle at build time, so changing
+  # it requires a rebuild, not a restart. Render triggers one on the change.
+  - type: web
+    name: bitcap-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

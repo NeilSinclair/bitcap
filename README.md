@@ -115,8 +115,10 @@ nightly red light.
 ## Deploying
 
 One image, two entrypoints — the cron job runs `bitcap-worker`, the web service
-runs uvicorn. [`render.yaml`](render.yaml) declares the database and the
-schedule; Railway needs the same two pieces configured in its UI.
+runs uvicorn. The dashboard is neither: it exports to static files and is served
+without a server of its own. [`render.yaml`](render.yaml) declares the database,
+the schedule and both web services; Railway needs the same pieces configured in
+its UI.
 
 ```bash
 docker build -t bitcap .
@@ -150,6 +152,15 @@ Secrets, none of which are in the repo:
 | `ANTHROPIC_API_KEY` | classification and drift only — ingestion needs no key |
 | `GITHUB_TOKEN` | the GitHub leg |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
+
+The two non-secret URLs are a pair, and each is only knowable once the other
+service exists. Deploy the blueprint, then set them from the URLs Render
+assigns and let both services redeploy:
+
+| Variable | On | Value |
+|---|---|---|
+| `FRONTEND_ORIGIN` | `bitcap-api` | the static site's URL — the API's CORS allow-list. Must not be blank: an empty value overrides the `http://localhost:3000` default and blocks every origin. |
+| `NEXT_PUBLIC_API_URL` | `bitcap-web` | the API's URL. Inlined into the bundle at build time, so a change rebuilds rather than restarts. |
 
 ## Running the web app
 

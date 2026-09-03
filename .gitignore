@@ -144,6 +144,7 @@ tempCodeRunnerFile.py
 # Frontend (Next.js)
 frontend/node_modules/
 frontend/.next/
+frontend/out/
 frontend/.env.local
 
 # Per-URL fetch caches: saved copies of pages already downloaded, ~250 MB and
