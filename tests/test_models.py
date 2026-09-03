@@ -41,6 +41,35 @@ def test_every_table_round_trips(session):
         m.RefPractice(id="prac", label="P", description="d",
                       dimensions={"coding": "x"}, config_version=2),
         m.GoldSnapshot(prompt_version="v7", metrics={"f1": 0.88}, run_id=run.id),
+        m.RunSource(run_id=run.id, leg="announcements", source_id="openai",
+                    status="succeeded", items_seen=12, items_new=3, cost_usd=0.04,
+                    duration_s=2.5),
+        m.SourceState(leg="announcements", source_id="openai",
+                      watermark={"max_published": "2026-08-31"}),
+        m.Alert(kind="system", rule="source_down", severity="warning",
+                subject="openai down", body="3 consecutive runs",
+                payload={"consecutive_failures": 3},
+                dedupe_key="source_down:announcements:openai:2026-09-03",
+                run_id=run.id),
+        m.RawPaper(url="https://deepmind.google/p/1", lab="openai",
+                   payload={"title": "p"}, content_hash="h", load_run_id=run.id),
+        m.RawGithubPerson(org="openai", login="ada", lab="openai",
+                          payload={"commits": 3}, content_hash="h", load_run_id=run.id),
+        m.UnresolvedItem(leg="papers", source_id="mistral", kind="paper",
+                         identifier="Some announcement", reason="no arxiv match",
+                         run_id=run.id),
+    ])
+    person = m.Person(lab="openai", source_kind="paper", canonical_name="Ada Lovelace",
+                      first_seen=date(2026, 3, 1), last_seen=date(2026, 8, 26))
+    session.add(person)
+    session.flush()
+    session.add_all([
+        m.PersonIdentity(person_id=person.id, kind="paper_name", value="Ada Lovelace",
+                         lab="openai"),
+        m.PersonEvidence(person_id=person.id, source_kind="paper",
+                         ref_url="https://deepmind.google/p/1",
+                         observed_on=date(2026, 8, 26), tier="model_asserted",
+                         payload={"affiliations": ["OpenAI"]}),
     ])
     session.add(m.Holding(isin="US1", name="Co", custodian_name="Co Inc. Reg. Shs",
                           aliases=["CoCorp"], ticker="CO", weight_pct=1.0,
@@ -84,6 +113,8 @@ def test_every_table_round_trips(session):
     assert session.scalars(select(m.RefPractice)).one().dimensions == {"coding": "x"}
     assert session.scalars(select(m.Classification)).one().dropped_tags == ["mechanisms:x"]
     assert session.scalars(select(m.ArticlePractice)).one().dimensions == ["coding"]
+    assert session.scalars(select(m.SourceState)).one().watermark == {"max_published": "2026-08-31"}
+    assert session.scalars(select(m.Alert)).one().payload == {"consecutive_failures": 3}
     for table in m.Base.metadata.tables.values():
         assert session.execute(select(table).limit(1)).first() is not None, table.name
 

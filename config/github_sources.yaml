@@ -18,6 +18,15 @@
 # commit email. Omit or set null where no convention is known -- an absent
 # suffix must yield zero merges, never a guess.
 #
+# `company_pattern` is a regex matched (case-insensitively) against the
+# free-text GitHub profile `company` field by enrich_github.py. It is the
+# second employment signal, catching staff who commit under a personal
+# address. People write this field by hand -- "Anthropic", "@anthropic",
+# "Anthropic PBC" all occur -- so the pattern is deliberately loose, but must
+# still be anchored enough not to match an unrelated word (see `xai-org`).
+#
+# `label` is the lab's display name, used for page titles and headings.
+#
 # Top-level key is the GitHub organisation login itself (matches the harvest
 # file name `github_commits_{org}.json` and the CLI invocation
 # `python aggregate_github.py <org>`). `lab` records which sources.yaml
@@ -28,18 +37,24 @@ version: 1
 orgs:
   anthropics:
     lab: anthropic
+    label: "Anthropic"
+    company_pattern: 'anthropic'
     domain: anthropic.com
     domain_shared: false
     work_suffix: "[-_](ant|anthropic)$"
 
   openai:
     lab: openai
+    label: "OpenAI"
+    company_pattern: 'open\s*ai'
     domain: openai.com
     domain_shared: false
     work_suffix: "[-_](oai|openai)$"
 
   google-deepmind:
     lab: google-deepmind
+    label: "Google DeepMind"
+    company_pattern: 'deepmind|\bgoogle\b'
     domain: google.com
     domain_shared: true
     work_suffix: null
@@ -52,6 +67,8 @@ orgs:
 
   mistralai:
     lab: mistral
+    label: "Mistral AI"
+    company_pattern: 'mistral'
     domain: null
     domain_shared: false
     work_suffix: null
@@ -64,6 +81,8 @@ orgs:
 
   xai-org:
     lab: xai
+    label: "xAI"
+    company_pattern: '\bx\.?ai\b'
     domain: x.ai
     domain_shared: false
     work_suffix: null
@@ -75,6 +94,8 @@ orgs:
 
   facebookresearch:
     lab: meta-ai
+    label: "Meta AI (FAIR)"
+    company_pattern: '\bmeta\b|facebook|\bfair\b'
     domain: [meta.com, fb.com]
     domain_shared: true
     work_suffix: null
@@ -88,6 +109,8 @@ orgs:
 
   meta-llama:
     lab: meta-ai
+    label: "Meta AI (Llama)"
+    company_pattern: '\bmeta\b|facebook|\bfair\b'
     domain: [meta.com, fb.com]
     domain_shared: true
     work_suffix: null
@@ -102,6 +125,8 @@ orgs:
 
   deepseek-ai:
     lab: deepseek
+    label: "DeepSeek"
+    company_pattern: 'deepseek'
     domain: deepseek.com
     domain_shared: false
     work_suffix: null

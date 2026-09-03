@@ -142,8 +142,14 @@ def load_costs(session: Session, path: Path = COSTS, run_id: int | None = None) 
     """
     rows = json.loads(path.read_text()) if path.exists() else []
     seen = set(session.execute(select(m.RawCost.url, m.RawCost.at)).all())
-    counts = {"inserted": 0, "unchanged": 0, "new_usd": 0.0}
+    counts = {"inserted": 0, "unchanged": 0, "new_usd": 0.0, "malformed": 0}
     for r in rows:
+        # (url, at) is the key. A record missing either cannot be stored, and
+        # one bad row must not take down a load that is otherwise fine — it is
+        # counted and reported instead, so the gap stays visible.
+        if not (r.get("url") and r.get("at")):
+            counts["malformed"] += 1
+            continue
         key = (r["url"], r["at"])
         if key in seen:
             counts["unchanged"] += 1

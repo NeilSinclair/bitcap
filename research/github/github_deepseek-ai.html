@@ -1,0 +1,1797 @@
+<title>DeepSeek GitHub Register</title>
+<style>
+:root {
+  --bg: #fbfaf8; --fg: #1a1a18; --muted: #6b6b64; --line: #e2e0da;
+  --card: #ffffff; --accent: #b8552e; --chip: #f0eee8;
+  --ok: #2d6a4a; --mid: #8a6d1f; --weak: #8a4a4a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+    --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+    --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+  --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+  --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); margin: 0;
+  font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 40px 22px 80px; }
+h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -0.02em; }
+.sub { color: var(--muted); margin: 0 0 30px; font-size: 14px; }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 26px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 15px 16px; }
+.card .v { font-size: 25px; font-weight: 600; letter-spacing: -0.02em; }
+.card .l { font-size: 13px; margin-top: 1px; }
+.card .n { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+.note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: 13px 16px; margin: 0 0 26px; font-size: 13.5px; }
+.note b { font-weight: 600; }
+.note p { margin: 0 0 8px; } .note p:last-child { margin: 0; }
+.filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+.filters button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; background: var(--card); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-weight: 600; font-size: 11.5px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted); padding: 11px 10px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; position: sticky; top: 0; background: var(--card); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dt { color: var(--muted); font-size: 12px; }
+.who a { color: var(--fg); text-decoration: none; font-weight: 600; }
+.who a:hover { color: var(--accent); }
+.who .name { color: var(--muted); font-size: 12px; }
+.alias { color: var(--muted); font-size: 11px; font-weight: 400; }
+.tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--chip);
+  white-space: nowrap; cursor: help; }
+.t-confirmed { color: var(--ok); } .t-profile { color: var(--ok); }
+.t-confirmed_org_wide { color: var(--mid); }
+.t-handle { color: var(--mid); } .t-vendor { color: var(--weak); }
+.repo { display: inline-block; background: var(--chip); border-radius: 4px;
+  padding: 1px 6px; font-size: 11.5px; margin: 1px 2px 1px 0; }
+.more, .none { color: var(--muted); font-size: 11.5px; }
+.ch a, .own { color: var(--accent); text-decoration: none; font-size: 12px;
+  margin-right: 7px; white-space: nowrap; }
+.ch a:hover, .own:hover { text-decoration: underline; }
+.own-c { max-width: 260px; }
+footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+<div class="wrap">
+<h1>DeepSeek GitHub Register</h1>
+<p class="sub">Contributors to the <code>deepseek-ai</code> organisation, 12 months to 2026-09-03.</p>
+
+<div class="cards"><div class="card"><div class="v">19</div><div class="l">repositories</div><div class="n">pushed in last 12 months</div></div><div class="card"><div class="v">15,348</div><div class="l">human commits</div><div class="n">11 bot commits removed</div></div><div class="card"><div class="v">129</div><div class="l">distinct people</div><div class="n">0 accounts merged</div></div><div class="card"><div class="v">23</div><div class="l">identified as staff</div><div class="n">12 by commit email, 11 by profile</div></div><div class="card"><div class="v">6</div><div class="l">with a channel to follow</div><div class="n">18 also publish their own repos</div></div></div>
+
+<div class="note">
+<p><b>How employment is decided.</b> A commit made from an <code>@deepseek.com</code> address is direct, lab-specific evidence and outranks everything else (12 people). A GitHub profile naming the lab is accepted next (11). No work-handle convention is known for this org, so no account was merged on handle resemblance alone.</p>
+<p><b>What was removed.</b> 11 of 15,359 commits were made by
+release automation and code generators, which otherwise outrank every human in the
+org. Mirrored repositories were excluded (none) &mdash; their contributors
+are upstream open-source maintainers, not lab staff, or their commits are already
+counted under another repository.</p>
+<p><b>Read the ranking with care.</b> Commit count measures who maintains public
+code, not seniority or influence. It is shown alongside repository breadth and
+recency rather than collapsed into a single score.</p>
+<p><b>On this organisation.</b> Org login is `deepseek-ai`, not `deepseek` -- the latter is a dead redirect stub with 0 public repos, confirmed via the GitHub API, same pattern as `deepmind`/`meta-ai`/`mistral-ai`. deepseek.com is a genuine, lab-specific, actively-used commit domain (3,274 commits), no shared-parent-company ambiguity. No work-handle convention found -- confirmed staff use personal-looking logins, not a &quot;-ds&quot; suffix or similar, so work_suffix is null, same as Mistral. One repo, `deepseek-harness` (created 2026-08-13, &quot;Everything is a Plugin&quot;), accounts for 14,981 of 15,359 total commits (97.5%) and has 210,256 stars / 24,586 forks after roughly three weeks -- an unusual growth rate, checked for being an undeclared mirror the way `OpenROAD-flow-scripts` was for Anthropic (fork=false, mirror_url=null reported either way). Not excluded: unlike that case, its top committers use deepseek.com and .cn-personal-provider (qq.com, sina.com) emails consistent with a genuinely large, fast-viral DeepSeek release, not an external open-source community mirrored in. Recorded here because it dominates any raw per-repo ranking and a reader should know why before trusting one.</p>
+</div>
+
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (129)</button>
+  <button data-f="staff" aria-pressed="false">Staff (23)</button>
+  <button data-f="confirmed" aria-pressed="false">Commit-email confirmed (12)</button>
+  <button data-f="profile" aria-pressed="false">Profile (11)</button>
+  <button data-f="unknown" aria-pressed="false">No evidence (106)</button>
+</div>
+
+<div class="scroll"><table>
+<thead><tr>
+  <th>Commits</th><th>Repos</th><th>Contributor</th><th>Evidence</th>
+  <th>Where they commit</th><th>Channels</th><th>Own projects</th><th>Last seen</th>
+</tr></thead>
+<tbody>
+<tr class="p" data-emp="profile">
+  <td class="num">5503</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/tianyicui" rel="noopener">tianyicui</a>
+    <div class="name">Tianyi Cui</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><a href="https://x.com/tianyi" rel="noopener">@tianyi</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/tianyicui/pack" rel="noopener">pack ★2640</a> <a class="own" href="https://github.com/tianyicui/golio" rel="noopener">golio ★77</a> <a class="own" href="https://github.com/tianyicui/pfds-ocaml" rel="noopener">pfds-ocaml ★40</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1758</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/LegGasai" rel="noopener">LegGasai</a>
+    <div class="name">Yichen Jiang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/LegGasai/gs-rpc" rel="noopener">gs-rpc ★4</a> <a class="own" href="https://github.com/LegGasai/plugin-agent" rel="noopener">plugin-agent ★1</a> <a class="own" href="https://github.com/LegGasai/LegGasai" rel="noopener">LegGasai ★0</a></td>
+  <td class="num dt">2026-09-03</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1630</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/imccyu" rel="noopener">imccyu</a>
+    <div class="name">imccyu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-09-03</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">976</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Chinesezjc" rel="noopener">Chinesezjc</a>
+    <div class="name">Chinesezjc</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Chinesezjc/dsh-interconnect" rel="noopener">dsh-interconnect ★35</a> <a class="own" href="https://github.com/Chinesezjc/dsh-tool-todo-tree" rel="noopener">dsh-tool-todo-tree ★7</a> <a class="own" href="https://github.com/Chinesezjc/CordisClaw" rel="noopener">CordisClaw ★5</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">707</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/kermanx" rel="noopener">kermanx</a>
+    <div class="name">_Kerman</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><a href="https://kermanx.com" rel="noopener">site</a> <a href="https://x.com/kermanx_" rel="noopener">@kermanx_</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/kermanx/reactive-vscode" rel="noopener">reactive-vscode ★822</a> <a class="own" href="https://github.com/kermanx/jsshaker" rel="noopener">jsshaker ★432</a> <a class="own" href="https://github.com/kermanx/p2p-live-share" rel="noopener">p2p-live-share ★304</a></td>
+  <td class="num dt">2026-09-01</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">677</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/CreatixChu" rel="noopener">CreatixChu</a>
+    <div class="name">CreatixChu</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/CreatixChu/Creatixchu.github.io" rel="noopener">Creatixchu.github.io ★0</a></td>
+  <td class="num dt">2026-08-31</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">636</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/turtle1999" rel="noopener">turtle1999</a>
+    <div class="name">Turtle</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/turtle1999/turtle-ui" rel="noopener">turtle-ui ★10</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">495</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/hypatiamay" rel="noopener">hypatiamay</a>
+    <div class="name">Hypatia May</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-25</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">481</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/pku-xht" rel="noopener">pku-xht</a>
+    <div class="name">pku-xht</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-31</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">373</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ZiyaZhang" rel="noopener">ZiyaZhang</a>
+    <div class="name">Ziya</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-31</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">308</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Dudu-0223" rel="noopener">Dudu-0223</a>
+    <div class="name">Dudu-0223</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Dudu-0223/Royal-Chess" rel="noopener">Royal-Chess ★2</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">302</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Kingwl" rel="noopener">Kingwl</a>
+    <div class="name">Wenlu Wang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><a href="https://x.com/WenluWang" rel="noopener">@WenluWang</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/Kingwl/monaco-volar" rel="noopener">monaco-volar ★182</a> <a class="own" href="https://github.com/Kingwl/core-dts" rel="noopener">core-dts ★60</a> <a class="own" href="https://github.com/Kingwl/proposal-string-trim-characters" rel="noopener">proposal-string-trim-characters ★28</a></td>
+  <td class="num dt">2026-08-27</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">274</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/Elevator14B" rel="noopener">Elevator14B</a>
+    <div class="name">Elevator14B</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span> <span class="repo">LPLB</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">185</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/NI0317" rel="noopener">NI0317</a>
+    <div class="name">Terra</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-12</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">110</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/07akioni" rel="noopener">07akioni</a>
+    <div class="name">07akioni</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/07akioni/xicons" rel="noopener">xicons ★1493</a> <a class="own" href="https://github.com/07akioni/vueuc" rel="noopener">vueuc ★312</a> <a class="own" href="https://github.com/07akioni/css-render" rel="noopener">css-render ★212</a></td>
+  <td class="num dt">2026-08-31</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">63</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yifandingD" rel="noopener">yifandingD</a>
+    <div class="name">Yif</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-28</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">45</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/mowentian" rel="noopener">mowentian</a>
+    <div class="name">Huang Panpan</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/mowentian/hellogit" rel="noopener">hellogit ★0</a> <a class="own" href="https://github.com/mowentian/dllc" rel="noopener">dllc ★0</a> <a class="own" href="https://github.com/mowentian/tf_jupyter_anaconda" rel="noopener">tf_jupyter_anaconda ★0</a></td>
+  <td class="num dt">2026-02-23</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">44</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/j-xiang" rel="noopener">j-xiang</a>
+    <div class="name">j-xiang</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-17</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">38</td>
+  <td class="num">4</td>
+  <td class="who">
+    <a href="https://github.com/DillionApple" rel="noopener">DillionApple</a>
+    <div class="name">DillionMango</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span> <span class="repo">awesome-deepseek-coder</span> <span class="repo">DeepSeek-Coder</span> <span class="repo">DeepSeek-Coder-V2</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/DillionApple/fdu_network_auto_auth" rel="noopener">fdu_network_auto_auth ★20</a> <a class="own" href="https://github.com/DillionApple/fdugeek-vue" rel="noopener">fdugeek-vue ★2</a> <a class="own" href="https://github.com/DillionApple/Textout-dataset" rel="noopener">Textout-dataset ★2</a></td>
+  <td class="num dt">2026-06-12</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">32</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/lsdsjy" rel="noopener">lsdsjy</a>
+    <div class="name">lsdsjy</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><a href="https://lsdsjy.github.io/" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/lsdsjy/prettier-plugin-stylus" rel="noopener">prettier-plugin-stylus ★19</a> <a class="own" href="https://github.com/lsdsjy/tsmind" rel="noopener">tsmind ★3</a> <a class="own" href="https://github.com/lsdsjy/template-parser" rel="noopener">template-parser ★2</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">22</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/LyricZhao" rel="noopener">LyricZhao</a>
+    <div class="name">Chenggang Zhao</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span> <span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/LyricZhao/THU-Bell" rel="noopener">THU-Bell ★28</a> <a class="own" href="https://github.com/LyricZhao/ThinRouter" rel="noopener">ThinRouter ★22</a> <a class="own" href="https://github.com/LyricZhao/rCore-Lab" rel="noopener">rCore-Lab ★8</a></td>
+  <td class="num dt">2026-07-14</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">20</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/GeeeekExplorer" rel="noopener">GeeeekExplorer</a>
+    <div class="name">Xingkai Yu</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span> <span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/GeeeekExplorer/nano-vllm" rel="noopener">nano-vllm ★15293</a> <a class="own" href="https://github.com/GeeeekExplorer/PVZ" rel="noopener">PVZ ★360</a> <a class="own" href="https://github.com/GeeeekExplorer/AndrewNg-Deep-Learning" rel="noopener">AndrewNg-Deep-Learning ★138</a></td>
+  <td class="num dt">2026-08-16</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">17</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/sphish" rel="noopener">sphish</a>
+    <div class="name">Shangyan Zhou</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><a href="https://sy-zhou.com" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/sphish/Beancount-CSVImporter" rel="noopener">Beancount-CSVImporter ★55</a> <a class="own" href="https://github.com/sphish/RallyLog" rel="noopener">RallyLog ★1</a> <a class="own" href="https://github.com/sphish/RDMA-Example" rel="noopener">RDMA-Example ★1</a></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">16</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SF-Zhou" rel="noopener">SF-Zhou</a>
+    <div class="name">SF-Zhou</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><a href="https://sf-zhou.github.io" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/SF-Zhou/lockmap" rel="noopener">lockmap ★20</a> <a class="own" href="https://github.com/SF-Zhou/sf-zhou.github.io" rel="noopener">sf-zhou.github.io ★19</a> <a class="own" href="https://github.com/SF-Zhou/ruapc" rel="noopener">ruapc ★17</a></td>
+  <td class="num dt">2026-03-27</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">15</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/Ucas-HaoranWei" rel="noopener">Ucas-HaoranWei</a>
+    <div class="name">WeiHaoran</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">DeepSeek-OCR-2</span> <span class="repo">DeepSeek-OCR</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Ucas-HaoranWei/GOT-OCR2.0" rel="noopener">GOT-OCR2.0 ★8222</a> <a class="own" href="https://github.com/Ucas-HaoranWei/Vary" rel="noopener">Vary ★1889</a> <a class="own" href="https://github.com/Ucas-HaoranWei/Vary-toy" rel="noopener">Vary-toy ★630</a></td>
+  <td class="num dt">2026-02-03</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">10</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/interestingLSY" rel="noopener">interestingLSY</a>
+    <div class="name">Shengyu Liu</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">FlashMLA</span></td>
+  <td class="ch"><a href="https://interestinglsy.github.io/" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/interestingLSY/swiftLLM" rel="noopener">swiftLLM ★333</a> <a class="own" href="https://github.com/interestingLSY/CUDA-From-Correctness-To-Performance-Code" rel="noopener">CUDA-From-Correctness-To-Performance-Code ★166</a> <a class="own" href="https://github.com/interestingLSY/hpcgame2026.kernel-design-trial" rel="noopener">hpcgame2026.kernel-design-trial ★15</a></td>
+  <td class="num dt">2026-01-20</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">10</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/Hannibal046" rel="noopener">Hannibal046</a>
+    <div class="name">Hannibal046</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSpec</span> <span class="repo">Engram</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Hannibal046/Awesome-LLM" rel="noopener">Awesome-LLM ★27317</a> <a class="own" href="https://github.com/Hannibal046/nanoRWKV" rel="noopener">nanoRWKV ★200</a> <a class="own" href="https://github.com/Hannibal046/xRAG" rel="noopener">xRAG ★183</a></td>
+  <td class="num dt">2026-07-09</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">9</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Magolor" rel="noopener">Magolor</a>
+    <div class="name">Magolor</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Magolor/hoi4dev" rel="noopener">hoi4dev ★6</a> <a class="own" href="https://github.com/Magolor/Blueprint" rel="noopener">Blueprint ★5</a> <a class="own" href="https://github.com/Magolor/magolor.github.io" rel="noopener">magolor.github.io ★3</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">8</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/RayWang96" rel="noopener">RayWang96</a>
+    <div class="name">Ray Wang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span> <span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/RayWang96/GPU_KNNG" rel="noopener">GPU_KNNG ★9</a></td>
+  <td class="num dt">2026-06-01</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">8</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ko3n1g" rel="noopener">ko3n1g</a>
+    <div class="name">oliver könig</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/ko3n1g/Ontology-based-InformationFlow-Industry-4.0" rel="noopener">Ontology-based-InformationFlow-Industry-4.0 ★13</a> <a class="own" href="https://github.com/ko3n1g/yolov8-triton-complete" rel="noopener">yolov8-triton-complete ★0</a> <a class="own" href="https://github.com/ko3n1g/codewars-python" rel="noopener">codewars-python ★0</a></td>
+  <td class="num dt">2025-10-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">7</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Yifffan" rel="noopener">Yifffan</a>
+    <div class="name">Yifffan</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Yifffan/memolite-legal" rel="noopener">memolite-legal ★0</a></td>
+  <td class="num dt">2026-08-28</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">7</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/cometeme" rel="noopener">cometeme</a>
+    <div class="name">cometeme</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://cometeme.github.io" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/cometeme/funcoder" rel="noopener">funcoder ★16</a> <a class="own" href="https://github.com/cometeme/compress-office" rel="noopener">compress-office ★12</a> <a class="own" href="https://github.com/cometeme/compilers" rel="noopener">compilers ★12</a></td>
+  <td class="num dt">2026-06-17</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/mektpoy" rel="noopener">mektpoy</a>
+    <div class="name">Xu Hanxiang</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/mektpoy/CourseDataBaseTHU" rel="noopener">CourseDataBaseTHU ★3</a> <a class="own" href="https://github.com/mektpoy/NetworkLab-Router" rel="noopener">NetworkLab-Router ★1</a> <a class="own" href="https://github.com/mektpoy/DistributedSystem" rel="noopener">DistributedSystem ★1</a></td>
+  <td class="num dt">2026-09-02</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yixiangihsiang" rel="noopener">yixiangihsiang</a>
+    <div class="name">ihsiang</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-09-01</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Kaige-Gao" rel="noopener">Kaige-Gao</a>
+    <div class="name">Kaige-Gao</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-20</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/morluto" rel="noopener">morluto</a>
+    <div class="name">morluto</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://x.com/morluto" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/morluto/rea" rel="noopener">rea ★392</a> <a class="own" href="https://github.com/morluto/jacobian" rel="noopener">jacobian ★124</a> <a class="own" href="https://github.com/morluto/flameox" rel="noopener">flameox ★68</a></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">5</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/zheanxu" rel="noopener">zheanxu</a>
+    <div class="name">Zhean Xu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">5</td>
+  <td class="num">5</td>
+  <td class="who">
+    <a href="https://github.com/yurekami" rel="noopener">yurekami</a>
+    <div class="name">ゆり</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span> <span class="repo">DeepEP</span> <span class="repo">3FS</span> <span class="repo">awesome-deepseek-integration</span> <span class="more">+1</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/yurekami/ultragent" rel="noopener">ultragent ★3</a> <a class="own" href="https://github.com/yurekami/oss-contribution-harness" rel="noopener">oss-contribution-harness ★1</a> <a class="own" href="https://github.com/yurekami/codex-skillify" rel="noopener">codex-skillify ★1</a></td>
+  <td class="num dt">2026-01-14</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">5</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/DaoyuanLi2816" rel="noopener">DaoyuanLi2816</a>
+    <div class="name">Daoyuan Li</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSpec</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/DaoyuanLi2816/can-i-finetune-this" rel="noopener">can-i-finetune-this ★792</a> <a class="own" href="https://github.com/DaoyuanLi2816/mini-verl" rel="noopener">mini-verl ★233</a> <a class="own" href="https://github.com/DaoyuanLi2816/pairjudge" rel="noopener">pairjudge ★170</a></td>
+  <td class="num dt">2026-07-08</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">5</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ZGGSONG" rel="noopener">ZGGSONG</a>
+    <div class="name">zggsong</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><a href="https://www.zggsong.com" rel="noopener">site</a> <a href="https://x.com/zggsong" rel="noopener">@zggsong</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/ZGGSONG/WeChatOcr" rel="noopener">WeChatOcr ★184</a> <a class="own" href="https://github.com/ZGGSONG/LangIndicator" rel="noopener">LangIndicator ★60</a> <a class="own" href="https://github.com/ZGGSONG/HP-OMEN-15-ax214TX-Hackintosh" rel="noopener">HP-OMEN-15-ax214TX-Hackintosh ★25</a></td>
+  <td class="num dt">2026-01-08</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/TianleLin" rel="noopener">TianleLin</a>
+    <div class="name">TianleLin</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/TianleLin/ANTLR_SQL_Parse" rel="noopener">ANTLR_SQL_Parse ★0</a> <a class="own" href="https://github.com/TianleLin/ComprehensiveDesignFrontEnd" rel="noopener">ComprehensiveDesignFrontEnd ★0</a> <a class="own" href="https://github.com/TianleLin/ComprehensiveDesignBackEnd" rel="noopener">ComprehensiveDesignBackEnd ★0</a></td>
+  <td class="num dt">2026-08-10</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/pomelo-nwu" rel="noopener">pomelo-nwu</a>
+    <div class="name">pomelo</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/pomelo-nwu/claude-fetch-setup" rel="noopener">claude-fetch-setup ★9</a> <a class="own" href="https://github.com/pomelo-nwu/watermark-for-react" rel="noopener">watermark-for-react ★5</a> <a class="own" href="https://github.com/pomelo-nwu/resume-lcw" rel="noopener">resume-lcw ★2</a></td>
+  <td class="num dt">2026-06-11</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/AmAzing129" rel="noopener">AmAzing129</a>
+    <div class="name">AmAzing-</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/AmAzing129/use-ai-lib" rel="noopener">use-ai-lib ★12</a> <a class="own" href="https://github.com/AmAzing129/Amazing-Vibe-Coding" rel="noopener">Amazing-Vibe-Coding ★4</a> <a class="own" href="https://github.com/AmAzing129/EgressBar" rel="noopener">EgressBar ★1</a></td>
+  <td class="num dt">2026-05-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/qieqieplus" rel="noopener">qieqieplus</a>
+    <div class="name">qieqieplus</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/qieqieplus/gofaiss" rel="noopener">gofaiss ★3</a> <a class="own" href="https://github.com/qieqieplus/fast_topk" rel="noopener">fast_topk ★2</a> <a class="own" href="https://github.com/qieqieplus/net-rs" rel="noopener">net-rs ★1</a></td>
+  <td class="num dt">2026-02-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/DeepSeekPH" rel="noopener">DeepSeekPH</a>
+    <div class="name">DeepSeekPH</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">4</td>
+  <td class="num">3</td>
+  <td class="who">
+    <a href="https://github.com/pkuzqh" rel="noopener">pkuzqh</a>
+    <div class="name">ZHU QIHAO</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-coder</span> <span class="repo">DeepSeek-Coder</span> <span class="repo">DeepSeek-Coder-V2</span></td>
+  <td class="ch"><a href="https://pkuzqh.github.io" rel="noopener">site</a> <a href="https://x.com/zqh" rel="noopener">@zqh</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/pkuzqh/Recoder" rel="noopener">Recoder ★60</a> <a class="own" href="https://github.com/pkuzqh/ICSE23Repair" rel="noopener">ICSE23Repair ★12</a> <a class="own" href="https://github.com/pkuzqh/GrammarT5" rel="noopener">GrammarT5 ★11</a></td>
+  <td class="num dt">2025-11-11</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SomeAB" rel="noopener">SomeAB</a>
+    <div class="name">Ahmad Bilal</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/SomeAB/somelang" rel="noopener">somelang ★1</a> <a class="own" href="https://github.com/SomeAB/openharmonyos_test" rel="noopener">openharmonyos_test ★1</a> <a class="own" href="https://github.com/SomeAB/Waqf-CG" rel="noopener">Waqf-CG ★0</a></td>
+  <td class="num dt">2026-05-10</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/abelxiaoxing" rel="noopener">abelxiaoxing</a>
+    <div class="name">abelxiaoxing</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://abelxiaoxing.github.io" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/abelxiaoxing/PatentAgent" rel="noopener">PatentAgent ★39</a> <a class="own" href="https://github.com/abelxiaoxing/AbelWorkflow" rel="noopener">AbelWorkflow ★9</a> <a class="own" href="https://github.com/abelxiaoxing/PyTorchMultiTaskVision" rel="noopener">PyTorchMultiTaskVision ★8</a></td>
+  <td class="num dt">2026-04-29</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yiyuanliu" rel="noopener">yiyuanliu</a>
+    <div class="name">Yiyuan Liu</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/yiyuanliu/EleLoadingView" rel="noopener">EleLoadingView ★8</a> <a class="own" href="https://github.com/yiyuanliu/async-learning" rel="noopener">async-learning ★1</a> <a class="own" href="https://github.com/yiyuanliu/yiyuanliu" rel="noopener">yiyuanliu ★0</a></td>
+  <td class="num dt">2025-12-26</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Cedarflake" rel="noopener">Cedarflake</a>
+    <div class="name">艽艽只</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Cedarflake/Cedarflake-Nami" rel="noopener">Cedarflake-Nami ★13</a> <a class="own" href="https://github.com/Cedarflake/Cedarflake-Ame" rel="noopener">Cedarflake-Ame ★12</a> <a class="own" href="https://github.com/Cedarflake/Cedarflake-Lab" rel="noopener">Cedarflake-Lab ★1</a></td>
+  <td class="num dt">2025-12-31</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ericcaiwx-star" rel="noopener">ericcaiwx-star</a>
+    <div class="name">EricCai</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-23</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/shigma" rel="noopener">shigma</a>
+    <div class="name">Shigma</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/shigma/schemastery" rel="noopener">schemastery ★85</a> <a class="own" href="https://github.com/shigma/slidev-addon-typst" rel="noopener">slidev-addon-typst ★56</a> <a class="own" href="https://github.com/shigma/vscode-wl" rel="noopener">vscode-wl ★51</a></td>
+  <td class="num dt">2026-08-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/simon-mo" rel="noopener">simon-mo</a>
+    <div class="name">Simon Mo</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span> <span class="repo">FlashMLA</span></td>
+  <td class="ch"><a href="https://x.com/simon_mo_" rel="noopener">@simon_mo_</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/simon-mo/vLLM-Benchmark" rel="noopener">vLLM-Benchmark ★33</a> <a class="own" href="https://github.com/simon-mo/conex" rel="noopener">conex ★3</a> <a class="own" href="https://github.com/simon-mo/ray-serve-feast" rel="noopener">ray-serve-feast ★3</a></td>
+  <td class="num dt">2025-09-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/uchihatmtkinu" rel="noopener">uchihatmtkinu</a>
+    <div class="name">Zeyu WANG</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">FlashMLA</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/uchihatmtkinu/Dog-Online-Judge" rel="noopener">Dog-Online-Judge ★1</a> <a class="own" href="https://github.com/uchihatmtkinu/test" rel="noopener">test ★1</a> <a class="own" href="https://github.com/uchihatmtkinu/RC" rel="noopener">RC ★0</a></td>
+  <td class="num dt">2026-03-31</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SeletubbY" rel="noopener">SeletubbY</a>
+    <div class="name">SeletubbY</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/SeletubbY/RelayLane" rel="noopener">RelayLane ★0</a></td>
+  <td class="num dt">2026-06-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/mustardwheat" rel="noopener">mustardwheat</a>
+    <div class="name">jie_Mai</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/mustardwheat/mustardwheat" rel="noopener">mustardwheat ★0</a> <a class="own" href="https://github.com/mustardwheat/ArcaneArteriesKedition" rel="noopener">ArcaneArteriesKedition ★0</a></td>
+  <td class="num dt">2026-05-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/makoMakoGo" rel="noopener">makoMakoGo</a>
+    <div class="name">makoMakoGo</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/makoMakoGo/fish-claude" rel="noopener">fish-claude ★168</a> <a class="own" href="https://github.com/makoMakoGo/thanks-to-cerebras" rel="noopener">thanks-to-cerebras ★14</a> <a class="own" href="https://github.com/makoMakoGo/novel-proofer" rel="noopener">novel-proofer ★11</a></td>
+  <td class="num dt">2026-04-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/bugkeep" rel="noopener">bugkeep</a>
+    <div class="name">bugkeep</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/bugkeep/AutoSolver" rel="noopener">AutoSolver ★5</a> <a class="own" href="https://github.com/bugkeep/-tcmalloc-" rel="noopener">-tcmalloc- ★3</a> <a class="own" href="https://github.com/bugkeep/tower-vib" rel="noopener">tower-vib ★1</a></td>
+  <td class="num dt">2026-04-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/2XiangL" rel="noopener">2XiangL</a>
+    <div class="name">2XiangL</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://termii.moe" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/2XiangL/remove-ctrl-m.nvim" rel="noopener">remove-ctrl-m.nvim ★2</a> <a class="own" href="https://github.com/2XiangL/neovim-config" rel="noopener">neovim-config ★1</a> <a class="own" href="https://github.com/2XiangL/Formatura" rel="noopener">Formatura ★1</a></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/qorzj" rel="noopener">qorzj</a>
+    <div class="name">null</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://www.vegamo.cn" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/qorzj/web_search_cli" rel="noopener">web_search_cli ★16</a> <a class="own" href="https://github.com/qorzj/claude-code-src" rel="noopener">claude-code-src ★4</a> <a class="own" href="https://github.com/qorzj/py-daily" rel="noopener">py-daily ★4</a></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Yuan-ManX" rel="noopener">Yuan-ManX</a>
+    <div class="name">Yuan-Man</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://ym1076302261@163.com" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/Yuan-ManX/ai-game-devtools" rel="noopener">ai-game-devtools ★1326</a> <a class="own" href="https://github.com/Yuan-ManX/ai-audio-datasets" rel="noopener">ai-audio-datasets ★962</a> <a class="own" href="https://github.com/Yuan-ManX/audio-development-tools" rel="noopener">audio-development-tools ★467</a></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Vizards" rel="noopener">Vizards</a>
+    <div class="name">Vizards</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><a href="https://vizards.cc" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/Vizards/deepseek-v4-for-copilot" rel="noopener">deepseek-v4-for-copilot ★1396</a> <a class="own" href="https://github.com/Vizards/uestc-api" rel="noopener">uestc-api ★52</a> <a class="own" href="https://github.com/Vizards/uestc-react-native-ios" rel="noopener">uestc-react-native-ios ★41</a></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/nautaa" rel="noopener">nautaa</a>
+    <div class="name">nauta</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><a href="https://nauta.com.cn" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/nautaa/LaTeX_Course_Project" rel="noopener">LaTeX_Course_Project ★4</a> <a class="own" href="https://github.com/nautaa/slides_template" rel="noopener">slides_template ★1</a> <a class="own" href="https://github.com/nautaa/nautaa" rel="noopener">nautaa ★0</a></td>
+  <td class="num dt">2025-10-14</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/bucket-xv" rel="noopener">bucket-xv</a>
+    <div class="name">Chenhao Xu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">TileKernels</span></td>
+  <td class="ch"><a href="https://bucket-xv.github.io/" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/bucket-xv/Thunder-in-Rust" rel="noopener">Thunder-in-Rust ★2</a> <a class="own" href="https://github.com/bucket-xv/3dgs-avatar" rel="noopener">3dgs-avatar ★1</a> <a class="own" href="https://github.com/bucket-xv/bucket-xv.github.io" rel="noopener">bucket-xv.github.io ★0</a></td>
+  <td class="num dt">2026-04-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Eric-Terminal" rel="noopener">Eric-Terminal</a>
+    <div class="name">Eric-Terminal</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><a href="https://ericterminal.com" rel="noopener">site</a> <a href="https://x.com/EricTerminal" rel="noopener">@EricTerminal</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/Eric-Terminal/ETOS-LLM-Studio" rel="noopener">ETOS-LLM-Studio ★200</a> <a class="own" href="https://github.com/Eric-Terminal/Cognitive-Hijacking-in-Long-Context-LLMs" rel="noopener">Cognitive-Hijacking-in-Long-Context-LLMs ★64</a> <a class="own" href="https://github.com/Eric-Terminal/cf-astro-blog" rel="noopener">cf-astro-blog ★19</a></td>
+  <td class="num dt">2026-02-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/youkaichao" rel="noopener">youkaichao</a>
+    <div class="name">youkaichao</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><a href="https://youkaichao.github.io" rel="noopener">site</a> <a href="https://x.com/KaichaoYou" rel="noopener">@KaichaoYou</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/youkaichao/minidb" rel="noopener">minidb ★41</a> <a class="own" href="https://github.com/youkaichao/fast_bpe_tokenizer" rel="noopener">fast_bpe_tokenizer ★28</a> <a class="own" href="https://github.com/youkaichao/youkaichao" rel="noopener">youkaichao ★23</a></td>
+  <td class="num dt">2025-09-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/chenanshuods" rel="noopener">chenanshuods</a>
+    <div class="name">Anshuo</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/FSYo" rel="noopener">FSYo</a>
+    <div class="name">Dudu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">deepseek-harness</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-01</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/guyan364" rel="noopener">guyan364</a>
+    <div class="name">Pengle Zhang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dfyz" rel="noopener">dfyz</a>
+    <div class="name">Ivan Komarov</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-06</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/xinqiu" rel="noopener">xinqiu</a>
+    <div class="name">Xin Qiu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-02-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ajwise9" rel="noopener">ajwise9</a>
+    <div class="name">AJ WISE</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-05</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SolenoidWGT" rel="noopener">SolenoidWGT</a>
+    <div class="name">Guoteng</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-19</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/jasl" rel="noopener">jasl</a>
+    <div class="name">Jun Jiang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-09</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/FlamingoPg" rel="noopener">FlamingoPg</a>
+    <div class="name">PGFLMG</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-01</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yukuai26" rel="noopener">yukuai26</a>
+    <div class="name">yukuai26</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepGEMM</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-12</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/EvadLee" rel="noopener">EvadLee</a>
+    <div class="name">Yanfu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Eliasthunderdog" rel="noopener">Eliasthunderdog</a>
+    <div class="name">Zhenghang Ren</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/MayDomine" rel="noopener">MayDomine</a>
+    <div class="name">MayDomine</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/DanielDanyang" rel="noopener">DanielDanyang</a>
+    <div class="name">Danyang Chen</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/hirschsn" rel="noopener">hirschsn</a>
+    <div class="name">Steffen Hirschmann</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/MARD1NO" rel="noopener">MARD1NO</a>
+    <div class="name">ZZK</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/isytwu" rel="noopener">isytwu</a>
+    <div class="name">Wu, Yutong</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-02-03</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/seth-howell" rel="noopener">seth-howell</a>
+    <div class="name">seth-howell</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-20</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/salmanmkc" rel="noopener">salmanmkc</a>
+    <div class="name">Salman Chishti</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-24</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/MaoZiming" rel="noopener">MaoZiming</a>
+    <div class="name">Ziming Mao</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/wangfakang" rel="noopener">wangfakang</a>
+    <div class="name">sky</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-05</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dongwang4096" rel="noopener">dongwang4096</a>
+    <div class="name">dongwang4096</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yifeizhang-c" rel="noopener">yifeizhang-c</a>
+    <div class="name">yifeizhang-c</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-05</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/fzyzcjy" rel="noopener">fzyzcjy</a>
+    <div class="name">fzyzcjy</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/varun-sundar-rabindranath" rel="noopener">varun-sundar-rabindranath</a>
+    <div class="name">Varun Sundar Rabindranath</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-17</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/jammycc" rel="noopener">jammycc</a>
+    <div class="name">jammy-_-</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yuantailing" rel="noopener">yuantailing</a>
+    <div class="name">Tailing Yuan</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-24</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/polarstormx" rel="noopener">polarstormx</a>
+    <div class="name">Yizhi Wang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepEP</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/zaristei" rel="noopener">zaristei</a>
+    <div class="name">zaristei</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">FlashMLA</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/PerkzZheng" rel="noopener">PerkzZheng</a>
+    <div class="name">Perkz Zheng</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">FlashMLA</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dianzhangchen" rel="noopener">dianzhangchen</a>
+    <div class="name">zhang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">FlashMLA</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/jessiewei7" rel="noopener">jessiewei7</a>
+    <div class="name">jessiewei7</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSpec</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-08</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/inisis" rel="noopener">inisis</a>
+    <div class="name">inisis</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSpec</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/hajimixiaojie" rel="noopener">hajimixiaojie</a>
+    <div class="name">只因那只只因</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-03</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/tianyuio" rel="noopener">tianyuio</a>
+    <div class="name">tianyuio</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/kennyzheng-builds" rel="noopener">kennyzheng-builds</a>
+    <div class="name">kennyzheng</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Hmbown" rel="noopener">Hmbown</a>
+    <div class="name">Hunter B</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/sigmarising" rel="noopener">sigmarising</a>
+    <div class="name">YUN Zhang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-02</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/guohao117" rel="noopener">guohao117</a>
+    <div class="name">Hao</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Soulter" rel="noopener">Soulter</a>
+    <div class="name">Soulter</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/picturepan2" rel="noopener">picturepan2</a>
+    <div class="name">Yan Zhu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-agent</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Captain32" rel="noopener">Captain32</a>
+    <div class="name">Captain32</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-07</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dxlog0" rel="noopener">dxlog0</a>
+    <div class="name">dxlog0</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-03-30</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Hansyangxingxiang" rel="noopener">Hansyangxingxiang</a>
+    <div class="name">yangxingxiang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SimonCqk" rel="noopener">SimonCqk</a>
+    <div class="name">Simon_CQK</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/mapleFU" rel="noopener">mapleFU</a>
+    <div class="name">mwish</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/bugwz" rel="noopener">bugwz</a>
+    <div class="name">咕咕</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">3FS</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-14</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/tianr22" rel="noopener">tianr22</a>
+    <div class="name">Rui Tian</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @deepseek.com address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">TileKernels</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/tianr22/verl-lean" rel="noopener">verl-lean ★0</a> <a class="own" href="https://github.com/tianr22/rlhf-lean" rel="noopener">rlhf-lean ★0</a> <a class="own" href="https://github.com/tianr22/Ring-Flash-Attention-with-Cache" rel="noopener">Ring-Flash-Attention-with-Cache ★0</a></td>
+  <td class="num dt">2026-04-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Yuikij" rel="noopener">Yuikij</a>
+    <div class="name">zxj</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-02-12</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/vincentkoc" rel="noopener">vincentkoc</a>
+    <div class="name">Vincent Koc</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-02-11</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/informatico-madrid" rel="noopener">informatico-madrid</a>
+    <div class="name">Joao Maria Arranz Aparicio</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-17</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/rockbenben" rel="noopener">rockbenben</a>
+    <div class="name">rockbenben</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-12-15</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/JohnnyZ93" rel="noopener">JohnnyZ93</a>
+    <div class="name">JohnnyZ93</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/joygqz" rel="noopener">joygqz</a>
+    <div class="name">joygqz</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/jiqi136" rel="noopener">jiqi136</a>
+    <div class="name">jiqi136</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SamYuan1990" rel="noopener">SamYuan1990</a>
+    <div class="name">Sam Yuan</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/JunnanDong" rel="noopener">JunnanDong</a>
+    <div class="name">Junnan Dong</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/TencentCloudADP-DevRel" rel="noopener">TencentCloudADP-DevRel</a>
+    <div class="name">TencentCloudADP-DevRel</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">awesome-deepseek-integration</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-25</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/study8677" rel="noopener">study8677</a>
+    <div class="name">fanjingwen</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">Engram</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/stack-heap-overflow" rel="noopener">stack-heap-overflow</a>
+    <div class="name">stack-heap-overflow</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/hnyls2002" rel="noopener">hnyls2002</a>
+    <div class="name">hnyls2002</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SplittyDev" rel="noopener">SplittyDev</a>
+    <div class="name">Marco Quinten</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-29</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/zhyncs" rel="noopener">zhyncs</a>
+    <div class="name">Yineng Zhang</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">DeepSeek-V3.2-Exp</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-29</td>
+</tr></tbody>
+</table></div>
+
+<footer>Generated 2026-09-03 from the GitHub REST and GraphQL APIs.
+Source: <code>research/github/</code>. Counts cover the default branch only.</footer>
+</div>
+<script>
+const staffSet = ["confirmed", "confirmed_org_wide", "profile", "handle"];
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll("tr.p").forEach(r => {
+      const e = r.dataset.emp;
+      const show = f === "all" || (f === "staff" ? staffSet.includes(e) : e === f);
+      r.style.display = show ? "" : "none";
+    });
+  });
+});
+</script>

@@ -1,0 +1,484 @@
+<title>Meta AI (Llama) GitHub Register</title>
+<style>
+:root {
+  --bg: #fbfaf8; --fg: #1a1a18; --muted: #6b6b64; --line: #e2e0da;
+  --card: #ffffff; --accent: #b8552e; --chip: #f0eee8;
+  --ok: #2d6a4a; --mid: #8a6d1f; --weak: #8a4a4a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+    --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+    --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+  --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+  --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); margin: 0;
+  font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 40px 22px 80px; }
+h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -0.02em; }
+.sub { color: var(--muted); margin: 0 0 30px; font-size: 14px; }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 26px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 15px 16px; }
+.card .v { font-size: 25px; font-weight: 600; letter-spacing: -0.02em; }
+.card .l { font-size: 13px; margin-top: 1px; }
+.card .n { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+.note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: 13px 16px; margin: 0 0 26px; font-size: 13.5px; }
+.note b { font-weight: 600; }
+.note p { margin: 0 0 8px; } .note p:last-child { margin: 0; }
+.filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+.filters button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; background: var(--card); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-weight: 600; font-size: 11.5px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted); padding: 11px 10px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; position: sticky; top: 0; background: var(--card); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dt { color: var(--muted); font-size: 12px; }
+.who a { color: var(--fg); text-decoration: none; font-weight: 600; }
+.who a:hover { color: var(--accent); }
+.who .name { color: var(--muted); font-size: 12px; }
+.alias { color: var(--muted); font-size: 11px; font-weight: 400; }
+.tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--chip);
+  white-space: nowrap; cursor: help; }
+.t-confirmed { color: var(--ok); } .t-profile { color: var(--ok); }
+.t-confirmed_org_wide { color: var(--mid); }
+.t-handle { color: var(--mid); } .t-vendor { color: var(--weak); }
+.repo { display: inline-block; background: var(--chip); border-radius: 4px;
+  padding: 1px 6px; font-size: 11.5px; margin: 1px 2px 1px 0; }
+.more, .none { color: var(--muted); font-size: 11.5px; }
+.ch a, .own { color: var(--accent); text-decoration: none; font-size: 12px;
+  margin-right: 7px; white-space: nowrap; }
+.ch a:hover, .own:hover { text-decoration: underline; }
+.own-c { max-width: 260px; }
+footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+<div class="wrap">
+<h1>Meta AI (Llama) GitHub Register</h1>
+<p class="sub">Contributors to the <code>meta-llama</code> organisation, 12 months to 2026-09-03.</p>
+
+<div class="cards"><div class="card"><div class="v">8</div><div class="l">repositories</div><div class="n">pushed in last 12 months</div></div><div class="card"><div class="v">297</div><div class="l">human commits</div><div class="n">54 bot commits removed</div></div><div class="card"><div class="v">28</div><div class="l">distinct people</div><div class="n">0 accounts merged</div></div><div class="card"><div class="v">21</div><div class="l">identified as staff</div><div class="n">16 by commit email, 5 by profile</div></div><div class="card"><div class="v">5</div><div class="l">with a channel to follow</div><div class="n">18 also publish their own repos</div></div></div>
+
+<div class="note">
+<p><b>How employment is decided.</b> A commit from an <code>@meta.com or fb.com</code> address is direct evidence (16 people), but that domain covers the whole parent company rather than this lab. It is tagged <b>parent domain</b> and must not be read as proof the person works in the AI org specifically. A GitHub profile naming the lab is accepted next (5). No work-handle convention is known for this org, so no account was merged on handle resemblance alone.</p>
+<p><b>What was removed.</b> 54 of 351 commits were made by
+release automation and code generators, which otherwise outrank every human in the
+org. Mirrored repositories were excluded (none) &mdash; their contributors
+are upstream open-source maintainers, not lab staff, or their commits are already
+counted under another repository.</p>
+<p><b>Read the ranking with care.</b> Commit count measures who maintains public
+code, not seniority or influence. It is shown alongside repository breadth and
+recency rather than collapsed into a single score.</p>
+<p><b>On this organisation.</b> Llama-specific org (12 repos), not directly linked from ai.meta.com but independently confirmed active and official. Recent commits here are mostly external contributors (@redhat.com, @gmail.com etc.), so expect a lower confirmed-tier yield than facebookresearch specifically -- a real difference between the two orgs, not a harvesting gap. A third candidate org, `meta-ai`, was checked and found dead/squatted (0 repos, no content) -- excluded, not tracked here.</p>
+</div>
+
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (28)</button>
+  <button data-f="staff" aria-pressed="false">Staff (21)</button>
+  <button data-f="confirmed_org_wide" aria-pressed="false">Parent-domain (16)</button>
+  <button data-f="profile" aria-pressed="false">Profile (5)</button>
+  <button data-f="unknown" aria-pressed="false">No evidence (7)</button>
+</div>
+
+<div class="scroll"><table>
+<thead><tr>
+  <th>Commits</th><th>Repos</th><th>Contributor</th><th>Evidence</th>
+  <th>Where they commit</th><th>Channels</th><th>Own projects</th><th>Last seen</th>
+</tr></thead>
+<tbody>
+<tr class="p" data-emp="profile">
+  <td class="num">87</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/heyjustinai" rel="noopener">heyjustinai</a>
+    <div class="name">Justin Lee</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">prompt-ops</span> <span class="repo">llama-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/heyjustinai/prompt-ops-mcp" rel="noopener">prompt-ops-mcp ★4</a> <a class="own" href="https://github.com/heyjustinai/linkedin-scraper" rel="noopener">linkedin-scraper ★2</a> <a class="own" href="https://github.com/heyjustinai/linkedin-similarity" rel="noopener">linkedin-similarity ★2</a></td>
+  <td class="num dt">2025-12-30</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">64</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/connortreacy" rel="noopener">connortreacy</a>
+    <div class="name">Connor Treacy</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">prompt-ops</span> <span class="repo">llama-cookbook</span></td>
+  <td class="ch"><a href="http://www.facebook.com/connortreacy" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/connortreacy/digix0x" rel="noopener">digix0x ★1</a> <a class="own" href="https://github.com/connortreacy/DIN_Sync_808" rel="noopener">DIN_Sync_808 ★0</a></td>
+  <td class="num dt">2025-12-19</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">43</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/JinpengMiao" rel="noopener">JinpengMiao</a>
+    <div class="name">Jinpeng</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><a href="https://github.com/JinpengMiao" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/JinpengMiao/Smart-Agriculture" rel="noopener">Smart-Agriculture ★0</a> <a class="own" href="https://github.com/JinpengMiao/gem5_cache" rel="noopener">gem5_cache ★0</a> <a class="own" href="https://github.com/JinpengMiao/VM-Detection" rel="noopener">VM-Detection ★0</a></td>
+  <td class="num dt">2026-05-04</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">15</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/albertodepaola" rel="noopener">albertodepaola</a>
+    <div class="name">Beto de Paola</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">llama-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/albertodepaola/play-admin" rel="noopener">play-admin ★2</a> <a class="own" href="https://github.com/albertodepaola/llama_watsonx_demo" rel="noopener">llama_watsonx_demo ★1</a> <a class="own" href="https://github.com/albertodepaola/hermes-meta-provider" rel="noopener">hermes-meta-provider ★0</a></td>
+  <td class="num dt">2025-11-01</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">10</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Riandy" rel="noopener">Riandy</a>
+    <div class="name">Riandy</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">llama-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Riandy/FAS" rel="noopener">FAS ★0</a> <a class="own" href="https://github.com/Riandy/cs2103aug12-f09-1c" rel="noopener">cs2103aug12-f09-1c ★0</a> <a class="own" href="https://github.com/Riandy/WorkHealthScheduler" rel="noopener">WorkHealthScheduler ★0</a></td>
+  <td class="num dt">2025-10-24</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">7</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/IgorKasianenko" rel="noopener">IgorKasianenko</a>
+    <div class="name">Igor Kasianenko</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">llama-cookbook</span> <span class="repo">synthetic-data-kit</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/IgorKasianenko/IgorKasianenko" rel="noopener">IgorKasianenko ★1</a> <a class="own" href="https://github.com/IgorKasianenko/public_speaking" rel="noopener">public_speaking ★1</a> <a class="own" href="https://github.com/IgorKasianenko/GANs-style-transfer-fast.ai-win10" rel="noopener">GANs-style-transfer-fast.ai-win10 ★1</a></td>
+  <td class="num dt">2025-10-27</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/amontilla0" rel="noopener">amontilla0</a>
+    <div class="name">Abraham Montilla</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/amontilla0/smartcoil" rel="noopener">smartcoil ★4</a> <a class="own" href="https://github.com/amontilla0/C4NN" rel="noopener">C4NN ★1</a> <a class="own" href="https://github.com/amontilla0/ZurichDogsDashboard" rel="noopener">ZurichDogsDashboard ★0</a></td>
+  <td class="num dt">2026-06-02</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">6</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/varunfb" rel="noopener">varunfb</a>
+    <div class="name">varunfb</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">llama-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/varunfb/llama" rel="noopener">llama ★7</a></td>
+  <td class="num dt">2025-11-03</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">4</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/init27" rel="noopener">init27</a>
+    <div class="name">Sanyam Bhutani</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">synthetic-data-kit</span></td>
+  <td class="ch"><a href="https://sanyambhutani.com" rel="noopener">site</a> <a href="https://x.com/bhutanisanyam1" rel="noopener">@bhutanisanyam1</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/init27/Deep-Learning-Book-Supplementary-Materials" rel="noopener">Deep-Learning-Book-Supplementary-Materials ★56</a> <a class="own" href="https://github.com/init27/MIT-6.S094-Deep-Learning-for-Self-Driving-Cars" rel="noopener">MIT-6.S094-Deep-Learning-for-Self-Driving-Cars ★55</a> <a class="own" href="https://github.com/init27/DL-Toolkit" rel="noopener">DL-Toolkit ★17</a></td>
+  <td class="num dt">2025-10-25</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SimonWan" rel="noopener">SimonWan</a>
+    <div class="name">Shengye Wan</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><a href="https://simonwan.github.io/" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/SimonWan/simonwan.github.io" rel="noopener">simonwan.github.io ★0</a> <a class="own" href="https://github.com/SimonWan/NFT-Offer-Behavior" rel="noopener">NFT-Offer-Behavior ★0</a> <a class="own" href="https://github.com/SimonWan/webview-test" rel="noopener">webview-test ★0</a></td>
+  <td class="num dt">2026-01-13</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/daruuro" rel="noopener">daruuro</a>
+    <div class="name">Abdullahi Abdalla</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/daruuro/instagrambot" rel="noopener">instagrambot ★1</a> <a class="own" href="https://github.com/daruuro/UIUC-Demographics-Data-Visualization" rel="noopener">UIUC-Demographics-Data-Visualization ★0</a></td>
+  <td class="num dt">2025-10-01</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/LeonKarabchevsky" rel="noopener">LeonKarabchevsky</a>
+    <div class="name">Leon Karabchevsky</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-24</td>
+</tr>
+<tr class="p" data-emp="profile">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/nelish01" rel="noopener">nelish01</a>
+    <div class="name">Nilesh</div>
+  </td>
+  <td><span class="tag t-profile" title="GitHub profile names the lab as their employer.">profile</span></td>
+  <td class="rep"><span class="repo">llama-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/nelish01/torchforge_test" rel="noopener">torchforge_test ★0</a> <a class="own" href="https://github.com/nelish01/PE-work" rel="noopener">PE-work ★0</a> <a class="own" href="https://github.com/nelish01/Llamatest" rel="noopener">Llamatest ★0</a></td>
+  <td class="num dt">2025-10-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ghyathmoussa" rel="noopener">ghyathmoussa</a>
+    <div class="name">Ghyath Moussa</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">synthetic-data-kit</span></td>
+  <td class="ch"><a href="https://ghyathmoussa.dev/" rel="noopener">site</a> <a href="https://x.com/ghyathmoussa11" rel="noopener">@ghyathmoussa11</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/ghyathmoussa/rLLM" rel="noopener">rLLM ★23</a> <a class="own" href="https://github.com/ghyathmoussa/LLMium" rel="noopener">LLMium ★4</a> <a class="own" href="https://github.com/ghyathmoussa/DriftGuard" rel="noopener">DriftGuard ★4</a></td>
+  <td class="num dt">2025-10-24</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dwjsong" rel="noopener">dwjsong</a>
+    <div class="name">Daniel Song</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/dwjsong/shadow_mem" rel="noopener">shadow_mem ★3</a> <a class="own" href="https://github.com/dwjsong/Lock-Free-Hash-Table-For-Memcached" rel="noopener">Lock-Free-Hash-Table-For-Memcached ★2</a> <a class="own" href="https://github.com/dwjsong/TestDocu" rel="noopener">TestDocu ★0</a></td>
+  <td class="num dt">2026-03-11</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Lookess244" rel="noopener">Lookess244</a>
+    <div class="name">Lookess244</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-22</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/hc3001meta" rel="noopener">hc3001meta</a>
+    <div class="name">Henry Choi</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-16</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/akashkathole7" rel="noopener">akashkathole7</a>
+    <div class="name">unknown</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-16</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/bowiechen" rel="noopener">bowiechen</a>
+    <div class="name">Bowie Chen</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/bowiechen/FactorialDigitsSum" rel="noopener">FactorialDigitsSum ★0</a> <a class="own" href="https://github.com/bowiechen/badPassword" rel="noopener">badPassword ★0</a></td>
+  <td class="num dt">2026-01-12</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Kravchie" rel="noopener">Kravchie</a>
+    <div class="name">Klaudia Krawiecka</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Kravchie/beehive" rel="noopener">beehive ★0</a></td>
+  <td class="num dt">2025-11-11</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/SteveLeungYL" rel="noopener">SteveLeungYL</a>
+    <div class="name">Steve Leung</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">PurpleLlama</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/SteveLeungYL/WaterTracker" rel="noopener">WaterTracker ★17</a> <a class="own" href="https://github.com/SteveLeungYL/parserfuzz_code" rel="noopener">parserfuzz_code ★5</a> <a class="own" href="https://github.com/SteveLeungYL/SQLBull" rel="noopener">SQLBull ★1</a></td>
+  <td class="num dt">2025-11-04</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yanxi0830" rel="noopener">yanxi0830</a>
+    <div class="name">Xi Yan</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">llama-api-python</span></td>
+  <td class="ch"><a href="https://www.linkedin.com/in/xi-yan" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/yanxi0830/grive-ui" rel="noopener">grive-ui ★7</a> <a class="own" href="https://github.com/yanxi0830/cs229-auto-paper-review" rel="noopener">cs229-auto-paper-review ★3</a> <a class="own" href="https://github.com/yanxi0830/NeuralDataServer-FastAdapt" rel="noopener">NeuralDataServer-FastAdapt ★2</a></td>
+  <td class="num dt">2025-10-01</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Yuanchen-Wu" rel="noopener">Yuanchen-Wu</a>
+    <div class="name">Yuanchen-Wu</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">prompt-ops</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-11</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yuanchenwu726" rel="noopener">yuanchenwu726</a>
+    <div class="name">Yuanchen Wu</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">prompt-ops</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-11-04</td>
+</tr>
+<tr class="p" data-emp="confirmed_org_wide">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/raghotham" rel="noopener">raghotham</a>
+    <div class="name">raghotham</div>
+  </td>
+  <td><span class="tag t-confirmed_org_wide" title="Committed under an @meta.com or fb.com address. That domain covers the whole parent company, not this lab specifically.">parent domain</span></td>
+  <td class="rep"><span class="repo">llama-verifications</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/raghotham/aws-okta-abac" rel="noopener">aws-okta-abac ★1</a> <a class="own" href="https://github.com/raghotham/testing" rel="noopener">testing ★0</a></td>
+  <td class="num dt">2025-09-08</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ashwinb" rel="noopener">ashwinb</a>
+    <div class="name">Ashwin Bharambe</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">llama-models</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-10</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Khadija-Bayoud" rel="noopener">Khadija-Bayoud</a>
+    <div class="name">Khadija-Bayoud</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">synthetic-data-kit</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-10-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ghd3v" rel="noopener">ghd3v</a>
+    <div class="name">Amir Youssefi</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">synthetic-data-kit</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2025-09-19</td>
+</tr></tbody>
+</table></div>
+
+<footer>Generated 2026-09-03 from the GitHub REST and GraphQL APIs.
+Source: <code>research/github/</code>. Counts cover the default branch only.</footer>
+</div>
+<script>
+const staffSet = ["confirmed", "confirmed_org_wide", "profile", "handle"];
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll("tr.p").forEach(r => {
+      const e = r.dataset.emp;
+      const show = f === "all" || (f === "staff" ? staffSet.includes(e) : e === f);
+      r.style.display = show ? "" : "none";
+    });
+  });
+});
+</script>

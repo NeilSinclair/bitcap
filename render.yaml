@@ -1,0 +1,63 @@
+# Render blueprint: managed Postgres, a nightly worker, and the read-only API.
+#
+# Declarative so the deployment is reviewable in the diff rather than clicked
+# together in a dashboard. Railway needs the same two pieces (database, cron)
+# configured through its UI — see README, "Deploying".
+#
+# Secrets are `sync: false`: Render prompts for them once and never stores them
+# here. ANTHROPIC_API_KEY is the only one the worker cannot run without, and
+# only for the classification and drift stages — ingestion needs no key at all.
+
+databases:
+  - name: bitcap-db
+    databaseName: bitcap
+    plan: basic-256mb
+
+services:
+  # The scheduled firing. 03:00 UTC daily: after the US-hours announcement
+  # window has closed, so a day's publications land in one run.
+  - type: cron
+    name: bitcap-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 3 * * *"
+    dockerCommand: bitcap-worker
+    plan: starter
+    # No disk: Render cron jobs cannot mount one. That is survivable because
+    # the cache that costs money is in Postgres, not on disk — classify.py
+    # takes its work list from `raw_articles LEFT JOIN raw_classifications`,
+    # so an article already classified at this prompt version never reaches
+    # the API however cold the container starts.
+    #
+    # What a cold start does cost is time, on the two legs that still cache to
+    # /app/research/docs: papers re-runs byline extraction (cadence 3) and
+    # github re-harvests its 12-month window (cadence 7, the slowest leg).
+    # Both are bounded by budget.per_run_usd. If those re-harvests become the
+    # bottleneck, the fix is a background worker with a disk that sleeps to its
+    # own schedule, billed 24/7 — not worth it until the time is actually felt.
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bitcap-db
+          property: connectionString
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: ALERT_WEBHOOK_URL
+        sync: false
+
+  - type: web
+    name: bitcap-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    plan: starter
+    healthCheckPath: /api/status
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bitcap-db
+          property: connectionString
+      - key: FRONTEND_ORIGIN
+        sync: false

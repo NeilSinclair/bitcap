@@ -1,0 +1,2071 @@
+{
+  "people": [
+    {
+      "login": "heyjustinai",
+      "commits": 87,
+      "repo_count": 2,
+      "repos": {
+        "prompt-ops": 86,
+        "llama-cookbook": 1
+      },
+      "first_commit": "2025-09-15T20:54:31Z",
+      "last_commit": "2025-12-30T16:00:35Z",
+      "names": [
+        "Justin Lee"
+      ],
+      "merged_from": [],
+      "employment": "profile",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "outlook.com": 87
+      },
+      "profile": {
+        "login": "heyjustinai",
+        "name": "Justin Lee",
+        "company": "@meta-llama",
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": "san francisco",
+        "followers": 62,
+        "created_at": "2017-05-09T11:37:04Z",
+        "personal_repos": [
+          {
+            "name": "prompt-ops-mcp",
+            "stars": 4,
+            "pushed_at": "2025-07-06T19:51:36Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "coinbasehack",
+            "stars": 0,
+            "pushed_at": "2025-02-02T19:42:12Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "multi-agent-defense",
+            "stars": 1,
+            "pushed_at": "2024-11-24T23:19:50Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "linkedin-scraper",
+            "stars": 2,
+            "pushed_at": "2021-05-19T21:07:43Z",
+            "description": "I developed a LinkedIn scraper to collect information such as headlines, work experience, etc as data for my machine learning research. ",
+            "language": "Python"
+          },
+          {
+            "name": "common-sense-reasoning",
+            "stars": 1,
+            "pushed_at": "2021-05-19T20:42:12Z",
+            "description": "As part of my senior design, I developed a web application that is capable of doing simple commonsense reasoning tasks.",
+            "language": "CSS"
+          },
+          {
+            "name": "linkedin-similarity",
+            "stars": 2,
+            "pushed_at": "2021-05-19T19:39:33Z",
+            "description": "I have received a research grant to analyze different word embedding techniques in detecting similarities between LinkedIn profiles and ultimately develop a mentor pairing program between college students.",
+            "language": "Jupyter Notebook"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "connortreacy",
+      "commits": 64,
+      "repo_count": 2,
+      "repos": {
+        "prompt-ops": 39,
+        "llama-cookbook": 25
+      },
+      "first_commit": "2025-10-16T16:49:57Z",
+      "last_commit": "2025-12-19T16:24:24Z",
+      "names": [
+        "Connor Treacy"
+      ],
+      "merged_from": [],
+      "employment": "profile",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 64
+      },
+      "profile": {
+        "login": "connortreacy",
+        "name": "Connor Treacy",
+        "company": "Meta",
+        "bio": null,
+        "blog": "http://www.facebook.com/connortreacy",
+        "twitter": null,
+        "location": "London",
+        "followers": 98,
+        "created_at": "2012-06-01T10:21:18Z",
+        "personal_repos": [
+          {
+            "name": "digix0x",
+            "stars": 1,
+            "pushed_at": "2025-10-08T21:32:06Z",
+            "description": "A digital emulation of the Roland TB-303, using values sampled from real hardware.",
+            "language": "C"
+          },
+          {
+            "name": "DIN_Sync_808",
+            "stars": 0,
+            "pushed_at": "2025-07-16T08:42:02Z",
+            "description": "A USB-MIDI DIN Sync converter for Roland TR-808, with shuffle support ",
+            "language": "C++"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "JinpengMiao",
+      "commits": 43,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 43
+      },
+      "first_commit": "2025-09-08T15:30:57Z",
+      "last_commit": "2026-05-04T23:31:34Z",
+      "names": [
+        "Jinpeng Miao"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 43,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 43
+      },
+      "profile": {
+        "login": "JinpengMiao",
+        "name": "Jinpeng",
+        "company": "Meta",
+        "bio": "Research Scientist at Meta",
+        "blog": "https://github.com/JinpengMiao",
+        "twitter": null,
+        "location": "Menlo Park, CA",
+        "followers": 4,
+        "created_at": "2016-09-04T22:23:33Z",
+        "personal_repos": [
+          {
+            "name": "Smart-Agriculture",
+            "stars": 0,
+            "pushed_at": "2023-03-06T22:12:56Z",
+            "description": "Source code for our research project on smart agriculture",
+            "language": "Python"
+          },
+          {
+            "name": "gem5_cache",
+            "stars": 0,
+            "pushed_at": "2020-07-07T19:35:58Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "VM-Detection",
+            "stars": 0,
+            "pushed_at": "2020-02-02T20:50:07Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "Algorithm-Project",
+            "stars": 0,
+            "pushed_at": "2019-04-19T16:55:01Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "DMFinalProject",
+            "stars": 0,
+            "pushed_at": "2018-12-13T20:49:27Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "CSCI-5448_Project",
+            "stars": 0,
+            "pushed_at": "2018-11-26T21:40:25Z",
+            "description": null,
+            "language": "HTML"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "albertodepaola",
+      "commits": 15,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 15
+      },
+      "first_commit": "2025-10-07T15:40:09Z",
+      "last_commit": "2025-11-01T00:39:26Z",
+      "names": [
+        "Beto de Paola",
+        "albertodepaola"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 13,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 13,
+        "gmail.com": 2
+      },
+      "profile": {
+        "login": "albertodepaola",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 33,
+        "created_at": "2010-03-15T02:33:04Z",
+        "personal_repos": [
+          {
+            "name": "hermes-meta-provider",
+            "stars": 0,
+            "pushed_at": "2026-08-08T00:04:35Z",
+            "description": "Hermes Agent model-provider plugin for the Meta Model API (Muse Spark family, incl. muse-spark-1.2-contributor).",
+            "language": "Python"
+          },
+          {
+            "name": "test_public",
+            "stars": 0,
+            "pushed_at": "2024-09-25T14:03:00Z",
+            "description": "simple repo",
+            "language": null
+          },
+          {
+            "name": "llama_watsonx_demo",
+            "stars": 1,
+            "pushed_at": "2024-06-14T23:19:45Z",
+            "description": "Repo for showcasing Llama on watsonx.ai and using Llama Guard for safeguarding",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "llama-recipes-private",
+            "stars": 0,
+            "pushed_at": "2024-04-24T18:38:43Z",
+            "description": "temporary private repo for llama-recipes work",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "catalog-project",
+            "stars": 0,
+            "pushed_at": "2022-12-08T02:22:33Z",
+            "description": "Full stack web dev nanodegree catalog app project",
+            "language": "Python"
+          },
+          {
+            "name": "LearningOpenGL",
+            "stars": 0,
+            "pushed_at": "2022-06-29T19:19:20Z",
+            "description": "Repo with solution following this website: https://learnopengl.com/",
+            "language": "C++"
+          },
+          {
+            "name": "rec-test-albertop-client",
+            "stars": 0,
+            "pushed_at": "2019-02-23T03:38:54Z",
+            "description": "Torre's test repo for the angular app",
+            "language": "TypeScript"
+          },
+          {
+            "name": "rec-test-albertop-server",
+            "stars": 0,
+            "pushed_at": "2019-02-22T05:12:04Z",
+            "description": "Server side for the test",
+            "language": "Java"
+          },
+          {
+            "name": "ud-project-4",
+            "stars": 0,
+            "pushed_at": "2018-09-04T00:46:18Z",
+            "description": null,
+            "language": "CSS"
+          },
+          {
+            "name": "linux-server-configuration",
+            "stars": 0,
+            "pushed_at": "2018-08-27T04:29:00Z",
+            "description": "Project n\u00ba 5 of the full stack web dev nanodegree",
+            "language": null
+          },
+          {
+            "name": "portfolio",
+            "stars": 0,
+            "pushed_at": "2018-08-20T02:03:50Z",
+            "description": "Personal portfolio, linking to code repos, developed sites or apps.",
+            "language": "HTML"
+          },
+          {
+            "name": "FileConsumer",
+            "stars": 0,
+            "pushed_at": "2018-06-07T11:32:29Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "jhipsterSampleApplication",
+            "stars": 0,
+            "pushed_at": "2018-04-16T18:54:39Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "my-travel-plans",
+            "stars": 0,
+            "pushed_at": "2018-03-29T01:00:00Z",
+            "description": null,
+            "language": "CSS"
+          },
+          {
+            "name": "logAnalysis",
+            "stars": 0,
+            "pushed_at": "2018-03-27T18:33:44Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "SpringBatchParser",
+            "stars": 0,
+            "pushed_at": "2018-03-06T03:06:59Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "logparser",
+            "stars": 0,
+            "pushed_at": "2018-02-26T21:19:34Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "mussi",
+            "stars": 0,
+            "pushed_at": "2016-06-20T23:12:30Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "abator-extend",
+            "stars": 0,
+            "pushed_at": "2015-06-18T21:37:18Z",
+            "description": "Automatically exported from code.google.com/p/abator-extend",
+            "language": "Java"
+          },
+          {
+            "name": "play-admin",
+            "stars": 2,
+            "pushed_at": "2013-07-16T06:27:19Z",
+            "description": "Django like admin for play framework.",
+            "language": "Java"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "Riandy",
+      "commits": 10,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 10
+      },
+      "first_commit": "2025-10-22T04:57:39Z",
+      "last_commit": "2025-10-24T16:11:25Z",
+      "names": [
+        "Riandy"
+      ],
+      "merged_from": [],
+      "employment": "profile",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "windowslive.com": 10
+      },
+      "profile": {
+        "login": "Riandy",
+        "name": "Riandy",
+        "company": "Meta",
+        "bio": "Gen AI Engineering - Meta ",
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 6,
+        "created_at": "2012-12-06T13:24:07Z",
+        "personal_repos": [
+          {
+            "name": "FAS",
+            "stars": 0,
+            "pushed_at": "2015-04-25T17:11:14Z",
+            "description": "Riandy Final Year Project",
+            "language": "Java"
+          },
+          {
+            "name": "cs2103aug12-f09-1c",
+            "stars": 0,
+            "pushed_at": "2015-03-18T14:08:59Z",
+            "description": "Automatically exported from code.google.com/p/cs2103aug12-f09-1c",
+            "language": "C++"
+          },
+          {
+            "name": "WorkHealthScheduler",
+            "stars": 0,
+            "pushed_at": "2014-11-05T07:39:44Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "FlexibleAlertScheduling",
+            "stars": 0,
+            "pushed_at": "2014-11-05T07:39:32Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "Android-Tutorials",
+            "stars": 0,
+            "pushed_at": "2014-10-13T02:34:43Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "Android-Tutorial",
+            "stars": 0,
+            "pushed_at": "2014-10-11T06:00:20Z",
+            "description": "Collections of mini tutorials that I believe are useful",
+            "language": null
+          },
+          {
+            "name": "Social-Media-Time-Machine",
+            "stars": 0,
+            "pushed_at": "2014-10-09T14:43:36Z",
+            "description": null,
+            "language": null
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "IgorKasianenko",
+      "commits": 7,
+      "repo_count": 2,
+      "repos": {
+        "llama-cookbook": 6,
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-09-08T16:55:45Z",
+      "last_commit": "2025-10-27T10:46:34Z",
+      "names": [
+        "Igor Kasianenko"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 7,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 7
+      },
+      "profile": {
+        "login": "IgorKasianenko",
+        "name": "Igor Kasianenko",
+        "company": null,
+        "bio": "AI/ML Engineer, ex-Meta\r\n",
+        "blog": null,
+        "twitter": null,
+        "location": "London, UK",
+        "followers": 27,
+        "created_at": "2016-03-06T15:55:09Z",
+        "personal_repos": [
+          {
+            "name": "IgorKasianenko",
+            "stars": 1,
+            "pushed_at": "2026-04-30T10:45:00Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "evals-for-engineers-and-pms",
+            "stars": 0,
+            "pushed_at": "2025-10-11T15:08:45Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "fastpages-igor",
+            "stars": 0,
+            "pushed_at": "2024-06-05T14:08:24Z",
+            "description": "My personal blog",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "public_speaking",
+            "stars": 1,
+            "pushed_at": "2022-08-17T17:54:20Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "hydra-bug-AttributeError",
+            "stars": 0,
+            "pushed_at": "2021-07-20T16:20:15Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "GANs-style-transfer-fast.ai-win10",
+            "stars": 1,
+            "pushed_at": "2018-06-03T10:03:11Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "sample_website",
+            "stars": 0,
+            "pushed_at": "2017-08-25T05:14:24Z",
+            "description": "A sample website for Learn Enough HTML to Be Dangerous",
+            "language": "HTML"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "amontilla0",
+      "commits": 6,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 6
+      },
+      "first_commit": "2025-09-22T10:44:22Z",
+      "last_commit": "2026-06-02T15:51:02Z",
+      "names": [
+        "Abraham Montilla"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 6,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 6
+      },
+      "profile": {
+        "login": "amontilla0",
+        "name": "Abraham Montilla",
+        "company": null,
+        "bio": "Professional software developer, data scientist and electronics hobbyist",
+        "blog": null,
+        "twitter": null,
+        "location": "Washington, DC",
+        "followers": 4,
+        "created_at": "2016-12-08T04:27:33Z",
+        "personal_repos": [
+          {
+            "name": "smartcoil",
+            "stars": 4,
+            "pushed_at": "2022-12-08T02:57:16Z",
+            "description": "Full interface to automate a home-based fan coil unit with a Raspberry Pi. Notice that fan coil unit wiring may involve high voltage manipulation, any handling of this kind is under your own responsibility.",
+            "language": "Python"
+          },
+          {
+            "name": "C4NN",
+            "stars": 1,
+            "pushed_at": "2019-06-18T03:43:17Z",
+            "description": "TensorFlow's artificial neural network that learns to play the Connect 4 game",
+            "language": "Python"
+          },
+          {
+            "name": "ZurichDogsDashboard",
+            "stars": 0,
+            "pushed_at": "2019-06-05T01:37:31Z",
+            "description": "A quick overview of dogs breeds owned in Zurich over the period 2001-2015. Dashboard developed using D3.js functionalities.",
+            "language": "JavaScript"
+          },
+          {
+            "name": "text_analytics_IDB_blogpost",
+            "stars": 0,
+            "pushed_at": "2019-06-04T01:08:32Z",
+            "description": "Use transparency data from IATI to classify IDB projects by sector",
+            "language": "Python"
+          },
+          {
+            "name": "lab01_Abe",
+            "stars": 0,
+            "pushed_at": "2017-03-04T18:58:27Z",
+            "description": "first lab ever in the Certificate Program",
+            "language": null
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "varunfb",
+      "commits": 6,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 6
+      },
+      "first_commit": "2025-10-07T17:05:42Z",
+      "last_commit": "2025-11-03T16:25:19Z",
+      "names": [
+        "varunfb"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 6,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 6
+      },
+      "profile": {
+        "login": "varunfb",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 10,
+        "created_at": "2016-08-17T22:59:32Z",
+        "personal_repos": [
+          {
+            "name": "llama",
+            "stars": 7,
+            "pushed_at": "2025-07-23T21:08:53Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "init27",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 4
+      },
+      "first_commit": "2025-09-29T19:41:49Z",
+      "last_commit": "2025-10-25T13:31:44Z",
+      "names": [
+        "Sanyam Bhutani"
+      ],
+      "merged_from": [],
+      "employment": "profile",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 4
+      },
+      "profile": {
+        "login": "init27",
+        "name": "Sanyam Bhutani",
+        "company": "@meta-llama ",
+        "bio": "Deep Learning Engineer\r\nPrev: Weights & Biases, H2O.ai | Chai Time Data Science Podcast Host | Kaggle Noob",
+        "blog": "sanyambhutani.com",
+        "twitter": "bhutanisanyam1",
+        "location": "Menlo Park",
+        "followers": 513,
+        "created_at": "2015-12-09T14:44:20Z",
+        "personal_repos": [
+          {
+            "name": "Deep-Learning-Book-Supplementary-Materials",
+            "stars": 56,
+            "pushed_at": "2022-12-28T18:19:37Z",
+            "description": "Supplementary Materials for the Deep Learning Book by Ian Goodfellow et al",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "fastai-ml-remastered",
+            "stars": 2,
+            "pushed_at": "2021-11-07T14:40:11Z",
+            "description": "fastai-ml remastered for 2021",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "Meetup-Notes",
+            "stars": 7,
+            "pushed_at": "2020-09-04T17:34:57Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "RTX-2080Ti-Vs-GTX-1080Ti-CIFAR-100-Benchmarks",
+            "stars": 15,
+            "pushed_at": "2019-01-29T15:58:39Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "MIT-6.S094-Deep-Learning-for-Self-Driving-Cars",
+            "stars": 55,
+            "pushed_at": "2018-07-05T02:35:10Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "Flying-Car-Nanodegree-Project-2-3D-Motion-Planning",
+            "stars": 2,
+            "pushed_at": "2018-07-01T21:39:05Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "Flying-Car-Nanodegree-Project-3-Control-of-a-3D-Quadrotor",
+            "stars": 3,
+            "pushed_at": "2018-07-01T21:27:54Z",
+            "description": null,
+            "language": "C"
+          },
+          {
+            "name": "Flying-Car-Nanodegree-Project-4-Building-an-Estimator",
+            "stars": 1,
+            "pushed_at": "2018-07-01T21:27:47Z",
+            "description": null,
+            "language": "C++"
+          },
+          {
+            "name": "ReaderBot",
+            "stars": 0,
+            "pushed_at": "2018-04-11T13:48:32Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "Flying-Car-ND-Backyard-Flyer",
+            "stars": 0,
+            "pushed_at": "2018-04-05T01:53:19Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "LyricGenerator",
+            "stars": 3,
+            "pushed_at": "2018-03-27T07:03:00Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "TV-Script-Generation",
+            "stars": 1,
+            "pushed_at": "2018-02-22T09:41:39Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "DL-Toolkit",
+            "stars": 17,
+            "pushed_at": "2018-01-21T05:35:23Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "SimonWan",
+      "commits": 3,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 3
+      },
+      "first_commit": "2025-09-14T03:12:39Z",
+      "last_commit": "2026-01-13T17:31:01Z",
+      "names": [
+        "Shengye Wan"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 3,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 3
+      },
+      "profile": {
+        "login": "SimonWan",
+        "name": "Shengye Wan",
+        "company": "Meta",
+        "bio": "Meta | AI Security | PhD | Remote@home",
+        "blog": "https://simonwan.github.io/",
+        "twitter": null,
+        "location": "New York",
+        "followers": 107,
+        "created_at": "2015-02-27T14:00:10Z",
+        "personal_repos": [
+          {
+            "name": "simonwan.github.io",
+            "stars": 0,
+            "pushed_at": "2026-05-03T21:10:20Z",
+            "description": null,
+            "language": "Ruby"
+          },
+          {
+            "name": "NFT-Offer-Behavior",
+            "stars": 0,
+            "pushed_at": "2025-01-02T21:56:55Z",
+            "description": "PSU Research Project: Information Systems x NFT",
+            "language": null
+          },
+          {
+            "name": "webview-test",
+            "stars": 0,
+            "pushed_at": "2020-06-25T15:35:52Z",
+            "description": "WebView navigation test",
+            "language": "HTML"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "daruuro",
+      "commits": 3,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 3
+      },
+      "first_commit": "2025-09-23T09:08:04Z",
+      "last_commit": "2025-10-01T17:47:27Z",
+      "names": [
+        "Abdullahi Abdalla"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 3,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 3
+      },
+      "profile": {
+        "login": "daruuro",
+        "name": "Abdullahi Abdalla",
+        "company": "@facebook",
+        "bio": "Me fail English? That's unpossible.",
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 60,
+        "created_at": "2013-11-25T01:29:41Z",
+        "personal_repos": [
+          {
+            "name": "UIUC-Demographics-Data-Visualization",
+            "stars": 0,
+            "pushed_at": "2017-09-12T05:24:14Z",
+            "description": "A small data visualization created with d3.js and Python (specifically Jupyter Notebook). Data for UIUC student demographics provided by DMI (dmi.illinois.edu).",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "instagrambot",
+            "stars": 1,
+            "pushed_at": "2015-07-28T04:21:11Z",
+            "description": "Instagram Bot",
+            "language": "Python"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "LeonKarabchevsky",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 2
+      },
+      "first_commit": "2025-09-22T14:25:46Z",
+      "last_commit": "2025-09-24T13:20:45Z",
+      "names": [
+        "Leon Karabchevsky"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 2,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 2
+      },
+      "profile": {
+        "login": "LeonKarabchevsky",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": "Tel Aviv",
+        "followers": 1,
+        "created_at": "2016-06-23T12:51:03Z",
+        "personal_repos": []
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "nelish01",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 2
+      },
+      "first_commit": "2025-10-10T05:29:31Z",
+      "last_commit": "2025-10-13T07:49:53Z",
+      "names": [
+        "Nilesh",
+        "llamatest"
+      ],
+      "merged_from": [],
+      "employment": "profile",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1,
+        "gmail.com": 1
+      },
+      "profile": {
+        "login": "nelish01",
+        "name": "Nilesh",
+        "company": "Facebook India",
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": "Mumbai",
+        "followers": 2,
+        "created_at": "2023-08-20T18:18:36Z",
+        "personal_repos": [
+          {
+            "name": "torchforge_test",
+            "stars": 0,
+            "pushed_at": "2025-12-22T05:12:13Z",
+            "description": "Evaluating the performance of TorchForge",
+            "language": "Python"
+          },
+          {
+            "name": "PE-work",
+            "stars": 0,
+            "pushed_at": "2025-01-16T07:03:21Z",
+            "description": "This will help to maintain the cookbooks and repo",
+            "language": null
+          },
+          {
+            "name": "Llamatest",
+            "stars": 0,
+            "pushed_at": "2025-01-06T16:50:17Z",
+            "description": "To support the Llama cases",
+            "language": null
+          },
+          {
+            "name": "GEN-AI-Local-Test",
+            "stars": 0,
+            "pushed_at": "2024-12-23T18:17:17Z",
+            "description": "This is to test my GEN AI projects",
+            "language": "Python"
+          },
+          {
+            "name": "myfirstlocalrepo",
+            "stars": 0,
+            "pushed_at": "2024-12-13T06:37:21Z",
+            "description": "this is my first local repo",
+            "language": null
+          },
+          {
+            "name": "https-github.com-facebookresearch-llama",
+            "stars": 0,
+            "pushed_at": "2024-02-18T17:39:27Z",
+            "description": "To support the Llama cases",
+            "language": null
+          },
+          {
+            "name": "nelish01",
+            "stars": 0,
+            "pushed_at": "2024-02-18T17:27:38Z",
+            "description": "Config files for my GitHub profile.",
+            "language": null
+          },
+          {
+            "name": "facebookresearch-llama",
+            "stars": 0,
+            "pushed_at": "2024-01-06T19:49:06Z",
+            "description": null,
+            "language": "Python"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "ghyathmoussa",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 2
+      },
+      "first_commit": "2025-10-18T11:35:47Z",
+      "last_commit": "2025-10-24T19:28:00Z",
+      "names": [
+        "ghyath"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "hotmail.com": 2
+      },
+      "profile": {
+        "login": "ghyathmoussa",
+        "name": "Ghyath Moussa",
+        "company": "NewmindAI",
+        "bio": "AI/System Engineer\r\n",
+        "blog": "https://ghyathmoussa.dev/",
+        "twitter": "ghyathmoussa11",
+        "location": null,
+        "followers": 46,
+        "created_at": "2019-04-20T08:33:51Z",
+        "personal_repos": [
+          {
+            "name": "rLLM",
+            "stars": 23,
+            "pushed_at": "2026-08-24T14:47:43Z",
+            "description": "A lightweight, single-binary LLM inference engine built in Rust. It offers low-latency token streaming, continuous batching, and memory-efficient caching via an OpenAI-compatible API",
+            "language": "Rust"
+          },
+          {
+            "name": ".github",
+            "stars": 0,
+            "pushed_at": "2026-07-09T08:04:58Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "mcp-agentic-system",
+            "stars": 0,
+            "pushed_at": "2026-05-13T14:49:37Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "DoctorFollow-Assginment",
+            "stars": 0,
+            "pushed_at": "2026-04-17T07:45:19Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "hybrid-rag",
+            "stars": 0,
+            "pushed_at": "2026-04-04T16:02:18Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "LLMium",
+            "stars": 4,
+            "pushed_at": "2026-03-13T17:13:47Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "rag-chatbot",
+            "stars": 2,
+            "pushed_at": "2026-02-22T10:49:36Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "SiteAble",
+            "stars": 0,
+            "pushed_at": "2026-01-20T20:34:01Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "ghyathmoussa",
+            "stars": 0,
+            "pushed_at": "2025-12-29T19:15:15Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "DriftGuard",
+            "stars": 4,
+            "pushed_at": "2025-11-23T10:20:27Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "ML_projects",
+            "stars": 1,
+            "pushed_at": "2025-05-09T06:46:31Z",
+            "description": "ML Projects will be collected in this repo",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "terraform",
+            "stars": 0,
+            "pushed_at": "2024-10-12T20:28:21Z",
+            "description": null,
+            "language": "HCL"
+          },
+          {
+            "name": "real-time-data-pipeline",
+            "stars": 0,
+            "pushed_at": "2024-09-21T13:05:13Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "pipeline_example",
+            "stars": 0,
+            "pushed_at": "2024-01-28T19:29:46Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "text_summarizer",
+            "stars": 0,
+            "pushed_at": "2023-11-20T08:41:27Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "text_search",
+            "stars": 0,
+            "pushed_at": "2023-11-12T18:06:46Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "hand_detection",
+            "stars": 2,
+            "pushed_at": "2023-09-18T06:54:10Z",
+            "description": "Hand Detection script with pure opencv",
+            "language": "Python"
+          },
+          {
+            "name": "Text_Classification_Using_Genetic_Algorithm",
+            "stars": 0,
+            "pushed_at": "2023-08-10T13:37:49Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "data_stream_pipline",
+            "stars": 0,
+            "pushed_at": "2023-08-07T20:01:00Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "log_monitoring",
+            "stars": 0,
+            "pushed_at": "2023-07-11T13:33:39Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "home_credit_card_clasification",
+            "stars": 0,
+            "pushed_at": "2023-05-15T14:39:17Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "airflow_etl",
+            "stars": 0,
+            "pushed_at": "2023-04-01T22:52:06Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "vehicle_control_by-eyes",
+            "stars": 0,
+            "pushed_at": "2023-01-17T12:30:40Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "CIFAR10_classification",
+            "stars": 0,
+            "pushed_at": "2023-01-16T13:48:50Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "image_retrieval",
+            "stars": 0,
+            "pushed_at": "2023-01-16T13:36:36Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "image_filters",
+            "stars": 0,
+            "pushed_at": "2023-01-16T12:52:22Z",
+            "description": null,
+            "language": "C"
+          },
+          {
+            "name": "Algorithms",
+            "stars": 0,
+            "pushed_at": "2023-01-16T12:01:56Z",
+            "description": "Describing some of common algorithms",
+            "language": "C"
+          },
+          {
+            "name": "tooth_segmentation",
+            "stars": 0,
+            "pushed_at": "2022-09-19T13:20:18Z",
+            "description": "Tooth Segmentation Projects",
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "login_nodejs",
+            "stars": 0,
+            "pushed_at": "2022-09-08T22:18:53Z",
+            "description": "simple login and register page with Authentication ",
+            "language": "JavaScript"
+          },
+          {
+            "name": "python_scripts",
+            "stars": 0,
+            "pushed_at": "2022-08-01T21:18:18Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "sorting_projects",
+            "stars": 0,
+            "pushed_at": "2022-08-01T17:30:35Z",
+            "description": null,
+            "language": "C"
+          },
+          {
+            "name": "we_socket_python",
+            "stars": 0,
+            "pushed_at": "2022-05-20T17:49:24Z",
+            "description": "simple chat app using python",
+            "language": "Python"
+          },
+          {
+            "name": "student_system",
+            "stars": 0,
+            "pushed_at": "2022-05-20T10:54:56Z",
+            "description": null,
+            "language": "HTML"
+          },
+          {
+            "name": "time_series",
+            "stars": 0,
+            "pushed_at": "2022-02-18T09:15:39Z",
+            "description": null,
+            "language": "Jupyter Notebook"
+          },
+          {
+            "name": "database_project",
+            "stars": 0,
+            "pushed_at": "2022-01-15T09:27:35Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "serverDataBase",
+            "stars": 0,
+            "pushed_at": "2021-12-24T14:26:59Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "jetlexa_task",
+            "stars": 0,
+            "pushed_at": "2021-03-03T10:02:40Z",
+            "description": null,
+            "language": "Pug"
+          },
+          {
+            "name": "UniversitySystem",
+            "stars": 0,
+            "pushed_at": "2021-01-21T18:20:00Z",
+            "description": null,
+            "language": "C"
+          },
+          {
+            "name": "nomerical_analysis",
+            "stars": 0,
+            "pushed_at": "2020-04-22T18:18:47Z",
+            "description": "Nomerical Analysis",
+            "language": "Python"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "dwjsong",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-03-11T19:49:24Z",
+      "last_commit": "2026-03-11T19:49:24Z",
+      "names": [
+        "Daniel Song"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "dwjsong",
+        "name": "Daniel Song",
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 51,
+        "created_at": "2012-02-14T01:59:47Z",
+        "personal_repos": [
+          {
+            "name": "TestDocu",
+            "stars": 0,
+            "pushed_at": "2024-07-17T16:45:07Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "simple",
+            "stars": 0,
+            "pushed_at": "2018-05-08T04:02:33Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "AuthClassLib",
+            "stars": 0,
+            "pushed_at": "2016-02-06T23:53:50Z",
+            "description": null,
+            "language": "C#"
+          },
+          {
+            "name": "clusterfuzz",
+            "stars": 0,
+            "pushed_at": "2016-02-05T20:33:39Z",
+            "description": "Automatically exported from code.google.com/p/clusterfuzz",
+            "language": null
+          },
+          {
+            "name": "dwjsong.github.io",
+            "stars": 0,
+            "pushed_at": "2015-01-30T21:43:55Z",
+            "description": "My webpage",
+            "language": null
+          },
+          {
+            "name": "Lock-Free-Hash-Table-For-Memcached",
+            "stars": 2,
+            "pushed_at": "2013-12-19T01:59:40Z",
+            "description": "Lock Free Hash Table For Memcached",
+            "language": "C"
+          },
+          {
+            "name": "shadow_mem",
+            "stars": 3,
+            "pushed_at": "2013-03-22T21:28:10Z",
+            "description": "shadow memory",
+            "language": "C"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "Lookess244",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-22T22:32:40Z",
+      "last_commit": "2026-01-22T22:32:40Z",
+      "names": [
+        "Lookess244"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "duck.com": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    },
+    {
+      "login": "hc3001meta",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-16T20:00:02Z",
+      "last_commit": "2026-01-16T20:00:02Z",
+      "names": [
+        "Henry Choi"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "hc3001meta",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 0,
+        "created_at": "2025-01-07T17:16:35Z",
+        "personal_repos": []
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "akashkathole7",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-16T13:53:22Z",
+      "last_commit": "2026-01-16T13:53:22Z",
+      "names": [
+        "unknown"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    },
+    {
+      "login": "bowiechen",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-12T10:51:16Z",
+      "last_commit": "2026-01-12T10:51:16Z",
+      "names": [
+        "Bowie Chen"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "bowiechen",
+        "name": "Bowie Chen",
+        "company": null,
+        "bio": "Quis custodiet ipsos custodes?",
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 26,
+        "created_at": "2011-01-01T03:12:31Z",
+        "personal_repos": [
+          {
+            "name": "FactorialDigitsSum",
+            "stars": 0,
+            "pushed_at": "2018-08-07T23:53:27Z",
+            "description": "The Factorial Digits Sum Puzzle, as seen on YouTube channel Mind Your Decisions.",
+            "language": "Python"
+          },
+          {
+            "name": "badPassword",
+            "stars": 0,
+            "pushed_at": "2017-08-19T21:19:46Z",
+            "description": "A Chromium extension that queries the haveibeenpwned.com API to check if password exists in known data dumps.",
+            "language": "JavaScript"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "Kravchie",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2025-11-11T19:07:42Z",
+      "last_commit": "2025-11-11T19:07:42Z",
+      "names": [
+        "Klaudia Krawiecka"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "Kravchie",
+        "name": "Klaudia Krawiecka",
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 7,
+        "created_at": "2015-02-16T18:20:38Z",
+        "personal_repos": [
+          {
+            "name": "beehive",
+            "stars": 0,
+            "pushed_at": "2022-01-17T14:36:49Z",
+            "description": "Code for the Beehive experiments",
+            "language": "Java"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "SteveLeungYL",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2025-11-04T00:57:03Z",
+      "last_commit": "2025-11-04T00:57:03Z",
+      "names": [
+        "Steve Leung"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "SteveLeungYL",
+        "name": "Steve Leung",
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": "State College, PA",
+        "followers": 5,
+        "created_at": "2015-04-01T04:44:00Z",
+        "personal_repos": [
+          {
+            "name": "SteveLeungYL.github.io",
+            "stars": 0,
+            "pushed_at": "2025-11-16T23:56:49Z",
+            "description": "Portfolio and CV",
+            "language": "SCSS"
+          },
+          {
+            "name": "SQLBull",
+            "stars": 1,
+            "pushed_at": "2025-11-16T23:23:23Z",
+            "description": "SQLBull: DBMS Fuzzer with Bottom-up Syntax-based SQL Generation",
+            "language": "C++"
+          },
+          {
+            "name": "parserfuzz_code",
+            "stars": 5,
+            "pushed_at": "2025-03-07T21:25:30Z",
+            "description": null,
+            "language": "C++"
+          },
+          {
+            "name": "WaterTracker",
+            "stars": 17,
+            "pushed_at": "2024-12-05T05:39:35Z",
+            "description": "A simple Water Tracker application written in pure SwiftUI and SwiftData, syncs with HealthKit and CloudKit.",
+            "language": "Swift"
+          },
+          {
+            "name": "WaterTrackerSupplementaryMaterials",
+            "stars": 0,
+            "pushed_at": "2024-12-05T05:28:02Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "blog",
+            "stars": 0,
+            "pushed_at": "2024-11-27T20:28:49Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "MyTmuxConfig",
+            "stars": 0,
+            "pushed_at": "2024-10-06T23:21:39Z",
+            "description": "My Tmux Config. ",
+            "language": "Shell"
+          },
+          {
+            "name": "NeoVimConfig",
+            "stars": 0,
+            "pushed_at": "2024-09-19T19:01:39Z",
+            "description": null,
+            "language": "Vim Script"
+          },
+          {
+            "name": "UniversalNotification",
+            "stars": 0,
+            "pushed_at": "2023-11-07T00:15:51Z",
+            "description": null,
+            "language": "Swift"
+          },
+          {
+            "name": "DoomEmacsConfig",
+            "stars": 0,
+            "pushed_at": "2022-04-14T17:22:46Z",
+            "description": null,
+            "language": "Emacs Lisp"
+          },
+          {
+            "name": "COVID_POMCP",
+            "stars": 0,
+            "pushed_at": "2020-10-22T23:16:39Z",
+            "description": "This is the release of POMCP software used in the AAMAS 2021 paper: Liang, Y., & Yadav, A. (2021). Let the DOCTOR Decide Whom to Test: Adaptive Testing Strategies to Tackle the COVID-19 Pandemic. (Submitted to AAMAS-2021)",
+            "language": "C++"
+          },
+          {
+            "name": "Plots_from_the_COVID_POMCP",
+            "stars": 0,
+            "pushed_at": "2020-10-22T23:07:17Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "COVID_19_Minimal",
+            "stars": 0,
+            "pushed_at": "2020-04-09T02:13:50Z",
+            "description": null,
+            "language": "R"
+          },
+          {
+            "name": "Influence_Maximization_Project",
+            "stars": 0,
+            "pushed_at": "2019-10-06T15:41:11Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "FakeNewsCreation",
+            "stars": 0,
+            "pushed_at": "2019-08-19T19:55:14Z",
+            "description": null,
+            "language": "Python"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "yanxi0830",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-api-python": 1
+      },
+      "first_commit": "2025-10-01T21:06:29Z",
+      "last_commit": "2025-10-01T21:06:29Z",
+      "names": [
+        "Xi Yan"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "yanxi0830",
+        "name": "Xi Yan",
+        "company": "Meta",
+        "bio": "Software Engineer @meta-llama ",
+        "blog": "https://www.linkedin.com/in/xi-yan",
+        "twitter": null,
+        "location": "Menlo Park",
+        "followers": 152,
+        "created_at": "2016-06-15T07:22:21Z",
+        "personal_repos": [
+          {
+            "name": "docs",
+            "stars": 0,
+            "pushed_at": "2025-09-23T02:53:21Z",
+            "description": null,
+            "language": "MDX"
+          },
+          {
+            "name": "noFluenza",
+            "stars": 0,
+            "pushed_at": "2022-12-08T01:33:07Z",
+            "description": "Smart Flu Shot Check-in Application (UofTHacksVI)",
+            "language": "HTML"
+          },
+          {
+            "name": "expert-data-server-flask",
+            "stars": 0,
+            "pushed_at": "2021-03-20T02:17:15Z",
+            "description": null,
+            "language": "JavaScript"
+          },
+          {
+            "name": "gcloud-tutorial",
+            "stars": 1,
+            "pushed_at": "2021-01-28T04:00:05Z",
+            "description": "CS329S GCloud Tutorial",
+            "language": "Python"
+          },
+          {
+            "name": "cs229-auto-paper-review",
+            "stars": 3,
+            "pushed_at": "2020-11-18T00:00:29Z",
+            "description": "CS229 Final Project",
+            "language": "Python"
+          },
+          {
+            "name": "CS238CrosswalkDriving",
+            "stars": 0,
+            "pushed_at": "2020-11-08T03:30:31Z",
+            "description": "CS238 Final Project: Safe Autonomous Driving Through a Crosswalk",
+            "language": "Python"
+          },
+          {
+            "name": "NeuralDataServer-FastAdapt",
+            "stars": 2,
+            "pushed_at": "2019-10-17T20:01:00Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "yanxi0830.github.io",
+            "stars": 0,
+            "pushed_at": "2019-08-27T18:20:01Z",
+            "description": null,
+            "language": "HTML"
+          },
+          {
+            "name": "SWT-Performance",
+            "stars": 0,
+            "pushed_at": "2019-03-11T11:07:08Z",
+            "description": "SWT local performance tests logs, updated daily at 07:00 (EDT)",
+            "language": "Python"
+          },
+          {
+            "name": "LM-RM",
+            "stars": 0,
+            "pushed_at": "2019-01-17T02:19:37Z",
+            "description": "Generating Reward Machines from Landmarks",
+            "language": "Python"
+          },
+          {
+            "name": "downward",
+            "stars": 0,
+            "pushed_at": "2018-11-14T05:24:27Z",
+            "description": "Modified Version of Fast Downward (http://www.fast-downward.org/)",
+            "language": "Python"
+          },
+          {
+            "name": "PDDL-RM",
+            "stars": 0,
+            "pushed_at": "2018-11-01T01:59:05Z",
+            "description": "Generate Reward Machines from high-level PDDL models using Partial-Ordered Plan",
+            "language": "Python"
+          },
+          {
+            "name": "csc494",
+            "stars": 0,
+            "pushed_at": "2018-09-12T03:25:33Z",
+            "description": null,
+            "language": "Python"
+          },
+          {
+            "name": "swtSnippets",
+            "stars": 0,
+            "pushed_at": "2018-07-09T19:17:37Z",
+            "description": null,
+            "language": "Java"
+          },
+          {
+            "name": "grive-ui",
+            "stars": 7,
+            "pushed_at": "2018-06-07T15:07:27Z",
+            "description": "Google Drive Client GTK UI based on Grive2",
+            "language": "C"
+          },
+          {
+            "name": "FaceDetection",
+            "stars": 0,
+            "pushed_at": "2017-09-28T23:08:17Z",
+            "description": "Face detection Java servlet",
+            "language": "Java"
+          },
+          {
+            "name": "Nanoleaf-EnergyDrum",
+            "stars": 0,
+            "pushed_at": "2017-07-24T17:48:25Z",
+            "description": "EnergyDrum Plugin for Nanoleaf Hackathon",
+            "language": "C++"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": true
+    },
+    {
+      "login": "Yuanchen-Wu",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "prompt-ops": 1
+      },
+      "first_commit": "2025-11-11T17:36:23Z",
+      "last_commit": "2025-11-11T17:36:23Z",
+      "names": [
+        "Yuanchen-Wu"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "psu.edu": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    },
+    {
+      "login": "yuanchenwu726",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "prompt-ops": 1
+      },
+      "first_commit": "2025-11-04T20:41:09Z",
+      "last_commit": "2025-11-04T20:41:09Z",
+      "names": [
+        "Yuanchen Wu"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "yuanchenwu726",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 0,
+        "created_at": "2025-07-16T00:13:45Z",
+        "personal_repos": []
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "raghotham",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-verifications": 1
+      },
+      "first_commit": "2025-09-08T16:38:21Z",
+      "last_commit": "2025-09-08T16:38:21Z",
+      "names": [
+        "raghotham"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      },
+      "profile": {
+        "login": "raghotham",
+        "name": null,
+        "company": null,
+        "bio": null,
+        "blog": null,
+        "twitter": null,
+        "location": null,
+        "followers": 38,
+        "created_at": "2011-06-16T04:23:02Z",
+        "personal_repos": [
+          {
+            "name": "testing",
+            "stars": 0,
+            "pushed_at": "2025-12-16T21:28:03Z",
+            "description": null,
+            "language": null
+          },
+          {
+            "name": "aws-okta-abac",
+            "stars": 1,
+            "pushed_at": "2024-12-26T21:14:08Z",
+            "description": null,
+            "language": "HCL"
+          }
+        ]
+      },
+      "profile_fetched": true,
+      "company_matches_lab": false
+    },
+    {
+      "login": "ashwinb",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-models": 1
+      },
+      "first_commit": "2025-10-10T00:22:05Z",
+      "last_commit": "2025-10-10T00:22:05Z",
+      "names": [
+        "Ashwin Bharambe"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    },
+    {
+      "login": "Khadija-Bayoud",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-10-18T11:37:43Z",
+      "last_commit": "2025-10-18T11:37:43Z",
+      "names": [
+        "Khadija-Bayoud"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    },
+    {
+      "login": "ghd3v",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-09-19T02:04:23Z",
+      "last_commit": "2025-09-19T02:04:23Z",
+      "names": [
+        "Amir Youssefi"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      },
+      "profile": {},
+      "profile_fetched": false
+    }
+  ],
+  "aliases": {},
+  "mirrors_excluded": [],
+  "totals": {
+    "repos": 8,
+    "commits": 351,
+    "people": 28,
+    "bot_commits": 54,
+    "unattributed_commits": 29,
+    "employment": {
+      "confirmed": 0,
+      "confirmed_org_wide": 16,
+      "profile": 5,
+      "handle": 0,
+      "vendor": 0,
+      "deleted": 0,
+      "unknown": 7
+    },
+    "profiles_fetched": 22,
+    "profile_min_commits": 2
+  }
+}

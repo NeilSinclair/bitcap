@@ -54,6 +54,7 @@ tr:last-child td { border-bottom: 0; }
 .tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--chip);
   white-space: nowrap; cursor: help; }
 .t-confirmed { color: var(--ok); } .t-profile { color: var(--ok); }
+.t-confirmed_org_wide { color: var(--mid); }
 .t-handle { color: var(--mid); } .t-vendor { color: var(--weak); }
 .repo { display: inline-block; background: var(--chip); border-radius: 4px;
   padding: 1px 6px; font-size: 11.5px; margin: 1px 2px 1px 0; }
@@ -66,30 +67,30 @@ footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
 </style>
 <div class="wrap">
 <h1>Anthropic GitHub Register</h1>
-<p class="sub">Contributors to the <code>anthropics</code> organisation, 12 months to 2026-08-31.</p>
+<p class="sub">Contributors to the <code>anthropics</code> organisation, 12 months to 2026-09-03.</p>
 
-<div class="cards"><div class="card"><div class="v">59</div><div class="l">repositories</div><div class="n">pushed in last 12 months</div></div><div class="card"><div class="v">3,457</div><div class="l">human commits</div><div class="n">13,439 bot commits removed</div></div><div class="card"><div class="v">426</div><div class="l">distinct people</div><div class="n">2 accounts merged</div></div><div class="card"><div class="v">176</div><div class="l">identified as staff</div><div class="n">161 by commit email, 9 by profile</div></div></div>
+<div class="cards"><div class="card"><div class="v">59</div><div class="l">repositories</div><div class="n">pushed in last 12 months</div></div><div class="card"><div class="v">3,457</div><div class="l">human commits</div><div class="n">13,439 bot commits removed</div></div><div class="card"><div class="v">426</div><div class="l">distinct people</div><div class="n">2 accounts merged</div></div><div class="card"><div class="v">176</div><div class="l">identified as staff</div><div class="n">161 by commit email, 9 by profile</div></div><div class="card"><div class="v">48</div><div class="l">with a channel to follow</div><div class="n">90 also publish their own repos</div></div></div>
 
 <div class="note">
-<p><b>How employment is decided.</b> A commit made from an
-<code>@anthropic.com</code> address is direct evidence and outranks everything else
-(161 people). A GitHub profile naming the lab is accepted next
-(9). The <code>-ant</code> work-handle convention is used only when
-neither is present (6), and is the one signal here that is a guess.</p>
+<p><b>How employment is decided.</b> A commit made from an <code>@anthropic.com</code> address is direct, lab-specific evidence and outranks everything else (161 people). A GitHub profile naming the lab is accepted next (9). The lab's <span class="tag" title="[-_](ant|anthropic)$">work-handle convention</span> is used only when neither is present (6), and is the one signal here that is a guess.</p>
 <p><b>What was removed.</b> 13,439 of 16,896 commits were made by
 release automation and code generators, which otherwise outrank every human in the
-org. Mirrored repositories were excluded (OpenROAD-flow-scripts, claude-code-base-action): the first is an upstream
-open-source project whose contributors are not staff, the second duplicates commits
-already counted elsewhere.</p>
+org. Mirrored repositories were excluded (OpenROAD-flow-scripts, claude-code-base-action) &mdash; their contributors
+are upstream open-source maintainers, not lab staff, or their commits are already
+counted under another repository.</p>
 <p><b>Read the ranking with care.</b> Commit count measures who maintains public
 code, not seniority or influence. It is shown alongside repository breadth and
 recency rather than collapsed into a single score.</p>
+
 </div>
 
 <div class="filters">
   <button data-f="all" aria-pressed="true">All (426)</button>
   <button data-f="staff" aria-pressed="false">Staff (176)</button>
   <button data-f="confirmed" aria-pressed="false">Commit-email confirmed (161)</button>
+  <button data-f="profile" aria-pressed="false">Profile (9)</button>
+  <button data-f="handle" aria-pressed="false">Handle only (6)</button>
+  <button data-f="vendor" aria-pressed="false">Vendor (4)</button>
   <button data-f="unknown" aria-pressed="false">No evidence (246)</button>
 </div>
 
@@ -106,7 +107,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/bryan-anthropic" rel="noopener">bryan-anthropic</a>
     <div class="name">Bryan Thompson</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-plugins-community</span> <span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/bryan-anthropic/viewer-parity" rel="noopener">viewer-parity ★0</a> <a class="own" href="https://github.com/bryan-anthropic/test-claude-plugin" rel="noopener">test-claude-plugin ★0</a> <a class="own" href="https://github.com/bryan-anthropic/e2e-test-plugin" rel="noopener">e2e-test-plugin ★0</a></td>
@@ -132,7 +133,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dtmeadows" rel="noopener">dtmeadows</a> <span class="alias">+dtmeadows-ant</span>
     <div class="name">David Meadows</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-python</span> <span class="repo">anthropic-sdk-go</span> <span class="repo">anthropic-sdk-java</span> <span class="repo">anthropic-sdk-ruby</span> <span class="more">+5</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/dtmeadows/llamattire" rel="noopener">llamattire ★1</a> <a class="own" href="https://github.com/dtmeadows/node-open-ai-to-audio-player" rel="noopener">node-open-ai-to-audio-player ★0</a> <a class="own" href="https://github.com/dtmeadows/zoom-open-api-specs" rel="noopener">zoom-open-api-specs ★0</a></td>
@@ -145,7 +146,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ashwin-ant" rel="noopener">ashwin-ant</a>
     <div class="name">Ashwin Bhat</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/ashwin-ant/action-test-publish" rel="noopener">action-test-publish ★3</a></td>
@@ -158,7 +159,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/tobinsouth" rel="noopener">tobinsouth</a>
     <div class="name">Tobin South</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-plugins-community</span> <span class="repo">knowledge-work-plugins</span> <span class="repo">claude-for-legal</span> <span class="more">+1</span></td>
   <td class="ch"><a href="https://tobin.page" rel="noopener">site</a> <a href="https://x.com/tobinsouth" rel="noopener">@tobinsouth</a></td>
   <td class="own-c"><a class="own" href="https://github.com/tobinsouth/IntroToMediaLab" rel="noopener">IntroToMediaLab ★11</a> <a class="own" href="https://github.com/tobinsouth/ProcessEntropy" rel="noopener">ProcessEntropy ★11</a> <a class="own" href="https://github.com/tobinsouth/hcp-demo" rel="noopener">hcp-demo ★7</a></td>
@@ -171,7 +172,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/zealoushacker" rel="noopener">zealoushacker</a>
     <div class="name">Alex Notov</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-quickstarts</span></td>
   <td class="ch"><a href="http://zealoushacker.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/zealoushacker/aviation-weather-mcp" rel="noopener">aviation-weather-mcp ★6</a> <a class="own" href="https://github.com/zealoushacker/meteor-bootstrap-and-font-awesome" rel="noopener">meteor-bootstrap-and-font-awesome ★3</a> <a class="own" href="https://github.com/zealoushacker/dotfiles" rel="noopener">dotfiles ★3</a></td>
@@ -184,7 +185,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/qing-ant" rel="noopener">qing-ant</a>
     <div class="name">Qing Wang</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-cookbooks</span> <span class="repo">claude-agent-sdk-typescript</span> <span class="repo">anthropic-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -197,7 +198,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ThariqS" rel="noopener">ThariqS</a>
     <div class="name">Thariq Shihipar</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-demos</span> <span class="repo">claude-plugins-official</span> <span class="repo">html-effectiveness</span> <span class="repo">claude-code</span> <span class="more">+1</span></td>
   <td class="ch"><a href="https://thariq.io" rel="noopener">site</a> <a href="https://x.com/trq212" rel="noopener">@trq212</a></td>
   <td class="own-c"><a class="own" href="https://github.com/ThariqS/html-effectiveness" rel="noopener">html-effectiveness ★661</a> <a class="own" href="https://github.com/ThariqS/poke-api" rel="noopener">poke-api ★21</a> <a class="own" href="https://github.com/ThariqS/ClaudeCodeSDK-EmailAgentExample" rel="noopener">ClaudeCodeSDK-EmailAgentExample ★17</a></td>
@@ -210,7 +211,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jwei-ant" rel="noopener">jwei-ant</a>
     <div class="name">Justin Wei</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">healthcare</span> <span class="repo">life-sciences</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -223,7 +224,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/PedramNavid" rel="noopener">PedramNavid</a>
     <div class="name">Pedram Navid</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-quickstarts</span></td>
   <td class="ch"><a href="http://www.pedramnavid.com" rel="noopener">site</a> <a href="https://x.com/pdrmnvd" rel="noopener">@pdrmnvd</a></td>
   <td class="own-c"><a class="own" href="https://github.com/PedramNavid/dbtpal" rel="noopener">dbtpal ★138</a> <a class="own" href="https://github.com/PedramNavid/petit" rel="noopener">petit ★132</a> <a class="own" href="https://github.com/PedramNavid/rust-for-data" rel="noopener">rust-for-data ★53</a></td>
@@ -236,7 +237,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mhegazy" rel="noopener">mhegazy</a>
     <div class="name">Mohamed Hegazy</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-code</span></td>
   <td class="ch"><a href="https://twitter.com/fdsmars" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/mhegazy/npm-dependency-test" rel="noopener">npm-dependency-test ★5</a> <a class="own" href="https://github.com/mhegazy/ng2Boilerplater-webpack" rel="noopener">ng2Boilerplater-webpack ★2</a> <a class="own" href="https://github.com/mhegazy/issuemanagement" rel="noopener">issuemanagement ★1</a></td>
@@ -249,7 +250,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/k6l3" rel="noopener">k6l3</a>
     <div class="name">Kenneth Lien</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><a href="https://kennethlien.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/k6l3/osascript-dxt" rel="noopener">osascript-dxt ★162</a> <a class="own" href="https://github.com/k6l3/spotify-dxt" rel="noopener">spotify-dxt ★25</a></td>
@@ -262,7 +263,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/noahzweben" rel="noopener">noahzweben</a>
     <div class="name">Noah Zweben</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-agent-sdk-demos</span> <span class="repo">claude-agent-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/noahzweben/Ballr" rel="noopener">Ballr ★3</a> <a class="own" href="https://github.com/noahzweben/AirHockey" rel="noopener">AirHockey ★1</a> <a class="own" href="https://github.com/noahzweben/noahzweben.github.io" rel="noopener">noahzweben.github.io ★0</a></td>
@@ -275,7 +276,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mattpic-ant" rel="noopener">mattpic-ant</a>
     <div class="name">Matt Piccolella</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span> <span class="repo">claude-for-legal</span> <span class="repo">financial-services</span> <span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -288,7 +289,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/tomer-ant" rel="noopener">tomer-ant</a>
     <div class="name">Tomer Aberbach</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-java</span> <span class="repo">anthropic-sdk-ruby</span> <span class="repo">anthropic-sdk-typescript</span> <span class="repo">anthropic-sdk-csharp</span> <span class="more">+3</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -314,7 +315,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/packyg" rel="noopener">packyg</a>
     <div class="name">Packy Gallagher</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-csharp</span> <span class="repo">anthropic-sdk-typescript</span> <span class="repo">anthropic-sdk-php</span> <span class="repo">anthropic-cli</span> <span class="more">+5</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/packyg/packyg" rel="noopener">packyg ★0</a></td>
@@ -327,7 +328,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/Mic92" rel="noopener">Mic92</a>
     <div class="name">Jörg Thalheim</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cargo-nix-plugin</span></td>
   <td class="ch"><a href="https://thalheim.io" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/Mic92/sops-nix" rel="noopener">sops-nix ★3140</a> <a class="own" href="https://github.com/Mic92/cntr" rel="noopener">cntr ★955</a> <a class="own" href="https://github.com/Mic92/nixos-shell" rel="noopener">nixos-shell ★911</a></td>
@@ -340,7 +341,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dhollman" rel="noopener">dhollman</a>
     <div class="name">Daisy S. Hollman</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">life-sciences</span> <span class="repo">claude-code</span></td>
   <td class="ch"><a href="https://dsh.fyi" rel="noopener">site</a> <a href="https://x.com/The_Whole_Daisy" rel="noopener">@The_Whole_Daisy</a></td>
   <td class="own-c"><a class="own" href="https://github.com/dhollman/daisychains" rel="noopener">daisychains ★11</a> <a class="own" href="https://github.com/dhollman/ruby-latex-tools" rel="noopener">ruby-latex-tools ★7</a> <a class="own" href="https://github.com/dhollman/cutempl" rel="noopener">cutempl ★5</a></td>
@@ -353,7 +354,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/OctavianGuzu" rel="noopener">OctavianGuzu</a>
     <div class="name">Octavian Guzu</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span> <span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-typescript</span> <span class="repo">claude-plugins-official</span> <span class="more">+1</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/OctavianGuzu/eMAG-Product-Matching" rel="noopener">eMAG-Product-Matching ★4</a> <a class="own" href="https://github.com/OctavianGuzu/SmartHack" rel="noopener">SmartHack ★3</a> <a class="own" href="https://github.com/OctavianGuzu/code4diversity" rel="noopener">code4diversity ★2</a></td>
@@ -366,7 +367,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dicksontsai" rel="noopener">dicksontsai</a>
     <div class="name">Dickson Tsai</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-demos</span></td>
   <td class="ch"><a href="https://dicksontsai.com" rel="noopener">site</a> <a href="https://x.com/dickson_tsai" rel="noopener">@dickson_tsai</a></td>
   <td class="own-c"><a class="own" href="https://github.com/dicksontsai/stanford-nlp-local-extension" rel="noopener">stanford-nlp-local-extension ★6</a> <a class="own" href="https://github.com/dicksontsai/custom-jeopardy" rel="noopener">custom-jeopardy ★3</a> <a class="own" href="https://github.com/dicksontsai/advice" rel="noopener">advice ★3</a></td>
@@ -392,7 +393,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/craigie-ant" rel="noopener">craigie-ant</a>
     <div class="name">Robert Craigie</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-python</span> <span class="repo">anthropic-sdk-typescript</span> <span class="repo">anthropic-cli</span> <span class="repo">anthropic-sdk-php</span> <span class="more">+2</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -405,7 +406,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/morganl-ant" rel="noopener">morganl-ant</a>
     <div class="name">Morgan Lunt</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -418,7 +419,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/cj-ant" rel="noopener">cj-ant</a>
     <div class="name">CJ Avilla</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-quickstarts</span> <span class="repo">anthropic-cli</span> <span class="repo">skills</span></td>
   <td class="ch"><a href="https://x.com/cjav_dev" rel="noopener">@cjav_dev</a></td>
   <td class="own-c"><a class="own" href="https://github.com/cj-ant/cj-ant" rel="noopener">cj-ant ★0</a></td>
@@ -431,7 +432,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jacobzim-ant" rel="noopener">jacobzim-ant</a>
     <div class="name">jacobzim-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-php</span> <span class="repo">anthropic-sdk-go</span> <span class="repo">anthropic-cli</span> <span class="repo">anthropic-sdk-java</span> <span class="more">+3</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -457,7 +458,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/rlancemartin" rel="noopener">rlancemartin</a>
     <div class="name">Lance Martin</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span> <span class="repo">claude-cookbooks</span> <span class="repo">claude-quickstarts</span></td>
   <td class="ch"><a href="https://x.com/RLanceMartin" rel="noopener">@RLanceMartin</a></td>
   <td class="own-c"><a class="own" href="https://github.com/rlancemartin/auto-evaluator" rel="noopener">auto-evaluator ★1101</a> <a class="own" href="https://github.com/rlancemartin/claude-diary" rel="noopener">claude-diary ★379</a> <a class="own" href="https://github.com/rlancemartin/lex-gpt" rel="noopener">lex-gpt ★340</a></td>
@@ -483,7 +484,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/maxwell-petruzzi" rel="noopener">maxwell-petruzzi</a>
     <div class="name">Maxwell Petruzzi</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">healthcare</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -496,7 +497,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/fvolcic" rel="noopener">fvolcic</a>
     <div class="name">fv</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/fvolcic/Convert-To-Image" rel="noopener">Convert-To-Image ★16</a> <a class="own" href="https://github.com/fvolcic/bitchat-relay" rel="noopener">bitchat-relay ★12</a> <a class="own" href="https://github.com/fvolcic/Crank" rel="noopener">Crank ★3</a></td>
@@ -509,7 +510,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mihilmy" rel="noopener">mihilmy</a>
     <div class="name">Omar Mihilmy</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span> <span class="repo">healthcare</span></td>
   <td class="ch"><a href="https://mihilmy.com" rel="noopener">site</a> <a href="https://x.com/omarmihilmy" rel="noopener">@omarmihilmy</a></td>
   <td class="own-c"><a class="own" href="https://github.com/mihilmy/dynamodb-adapters" rel="noopener">dynamodb-adapters ★4</a> <a class="own" href="https://github.com/mihilmy/cw-logger" rel="noopener">cw-logger ★2</a> <a class="own" href="https://github.com/mihilmy/fixmywording" rel="noopener">fixmywording ★1</a></td>
@@ -522,7 +523,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/bcherny" rel="noopener">bcherny</a>
     <div class="name">Boris Cherny</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span> <span class="repo">claude-plugins-official</span></td>
   <td class="ch"><a href="https://borischerny.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/bcherny/json-schema-to-typescript" rel="noopener">json-schema-to-typescript ★3341</a> <a class="own" href="https://github.com/bcherny/undux" rel="noopener">undux ★1562</a> <a class="own" href="https://github.com/bcherny/frontend-interview-questions" rel="noopener">frontend-interview-questions ★1140</a></td>
@@ -548,7 +549,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ant-kurt" rel="noopener">ant-kurt</a>
     <div class="name">Kurt Carpenter</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-code-action</span> <span class="repo">anthropic-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -561,7 +562,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/meorphis" rel="noopener">meorphis</a> <span class="alias">+meorphis-anthropic</span>
     <div class="name">meorphis</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-php</span> <span class="repo">anthropic-sdk-csharp</span> <span class="repo">anthropic-sdk-typescript</span> <span class="repo">ClaudeForFoundationModels</span> <span class="more">+3</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/meorphis/test-repo-9" rel="noopener">test-repo-9 ★0</a> <a class="own" href="https://github.com/meorphis/stlc-test" rel="noopener">stlc-test ★0</a> <a class="own" href="https://github.com/meorphis/test-repo-17" rel="noopener">test-repo-17 ★0</a></td>
@@ -574,7 +575,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ddworken" rel="noopener">ddworken</a>
     <div class="name">David Dworken</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span> <span class="repo">claude-code</span> <span class="repo">claude-code-security-review</span></td>
   <td class="ch"><a href="https://daviddworken.com" rel="noopener">site</a> <a href="https://x.com/ddworken" rel="noopener">@ddworken</a></td>
   <td class="own-c"><a class="own" href="https://github.com/ddworken/hishtory" rel="noopener">hishtory ★3116</a> <a class="own" href="https://github.com/ddworken/GooglePhotosStorage" rel="noopener">GooglePhotosStorage ★38</a> <a class="own" href="https://github.com/ddworken/ide-worm" rel="noopener">ide-worm ★16</a></td>
@@ -587,7 +588,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/cxyback" rel="noopener">cxyback</a>
     <div class="name">Nicholas Lin</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/cxyback/cxl-test" rel="noopener">cxl-test ★0</a></td>
@@ -600,7 +601,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/abibbs-ant" rel="noopener">abibbs-ant</a>
     <div class="name">Anthony Bibbs</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-plugins-community</span> <span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -613,7 +614,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/montanalow" rel="noopener">montanalow</a>
     <div class="name">Montana Low</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/montanalow/my_app" rel="noopener">my_app ★5</a> <a class="own" href="https://github.com/montanalow/space-ship-flyer" rel="noopener">space-ship-flyer ★2</a> <a class="own" href="https://github.com/montanalow/market-analyzer" rel="noopener">market-analyzer ★1</a></td>
@@ -626,7 +627,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jsham042" rel="noopener">jsham042</a>
     <div class="name">Joe Shamon</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/jsham042/hello-world-ambient-joe" rel="noopener">hello-world-ambient-joe ★0</a> <a class="own" href="https://github.com/jsham042/intuit-demo" rel="noopener">intuit-demo ★0</a> <a class="own" href="https://github.com/jsham042/soundtracks_final" rel="noopener">soundtracks_final ★0</a></td>
@@ -639,7 +640,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/antdres" rel="noopener">antdres</a>
     <div class="name">Andres March</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">life-sciences</span> <span class="repo">healthcare</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -652,7 +653,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/sarahdeaton" rel="noopener">sarahdeaton</a>
     <div class="name">Sarah Deaton</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span> <span class="repo">claude-plugins-official</span> <span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-demos</span> <span class="more">+1</span></td>
   <td class="ch"><a href="https://sdeaton.com/" rel="noopener">site</a></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -665,7 +666,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/nadine-anthropic" rel="noopener">nadine-anthropic</a>
     <div class="name">Nadine Yasser</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">healthcare</span> <span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -691,7 +692,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/eugeneyan-ant" rel="noopener">eugeneyan-ant</a>
     <div class="name">Eugene Yan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">defending-code-reference-harness</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -704,7 +705,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jportner-ant" rel="noopener">jportner-ant</a>
     <div class="name">Joe Portner</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-cookbooks</span> <span class="repo">claude-code</span> <span class="repo">s5cmd</span> <span class="more">+6</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -756,7 +757,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/manar-ant" rel="noopener">manar-ant</a>
     <div class="name">Manar Safi</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span> <span class="repo">anthropic-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -769,7 +770,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/klazuka" rel="noopener">klazuka</a>
     <div class="name">Keith Lazuka</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/klazuka/Kal" rel="noopener">Kal ★1210</a> <a class="own" href="https://github.com/klazuka/TTRemoteExamples" rel="noopener">TTRemoteExamples ★147</a> <a class="own" href="https://github.com/klazuka/TTStyleBuilder" rel="noopener">TTStyleBuilder ★123</a></td>
@@ -782,7 +783,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/km-anthropic" rel="noopener">km-anthropic</a>
     <div class="name">kashyap murali</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span> <span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/km-anthropic/mcp-stdio-test" rel="noopener">mcp-stdio-test ★0</a></td>
@@ -795,7 +796,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/sophie-ant" rel="noopener">sophie-ant</a>
     <div class="name">Sophie Downward</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-csharp</span> <span class="repo">anthropic-sdk-ruby</span> <span class="repo">anthropic-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -808,7 +809,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/isabella-anthropic" rel="noopener">isabella-anthropic</a>
     <div class="name">Isabella He</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -821,7 +822,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/Adriaan-ANT" rel="noopener">Adriaan-ANT</a>
     <div class="name">Adriaan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -834,7 +835,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/eeeasley" rel="noopener">eeeasley</a>
     <div class="name">Eric Easley</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">formal-math</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -873,7 +874,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/michael-cohen-io" rel="noopener">michael-cohen-io</a>
     <div class="name">Michael Cohen</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cwc-workshops</span> <span class="repo">claude-cookbooks</span> <span class="repo">anthropic-cli</span></td>
   <td class="ch"><a href="https://michaelcohen.io" rel="noopener">site</a> <a href="https://x.com/_hi_mc" rel="noopener">@_hi_mc</a></td>
   <td class="own-c"><a class="own" href="https://github.com/michael-cohen-io/PokeJava" rel="noopener">PokeJava ★25</a> <a class="own" href="https://github.com/michael-cohen-io/michael-simple" rel="noopener">michael-simple ★3</a> <a class="own" href="https://github.com/michael-cohen-io/NFT-Contract-Template" rel="noopener">NFT-Contract-Template ★3</a></td>
@@ -886,7 +887,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/JiriDeJonghe" rel="noopener">JiriDeJonghe</a>
     <div class="name">Jiri De Jonghe</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/JiriDeJonghe/dotfiles" rel="noopener">dotfiles ★0</a></td>
@@ -899,7 +900,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/whyuan-cc" rel="noopener">whyuan-cc</a>
     <div class="name">Wanghong Yuan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span> <span class="repo">claude-code-action</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -925,7 +926,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/trilorez" rel="noopener">trilorez</a>
     <div class="name">Daniel Resnick</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">ClaudeForFoundationModels</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/trilorez/CellWallSite" rel="noopener">CellWallSite ★0</a> <a class="own" href="https://github.com/trilorez/SynthecasterPrivacyPolicy" rel="noopener">SynthecasterPrivacyPolicy ★0</a></td>
@@ -938,7 +939,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/imichaelmoore" rel="noopener">imichaelmoore</a>
     <div class="name">Michael Moore</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><a href="http://imichael.org" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/imichaelmoore/adsb-rust-dataset" rel="noopener">adsb-rust-dataset ★3</a> <a class="own" href="https://github.com/imichaelmoore/comps_model" rel="noopener">comps_model ★2</a> <a class="own" href="https://github.com/imichaelmoore/adsb-go-dataset" rel="noopener">adsb-go-dataset ★2</a></td>
@@ -951,7 +952,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/felixfbecker" rel="noopener">felixfbecker</a>
     <div class="name">Felix Becker</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-cli</span> <span class="repo">anthropic-sdk-python</span> <span class="repo">cwc-workshops</span> <span class="repo">anthropic-sdk-typescript</span></td>
   <td class="ch"><a href="https://felixfbecker.me" rel="noopener">site</a> <a href="https://x.com/felixfbecker" rel="noopener">@felixfbecker</a></td>
   <td class="own-c"><a class="own" href="https://github.com/felixfbecker/php-language-server" rel="noopener">php-language-server ★1195</a> <a class="own" href="https://github.com/felixfbecker/svg-screenshots" rel="noopener">svg-screenshots ★922</a> <a class="own" href="https://github.com/felixfbecker/node-sql-template-strings" rel="noopener">node-sql-template-strings ★625</a></td>
@@ -964,7 +965,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/nikblanchet" rel="noopener">nikblanchet</a>
     <div class="name">Nik Blanchet</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">anthropic-sdk-php</span> <span class="repo">anthropic-sdk-python</span> <span class="repo">anthropic-sdk-java</span> <span class="more">+2</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/nikblanchet/claude-skills" rel="noopener">claude-skills ★1</a> <a class="own" href="https://github.com/nikblanchet/brotein-buddy" rel="noopener">brotein-buddy ★0</a> <a class="own" href="https://github.com/nikblanchet/docimp" rel="noopener">docimp ★0</a></td>
@@ -977,7 +978,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/aravind-ant" rel="noopener">aravind-ant</a>
     <div class="name">Aravind Singirikonda</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -990,7 +991,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/markn-ant" rel="noopener">markn-ant</a>
     <div class="name">markn</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1003,7 +1004,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/hackyon-anthropic" rel="noopener">hackyon-anthropic</a>
     <div class="name">JB</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span> <span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1016,7 +1017,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jmm-ant" rel="noopener">jmm-ant</a>
     <div class="name">john-michael</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">healthcare</span> <span class="repo">financial-services</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1029,7 +1030,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/heyyjudes" rel="noopener">heyyjudes</a>
     <div class="name">Judy Hanwen Shen</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">political-neutrality-eval</span></td>
   <td class="ch"><a href="https://heyyjudes.github.io/" rel="noopener">site</a> <a href="https://x.com/judyhshen" rel="noopener">@judyhshen</a></td>
   <td class="own-c"><a class="own" href="https://github.com/heyyjudes/dp-sgd" rel="noopener">dp-sgd ★9</a> <a class="own" href="https://github.com/heyyjudes/differentially-private-set-union" rel="noopener">differentially-private-set-union ★8</a> <a class="own" href="https://github.com/heyyjudes/online-dating-2048" rel="noopener">online-dating-2048 ★7</a></td>
@@ -1042,7 +1043,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/rfurman" rel="noopener">rfurman</a>
     <div class="name">Ralph Furman</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">formal-math</span></td>
   <td class="ch"><a href="https://sugaku.net/" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/rfurman/pnphard" rel="noopener">pnphard ★2</a> <a class="own" href="https://github.com/rfurman/traceformula" rel="noopener">traceformula ★1</a> <a class="own" href="https://github.com/rfurman/sugaku.net" rel="noopener">sugaku.net ★0</a></td>
@@ -1055,7 +1056,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/kencheeto" rel="noopener">kencheeto</a>
     <div class="name">Kenshiro Nakagawa</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">skills</span></td>
   <td class="ch"><a href="https://www.kencheeto.com/" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/kencheeto/triage" rel="noopener">triage ★1</a> <a class="own" href="https://github.com/kencheeto/kencheeto" rel="noopener">kencheeto ★0</a> <a class="own" href="https://github.com/kencheeto/dotfiles" rel="noopener">dotfiles ★0</a></td>
@@ -1068,7 +1069,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ashprabaker" rel="noopener">ashprabaker</a>
     <div class="name">Ash Prabaker</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><a href="https://ashprabaker.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/ashprabaker/openapi-to-mcp" rel="noopener">openapi-to-mcp ★0</a> <a class="own" href="https://github.com/ashprabaker/project-starter-repo" rel="noopener">project-starter-repo ★0</a></td>
@@ -1081,7 +1082,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jleder3" rel="noopener">jleder3</a>
     <div class="name">jleder3</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">formal-math</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1107,7 +1108,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jeffcurry-ant" rel="noopener">jeffcurry-ant</a>
     <div class="name">Jeff Curry</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cwc-workshops</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/jeffcurry-ant/rfp-agent" rel="noopener">rfp-agent ★0</a></td>
@@ -1120,7 +1121,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/localden" rel="noopener">localden</a>
     <div class="name">Den Delimarsky</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">knowledge-work-plugins</span> <span class="repo">claude-ai-mcp</span></td>
   <td class="ch"><a href="https://den.dev" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/localden/remote-auth-mcp-apim-py" rel="noopener">remote-auth-mcp-apim-py ★31</a> <a class="own" href="https://github.com/localden/min-ts-mcp-auth" rel="noopener">min-ts-mcp-auth ★10</a> <a class="own" href="https://github.com/localden/mcp-repo-data-tracker" rel="noopener">mcp-repo-data-tracker ★9</a></td>
@@ -1146,7 +1147,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/luiz-anthropic" rel="noopener">luiz-anthropic</a>
     <div class="name">luiz-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-typescript</span> <span class="repo">anthropic-sdk-python</span> <span class="repo">anthropic-sdk-go</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1159,7 +1160,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/benlehrburger-ant" rel="noopener">benlehrburger-ant</a>
     <div class="name">benlehrburger</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">anthropic-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1172,7 +1173,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/bradabrams" rel="noopener">bradabrams</a>
     <div class="name">Brad Abrams</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><a href="https://www.linkedin.com/in/brabrams" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/bradabrams/stopwatchio13" rel="noopener">stopwatchio13 ★26</a> <a class="own" href="https://github.com/bradabrams/GeekSerendipity-io13" rel="noopener">GeekSerendipity-io13 ★22</a> <a class="own" href="https://github.com/bradabrams/emojistlator" rel="noopener">emojistlator ★4</a></td>
@@ -1211,7 +1212,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/AlePouroullis" rel="noopener">AlePouroullis</a>
     <div class="name">Alexandros Pouroullis</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-cli</span> <span class="repo">homebrew-tap</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/AlePouroullis/SSCI2025_Hexapod" rel="noopener">SSCI2025_Hexapod ★2</a> <a class="own" href="https://github.com/AlePouroullis/synthlab" rel="noopener">synthlab ★1</a> <a class="own" href="https://github.com/AlePouroullis/SSCI2025_Hexapod_CPG" rel="noopener">SSCI2025_Hexapod_CPG ★1</a></td>
@@ -1224,7 +1225,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mroknich" rel="noopener">mroknich</a>
     <div class="name">Matthew Roknich</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cwc-workshops</span></td>
   <td class="ch"><a href="https://www.linkedin.com/in/mroknich/" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/mroknich/codeSample" rel="noopener">codeSample ★1</a> <a class="own" href="https://github.com/mroknich/retoolApp1" rel="noopener">retoolApp1 ★0</a> <a class="own" href="https://github.com/mroknich/Smalltalk" rel="noopener">Smalltalk ★0</a></td>
@@ -1237,7 +1238,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/williamsteuk" rel="noopener">williamsteuk</a>
     <div class="name">William Steuk</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-demos</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1250,7 +1251,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/abelribbink" rel="noopener">abelribbink</a>
     <div class="name">Abel Ribbink</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">defending-code-reference-harness</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1263,7 +1264,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/shao-anthropic" rel="noopener">shao-anthropic</a>
     <div class="name">shao-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-ai-mcp</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1276,7 +1277,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/charmaine" rel="noopener">charmaine</a>
     <div class="name">Charmaine Lee</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-plugins-official</span></td>
   <td class="ch"><a href="https://charmaineklee.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/charmaine/InternetWishlist" rel="noopener">InternetWishlist ★14</a> <a class="own" href="https://github.com/charmaine/Mummify" rel="noopener">Mummify ★3</a> <a class="own" href="https://github.com/charmaine/VRTour" rel="noopener">VRTour ★2</a></td>
@@ -1289,7 +1290,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jakemmarsh" rel="noopener">jakemmarsh</a>
     <div class="name">Jake Marsh</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><a href="http://jakemmarsh.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/jakemmarsh/neural-network-stock-predictor" rel="noopener">neural-network-stock-predictor ★90</a> <a class="own" href="https://github.com/jakemmarsh/node-soundcloud" rel="noopener">node-soundcloud ★31</a> <a class="own" href="https://github.com/jakemmarsh/grunt-requirejs-angularjs-sass-boilerplate" rel="noopener">grunt-requirejs-angularjs-sass-boilerplate ★25</a></td>
@@ -1341,7 +1342,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/Briiick" rel="noopener">Briiick</a>
     <div class="name">Alexander Bricken</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-tag-plugins</span></td>
   <td class="ch"><a href="https://alexanderbricken.com" rel="noopener">site</a> <a href="https://x.com/ambricken" rel="noopener">@ambricken</a></td>
   <td class="own-c"><a class="own" href="https://github.com/Briiick/NLP-disaster-tweets" rel="noopener">NLP-disaster-tweets ★13</a> <a class="own" href="https://github.com/Briiick/ai-timeline" rel="noopener">ai-timeline ★2</a> <a class="own" href="https://github.com/Briiick/spotify-recommendation" rel="noopener">spotify-recommendation ★2</a></td>
@@ -1367,7 +1368,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/roy-ant" rel="noopener">roy-ant</a>
     <div class="name">Roy Arsan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/roy-ant/agent-otel-on-gcp" rel="noopener">agent-otel-on-gcp ★0</a></td>
@@ -1380,7 +1381,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/chrislloyd" rel="noopener">chrislloyd</a>
     <div class="name">Chris Lloyd</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><a href="http://chrislloyd.net" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/chrislloyd/git-remote-sqlite" rel="noopener">git-remote-sqlite ★120</a> <a class="own" href="https://github.com/chrislloyd/tree-sitter-hledger" rel="noopener">tree-sitter-hledger ★10</a> <a class="own" href="https://github.com/chrislloyd/dotfiles" rel="noopener">dotfiles ★5</a></td>
@@ -1393,7 +1394,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/catherinewu" rel="noopener">catherinewu</a>
     <div class="name">Catherine Wu</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/catherinewu/tau-bench-viz" rel="noopener">tau-bench-viz ★0</a> <a class="own" href="https://github.com/catherinewu/connectfourplus" rel="noopener">connectfourplus ★0</a></td>
@@ -1406,7 +1407,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/alexvangrootel" rel="noopener">alexvangrootel</a>
     <div class="name">Alex van Grootel</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">defending-code-reference-harness</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1419,7 +1420,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/trishume" rel="noopener">trishume</a>
     <div class="name">Tristan Hume</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">original_performance_takehome</span></td>
   <td class="ch"><a href="http://thume.ca/" rel="noopener">site</a> <a href="https://x.com/trishume" rel="noopener">@trishume</a></td>
   <td class="own-c"><a class="own" href="https://github.com/trishume/syntect" rel="noopener">syntect ★2410</a> <a class="own" href="https://github.com/trishume/eyeLike" rel="noopener">eyeLike ★1015</a> <a class="own" href="https://github.com/trishume/telefork" rel="noopener">telefork ★611</a></td>
@@ -1432,7 +1433,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ochafik" rel="noopener">ochafik</a>
     <div class="name">Olivier Chafik</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><a href="https://ochafik.com" rel="noopener">site</a> <a href="https://x.com/ochafik" rel="noopener">@ochafik</a></td>
   <td class="own-c"><a class="own" href="https://github.com/ochafik/nabab" rel="noopener">nabab ★1</a> <a class="own" href="https://github.com/ochafik/webtop-mcp" rel="noopener">webtop-mcp ★1</a> <a class="own" href="https://github.com/ochafik/autopilot" rel="noopener">autopilot ★1</a></td>
@@ -1471,7 +1472,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/kevintang513" rel="noopener">kevintang513</a>
     <div class="name">Kevin Tang</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/kevintang513/economic-data-analysis" rel="noopener">economic-data-analysis ★0</a> <a class="own" href="https://github.com/kevintang513/reform_project" rel="noopener">reform_project ★0</a> <a class="own" href="https://github.com/kevintang513/full-stack-demo" rel="noopener">full-stack-demo ★0</a></td>
@@ -1484,7 +1485,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/gaganb-ant" rel="noopener">gaganb-ant</a>
     <div class="name">Gagan Bhat</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">cwc-workshops</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1497,7 +1498,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/sid374" rel="noopener">sid374</a>
     <div class="name">Sid Bidasaria</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/sid374/SharkHunting" rel="noopener">SharkHunting ★4</a> <a class="own" href="https://github.com/sid374/FPLTeamMaker" rel="noopener">FPLTeamMaker ★1</a> <a class="own" href="https://github.com/sid374/test-mantine-remix" rel="noopener">test-mantine-remix ★0</a></td>
@@ -1523,7 +1524,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/viveknair" rel="noopener">viveknair</a>
     <div class="name">Vivek Nair</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span></td>
   <td class="ch"><a href="https://gentrace.ai" rel="noopener">site</a> <a href="https://x.com/virtuallyvivek" rel="noopener">@virtuallyvivek</a></td>
   <td class="own-c"><a class="own" href="https://github.com/viveknair/ccoutputstyles" rel="noopener">ccoutputstyles ★55</a> <a class="own" href="https://github.com/viveknair/ccheatmap" rel="noopener">ccheatmap ★7</a> <a class="own" href="https://github.com/viveknair/GoClassify" rel="noopener">GoClassify ★5</a></td>
@@ -1536,7 +1537,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/lamis-ant" rel="noopener">lamis-ant</a>
     <div class="name">Lamis Mukta</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">launch-your-agent</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1549,7 +1550,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jerome3o-anthropic" rel="noopener">jerome3o-anthropic</a>
     <div class="name">Jerome</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-ai-mcp</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/jerome3o-anthropic/mcp-python-sdk-compat-check" rel="noopener">mcp-python-sdk-compat-check ★1</a></td>
@@ -1562,7 +1563,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/michaeltingley" rel="noopener">michaeltingley</a>
     <div class="name">Michael Tingley</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">s5cmd</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/michaeltingley/Claude-Messenger" rel="noopener">Claude-Messenger ★0</a> <a class="own" href="https://github.com/michaeltingley/Better-Suno" rel="noopener">Better-Suno ★0</a> <a class="own" href="https://github.com/michaeltingley/bw" rel="noopener">bw ★0</a></td>
@@ -1575,7 +1576,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/zenexer-ant" rel="noopener">zenexer-ant</a>
     <div class="name">zenexer-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">knowledge-work-plugins</span> <span class="repo">claude-cookbooks</span> <span class="repo">claude-plugins-community</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1588,7 +1589,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/blois" rel="noopener">blois</a>
     <div class="name">Pete Blois</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/blois/colab_inspector" rel="noopener">colab_inspector ★6</a> <a class="own" href="https://github.com/blois/js-module-renderer" rel="noopener">js-module-renderer ★4</a> <a class="own" href="https://github.com/blois/browser-test" rel="noopener">browser-test ★3</a></td>
@@ -1601,7 +1602,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jschwar2552" rel="noopener">jschwar2552</a>
     <div class="name">Jason Schwartz</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cwc-long-running-agents</span> <span class="repo">claude-plugins-official</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1614,7 +1615,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/samfishman" rel="noopener">samfishman</a>
     <div class="name">Sam Fishman</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><a href="http://sam.fish" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/samfishman/codeformat" rel="noopener">codeformat ★3</a> <a class="own" href="https://github.com/samfishman/facescrape" rel="noopener">facescrape ★1</a> <a class="own" href="https://github.com/samfishman/dotfiles" rel="noopener">dotfiles ★0</a></td>
@@ -1627,7 +1628,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/bhosmer-ant" rel="noopener">bhosmer-ant</a>
     <div class="name">Basil Hosmer</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1640,7 +1641,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/amorriscode" rel="noopener">amorriscode</a>
     <div class="name">Anthony Morris</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span> <span class="repo">claude-code</span></td>
   <td class="ch"><a href="https://anthonymorris.dev" rel="noopener">site</a> <a href="https://x.com/amorriscode" rel="noopener">@amorriscode</a></td>
   <td class="own-c"><a class="own" href="https://github.com/amorriscode/use-overflow" rel="noopener">use-overflow ★30</a> <a class="own" href="https://github.com/amorriscode/book-box" rel="noopener">book-box ★26</a> <a class="own" href="https://github.com/amorriscode/anthonymorris.dev" rel="noopener">anthonymorris.dev ★25</a></td>
@@ -1692,7 +1693,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/henrykeetay" rel="noopener">henrykeetay</a>
     <div class="name">Henry Tay</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1783,7 +1784,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/russell-coleman" rel="noopener">russell-coleman</a>
     <div class="name">Russell Coleman</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1796,7 +1797,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/lee-weisberger" rel="noopener">lee-weisberger</a>
     <div class="name">Lee Weisberger</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1809,7 +1810,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/henrythe9th" rel="noopener">henrythe9th</a>
     <div class="name">Henry Shi</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><a href="https://x.com/henrythe9ths" rel="noopener">@henrythe9ths</a></td>
   <td class="own-c"><a class="own" href="https://github.com/henrythe9th/AI-Crash-Course" rel="noopener">AI-Crash-Course ★6256</a> <a class="own" href="https://github.com/henrythe9th/official-lean-ai-native-leaderboard" rel="noopener">official-lean-ai-native-leaderboard ★284</a> <a class="own" href="https://github.com/henrythe9th/freelancer-economic-agi" rel="noopener">freelancer-economic-agi ★13</a></td>
@@ -1848,7 +1849,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/rpb-ant" rel="noopener">rpb-ant</a>
     <div class="name">rpb-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">buffa</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1900,7 +1901,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mattmccarley-ant" rel="noopener">mattmccarley-ant</a>
     <div class="name">mattmccarley-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1913,7 +1914,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/rodrigo-olivares" rel="noopener">rodrigo-olivares</a>
     <div class="name">Rodrigo Olivares</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span> <span class="repo">claude-agent-sdk-python</span> <span class="repo">cwc-workshops</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1926,7 +1927,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/noble-ant" rel="noopener">noble-ant</a>
     <div class="name">Jake Noble</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1939,7 +1940,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ant-ken" rel="noopener">ant-ken</a>
     <div class="name">Ken Aizawa</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -1965,7 +1966,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/omid-ant" rel="noopener">omid-ant</a>
     <div class="name">Omid Mogasemi</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2108,7 +2109,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/vinitra-ant" rel="noopener">vinitra-ant</a>
     <div class="name">Vinitra Rangan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2121,7 +2122,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/markpikemarkpike" rel="noopener">markpikemarkpike</a>
     <div class="name">Mark Pike</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-for-legal</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/markpikemarkpike/amicus" rel="noopener">amicus ★6</a> <a class="own" href="https://github.com/markpikemarkpike/sea-ranch-quest" rel="noopener">sea-ranch-quest ★0</a></td>
@@ -2160,7 +2161,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/daniellechou-anthropic" rel="noopener">daniellechou-anthropic</a>
     <div class="name">Danielle Chou</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">life-sciences</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2173,7 +2174,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/crondinini-ant" rel="noopener">crondinini-ant</a>
     <div class="name">Camila Rondinini</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-ai-mcp</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2186,7 +2187,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/aaronlevin" rel="noopener">aaronlevin</a>
     <div class="name">Aaron Levin</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">model-cards</span></td>
   <td class="ch"><a href="http://aaronlevin.ca" rel="noopener">site</a> <a href="https://x.com/aaronmblevin" rel="noopener">@aaronmblevin</a></td>
   <td class="own-c"><a class="own" href="https://github.com/aaronlevin/scala-gitrev" rel="noopener">scala-gitrev ★33</a> <a class="own" href="https://github.com/aaronlevin/free-vl" rel="noopener">free-vl ★24</a> <a class="own" href="https://github.com/aaronlevin/nixos-cookbook" rel="noopener">nixos-cookbook ★14</a></td>
@@ -2199,7 +2200,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/underyx" rel="noopener">underyx</a>
     <div class="name">Bence Nagy</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><a href="https://bence.dev" rel="noopener">site</a> <a href="https://x.com/underyx" rel="noopener">@underyx</a></td>
   <td class="own-c"><a class="own" href="https://github.com/underyx/flask-redis" rel="noopener">flask-redis ★439</a> <a class="own" href="https://github.com/underyx/structlog-pretty" rel="noopener">structlog-pretty ★37</a> <a class="own" href="https://github.com/underyx/aiohttp-sentry" rel="noopener">aiohttp-sentry ★35</a></td>
@@ -2225,7 +2226,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/taoroalin" rel="noopener">taoroalin</a>
     <div class="name">Tao Lin</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">buffa</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/taoroalin/mtg-llm" rel="noopener">mtg-llm ★1</a></td>
@@ -2303,7 +2304,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/paulchen-go" rel="noopener">paulchen-go</a>
     <div class="name">Paul Chen</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2342,7 +2343,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/benmap-anthropic" rel="noopener">benmap-anthropic</a>
     <div class="name">Benjamin Morris</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/benmap-anthropic/benmap-anthropic.github.io" rel="noopener">benmap-anthropic.github.io ★0</a></td>
@@ -2355,7 +2356,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/elie" rel="noopener">elie</a>
     <div class="name">Elie Schoppik</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><a href="https://x.com/eschoppik" rel="noopener">@eschoppik</a></td>
   <td class="own-c"><a class="own" href="https://github.com/elie/mcp-client-notebook" rel="noopener">mcp-client-notebook ★4</a> <a class="own" href="https://github.com/elie/sublime-snippets" rel="noopener">sublime-snippets ★4</a> <a class="own" href="https://github.com/elie/mcp-research-server" rel="noopener">mcp-research-server ★3</a></td>
@@ -2368,7 +2369,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/re-bird" rel="noopener">re-bird</a>
     <div class="name">Marie Vachovsky</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-php</span> <span class="repo">anthropic-sdk-java</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2680,7 +2681,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/wolffiex" rel="noopener">wolffiex</a>
     <div class="name">Adam Wolff</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><a href="https://x.com/dmwlff" rel="noopener">@dmwlff</a></td>
   <td class="own-c"><a class="own" href="https://github.com/wolffiex/shellbot" rel="noopener">shellbot ★15</a> <a class="own" href="https://github.com/wolffiex/qcon-2025-ai-speed" rel="noopener">qcon-2025-ai-speed ★11</a> <a class="own" href="https://github.com/wolffiex/cmux" rel="noopener">cmux ★7</a></td>
@@ -2771,7 +2772,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/gcemaj" rel="noopener">gcemaj</a>
     <div class="name">Gabe Cemaj</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-go</span> <span class="repo">cwc-workshops</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/gcemaj/COMP206" rel="noopener">COMP206 ★1</a> <a class="own" href="https://github.com/gcemaj/gcemaj" rel="noopener">gcemaj ★0</a> <a class="own" href="https://github.com/gcemaj/snow-walker" rel="noopener">snow-walker ★0</a></td>
@@ -2810,7 +2811,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dlaw-ant" rel="noopener">dlaw-ant</a>
     <div class="name">Daniel Law</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">financial-services</span> <span class="repo">claude-for-legal</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2849,7 +2850,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/peterlai-ant" rel="noopener">peterlai-ant</a>
     <div class="name">Peter Lai</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2875,7 +2876,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/maheshmurag" rel="noopener">maheshmurag</a>
     <div class="name">Mahesh Murag</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/maheshmurag/workshop-mcp-agent-example" rel="noopener">workshop-mcp-agent-example ★75</a> <a class="own" href="https://github.com/maheshmurag/InTheLoop" rel="noopener">InTheLoop ★19</a> <a class="own" href="https://github.com/maheshmurag/anthropic-mcp-hackathon" rel="noopener">anthropic-mcp-hackathon ★6</a></td>
@@ -2901,7 +2902,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/annekeant" rel="noopener">annekeant</a>
     <div class="name">annekeant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">life-sciences</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2914,7 +2915,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/zygi-anthropic" rel="noopener">zygi-anthropic</a>
     <div class="name">Zygi Straznickas</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cryptography-research-demo</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -2927,7 +2928,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/felixrieseberg" rel="noopener">felixrieseberg</a>
     <div class="name">Felix Rieseberg</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-desktop-buddy</span></td>
   <td class="ch"><a href="http://www.felixrieseberg.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/felixrieseberg/windows95" rel="noopener">windows95 ★24217</a> <a class="own" href="https://github.com/felixrieseberg/macintosh.js" rel="noopener">macintosh.js ★8497</a> <a class="own" href="https://github.com/felixrieseberg/windows-development-environment" rel="noopener">windows-development-environment ★1409</a></td>
@@ -2953,7 +2954,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/chrisgorgo" rel="noopener">chrisgorgo</a>
     <div class="name">Chris Gorgolewski</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">model-cards</span></td>
   <td class="ch"><a href="http://chrisgorgolewski.org" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/chrisgorgo/alleninf" rel="noopener">alleninf ★33</a> <a class="own" href="https://github.com/chrisgorgo/experiments" rel="noopener">experiments ★2</a> <a class="own" href="https://github.com/chrisgorgo/slice_leakage" rel="noopener">slice_leakage ★2</a></td>
@@ -3005,7 +3006,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/clackbib" rel="noopener">clackbib</a>
     <div class="name">Habib Okanla</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-plugins-official</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/clackbib/KnockDetector" rel="noopener">KnockDetector ★7</a> <a class="own" href="https://github.com/clackbib/RxSuggestions" rel="noopener">RxSuggestions ★4</a> <a class="own" href="https://github.com/clackbib/BundleJam" rel="noopener">BundleJam ★2</a></td>
@@ -3031,7 +3032,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/christine-betts" rel="noopener">christine-betts</a>
     <div class="name">christine-betts</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">knowledge-work-plugins</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/christine-betts/test-marketplace" rel="noopener">test-marketplace ★0</a></td>
@@ -3447,7 +3448,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mengtingli-ant" rel="noopener">mengtingli-ant</a>
     <div class="name">mengtingli-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3460,7 +3461,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/moeseifan" rel="noopener">moeseifan</a>
     <div class="name">Mo Eseifan</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3473,7 +3474,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/jannet-park" rel="noopener">jannet-park</a>
     <div class="name">Jannet Park</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3551,7 +3552,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/cal-anthropic" rel="noopener">cal-anthropic</a>
     <div class="name">Cal Rueb</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-cookbooks</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3694,7 +3695,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/lorenzojb" rel="noopener">lorenzojb</a>
     <div class="name">lorenzojb</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/lorenzojb/mcp-onboarding" rel="noopener">mcp-onboarding ★0</a></td>
@@ -3707,7 +3708,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dmckennirey-ant" rel="noopener">dmckennirey-ant</a>
     <div class="name">David McKennirey</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3720,7 +3721,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/timgu0" rel="noopener">timgu0</a>
     <div class="name">timgu0</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3733,7 +3734,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mnielan-ant" rel="noopener">mnielan-ant</a>
     <div class="name">mnielan-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3772,7 +3773,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/paola-renteria" rel="noopener">paola-renteria</a>
     <div class="name">paola-renteria</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3785,7 +3786,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/james-m-thomas" rel="noopener">james-m-thomas</a>
     <div class="name">James Thomas</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -3915,7 +3916,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/shawnm-anthropic" rel="noopener">shawnm-anthropic</a>
     <div class="name">shawnm-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-agent-sdk-python</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -4305,7 +4306,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/alexglynn" rel="noopener">alexglynn</a>
     <div class="name">alexglynn</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -4409,7 +4410,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/chsmc-ant" rel="noopener">chsmc-ant</a>
     <div class="name">Chase McCoy</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -4708,7 +4709,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ant-soumitr" rel="noopener">ant-soumitr</a>
     <div class="name">ant-soumitr</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code-action</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -4942,7 +4943,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/whu-ant" rel="noopener">whu-ant</a>
     <div class="name">William Hu</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-code</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5137,7 +5138,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/garetht-ant" rel="noopener">garetht-ant</a>
     <div class="name">garetht-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-cli</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5150,7 +5151,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/yjp-ant" rel="noopener">yjp-ant</a>
     <div class="name">Young-jin Park</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-cli</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5163,7 +5164,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/codebytere-ant" rel="noopener">codebytere-ant</a>
     <div class="name">Shelley Vohr</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-typescript</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/codebytere-ant/codebytere-ant" rel="noopener">codebytere-ant ★0</a></td>
@@ -5241,7 +5242,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/noahp-anthropic" rel="noopener">noahp-anthropic</a>
     <div class="name">noahp-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">anthropic-sdk-go</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5267,7 +5268,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/akshit-ant" rel="noopener">akshit-ant</a>
     <div class="name">akshit-ant</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">k12-teacher-skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5319,7 +5320,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/TanveerMittal" rel="noopener">TanveerMittal</a>
     <div class="name">TanveerMittal</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">cwc-workshops</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/TanveerMittal/Notez.ai" rel="noopener">Notez.ai ★4</a> <a class="own" href="https://github.com/TanveerMittal/DataHacks_2020" rel="noopener">DataHacks_2020 ★2</a> <a class="own" href="https://github.com/TanveerMittal/Feature_Type_Inference_Capstone" rel="noopener">Feature_Type_Inference_Capstone ★1</a></td>
@@ -5397,7 +5398,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/parisac-ant" rel="noopener">parisac-ant</a>
     <div class="name">Alex Paris</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">claude-quickstarts</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5423,7 +5424,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/zack-anthropic" rel="noopener">zack-anthropic</a>
     <div class="name">zack-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5449,7 +5450,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ant-andi" rel="noopener">ant-andi</a>
     <div class="name">ant-andi</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">skills</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5488,7 +5489,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mmolash" rel="noopener">mmolash</a>
     <div class="name">Michael Molash</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">defending-code-reference-harness</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/mmolash/basic-mern" rel="noopener">basic-mern ★2</a> <a class="own" href="https://github.com/mmolash/esports-scores" rel="noopener">esports-scores ★2</a> <a class="own" href="https://github.com/mmolash/randomcity" rel="noopener">randomcity ★1</a></td>
@@ -5501,7 +5502,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/mntss" rel="noopener">mntss</a>
     <div class="name">Mateusz Piotrowski</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">jacobian-lens</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/mntss/neural-steering" rel="noopener">neural-steering ★2</a> <a class="own" href="https://github.com/mntss/poleval-2021" rel="noopener">poleval-2021 ★1</a> <a class="own" href="https://github.com/mntss/BioInf" rel="noopener">BioInf ★0</a></td>
@@ -5527,7 +5528,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/samching" rel="noopener">samching</a>
     <div class="name">Sam Ching</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">s5cmd</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/samching/nextjs-prisma" rel="noopener">nextjs-prisma ★0</a> <a class="own" href="https://github.com/samching/roam2github" rel="noopener">roam2github ★0</a> <a class="own" href="https://github.com/samching/react-native-youtube" rel="noopener">react-native-youtube ★0</a></td>
@@ -5540,7 +5541,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/dougbarth" rel="noopener">dougbarth</a>
     <div class="name">Doug Barth</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">s5cmd</span></td>
   <td class="ch"><a href="http://dougbarth.github.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/dougbarth/amqp-utils" rel="noopener">amqp-utils ★78</a> <a class="own" href="https://github.com/dougbarth/jsonlint" rel="noopener">jsonlint ★19</a> <a class="own" href="https://github.com/dougbarth/ermarb" rel="noopener">ermarb ★10</a></td>
@@ -5553,7 +5554,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/curiouswhale" rel="noopener">curiouswhale</a>
     <div class="name">Winnie Xiao</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">scone-bench</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5566,7 +5567,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/harish-kamath" rel="noopener">harish-kamath</a>
     <div class="name">Harish Kamath</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">headvis</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/harish-kamath/rqae" rel="noopener">rqae ★14</a> <a class="own" href="https://github.com/harish-kamath/WaymoOpenDatasetChallenge" rel="noopener">WaymoOpenDatasetChallenge ★4</a> <a class="own" href="https://github.com/harish-kamath/gym-mbbl" rel="noopener">gym-mbbl ★2</a></td>
@@ -5579,7 +5580,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/remyolson" rel="noopener">remyolson</a>
     <div class="name">Rémy Olson</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">agent-sdk-workshop</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><a class="own" href="https://github.com/remyolson/agent-sdk-workshop" rel="noopener">agent-sdk-workshop ★0</a></td>
@@ -5605,7 +5606,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/anthropic-rw" rel="noopener">anthropic-rw</a>
     <div class="name">anthropic-rw</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">original_performance_takehome</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5618,7 +5619,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/l1n" rel="noopener">l1n</a>
     <div class="name">Nova</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">tailscale-hint-extension</span></td>
   <td class="ch"><a href="https://novalinium.com" rel="noopener">site</a></td>
   <td class="own-c"><a class="own" href="https://github.com/l1n/topaz-dext" rel="noopener">topaz-dext ★1</a> <a class="own" href="https://github.com/l1n/ao3-downloader" rel="noopener">ao3-downloader ★1</a> <a class="own" href="https://github.com/l1n/gcg-rs" rel="noopener">gcg-rs ★0</a></td>
@@ -5631,7 +5632,7 @@ recency rather than collapsed into a single score.</p>
     <a href="https://github.com/ruth-anthropic" rel="noopener">ruth-anthropic</a>
     <div class="name">ruth-anthropic</div>
   </td>
-  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address.">commit email</span></td>
+  <td><span class="tag t-confirmed" title="Committed under an @anthropic.com address, which belongs to the lab itself.">commit email</span></td>
   <td class="rep"><span class="repo">political-neutrality-eval</span></td>
   <td class="ch"><span class="none">—</span></td>
   <td class="own-c"><span class="none">—</span></td>
@@ -5639,11 +5640,11 @@ recency rather than collapsed into a single score.</p>
 </tr></tbody>
 </table></div>
 
-<footer>Generated 2026-08-31 from the GitHub REST and GraphQL APIs.
+<footer>Generated 2026-09-03 from the GitHub REST and GraphQL APIs.
 Source: <code>research/github/</code>. Counts cover the default branch only.</footer>
 </div>
 <script>
-const staffSet = ["confirmed", "profile", "handle"];
+const staffSet = ["confirmed", "confirmed_org_wide", "profile", "handle"];
 document.querySelectorAll(".filters button").forEach(b => {
   b.addEventListener("click", () => {
     document.querySelectorAll(".filters button")

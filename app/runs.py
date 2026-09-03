@@ -18,7 +18,10 @@ from app.models import utcnow
 
 
 @contextmanager
-def tracked(session: Session, kind: str, stats: dict | None = None) -> Iterator[m.PipelineRun]:
+def tracked(
+    session: Session, kind: str, stats: dict | None = None,
+    run: m.PipelineRun | None = None,
+) -> Iterator[m.PipelineRun]:
     """Open a pipeline_runs row around a unit of work, as one transaction.
 
     The body's stages flush rather than commit, so this context manager owns the
@@ -30,10 +33,17 @@ def tracked(session: Session, kind: str, stats: dict | None = None) -> Iterator[
     Args:
         session: Open session; the run row is committed on entry so a crash
             leaves a visible `running` corpse rather than nothing.
-        kind: What ran — load | rebuild | connect.
+        kind: What ran — load | rebuild | connect | scheduled.
         stats: Mutable dict the caller fills stage by stage. Recorded on both
             the success and the failure path, so a failed run says how far it
             got instead of reporting an empty `{}`.
+        run: An existing run row to record against instead of opening one. The
+            scheduled worker uses this: its firing is a single run that spans
+            ingestion (which commits per source, because a fetch that happened
+            is a fact and must survive a later failure) and the ETL (which must
+            stay atomic). Passing the row in keeps that one firing as one row
+            rather than two. When reused, the caller owns marking it succeeded —
+            the ETL finishing is not the whole firing finishing.
 
     Yields:
         The run row; the caller fills `watermarks` and `cost_usd`.
@@ -41,24 +51,28 @@ def tracked(session: Session, kind: str, stats: dict | None = None) -> Iterator[
     Raises:
         Whatever the body raised, after recording it on the run row.
     """
-    run = m.PipelineRun(kind=kind)
-    session.add(run)
-    session.commit()
+    owned = run is None
+    if owned:
+        run = m.PipelineRun(kind=kind)
+        session.add(run)
+        session.commit()
     try:
         yield run
     except Exception as exc:
         # Rolling back discards the body's whole transaction — including the
         # ref wipe — so the previous good state survives the failure. The run
-        # row itself is safe: it was committed on entry.
+        # row itself is safe: it was committed on entry, and anything an earlier
+        # phase committed against it (ingestion) is equally untouched.
         session.rollback()
         run.status, run.error, run.finished_at = "failed", str(exc), utcnow()
         if stats is not None:
-            run.stats = dict(stats)
+            run.stats = {**(run.stats or {}), **stats}
         session.commit()
         raise
-    run.status, run.finished_at = "succeeded", utcnow()
+    if owned:
+        run.status, run.finished_at = "succeeded", utcnow()
     if stats is not None:
-        run.stats = dict(stats)
+        run.stats = {**(run.stats or {}), **stats}
     session.commit()
 
 

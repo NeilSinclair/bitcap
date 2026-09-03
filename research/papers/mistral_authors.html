@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mistral AI contributors — papers authored</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --line:#2a323d; --tx:#e6edf3;
+    --dim:#9aa7b4; --faint:#6e7c8c; --accent:#4c9aff;
+    --staff:#3fb950; --fellow:#d29922; --external:#8b949e; --res:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px 80px}
+  header{border-bottom:1px solid var(--line);padding:34px 0 22px;margin-bottom:24px}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
+  h2{font-size:15px;margin:34px 0 10px;color:var(--dim);font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em}
+  .sub{color:var(--dim);font-size:14px} .sub b{color:var(--tx);font-weight:600}
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:12px 16px;min-width:130px;flex:1}
+  .stat b{display:block;font-size:22px;letter-spacing:-.02em}
+  .stat span{display:block;color:var(--faint);font-size:12px;
+    text-transform:uppercase;letter-spacing:.05em}
+  .stat em{display:block;color:var(--faint);font-size:11.5px;font-style:normal;margin-top:4px}
+  .note{background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:13px 16px;margin:24px 0 0;font-size:13.5px;color:var(--dim)}
+  .note b{color:var(--tx);font-weight:600}
+  .note p{margin:0 0 8px} .note p:last-child{margin:0}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--faint);padding:10px 12px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dt{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ti{min-width:260px} .lk{white-space:nowrap} .lk a{margin-right:8px}
+  .barcell{width:180px}
+  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+  .filters button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel);color:var(--tx);cursor:pointer}
+  .filters button[aria-pressed="true"]{background:var(--tx);color:var(--bg);
+    border-color:var(--tx)}
+  .row{border:1px solid var(--line);border-radius:8px;background:var(--panel);
+    margin-bottom:6px}
+  .row summary{display:flex;align-items:center;gap:12px;padding:9px 14px;
+    cursor:pointer;list-style:none}
+  .row summary::-webkit-details-marker{display:none}
+  .rank{color:var(--faint);font-size:12px;min-width:26px;
+    font-variant-numeric:tabular-nums}
+  .name{font-weight:600;min-width:190px}
+  .bar{flex:1;height:6px;background:#0d1117;border-radius:3px;overflow:hidden;
+    min-width:60px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+  .count{font-variant-numeric:tabular-nums;color:var(--dim);min-width:20px;
+    text-align:right}
+  .flags{min-width:150px;text-align:right}
+  .tag{font-size:11px;padding:2px 7px;border-radius:4px;background:#0d1117;
+    white-space:nowrap;cursor:help}
+  .t-staff{color:var(--staff)} .t-fellow{color:var(--fellow)}
+  .t-external{color:var(--external)} .t-res{color:var(--res)}
+  .affs{padding:0 14px 4px 52px}
+  .aff{display:inline-block;background:#0d1117;border-radius:4px;padding:1px 7px;
+    font-size:11.5px;color:var(--dim);margin:0 4px 4px 0}
+  .papers{margin:0;padding:4px 14px 12px 52px;list-style:none}
+  .papers li{padding:3px 0;font-size:13px;border-top:1px solid var(--line)}
+  .papers .d{color:var(--faint);font-size:11.5px;margin-left:8px;
+    font-variant-numeric:tabular-nums}
+  .none{color:var(--faint)}
+  footer{color:var(--faint);font-size:12px;margin-top:30px;
+    border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Mistral AI — contributors from papers</h1>
+  <p class="sub">Every author on every Mistral AI paper harvested in the window,
+  <b>2026-07-22 to 2026-07-28</b>. Generated 2026-09-03.</p>
+  <div class="stats"><div class="stat"><b>2</b><span>papers</span><em>2026-07-22 to 2026-07-28</em></div><div class="stat"><b>2/2</b><span>cite a primary source</span><em>every insight needs one</em></div><div class="stat"><b>23</b><span>distinct authors</span><em>23 lab staff</em></div><div class="stat"><b>0</b><span>external co-authors</span><em>across 1 affiliations</em></div><div class="stat"><b>2</b><span>staff on 2+ papers</span><em>the followable core</em></div></div>
+</header>
+
+<h2>Papers</h2>
+<div class="scroll"><table>
+<thead><tr><th>Date</th><th>Title</th><th>Authors</th><th>Staff</th>
+<th>arXiv match</th><th>Links</th></tr></thead>
+<tbody><tr><td class="dt">2026-07-28</td><td class="ti">Shieldstral</td><td class="n">11</td><td class="n">11</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://mistral.ai/news/shieldstral/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.25857v2" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-22</td><td class="ti">Robostral Navigate</td><td class="n">14</td><td class="n">14</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.20785v3" rel="noopener">arXiv</a></td></tr></tbody>
+</table></div>
+
+<h2>Co-authoring institutions</h2>
+<p class="sub">Ranked by how many people carry the affiliation. Each is a
+candidate source the register does not yet track.</p>
+<div class="scroll"><table>
+<thead><tr><th>Institution</th><th></th><th>People</th></tr></thead>
+<tbody><tr><td colspan="3" class="none">No external co-authoring institutions.</td></tr></tbody>
+</table></div>
+
+<h2>People</h2>
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (23)</button>
+  <button data-f="staff" aria-pressed="false">Lab staff (23)</button>
+  <button data-f="external" aria-pressed="false">External (0)</button>
+</div>
+
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">1</span>
+        <span class="name">Avinash Sooriyarachchi</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">2</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">2</span>
+        <span class="name">Guillaume Lample</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">2</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">3</span>
+        <span class="name">Antonia Calvi</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">4</span>
+        <span class="name">Arjun Majumdar</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">5</span>
+        <span class="name">Benjamin Tibi</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">6</span>
+        <span class="name">Chris Bamford</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">7</span>
+        <span class="name">Elliot Chane-Sane</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">8</span>
+        <span class="name">Giada Pistilli</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">9</span>
+        <span class="name">Khyathi Raghavi Chandu</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">10</span>
+        <span class="name">Ludovic Ho Fuh</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">11</span>
+        <span class="name">Maarten Buyl</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">12</span>
+        <span class="name">Mathieu Poirée</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">13</span>
+        <span class="name">Maximilian Augustin</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">14</span>
+        <span class="name">Maximilian Müller</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">15</span>
+        <span class="name">Olivier Duchenne</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">16</span>
+        <span class="name">Pierre Stock</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">17</span>
+        <span class="name">Rosalie Millner</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">18</span>
+        <span class="name">Srijan Mishra</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">19</span>
+        <span class="name">Thomas Chabal</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">20</span>
+        <span class="name">Théo Cachet</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/robostral-navigate/" rel="noopener">Robostral Navigate</a><span class="d">2026-07-22</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">21</span>
+        <span class="name">Tom Bewley</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">22</span>
+        <span class="name">Wassim Bouaziz</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">23</span>
+        <span class="name">Yimu Pan</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Mistral AI</span></div>
+      <ul class="papers"><li><a href="https://mistral.ai/news/shieldstral/" rel="noopener">Shieldstral</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+
+<div class="note">
+<p><b>What "lab staff" means here.</b> The person carried a Mistral AI
+affiliation on at least one paper's own byline. It is the paper's claim, not an
+employment check &mdash; someone who has since left still shows as staff, and a
+paper that states no affiliation for an author leaves them external by default.</p>
+<p><b>Why the affiliation table matters.</b> Every institution in it is a group
+that publishes with this lab and is not itself in the register. That is the
+cheapest available list of sources to consider adding next, ranked by how
+much of this lab's output they actually touch.</p>
+</div>
+
+<footer>Generated from <code>research/docs/mistral_contributors.json</code>.
+Built by <code>research/papers/build_lab_authors_page.py</code>.</footer>
+</div>
+<script>
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll(".row").forEach(r => {
+      r.style.display = (f === "all" || r.dataset.tier === f) ? "" : "none";
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@ dependencies = [
     "pypdf>=5.0",
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.2",
+    "alembic>=1.14",
 ]
 
 [dependency-groups]
@@ -24,6 +25,7 @@ default-groups = ["dev", "api"]
 
 [project.scripts]
 bitcap-db = "app.cli:main"
+bitcap-worker = "app.pipeline.worker:main"
 
 [build-system]
 requires = ["hatchling"]

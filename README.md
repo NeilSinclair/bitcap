@@ -25,10 +25,25 @@ uv run pytest                  # full test suite
 terminal — the API, the frontend, a fresh `bitcap-db` invocation — picks it up
 the same way, instead of only the shell that ran this command.
 
-`rebuild` needs **no API key**: it loads the committed artifacts — 191 scored
-articles (June–Aug 2026), 26 holdings with their mechanism and lab-exposure
-edges, and the full cost log — and derives the clean tables and joins. It is
-always safe to re-run; the database is entirely derived from files in the repo.
+`rebuild` needs **no API key**: it loads the committed artifacts — the scored
+announcement corpus (June–Aug 2026), 26 holdings with their mechanism and
+lab-exposure edges, and the full cost log — and derives the clean tables and
+joins. It is always safe to re-run.
+
+It is safe because everything it drops is derived from files in the repo. The
+**operational** tables are the exception and are never dropped: `pipeline_runs`,
+`run_sources`, `source_state`, `alerts` and `gold_snapshots` record what actually
+happened on a run, and nothing in the repo can reproduce them. Schema changes go
+through Alembic:
+
+```bash
+uv run alembic upgrade head    # bring a database to the current schema
+uv run alembic current         # what revision is it on
+```
+
+`bitcap-db rebuild`/`load` call this for you. A database created before
+migrations existed is stamped automatically on first use, so no manual step is
+needed on an existing clone.
 
 ## What the database holds
 
@@ -68,6 +83,65 @@ uv run bitcap-db load                                         # pick up the new 
 ```
 
 Costs are recorded per call as runs proceed (`docs/cost.md` has the ledger).
+
+## The scheduled pipeline
+
+`bitcap-worker` is one firing, start to finish: ingest every due source →
+classify what is new, under a cost ceiling → derive the clean layer and the
+joins → check the classifier against the gold set → raise alerts.
+
+```bash
+uv run bitcap-worker                          # a real firing
+uv run bitcap-worker --dry-run                # same shape, no LLM spend, no alert delivery
+uv run bitcap-worker --legs announcements     # override cadence, run one leg
+```
+
+Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yaml):
+
+| Setting | Why it exists |
+|---|---|
+| `budget.per_run_usd` / `per_month_usd` | A cron making LLM calls with no ceiling is the one thing that can hurt on a fixed budget. Exceeding it stops classification; ingested data still lands. |
+| `cadence` | Per leg. A rolling 12-month GitHub window barely moves in a day; re-harvesting nightly is the most expensive thing here in wall-clock. Firing 1 runs everything. |
+| `alerts.source_down_runs` | One firing down and back up is noise. N in a row is an incident. |
+| `alerts.max_deliveries_per_run` | Everything raised is recorded; only delivery is capped, so a first run over an existing corpus does not fire 135 notifications. |
+
+**A dead source is not a dead run.** The orchestrator isolates sources so one
+broken lab does not cost the other six, and the run status and exit code say the
+same thing: a firing that completes exits `0` even with a source down, and
+`source_down` escalates that after N consecutive runs. Non-zero means the firing
+itself broke, so the platform's own cron alerting stays a signal rather than a
+nightly red light.
+
+## Deploying
+
+One image, two entrypoints — the cron job runs `bitcap-worker`, the web service
+runs uvicorn. [`render.yaml`](render.yaml) declares the database and the
+schedule; Railway needs the same two pieces configured in its UI.
+
+```bash
+docker build -t bitcap .
+docker run --rm -e DATABASE_URL=... bitcap bitcap-worker --dry-run
+```
+
+**A persistent volume at `/app/research/docs` is optional.** The per-URL fetch
+caches live there (~250 MB today), but the cache that costs money is in
+Postgres: `classify.py` takes its work list from `raw_articles LEFT JOIN
+raw_classifications`, so an article already classified at the current prompt
+version never reaches the API however cold the container starts. A lost volume
+costs time, not money and not correctness — the papers leg re-extracts bylines
+and the github leg re-harvests its 12-month window.
+
+Render cron jobs cannot mount a disk, so the blueprint runs without one. Mount
+one on any platform that allows it if those re-harvests become the bottleneck.
+
+Secrets, none of which are in the repo:
+
+| Variable | Needed for |
+|---|---|
+| `DATABASE_URL` | everything |
+| `ANTHROPIC_API_KEY` | classification and drift only — ingestion needs no key |
+| `GITHUB_TOKEN` | the GitHub leg |
+| `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
 
 ## Running the web app
 

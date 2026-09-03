@@ -1,0 +1,72 @@
+# How the scheduled pipeline behaves. Config, not code.
+#
+# The numbers here are the ones a person would want to change at 2am without
+# reading Python: what the run is allowed to spend, how often each leg is worth
+# running, and when a failure stops being noise.
+
+version: 1
+
+# Cost runaway is a named failure mode (CLAUDE.md) that had no control at all
+# until this file existed. A cron job making LLM calls against a EUR 100 budget
+# is exactly where it bites, because nobody is watching when it fires.
+#
+# Calibration, from the real cost log (docs/cost.md, raw_costs): the classifier
+# averages ~$0.029 per article, and the full 191-article corpus cost $5.44.
+# A normal incremental run classifies a handful of new articles and costs cents.
+# `per_run_usd` is therefore set well above a normal run and well below a full
+# re-classification -- high enough never to fire in ordinary operation, low
+# enough that a loop or a prompt regression is stopped within one firing rather
+# than one month.
+budget:
+  per_run_usd: 3.00
+  per_month_usd: 20.00
+  # abort_llm_stage: stop making calls, but keep everything already ingested and
+  # let the ETL finish. The alternative (fail the whole run) would throw away
+  # fetches that already happened and, worse, cost money to redo.
+  on_exceed: abort_llm_stage
+
+# Not every leg deserves every firing. Values are "run on every Nth firing";
+# 1 means every run.
+cadence:
+  announcements: 1   # the insight stream; this is what the digest is made of
+  papers: 3          # labs publish papers weekly at best, not daily
+  github: 7          # a rolling 12-month commit window barely moves in a day,
+                     # and a cold re-harvest is the most expensive leg in time
+  drift: 1           # cheap by design -- a small fixed sample, not the corpus
+
+alerts:
+  # Consecutive scheduled runs a source may fail before it is an incident
+  # rather than noise (planning.md 4b). One firing down and back up is normal;
+  # three in a row is not.
+  source_down_runs: 3
+
+  # Content alerts fire at or above this band. `high` is >= 60 on the
+  # deterministic score (config/scoring.yaml).
+  content_band: high
+
+  # Minimum connection strength for a holding-impact content alert.
+  content_min_strength: 0.5
+
+  # Gold-set agreement below this raises a *system* alert, not a content one:
+  # a scorer quietly becoming less consistent is silent degradation, which is
+  # a broken pipeline rather than a finding about the world (planning.md 6a).
+  drift_agreement_floor: 0.80
+
+  # stdout | webhook. The alerts table is the record of truth either way;
+  # the channel is only delivery, and a delivery failure is recorded rather
+  # than fatal. The webhook URL comes from ALERT_WEBHOOK_URL, never from here.
+  channel: stdout
+
+  # Everything raised is recorded; only delivery is capped. Without this the
+  # first run over an existing corpus fires one notification per high-band
+  # article already in it (16, today) and trains everyone to mute the channel.
+  # Suppressed alerts say so in `delivery_error` rather than looking failed.
+  max_deliveries_per_run: 10
+
+classification:
+  model: claude-sonnet-5
+  workers: 12          # network-bound, not CPU-bound
+  # Interactive by default. The Batches API is half price but polls to
+  # completion, which suits a backfill and not a scheduled firing that has to
+  # finish (planning.md 4a).
+  batch: false

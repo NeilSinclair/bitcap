@@ -13,22 +13,46 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).parent.parent.parent
 DOCS = ROOT / "research" / "docs"
-
-LABS = {
-    "anthropics": ("Anthropic", "anthropic.com"),
-    "openai": ("OpenAI", "openai.com"),
-}
+GITHUB_SOURCES = ROOT / "config" / "github_sources.yaml"
 
 EVIDENCE = {
-    "confirmed": ("commit email", "Committed under an @{domain} address."),
+    "confirmed": ("commit email", "Committed under an @{domain} address, which belongs to the lab itself."),
+    "confirmed_org_wide": ("parent domain", "Committed under an @{domain} address. That domain covers the whole parent company, not this lab specifically."),
     "profile": ("profile", "GitHub profile names the lab as their employer."),
     "handle": ("handle", "Work-account naming convention only; weakest signal."),
     "vendor": ("vendor", "Commits under a vendor domain; contractor, not staff."),
     "unknown": ("none", "No employment evidence found."),
     "deleted": ("gone", "Account no longer exists."),
 }
+
+# Tiers that count as an identified person, strongest first.
+STAFF_TIERS = ("confirmed", "confirmed_org_wide", "profile", "handle")
+
+
+def load_org(org: str) -> dict:
+    """Read one org's entry from config/github_sources.yaml.
+
+    Args:
+        org: GitHub organisation login.
+
+    Returns:
+        The org's config dict, with `domain` normalised to a list (empty when
+        the org has no evidencing domain at all, as with Mistral).
+
+    Raises:
+        SystemExit: If the org has no entry in the config file.
+    """
+    orgs = yaml.safe_load(GITHUB_SOURCES.read_text())["orgs"]
+    if org not in orgs:
+        sys.exit(f"no lab config for {org}; add it to config/github_sources.yaml")
+    cfg = dict(orgs[org])
+    domain = cfg.get("domain")
+    cfg["domain"] = [] if not domain else ([domain] if isinstance(domain, str) else list(domain))
+    return cfg
 
 
 def esc(text) -> str:
@@ -41,7 +65,8 @@ def person_row(p: dict, domain: str) -> str:
 
     Args:
         p: Enriched person record.
-        domain: Lab email domain, for the evidence caption.
+        domain: Lab email domain(s), already joined for display in the
+            evidence caption.
 
     Returns:
         HTML string for both rows.
@@ -113,14 +138,29 @@ def build(org: str) -> str:
     Returns:
         HTML document body.
     """
-    label, domain = LABS[org]
-    reg = json.loads((DOCS / f"github_enriched_{org}.json").read_text())
+    cfg = load_org(org)
+    label = cfg["label"]
+    domain = " or ".join(cfg["domain"]) or "the lab's own"
+
+    # Enrichment is a separate, rate-limited pass. An org that has not had it
+    # run still has a register worth reading -- it just cannot show the
+    # per-person channels, so say so on the page rather than failing.
+    enriched_path = DOCS / f"github_enriched_{org}.json"
+    enriched = enriched_path.exists()
+    src = enriched_path if enriched else DOCS / f"github_people_{org}.json"
+    reg = json.loads(src.read_text())
+
     t = reg["totals"]
-    emp = t["employment"]
-    staff = [
-        p for p in reg["people"] if p["employment"] in ("confirmed", "profile", "handle")
-    ]
+    emp = {k: t["employment"].get(k, 0) for k in EVIDENCE}
+    staff = [p for p in reg["people"] if p["employment"] in STAFF_TIERS]
+    for p in reg["people"]:
+        p.setdefault("profile", {})
     rows = "".join(person_row(p, domain) for p in reg["people"])
+
+    channelled = sum(
+        1 for p in staff if p["profile"].get("blog") or p["profile"].get("twitter")
+    )
+    own_repos = sum(1 for p in staff if p["profile"].get("personal_repos"))
 
     def card(caption, value, note=""):
         return (
@@ -128,6 +168,7 @@ def build(org: str) -> str:
             f'<div class="l">{caption}</div><div class="n">{note}</div></div>'
         )
 
+    evidenced = emp["confirmed"] + emp["confirmed_org_wide"]
     cards = "".join(
         [
             card("repositories", t["repos"], "pushed in last 12 months"),
@@ -135,12 +176,88 @@ def build(org: str) -> str:
                  f"{t['bot_commits']:,} bot commits removed"),
             card("distinct people", t["people"], f"{len(reg['aliases'])} accounts merged"),
             card("identified as staff", len(staff),
-                 f"{emp['confirmed']} by commit email, {emp['profile']} by profile"),
+                 f"{evidenced} by commit email, {emp['profile']} by profile"),
+            card("with a channel to follow", channelled if enriched else "—",
+                 f"{own_repos} also publish their own repos" if enriched
+                 else "profile enrichment not run for this org"),
         ]
     )
 
     mirrors = ", ".join(reg.get("mirrors_excluded", [])) or "none"
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    # The evidence ladder differs per org and the difference is the point: a
+    # lab-owned domain, a parent-company domain and no domain at all support
+    # very different claims, so the page states which one it is rather than
+    # printing the same sentence everywhere.
+    if not cfg["domain"]:
+        prose = [
+            "There is no commit-email evidence for this org at all &mdash; recent "
+            "commits are almost universally GitHub's privacy-relay noreply "
+            "addresses. That is a finding about the org, not a harvesting gap, "
+            "and it leaves the profile field as the only route to a name."
+        ]
+    elif cfg.get("domain_shared"):
+        prose = [
+            f"A commit from an <code>@{esc(domain)}</code> address is direct "
+            f"evidence ({emp['confirmed_org_wide']} people), but that domain "
+            "covers the whole parent company rather than this lab. It is tagged "
+            "<b>parent domain</b> and must not be read as proof the person works "
+            "in the AI org specifically."
+        ]
+    else:
+        prose = [
+            f"A commit made from an <code>@{esc(domain)}</code> address is direct, "
+            f"lab-specific evidence and outranks everything else "
+            f"({emp['confirmed']} people)."
+        ]
+
+    if enriched:
+        prose.append(
+            f"A GitHub profile naming the lab is accepted next ({emp['profile']})."
+        )
+    else:
+        prose.append(
+            "<b>Profile enrichment has not been run for this org</b>, so the "
+            "profile route contributes nothing here and the Channels and Own "
+            "projects columns are empty. Those are not absent signals, just "
+            "unfetched ones."
+        )
+
+    if cfg.get("work_suffix"):
+        prose.append(
+            f'The lab\'s <span class="tag" title="{esc(cfg["work_suffix"])}">'
+            "work-handle convention</span> is used only when neither is present "
+            f"({emp['handle']}), and is the one signal here that is a guess."
+        )
+    else:
+        prose.append(
+            "No work-handle convention is known for this org, so no account was "
+            "merged on handle resemblance alone."
+        )
+    employment_prose = " ".join(prose)
+
+    # Only offer a filter for a tier that actually has people in it -- a row of
+    # "(0)" buttons reads as missing data rather than an inapplicable signal.
+    filter_labels = {
+        "confirmed": "Commit-email confirmed",
+        "confirmed_org_wide": "Parent-domain",
+        "profile": "Profile",
+        "handle": "Handle only",
+        "vendor": "Vendor",
+        "unknown": "No evidence",
+    }
+    filter_buttons = "\n  ".join(
+        f'<button data-f="{tier}" aria-pressed="false">{lbl} ({emp[tier]})</button>'
+        for tier, lbl in filter_labels.items()
+        if emp[tier]
+    )
+
+    notes_html = (
+        f'<p><b>On this organisation.</b> {esc(" ".join(cfg["notes"].split()))}</p>'
+        if cfg.get("notes")
+        else ""
+    )
 
     return f"""<title>{label} GitHub Register</title>
 <style>
@@ -198,6 +315,7 @@ tr:last-child td {{ border-bottom: 0; }}
 .tag {{ font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--chip);
   white-space: nowrap; cursor: help; }}
 .t-confirmed {{ color: var(--ok); }} .t-profile {{ color: var(--ok); }}
+.t-confirmed_org_wide {{ color: var(--mid); }}
 .t-handle {{ color: var(--mid); }} .t-vendor {{ color: var(--weak); }}
 .repo {{ display: inline-block; background: var(--chip); border-radius: 4px;
   padding: 1px 6px; font-size: 11.5px; margin: 1px 2px 1px 0; }}
@@ -215,26 +333,22 @@ footer {{ color: var(--muted); font-size: 12px; margin-top: 24px; }}
 <div class="cards">{cards}</div>
 
 <div class="note">
-<p><b>How employment is decided.</b> A commit made from an
-<code>@{domain}</code> address is direct evidence and outranks everything else
-({emp['confirmed']} people). A GitHub profile naming the lab is accepted next
-({emp['profile']}). The <code>-ant</code> work-handle convention is used only when
-neither is present ({emp['handle']}), and is the one signal here that is a guess.</p>
+<p><b>How employment is decided.</b> {employment_prose}</p>
 <p><b>What was removed.</b> {t['bot_commits']:,} of {t['commits']:,} commits were made by
 release automation and code generators, which otherwise outrank every human in the
-org. Mirrored repositories were excluded ({esc(mirrors)}): the first is an upstream
-open-source project whose contributors are not staff, the second duplicates commits
-already counted elsewhere.</p>
+org. Mirrored repositories were excluded ({esc(mirrors)}) &mdash; their contributors
+are upstream open-source maintainers, not lab staff, or their commits are already
+counted under another repository.</p>
 <p><b>Read the ranking with care.</b> Commit count measures who maintains public
 code, not seniority or influence. It is shown alongside repository breadth and
 recency rather than collapsed into a single score.</p>
+{notes_html}
 </div>
 
 <div class="filters">
   <button data-f="all" aria-pressed="true">All ({t['people']})</button>
   <button data-f="staff" aria-pressed="false">Staff ({len(staff)})</button>
-  <button data-f="confirmed" aria-pressed="false">Commit-email confirmed ({emp['confirmed']})</button>
-  <button data-f="unknown" aria-pressed="false">No evidence ({emp['unknown']})</button>
+  {filter_buttons}
 </div>
 
 <div class="scroll"><table>
@@ -249,7 +363,7 @@ recency rather than collapsed into a single score.</p>
 Source: <code>research/github/</code>. Counts cover the default branch only.</footer>
 </div>
 <script>
-const staffSet = ["confirmed", "profile", "handle"];
+const staffSet = ["confirmed", "confirmed_org_wide", "profile", "handle"];
 document.querySelectorAll(".filters button").forEach(b => {{
   b.addEventListener("click", () => {{
     document.querySelectorAll(".filters button")
