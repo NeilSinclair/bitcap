@@ -16,6 +16,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent))
 from harvest_github import API, _call, load_token  # noqa: E402
 
@@ -23,11 +25,47 @@ ROOT = Path(__file__).parent.parent.parent
 DOCS = ROOT / "research" / "docs"
 CACHE = DOCS / "github_profiles"
 
-# Matched against the free-text profile company field, which people write by
-# hand: "Anthropic", "@anthropic", "Anthropic PBC" all occur.
-LAB_COMPANY = re.compile(r"anthropic", re.I)
+GITHUB_SOURCES = ROOT / "config" / "github_sources.yaml"
 
-LAB_PATTERNS = {"anthropics": r"anthropic", "openai": r"open\s*ai"}
+# Every employment tier that already carries evidence, so is always worth a
+# profile fetch. `confirmed_org_wide` (parent-company domain, e.g. @google.com
+# for DeepMind) is evidence too -- omitting it skipped low-commit staff at
+# exactly the labs whose domain is shared.
+EVIDENCED = ("confirmed", "confirmed_org_wide", "profile", "handle", "vendor")
+
+# Order matters only for reporting; these are the tiers a person can end in.
+TIERS = (
+    "confirmed",
+    "confirmed_org_wide",
+    "profile",
+    "handle",
+    "vendor",
+    "deleted",
+    "unknown",
+)
+
+# Matched against the free-text profile company field, which people write by
+# hand: "Anthropic", "@anthropic", "Anthropic PBC" all occur. Set per org in
+# config/github_sources.yaml, not here -- adding a lab is a config change.
+LAB_COMPANY = re.compile(r"(?!)")  # matches nothing until enrich() sets it
+
+
+def company_pattern(org: str) -> str:
+    """Look up an org's profile-company regex.
+
+    Args:
+        org: GitHub organisation login.
+
+    Returns:
+        The `company_pattern` regex string for that org.
+
+    Raises:
+        SystemExit: If the org has no entry in the config file.
+    """
+    orgs = yaml.safe_load(GITHUB_SOURCES.read_text())["orgs"]
+    if org not in orgs:
+        sys.exit(f"no lab config for {org}; add it to config/github_sources.yaml")
+    return orgs[org]["company_pattern"]
 
 
 def profile(login: str, token: str) -> dict:
@@ -96,7 +134,7 @@ def worth_fetching(person: dict, min_commits: int) -> bool:
         True if the profile should be fetched.
     """
     return (
-        person["employment"] in ("confirmed", "profile", "handle", "vendor")
+        person["employment"] in EVIDENCED
         or person["commits"] >= min_commits
     )
 
@@ -143,8 +181,8 @@ def enrich(
         company = prof.get("company") or ""
         person["company_matches_lab"] = bool(LAB_COMPANY.search(company))
 
-        if person["employment"] == "confirmed":
-            pass  # committed under a lab address; nothing beats that
+        if person["employment"] in ("confirmed", "confirmed_org_wide"):
+            pass  # committed under a corporate address; nothing beats that
         elif person["company_matches_lab"]:
             person["employment"] = "profile"
         elif person["employment"] == "handle":
@@ -158,15 +196,14 @@ def enrich(
     reg["totals"]["profiles_fetched"] = len(targets)
     reg["totals"]["profile_min_commits"] = min_commits
     reg["totals"]["employment"] = {
-        k: sum(1 for p in reg["people"] if p["employment"] == k)
-        for k in ("confirmed", "profile", "handle", "vendor", "deleted", "unknown")
+        k: sum(1 for p in reg["people"] if p["employment"] == k) for k in TIERS
     }
     return reg
 
 
 if __name__ == "__main__":
     org = sys.argv[1] if len(sys.argv) > 1 else "anthropics"
-    result = enrich(org, LAB_PATTERNS.get(org))
+    result = enrich(org, company_pattern(org))
     print(f"\nprofiles fetched: {result['totals']['profiles_fetched']}")
     dest = DOCS / f"github_enriched_{org}.json"
     dest.write_text(json.dumps(result, indent=2))
@@ -178,7 +215,7 @@ if __name__ == "__main__":
     staff = [
         p
         for p in result["people"]
-        if p["employment"] in ("confirmed", "profile", "handle")
+        if p["employment"] in ("confirmed", "confirmed_org_wide", "profile", "handle")
     ]
     print(f"\nstaff identified: {len(staff)}")
     with_channel = [

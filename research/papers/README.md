@@ -1,5 +1,23 @@
 # Papers research — deriving a lab's people from what it publishes
 
+**Pages (D22).** `build_lab_authors_page.py [lab...]` renders DeepMind, Meta and
+Mistral from one builder — those three share a register schema (`is_lab_staff`,
+`affiliations`), unlike the older Anthropic, OpenAI and DeepSeek registers,
+which keep their own builders rather than being forced into a shared one. Each
+page carries the paper table with its arXiv resolution method, the people, and a
+ranked table of **co-authoring institutions**: the cheapest available shortlist
+of sources not yet tracked. Cross-lab view:
+[`research/corpus_survey.html`](../corpus_survey.html).
+
+**All six registers cite a resolvable primary source for every paper, but not
+under the same key** — checked, not assumed. DeepMind, Meta and Mistral carry
+`source_url` (the arXiv HTML) alongside the lab's own page; OpenAI and DeepSeek
+put the arXiv abstract URL in `url` and also keep `arxiv_id`; Anthropic's `url`
+is the publishing venue itself (`alignment.anthropic.com`,
+`transformer-circuits.pub`), which is the primary source for work it never puts
+on arXiv. Anything reading across registers has to normalise these three
+shapes; `research/build_corpus_survey.py` does it in one place.
+
 **Status: extended to Google DeepMind, Meta AI, and Mistral AI. xAI confirmed to have
 no papers findable by any method tried — no code was built for it.**
 

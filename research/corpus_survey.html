@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontier lab corpus — what we have collected</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --line:#2a323d; --tx:#e6edf3;
+    --dim:#9aa7b4; --faint:#6e7c8c; --accent:#4c9aff;
+    --ok:#3fb950; --mid:#d29922; --weak:#f85149;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 80px}
+  header{border-bottom:1px solid var(--line);padding:34px 0 22px;margin-bottom:26px}
+  h1{margin:0 0 6px;font-size:27px;letter-spacing:-.02em}
+  h2{font-size:15px;margin:38px 0 6px;color:var(--dim);font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em}
+  .sub{color:var(--dim);font-size:14px;margin:0 0 12px}
+  .sub b{color:var(--tx);font-weight:600}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:12px 15px;flex:1;min-width:150px}
+  .stat b{display:block;font-size:21px;letter-spacing:-.02em}
+  .stat span{display:block;color:var(--faint);font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  .stat em{display:block;color:var(--faint);font-size:11.5px;font-style:normal;
+    margin-top:5px;line-height:1.4}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--faint);padding:10px 12px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dt{color:var(--dim);white-space:nowrap;font-size:12px;
+    font-variant-numeric:tabular-nums}
+  .ti{min-width:170px;font-weight:600}
+  .sub2{display:block;color:var(--faint);font-size:11.5px;font-weight:400}
+  .lab{font-weight:600;min-width:150px}
+  .cell{text-align:center;min-width:110px}
+  .cell b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+  .cell span{display:block;color:var(--faint);font-size:11px;margin-top:1px}
+  .cell.no b{color:var(--faint)}
+  .cell.yes b{color:var(--tx)}
+  .tag{font-size:11px;padding:2px 8px;border-radius:4px;background:#0d1117;
+    white-space:nowrap}
+  .t-ok{color:var(--ok)} .t-mid{color:var(--mid)} .t-weak{color:var(--weak)}
+  .warn{color:var(--mid)}
+  .ch{font-size:12px;color:var(--dim);white-space:nowrap}
+  .barcell{width:200px}
+  .bar{display:block;height:6px;background:#0d1117;border-radius:3px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+  .note{background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:14px 17px;margin:14px 0 0;font-size:13.5px;color:var(--dim)}
+  .note.warnbox{border-left-color:var(--mid)}
+  .note b{color:var(--tx);font-weight:600}
+  .note p{margin:0 0 9px} .note p:last-child{margin:0}
+  .note code{background:#0d1117;padding:1px 5px;border-radius:3px;font-size:12px}
+  .none{color:var(--faint)}
+  .empty td{opacity:.65}
+  footer{color:var(--faint);font-size:12px;margin-top:36px;
+    border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Frontier lab corpus &mdash; what we have collected</h1>
+  <p class="sub">Every research leg, every lab, as of 2026-09-03. The per-lab
+  pages go deep on one lab each; this one goes wide, to show where the corpus is
+  solid and where it is thin.</p>
+  <div class="stats"><div class="stat"><b>7</b><span>labs in the register</span><em>3-month window</em></div><div class="stat"><b>768</b><span>lab-owned repositories</span><em>each one a release and changelog feed</em></div><div class="stat"><b>1,278</b><span>people evidenced as staff</span><em>across all GitHub orgs</em></div><div class="stat"><b>101+68</b><span>blogs and X handles</span><em>personal channels, staff only</em></div><div class="stat"><b>3,281</b><span>staff personal repositories</span><em>side projects, published early</em></div><div class="stat"><b>91</b><span>papers harvested</span><em>1,798 author slots</em></div></div>
+</header>
+
+<h2>Coverage</h2>
+<p class="sub">Seven labs in the register, three ingestion legs. A dash is a
+real absence, not a pending task.</p>
+<div class="scroll"><table>
+<thead><tr><th>Lab</th><th>Announcements</th><th>Papers</th><th>GitHub</th></tr></thead>
+<tbody><tr><td class="lab">Anthropic</td><td class="cell yes"><b>35</b><span>announcements</span></td><td class="cell yes"><b>54</b><span>175 authors</span></td><td class="cell yes"><b>59</b><span>1 org, 176 staff</span></td></tr><tr><td class="lab">OpenAI</td><td class="cell yes"><b>138</b><span>announcements</span></td><td class="cell yes"><b>7</b><span>1079 authors</span></td><td class="cell yes"><b>99</b><span>1 org, 456 staff</span></td></tr><tr><td class="lab">DeepSeek</td><td class="cell yes"><b>2</b><span>announcements</span></td><td class="cell yes"><b>8</b><span>415 authors</span></td><td class="cell yes"><b>19</b><span>1 org, 23 staff</span></td></tr><tr><td class="lab">Google DeepMind</td><td class="cell yes"><b>12</b><span>announcements</span></td><td class="cell yes"><b>15</b><span>65 authors</span></td><td class="cell yes"><b>168</b><span>1 org, 221 staff</span></td></tr><tr><td class="lab">Mistral AI</td><td class="cell yes"><b>9</b><span>announcements</span></td><td class="cell yes"><b>2</b><span>23 authors</span></td><td class="cell yes"><b>12</b><span>1 org, 22 staff</span></td></tr><tr><td class="lab">Meta AI</td><td class="cell yes"><b>5</b><span>announcements</span></td><td class="cell yes"><b>5</b><span>41 authors</span></td><td class="cell yes"><b>403</b><span>2 orgs, 368 staff</span></td></tr><tr><td class="lab">xAI / SpaceXAI</td><td class="cell yes"><b>35</b><span>announcements</span></td><td class="cell no"><b>—</b><span>no papers leg</span></td><td class="cell yes"><b>8</b><span>1 org, 12 staff</span></td></tr></tbody>
+</table></div>
+
+<h2>GitHub &mdash; what sources this leg hands us</h2>
+<p class="sub">Two kinds of source come out of this leg. The <b>repositories</b>
+are sources in their own right: 768 of them, each with releases,
+tags and a changelog. The <b>people</b> are a route to more &mdash; a blog, an X
+handle, or their own side projects, which is often where work appears before the
+lab announces it.</p>
+<div class="scroll"><table>
+<thead><tr><th>Organisation</th><th>Repos</th><th>Human commits</th><th>People</th>
+<th>Staff</th><th>Evidence quality</th><th>Channels found</th></tr></thead>
+<tbody><tr><td class="ti"><a href="github/github_facebookresearch.html">Meta AI (FAIR)</a><span class="sub2">facebookresearch</span></td><td class="n">395</td><td class="n">10,121</td><td class="n">734</td><td class="n">347</td><td><span class="tag t-mid">parent-company domain, not lab-specific</span></td><td class="ch"><span class="warn">not enriched</span></td></tr><tr><td class="ti"><a href="github/github_google-deepmind.html">Google DeepMind</a><span class="sub2">google-deepmind</span></td><td class="n">168</td><td class="n">9,572</td><td class="n">632</td><td class="n">221</td><td><span class="tag t-mid">parent-company domain, not lab-specific</span></td><td class="ch"><span class="warn">not enriched</span></td></tr><tr><td class="ti"><a href="github/github_openai.html">OpenAI</a><span class="sub2">openai</span></td><td class="n">99</td><td class="n">17,306</td><td class="n">1,146</td><td class="n">456</td><td><span class="tag t-ok">lab-owned domain</span></td><td class="ch">37 blogs · 31 X · 907 repos</td></tr><tr><td class="ti"><a href="github/github_anthropics.html">Anthropic</a><span class="sub2">anthropics</span></td><td class="n">59</td><td class="n">3,457</td><td class="n">426</td><td class="n">176</td><td><span class="tag t-ok">lab-owned domain</span></td><td class="ch">43 blogs · 25 X · 1,533 repos</td></tr><tr><td class="ti"><a href="github/github_deepseek-ai.html">DeepSeek</a><span class="sub2">deepseek-ai</span></td><td class="n">19</td><td class="n">15,348</td><td class="n">129</td><td class="n">23</td><td><span class="tag t-ok">lab-owned domain</span></td><td class="ch">5 blogs · 2 X · 362 repos</td></tr><tr><td class="ti"><a href="github/github_mistralai.html">Mistral AI</a><span class="sub2">mistralai</span></td><td class="n">12</td><td class="n">1,257</td><td class="n">93</td><td class="n">22</td><td><span class="tag t-weak">no commit-email evidence exists; profile field only</span></td><td class="ch">9 blogs · 5 X · 322 repos</td></tr><tr><td class="ti"><a href="github/github_xai-org.html">xAI</a><span class="sub2">xai-org</span></td><td class="n">8</td><td class="n">241</td><td class="n">33</td><td class="n">12</td><td><span class="tag t-ok">lab-owned domain</span></td><td class="ch">2 blogs · 4 X · 33 repos</td></tr><tr><td class="ti"><a href="github/github_meta-llama.html">Meta AI (Llama)</a><span class="sub2">meta-llama</span></td><td class="n">8</td><td class="n">297</td><td class="n">28</td><td class="n">21</td><td><span class="tag t-mid">parent-company domain, not lab-specific</span></td><td class="ch">5 blogs · 1 X · 124 repos</td></tr></tbody>
+</table></div>
+
+<div class="note warnbox">
+<p><b>Evidence quality is not comparable across labs, and the column says so.</b>
+Anthropic, OpenAI, DeepSeek and xAI have lab-owned commit domains, so a match
+names the lab. Google DeepMind and both Meta orgs only have parent-company
+domains &mdash; an <code>@google.com</code> commit proves Alphabet, not DeepMind.
+Mistral has no usable commit-email evidence at all; every person identified
+there comes from the profile field alone.</p>
+<p><b>Two orgs are unenriched.</b> <code>google-deepmind</code>, <code>facebookresearch</code> have had no profile pass run, so their Channels column is empty. That is the largest single gap on this page: together they are 568 evidenced staff whose blogs, X handles and personal repositories have simply not been fetched yet. Their repository and commit data is complete.</p>
+</div>
+
+<h2>Papers &mdash; what this leg gives us downstream</h2>
+<p class="sub">Three things worth using: a <b>resolvable primary source</b> per
+paper, a set of <b>named people</b> to follow, and the <b>institutions</b> those
+people co-author with.</p>
+<div class="scroll"><table>
+<thead><tr><th>Lab</th><th>Papers</th><th>Author slots</th><th>Lab staff</th>
+<th>On 2+ papers</th><th>Cites source</th><th>Source kind</th><th>Window</th></tr></thead>
+<tbody><tr><td class="ti"><a href="papers/anthropic_authors.html">Anthropic</a></td><td class="n">54</td><td class="n">175</td><td class="n">117</td><td class="n">63</td><td class="n">54/54</td><td class="dt">publishing venue</td><td class="dt">2025-08-07 to 2026-08-28</td></tr><tr><td class="ti"><a href="papers/openai_authors.html">OpenAI</a></td><td class="n">7</td><td class="n">1,079</td><td class="n">—</td><td class="n">399</td><td class="n">7/7</td><td class="dt">arXiv</td><td class="dt">2023-03-15 to 2026-08-18</td></tr><tr><td class="ti"><a href="papers/deepseek_authors.html">DeepSeek</a></td><td class="n">8</td><td class="n">415</td><td class="n">—</td><td class="n">276</td><td class="n">8/8</td><td class="dt">arXiv</td><td class="dt">2024-01-05 to 2026-04-26</td></tr><tr><td class="ti"><a href="papers/deepmind_authors.html">Google DeepMind</a></td><td class="n">15</td><td class="n">65</td><td class="n">38</td><td class="n">3</td><td class="n">15/15</td><td class="dt">arXiv + lab page</td><td class="dt">2025-07-21 to 2026-08-26</td></tr><tr><td class="ti"><a href="papers/mistral_authors.html">Mistral AI</a></td><td class="n">2</td><td class="n">23</td><td class="n">23</td><td class="n">2</td><td class="n">2/2</td><td class="dt">arXiv + lab page</td><td class="dt">2026-07-22 to 2026-07-28</td></tr><tr><td class="ti"><a href="papers/meta_authors.html">Meta AI</a></td><td class="n">5</td><td class="n">41</td><td class="n">24</td><td class="n">0</td><td class="n">5/5</td><td class="dt">arXiv + lab page</td><td class="dt">2026-06-11 to 2026-07-30</td></tr><tr class="empty"><td class="ti">xAI / SpaceXAI</td><td colspan="7" class="none">No papers leg &mdash; nothing findable by any method tried.</td></tr></tbody>
+</table></div>
+
+<div class="note">
+<p><b>The two register schemas are not the same, and the table does not pretend
+otherwise.</b> DeepMind, Meta and Mistral record a per-author affiliation, so a
+staff/external split is real for them. Anthropic records a byline count instead.
+The OpenAI and DeepSeek harvesters only ever collected papers whose authors are
+all the lab's own, so a "lab staff" figure would be the author count restated
+&mdash; shown as a dash rather than a number that means something different.</p>
+<p><b>Every paper in every register resolves to a primary source, but not under
+the same key.</b> DeepMind, Meta and Mistral store the arXiv HTML in
+<code>source_url</code> alongside the lab's own page. OpenAI and DeepSeek put
+the arXiv abstract URL straight in <code>url</code>. Anthropic's
+<code>url</code> is the publishing venue itself &mdash;
+<code>alignment.anthropic.com</code>, <code>transformer-circuits.pub</code>
+&mdash; which is the primary source for work it never puts on arXiv, not a
+weaker substitute for one. Anything reading across registers has to normalise
+all three shapes.</p>
+</div>
+
+<h2>Candidate sources the papers already name</h2>
+<p class="sub">Institutions that co-author with a tracked lab and are not
+themselves tracked. Ranked by how many people carry the affiliation &mdash; the
+cheapest available shortlist of what to consider adding next.</p>
+<div class="scroll"><table>
+<thead><tr><th>Institution</th><th></th><th>People</th></tr></thead>
+<tbody><tr><td class="ti">MATS</td><td class="barcell"><span class="bar"><i style="width:100%"></i></span></td><td class="n">10</td></tr><tr><td class="ti">Redwood Research</td><td class="barcell"><span class="bar"><i style="width:80%"></i></span></td><td class="n">8</td></tr><tr><td class="ti">AE Studio</td><td class="barcell"><span class="bar"><i style="width:80%"></i></span></td><td class="n">8</td></tr><tr><td class="ti">Visual Geometry Group (VGG), University of Oxford</td><td class="barcell"><span class="bar"><i style="width:70%"></i></span></td><td class="n">7</td></tr><tr><td class="ti">ML Alignment and Theory Scholars</td><td class="barcell"><span class="bar"><i style="width:50%"></i></span></td><td class="n">5</td></tr><tr><td class="ti">National Institute of Advanced Industrial Science and Technology (AIST)</td><td class="barcell"><span class="bar"><i style="width:40%"></i></span></td><td class="n">4</td></tr><tr><td class="ti">Truthful AI</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">Independent</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">EPFL</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">Rice University</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">Inria</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">École Normale Supérieure, Paris</td><td class="barcell"><span class="bar"><i style="width:30%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">Constellation</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">MATS Program</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">University of Technology Nuremberg</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">2</td></tr></tbody>
+</table></div>
+
+<div class="note warnbox">
+<p><b>These are raw affiliation strings, deliberately unmerged.</b> "MATS", "MATS
+Program" and "ML Alignment and Theory Scholars" are one organisation appearing
+three times, and several university entries differ only by campus or comma. The
+counts are therefore a floor, not a total. Merging them needs an alias map
+&mdash; the same entity-resolution problem the register already handles for
+people &mdash; and guessing at it here would bury the collision rather than
+show it. <code>Independent</code> is not an institution at all and is listed
+only because that is what the byline said.</p>
+</div>
+
+<footer>Generated 2026-09-03 by <code>research/build_corpus_survey.py</code>
+from <code>research/docs/</code>. Register: <code>config/sources.yaml</code>,
+<code>config/github_sources.yaml</code>.</footer>
+</div>
+</body>
+</html>

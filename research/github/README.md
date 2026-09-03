@@ -1,5 +1,22 @@
 # GitHub-derived contributor research
 
+**Pages (D22).** `build_github_page.py <org>` now renders any org in
+`config/github_sources.yaml`, not just Anthropic and OpenAI — it reads the
+label, domain and handle convention from config and writes one of three
+evidence paragraphs depending on whether the org has a lab-owned domain, a
+parent-company domain, or none. All eight pages are built. The cross-lab view
+is [`research/corpus_survey.html`](../corpus_survey.html)
+(`research/build_corpus_survey.py`).
+
+**Enrichment is run for six of eight orgs.** `google-deepmind` and
+`facebookresearch` are deliberately still unenriched (~1,350 profile fetches);
+their pages say so rather than showing an empty Channels column. The four small
+orgs were enriched in D22 and the profile route mattered most exactly where
+commit email failed: **Mistral goes from 0 evidenced people to 22.** Two bugs
+were fixed to get there — `worth_fetching()` and the totals recount both
+predated the `confirmed_org_wide` tier and skipped it, losing 8 of
+meta-llama's 16 evidenced staff.
+
 **Status: run on all seven deep-coverage labs — Anthropic, OpenAI, DeepSeek,
 Google DeepMind, Mistral, xAI, and Meta AI (D19 built DeepSeek; the other six
 were re-checked live against fresh data, not just the original run).**
