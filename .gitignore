@@ -140,3 +140,8 @@ tempCodeRunnerFile.py
 .pypirc
 
 .claude/worktrees/
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local

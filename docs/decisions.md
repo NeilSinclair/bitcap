@@ -2586,3 +2586,52 @@ behavior-neutral for already-correct data and only change behavior on the
 specific failure paths each one targets. Full test suite: 483 passed, 1
 skipped (up from 456 before this pass — 27 new tests, one new file,
 `tests/test_validate.py`).
+## A category row loses to a contradicting mechanism row on the same holding (2026-09-02)
+
+Real case, surfaced by Neil while using the frontend: OpenAI shipping its own
+inference accelerator tags `category: accelerator_custom_si` positive (good for
+the group) and, via NVIDIA's own `custom_silicon_substitution` mechanism edge,
+`mechanism` negative for NVIDIA specifically (a socket it loses). Both routes
+fired on the same article, so NVIDIA showed "chips ↑" and "chips ↓" side by
+side — not wrong individually, but presented together it reads as the system
+contradicting itself rather than as two different kinds of evidence.
+
+**Decision.** In `app/connect.py`, `_drop_contradicted_category_rows` drops a
+holding's category-route row when that same holding has a mechanism-route row
+on the same article with the strictly opposite direction (positive vs
+negative). `mixed` contradicts nothing, so it never suppresses. A holding with
+mechanism rows on *both* sides (a genuinely mixed picture) still loses the
+category row — its own mechanism evidence is more specific either way, so the
+group-level claim adds nothing.
+
+**Alternative rejected: keep both rows, let the frontend pick one.** Pushes a
+data-quality decision into a rendering layer, and every future consumer of
+`connections` (a second frontend, an alert digest, an export) would have to
+reimplement the same rule or reproduce the same contradiction. The suppression
+belongs where the join is computed, once.
+
+**Alternative rejected: average or net the two directions.** A synthetic
+"slightly positive" for NVIDIA would be worse than either input — it asserts a
+number nobody's evidence actually supports, exactly the "arbitrary weighted sum
+dressed up as a score" the scoring rule already refuses to do (`scoring.yaml`).
+
+**Consequence.** `connect()`'s per-route counts are now post-suppression —
+a category count can drop between runs with no config change if more articles
+land in this shape. Category route only affected; `lab_exposure` and `named`
+are hardcoded `mixed` and can't contradict anything. Tested in
+`TestCategoryMechanismContradiction` (`tests/test_connect.py`): the NVIDIA
+shape, agreement (both rows kept), no mechanism row (category row kept),
+`mixed` mechanism (no suppression), and a holding with mechanism rows on both
+sides (still suppressed).
+
+**Also recorded here:** the frontend's Portfolio-impact panel groups
+connections by holding instead of listing every route flat, and every
+connection row now carries a resolved label (the mechanism/category name, or a
+humanized lab-relationship/named-mention phrase) instead of the bare route
+word — the flat, unlabeled list was unreadable on an article that hit a dozen
+holdings across several routes each. `api/queries.py` computes the label and
+the holding/article-side magnitude and confidence; `frontend/app/page.js`
+groups and sorts. A row's reason text is shown only when it says something
+Evidence doesn't already — true for `mechanism`/`lab_exposure`/`named` (their
+`note` prefers the holding-specific `why`), not for `category` (which has no
+holding-side text and would just repeat the tag's own reason).

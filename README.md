@@ -8,16 +8,22 @@ practice — with a verbatim quote behind every tag.
 
 Prerequisites: [uv](https://docs.astral.sh/uv/), and Docker for the Postgres
 path (optional — without it the database falls back to a local sqlite file).
+[Node.js](https://nodejs.org/) 18.18+ is needed too, but only for the frontend
+(below).
 
 ```bash
 git clone <repo> && cd bitcap
 uv sync                        # env + deps from the committed lockfile
 docker compose up -d           # local Postgres (skip for sqlite fallback)
-export DATABASE_URL=postgresql+psycopg://bitcap:bitcap@localhost:5432/bitcap
+echo "DATABASE_URL=postgresql+psycopg://bitcap:bitcap@localhost:5432/bitcap" >> .env
 uv run bitcap-db rebuild       # schema + full load from committed data
 uv run bitcap-db status        # last runs, counts, watermarks, cost
 uv run pytest                  # full test suite
 ```
+
+`DATABASE_URL` goes in `.env` rather than a plain `export` so every later
+terminal — the API, the frontend, a fresh `bitcap-db` invocation — picks it up
+the same way, instead of only the shell that ran this command.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — 191 scored
 articles (June–Aug 2026), 26 holdings with their mechanism and lab-exposure
@@ -63,6 +69,22 @@ uv run bitcap-db load                                         # pick up the new 
 
 Costs are recorded per call as runs proceed (`docs/cost.md` has the ledger).
 
+## Running the web app
+
+A read-only FastAPI service (`api/`) queries the database `bitcap-db` built
+above; a Next.js frontend (`frontend/`) calls it. Both need the Postgres
+container from the quickstart running, and `DATABASE_URL` in `.env` (the
+clone-to-running steps above already set this up).
+
+```bash
+uv run uvicorn api.main:app --reload --port 8000   # http://localhost:8000
+cd frontend && npm install && npm run dev           # http://localhost:3000
+```
+
+Sign-in on the frontend is a UI placeholder, not real auth — this is a
+prototype of the login/dashboard/detail flow wired to real data, not yet a
+deployed or access-controlled app.
+
 ## Layout
 
 - `config/` — what's tracked: labs, mechanisms, categories, practices,
@@ -71,5 +93,7 @@ Costs are recorded per call as runs proceed (`docs/cost.md` has the ledger).
 - `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v7.md`)
 - `research/` — ingestion, classification, evaluation (gold set), analyses
 - `app/` — the database package (`bitcap-db`)
+- `api/` — read-only FastAPI service over the same database, for the frontend
+- `frontend/` — Next.js app (investment/AI-team dashboards, insight detail view)
 - `docs/` — planning, running decision log, cost ledger
 - `tests/` — `uv run pytest`

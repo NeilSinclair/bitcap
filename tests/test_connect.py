@@ -123,6 +123,73 @@ class TestCategoryRoute:
         assert rows == []
 
 
+class TestCategoryMechanismContradiction:
+    """A category tag is a claim about the group; a mechanism edge is
+    evidence about one company. When a holding has both on the same article
+    and they disagree, only the company-specific mechanism row should show.
+    """
+
+    def cat_tag(self, cid, sign="positive", confidence="high"):
+        return m.ArticleCategory(category_id=cid, sign=sign, confidence=confidence,
+                                 reason="r", quote="q")
+
+    def test_the_nvidia_case(self):
+        """Real shape: OpenAI's custom silicon reads positive for the
+        accelerator category and negative for NVIDIA specifically."""
+        edges = [mech_edge("NVDA", "custom_silicon_substitution", "negative", "medium", "medium")]
+        rows = connections_for(
+            article(),
+            {"mechanisms": [mech_tag("custom_silicon_substitution")],
+             "categories": [self.cat_tag("memory_storage")]},
+            100.0,
+            refs(holding_mechanisms=edges, holding_categories={"memory_storage": ["NVDA"]}),
+            RULES)
+        assert {r.route for r in rows if r.isin == "NVDA"} == {"mechanism"}
+        assert next(r for r in rows if r.isin == "NVDA").direction == "negative"
+
+    def test_agreeing_mechanism_keeps_both_rows(self):
+        edges = [mech_edge("MRVL", "custom_silicon_substitution", "positive", "high", "high")]
+        rows = connections_for(
+            article(),
+            {"mechanisms": [mech_tag("custom_silicon_substitution")],
+             "categories": [self.cat_tag("memory_storage")]},
+            100.0,
+            refs(holding_mechanisms=edges, holding_categories={"memory_storage": ["MRVL"]}),
+            RULES)
+        assert {r.route for r in rows if r.isin == "MRVL"} == {"mechanism", "category"}
+
+    def test_holding_with_no_mechanism_row_keeps_its_category_row(self):
+        rows = connections_for(
+            article(), {"mechanisms": [], "categories": [self.cat_tag("memory_storage")]}, 100.0,
+            refs(holding_categories={"memory_storage": ["SNDK"]}), RULES)
+        assert {r.route for r in rows if r.isin == "SNDK"} == {"category"}
+
+    def test_mixed_mechanism_direction_does_not_suppress(self):
+        edges = [mech_edge("W", "x_mech", "mixed", "high", "high")]
+        rows = connections_for(
+            article(),
+            {"mechanisms": [mech_tag("x_mech")], "categories": [self.cat_tag("memory_storage")]},
+            100.0,
+            refs(holding_mechanisms=edges, holding_categories={"memory_storage": ["W"]}),
+            RULES)
+        assert {r.route for r in rows if r.isin == "W"} == {"mechanism", "category"}
+
+    def test_a_holding_with_mechanism_rows_on_both_sides_still_loses_the_category_row(self):
+        """A genuinely mixed picture (two mechanisms, opposite directions) is
+        still more specific than the group claim — the category row goes."""
+        edges = [mech_edge("MIX", "mech_a", "positive", "high", "high"),
+                 mech_edge("MIX", "mech_b", "negative", "high", "high")]
+        rows = connections_for(
+            article(),
+            {"mechanisms": [mech_tag("mech_a"), mech_tag("mech_b")],
+             "categories": [self.cat_tag("memory_storage")]},
+            100.0,
+            refs(holding_mechanisms=edges, holding_categories={"memory_storage": ["MIX"]}),
+            RULES)
+        assert {r.route for r in rows if r.isin == "MIX"} == {"mechanism"}
+        assert {r.direction for r in rows if r.isin == "MIX"} == {"positive", "negative"}
+
+
 class TestLabExposureRoute:
     def lab_edge(self, isin, lab, kind, dormant=False):
         return m.HoldingLabExposure(isin=isin, lab=lab, kind=kind, sign="positive",

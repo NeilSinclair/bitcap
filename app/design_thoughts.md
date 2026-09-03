@@ -18,3 +18,17 @@ The app needs to note when the last pipeline was run
 
 The app needs to state somewhere (maybe with a summary of the last pipeline run) what the cost of the last run is (less important)
 
+The app should be written in React for viewing in the browswer
+
+The app needs some basic login screen
+
+Articles / intelligence need to be dated; we should be able to view the data intelligence reports going backwards
+
+The frontend needs to engage with the Postgres DB developed inside the app/ folder
+
+The design should be crisp and clean
+
+The design should have the BIT Captial Logo 
+
+The design should use BIT Capital's brand colours
+
