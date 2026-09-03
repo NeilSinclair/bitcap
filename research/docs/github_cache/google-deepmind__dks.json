@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-07-08T00:50:07Z", "login": "h-joo", "name": "Hana Joo", "email": "hanajoo@google.com"}], "stars": 81, "description": "Multi-framework implementation of Deep Kernel Shaping and Tailored Activation Transformations, which are methods that modify neural network models (and their initializations) to make them easier to train."}

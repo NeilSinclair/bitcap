@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/wFTXILJmMZaV1/04WD+7WLhbXWk</id>
+  <title>arXiv Query: search_query=ti:"Omnilingual MT: Machine Translation for 1,600 Languages"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:42Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Omnilingual+MT:+Machine+Translation+for+1,600+Languages%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2603.16309v3</id>
+    <title>Omnilingual MT: Machine Translation for 1,600 Languages</title>
+    <updated>2026-05-07T09:08:15Z</updated>
+    <link href="https://arxiv.org/abs/2603.16309v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.16309v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>High-quality machine translation (MT) can scale to hundreds of languages, setting a high bar for multilingual systems. However, compared to the world's 7,000 languages, current systems still offer only limited coverage: about 200 languages on the target side, and maybe a few hundreds more on the source side, supported due to cross-lingual transfer. And even these numbers have been hard to evaluate due to the lack of reliable benchmarks and metrics.
+  We present Omnilingual Machine Translation (OMT), the first MT system supporting more than 1,600 languages. This scale is enabled by a comprehensive data strategy that integrates large public multilingual corpora with newly created datasets, including manually curated MeDLEY bitext.
+  We explore two ways of specializing a Large Language model (LLM) for machine translation: as a decoder-only model (OMT-LLaMA) or as a module in an encoder-decoder architecture (OMT-NLLB). Notably, all our 1B to 8B parameter models match or exceed the MT performance of a 70B LLM baseline, revealing a clear specialization advantage and enabling strong translation quality in low-compute settings. Moreover, our evaluation of English-to-1,600 translations further shows that while baseline models can interpret undersupported languages, they frequently fail to generate them with meaningful fidelity; OMT-LLaMA models substantially expand the set of languages for which coherent generation is feasible. Additionally, OMT models improve in cross-lingual transfer, being close to solving the "understanding" part of the puzzle in MT for the 1,600 evaluated. Our leaderboard and main human-created evaluation datasets (BOUQuET and Met-BOUQuET) are dynamically evolving towards Omnilinguality and freely available.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-17T09:43:42Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name> Omnilingual MT Team</name>
+    </author>
+    <author>
+      <name>Belen Alastruey</name>
+    </author>
+    <author>
+      <name>Niyati Bafna</name>
+    </author>
+    <author>
+      <name>Andrea Caciolai</name>
+    </author>
+    <author>
+      <name>Kevin Heffernan</name>
+    </author>
+    <author>
+      <name>Artyom Kozhevnikov</name>
+    </author>
+    <author>
+      <name>Christophe Ropers</name>
+    </author>
+    <author>
+      <name>Eduardo Sánchez</name>
+    </author>
+    <author>
+      <name>Charles-Eric Saint-James</name>
+    </author>
+    <author>
+      <name>Ioannis Tsiamas</name>
+    </author>
+    <author>
+      <name>Xiang "Tony" Cao</name>
+    </author>
+    <author>
+      <name>Chierh Cheng</name>
+    </author>
+    <author>
+      <name>Joe Chuang</name>
+    </author>
+    <author>
+      <name>Paul-Ambroise Duquenne</name>
+    </author>
+    <author>
+      <name>Mark Duppenthaler</name>
+    </author>
+    <author>
+      <name>Nate Ekberg</name>
+    </author>
+    <author>
+      <name>Cynthia Gao</name>
+    </author>
+    <author>
+      <name>Pere Lluís Huguet Cabot</name>
+    </author>
+    <author>
+      <name>João Maria Janeiro</name>
+    </author>
+    <author>
+      <name>Jean Maillard</name>
+    </author>
+    <author>
+      <name>Gabriel Mejia Gonzalez</name>
+    </author>
+    <author>
+      <name>Holger Schwenk</name>
+    </author>
+    <author>
+      <name>Edan Toledo</name>
+    </author>
+    <author>
+      <name>Arina Turkatenko</name>
+    </author>
+    <author>
+      <name>Albert Ventayol-Boada</name>
+    </author>
+    <author>
+      <name>Rashel Moritz</name>
+    </author>
+    <author>
+      <name>Alexandre Mourachko</name>
+    </author>
+    <author>
+      <name>Surya Parimi</name>
+    </author>
+    <author>
+      <name>Mary Williamson</name>
+    </author>
+    <author>
+      <name>Shireen Yates</name>
+    </author>
+    <author>
+      <name>David Dale</name>
+    </author>
+    <author>
+      <name>Marta R. Costa-jussà</name>
+    </author>
+  </entry>
+</feed>

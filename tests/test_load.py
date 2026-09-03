@@ -28,7 +28,12 @@ def session():
 class TestLoadRefs:
     def test_real_config_counts(self, session):
         counts = lr.load_refs(session, check=False)
-        assert counts["ref_labs"] == 3
+        # 7 now that xAI's announcements leg is configured (wayback_cdx
+        # method) -- D7's original five (anthropic, openai, deepseek,
+        # google-deepmind, mistral) plus Meta AI (D14) plus xAI. Update this
+        # alongside any further register change, same as every other count
+        # pinned here.
+        assert counts["ref_labs"] == 7
         assert counts["ref_mechanisms"] == 13
         assert counts["ref_categories"] == 13
         assert counts["ref_practices"] == 5

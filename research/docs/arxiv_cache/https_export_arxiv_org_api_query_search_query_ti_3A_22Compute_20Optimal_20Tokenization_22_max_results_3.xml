@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/cFtPYl3Ciagql5QMK95tQ3Dg+5Q</id>
+  <title>arXiv Query: search_query=ti:"Compute Optimal Tokenization"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:10Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Compute+Optimal+Tokenization%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.01188v2</id>
+    <title>Compute Optimal Tokenization</title>
+    <updated>2026-05-26T17:52:49Z</updated>
+    <link href="https://arxiv.org/abs/2605.01188v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.01188v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Scaling laws enable the optimal selection of data amount and language model size, yet the impact of the data unit, the token, on this relationship remains underexplored. In this work, we systematically investigate how the information granularity of tokens, controlled by the compression rate (i.e., average bytes of text per token), affects scaling trends. We train 988 latent tokenized models (BLT) ranging from 50M to 7B parameters that enable setting the desired compression rate. This flexibility allows us to study the role of compression rate well beyond 4.57 bytes per token obtained with a popular BPE tokenizer. Our experiments reveal that in compute-optimal configurations, model parameter counts scale proportionally to data size measured in bytes, not in tokens as commonly perceived (Kaplan et al., 2020; Hoffmann et al., 2022). Furthermore, we discover that the optimal compression rate differs from the one obtained with BPE and decreases with compute. These findings generalize to both latent and subword tokenization, as well as to languages other than English, guiding language model developers on tokenization scheme selection for maximal compute efficiency.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-02T01:53:22Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Tomasz Limisiewicz</name>
+    </author>
+    <author>
+      <name>Artidoro Pagnoni</name>
+    </author>
+    <author>
+      <name>Srini Iyer</name>
+    </author>
+    <author>
+      <name>Mike Lewis</name>
+    </author>
+    <author>
+      <name>Sachin Mehta</name>
+    </author>
+    <author>
+      <name>Alisa Liu</name>
+    </author>
+    <author>
+      <name>Margaret Li</name>
+    </author>
+    <author>
+      <name>Gargi Ghosh</name>
+    </author>
+    <author>
+      <name>Luke Zettlemoyer</name>
+    </author>
+  </entry>
+</feed>

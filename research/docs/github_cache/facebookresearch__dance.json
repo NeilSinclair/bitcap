@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-05-27T09:21:48Z", "login": "jarod1212", "name": "Jarod", "email": "levyjarod@gmail.com"}], "stars": 42, "description": "Dance is an end-to-end framework that detects and classifies events in EEG signals. In a single forward pass, it extracts a set of events directly from the raw, unaligned recording."}

@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-05-15T21:48:05Z", "login": null, "name": "mahiluthra user", "email": "mahiluthra@mahiluthra-login-0.mahiluthra-login.tenant-slurm.svc.cluster.local"}], "stars": 2, "description": "Contains code for training and evaluating spoken language models on speech SSL units (e.g., SpidR)."}

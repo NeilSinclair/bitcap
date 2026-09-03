@@ -1,0 +1,1900 @@
+{
+  "x-algorithm": {
+    "total": 19,
+    "commits": [
+      {
+        "date": "2026-09-02T19:46:48Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-09-01T20:47:22Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-09-01T00:11:04Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-28T22:37:32Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-28T01:00:41Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-26T20:04:12Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-25T23:20:04Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-24T18:51:34Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-21T19:10:38Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-20T20:22:58Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-19T21:25:42Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-18T18:57:00Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-17T20:20:07Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-14T20:55:37Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-13T17:23:56Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-08-13T17:09:58Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-05-15T21:54:59Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-05-15T07:28:04Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2026-01-20T02:31:49Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      }
+    ],
+    "stars": 32559,
+    "description": "Algorithm powering the For You feed on X"
+  },
+  "plugin-marketplace": {
+    "total": 80,
+    "commits": [
+      {
+        "date": "2026-09-02T16:36:22Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-09-01T17:10:59Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-31T16:57:15Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-26T18:16:12Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-25T17:56:01Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-24T18:52:18Z",
+        "login": "laithrw",
+        "name": "laithrw",
+        "email": "70768382+laithrw@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-22T21:21:34Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-21T23:45:19Z",
+        "login": "kayleegeorge",
+        "name": "Kaylee George",
+        "email": "62825936+kayleegeorge@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-21T22:54:21Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-20T17:04:56Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-19T23:18:27Z",
+        "login": "seancdavis",
+        "name": "Sean C Davis",
+        "email": "scdavis41@gmail.com"
+      },
+      {
+        "date": "2026-08-18T17:41:44Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-17T17:23:58Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-12T23:46:32Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-12T01:54:03Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-10T18:31:48Z",
+        "login": "nirinchev",
+        "name": "Nikola Irinchev",
+        "email": "irinchev@me.com"
+      },
+      {
+        "date": "2026-08-10T17:20:17Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-07T18:57:59Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-05T17:11:37Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T23:12:00Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T23:10:53Z",
+        "login": "gilisho",
+        "name": "Gili Shohat",
+        "email": "40733156+gilisho@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T23:09:28Z",
+        "login": "gilisho",
+        "name": "Gili Shohat",
+        "email": "40733156+gilisho@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T05:19:54Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-30T04:48:49Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-28T18:41:58Z",
+        "login": "Zechereh",
+        "name": "Zachary Lyon",
+        "email": "zachary@lyonfamily.org"
+      },
+      {
+        "date": "2026-07-27T21:45:57Z",
+        "login": "10ishq",
+        "name": "Tanishq",
+        "email": "30299564+10ishq@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-24T20:42:46Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-23T20:40:13Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-22T18:41:11Z",
+        "login": "lakshyaag-tavily",
+        "name": "Lakshya Agarwal",
+        "email": "lakshya.agarwal@tavily.com"
+      },
+      {
+        "date": "2026-07-21T23:16:24Z",
+        "login": "10ishq",
+        "name": "Tanishq",
+        "email": "30299564+10ishq@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-21T18:39:11Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-20T21:35:34Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-18T00:47:19Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-17T08:24:59Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-07-16T20:28:16Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-07-16T18:36:12Z",
+        "login": "github-actions[bot]",
+        "name": "github-actions[bot]",
+        "email": "41898282+github-actions[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-16T18:26:50Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-07-16T10:11:01Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-07-14T23:11:01Z",
+        "login": "m-abdelwahab",
+        "name": "Mahmoud Abdelwahab",
+        "email": "m@mahmoudw.com"
+      },
+      {
+        "date": "2026-07-09T03:05:36Z",
+        "login": "StephenXie",
+        "name": "Stephen Xie",
+        "email": "49465499+StephenXie@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-02T17:40:24Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-26T16:05:05Z",
+        "login": "seiflotfy",
+        "name": "Seif Lotfy",
+        "email": "seif@axiom.co"
+      },
+      {
+        "date": "2026-06-26T06:54:55Z",
+        "login": "seiflotfy",
+        "name": "Seif Lotfy",
+        "email": "seif@axiom.co"
+      },
+      {
+        "date": "2026-06-25T01:56:40Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-18T21:36:26Z",
+        "login": "rakshith48",
+        "name": "Rakshith Ramprakash",
+        "email": "rakshithramprakash@gmail.com"
+      },
+      {
+        "date": "2026-06-17T19:38:09Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-16T17:17:40Z",
+        "login": "evanpurkhiser",
+        "name": "Evan Purkhiser",
+        "email": "evanpurkhiser@gmail.com"
+      },
+      {
+        "date": "2026-06-12T18:36:59Z",
+        "login": "andrelandgraf",
+        "name": "Andre Landgraf",
+        "email": "andre.landgraf@databricks.com"
+      },
+      {
+        "date": "2026-06-12T17:36:50Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-11T08:21:36Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-09T21:30:25Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-09T20:17:05Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-09T01:05:20Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-08T21:22:00Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-08T21:18:56Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-08T21:16:08Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-06T00:35:11Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-05T23:51:39Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-04T07:02:48Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-03T01:34:28Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-03T01:32:40Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-02T00:05:53Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-01T23:20:24Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-01T22:34:16Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-06-01T22:25:24Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-18T15:02:58Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-18T15:02:22Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-18T12:11:52Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-18T08:00:35Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-18T07:25:03Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-17T16:29:00Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-17T16:13:26Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-17T16:12:01Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-17T16:00:56Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-16T22:15:34Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-15T21:41:14Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-15T21:27:22Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-15T21:02:35Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-15T20:47:27Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      },
+      {
+        "date": "2026-05-15T19:36:54Z",
+        "login": "ykeremy",
+        "name": "Kerem Yilmaz",
+        "email": "kyilmaz@x.ai"
+      }
+    ],
+    "stars": 211,
+    "description": "Official xAI plugin marketplace"
+  },
+  "grok-build": {
+    "total": 42,
+    "commits": [
+      {
+        "date": "2026-09-01T22:20:33Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-31T17:40:27Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-28T16:56:21Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-27T13:30:20Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-25T21:15:49Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-24T18:43:42Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-23T10:48:57Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-19T19:55:30Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-19T00:29:49Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-17T18:48:25Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-16T19:00:58Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-15T20:21:30Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-15T15:14:48Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-13T18:26:29Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-12T22:40:17Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-11T20:25:21Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-10T17:22:17Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-09T20:00:51Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-08T21:25:47Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-07T16:56:10Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-06T19:09:11Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-05T18:16:04Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T16:51:06Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-03T17:33:32Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-03T08:17:57Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-31T18:08:03Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-30T19:07:40Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-29T17:17:54Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-28T22:50:19Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-27T17:54:34Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-26T19:03:03Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-25T18:44:42Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-24T16:59:42Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-23T17:12:33Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-22T18:22:27Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-21T18:10:23Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-20T17:22:25Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-19T17:42:24Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-18T18:48:28Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-17T13:19:50Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-16T19:27:30Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      },
+      {
+        "date": "2026-07-16T05:46:02Z",
+        "login": "grokkybara[bot]",
+        "name": "grokkybara[bot]",
+        "email": "304785771+grokkybara[bot]@users.noreply.github.com"
+      }
+    ],
+    "stars": 26404,
+    "description": "SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible."
+  },
+  "xai-sdk-python": {
+    "total": 118,
+    "commits": [
+      {
+        "date": "2026-08-18T19:24:13Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-18T18:52:45Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-18T17:22:01Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-18T17:21:36Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-17T17:40:47Z",
+        "login": "yanxi0830",
+        "name": "Xi Yan",
+        "email": "yanxi970830@gmail.com"
+      },
+      {
+        "date": "2026-08-14T22:39:08Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-14T22:11:57Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-14T21:48:07Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-14T19:27:14Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-13T03:53:07Z",
+        "login": "gyang-xai",
+        "name": "Ming Yang",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2026-08-13T01:21:25Z",
+        "login": "gyang-xai",
+        "name": "Ming Yang",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2026-08-12T22:47:59Z",
+        "login": "gyang-xai",
+        "name": "Ming Yang",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2026-07-14T17:02:15Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-07-13T21:39:54Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-07-10T00:43:54Z",
+        "login": "jkylekelly",
+        "name": "Kyle Kelly",
+        "email": "124007635+jkylekelly@users.noreply.github.com"
+      },
+      {
+        "date": "2026-06-12T03:38:43Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-06-12T01:31:51Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-06-10T17:14:32Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-06-09T19:04:17Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-06-08T23:52:40Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-06-08T21:51:46Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-05-30T01:38:29Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-05-30T01:32:33Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-05-29T23:27:25Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-05-27T05:08:31Z",
+        "login": "ushiromiya-lion",
+        "name": "Baqiao",
+        "email": "bliu@x.ai"
+      },
+      {
+        "date": "2026-05-27T04:28:59Z",
+        "login": "ushiromiya-lion",
+        "name": "Baqiao",
+        "email": "bliu@x.ai"
+      },
+      {
+        "date": "2026-05-16T17:59:02Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-05-07T00:01:58Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-05-06T23:52:54Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-04-30T22:29:53Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-04-30T20:07:17Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-04-29T18:58:11Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-29T18:33:58Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-29T18:04:19Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-28T18:48:20Z",
+        "login": "dcbert",
+        "name": "Davide bert",
+        "email": "dc.bert@outlook.com"
+      },
+      {
+        "date": "2026-04-28T18:47:36Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-24T19:01:50Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-23T19:40:23Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-22T14:03:07Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-03-27T18:16:34Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-27T06:10:25Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-27T00:42:22Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-24T17:18:43Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-24T14:53:40Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-19T22:54:14Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-19T22:49:04Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-19T00:23:26Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-18T02:08:16Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-18T01:58:52Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-17T17:32:18Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "69895549+double-di@users.noreply.github.com"
+      },
+      {
+        "date": "2026-03-16T17:58:27Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-16T17:41:46Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-11T02:59:47Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-09T04:50:10Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-05T06:42:27Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-05T06:26:19Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-05T06:06:06Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-05T05:44:43Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-02-18T19:23:49Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-02-17T22:16:31Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-02-17T21:25:24Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-02-12T06:33:04Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-02-10T01:38:28Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-01-29T03:09:20Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-01-29T03:05:58Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-01-27T17:52:17Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-01-26T20:29:17Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-01-21T18:40:42Z",
+        "login": "aaditjuneja",
+        "name": "aaditjuneja",
+        "email": "ajuneja@x.ai"
+      },
+      {
+        "date": "2026-01-21T18:40:16Z",
+        "login": "aaditjuneja",
+        "name": "aaditjuneja",
+        "email": "ajuneja@x.ai"
+      },
+      {
+        "date": "2026-01-21T18:39:55Z",
+        "login": "aaditjuneja",
+        "name": "aaditjuneja",
+        "email": "ajuneja@x.ai"
+      },
+      {
+        "date": "2026-01-21T16:10:03Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-01-21T02:16:55Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-01-19T18:01:59Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-01-09T22:21:29Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-12-05T03:23:30Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-12-05T02:27:57Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-12-05T00:47:23Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-12-04T20:27:13Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-12-03T07:39:54Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-11-26T23:32:48Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-26T21:48:37Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-26T01:59:06Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-25T18:51:35Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-11-20T17:43:56Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-12T17:19:37Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-12T17:19:23Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-07T23:45:39Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-07T22:38:29Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-11-07T20:01:21Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-07T05:10:58Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-11-06T07:00:46Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-06T06:14:14Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-06T01:16:01Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-31T00:20:02Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-10-30T18:53:22Z",
+        "login": "gyang-xai",
+        "name": "gyang-xai",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2025-10-28T21:31:42Z",
+        "login": "gyang-xai",
+        "name": "gyang-xai",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2025-10-28T17:26:54Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-10-27T16:52:16Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-10-24T18:01:52Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-23T20:01:35Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-10-23T19:59:25Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-23T19:14:04Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-20T23:28:53Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-20T20:49:38Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-20T20:43:43Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-10-20T19:58:32Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-20T11:44:11Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-10-17T16:15:20Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-17T15:58:01Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-10-15T19:02:14Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-15T18:36:14Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-10-10T15:32:38Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-29T18:08:15Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-29T17:19:56Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-18T21:23:25Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-18T14:06:02Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-18T00:06:15Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-17T13:42:37Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      }
+    ],
+    "stars": 562,
+    "description": "The official Python SDK for the xAI API"
+  },
+  "xai-proto": {
+    "total": 37,
+    "commits": [
+      {
+        "date": "2026-08-14T21:57:08Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-14T19:08:02Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-14T17:50:27Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-08-12T22:48:39Z",
+        "login": "gyang-xai",
+        "name": "Ming Yang",
+        "email": "guyang@x.ai"
+      },
+      {
+        "date": "2026-07-10T00:43:31Z",
+        "login": "jkylekelly",
+        "name": "Kyle Kelly",
+        "email": "124007635+jkylekelly@users.noreply.github.com"
+      },
+      {
+        "date": "2026-06-12T01:27:26Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-06-11T04:20:15Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-05-30T01:27:37Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-05-27T04:28:33Z",
+        "login": "ushiromiya-lion",
+        "name": "Baqiao",
+        "email": "bliu@x.ai"
+      },
+      {
+        "date": "2026-05-16T17:51:10Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-05-14T16:14:04Z",
+        "login": "double-di",
+        "name": "Denis Dorozhkin",
+        "email": "ddorozhkin@x.ai"
+      },
+      {
+        "date": "2026-05-06T23:41:48Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-04-24T19:02:24Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-04-24T18:47:05Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-31T04:05:53Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-26T22:50:28Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-03-23T20:18:33Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-03-13T18:50:35Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-02-17T19:52:54Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2026-02-12T06:27:26Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-02-10T01:27:33Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-01-30T14:55:25Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2026-01-28T14:01:36Z",
+        "login": "zhaohan-dong",
+        "name": "Zhaohan Dong",
+        "email": "65422392+zhaohan-dong@users.noreply.github.com"
+      },
+      {
+        "date": "2026-01-20T20:15:31Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-01-18T22:07:39Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2026-01-16T18:27:51Z",
+        "login": "mark-xai",
+        "name": "Mark Yang",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-12-04T19:43:57Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-12-03T02:10:46Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-12-02T22:35:10Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-12-01T21:56:39Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-25T23:38:59Z",
+        "login": "mark-xai",
+        "name": "mark-xai",
+        "email": "yyang@x.ai"
+      },
+      {
+        "date": "2025-11-21T01:59:12Z",
+        "login": "shawnthapa",
+        "name": "Shawn Thapa",
+        "email": "sthapa@x.ai"
+      },
+      {
+        "date": "2025-11-21T00:19:21Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-11-13T12:24:55Z",
+        "login": "zhaohan-dong",
+        "name": "Zhaohan Dong",
+        "email": "65422392+zhaohan-dong@users.noreply.github.com"
+      },
+      {
+        "date": "2025-11-05T05:40:56Z",
+        "login": "Omar-V2",
+        "name": "Omar",
+        "email": "od@x.ai"
+      },
+      {
+        "date": "2025-09-30T18:10:07Z",
+        "login": "zhaohan-dong",
+        "name": "Zhaohan Dong",
+        "email": "65422392+zhaohan-dong@users.noreply.github.com"
+      },
+      {
+        "date": "2025-09-30T18:05:42Z",
+        "login": "zhaohan-dong",
+        "name": "Zhaohan Dong",
+        "email": "65422392+zhaohan-dong@users.noreply.github.com"
+      }
+    ],
+    "stars": 151,
+    "description": "Public protobuf definitions for xAI's gRPC APIs"
+  },
+  "grok-build-plugin-cc": {
+    "total": 4,
+    "commits": [
+      {
+        "date": "2026-08-04T20:29:49Z",
+        "login": "mittalpk",
+        "name": "Praveen Kumar Mittal",
+        "email": "46550971+mittalpk@users.noreply.github.com"
+      },
+      {
+        "date": "2026-08-04T20:27:17Z",
+        "login": "raghavagrawal-x",
+        "name": "Raghav Agrawal",
+        "email": "ragrawal@x.com"
+      },
+      {
+        "date": "2026-08-04T20:25:56Z",
+        "login": "railapex",
+        "name": "Chris Hynes",
+        "email": "chris@programcsharp.com"
+      },
+      {
+        "date": "2026-07-10T21:19:05Z",
+        "login": "aksheyd",
+        "name": "Akshey Deokule",
+        "email": "akshey@x.ai"
+      }
+    ],
+    "stars": 239,
+    "description": "Claude Code plugin that delegates reviews, rescue tasks, and session transfer to the Grok Build CLI"
+  },
+  "xai-cookbook": {
+    "total": 5,
+    "commits": [
+      {
+        "date": "2026-04-16T15:38:38Z",
+        "login": "tagakov-xai",
+        "name": "Tagakov",
+        "email": "vtagakov@x.ai"
+      },
+      {
+        "date": "2026-03-23T19:59:27Z",
+        "login": "egec1",
+        "name": "egec1",
+        "email": "ecavusoglu@x.ai"
+      },
+      {
+        "date": "2026-03-23T18:06:35Z",
+        "login": "egec1",
+        "name": "egec1",
+        "email": "ecavusoglu@x.ai"
+      },
+      {
+        "date": "2025-12-16T05:26:38Z",
+        "login": "damien-xai",
+        "name": "Damien Murphy",
+        "email": "dmurphy@x.ai"
+      },
+      {
+        "date": "2025-09-15T14:44:08Z",
+        "login": "zhaohan-dong",
+        "name": "Zhaohan Dong",
+        "email": "65422392+zhaohan-dong@users.noreply.github.com"
+      }
+    ],
+    "stars": 560,
+    "description": "A collection of pragmatic, real-world examples guiding you from basic to advanced use of xAI's Grok APIs."
+  },
+  "grok-prompts": {
+    "total": 2,
+    "commits": [
+      {
+        "date": "2025-11-17T20:40:17Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      },
+      {
+        "date": "2025-11-06T22:29:41Z",
+        "login": null,
+        "name": "CI agent",
+        "email": "support@x.ai"
+      }
+    ],
+    "stars": 4429,
+    "description": "Prompts for our Grok chat assistant and the `@grok` bot on X."
+  }
+}

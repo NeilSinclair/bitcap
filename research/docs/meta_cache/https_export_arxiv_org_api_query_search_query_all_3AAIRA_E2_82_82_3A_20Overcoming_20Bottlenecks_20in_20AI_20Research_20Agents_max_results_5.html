@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/6sxHYil3Yb6KJ87a4RgYkZVG8Tk</id>
+  <title>arXiv Query: search_query=all:AIRA₂: OR all:Overcoming OR all:Bottlenecks OR all:in OR all:AI OR all:Research OR all:Agents&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-09-03T07:06:04Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:AIRA%E2%82%82:+OR+(all:Overcoming+OR+(all:Bottlenecks+OR+(all:in+OR+(all:AI+OR+(all:Research+OR+all:Agents)))))&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>366843</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2604.17587v1</id>
+    <title>AIRA: AI-Induced Risk Audit: A Structured Inspection Framework for AI-Generated Code</title>
+    <updated>2026-04-19T19:32:52Z</updated>
+    <link href="https://arxiv.org/abs/2604.17587v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.17587v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Practitioners have reported a directional pattern in AI-assisted code generation: AI-generated code tends to fail quietly, preserving the appearance of functionality while degrading or concealing guarantees. This paper introduces the Reward-Shaped Failure Hypothesis - the proposal that this pattern may reflect an artifact of optimization through human feedback rather than a random distribution of bugs. We define failure truthfulness as the property that a system's observable outputs accurately represent its internal success or failure state. We then present AIRA (AI-Induced Risk Audit), a deterministic 15-check inspection framework designed to detect failure-untruthful patterns in code. We report results from three studies: (1) an anonymized enterprise environment audit, (2) a balanced 600-file public corpus pilot, and (3) a strict matched-control replication comparing 955 AI-attributed files against 955 human-control files. In the final replication, AI-attributed files show 0.435 high-severity findings per file versus 0.242 in human controls (1.80x). The effect is consistent across JavaScript, Python, and TypeScript, with strongest concentration in exception-handling-related patterns. These findings are consistent with a directional skew toward fail-soft behavior in AI-assisted code. AIRA is designed for governance, compliance, and safety-critical systems where fail-closed behavior is required.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-19T19:32:52Z</published>
+    <arxiv:comment>15 pages, 6 tables. Introduces the Reward-Shaped Failure Hypothesis and AIRA, a deterministic inspection framework for detecting failure-untruthful patterns in AI-generated code. Includes three empirical studies and a strict matched-control replication</arxiv:comment>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>William M. Parris</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.26499v2</id>
+    <title>AIRA_2: Overcoming Bottlenecks in AI Research Agents</title>
+    <updated>2026-04-13T16:38:00Z</updated>
+    <link href="https://arxiv.org/abs/2603.26499v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.26499v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Existing research has identified three structural performance bottlenecks in AI research agents: (1) synchronous single-GPU execution constrains sample throughput, limiting the benefit of search; (2) a generalization gap where validation-based selection causes overfitting and performance to degrade over extended search horizons; and (3) the limited capability of fixed, single-turn LLM operators imposes a ceiling on search performance. We introduce AIRA$_2$, which addresses these bottlenecks through three architectural choices: an asynchronous multi-GPU worker pool that increases experiment throughput linearly; a Hidden Consistent Evaluation protocol that delivers a reliable evaluation signal; and ReAct agents that dynamically scope their actions and debug interactively. On MLE-bench-30, AIRA$^{\dagger}_{2}$ achieves a mean Percentile Rank of 81.5% at 24 hours and 83.1% at 72 hours, outperforming the strongest baseline, which achieves 72.7%. On AIRS-Bench, AIRA$_2$ exceeds human state-of-the-art on 6 out of 20 diverse research tasks. Ablations confirm that each architectural component is necessary, that performance follows a predictable scaling law that transfers across LLM backbones, and that the "overfitting" reported in prior work was driven by evaluation noise rather than true data memorization.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-27T15:02:43Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Karen Hambardzumyan</name>
+    </author>
+    <author>
+      <name>Nicolas Baldwin</name>
+    </author>
+    <author>
+      <name>Edan Toledo</name>
+    </author>
+    <author>
+      <name>Rishi Hazra</name>
+    </author>
+    <author>
+      <name>Michael Kuchnik</name>
+    </author>
+    <author>
+      <name>Bassel Al Omari</name>
+    </author>
+    <author>
+      <name>Thomas Simon Foster</name>
+    </author>
+    <author>
+      <name>Anton Protopopov</name>
+    </author>
+    <author>
+      <name>Jean-Christophe Gagnon-Audet</name>
+    </author>
+    <author>
+      <name>Ishita Mediratta</name>
+    </author>
+    <author>
+      <name>Kelvin Niu</name>
+    </author>
+    <author>
+      <name>Michael Shvartsman</name>
+    </author>
+    <author>
+      <name>Alisia Lupidi</name>
+    </author>
+    <author>
+      <name>Alexis Audran-Reiss</name>
+    </author>
+    <author>
+      <name>Parth Pathak</name>
+    </author>
+    <author>
+      <name>Tatiana Shavrina</name>
+    </author>
+    <author>
+      <name>Despoina Magka</name>
+    </author>
+    <author>
+      <name>Hela Momand</name>
+    </author>
+    <author>
+      <name>Derek Dunfield</name>
+    </author>
+    <author>
+      <name>Nicola Cancedda</name>
+    </author>
+    <author>
+      <name>Pontus Stenetorp</name>
+    </author>
+    <author>
+      <name>Carole-Jean Wu</name>
+    </author>
+    <author>
+      <name>Jakob Nicolaus Foerster</name>
+    </author>
+    <author>
+      <name>Yoram Bachrach</name>
+    </author>
+    <author>
+      <name>Martin Josifoski</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.28944v2</id>
+    <title>Faith in AI can narrow the futures individuals consider</title>
+    <updated>2026-07-03T09:41:30Z</updated>
+    <link href="https://arxiv.org/abs/2603.28944v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.28944v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Artificial intelligence (AI) predictions are increasingly used to inform human decisions. Here, using a behavioral implementation of the classic Newcomb's paradox in 1,305 participants, we show that AI predictions can also shape the reasoning people use to make a decision. In this paradigm, perceived predictive authority can alter how people reason about their future actions, leading them to forgo a guaranteed reward. Over 40% of participants treated AI as such a predictive authority about their own behavior, significantly increasing the odds of forgoing the guaranteed reward by a factor of 3.39 (95% CI: 2.45-4.70) and reducing earnings by 10.7-42.9%. The effect appeared across AI presentations and decision contexts and remained detectable even when predictions repeatedly failed. When people perceive AI as capable of predicting their personal behavior, the mere presence of AI predictions may shape their decision-making, narrowing the futures they consider.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-30T19:36:10Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Aoi Naito</name>
+    </author>
+    <author>
+      <name>Hirokazu Shirado</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.02842v1</id>
+    <title>Foundations of GenIR</title>
+    <updated>2025-01-06T08:38:29Z</updated>
+    <link href="https://arxiv.org/abs/2501.02842v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.02842v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The chapter discusses the foundational impact of modern generative AI models on information access (IA) systems. In contrast to traditional AI, the large-scale training and superior data modeling of generative AI models enable them to produce high-quality, human-like responses, which brings brand new opportunities for the development of IA paradigms. In this chapter, we identify and introduce two of them in details, i.e., information generation and information synthesis. Information generation allows AI to create tailored content addressing user needs directly, enhancing user experience with immediate, relevant outputs. Information synthesis leverages the ability of generative AI to integrate and reorganize existing information, providing grounded responses and mitigating issues like model hallucination, which is particularly valuable in scenarios requiring precision and external knowledge. This chapter delves into the foundational aspects of generative models, including architecture, scaling, and training, and discusses their applications in multi-modal scenarios. Additionally, it examines the retrieval-augmented generation paradigm and other methods for corpus modeling and understanding, demonstrating how generative AI can enhance information access systems. It also summarizes potential challenges and fruitful directions for future studies.</summary>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-06T08:38:29Z</published>
+    <arxiv:comment>Chapter 2 of the book on Information Access in the Era of Generative AI</arxiv:comment>
+    <arxiv:primary_category term="cs.IR"/>
+    <author>
+      <name>Qingyao Ai</name>
+    </author>
+    <author>
+      <name>Jingtao Zhan</name>
+    </author>
+    <author>
+      <name>Yiqun Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.16513v1</id>
+    <title>Competing Visions of Ethical AI: A Case Study of OpenAI</title>
+    <updated>2026-01-23T07:26:45Z</updated>
+    <link href="https://arxiv.org/abs/2601.16513v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.16513v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Introduction. AI Ethics is framed distinctly across actors and stakeholder groups. We report results from a case study of OpenAI analysing ethical AI discourse. Method. Research addressed: How has OpenAI's public discourse leveraged 'ethics', 'safety', 'alignment' and adjacent related concepts over time, and what does discourse signal about framing in practice? A structured corpus, differentiating between communication for a general audience and communication with an academic audience, was assembled from public documentation. Analysis. Qualitative content analysis of ethical themes combined inductively derived and deductively applied codes. Quantitative analysis leveraged computational content analysis methods via NLP to model topics and quantify changes in rhetoric over time. Visualizations report aggregate results. For reproducible results, we have released our code at https://github.com/famous-blue-raincoat/AI_Ethics_Discourse. Results. Results indicate that safety and risk discourse dominate OpenAI's public communication and documentation, without applying academic and advocacy ethics frameworks or vocabularies. Conclusions. Implications for governance are presented, along with discussion of ethics-washing practices in industry.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-23T07:26:45Z</published>
+    <arxiv:comment>iConference 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Melissa Wilfley</name>
+    </author>
+    <author>
+      <name>Mengting Ai</name>
+    </author>
+    <author>
+      <name>Madelyn Rose Sanfilippo</name>
+    </author>
+    <arxiv:doi>10.47989/ir31iConf64115</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.47989/ir31iConf64115" title="doi"/>
+  </entry>
+</feed>

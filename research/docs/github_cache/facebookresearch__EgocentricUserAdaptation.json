@@ -1,0 +1,1 @@
+{"total": 0, "commits": [], "stars": 15, "description": "In this codebase we establish a benchmark for egocentric user adaptation based on Ego4d.First, we start from  a population model which has data from many users to learn user-agnostic representations.As the user gains more experience over its lifetime, we aim to tailor the general model to user-specific expert models."}

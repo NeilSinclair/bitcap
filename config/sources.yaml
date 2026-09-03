@@ -9,7 +9,13 @@
 # computed from a full article without the difference being visible. Every item
 # on the output page carries this field.
 #
-# Scope: the three labs carried through the papers and GitHub research.
+# Scope: D7's deep-coverage register (docs/decisions.md), now seven labs
+# after D14 added Meta AI. All seven are configured. xAI (`method:
+# wayback_cdx`) discovers via the Internet Archive's CDX API rather than a
+# live fetch -- live x.ai is fully Cloudflare-blocked, including
+# sitemap.xml itself -- see that entry's own notes for why a sitemap-via-
+# Wayback approach was tried first and abandoned (the archived sitemap
+# copy is stale, would miss every in-window article).
 
 version: 1
 window_months: 3
@@ -70,3 +76,95 @@ labs:
       lastmod, but slugs encode the date (news260821 = 2026-08-21; pre-2025
       slugs are MMDD). Only 17 items exist in total, which matches the sparse
       publication cadence found in the papers research.
+
+  - id: google-deepmind
+    label: Google DeepMind
+    method: sitemap
+    index_url: https://deepmind.google/sitemap.xml
+    url_contains: /blog/
+    text_source: full_text
+    date_from: page
+    notes: >
+      Not blocked -- plain fetch of the blog index, sitemap and article pages
+      all return 200. An RSS feed also exists (blog/rss.xml) but the sitemap
+      was chosen for parity with Anthropic's proven path. The sitemap's
+      <lastmod> is present per entry but still only used as a coarse
+      prefilter, same reasoning as Anthropic: it is a modification date, not
+      a publication date, so the real date is read from the page. Some
+      article URLs 302-redirect off-domain to blog.google; urllib follows
+      redirects by default, so this needed no new fetch-layer code.
+
+  - id: mistral
+    label: Mistral AI
+    method: rss
+    index_url: https://mistral.ai/news/rss
+    text_source: full_text
+    date_from: feed
+    notes: >
+      Not blocked. RSS discovery was chosen over the sitemap because the feed
+      is already English-only (the sitemap enumerates /fr/news/ duplicates
+      that would need filtering out) and gives a clean pubDate directly.
+      `from_rss` now fetches each item's own page for the real article text
+      when `text_source: full_text` is set (previously the RSS path only ever
+      returned the feed's title+summary, silently mislabelled as whatever
+      text_source the config claimed -- fixed alongside this entry) rather
+      than adding a second, sitemap-based lab entry.
+
+  - id: meta-ai
+    label: Meta AI
+    method: listing_pagination
+    index_url: https://ai.meta.com/blog/
+    page_param: page
+    url_contains: /blog/
+    text_source: full_text
+    date_from: page
+    user_agent: ""
+    notes: >
+      No RSS feed at any path tried. Sitemap is gated to named crawler UAs
+      only -- robots.txt explicitly allows facebookexternalhit and
+      meta-externalads, 403 for everyone else, confirmed live. Discovery
+      instead paginates the plain blog listing (ai.meta.com/blog/?page=N).
+
+      Confirmed live, and the opposite of every other lab here: a plain
+      fetch with no custom User-Agent gets 200; any browser-style
+      User-Agent gets 400. Hence the empty `user_agent` override, which
+      `from_listing_pagination`/`fetch` read as "send no override, let
+      urllib use its own non-browser-shaped default."
+
+      No structured date metadata found on article pages (no OpenGraph
+      tags, no JSON-LD) -- date is read from visible page text, same regex
+      every page-sourced lab already uses.
+
+  - id: xai
+    label: xAI / SpaceXAI
+    method: wayback_cdx
+    index_url: https://x.ai/news
+    url_contains: /news/
+    text_source: full_text_archived
+    date_from: page
+    notes: >
+      Live x.ai is fully Cloudflare-blocked on every path, including
+      sitemap.xml itself, confirmed repeatedly across this project.
+      Discovery goes through the Internet Archive's CDX API instead of a
+      live fetch -- not just full-text recovery for an already-known URL
+      the way backfill_openai.py uses it, but discovery itself.
+
+      The originally planned method (fetch x.ai's own sitemap via its
+      archived copy) does not work: confirmed live that
+      x.ai/sitemap.xml has not been re-archived since February 2026, so
+      its URL list would miss every article actually inside a 3-month
+      window. Uses a direct CDX wildcard query on the article path instead
+      (x.ai/news*), which finds real recent snapshots regardless of
+      whether the sitemap itself was ever re-crawled.
+
+      A snapshot's crawl date has no relationship to the article's publish
+      date -- confirmed live, e.g. a 2024-dated funding-round page was
+      recrawled in August 2026, completely ordinary archive behaviour.
+      Every candidate is therefore dated from its own JSON-LD
+      datePublished field, never from the CDX timestamp.
+
+      Site brand is "SpaceXAI" as of the February 2026 SpaceX acquisition
+      (D14), rendered even on old pages' titles since a page's <title> is
+      generated at crawl time, not publish time -- both "SpaceXAI" and the
+      earlier "xAI" suffix are stripped from titles regardless of an
+      article's own age.

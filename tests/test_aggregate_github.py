@@ -33,6 +33,11 @@ class TestIsBot:
             "claude[bot]",
             "dependabot",
             "web-flow",
+            "copybara-github",
+            "Copilot",
+            "speakeasybot",
+            "maiengineering",
+            "goreleaserbot",
         ],
     )
     def test_machine_accounts_rejected(self, login):
@@ -178,6 +183,60 @@ class TestAggregate:
             "guess-ant": "handle",
             "outsider": "unknown",
         }
+
+    def test_domain_shared_tags_confirmed_org_wide_not_confirmed(self, harvest):
+        # @google.com evidences "works somewhere at Alphabet", not "works at
+        # DeepMind specifically" -- domain_shared=True must produce a
+        # visibly weaker tier, never the plain "confirmed" a lab-owned
+        # domain earns.
+        harvest(
+            {
+                "repo": {
+                    "total": 1,
+                    "commits": [
+                        {"date": "2026-01-01T00:00:00Z", "login": "staff",
+                         "name": "S", "email": "s@google.com"},
+                    ],
+                }
+            }
+        )
+        p = aggregate("testorg", "google.com", domain_shared=True)["people"][0]
+        assert p["employment"] == "confirmed_org_wide"
+
+    def test_multiple_org_domains_both_evidence_employment(self, harvest):
+        # Meta: both @meta.com and @fb.com are active corporate domains in
+        # real commits (confirmed live) -- a single-string comparison would
+        # silently miss whichever one wasn't passed.
+        harvest(
+            {
+                "repo": {
+                    "total": 2,
+                    "commits": [
+                        {"date": "2026-01-01T00:00:00Z", "login": "new-staff",
+                         "name": "N", "email": "n@meta.com"},
+                        {"date": "2026-01-01T00:00:00Z", "login": "old-staff",
+                         "name": "O", "email": "o@fb.com"},
+                    ],
+                }
+            }
+        )
+        by = {p["login"]: p["employment"] for p in aggregate("testorg", ["meta.com", "fb.com"])["people"]}
+        assert by == {"new-staff": "confirmed", "old-staff": "confirmed"}
+
+    def test_domain_shared_false_keeps_plain_confirmed(self, harvest):
+        harvest(
+            {
+                "repo": {
+                    "total": 1,
+                    "commits": [
+                        {"date": "2026-01-01T00:00:00Z", "login": "staff",
+                         "name": "S", "email": "s@anthropic.com"},
+                    ],
+                }
+            }
+        )
+        p = aggregate("testorg", "anthropic.com", domain_shared=False)["people"][0]
+        assert p["employment"] == "confirmed"
 
     def test_vendor_domain_flagged_separately(self, harvest):
         harvest(
@@ -330,8 +389,26 @@ class TestPerLabWorkSuffix:
         assert alias_pairs(people) == {}
 
     def test_every_configured_lab_has_domain_and_suffix(self):
+        # domain may be None (Mistral: no reliable commit-email evidence
+        # found -- a real finding, not a gap to paper over with a guess),
+        # a string, or a list of strings (Meta: both @meta.com and @fb.com
+        # are active in real commits). Every entry's suffix must still
+        # compile, even the "matches nothing" sentinel used where no
+        # work-handle convention is known.
         from aggregate_github import LABS
 
-        for org, (domain, suffix) in LABS.items():
-            assert "." in domain, org
+        for org, (domain, suffix, domain_shared) in LABS.items():
+            domains = [domain] if isinstance(domain, str) else (domain or [])
+            assert domain is None or all("." in d for d in domains), org
             assert __import__("re").compile(suffix), org
+            assert isinstance(domain_shared, bool), org
+
+    def test_domain_shared_orgs_tag_confirmed_org_wide_not_confirmed(self):
+        from aggregate_github import LABS
+
+        shared = [org for org, (_, _, shared) in LABS.items() if shared]
+        assert "google-deepmind" in shared, (
+            "@google.com is Alphabet-wide, not DeepMind-specific -- this "
+            "must stay flagged domain_shared or it silently overstates "
+            "the evidence"
+        )

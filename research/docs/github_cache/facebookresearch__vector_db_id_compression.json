@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-01-12T14:38:52Z", "login": "dsevero", "name": "Daniel Severo", "email": "dsevero@meta.com"}], "stars": 89, "description": "Implementation of the paper \"Lossless Compression of Vector IDs for Approximate Nearest Neighbor Search\" by Severo et al."}

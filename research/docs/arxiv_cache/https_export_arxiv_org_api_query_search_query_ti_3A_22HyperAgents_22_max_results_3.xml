@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/r8Kli+C6Gso+9bnL+8ygzzrwvjs</id>
+  <title>arXiv Query: search_query=ti:"HyperAgents"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:22Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22HyperAgents%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>7</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2603.19461v1</id>
+    <title>Hyperagents</title>
+    <updated>2026-03-19T20:50:08Z</updated>
+    <link href="https://arxiv.org/abs/2603.19461v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.19461v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Self-improving AI systems aim to reduce reliance on human engineering by learning to improve their own learning and problem-solving processes. Existing approaches to self-improvement rely on fixed, handcrafted meta-level mechanisms, fundamentally limiting how fast such systems can improve. The Darwin Gödel Machine (DGM) demonstrates open-ended self-improvement in coding by repeatedly generating and evaluating self-modified variants. Because both evaluation and self-modification are coding tasks, gains in coding ability can translate into gains in self-improvement ability. However, this alignment does not generally hold beyond coding domains. We introduce \textbf{hyperagents}, self-referential agents that integrate a task agent (which solves the target task) and a meta agent (which modifies itself and the task agent) into a single editable program. Crucially, the meta-level modification procedure is itself editable, enabling metacognitive self-modification, improving not only the task-solving behavior, but also the mechanism that generates future improvements. We instantiate this framework by extending DGM to create DGM-Hyperagents (DGM-H), eliminating the assumption of domain-specific alignment between task performance and self-modification skill to potentially support self-accelerating progress on any computable task. Across diverse domains, the DGM-H improves performance over time and outperforms baselines without self-improvement or open-ended exploration, as well as prior self-improving systems. Furthermore, the DGM-H improves the process by which it generates new agents (e.g., persistent memory, performance tracking), and these meta-level improvements transfer across domains and accumulate across runs. DGM-Hyperagents offer a glimpse of open-ended AI systems that do not merely search for better solutions, but continually improve their search for how to improve.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-19T20:50:08Z</published>
+    <arxiv:comment>Code at https://github.com/facebookresearch/Hyperagents</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Jenny Zhang</name>
+    </author>
+    <author>
+      <name>Bingchen Zhao</name>
+    </author>
+    <author>
+      <name>Wannan Yang</name>
+    </author>
+    <author>
+      <name>Jakob Foerster</name>
+    </author>
+    <author>
+      <name>Jeff Clune</name>
+    </author>
+    <author>
+      <name>Minqi Jiang</name>
+    </author>
+    <author>
+      <name>Sam Devlin</name>
+    </author>
+    <author>
+      <name>Tatiana Shavrina</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.10611v3</id>
+    <title>HyperAgent: Leveraging Hypergraphs for Topology Optimization in Multi-Agent Communication</title>
+    <updated>2026-02-26T02:07:45Z</updated>
+    <link href="https://arxiv.org/abs/2510.10611v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.10611v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in large language model-powered multi-agent systems have demonstrated remarkable collective intelligence through effective communication. However, existing approaches face two primary challenges: (i) \textit{Ineffective group collaboration modeling}, as they rely on pairwise edge representations in graph structures, limiting their ability to capture relationships among multiple agents; and (ii) \textit{Limited task-adaptiveness in communication topology design}, leading to excessive communication cost for simple tasks and insufficient coordination for complex scenarios. These issues restrict the scalability and practical deployment of adaptive collaboration frameworks. To address these challenges, we propose \textbf{HyperAgent}, a hypergraph-based framework that optimizes communication topologies and effectively captures group collaboration patterns using direct hyperedge representations. Unlike edge-based approaches, HyperAgent uses hyperedges to link multiple agents within the same subtask and employs hypergraph convolutional layers to achieve one-step information aggregation in collaboration groups. Additionally, it incorporates a variational autoencoder framework with sparsity regularization to dynamically adjust hypergraph topologies based on task complexity. Experiments highlight the superiority of HyperAgent in both performance and efficiency. For instance, on GSM8K, HyperAgent achieves 95.07\% accuracy while reducing token consumption by 25.33\%, demonstrating the potential of hypergraph-based optimization for multi-agent communication.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.GR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-12T13:47:42Z</published>
+    <arxiv:comment>This submission has been withdrawn by the authors due to a fundamental error in the methodology that affects the validity of the main results</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Heng Zhang</name>
+    </author>
+    <author>
+      <name>Yuling Shi</name>
+    </author>
+    <author>
+      <name>Xiaodong Gu</name>
+    </author>
+    <author>
+      <name>Zijian Zhang</name>
+    </author>
+    <author>
+      <name>Haochen You</name>
+    </author>
+    <author>
+      <name>Lubin Gan</name>
+    </author>
+    <author>
+      <name>Yilei Yuan</name>
+    </author>
+    <author>
+      <name>Jin Huang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2409.16299v3</id>
+    <title>HyperAgent: Generalist Software Engineering Agents to Solve Coding Tasks at Scale</title>
+    <updated>2025-09-05T08:01:17Z</updated>
+    <link href="https://arxiv.org/abs/2409.16299v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2409.16299v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) have revolutionized software engineering (SE), showcasing remarkable proficiency in various coding tasks. Despite recent advancements that have enabled the creation of autonomous software agents utilizing LLMs for end-to-end development tasks, these systems are typically designed for specific SE functions. We introduce HyperAgent, an innovative generalist multi-agent system designed to tackle a wide range of SE tasks across different programming languages by mimicking the workflows of human developers. HyperAgent features four specialized agents-Planner, Navigator, Code Editor, and Executor-capable of handling the entire lifecycle of SE tasks, from initial planning to final verification. HyperAgent sets new benchmarks in diverse SE tasks, including GitHub issue resolution on the renowned SWE-Bench benchmark, outperforming robust baselines. Furthermore, HyperAgent demonstrates exceptional performance in repository-level code generation (RepoExec) and fault localization and program repair (Defects4J), often surpassing state-of-the-art baselines.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-09-09T19:35:34Z</published>
+    <arxiv:comment>49 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Huy Nhat Phan</name>
+    </author>
+    <author>
+      <name>Tien N. Nguyen</name>
+    </author>
+    <author>
+      <name>Phong X. Nguyen</name>
+    </author>
+    <author>
+      <name>Nghi D. Q. Bui</name>
+    </author>
+  </entry>
+</feed>

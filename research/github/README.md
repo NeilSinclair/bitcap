@@ -1,10 +1,94 @@
 # GitHub-derived contributor research
 
-**Status: run on Anthropic and OpenAI. DeepSeek not yet attempted.**
+**Status: run on all seven deep-coverage labs — Anthropic, OpenAI, DeepSeek,
+Google DeepMind, Mistral, xAI, and Meta AI (D19 built DeepSeek; the other six
+were re-checked live against fresh data, not just the original run).**
+Per-lab config lives in
+[`config/github_sources.yaml`](../../config/github_sources.yaml), not a hardcoded dict —
+see that file's own header for the schema, `domain_shared`, and (as of Meta AI) support
+for a lab whose commit evidence spans more than one domain.
+
+**DeepMind, Mistral, xAI, in one line each:** DeepMind's public org (`google-deepmind`)
+is easily the busiest single-org source found so far — 168 repos, 9,883 commits, 632
+people — but every one of its 221 evidenced staff is tagged `confirmed_org_wide`, not
+`confirmed`: the evidence is an `@google.com` commit, which is Alphabet-wide, not
+DeepMind-specific, and conflating the two would overstate what the data actually shows.
+Mistral (`mistralai`) evidences **zero** people via email — recent commits are almost
+universally GitHub's privacy-relay noreply addresses — a real finding about that org, not
+a harvesting gap; re-checked live (D18) after clearing its cache, one day on: same 12
+repos, 1366 commits, still zero. No second Mistral GitHub org exists to add (the Meta AI
+two-org pattern doesn't apply here) — `mistral-ai` exists but is dead/squatted, 0 public
+repos, same as `meta-ai` was for Meta. xAI (`xai-org`) is the cleanest of the three: a genuinely lab-specific
+`@x.ai` domain, still in active use as of September 2026 despite the February 2026 SpaceX
+acquisition, evidencing 12 of 33 people directly.
+
+**Meta AI (D14) needed two orgs and a two-domain evidence rule.** `facebookresearch`
+(general FAIR/research, 395 in-window repos, 10,944 commits, 734 people) and `meta-llama`
+(Llama-specific, 8 repos, 351 commits, 28 people) are both tracked under one `lab: meta-ai`
+id — a third candidate, `meta-ai` itself, was checked and confirmed dead/squatted (0
+repos) and is excluded. A fourth candidate, `facebookincubator` ("Meta Incubator," 104
+repos, genuinely real), was checked and excluded on re-verification (see below) — general
+systems engineering, not AI-research-specific. Both `@meta.com` and `@fb.com` are active
+corporate domains in real recent commits (fb.com is the legacy domain, not yet retired),
+so `aggregate()`'s `org_domain` parameter now accepts a list, not just one string —
+checked with a set membership test rather than equality. Both domains are
+Meta-corporation-wide, not AI-org-specific, so both tag `confirmed_org_wide`, same
+reasoning as DeepMind: 347 of 734 at `facebookresearch`, 16 of 28 at `meta-llama`. Both
+orgs re-checked live: numbers essentially unchanged, no new bot leaks beyond the
+already-caught `facebook-github-bot` (full account in `docs/decisions.md` D19).
+
+**DeepSeek (D19), built last, is the cleanest register of any lab checked.** `deepseek-ai`
+— 19 repos, 15,359 commits, 129 people, 12 evidenced via a genuine lab-owned
+`deepseek.com` domain (no shared-parent-company ambiguity), zero new bot leaks on a full
+commit-level scan. One repo, `deepseek-harness`, is 97.5% of the entire corpus (14,981
+commits, three weeks old, 210K stars) and reads exactly like the `OpenROAD-flow-scripts`
+mirror problem below on the surface (`fork: false`, `mirror_url: null` either way) — but
+its actual committers use `@deepseek.com` and Chinese personal-email providers consistent
+with an internal team, not the sprawling unrelated-external-maintainer population a real
+mirror has. Recorded in `config/github_sources.yaml`'s own notes rather than left for the
+next reader to re-investigate from scratch.
+
+**Six bots slipped through on real live runs, each fixed at the source.**
+`copybara-github` (Google's internal source-sync tool, found via the DeepMind run: 199
+commits, 11 repos, display name "Copybara-Service") and `copilot` (GitHub's own Copilot
+coding agent, found via the facebookresearch run: 43 commits, 3 repos, resolved login
+"Copilot" even though one of its own commit `name` fields is literally
+"copilot-swe-agent[bot]"). Neither was caught by the existing `[bot]`/`-bot`/`stainless`
+patterns — `copybara-github`'s login ends in `-github`, not `-bot`; `copilot`'s login has
+no hyphen before "bot" at all. Both would have ranked in the top 10 committers by volume,
+ahead of real staff, until removed.
+
+The Mistral re-run (D18) found two more, one of a genuinely new kind: `speakeasybot`
+(Speakeasy's SDK-generation automation, 20 commits/2 repos, login ends in "bot" with no
+hyphen — same class of miss as the two above, confirmed live via its own profile) and
+`maiengineering` (Mistral's own CI automation, 50 commits/4 repos) — but `maiengineering`
+was caught by a completely different signal, since its login gives no hint of being a bot
+at all: a blank profile, a role-based team mailbox (`engineering@mistral.ai`, not
+personal), and half its commits carrying the raw commit `name` "Buildkite CI" instead of
+a person's name. No login-pattern generalization would have caught it — only checking the
+commit-level `name`/`email` fields directly did.
+
+A sixth, `goreleaserbot` (release automation, 1 commit, found via the OpenAI re-check),
+was the same class of miss as `speakeasybot` — no hyphen before "bot". Re-checking
+Anthropic, DeepMind, xAI and DeepSeek at the same commit level (login/name/email, not just
+the top-30 display) found no further leaks — every flagged account in those four turned
+out to be either an already-caught bot, a real external contributor, or a real staff
+member using an unusually named personal account, checked and left alone in each case
+(full reasoning in `docs/decisions.md` D18/D19).
+
+All six added to `BOT_LOGINS` explicitly by name rather than generalizing the pattern
+each time, since none implies a rule that should catch others by resemblance.
 
 Tests whether GitHub commit history can identify trackable people at a frontier lab —
 the question the [papers research](../papers/README.md) answered negatively for
 publication bylines.
+
+**A note on the detailed tables below.** The Anthropic/OpenAI comparison in "What
+worked"/"What did not work" (bot share, enrichment yield, medians) is the original
+spike's point-in-time run and was not re-run as part of D18/D19's freshness checks —
+only commit counts, bot classification, and employment totals were. The headline
+figures at the top of this file are current as of D18/D19; the detailed percentages
+further down should be read as "true when measured," not "true today."
 
 ## The question
 

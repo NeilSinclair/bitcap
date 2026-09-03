@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/2ij+B7IQRZfPWwOpCBUuL9RKOw4</id>
+  <title>arXiv Query: search_query=ti:"FERRET: Framework for Expansion Reliant Red Teaming"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:16Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22FERRET:+Framework+for+Expansion+Reliant+Red+Teaming%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2603.10010v1</id>
+    <title>FERRET: Framework for Expansion Reliant Red Teaming</title>
+    <updated>2026-02-17T20:59:14Z</updated>
+    <link href="https://arxiv.org/abs/2603.10010v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.10010v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce a multi-faceted automated red teaming framework in which the goal is to generate multi-modal adversarial conversations that would break a target model and introduce various expansions that would result in more effective and efficient adversarial conversations. The introduced expansions include: 1. Horizontal expansion in which the goal is for the red team model to self-improve and generate more effective conversation starters that would shape a conversation. 2. Vertical expansion in which the goal is to take these conversation starters that are discovered in the horizontal expansion phase and expand them into effective multi-modal conversations and 3. Meta expansion in which the goal is for the red team model to discover more effective multi-modal attack strategies during the course of a conversation. We call our framework FERRET (Framework for Expansion Reliant Red Teaming) and compare it with various existing automated red teaming approaches. In our experiments, we demonstrate the effectiveness of FERRET in generating effective multi-modal adversarial conversations and its superior performance against existing state of the art approaches.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-17T20:59:14Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Ninareh Mehrabi</name>
+    </author>
+    <author>
+      <name>Vitor Albiero</name>
+    </author>
+    <author>
+      <name>Maya Pavlova</name>
+    </author>
+    <author>
+      <name>Joanna Bitton</name>
+    </author>
+  </entry>
+</feed>

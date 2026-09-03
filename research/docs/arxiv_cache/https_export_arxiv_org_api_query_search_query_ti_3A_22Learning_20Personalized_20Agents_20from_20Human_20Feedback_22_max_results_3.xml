@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/WtPGPMoMZ6cucKUhaYBRkk/JEl0</id>
+  <title>arXiv Query: search_query=ti:"Learning Personalized Agents from Human Feedback"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:29Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Learning+Personalized+Agents+from+Human+Feedback%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2602.16173v1</id>
+    <title>Learning Personalized Agents from Human Feedback</title>
+    <updated>2026-02-18T04:18:47Z</updated>
+    <link href="https://arxiv.org/abs/2602.16173v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.16173v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Modern AI agents are powerful but often fail to align with the idiosyncratic, evolving preferences of individual users. Prior approaches typically rely on static datasets, either training implicit preference models on interaction history or encoding user profiles in external memory. However, these approaches struggle with new users and with preferences that change over time. We introduce Personalized Agents from Human Feedback (PAHF), a framework for continual personalization in which agents learn online from live interaction using explicit per-user memory. PAHF operationalizes a three-step loop: (1) seeking pre-action clarification to resolve ambiguity, (2) grounding actions in preferences retrieved from memory, and (3) integrating post-action feedback to update memory when preferences drift. To evaluate this capability, we develop a four-phase protocol and two benchmarks in embodied manipulation and online shopping. These benchmarks quantify an agent's ability to learn initial preferences from scratch and subsequently adapt to persona shifts. Our theoretical analysis and empirical results show that integrating explicit memory with dual feedback channels is critical: PAHF learns substantially faster and consistently outperforms both no-memory and single-channel baselines, reducing initial personalization error and enabling rapid adaptation to preference shifts.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-18T04:18:47Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Kaiqu Liang</name>
+    </author>
+    <author>
+      <name>Julia Kruk</name>
+    </author>
+    <author>
+      <name>Shengyi Qian</name>
+    </author>
+    <author>
+      <name>Xianjun Yang</name>
+    </author>
+    <author>
+      <name>Shengjie Bi</name>
+    </author>
+    <author>
+      <name>Yuanshun Yao</name>
+    </author>
+    <author>
+      <name>Shaoliang Nie</name>
+    </author>
+    <author>
+      <name>Mingyang Zhang</name>
+    </author>
+    <author>
+      <name>Lijuan Liu</name>
+    </author>
+    <author>
+      <name>Jaime Fernández Fisac</name>
+    </author>
+    <author>
+      <name>Shuyan Zhou</name>
+    </author>
+    <author>
+      <name>Saghar Hosseini</name>
+    </author>
+  </entry>
+</feed>

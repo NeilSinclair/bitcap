@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/bf5pJpn2QM16/UOVqFib+Ow/FqU</id>
+  <title>arXiv Query: search_query=ti:"GIM: Evaluating models via tasks that integrate multiple cognitive domains"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:03:43Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22GIM:+Evaluating+models+via+tasks+that+integrate+multiple+cognitive+domains%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.18663v2</id>
+    <title>GIM: Evaluating models via tasks that integrate multiple cognitive domains</title>
+    <updated>2026-08-21T21:38:53Z</updated>
+    <link href="https://arxiv.org/abs/2605.18663v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.18663v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As LLM benchmarks saturate, the evaluation community has pursued two strategies to increase difficulty: escalating knowledge demands (GPQA, HLE) or removing knowledge entirely in favor of abstract reasoning (ARC-AGI). The first conflates memorization with capability; the second divorces reasoning from the practical contexts in which it matters. We take a different approach. The Grounded Integration Measure (GIM) is a benchmark of 820 original problems (615 public, 205 private) where difficulty comes from integration; individual problems require coordinating multiple cognitive operations (constraint satisfaction, state tracking, epistemic vigilance, audience calibration) over broadly accessible knowledge, so that reasoning stays grounded in realistic tasks without being gated on specialized expertise. Each problem is an original expert-authored composition, majority with rubric-decomposed scoring. We calibrate a judge-aware continuous response 2-parameter logistic (2PL) IRT model across 53 test-configurations (unique model x thinking-level pairs) and five calibrated judges, using 203,800 epoch-averaged prompt-judge cells derived from &gt;1M raw judge-scored observations, producing robust ability estimates that correctly order test-configurations even when raw accuracy is distorted by errors, missing data, or judge leniency differences. Using this framework, we present a comprehensive leaderboard spanning 22 models and 47 reporting test-configurations, and conduct what is to our knowledge the most extensive published study of how test-time compute trades off against model capability on a fixed benchmark: 11 models swept across 35 test-configurations. We observe that within-family configuration choices, such as thinking budget and quantization, matter as much as model selection, and increasing thinking tokens has diminishing marginal returns.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-18T17:09:50Z</published>
+    <arxiv:comment>61 pages, 27 figures, 4 tables. Code: https://github.com/facebookresearch/gim ; Dataset: https://huggingface.co/datasets/facebook/gim</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Rohit Patel</name>
+    </author>
+    <author>
+      <name>Alexandre Rezende</name>
+    </author>
+    <author>
+      <name>Steven McClain</name>
+    </author>
+  </entry>
+</feed>

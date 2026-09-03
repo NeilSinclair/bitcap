@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/gRDSco12chCU5CiL8bMn8jCjS68</id>
+  <title>arXiv Query: search_query=ti:"NeuralBench: A Unifying Framework to Benchmark NeuroAI Models"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:06:35Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22NeuralBench:+A+Unifying+Framework+to+Benchmark+NeuroAI+Models%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.08495v1</id>
+    <title>NeuralBench: A Unifying Framework to Benchmark NeuroAI Models</title>
+    <updated>2026-05-08T21:19:57Z</updated>
+    <link href="https://arxiv.org/abs/2605.08495v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.08495v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Deep learning and large public datasets have recently catalyzed the proliferation of AI models for processing brain recordings. However, systematically evaluating these models remains a challenge: not only do the preprocessing pipelines, training and finetuning approaches largely vary across studies, but their downstream evaluation is often limited to small sets of tasks and/or datasets. Here, we present NeuralBench: a unified framework for benchmarking AI models of brain activity. We accompany this framework with NeuralBench-EEG v1.0 -- a large EEG benchmark that includes 36 electroencephalography (EEG) tasks and 14 deep learning architectures, and is evaluated on 94 datasets accessed through a standardized interface. This first EEG-focused release already highlights two main findings. First, current foundation models only marginally outperform task-specific models. Second, a large set of tasks (e.g. cognitive decoding, clinical predictions) remain highly challenging, even for the best models. Critically, NeuralBench is designed for the integration of new tasks, datasets, models, and neuroimaging modalities, as illustrated by preliminary extensions to MEG and fMRI datasets and models. Through this white paper, we invite the community to expand this open-source framework and work together toward a unified benchmarking standard for neuroimaging models.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="q-bio.NC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-08T21:19:57Z</published>
+    <arxiv:comment>31 pages, 9 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Hubert Banville</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Stéphane d'Ascoli</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Simon Dahan</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jérémy Rapin</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Marlène Careil</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Yohann Benchetrit</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jarod Lévy</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Saarang Panchavati</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Antoine Ratouchniak</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Mingfang</name>
+      <arxiv:affiliation>Lucy</arxiv:affiliation>
+    </author>
+    <author>
+      <name> Zhang</name>
+    </author>
+    <author>
+      <name>Elisa Cascardi</name>
+    </author>
+    <author>
+      <name>Katelyn Begany</name>
+    </author>
+    <author>
+      <name>Teon Brooks</name>
+    </author>
+    <author>
+      <name>Jean-Rémi King</name>
+    </author>
+  </entry>
+</feed>

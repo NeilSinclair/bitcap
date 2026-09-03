@@ -1,0 +1,743 @@
+{
+  "https://deepmind.google/research/publications/270149/": {
+    "authors": [
+      {
+        "name": "Hirokatsu Kataoka",
+        "affiliations": [
+          "National Institute of Advanced Industrial Science and Technology (AIST)",
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Yoshihiro Fukuhara",
+        "affiliations": [
+          "National Institute of Advanced Industrial Science and Technology (AIST)",
+          "CADDi"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Yonglong Tian",
+        "affiliations": [
+          "OpenAI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Shangzhe Wu",
+        "affiliations": [
+          "University of Cambridge"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Oishi Deb",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Ryousuke Yamada",
+        "affiliations": [
+          "National Institute of Advanced Industrial Science and Technology (AIST)",
+          "University of Technology Nuremberg"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Christian Rupprecht",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Jianyuan Wang",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Kohsuke Ide",
+        "affiliations": [
+          "National Institute of Advanced Industrial Science and Technology (AIST)",
+          "University of Tsukuba"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Koichi Namekata",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Xianzheng Ma",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Yiming Chen",
+        "affiliations": [
+          "Visual Geometry Group (VGG), University of Oxford"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Robert Geirhos",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Aditi Raghunathan",
+        "affiliations": [
+          "Carnegie Mellon University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Yuki M. Asano",
+        "affiliations": [
+          "University of Technology Nuremberg"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Deva Ramanan",
+        "affiliations": [
+          "Carnegie Mellon University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "David Fouhey",
+        "affiliations": [
+          "New York University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Andrew J. Davison",
+        "affiliations": [
+          "Imperial College London"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Yilun Du",
+        "affiliations": [
+          "Harvard University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Jiajun Wu",
+        "affiliations": [
+          "Stanford University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Zhuang Liu",
+        "affiliations": [
+          "Princeton University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/118955/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/264392/": {
+    "authors": [
+      {
+        "name": "Robert Geirhos",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Yuxuan Li",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Thadd\u00e4us Wiedemer",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Neha Kalibhat",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Zi Wang",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Mani Malek",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Oyvind Tafjord",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Kevin Swersky",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Been Kim",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Priyank Jaini",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [
+          "*"
+        ],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2026-07-28",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/203490/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/118251/": {
+    "authors": [
+      {
+        "name": "Charvi Rastogi",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Tian Huey Teh",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Pushkar Mishra",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Roma Patel",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Ding Wang",
+        "affiliations": [
+          "Google Research"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Mark Diaz",
+        "affiliations": [
+          "Google Research"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Alicia Parrish",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Aida Mostafazadeh Davani",
+        "affiliations": [
+          "Google Research"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Zoe Ashwood",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Michela Paganini",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Vinodkumar Prabhakaran",
+        "affiliations": [
+          "Google Research"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Verena Rieser",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Lora Aroyo",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2025-07-15",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/149262/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/224397/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/139779/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/225819/": {
+    "authors": [
+      {
+        "name": "Arkadiy Saakyan",
+        "affiliations": [
+          "Columbia University, New York, NY, USA. Work done during an internship at Google DeepMind."
+        ],
+        "marks": [],
+        "is_fellow": true,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Charvi Rastogi",
+        "affiliations": [
+          "Google DeepMind, New York, NY, USA"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Lora Aroyo",
+        "affiliations": [
+          "Google DeepMind, New York, NY, USA"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2026-05-29",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/224297/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/248131/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/239849/": {
+    "authors": [
+      {
+        "name": "Julian Jacobs",
+        "affiliations": [
+          "University of Oxford",
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Jordan Canedy",
+        "affiliations": [
+          "Forecasting Research Institute"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      }
+    ],
+    "date": "2026-08-24",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/239142/": {
+    "authors": [
+      {
+        "name": "Tim Genewein",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Matija Franklin",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Alexander Lerchner",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Laurent Orseau",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Samuel Albanie",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Adam Bales",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Cole Wyeth",
+        "affiliations": [
+          "Google DeepMind",
+          "University of Waterloo (work conducted while at Google DeepMind)"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Stephanie Chan",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Iason Gabriel",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Joel Z. Leibo",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Allan Dafoe",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Marcus Hutter",
+        "affiliations": [
+          "Google DeepMind",
+          "Australian National University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Thore Graepel",
+        "affiliations": [
+          "Google DeepMind",
+          "University College London"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Shane Legg",
+        "affiliations": [
+          "Google DeepMind"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://deepmind.google/research/publications/146950/": {
+    "authors": [],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": true
+  },
+  "https://deepmind.google/research/publications/231466/": {
+    "authors": [
+      {
+        "name": "Rakshit S Trivedi",
+        "affiliations": [
+          "Independent Researcher, CA, USA"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Natasha Jaques",
+        "affiliations": [
+          "University of Washington, Seattle, WA, USA",
+          "Google Deepmind, London, UK"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Logan Cross",
+        "affiliations": [
+          "Google Deepmind, London, UK"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Alexander Sasha Vezhnevets",
+        "affiliations": [
+          "Google Deepmind, London, UK"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Joel Z Leibo",
+        "affiliations": [
+          "Google Deepmind, London, UK"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2026-06-02",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  }
+}

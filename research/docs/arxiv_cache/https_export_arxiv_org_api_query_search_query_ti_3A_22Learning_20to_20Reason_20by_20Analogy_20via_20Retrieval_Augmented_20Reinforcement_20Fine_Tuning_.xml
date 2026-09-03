@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/BKloU4ygKEESlEXWePYBLo+Bc8U</id>
+  <title>arXiv Query: search_query=ti:"Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-09-03T07:03:56Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=ti:%22Learning+to+Reason+by+Analogy+via+Retrieval-Augmented+Reinforcement+Fine-Tuning%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2606.13680v1</id>
+    <title>Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</title>
+    <updated>2026-06-11T17:59:52Z</updated>
+    <link href="https://arxiv.org/abs/2606.13680v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.13680v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Retrieval-augmented generation (RAG) has become a standard mechanism for grounding language models in external knowledge, yet conventional retrieval based on lexical or semantic similarity is poorly suited for complex reasoning tasks: a semantically similar problem may demand an entirely different solution strategy, while a superficially different problem may share the same underlying reasoning pattern. We propose Retrieval-Augmented Reinforcement Fine-Tuning (RA-RFT), a post-training framework that teaches language models to reason by analogy. RA-RFT uses gold-relevance distillation to train a retriever that ranks contexts by expected reasoning benefit rather than semantic overlap, and then fine-tunes the policy model via reinforcement fine-tuning methods with retrieved analogous demonstrations, so the model learns to leverage reasoning traces under verifiable outcome rewards. We further analyze the diversity of retrieved contexts and find that reasoning-aware retrieval surfaces complementary solution strategies that provide distinct reasoning scaffolds for individual problems. Across challenging mathematical reasoning benchmarks, RA-RFT consistently outperforms standard reinforcement fine-tuning methods. For example, it improves AIME 2025 average@32 accuracy by 7.1 and 2.8 points over GRPO for Qwen3-1.7B and Qwen3-4B respectively -- suggesting that reasoning-aware retrieval is a complementary axis of improvement and orthogonal to advances in reward design or training curricula.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-11T17:59:52Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Zilin Xiao</name>
+    </author>
+    <author>
+      <name>Qi Ma</name>
+    </author>
+    <author>
+      <name>Chun-cheng Jason Chen</name>
+    </author>
+    <author>
+      <name>Xintao Chen</name>
+    </author>
+    <author>
+      <name>Avinash Atreya</name>
+    </author>
+    <author>
+      <name>Hanjie Chen</name>
+    </author>
+    <author>
+      <name>Vicente Ordonez</name>
+    </author>
+  </entry>
+</feed>

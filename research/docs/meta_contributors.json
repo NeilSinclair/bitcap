@@ -1,0 +1,1103 @@
+{
+  "generated": "2026-09-03",
+  "lab": "Meta AI",
+  "papers": [
+    {
+      "meta_url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+      "arxiv_id": "2608.18114v1",
+      "source_url": "https://arxiv.org/html/2608.18114v1",
+      "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+      "date": "2026-06-29",
+      "resolution": "exact_title",
+      "authors": [
+        {
+          "name": "Mingfang (Lucy) Zhang",
+          "affiliations": [
+            "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Jarod L\u00e9vy",
+          "affiliations": [
+            "Meta AI"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Cedric Rommel",
+          "affiliations": [
+            "Meta AI"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "J\u00e9r\u00e9my Rapin",
+          "affiliations": [
+            "Meta AI"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Corentin Bel",
+          "affiliations": [
+            "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS",
+            "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Julie Bonnaire",
+          "affiliations": [
+            "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Daniel Nieto",
+          "affiliations": [
+            "Basque Center on Cognition, Brain and Language, San Sebastian"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Pierre Bourdillon",
+          "affiliations": [
+            "Hospital Foundation Adolphe de Rothschild"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Svetlana Pinet",
+          "affiliations": [
+            "Univ. Lille, CNRS, UMR 9193-SCALab-Sciences Cognitives et Sciences Affectives, F-59000 Lille, France"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "St\u00e9phane d\u2019Ascoli",
+          "affiliations": [],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Thomas Moreau",
+          "affiliations": [],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Jean-R\u00e9mi King",
+          "affiliations": [
+            "Paris Cit\u00e9 University",
+            "Inria, Universit\u00e9 Paris-Saclay, Palaiseau, France"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null
+    },
+    {
+      "meta_url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+      "arxiv_id": "2606.13680v1",
+      "source_url": "https://arxiv.org/html/2606.13680v1",
+      "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+      "date": "2026-06-11",
+      "resolution": "exact_title",
+      "authors": [
+        {
+          "name": "Zilin Xiao",
+          "affiliations": [
+            "Meta Superintelligence Labs",
+            "Rice University"
+          ],
+          "marks": [],
+          "is_fellow": true,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Qi Ma",
+          "affiliations": [
+            "Meta Superintelligence Labs"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Jason Chen",
+          "affiliations": [
+            "Meta Superintelligence Labs"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Xintao Chen",
+          "affiliations": [
+            "Meta Superintelligence Labs"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Avinash Atreya",
+          "affiliations": [
+            "Meta Superintelligence Labs"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Hanjie Chen",
+          "affiliations": [
+            "Rice University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Vicente Ordonez",
+          "affiliations": [
+            "Rice University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null
+    },
+    {
+      "meta_url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+      "arxiv_id": "2607.25970v1",
+      "source_url": "https://arxiv.org/html/2607.25970v1",
+      "title": "Reinforcement Learning for Code Optimization",
+      "date": "2026-07-28",
+      "resolution": "exact_title",
+      "authors": [
+        {
+          "name": "Pierre Chambon",
+          "affiliations": [
+            "FAIR at Meta",
+            "Inria"
+          ],
+          "marks": [
+            "\u2020"
+          ],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Kunhao Zheng",
+          "affiliations": [
+            "FAIR at Meta",
+            "Universit\u00e9 Paris Dauphine"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Juliette Decugis",
+          "affiliations": [
+            "FAIR at Meta",
+            "Inria"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Benoit Sagot",
+          "affiliations": [
+            "Inria"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Gabriel Synnaeve",
+          "affiliations": [
+            "FAIR at Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": "other"
+    },
+    {
+      "meta_url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+      "arxiv_id": "2607.02689v2",
+      "source_url": "https://arxiv.org/html/2607.02689v2",
+      "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+      "date": "2026-07-02",
+      "resolution": "exact_title",
+      "authors": [
+        {
+          "name": "Xiaodong Wang",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Xuanyi Zhao",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Pedro Rodriguez",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Devendra Singh Sachan",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Barlas Oguz",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Seungwhan Moon",
+          "affiliations": [
+            "Reality Labs, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Shang-Wen Li",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Gargi Ghosh",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Xin Dong",
+          "affiliations": [
+            "Reality Labs, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Wen-Tau Yih",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null
+    },
+    {
+      "meta_url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+      "arxiv_id": "2607.28760v1",
+      "source_url": "https://arxiv.org/html/2607.28760v1",
+      "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+      "date": "2026-07-30",
+      "resolution": "exact_title",
+      "authors": [
+        {
+          "name": "Krunoslav Lehman Pavasovic",
+          "affiliations": [
+            "FAIR, Meta",
+            "\u00c9cole Normale Sup\u00e9rieure, Paris"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Th\u00e9ophane Vallaeys",
+          "affiliations": [
+            "FAIR, Meta",
+            "Sorbonne University, Paris"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "St\u00e9phane Mallat",
+          "affiliations": [
+            "\u00c9cole Normale Sup\u00e9rieure, Paris"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Giulio Biroli",
+          "affiliations": [
+            "\u00c9cole Normale Sup\u00e9rieure, Paris"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Luke Zettlemoyer",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Brian Karrer",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Jakob Verbeek",
+          "affiliations": [
+            "FAIR, Meta"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null
+    }
+  ],
+  "people": [
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Mingfang (Lucy) Zhang"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta AI"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Jarod L\u00e9vy"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta AI"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Cedric Rommel"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta AI"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "J\u00e9r\u00e9my Rapin"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette",
+        "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Corentin Bel"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Julie Bonnaire"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Basque Center on Cognition, Brain and Language, San Sebastian"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Daniel Nieto"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Hospital Foundation Adolphe de Rothschild"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Pierre Bourdillon"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Univ. Lille, CNRS, UMR 9193-SCALab-Sciences Cognitives et Sciences Affectives, F-59000 Lille, France"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Svetlana Pinet"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "St\u00e9phane d\u2019Ascoli"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Thomas Moreau"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Inria, Universit\u00e9 Paris-Saclay, Palaiseau, France",
+        "Paris Cit\u00e9 University"
+      ],
+      "papers": [
+        {
+          "title": "Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings",
+          "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/",
+          "date": "2026-06-29"
+        }
+      ],
+      "name": "Jean-R\u00e9mi King"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": true,
+      "affiliations": [
+        "Meta Superintelligence Labs",
+        "Rice University"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Zilin Xiao"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta Superintelligence Labs"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Qi Ma"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta Superintelligence Labs"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Jason Chen"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta Superintelligence Labs"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Xintao Chen"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Meta Superintelligence Labs"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Avinash Atreya"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Rice University"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Hanjie Chen"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Rice University"
+      ],
+      "papers": [
+        {
+          "title": "Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning",
+          "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/",
+          "date": "2026-06-11"
+        }
+      ],
+      "name": "Vicente Ordonez"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR at Meta",
+        "Inria"
+      ],
+      "papers": [
+        {
+          "title": "Reinforcement Learning for Code Optimization",
+          "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Pierre Chambon"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR at Meta",
+        "Universit\u00e9 Paris Dauphine"
+      ],
+      "papers": [
+        {
+          "title": "Reinforcement Learning for Code Optimization",
+          "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Kunhao Zheng"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR at Meta",
+        "Inria"
+      ],
+      "papers": [
+        {
+          "title": "Reinforcement Learning for Code Optimization",
+          "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Juliette Decugis"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Inria"
+      ],
+      "papers": [
+        {
+          "title": "Reinforcement Learning for Code Optimization",
+          "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Benoit Sagot"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR at Meta"
+      ],
+      "papers": [
+        {
+          "title": "Reinforcement Learning for Code Optimization",
+          "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Gabriel Synnaeve"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Xiaodong Wang"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Xuanyi Zhao"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Pedro Rodriguez"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Devendra Singh Sachan"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Barlas Oguz"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Reality Labs, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Seungwhan Moon"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Shang-Wen Li"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Gargi Ghosh"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Reality Labs, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Xin Dong"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval",
+          "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/",
+          "date": "2026-07-02"
+        }
+      ],
+      "name": "Wen-Tau Yih"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta",
+        "\u00c9cole Normale Sup\u00e9rieure, Paris"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Krunoslav Lehman Pavasovic"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta",
+        "Sorbonne University, Paris"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Th\u00e9ophane Vallaeys"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "\u00c9cole Normale Sup\u00e9rieure, Paris"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "St\u00e9phane Mallat"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "\u00c9cole Normale Sup\u00e9rieure, Paris"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Giulio Biroli"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Luke Zettlemoyer"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Brian Karrer"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "FAIR, Meta"
+      ],
+      "papers": [
+        {
+          "title": "WaiT for the Signal: Simple Frequency-Aware Flow-Matching",
+          "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/",
+          "date": "2026-07-30"
+        }
+      ],
+      "name": "Jakob Verbeek"
+    }
+  ]
+}

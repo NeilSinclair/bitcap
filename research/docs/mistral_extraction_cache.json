@@ -1,0 +1,243 @@
+{
+  "https://mistral.ai/news/shieldstral/": {
+    "authors": [
+      {
+        "name": "Antonia Calvi",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Avinash Sooriyarachchi",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Giada Pistilli",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Guillaume Lample",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Maarten Buyl",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Maximilian Augustin",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Maximilian M\u00fcller",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Pierre Stock",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Tom Bewley",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Wassim Bouaziz",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Yimu Pan",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": false,
+    "no_byline": false
+  },
+  "https://mistral.ai/news/robostral-navigate/": {
+    "authors": [
+      {
+        "name": "Arjun Majumdar",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Avinash Sooriyarachchi",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Benjamin Tibi",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Chris Bamford",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Elliot Chane-Sane",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Guillaume Lample",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Khyathi Raghavi Chandu",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Ludovic Ho Fuh",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Mathieu Poir\u00e9e",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Olivier Duchenne",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Rosalie Millner",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Srijan Mishra",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Th\u00e9o Cachet",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Thomas Chabal",
+        "affiliations": [
+          "Mistral AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": null,
+    "star_means": null,
+    "order_meaningful": false,
+    "no_byline": false
+  }
+}

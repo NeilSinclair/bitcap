@@ -1,0 +1,1 @@
+{"total": 1, "commits": [{"date": "2026-07-09T12:21:29Z", "login": "lcabannes", "name": "lcabannes", "email": "lcabannes@meta.com"}], "stars": 38, "description": "This repositories contains the reference implementation for the Sparse Delta Memory paper.More precisely, it contains the model definition as well as triton and cuda kernels for the Sparse Delta Memory layer."}
