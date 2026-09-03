@@ -405,3 +405,81 @@ near-miss to an error naming the likely intended id, and leaves everything else 
 dormant warning. Open vocabulary kept, typo hole closed. Roughly four lines plus
 tests.
 
+
+### 13.2 The test suite runs on sqlite; production runs on Postgres
+
+Every test builds its database with `create_engine("sqlite:///:memory:")` and
+`create_all`. Production is Postgres, built by Alembic. Two different dialects
+and two different construction paths, and the suite only ever exercises one of
+each.
+
+**The hole.** A divergence between `models.py` and `alembic/versions/` that
+sqlite cannot express passes green. `JSONVariant` is `JSON` on sqlite and
+`JSONB` on Postgres, so a type mismatch between a model and its migration is
+invisible; the same goes for `server_default` and for anything sqlite silently
+accepts. This is not hypothetical — the CRITICAL that D29's review found
+(`ensure_schema` colliding with a pending migration) is exactly this gap biting,
+and it took a human reproducing it by hand to surface.
+
+`tests/test_migrations.py::_schema` was widened after that review to compare
+unique constraints and foreign keys as well as columns, which closes the most
+dangerous slice (`alerts.dedupe_key`'s uniqueness is what the whole alerting
+design rests on). The dialect gap itself remains.
+
+**The fix.** Run the migration tests against a real Postgres — the
+`docker compose` one already in the quickstart — behind a marker so a clone with
+no Docker still gets a green suite. Roughly: a `postgres` fixture that skips
+when `DATABASE_URL` names no Postgres, and `TestMigrationsMatchTheModels`
+parametrised over both engines. The other ~780 tests can stay on sqlite; it is
+only the schema-shaped ones that need the real dialect.
+
+### 13.3 A cold container can strand an article as permanently unclassified
+
+`classify_new` takes its work list from the database (`raw_articles` LEFT JOIN
+`raw_classifications`) but reads the article *text* from
+`research/docs/announcements.json`. On a platform where the cron container has
+no persistent disk — which is the deployed shape, since Render cron jobs cannot
+mount one — that file resets to the image copy on every firing.
+
+**The hole.** An article ingested on firing N is written into the corpus file
+and into `raw_articles`. On firing N+1 the file is back to the image copy. If
+that article's source is down, or its lab is not due this firing, the merge
+never re-adds it — so it stays pending in the database forever while the text
+needed to classify it is gone. `classify_new` reports `{pending: 5, classified:
+0, skipped_for_budget: 0}` and **no alert rule matches that shape**: it is not a
+budget breach, not a failed source, not a failed run. It looks exactly like a
+quiet night.
+
+Not confirmed against a deployed instance — flagged by review, traced through
+the code, not reproduced. The query that would settle it:
+`SELECT count(*) FROM raw_articles a LEFT JOIN raw_classifications c ON
+c.url = a.url AND c.prompt_version = 'v7' WHERE c.url IS NULL`, compared against
+the corpus file the container actually has.
+
+**The fix, in preference order.** (a) Store the article text in `raw_articles`
+— it is already there, in `payload` — and have `classify_new` read from the
+database rather than the file, which removes the dependency entirely and is
+probably a dozen lines. (b) Failing that, a `pending_not_falling` alert rule:
+same pending count across N consecutive firings with nothing classified and no
+budget breach is a stuck corpus, and should say so.
+
+### 13.4 Alerts go to stdout, which on a cron job means a log nobody reads
+
+`config/pipeline.yaml` ships `alerts.channel: stdout`. The `webhook` channel is
+built, tested and takes its URL from `ALERT_WEBHOOK_URL`, but nothing is
+configured to receive it.
+
+**The hole.** The alerts table is the record of truth and `/ops` renders it, so
+nothing is lost — but a system alert that only appears somewhere a person has to
+go and look is not alerting, it is logging. The whole point of the system/content
+split is that a `system` alert means someone has to act, and on the deployed
+shape (a nightly container that exits) stdout goes to a platform log that is
+read after somebody already noticed the problem.
+
+**The fix.** A one-line config change at deploy time: set `alerts.channel:
+webhook` and add `ALERT_WEBHOOK_URL` (Slack or Discord incoming webhook) to the
+service's secrets — `render.yaml` already declares it `sync: false`. Worth doing
+*at* deployment rather than after, since the first firing on a fresh database is
+also the one most likely to surface something. Note the per-run delivery cap
+(`max_deliveries_per_run: 10`) exists precisely so switching this on does not
+fire 135 notifications on day one.
