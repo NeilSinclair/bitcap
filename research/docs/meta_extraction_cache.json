@@ -1,0 +1,417 @@
+{
+  "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/": {
+    "authors": [
+      {
+        "name": "Mingfang (Lucy) Zhang",
+        "affiliations": [
+          "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Jarod L\u00e9vy",
+        "affiliations": [
+          "Meta AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Cedric Rommel",
+        "affiliations": [
+          "Meta AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "J\u00e9r\u00e9my Rapin",
+        "affiliations": [
+          "Meta AI"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Corentin Bel",
+        "affiliations": [
+          "\u00c9cole Normale Sup\u00e9rieure, Universit\u00e9 PSL, CNRS",
+          "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Julie Bonnaire",
+        "affiliations": [
+          "CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Daniel Nieto",
+        "affiliations": [
+          "Basque Center on Cognition, Brain and Language, San Sebastian"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Pierre Bourdillon",
+        "affiliations": [
+          "Hospital Foundation Adolphe de Rothschild"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Svetlana Pinet",
+        "affiliations": [
+          "Univ. Lille, CNRS, UMR 9193-SCALab-Sciences Cognitives et Sciences Affectives, F-59000 Lille, France"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "St\u00e9phane d\u2019Ascoli",
+        "affiliations": [],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Thomas Moreau",
+        "affiliations": [],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Jean-R\u00e9mi King",
+        "affiliations": [
+          "Paris Cit\u00e9 University",
+          "Inria, Universit\u00e9 Paris-Saclay, Palaiseau, France"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      }
+    ],
+    "date": "2026-08-24",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/": {
+    "authors": [
+      {
+        "name": "Zilin Xiao",
+        "affiliations": [
+          "Meta Superintelligence Labs",
+          "Rice University"
+        ],
+        "marks": [],
+        "is_fellow": true,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Qi Ma",
+        "affiliations": [
+          "Meta Superintelligence Labs"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Jason Chen",
+        "affiliations": [
+          "Meta Superintelligence Labs"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Xintao Chen",
+        "affiliations": [
+          "Meta Superintelligence Labs"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Avinash Atreya",
+        "affiliations": [
+          "Meta Superintelligence Labs"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Hanjie Chen",
+        "affiliations": [
+          "Rice University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Vicente Ordonez",
+        "affiliations": [
+          "Rice University"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      }
+    ],
+    "date": "2026-08-24",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/": {
+    "authors": [
+      {
+        "name": "Xiaodong Wang",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Xuanyi Zhao",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Pedro Rodriguez",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Devendra Singh Sachan",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Barlas Oguz",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Seungwhan Moon",
+        "affiliations": [
+          "Reality Labs, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Shang-Wen Li",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Gargi Ghosh",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Xin Dong",
+        "affiliations": [
+          "Reality Labs, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Wen-Tau Yih",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2026-08-26",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/": {
+    "authors": [
+      {
+        "name": "Krunoslav Lehman Pavasovic",
+        "affiliations": [
+          "FAIR, Meta",
+          "\u00c9cole Normale Sup\u00e9rieure, Paris"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Th\u00e9ophane Vallaeys",
+        "affiliations": [
+          "FAIR, Meta",
+          "Sorbonne University, Paris"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "St\u00e9phane Mallat",
+        "affiliations": [
+          "\u00c9cole Normale Sup\u00e9rieure, Paris"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Giulio Biroli",
+        "affiliations": [
+          "\u00c9cole Normale Sup\u00e9rieure, Paris"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Luke Zettlemoyer",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Brian Karrer",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Jakob Verbeek",
+        "affiliations": [
+          "FAIR, Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": "2026-07-30",
+    "star_means": null,
+    "order_meaningful": true,
+    "no_byline": false
+  },
+  "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/": {
+    "authors": [
+      {
+        "name": "Pierre Chambon",
+        "affiliations": [
+          "FAIR at Meta",
+          "Inria"
+        ],
+        "marks": [
+          "\u2020"
+        ],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Kunhao Zheng",
+        "affiliations": [
+          "FAIR at Meta",
+          "Universit\u00e9 Paris Dauphine"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Juliette Decugis",
+        "affiliations": [
+          "FAIR at Meta",
+          "Inria"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      },
+      {
+        "name": "Benoit Sagot",
+        "affiliations": [
+          "Inria"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": false
+      },
+      {
+        "name": "Gabriel Synnaeve",
+        "affiliations": [
+          "FAIR at Meta"
+        ],
+        "marks": [],
+        "is_fellow": false,
+        "is_lab_staff": true
+      }
+    ],
+    "date": null,
+    "star_means": "other",
+    "order_meaningful": true,
+    "no_byline": false
+  }
+}

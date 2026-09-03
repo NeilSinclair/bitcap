@@ -1,0 +1,4808 @@
+{
+  "latest_period": "2026-06-30",
+  "latest_filed": "2026-08-12",
+  "latest_total_usd": 2917195285,
+  "latest_options_usd": 458143121,
+  "latest_n_holdings": 82,
+  "series": [
+    {
+      "period": "2020-06-30",
+      "value_usd": 215636251,
+      "options_usd": 0,
+      "n_holdings": 41,
+      "top10_pct": 75.0
+    },
+    {
+      "period": "2020-09-30",
+      "value_usd": 344960060,
+      "options_usd": 0,
+      "n_holdings": 49,
+      "top10_pct": 73.9
+    },
+    {
+      "period": "2020-12-31",
+      "value_usd": 655740783,
+      "options_usd": 0,
+      "n_holdings": 46,
+      "top10_pct": 73.0
+    },
+    {
+      "period": "2021-03-31",
+      "value_usd": 1270637417,
+      "options_usd": 0,
+      "n_holdings": 63,
+      "top10_pct": 70.6
+    },
+    {
+      "period": "2021-06-30",
+      "value_usd": 1699725981,
+      "options_usd": 0,
+      "n_holdings": 85,
+      "top10_pct": 75.9
+    },
+    {
+      "period": "2021-09-30",
+      "value_usd": 1718446372,
+      "options_usd": 0,
+      "n_holdings": 95,
+      "top10_pct": 74.7
+    },
+    {
+      "period": "2021-12-31",
+      "value_usd": 1291600398,
+      "options_usd": 11890500,
+      "n_holdings": 138,
+      "top10_pct": 71.0
+    },
+    {
+      "period": "2022-03-31",
+      "value_usd": 974125037,
+      "options_usd": 158763638,
+      "n_holdings": 147,
+      "top10_pct": 70.2
+    },
+    {
+      "period": "2022-06-30",
+      "value_usd": 680689486,
+      "options_usd": 54722857,
+      "n_holdings": 100,
+      "top10_pct": 66.4
+    },
+    {
+      "period": "2022-09-30",
+      "value_usd": 520078578,
+      "options_usd": 13774563,
+      "n_holdings": 121,
+      "top10_pct": 67.0
+    },
+    {
+      "period": "2022-12-31",
+      "value_usd": 481055196,
+      "options_usd": 9720025,
+      "n_holdings": 120,
+      "top10_pct": 66.9
+    },
+    {
+      "period": "2023-03-31",
+      "value_usd": 641331729,
+      "options_usd": 40829108,
+      "n_holdings": 127,
+      "top10_pct": 69.0
+    },
+    {
+      "period": "2023-06-30",
+      "value_usd": 858201514,
+      "options_usd": 220234734,
+      "n_holdings": 124,
+      "top10_pct": 61.1
+    },
+    {
+      "period": "2023-09-30",
+      "value_usd": 747251864,
+      "options_usd": 107677304,
+      "n_holdings": 115,
+      "top10_pct": 59.4
+    },
+    {
+      "period": "2023-12-31",
+      "value_usd": 923881503,
+      "options_usd": 92585592,
+      "n_holdings": 88,
+      "top10_pct": 60.5
+    },
+    {
+      "period": "2024-03-31",
+      "value_usd": 1132269133,
+      "options_usd": 218018063,
+      "n_holdings": 96,
+      "top10_pct": 62.4
+    },
+    {
+      "period": "2024-06-30",
+      "value_usd": 1101986617,
+      "options_usd": 176557222,
+      "n_holdings": 90,
+      "top10_pct": 67.3
+    },
+    {
+      "period": "2024-09-30",
+      "value_usd": 1041179035,
+      "options_usd": 36045153,
+      "n_holdings": 96,
+      "top10_pct": 63.1
+    },
+    {
+      "period": "2024-12-31",
+      "value_usd": 1142086350,
+      "options_usd": 117904993,
+      "n_holdings": 100,
+      "top10_pct": 63.7
+    },
+    {
+      "period": "2025-03-31",
+      "value_usd": 830414437,
+      "options_usd": 335821011,
+      "n_holdings": 85,
+      "top10_pct": 70.9
+    },
+    {
+      "period": "2025-06-30",
+      "value_usd": 1534881609,
+      "options_usd": 199104292,
+      "n_holdings": 80,
+      "top10_pct": 62.0
+    },
+    {
+      "period": "2025-09-30",
+      "value_usd": 2192241717,
+      "options_usd": 729484590,
+      "n_holdings": 90,
+      "top10_pct": 54.9
+    },
+    {
+      "period": "2025-12-31",
+      "value_usd": 2294142174,
+      "options_usd": 423904271,
+      "n_holdings": 87,
+      "top10_pct": 58.1
+    },
+    {
+      "period": "2026-03-31",
+      "value_usd": 1791767023,
+      "options_usd": 281249313,
+      "n_holdings": 76,
+      "top10_pct": 65.8
+    },
+    {
+      "period": "2026-06-30",
+      "value_usd": 2917195285,
+      "options_usd": 458143121,
+      "n_holdings": 82,
+      "top10_pct": 62.3
+    }
+  ],
+  "latest_holdings": [
+    {
+      "issuer": "IREN LIMITED",
+      "cusip": "Q4982L109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 321597094,
+      "shares": 7032519,
+      "pct": 11.024,
+      "share_change_pct": 7.7
+    },
+    {
+      "issuer": "AMAZON COM INC",
+      "cusip": "023135106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 222425323,
+      "shares": 933227,
+      "pct": 7.625,
+      "share_change_pct": 20.2
+    },
+    {
+      "issuer": "MICRON TECHNOLOGY INC",
+      "cusip": "595112103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 211574431,
+      "shares": 183294,
+      "pct": 7.253,
+      "share_change_pct": -40.3
+    },
+    {
+      "issuer": "ROBINHOOD MKTS INC",
+      "cusip": "770700102",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 198860655,
+      "shares": 1983054,
+      "pct": 6.817,
+      "share_change_pct": 2173.9
+    },
+    {
+      "issuer": "SANDISK CORP",
+      "cusip": "80004C200",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 194956431,
+      "shares": 85743,
+      "pct": 6.683,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "cusip": "874039100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 163912053,
+      "shares": 343221,
+      "pct": 5.619,
+      "share_change_pct": 2.4
+    },
+    {
+      "issuer": "MARVELL TECHNOLOGY INC",
+      "cusip": "573874104",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 150158902,
+      "shares": 504075,
+      "pct": 5.147,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "NAVAN INC",
+      "cusip": "639193101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 119168709,
+      "shares": 5210700,
+      "pct": 4.085,
+      "share_change_pct": 2167.5
+    },
+    {
+      "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+      "cusip": "349381103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 117686862,
+      "shares": 3832200,
+      "pct": 4.034,
+      "share_change_pct": 53.3
+    },
+    {
+      "issuer": "SILICON MOTION TECHNOLOGY CO",
+      "cusip": "82706C108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 116397169,
+      "shares": 349195,
+      "pct": 3.99,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "OSCAR HEALTH INC",
+      "cusip": "687793109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 97480134,
+      "shares": 3417957,
+      "pct": 3.342,
+      "share_change_pct": -45.9
+    },
+    {
+      "issuer": "HINGE HEALTH INC",
+      "cusip": "433313103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 95881849,
+      "shares": 1155203,
+      "pct": 3.287,
+      "share_change_pct": -50.0
+    },
+    {
+      "issuer": "FREEPORT MCMORAN INC",
+      "cusip": "35671D857",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 90560594,
+      "shares": 1439984,
+      "pct": 3.104,
+      "share_change_pct": 53.1
+    },
+    {
+      "issuer": "COMPASS PATHWAYS PLC",
+      "cusip": "20451W101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 89835478,
+      "shares": 6348797,
+      "pct": 3.08,
+      "share_change_pct": 81.8
+    },
+    {
+      "issuer": "CIENA CORP",
+      "cusip": "171779309",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 82838905,
+      "shares": 168866,
+      "pct": 2.84,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "INTEL CORP",
+      "cusip": "458140100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 80731832,
+      "shares": 578184,
+      "pct": 2.767,
+      "share_change_pct": -61.4
+    },
+    {
+      "issuer": "TERAWULF INC",
+      "cusip": "88080T104",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 69374569,
+      "shares": 2808687,
+      "pct": 2.378,
+      "share_change_pct": 14.5
+    },
+    {
+      "issuer": "NOKIA CORP",
+      "cusip": "654902204",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 61332790,
+      "shares": 4618433,
+      "pct": 2.102,
+      "share_change_pct": 36.0
+    },
+    {
+      "issuer": "NVIDIA CORPORATION",
+      "cusip": "67066G104",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 51736471,
+      "shares": 258566,
+      "pct": 1.774,
+      "share_change_pct": -47.3
+    },
+    {
+      "issuer": "HYPERLIQUID STRATEGIES INC",
+      "cusip": "44916Y106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 44886876,
+      "shares": 5703542,
+      "pct": 1.539,
+      "share_change_pct": 7029.4
+    },
+    {
+      "issuer": "KEEL INFRASTRUCTURE CORP",
+      "cusip": "486917107",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 43981229,
+      "shares": 7662235,
+      "pct": 1.508,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "SOCIEDAD QUIMICA Y MINERA DE",
+      "cusip": "833635105",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 27638836,
+      "shares": 373296,
+      "pct": 0.947,
+      "share_change_pct": 81.2
+    },
+    {
+      "issuer": "AFFIRM HLDGS INC",
+      "cusip": "00827B106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 27009360,
+      "shares": 331200,
+      "pct": 0.926,
+      "share_change_pct": 534.5
+    },
+    {
+      "issuer": "ALBEMARLE CORP",
+      "cusip": "012653101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 19568818,
+      "shares": 144922,
+      "pct": 0.671,
+      "share_change_pct": 51.6
+    },
+    {
+      "issuer": "GALAXY DIGITAL INC.",
+      "cusip": "36317J209",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 16633191,
+      "shares": 608383,
+      "pct": 0.57,
+      "share_change_pct": 163.6
+    },
+    {
+      "issuer": "CIPHER DIGITAL INC",
+      "cusip": "17253J106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 15615908,
+      "shares": 637384,
+      "pct": 0.535,
+      "share_change_pct": 6.6
+    },
+    {
+      "issuer": "HUT 8 CORP",
+      "cusip": "44812J104",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 15474363,
+      "shares": 134041,
+      "pct": 0.53,
+      "share_change_pct": -92.9
+    },
+    {
+      "issuer": "REDDIT INC",
+      "cusip": "75734B100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 15230083,
+      "shares": 87741,
+      "pct": 0.522,
+      "share_change_pct": 7205.7
+    },
+    {
+      "issuer": "CORE SCIENTIFIC INC NEW",
+      "cusip": "21874A106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 14793349,
+      "shares": 578091,
+      "pct": 0.507,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "APPLIED DIGITAL CORP",
+      "cusip": "038169207",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 14414883,
+      "shares": 386458,
+      "pct": 0.494,
+      "share_change_pct": -2.4
+    },
+    {
+      "issuer": "SEMTECH CORP",
+      "cusip": "816850101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 12138750,
+      "shares": 75000,
+      "pct": 0.416,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "IDEAYA BIOSCIENCES INC",
+      "cusip": "45166A102",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 11603381,
+      "shares": 311333,
+      "pct": 0.398,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "BITDEER TECHNOLOGIES GROUP",
+      "cusip": "G11448100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 11289188,
+      "shares": 711354,
+      "pct": 0.387,
+      "share_change_pct": 26.7
+    },
+    {
+      "issuer": "RIOT PLATFORMS INC",
+      "cusip": "767292105",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 6496453,
+      "shares": 237270,
+      "pct": 0.223,
+      "share_change_pct": -70.8
+    },
+    {
+      "issuer": "BLOOM ENERGY CORP",
+      "cusip": "093712107",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 6090627,
+      "shares": 20121,
+      "pct": 0.209,
+      "share_change_pct": -92.1
+    },
+    {
+      "issuer": "DEFINIUM THERAPEUTICS INC",
+      "cusip": "24477V105",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 6027282,
+      "shares": 128131,
+      "pct": 0.207,
+      "share_change_pct": -53.8
+    },
+    {
+      "issuer": "HIVE DIGITAL TECHNOLOGIES LT",
+      "cusip": "433921103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 5141744,
+      "shares": 1412567,
+      "pct": 0.176,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ALPHABET INC",
+      "cusip": "02079K305",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 4501075,
+      "shares": 12595,
+      "pct": 0.154,
+      "share_change_pct": -97.3
+    },
+    {
+      "issuer": "CIRCLE INTERNET GROUP INC",
+      "cusip": "172573107",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 4394434,
+      "shares": 70165,
+      "pct": 0.151,
+      "share_change_pct": 195.9
+    },
+    {
+      "issuer": "EIGHTCO HOLDINGS INC",
+      "cusip": "22890A302",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 3623874,
+      "shares": 5210458,
+      "pct": 0.124,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "UXIN LTD",
+      "cusip": "91818X306",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 3304594,
+      "shares": 2131996,
+      "pct": 0.113,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "CANADIAN SOLAR INC",
+      "cusip": "136635109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 3075616,
+      "shares": 191986,
+      "pct": 0.105,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ULTRAGENYX PHARMACEUTICAL IN",
+      "cusip": "90400D108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 3051545,
+      "shares": 91391,
+      "pct": 0.105,
+      "share_change_pct": 407.7
+    },
+    {
+      "issuer": "KASPI KZ JSC",
+      "cusip": "48581R205",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 2608904,
+      "shares": 30112,
+      "pct": 0.089,
+      "share_change_pct": -80.8
+    },
+    {
+      "issuer": "COINBASE GLOBAL INC",
+      "cusip": "19260Q107",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 2547507,
+      "shares": 17426,
+      "pct": 0.087,
+      "share_change_pct": -60.6
+    },
+    {
+      "issuer": "CLEANSPARK INC",
+      "cusip": "18452B209",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 2514487,
+      "shares": 172817,
+      "pct": 0.086,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "HIMS & HERS HEALTH INC",
+      "cusip": "433000106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 2129501,
+      "shares": 61422,
+      "pct": 0.073,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ARCUS BIOSCIENCES INC",
+      "cusip": "03969F109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1849800,
+      "shares": 60000,
+      "pct": 0.063,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ENTEGRIS INC",
+      "cusip": "29362U104",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1830255,
+      "shares": 10176,
+      "pct": 0.063,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ASTERA LABS INC",
+      "cusip": "04626A103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1785725,
+      "shares": 3697,
+      "pct": 0.061,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "IMMUNOME INC ",
+      "cusip": "45257U108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1767246,
+      "shares": 83400,
+      "pct": 0.061,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ATAIBECKLEY INC",
+      "cusip": "04650F101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1689436,
+      "shares": 320576,
+      "pct": 0.058,
+      "share_change_pct": 75.6
+    },
+    {
+      "issuer": "LUMENTUM HLDGS INC",
+      "cusip": "55024U109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1528205,
+      "shares": 1781,
+      "pct": 0.052,
+      "share_change_pct": -91.3
+    },
+    {
+      "issuer": "NEKTAR THERAPEUTICS",
+      "cusip": "640268306",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1472991,
+      "shares": 21100,
+      "pct": 0.05,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "GRINDR INC",
+      "cusip": "39854F101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1372421,
+      "shares": 95506,
+      "pct": 0.047,
+      "share_change_pct": -77.1
+    },
+    {
+      "issuer": "PERCEPTIVE CAP SOLUTIONS COR",
+      "cusip": "G70077105",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1305600,
+      "shares": 120000,
+      "pct": 0.045,
+      "share_change_pct": -83.8
+    },
+    {
+      "issuer": "IONIS PHARMACEUTICALS INC",
+      "cusip": "462222100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1292427,
+      "shares": 16300,
+      "pct": 0.044,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ALIBABA GROUP HLDG LTD",
+      "cusip": "01609W102",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1204741,
+      "shares": 12552,
+      "pct": 0.041,
+      "share_change_pct": 99.8
+    },
+    {
+      "issuer": "PALISADE BIO INC",
+      "cusip": "696389402",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1199660,
+      "shares": 574000,
+      "pct": 0.041,
+      "share_change_pct": 270.3
+    },
+    {
+      "issuer": "DIANTHUS THERAPEUTICS INC",
+      "cusip": "252828108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1169760,
+      "shares": 12000,
+      "pct": 0.04,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "REGAL REXNORD CORPORATION",
+      "cusip": "758750103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1079477,
+      "shares": 4532,
+      "pct": 0.037,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "REVOLUTION MEDICINES INC",
+      "cusip": "76155X100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1067496,
+      "shares": 5700,
+      "pct": 0.037,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "EDITAS MEDICINE INC",
+      "cusip": "28106W103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1056240,
+      "shares": 326000,
+      "pct": 0.036,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "ELEDON PHARMACEUTICALS INC",
+      "cusip": "28617K101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1048040,
+      "shares": 266000,
+      "pct": 0.036,
+      "share_change_pct": 98.5
+    },
+    {
+      "issuer": "ROCKET PHARMACEUTICALS INC ",
+      "cusip": "77313F106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 1019160,
+      "shares": 298000,
+      "pct": 0.035,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "CISCO SYS INC",
+      "cusip": "17275R102",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 999467,
+      "shares": 8509,
+      "pct": 0.034,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "APPLE INC",
+      "cusip": "037833100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 973118,
+      "shares": 3363,
+      "pct": 0.033,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "NETFLIX INC.",
+      "cusip": "64110L106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 859299,
+      "shares": 12035,
+      "pct": 0.029,
+      "share_change_pct": 73.5
+    },
+    {
+      "issuer": "TREVI THERAPEUTICS INC",
+      "cusip": "89532M101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 839250,
+      "shares": 45000,
+      "pct": 0.029,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "ARM HOLDINGS PLC",
+      "cusip": "042068205",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 817284,
+      "shares": 2305,
+      "pct": 0.028,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "VIR BIOTECHNOLOGY INC",
+      "cusip": "92764N102",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 815200,
+      "shares": 80000,
+      "pct": 0.028,
+      "share_change_pct": 166.7
+    },
+    {
+      "issuer": "RUBRIK INC.",
+      "cusip": "781154109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 683825,
+      "shares": 8518,
+      "pct": 0.023,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "AGNICO EAGLE MINES LTD",
+      "cusip": "008474108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 677608,
+      "shares": 4368,
+      "pct": 0.023,
+      "share_change_pct": -77.0
+    },
+    {
+      "issuer": "COSTCO WHOLESALE CORPORATION",
+      "cusip": "22160K105",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 652958,
+      "shares": 698,
+      "pct": 0.022,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "PMV PHARMACEUTICALS INC ",
+      "cusip": "69353Y103",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 546124,
+      "shares": 407555,
+      "pct": 0.019,
+      "share_change_pct": 229.9
+    },
+    {
+      "issuer": "ALLOGENE THERAPEUTICS INC",
+      "cusip": "019770106",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 478400,
+      "shares": 230000,
+      "pct": 0.016,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "NEBIUS GROUP N.V.",
+      "cusip": "N97284108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 435796,
+      "shares": 1578,
+      "pct": 0.015,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "DYNE THERAPEUTICS INC",
+      "cusip": "26818M108",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 348697,
+      "shares": 15700,
+      "pct": 0.012,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "KINIKSA PHARMACEUTICALS INTL",
+      "cusip": "G52694109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 328575,
+      "shares": 5138,
+      "pct": 0.011,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "AMERICAN ELEC PWR CO INC",
+      "cusip": "025537101",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 300024,
+      "shares": 2193,
+      "pct": 0.01,
+      "share_change_pct": 0.0
+    },
+    {
+      "issuer": "XOMETRY INC",
+      "cusip": "98423F109",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 257033,
+      "shares": 2663,
+      "pct": 0.009,
+      "share_change_pct": null
+    },
+    {
+      "issuer": "KLA CORP",
+      "cusip": "482480100",
+      "kind": "common",
+      "put_call": null,
+      "value_usd": 147838,
+      "shares": 490,
+      "pct": 0.005,
+      "share_change_pct": null
+    }
+  ],
+  "latest_options": [
+    {
+      "issuer": "AMAZON COM INC",
+      "cusip": "023135106",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 329266710,
+      "shares": 1381500
+    },
+    {
+      "issuer": "IREN LIMITED",
+      "cusip": "Q4982L109",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 35861466,
+      "shares": 784200
+    },
+    {
+      "issuer": "STRATEGY INC",
+      "cusip": "594972408",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 25540034,
+      "shares": 293800
+    },
+    {
+      "issuer": "ROBINHOOD MKTS INC",
+      "cusip": "770700102",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 17398580,
+      "shares": 173500
+    },
+    {
+      "issuer": "CIRCLE INTERNET GROUP INC",
+      "cusip": "172573107",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 13778600,
+      "shares": 220000
+    },
+    {
+      "issuer": "MICROSOFT CORP",
+      "cusip": "594918104",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 7087380,
+      "shares": 19000
+    },
+    {
+      "issuer": "COINBASE GLOBAL INC",
+      "cusip": "19260Q107",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 6578550,
+      "shares": 45000
+    },
+    {
+      "issuer": "BROADCOM INC",
+      "cusip": "11135F101",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 6044000,
+      "shares": 16000
+    },
+    {
+      "issuer": "ALPHABET INC",
+      "cusip": "02079K305",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 5003180,
+      "shares": 14000
+    },
+    {
+      "issuer": "CISCO SYS INC",
+      "cusip": "17275R102",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 3817450,
+      "shares": 32500
+    },
+    {
+      "issuer": "INTEL CORP",
+      "cusip": "458140100",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 3490750,
+      "shares": 25000
+    },
+    {
+      "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+      "cusip": "349381103",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 3071000,
+      "shares": 100000
+    },
+    {
+      "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "cusip": "874039100",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 1193925,
+      "shares": 2500
+    },
+    {
+      "issuer": "GRINDR INC",
+      "cusip": "39854F101",
+      "kind": "option",
+      "put_call": "Call",
+      "value_usd": 11496,
+      "shares": 800
+    }
+  ],
+  "quarters": [
+    {
+      "period": "2020-09-30",
+      "entries": [
+        {
+          "issuer": "FIVERR INTL LTD",
+          "value_usd": 27498583,
+          "pct": 7.972
+        },
+        {
+          "issuer": "YANDEX N V",
+          "value_usd": 24338250,
+          "pct": 7.055
+        },
+        {
+          "issuer": "FASTLY INC",
+          "value_usd": 23597992,
+          "pct": 6.841
+        },
+        {
+          "issuer": "FARFETCH LTD",
+          "value_usd": 8063780,
+          "pct": 2.338
+        },
+        {
+          "issuer": "UPWORK INC",
+          "value_usd": 4935520,
+          "pct": 1.431
+        },
+        {
+          "issuer": "PELOTON INTERACTIVE INC",
+          "value_usd": 4416180,
+          "pct": 1.28
+        },
+        {
+          "issuer": "ATLASSIAN CORP PLC",
+          "value_usd": 3481279,
+          "pct": 1.009
+        },
+        {
+          "issuer": "INTUITIVE SURGICAL INC",
+          "value_usd": 3320647,
+          "pct": 0.963
+        },
+        {
+          "issuer": "TWILIO INC",
+          "value_usd": 3184990,
+          "pct": 0.923
+        },
+        {
+          "issuer": "APPFOLIO INC",
+          "value_usd": 2978010,
+          "pct": 0.863
+        },
+        {
+          "issuer": "MONGODB INC",
+          "value_usd": 2914711,
+          "pct": 0.845
+        },
+        {
+          "issuer": "BOX INC",
+          "value_usd": 2812320,
+          "pct": 0.815
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "DOCUSIGN INC",
+          "value_usd": 10984587,
+          "pct": 5.094
+        },
+        {
+          "issuer": "YOUDAO INC",
+          "value_usd": 7312500,
+          "pct": 3.391
+        },
+        {
+          "issuer": "VIPSHOP GOLDING LIMITED",
+          "value_usd": 3187969,
+          "pct": 1.478
+        },
+        {
+          "issuer": "PAYLOCITY HLDG CORP",
+          "value_usd": 2074118,
+          "pct": 0.962
+        },
+        {
+          "issuer": "RINGCENTRAL INC",
+          "value_usd": 2042097,
+          "pct": 0.947
+        },
+        {
+          "issuer": "PAYCOM SOFTWARE INC",
+          "value_usd": 1664179,
+          "pct": 0.772
+        },
+        {
+          "issuer": "MATCH GROUP INC",
+          "value_usd": 1466585,
+          "pct": 0.68
+        },
+        {
+          "issuer": "FIREEYE INC",
+          "value_usd": 1278885,
+          "pct": 0.593
+        },
+        {
+          "issuer": "SHOPIFY INC",
+          "value_usd": 949200,
+          "pct": 0.44
+        },
+        {
+          "issuer": "SALESFORCE COM INC",
+          "value_usd": 584282,
+          "pct": 0.271
+        },
+        {
+          "issuer": "FORRESTER RESH INC",
+          "value_usd": 567108,
+          "pct": 0.263
+        },
+        {
+          "issuer": "RUBICON PROJ INC",
+          "value_usd": 373683,
+          "pct": 0.173
+        }
+      ],
+      "n_entries": 21,
+      "n_exits": 13,
+      "name_turnover_pct": 72.5
+    },
+    {
+      "period": "2020-12-31",
+      "entries": [
+        {
+          "issuer": "FUTU HLDGS LTD",
+          "value_usd": 78693843,
+          "pct": 12.001
+        },
+        {
+          "issuer": "SHOPIFY INC",
+          "value_usd": 27356968,
+          "pct": 4.172
+        },
+        {
+          "issuer": "UPSTART HLDGS INC",
+          "value_usd": 22227169,
+          "pct": 3.39
+        },
+        {
+          "issuer": "DOCUSIGN INC",
+          "value_usd": 12461027,
+          "pct": 1.9
+        },
+        {
+          "issuer": "ACTIVISION BLIZZARD INC",
+          "value_usd": 8061701,
+          "pct": 1.229
+        },
+        {
+          "issuer": "LULULEMON ATHLETICA INC",
+          "value_usd": 5928691,
+          "pct": 0.904
+        },
+        {
+          "issuer": "ZSCALER INC",
+          "value_usd": 4443548,
+          "pct": 0.678
+        },
+        {
+          "issuer": "UP FINTECH HLDG LTD",
+          "value_usd": 4390026,
+          "pct": 0.669
+        },
+        {
+          "issuer": "SMARTSHEET INC",
+          "value_usd": 3235843,
+          "pct": 0.493
+        },
+        {
+          "issuer": "AKAMAI TECHNOLOGIES INC",
+          "value_usd": 3133952,
+          "pct": 0.478
+        },
+        {
+          "issuer": "CROWDSTRIKE HLDGS INC",
+          "value_usd": 3050208,
+          "pct": 0.465
+        },
+        {
+          "issuer": "ALTERYX INC",
+          "value_usd": 2996034,
+          "pct": 0.457
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "YANDEX N V",
+          "value_usd": 24338250,
+          "pct": 7.055
+        },
+        {
+          "issuer": "SMILEDIRECTCLUB INC",
+          "value_usd": 3556560,
+          "pct": 1.031
+        },
+        {
+          "issuer": "ATLASSIAN CORP PLC",
+          "value_usd": 3481279,
+          "pct": 1.009
+        },
+        {
+          "issuer": "APPFOLIO INC",
+          "value_usd": 2978010,
+          "pct": 0.863
+        },
+        {
+          "issuer": "MONGODB INC",
+          "value_usd": 2914711,
+          "pct": 0.845
+        },
+        {
+          "issuer": "SLACK TECHNOLOGIES INC",
+          "value_usd": 2309960,
+          "pct": 0.67
+        },
+        {
+          "issuer": "NUTANIX INC",
+          "value_usd": 2082702,
+          "pct": 0.604
+        },
+        {
+          "issuer": "PLURALSIGHT INC",
+          "value_usd": 1870596,
+          "pct": 0.542
+        },
+        {
+          "issuer": "NEW RELIC INC",
+          "value_usd": 1823246,
+          "pct": 0.529
+        },
+        {
+          "issuer": "GUIDEWIRE SOFTWARE INC",
+          "value_usd": 1710028,
+          "pct": 0.496
+        },
+        {
+          "issuer": "PAYSIGN INC",
+          "value_usd": 705456,
+          "pct": 0.205
+        },
+        {
+          "issuer": "LIVONGO HEALTH INC",
+          "value_usd": 623223,
+          "pct": 0.181
+        }
+      ],
+      "n_entries": 13,
+      "n_exits": 16,
+      "name_turnover_pct": 65.3
+    },
+    {
+      "period": "2021-03-31",
+      "entries": [
+        {
+          "issuer": "ETSY INC",
+          "value_usd": 47580003,
+          "pct": 3.745
+        },
+        {
+          "issuer": "360 DIGITECH INC",
+          "value_usd": 44818351,
+          "pct": 3.527
+        },
+        {
+          "issuer": "MAKEMYTRIP LIMITED MAURITIUS",
+          "value_usd": 41369011,
+          "pct": 3.256
+        },
+        {
+          "issuer": "SILVERGATE CAP CORP",
+          "value_usd": 40048578,
+          "pct": 3.152
+        },
+        {
+          "issuer": "FINVOLUTION GROUP",
+          "value_usd": 32429171,
+          "pct": 2.552
+        },
+        {
+          "issuer": "VIPSHOP HOLDINGS LIMITED",
+          "value_usd": 23632697,
+          "pct": 1.86
+        },
+        {
+          "issuer": "BOOKING HOLDINGS INC",
+          "value_usd": 22669343,
+          "pct": 1.784
+        },
+        {
+          "issuer": "LENDINGCLUB CORP",
+          "value_usd": 19852827,
+          "pct": 1.562
+        },
+        {
+          "issuer": "EVERBRIDGE INC",
+          "value_usd": 12362178,
+          "pct": 0.973
+        },
+        {
+          "issuer": "PAYPAL HLDGS INC",
+          "value_usd": 9227920,
+          "pct": 0.726
+        },
+        {
+          "issuer": "ENOVA INTL INC",
+          "value_usd": 8978391,
+          "pct": 0.707
+        },
+        {
+          "issuer": "OZON HLDGS PLC",
+          "value_usd": 7697290,
+          "pct": 0.606
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "FARFETCH LTD",
+          "value_usd": 32557457,
+          "pct": 4.965
+        },
+        {
+          "issuer": "DOCUSIGN INC",
+          "value_usd": 12461027,
+          "pct": 1.9
+        },
+        {
+          "issuer": "ACTIVISION BLIZZARD INC",
+          "value_usd": 8061701,
+          "pct": 1.229
+        },
+        {
+          "issuer": "LULULEMON ATHLETICA INC",
+          "value_usd": 5928691,
+          "pct": 0.904
+        },
+        {
+          "issuer": "BOX INC",
+          "value_usd": 5873921,
+          "pct": 0.896
+        },
+        {
+          "issuer": "AGORA INC",
+          "value_usd": 4664124,
+          "pct": 0.711
+        },
+        {
+          "issuer": "SMARTSHEET INC",
+          "value_usd": 3235843,
+          "pct": 0.493
+        },
+        {
+          "issuer": "AKAMAI TECHNOLOGIES INC",
+          "value_usd": 3133952,
+          "pct": 0.478
+        },
+        {
+          "issuer": "ALTERYX INC",
+          "value_usd": 2996034,
+          "pct": 0.457
+        },
+        {
+          "issuer": "NIO INC",
+          "value_usd": 2354484,
+          "pct": 0.359
+        },
+        {
+          "issuer": "TAL EDUCATION GROUP",
+          "value_usd": 2116696,
+          "pct": 0.323
+        },
+        {
+          "issuer": "SERVICENOW INC",
+          "value_usd": 1431118,
+          "pct": 0.218
+        }
+      ],
+      "n_entries": 32,
+      "n_exits": 15,
+      "name_turnover_pct": 67.2
+    },
+    {
+      "period": "2021-06-30",
+      "entries": [
+        {
+          "issuer": "COINBASE GLOBAL INC COM CL A",
+          "value_usd": 120428952,
+          "pct": 7.085
+        },
+        {
+          "issuer": "FARFETCH LTD",
+          "value_usd": 72018829,
+          "pct": 4.237
+        },
+        {
+          "issuer": "BUMBLE INC",
+          "value_usd": 31281984,
+          "pct": 1.84
+        },
+        {
+          "issuer": "PALO ALTO NETWORKS INC",
+          "value_usd": 29544856,
+          "pct": 1.738
+        },
+        {
+          "issuer": "NCINO INC ",
+          "value_usd": 20616075,
+          "pct": 1.213
+        },
+        {
+          "issuer": "LEXINFINTECH HLDGS LTD",
+          "value_usd": 18046333,
+          "pct": 1.062
+        },
+        {
+          "issuer": "CARVANA CO",
+          "value_usd": 17176576,
+          "pct": 1.011
+        },
+        {
+          "issuer": "ASANA INC",
+          "value_usd": 12213707,
+          "pct": 0.719
+        },
+        {
+          "issuer": "SNOWFLAKE INC",
+          "value_usd": 9360078,
+          "pct": 0.551
+        },
+        {
+          "issuer": "ROKU INC",
+          "value_usd": 6762456,
+          "pct": 0.398
+        },
+        {
+          "issuer": "KANZHUN LIMITED",
+          "value_usd": 5511350,
+          "pct": 0.324
+        },
+        {
+          "issuer": "MIMECAST LTD",
+          "value_usd": 4245061,
+          "pct": 0.25
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "PINDUODUO INC",
+          "value_usd": 38309093,
+          "pct": 3.015
+        },
+        {
+          "issuer": "VIPSHOP HOLDINGS LIMITED",
+          "value_usd": 23632697,
+          "pct": 1.86
+        },
+        {
+          "issuer": "EVERBRIDGE INC",
+          "value_usd": 12362178,
+          "pct": 0.973
+        },
+        {
+          "issuer": "TWILIO INC",
+          "value_usd": 5809958,
+          "pct": 0.457
+        },
+        {
+          "issuer": "PROOFPOINT INC",
+          "value_usd": 5627845,
+          "pct": 0.443
+        },
+        {
+          "issuer": "DOMO INC",
+          "value_usd": 3317789,
+          "pct": 0.261
+        },
+        {
+          "issuer": "EXTREME NETWORKS INC",
+          "value_usd": 2724663,
+          "pct": 0.214
+        },
+        {
+          "issuer": "FASTLY INC",
+          "value_usd": 698030,
+          "pct": 0.055
+        },
+        {
+          "issuer": "LEAF GROUP LTD",
+          "value_usd": 548779,
+          "pct": 0.043
+        },
+        {
+          "issuer": "FORRESTER RESH INC",
+          "value_usd": 535248,
+          "pct": 0.042
+        }
+      ],
+      "n_entries": 32,
+      "n_exits": 10,
+      "name_turnover_pct": 37.0
+    },
+    {
+      "period": "2021-09-30",
+      "entries": [
+        {
+          "issuer": "ROBINHOOD MKTS INC",
+          "value_usd": 16774982,
+          "pct": 0.976
+        },
+        {
+          "issuer": "SALESFORCE COM INC",
+          "value_usd": 13226857,
+          "pct": 0.77
+        },
+        {
+          "issuer": "NUTANIX INC",
+          "value_usd": 6767150,
+          "pct": 0.394
+        },
+        {
+          "issuer": "DYNATRACE INC",
+          "value_usd": 6581403,
+          "pct": 0.383
+        },
+        {
+          "issuer": "PING IDENTITY HLDG CORP",
+          "value_usd": 5970756,
+          "pct": 0.347
+        },
+        {
+          "issuer": "ANAPLAN INC",
+          "value_usd": 5722138,
+          "pct": 0.333
+        },
+        {
+          "issuer": "ALLIANCE DATA SYSTEMS CORP",
+          "value_usd": 4883782,
+          "pct": 0.284
+        },
+        {
+          "issuer": "CARDLYTICS INC",
+          "value_usd": 4634747,
+          "pct": 0.27
+        },
+        {
+          "issuer": "SPOTIFY TECHNOLOGY S A",
+          "value_usd": 4516940,
+          "pct": 0.263
+        },
+        {
+          "issuer": "DATADOG INC",
+          "value_usd": 4250819,
+          "pct": 0.247
+        },
+        {
+          "issuer": "MODERNA INC",
+          "value_usd": 3290938,
+          "pct": 0.192
+        },
+        {
+          "issuer": "SOFI TECHNOLOGIES INC",
+          "value_usd": 3191562,
+          "pct": 0.186
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "PELOTON INTERACTIVE INC",
+          "value_usd": 40500591,
+          "pct": 2.383
+        },
+        {
+          "issuer": "BUMBLE INC",
+          "value_usd": 31281984,
+          "pct": 1.84
+        },
+        {
+          "issuer": "BOOKING HOLDINGS INC",
+          "value_usd": 22362280,
+          "pct": 1.316
+        },
+        {
+          "issuer": "CARVANA CO",
+          "value_usd": 17176576,
+          "pct": 1.011
+        },
+        {
+          "issuer": "OZON HLDGS PLC",
+          "value_usd": 11966687,
+          "pct": 0.704
+        },
+        {
+          "issuer": "ROKU INC",
+          "value_usd": 6762456,
+          "pct": 0.398
+        },
+        {
+          "issuer": "KANZHUN LIMITED",
+          "value_usd": 5511350,
+          "pct": 0.324
+        },
+        {
+          "issuer": "CROWDSTRIKE HLDGS INC",
+          "value_usd": 5274997,
+          "pct": 0.31
+        },
+        {
+          "issuer": "LENDINGCLUB CORP",
+          "value_usd": 4908154,
+          "pct": 0.289
+        },
+        {
+          "issuer": "ENOVA INTL INC",
+          "value_usd": 4670520,
+          "pct": 0.275
+        },
+        {
+          "issuer": "MIMECAST LTD",
+          "value_usd": 4245061,
+          "pct": 0.25
+        },
+        {
+          "issuer": "DOCEBO INC",
+          "value_usd": 4101109,
+          "pct": 0.241
+        }
+      ],
+      "n_entries": 37,
+      "n_exits": 27,
+      "name_turnover_pct": 17.1
+    },
+    {
+      "period": "2021-12-31",
+      "entries": [
+        {
+          "issuer": "OPENDOOR TECHNOLOGIES INC",
+          "value_usd": 170284649,
+          "pct": 13.184
+        },
+        {
+          "issuer": "OKTA INC",
+          "value_usd": 11626129,
+          "pct": 0.9
+        },
+        {
+          "issuer": "AMPLITUDE INC",
+          "value_usd": 9410297,
+          "pct": 0.729
+        },
+        {
+          "issuer": "RAPID7 INC",
+          "value_usd": 5326179,
+          "pct": 0.412
+        },
+        {
+          "issuer": "GREENIDGE GENERATION HLDGS I",
+          "value_usd": 5123026,
+          "pct": 0.397
+        },
+        {
+          "issuer": "PELOTON INTERACTIVE INC",
+          "value_usd": 5113823,
+          "pct": 0.396
+        },
+        {
+          "issuer": "GOPRO INC",
+          "value_usd": 4953749,
+          "pct": 0.384
+        },
+        {
+          "issuer": "CROWDSTRIKE HLDGS INC",
+          "value_usd": 4613427,
+          "pct": 0.357
+        },
+        {
+          "issuer": "V F CORP",
+          "value_usd": 4320932,
+          "pct": 0.335
+        },
+        {
+          "issuer": "GLOBAL E ONLINE LTD",
+          "value_usd": 3828439,
+          "pct": 0.296
+        },
+        {
+          "issuer": "NEWELL BRANDS INC",
+          "value_usd": 3589622,
+          "pct": 0.278
+        },
+        {
+          "issuer": "UNITEDHEALTH GROUP INC",
+          "value_usd": 3423088,
+          "pct": 0.265
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "SNAP INC",
+          "value_usd": 14525575,
+          "pct": 0.845
+        },
+        {
+          "issuer": "LEXINFINTECH HLDGS LTD",
+          "value_usd": 8196477,
+          "pct": 0.477
+        },
+        {
+          "issuer": "NUTANIX INC",
+          "value_usd": 6767150,
+          "pct": 0.394
+        },
+        {
+          "issuer": "DYNATRACE INC",
+          "value_usd": 6581403,
+          "pct": 0.383
+        },
+        {
+          "issuer": "ANAPLAN INC",
+          "value_usd": 5722138,
+          "pct": 0.333
+        },
+        {
+          "issuer": "ALLIANCE DATA SYSTEMS CORP",
+          "value_usd": 4883782,
+          "pct": 0.284
+        },
+        {
+          "issuer": "CARDLYTICS INC",
+          "value_usd": 4634747,
+          "pct": 0.27
+        },
+        {
+          "issuer": "SPOTIFY TECHNOLOGY S A",
+          "value_usd": 4516940,
+          "pct": 0.263
+        },
+        {
+          "issuer": "MODERNA INC",
+          "value_usd": 3290938,
+          "pct": 0.192
+        },
+        {
+          "issuer": "TIO TECH A",
+          "value_usd": 2922000,
+          "pct": 0.17
+        },
+        {
+          "issuer": "SIMILARWEB LTD",
+          "value_usd": 2730319,
+          "pct": 0.159
+        },
+        {
+          "issuer": "TERADATA CORP DEL",
+          "value_usd": 2083239,
+          "pct": 0.121
+        }
+      ],
+      "n_entries": 67,
+      "n_exits": 24,
+      "name_turnover_pct": 20.0
+    },
+    {
+      "period": "2022-03-31",
+      "entries": [
+        {
+          "issuer": "DUOLINGO INC",
+          "value_usd": 61971108,
+          "pct": 6.362
+        },
+        {
+          "issuer": "AIRBNB INC",
+          "value_usd": 30031549,
+          "pct": 3.083
+        },
+        {
+          "issuer": "OFFERPAD SOLUTIONS INC",
+          "value_usd": 5709805,
+          "pct": 0.586
+        },
+        {
+          "issuer": "OSCAR HEALTH INC",
+          "value_usd": 4707535,
+          "pct": 0.483
+        },
+        {
+          "issuer": "CORE SCIENTIFIC INC",
+          "value_usd": 4492123,
+          "pct": 0.461
+        },
+        {
+          "issuer": "VARONIS SYS INC",
+          "value_usd": 3989699,
+          "pct": 0.41
+        },
+        {
+          "issuer": "CHEGG INC",
+          "value_usd": 3967182,
+          "pct": 0.407
+        },
+        {
+          "issuer": "TRIPADVISOR INC",
+          "value_usd": 3508867,
+          "pct": 0.36
+        },
+        {
+          "issuer": "EVENTBRITE INC",
+          "value_usd": 2806832,
+          "pct": 0.288
+        },
+        {
+          "issuer": "TIO TECH A",
+          "value_usd": 2342529,
+          "pct": 0.24
+        },
+        {
+          "issuer": "PAGERDUTY INC",
+          "value_usd": 1744100,
+          "pct": 0.179
+        },
+        {
+          "issuer": "RAYTHEON TECHNOLOGIES COR",
+          "value_usd": 1436515,
+          "pct": 0.147
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 13191877,
+          "pct": 1.021
+        },
+        {
+          "issuer": "AMPLITUDE INC",
+          "value_usd": 9410297,
+          "pct": 0.729
+        },
+        {
+          "issuer": "RAPID7 INC",
+          "value_usd": 5326179,
+          "pct": 0.412
+        },
+        {
+          "issuer": "GOPRO INC",
+          "value_usd": 4953749,
+          "pct": 0.384
+        },
+        {
+          "issuer": "V F CORP",
+          "value_usd": 4320932,
+          "pct": 0.335
+        },
+        {
+          "issuer": "GLOBAL E ONLINE LTD",
+          "value_usd": 3828439,
+          "pct": 0.296
+        },
+        {
+          "issuer": "NEWELL BRANDS INC",
+          "value_usd": 3589622,
+          "pct": 0.278
+        },
+        {
+          "issuer": "MYNARIC AG",
+          "value_usd": 2925600,
+          "pct": 0.227
+        },
+        {
+          "issuer": "POWER & DIGITAL INFRA ACQ CO",
+          "value_usd": 2749899,
+          "pct": 0.213
+        },
+        {
+          "issuer": "ASPEN TECHNOLOGY INC",
+          "value_usd": 2357274,
+          "pct": 0.183
+        },
+        {
+          "issuer": "PTC INC",
+          "value_usd": 2336378,
+          "pct": 0.181
+        },
+        {
+          "issuer": "TERADYNE INC",
+          "value_usd": 1700712,
+          "pct": 0.132
+        }
+      ],
+      "n_entries": 42,
+      "n_exits": 33,
+      "name_turnover_pct": 16.3
+    },
+    {
+      "period": "2022-06-30",
+      "entries": [
+        {
+          "issuer": "SERVICENOW INC",
+          "value_usd": 22914833,
+          "pct": 3.366
+        },
+        {
+          "issuer": "CREDICORP LTD",
+          "value_usd": 3069576,
+          "pct": 0.451
+        },
+        {
+          "issuer": "SIGNATURE BK NEW YORK N Y",
+          "value_usd": 2109660,
+          "pct": 0.31
+        },
+        {
+          "issuer": "SHOALS TECHNOLOGIES GROUP IN",
+          "value_usd": 2024964,
+          "pct": 0.297
+        },
+        {
+          "issuer": "IRIS ENERGY LTD",
+          "value_usd": 1380592,
+          "pct": 0.203
+        },
+        {
+          "issuer": "XPENG INC",
+          "value_usd": 1379420,
+          "pct": 0.203
+        },
+        {
+          "issuer": "ARRAY TECHNOLOGIES INC",
+          "value_usd": 1194750,
+          "pct": 0.176
+        },
+        {
+          "issuer": "GENERAC HLDGS INC",
+          "value_usd": 1104703,
+          "pct": 0.162
+        },
+        {
+          "issuer": "HYZON MOTORS INC",
+          "value_usd": 1056224,
+          "pct": 0.155
+        },
+        {
+          "issuer": "SPS COMM INC",
+          "value_usd": 1003658,
+          "pct": 0.147
+        },
+        {
+          "issuer": "AVALARA INC",
+          "value_usd": 912717,
+          "pct": 0.134
+        },
+        {
+          "issuer": "FORTINET INC",
+          "value_usd": 861996,
+          "pct": 0.127
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "PINDUODUO INC",
+          "value_usd": 10047475,
+          "pct": 1.031
+        },
+        {
+          "issuer": "SHOPIFY INC",
+          "value_usd": 7692425,
+          "pct": 0.79
+        },
+        {
+          "issuer": "INTERACTIVE BROKERS GROUP IN",
+          "value_usd": 5163983,
+          "pct": 0.53
+        },
+        {
+          "issuer": "TENABLE HLDGS INC",
+          "value_usd": 4101125,
+          "pct": 0.421
+        },
+        {
+          "issuer": "VARONIS SYS INC",
+          "value_usd": 3989699,
+          "pct": 0.41
+        },
+        {
+          "issuer": "CHEGG INC",
+          "value_usd": 3967182,
+          "pct": 0.407
+        },
+        {
+          "issuer": "BOOKING HOLDINGS INC",
+          "value_usd": 3945396,
+          "pct": 0.405
+        },
+        {
+          "issuer": "TRIPADVISOR INC",
+          "value_usd": 3508867,
+          "pct": 0.36
+        },
+        {
+          "issuer": "ZSCALER INC",
+          "value_usd": 3208783,
+          "pct": 0.329
+        },
+        {
+          "issuer": "COURSERA INC",
+          "value_usd": 3180465,
+          "pct": 0.326
+        },
+        {
+          "issuer": "EVENTBRITE INC",
+          "value_usd": 2806832,
+          "pct": 0.288
+        },
+        {
+          "issuer": "TIO TECH A",
+          "value_usd": 2342529,
+          "pct": 0.24
+        }
+      ],
+      "n_entries": 27,
+      "n_exits": 74,
+      "name_turnover_pct": 12.0
+    },
+    {
+      "period": "2022-09-30",
+      "entries": [
+        {
+          "issuer": "MONDAY COM LTD",
+          "value_usd": 46466340,
+          "pct": 8.934
+        },
+        {
+          "issuer": "REMITLY GLOBAL INC",
+          "value_usd": 3888086,
+          "pct": 0.748
+        },
+        {
+          "issuer": "ZILLOW GROUP INC",
+          "value_usd": 2343022,
+          "pct": 0.451
+        },
+        {
+          "issuer": "ESS TECH INC",
+          "value_usd": 1571611,
+          "pct": 0.302
+        },
+        {
+          "issuer": "SUNNOVA ENERGY INTL INC.",
+          "value_usd": 1141050,
+          "pct": 0.219
+        },
+        {
+          "issuer": "SUNRUN INC",
+          "value_usd": 1104483,
+          "pct": 0.212
+        },
+        {
+          "issuer": "CLEANSPARK INC",
+          "value_usd": 868156,
+          "pct": 0.167
+        },
+        {
+          "issuer": "EATON CORP PLC",
+          "value_usd": 764553,
+          "pct": 0.147
+        },
+        {
+          "issuer": "DARLING INGREDIENTS INC",
+          "value_usd": 716140,
+          "pct": 0.138
+        },
+        {
+          "issuer": "AEMETIS INC",
+          "value_usd": 712539,
+          "pct": 0.137
+        },
+        {
+          "issuer": "ENPHASE ENERGY INC",
+          "value_usd": 695340,
+          "pct": 0.134
+        },
+        {
+          "issuer": "NXP SEMICONDUCTORS N V",
+          "value_usd": 639308,
+          "pct": 0.123
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 29936495,
+          "pct": 4.398
+        },
+        {
+          "issuer": "UP FINTECH HLDG LTD",
+          "value_usd": 8789114,
+          "pct": 1.291
+        },
+        {
+          "issuer": "SVB FINANCIAL GROUP",
+          "value_usd": 7680186,
+          "pct": 1.128
+        },
+        {
+          "issuer": "SEA LTD",
+          "value_usd": 3201123,
+          "pct": 0.47
+        },
+        {
+          "issuer": "CARVANA CO                                                                      ",
+          "value_usd": 2868383,
+          "pct": 0.421
+        },
+        {
+          "issuer": "APPLE INC                                                                       ",
+          "value_usd": 2679028,
+          "pct": 0.394
+        },
+        {
+          "issuer": "CANAAN INC",
+          "value_usd": 2403943,
+          "pct": 0.353
+        },
+        {
+          "issuer": "AIRBNB INC",
+          "value_usd": 2209273,
+          "pct": 0.325
+        },
+        {
+          "issuer": "OSCAR HEALTH INC",
+          "value_usd": 2006723,
+          "pct": 0.295
+        },
+        {
+          "issuer": "MERCADOLIBRE INC",
+          "value_usd": 1092869,
+          "pct": 0.161
+        },
+        {
+          "issuer": "UPSTART HLDGS INC",
+          "value_usd": 1032045,
+          "pct": 0.152
+        },
+        {
+          "issuer": "SPS COMM INC",
+          "value_usd": 1003658,
+          "pct": 0.147
+        }
+      ],
+      "n_entries": 52,
+      "n_exits": 31,
+      "name_turnover_pct": 21.9
+    },
+    {
+      "period": "2022-12-31",
+      "entries": [
+        {
+          "issuer": "UBER TECHNOLOGIES INC",
+          "value_usd": 26514146,
+          "pct": 5.512
+        },
+        {
+          "issuer": "SEA LTD",
+          "value_usd": 5949370,
+          "pct": 1.237
+        },
+        {
+          "issuer": "HIMS & HERS HEALTH INC",
+          "value_usd": 5782653,
+          "pct": 1.202
+        },
+        {
+          "issuer": "AIRBNB INC",
+          "value_usd": 4341434,
+          "pct": 0.902
+        },
+        {
+          "issuer": "TESLA INC",
+          "value_usd": 1668966,
+          "pct": 0.347
+        },
+        {
+          "issuer": "CHART INDS INC",
+          "value_usd": 1160942,
+          "pct": 0.241
+        },
+        {
+          "issuer": "INTER & CO INC",
+          "value_usd": 1157354,
+          "pct": 0.241
+        },
+        {
+          "issuer": "NEW FORTRESS ENERGY INC",
+          "value_usd": 1077595,
+          "pct": 0.224
+        },
+        {
+          "issuer": "FARFETCH LTD",
+          "value_usd": 1050060,
+          "pct": 0.218
+        },
+        {
+          "issuer": "THE LION ELECTRIC COMPANY",
+          "value_usd": 975625,
+          "pct": 0.203
+        },
+        {
+          "issuer": "GREEN PLAINS INC",
+          "value_usd": 799436,
+          "pct": 0.166
+        },
+        {
+          "issuer": "THOUGHTWORKS HOLDING INC",
+          "value_usd": 629732,
+          "pct": 0.131
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "SNOWFLAKE INC",
+          "value_usd": 6692005,
+          "pct": 1.287
+        },
+        {
+          "issuer": "ZILLOW GROUP INC",
+          "value_usd": 2343022,
+          "pct": 0.451
+        },
+        {
+          "issuer": "ESS TECH INC",
+          "value_usd": 1571611,
+          "pct": 0.302
+        },
+        {
+          "issuer": "SOLAREDGE TECHNOLOGIES INC",
+          "value_usd": 1131376,
+          "pct": 0.218
+        },
+        {
+          "issuer": "CORE SCIENTIFIC INC",
+          "value_usd": 811922,
+          "pct": 0.156
+        },
+        {
+          "issuer": "EATON CORP PLC",
+          "value_usd": 764553,
+          "pct": 0.147
+        },
+        {
+          "issuer": "DARLING INGREDIENTS INC",
+          "value_usd": 716140,
+          "pct": 0.138
+        },
+        {
+          "issuer": "AEMETIS INC",
+          "value_usd": 712539,
+          "pct": 0.137
+        },
+        {
+          "issuer": "ENPHASE ENERGY INC",
+          "value_usd": 695340,
+          "pct": 0.134
+        },
+        {
+          "issuer": "CONFLUENT INC",
+          "value_usd": 682294,
+          "pct": 0.131
+        },
+        {
+          "issuer": "CLEARWAY ENERGY INC",
+          "value_usd": 624777,
+          "pct": 0.12
+        },
+        {
+          "issuer": "KNOWBE4 INC",
+          "value_usd": 528220,
+          "pct": 0.102
+        }
+      ],
+      "n_entries": 48,
+      "n_exits": 49,
+      "name_turnover_pct": 17.9
+    },
+    {
+      "period": "2023-03-31",
+      "entries": [
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 17236503,
+          "pct": 2.688
+        },
+        {
+          "issuer": "CRITEO S A",
+          "value_usd": 8057719,
+          "pct": 1.256
+        },
+        {
+          "issuer": "PAGAYA TECHNOLOGIES LTD",
+          "value_usd": 5078363,
+          "pct": 0.792
+        },
+        {
+          "issuer": "BAIDU ONC",
+          "value_usd": 3352990,
+          "pct": 0.523
+        },
+        {
+          "issuer": "MARVELL TECHNOLOGY INC",
+          "value_usd": 2087363,
+          "pct": 0.325
+        },
+        {
+          "issuer": "CIPHER MINING INC",
+          "value_usd": 1934671,
+          "pct": 0.302
+        },
+        {
+          "issuer": "LUMINAR TECHNOLOGIES INC",
+          "value_usd": 1719247,
+          "pct": 0.268
+        },
+        {
+          "issuer": "GITLAB INC",
+          "value_usd": 1498919,
+          "pct": 0.234
+        },
+        {
+          "issuer": "HP INC",
+          "value_usd": 1395798,
+          "pct": 0.218
+        },
+        {
+          "issuer": "LULULEMON ATHLETICA INC",
+          "value_usd": 1262283,
+          "pct": 0.197
+        },
+        {
+          "issuer": "APPLE INC",
+          "value_usd": 1158587,
+          "pct": 0.181
+        },
+        {
+          "issuer": "LEVI STRAUSS & CO NEW",
+          "value_usd": 1116460,
+          "pct": 0.174
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "MONDAY COM LTD",
+          "value_usd": 32418816,
+          "pct": 6.739
+        },
+        {
+          "issuer": "360 DIGITECH INC",
+          "value_usd": 22884925,
+          "pct": 4.757
+        },
+        {
+          "issuer": "NETFLIX INC",
+          "value_usd": 11122874,
+          "pct": 2.312
+        },
+        {
+          "issuer": "UPWORK INC",
+          "value_usd": 5836044,
+          "pct": 1.213
+        },
+        {
+          "issuer": "TWILIO INC",
+          "value_usd": 5720388,
+          "pct": 1.189
+        },
+        {
+          "issuer": "CREDICORP LTD",
+          "value_usd": 5203918,
+          "pct": 1.082
+        },
+        {
+          "issuer": "ASANA INC",
+          "value_usd": 1819251,
+          "pct": 0.378
+        },
+        {
+          "issuer": "SILVERGATE CAP CORP",
+          "value_usd": 1513017,
+          "pct": 0.315
+        },
+        {
+          "issuer": "CHART INDS INC",
+          "value_usd": 1160942,
+          "pct": 0.241
+        },
+        {
+          "issuer": "GENERAC HLDGS INC",
+          "value_usd": 1115615,
+          "pct": 0.232
+        },
+        {
+          "issuer": "NEW FORTRESS ENERGY INC",
+          "value_usd": 1077595,
+          "pct": 0.224
+        },
+        {
+          "issuer": "THE LION ELECTRIC COMPANY",
+          "value_usd": 975625,
+          "pct": 0.203
+        }
+      ],
+      "n_entries": 52,
+      "n_exits": 45,
+      "name_turnover_pct": 34.4
+    },
+    {
+      "period": "2023-06-30",
+      "entries": [
+        {
+          "issuer": "CARVANA CO",
+          "value_usd": 37700381,
+          "pct": 4.393
+        },
+        {
+          "issuer": "ZOOMINFO TECHNOLOGIES INC",
+          "value_usd": 21553622,
+          "pct": 2.511
+        },
+        {
+          "issuer": "UDEMY INC",
+          "value_usd": 5092866,
+          "pct": 0.593
+        },
+        {
+          "issuer": "AES CORP",
+          "value_usd": 2640463,
+          "pct": 0.308
+        },
+        {
+          "issuer": "CIENA CORP",
+          "value_usd": 2284305,
+          "pct": 0.266
+        },
+        {
+          "issuer": "PROCORE TECHNOLOGIES INC",
+          "value_usd": 2231836,
+          "pct": 0.26
+        },
+        {
+          "issuer": "REVOLVE GROUP INC",
+          "value_usd": 1779728,
+          "pct": 0.207
+        },
+        {
+          "issuer": "APPLIED DIGITAL CORP",
+          "value_usd": 1718091,
+          "pct": 0.2
+        },
+        {
+          "issuer": "CYBERARK SOFTWARE LTD",
+          "value_usd": 1609417,
+          "pct": 0.188
+        },
+        {
+          "issuer": "CREDICORP LTD",
+          "value_usd": 1567642,
+          "pct": 0.183
+        },
+        {
+          "issuer": "TERADYNE INC",
+          "value_usd": 1438272,
+          "pct": 0.168
+        },
+        {
+          "issuer": "LUCID GROUP INC",
+          "value_usd": 1215189,
+          "pct": 0.142
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "MARVELL TECHNOLOGY INC",
+          "value_usd": 2087363,
+          "pct": 0.325
+        },
+        {
+          "issuer": "LUMINAR TECHNOLOGIES INC",
+          "value_usd": 1719247,
+          "pct": 0.268
+        },
+        {
+          "issuer": "GITLAB INC",
+          "value_usd": 1498919,
+          "pct": 0.234
+        },
+        {
+          "issuer": "HP INC",
+          "value_usd": 1395798,
+          "pct": 0.218
+        },
+        {
+          "issuer": "LULULEMON ATHLETICA INC",
+          "value_usd": 1262283,
+          "pct": 0.197
+        },
+        {
+          "issuer": "LEVI STRAUSS & CO NEW",
+          "value_usd": 1116460,
+          "pct": 0.174
+        },
+        {
+          "issuer": "GARMIN LTD",
+          "value_usd": 1094881,
+          "pct": 0.171
+        },
+        {
+          "issuer": "CONSOLIDATED EDISON INC",
+          "value_usd": 1078584,
+          "pct": 0.168
+        },
+        {
+          "issuer": "FLUENCE ENERGY INC",
+          "value_usd": 1077057,
+          "pct": 0.168
+        },
+        {
+          "issuer": "GOPRO INC",
+          "value_usd": 1026397,
+          "pct": 0.16
+        },
+        {
+          "issuer": "RELAY THERAPEUTICS INC",
+          "value_usd": 967794,
+          "pct": 0.151
+        },
+        {
+          "issuer": "AMERESCO INC",
+          "value_usd": 939807,
+          "pct": 0.147
+        }
+      ],
+      "n_entries": 35,
+      "n_exits": 38,
+      "name_turnover_pct": 18.1
+    },
+    {
+      "period": "2023-09-30",
+      "entries": [
+        {
+          "issuer": "AFFIRM HLDGS INC",
+          "value_usd": 45520204,
+          "pct": 6.092
+        },
+        {
+          "issuer": "GRINDR INC",
+          "value_usd": 7138493,
+          "pct": 0.955
+        },
+        {
+          "issuer": "LILIUM N V",
+          "value_usd": 6035615,
+          "pct": 0.808
+        },
+        {
+          "issuer": "MATCH GROUP INC NEW",
+          "value_usd": 5679161,
+          "pct": 0.76
+        },
+        {
+          "issuer": "INMODE LTD",
+          "value_usd": 5652919,
+          "pct": 0.756
+        },
+        {
+          "issuer": "INTUIT",
+          "value_usd": 2863819,
+          "pct": 0.383
+        },
+        {
+          "issuer": "MASTERCARD INCORPORATED",
+          "value_usd": 2835112,
+          "pct": 0.379
+        },
+        {
+          "issuer": "SYNOPSYS INC",
+          "value_usd": 2343501,
+          "pct": 0.314
+        },
+        {
+          "issuer": "EXP WORLD HLDGS INC",
+          "value_usd": 1404110,
+          "pct": 0.188
+        },
+        {
+          "issuer": "CARPARTS COM INC",
+          "value_usd": 1155981,
+          "pct": 0.155
+        },
+        {
+          "issuer": "HEALTH CATALYST INC",
+          "value_usd": 458821,
+          "pct": 0.061
+        },
+        {
+          "issuer": "HIVE DIGITAL TECHNOLOGIES LT",
+          "value_usd": 344652,
+          "pct": 0.046
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "CARVANA CO",
+          "value_usd": 37700381,
+          "pct": 4.393
+        },
+        {
+          "issuer": "PALO ALTO NETWORKS INC",
+          "value_usd": 19328054,
+          "pct": 2.252
+        },
+        {
+          "issuer": "BAIDU INC",
+          "value_usd": 6128639,
+          "pct": 0.714
+        },
+        {
+          "issuer": "UDEMY INC",
+          "value_usd": 5092866,
+          "pct": 0.593
+        },
+        {
+          "issuer": "AES CORP",
+          "value_usd": 2640463,
+          "pct": 0.308
+        },
+        {
+          "issuer": "CIENA CORP",
+          "value_usd": 2284305,
+          "pct": 0.266
+        },
+        {
+          "issuer": "INTEL CORP",
+          "value_usd": 2237404,
+          "pct": 0.261
+        },
+        {
+          "issuer": "PROCORE TECHNOLOGIES INC",
+          "value_usd": 2231836,
+          "pct": 0.26
+        },
+        {
+          "issuer": "REVOLVE GROUP INC",
+          "value_usd": 1779728,
+          "pct": 0.207
+        },
+        {
+          "issuer": "CYBERARK SOFTWARE LTD",
+          "value_usd": 1609417,
+          "pct": 0.188
+        },
+        {
+          "issuer": "TERADYNE INC",
+          "value_usd": 1438272,
+          "pct": 0.168
+        },
+        {
+          "issuer": "LUCID GROUP INC",
+          "value_usd": 1215189,
+          "pct": 0.142
+        }
+      ],
+      "n_entries": 28,
+      "n_exits": 37,
+      "name_turnover_pct": 20.9
+    },
+    {
+      "period": "2023-12-31",
+      "entries": [
+        {
+          "issuer": "AXON ENTERPRISE INC",
+          "value_usd": 9218764,
+          "pct": 0.998
+        },
+        {
+          "issuer": "GRAB HOLDINGS LIMITED",
+          "value_usd": 5517610,
+          "pct": 0.597
+        },
+        {
+          "issuer": "HUT 8 CORP",
+          "value_usd": 4853706,
+          "pct": 0.525
+        },
+        {
+          "issuer": "BITDEER TECHNOLOGIES GROUP",
+          "value_usd": 4588243,
+          "pct": 0.497
+        },
+        {
+          "issuer": "BIT DIGITAL INC",
+          "value_usd": 2223127,
+          "pct": 0.241
+        },
+        {
+          "issuer": "AUTODESK INC",
+          "value_usd": 984146,
+          "pct": 0.107
+        },
+        {
+          "issuer": "MONDAY COM LTD",
+          "value_usd": 946187,
+          "pct": 0.102
+        },
+        {
+          "issuer": "JFROG LTD",
+          "value_usd": 939385,
+          "pct": 0.102
+        },
+        {
+          "issuer": "BILL HOLDINGS INC",
+          "value_usd": 361933,
+          "pct": 0.039
+        },
+        {
+          "issuer": "FATE THERAPEUTICS INC",
+          "value_usd": 333466,
+          "pct": 0.036
+        },
+        {
+          "issuer": "UDEMY INC",
+          "value_usd": 235636,
+          "pct": 0.026
+        },
+        {
+          "issuer": "AUTOLUS THERAPEUTICS PLC",
+          "value_usd": 193606,
+          "pct": 0.021
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "CRITEO S A",
+          "value_usd": 18518844,
+          "pct": 2.478
+        },
+        {
+          "issuer": "FARFETCH LTD",
+          "value_usd": 11793962,
+          "pct": 1.578
+        },
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 11751621,
+          "pct": 1.573
+        },
+        {
+          "issuer": "MATCH GROUP INC NEW",
+          "value_usd": 5679161,
+          "pct": 0.76
+        },
+        {
+          "issuer": "INMODE LTD",
+          "value_usd": 5652919,
+          "pct": 0.756
+        },
+        {
+          "issuer": "ZOOMINFO TECHNOLOGIES INC",
+          "value_usd": 4030562,
+          "pct": 0.539
+        },
+        {
+          "issuer": "IMMUNOGEN INC",
+          "value_usd": 3377961,
+          "pct": 0.452
+        },
+        {
+          "issuer": "INTUIT",
+          "value_usd": 2863819,
+          "pct": 0.383
+        },
+        {
+          "issuer": "MASTERCARD INCORPORATED",
+          "value_usd": 2835112,
+          "pct": 0.379
+        },
+        {
+          "issuer": "ADVANCED MICRO DEVICES INC",
+          "value_usd": 2381620,
+          "pct": 0.319
+        },
+        {
+          "issuer": "SYNOPSYS INC",
+          "value_usd": 2343501,
+          "pct": 0.314
+        },
+        {
+          "issuer": "YANDEX N V",
+          "value_usd": 2244049,
+          "pct": 0.3
+        }
+      ],
+      "n_entries": 26,
+      "n_exits": 53,
+      "name_turnover_pct": 16.0
+    },
+    {
+      "period": "2024-03-31",
+      "entries": [
+        {
+          "issuer": "KASPI KZ JSC",
+          "value_usd": 115026801,
+          "pct": 10.159
+        },
+        {
+          "issuer": "MOBILEYE GLOBAL INC",
+          "value_usd": 31215882,
+          "pct": 2.757
+        },
+        {
+          "issuer": "SOFI TECHNOLOGIES INC",
+          "value_usd": 10839602,
+          "pct": 0.957
+        },
+        {
+          "issuer": "LUFAX HOLDING LTD",
+          "value_usd": 10705228,
+          "pct": 0.945
+        },
+        {
+          "issuer": "ADVANCED MICRO DEVICES INC",
+          "value_usd": 7927843,
+          "pct": 0.7
+        },
+        {
+          "issuer": "JPMORGAN CHASE & CO",
+          "value_usd": 7447955,
+          "pct": 0.658
+        },
+        {
+          "issuer": "VIKING THERAPEUTICS INC",
+          "value_usd": 6364348,
+          "pct": 0.562
+        },
+        {
+          "issuer": "ROBINHOOD MKTS INC",
+          "value_usd": 5628066,
+          "pct": 0.497
+        },
+        {
+          "issuer": "SENTINELONE INC",
+          "value_usd": 4532886,
+          "pct": 0.4
+        },
+        {
+          "issuer": "DAQO NEW ENERGY CORP",
+          "value_usd": 4520806,
+          "pct": 0.399
+        },
+        {
+          "issuer": "SYNCHRONY FINANCIAL",
+          "value_usd": 4460376,
+          "pct": 0.394
+        },
+        {
+          "issuer": "TAIWAN SEMICONDUCTOR MFG LTD",
+          "value_usd": 3479343,
+          "pct": 0.307
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "DUOLINGO INC",
+          "value_usd": 40391777,
+          "pct": 4.372
+        },
+        {
+          "issuer": "PAGAYA TECHNOLOGIES LTD",
+          "value_usd": 11955275,
+          "pct": 1.294
+        },
+        {
+          "issuer": "KARUNA THERAPEUTICS INC",
+          "value_usd": 11223761,
+          "pct": 1.215
+        },
+        {
+          "issuer": "WOLFSPEED INC",
+          "value_usd": 10410855,
+          "pct": 1.127
+        },
+        {
+          "issuer": "FINVOLUTION GROUP",
+          "value_usd": 9928556,
+          "pct": 1.075
+        },
+        {
+          "issuer": "TERAWULF INC",
+          "value_usd": 5368378,
+          "pct": 0.581
+        },
+        {
+          "issuer": "MARATHON DIGITAL HOLDINGS IN",
+          "value_usd": 5097283,
+          "pct": 0.552
+        },
+        {
+          "issuer": "STRONGHOLD DIGITAL MINING IN",
+          "value_usd": 3022229,
+          "pct": 0.327
+        },
+        {
+          "issuer": "APPLE INC",
+          "value_usd": 1624183,
+          "pct": 0.176
+        },
+        {
+          "issuer": "AUTODESK INC",
+          "value_usd": 984146,
+          "pct": 0.107
+        },
+        {
+          "issuer": "MONDAY COM LTD",
+          "value_usd": 946187,
+          "pct": 0.102
+        },
+        {
+          "issuer": "JFROG LTD",
+          "value_usd": 939385,
+          "pct": 0.102
+        }
+      ],
+      "n_entries": 38,
+      "n_exits": 30,
+      "name_turnover_pct": 38.3
+    },
+    {
+      "period": "2024-06-30",
+      "entries": [
+        {
+          "issuer": "DUOLINGO INC",
+          "value_usd": 95260150,
+          "pct": 8.644
+        },
+        {
+          "issuer": "CARVANA CO",
+          "value_usd": 17868009,
+          "pct": 1.621
+        },
+        {
+          "issuer": "CORE SCIENTIFIC INC NEW",
+          "value_usd": 9832509,
+          "pct": 0.892
+        },
+        {
+          "issuer": "LEMONADE INC",
+          "value_usd": 5290956,
+          "pct": 0.48
+        },
+        {
+          "issuer": "TERAWULF INC",
+          "value_usd": 4040729,
+          "pct": 0.367
+        },
+        {
+          "issuer": "AGENUS INC",
+          "value_usd": 2586786,
+          "pct": 0.235
+        },
+        {
+          "issuer": "REDDIT INC",
+          "value_usd": 2473310,
+          "pct": 0.224
+        },
+        {
+          "issuer": "NUVATION BIO INC",
+          "value_usd": 1620801,
+          "pct": 0.147
+        },
+        {
+          "issuer": "MICROSTRATEGY INC",
+          "value_usd": 1304474,
+          "pct": 0.118
+        },
+        {
+          "issuer": "UPSTART HLDGS INC",
+          "value_usd": 1143714,
+          "pct": 0.104
+        },
+        {
+          "issuer": "LIVE NATION ENTERTAINMENT IN",
+          "value_usd": 1117850,
+          "pct": 0.101
+        },
+        {
+          "issuer": "CME GROUP INC",
+          "value_usd": 1076188,
+          "pct": 0.098
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "TESLA INC",
+          "value_usd": 27736849,
+          "pct": 2.45
+        },
+        {
+          "issuer": "AIRBNB INC",
+          "value_usd": 9505820,
+          "pct": 0.84
+        },
+        {
+          "issuer": "ADVANCED MICRO DEVICES INC",
+          "value_usd": 7927843,
+          "pct": 0.7
+        },
+        {
+          "issuer": "SENTINELONE INC",
+          "value_usd": 4532886,
+          "pct": 0.4
+        },
+        {
+          "issuer": "SYNCHRONY FINANCIAL",
+          "value_usd": 4460376,
+          "pct": 0.394
+        },
+        {
+          "issuer": "BIT DIGITAL INC",
+          "value_usd": 4080153,
+          "pct": 0.36
+        },
+        {
+          "issuer": "COUCHBASE INC",
+          "value_usd": 3305325,
+          "pct": 0.292
+        },
+        {
+          "issuer": "MAKEMYTRIP LIMITED MAURITIUS",
+          "value_usd": 2847968,
+          "pct": 0.252
+        },
+        {
+          "issuer": "BROADCOM INC",
+          "value_usd": 2532859,
+          "pct": 0.224
+        },
+        {
+          "issuer": "SYNOPSYS INC",
+          "value_usd": 2505456,
+          "pct": 0.221
+        },
+        {
+          "issuer": "CYTOKINETICS INC",
+          "value_usd": 2113396,
+          "pct": 0.187
+        },
+        {
+          "issuer": "AGENUS INC",
+          "value_usd": 1791459,
+          "pct": 0.158
+        }
+      ],
+      "n_entries": 20,
+      "n_exits": 26,
+      "name_turnover_pct": 21.0
+    },
+    {
+      "period": "2024-09-30",
+      "entries": [
+        {
+          "issuer": "PDD HOLDINGS INC",
+          "value_usd": 49805015,
+          "pct": 4.784
+        },
+        {
+          "issuer": "RUBRIK INC.",
+          "value_usd": 16065548,
+          "pct": 1.543
+        },
+        {
+          "issuer": "ZOOMINFO TECHNOLOGIES INC",
+          "value_usd": 3975429,
+          "pct": 0.382
+        },
+        {
+          "issuer": "BIONTECH SE",
+          "value_usd": 2032155,
+          "pct": 0.195
+        },
+        {
+          "issuer": "IDEAYA BIOSCIENCES INC",
+          "value_usd": 1090204,
+          "pct": 0.105
+        },
+        {
+          "issuer": "TAPESTRY INC",
+          "value_usd": 1033325,
+          "pct": 0.099
+        },
+        {
+          "issuer": "NATIONAL BK HLDGS CORP",
+          "value_usd": 981393,
+          "pct": 0.094
+        },
+        {
+          "issuer": "LULULEMON ATHLETICA INC",
+          "value_usd": 917977,
+          "pct": 0.088
+        },
+        {
+          "issuer": "ETSY INC",
+          "value_usd": 905139,
+          "pct": 0.087
+        },
+        {
+          "issuer": "C4 THERAPEUTICS INC",
+          "value_usd": 791724,
+          "pct": 0.076
+        },
+        {
+          "issuer": "ANAPTYSBIO INC",
+          "value_usd": 650637,
+          "pct": 0.062
+        },
+        {
+          "issuer": "IMMATICS N.V",
+          "value_usd": 583074,
+          "pct": 0.056
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "MOBILEYE GLOBAL INC",
+          "value_usd": 3031467,
+          "pct": 0.275
+        },
+        {
+          "issuer": "AGENUS INC",
+          "value_usd": 2586786,
+          "pct": 0.235
+        },
+        {
+          "issuer": "NUVATION BIO INC",
+          "value_usd": 1620801,
+          "pct": 0.147
+        },
+        {
+          "issuer": "COHERUS BIOSCIENCES INC",
+          "value_usd": 1451378,
+          "pct": 0.132
+        },
+        {
+          "issuer": "JANUX THERAPEUTICS INC",
+          "value_usd": 1307931,
+          "pct": 0.119
+        },
+        {
+          "issuer": "LIVE NATION ENTERTAINMENT IN",
+          "value_usd": 1117850,
+          "pct": 0.101
+        },
+        {
+          "issuer": "CME GROUP INC",
+          "value_usd": 1076188,
+          "pct": 0.098
+        },
+        {
+          "issuer": "APPLIED DIGITAL CORP",
+          "value_usd": 1041559,
+          "pct": 0.095
+        },
+        {
+          "issuer": "PROCEPT BIOROBOTICS CORP",
+          "value_usd": 1040057,
+          "pct": 0.094
+        },
+        {
+          "issuer": "INTERACTIVE BROKERS GROUP IN",
+          "value_usd": 1028859,
+          "pct": 0.093
+        },
+        {
+          "issuer": "BREAD FINANCIAL HOLDINGS INC",
+          "value_usd": 1016102,
+          "pct": 0.092
+        },
+        {
+          "issuer": "LOCKHEED MARTIN CORP",
+          "value_usd": 782393,
+          "pct": 0.071
+        }
+      ],
+      "n_entries": 27,
+      "n_exits": 21,
+      "name_turnover_pct": 9.3
+    },
+    {
+      "period": "2024-12-31",
+      "entries": [
+        {
+          "issuer": "STRONGHOLD DIGITAL MINING IN",
+          "value_usd": 5478291,
+          "pct": 0.48
+        },
+        {
+          "issuer": "CANGO INC",
+          "value_usd": 3669873,
+          "pct": 0.321
+        },
+        {
+          "issuer": "MARA HOLDINGS INC",
+          "value_usd": 3088430,
+          "pct": 0.27
+        },
+        {
+          "issuer": "XENON PHARMACEUTICALS INC",
+          "value_usd": 2113978,
+          "pct": 0.185
+        },
+        {
+          "issuer": "RELAY THERAPEUTICS INC",
+          "value_usd": 1172173,
+          "pct": 0.103
+        },
+        {
+          "issuer": "CULLINAN THERAPEUTICS INC",
+          "value_usd": 1149110,
+          "pct": 0.101
+        },
+        {
+          "issuer": "MOONLAKE IMMUNOTHERAPEUTICS",
+          "value_usd": 1123504,
+          "pct": 0.098
+        },
+        {
+          "issuer": "GLOBAL E ONLINE LTD",
+          "value_usd": 1113448,
+          "pct": 0.097
+        },
+        {
+          "issuer": "MAKEMYTRIP LIMITED MAURITIUS",
+          "value_usd": 964597,
+          "pct": 0.084
+        },
+        {
+          "issuer": "UNITEDHEALTH GROUP INC",
+          "value_usd": 942923,
+          "pct": 0.083
+        },
+        {
+          "issuer": "CYTOKINETICS INC",
+          "value_usd": 907072,
+          "pct": 0.079
+        },
+        {
+          "issuer": "BEAM THERAPEUTICS INC",
+          "value_usd": 878267,
+          "pct": 0.077
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "AFFIRM HLDGS INC",
+          "value_usd": 10899430,
+          "pct": 1.047
+        },
+        {
+          "issuer": "LUFAX HOLDING LTD",
+          "value_usd": 10195714,
+          "pct": 0.979
+        },
+        {
+          "issuer": "LILIUM N V",
+          "value_usd": 9873112,
+          "pct": 0.948
+        },
+        {
+          "issuer": "BLOCK INC",
+          "value_usd": 4101979,
+          "pct": 0.394
+        },
+        {
+          "issuer": "MICROSTRATEGY INC",
+          "value_usd": 2586324,
+          "pct": 0.248
+        },
+        {
+          "issuer": "SYNDAX PHARMACEUTICALS INC",
+          "value_usd": 1693942,
+          "pct": 0.163
+        },
+        {
+          "issuer": "SILENCE THERAPEUTICS INC",
+          "value_usd": 1680359,
+          "pct": 0.161
+        },
+        {
+          "issuer": "KEROS THERAPEUTICS INC",
+          "value_usd": 1523583,
+          "pct": 0.146
+        },
+        {
+          "issuer": "ALTO NEUROSCIENCE INC",
+          "value_usd": 1374161,
+          "pct": 0.132
+        },
+        {
+          "issuer": "INCYTE CORP",
+          "value_usd": 1337335,
+          "pct": 0.128
+        },
+        {
+          "issuer": "KURA ONCOLOGY INC",
+          "value_usd": 1184730,
+          "pct": 0.114
+        },
+        {
+          "issuer": "UPSTART HLDGS INC",
+          "value_usd": 1035099,
+          "pct": 0.099
+        }
+      ],
+      "n_entries": 29,
+      "n_exits": 25,
+      "name_turnover_pct": 8.1
+    },
+    {
+      "period": "2025-03-31",
+      "entries": [
+        {
+          "issuer": "AFFIRM HLDGS INC",
+          "value_usd": 26059898,
+          "pct": 3.138
+        },
+        {
+          "issuer": "AGIOS PHARMACEUTICALS INC",
+          "value_usd": 629012,
+          "pct": 0.076
+        },
+        {
+          "issuer": "ATAI LIFE SCIENCES NV",
+          "value_usd": 597186,
+          "pct": 0.072
+        },
+        {
+          "issuer": "WARNER BROS DISCOVERY INC",
+          "value_usd": 520759,
+          "pct": 0.063
+        },
+        {
+          "issuer": "ANAPTYSBIO INC",
+          "value_usd": 472595,
+          "pct": 0.057
+        },
+        {
+          "issuer": "MSCI INC",
+          "value_usd": 472193,
+          "pct": 0.057
+        },
+        {
+          "issuer": "CLOUDFLARE INC",
+          "value_usd": 465297,
+          "pct": 0.056
+        },
+        {
+          "issuer": "ENLIVEN THERAPEUTICS INC",
+          "value_usd": 381516,
+          "pct": 0.046
+        },
+        {
+          "issuer": "EXP WORLD HLDGS INC",
+          "value_usd": 353488,
+          "pct": 0.043
+        },
+        {
+          "issuer": "RHYTHM PHARMACEUTICALS INC",
+          "value_usd": 318509,
+          "pct": 0.038
+        },
+        {
+          "issuer": "TREVI THERAPEUTICS INC",
+          "value_usd": 264098,
+          "pct": 0.032
+        },
+        {
+          "issuer": "KINIKSA PHARMACEUTICALS INTL",
+          "value_usd": 263810,
+          "pct": 0.032
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "ASCENDIS PHARMA A/S",
+          "value_usd": 10186203,
+          "pct": 0.892
+        },
+        {
+          "issuer": "DAQO NEW ENERGY CORP",
+          "value_usd": 8228602,
+          "pct": 0.72
+        },
+        {
+          "issuer": "BITDEER TECHNOLOGIES GROUP",
+          "value_usd": 7023984,
+          "pct": 0.615
+        },
+        {
+          "issuer": "STRONGHOLD DIGITAL MINING IN",
+          "value_usd": 5478291,
+          "pct": 0.48
+        },
+        {
+          "issuer": "ARVINAS INC",
+          "value_usd": 5051813,
+          "pct": 0.442
+        },
+        {
+          "issuer": "VIKING THERAPEUTICS INC",
+          "value_usd": 5007586,
+          "pct": 0.438
+        },
+        {
+          "issuer": "CANGO INC",
+          "value_usd": 3669873,
+          "pct": 0.321
+        },
+        {
+          "issuer": "MARA HOLDINGS INC",
+          "value_usd": 3088430,
+          "pct": 0.27
+        },
+        {
+          "issuer": "INTER & CO INC",
+          "value_usd": 2526214,
+          "pct": 0.221
+        },
+        {
+          "issuer": "RELAY THERAPEUTICS INC",
+          "value_usd": 1172173,
+          "pct": 0.103
+        },
+        {
+          "issuer": "CULLINAN THERAPEUTICS INC",
+          "value_usd": 1149110,
+          "pct": 0.101
+        },
+        {
+          "issuer": "GLOBAL E ONLINE LTD",
+          "value_usd": 1113448,
+          "pct": 0.097
+        }
+      ],
+      "n_entries": 19,
+      "n_exits": 34,
+      "name_turnover_pct": 8.2
+    },
+    {
+      "period": "2025-06-30",
+      "entries": [
+        {
+          "issuer": "HINGE HEALTH INC",
+          "value_usd": 39133557,
+          "pct": 2.55
+        },
+        {
+          "issuer": "THE TRADE DESK INC",
+          "value_usd": 32600240,
+          "pct": 2.124
+        },
+        {
+          "issuer": "SEMLER SCIENTIFIC INC",
+          "value_usd": 12761266,
+          "pct": 0.831
+        },
+        {
+          "issuer": "SHOPIFY INC",
+          "value_usd": 12345795,
+          "pct": 0.804
+        },
+        {
+          "issuer": "GALAXY DIGITAL INC.",
+          "value_usd": 7374956,
+          "pct": 0.48
+        },
+        {
+          "issuer": "SHARPLINK GAMING INC",
+          "value_usd": 5931298,
+          "pct": 0.386
+        },
+        {
+          "issuer": "COLUMBUS CIRCLE CAP CORP. I",
+          "value_usd": 4190493,
+          "pct": 0.273
+        },
+        {
+          "issuer": "MICROSTRATEGY INC",
+          "value_usd": 3851908,
+          "pct": 0.251
+        },
+        {
+          "issuer": "XOMETRY INC",
+          "value_usd": 3445161,
+          "pct": 0.224
+        },
+        {
+          "issuer": "SERVICENOW INC",
+          "value_usd": 1936903,
+          "pct": 0.126
+        },
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 1153035,
+          "pct": 0.075
+        },
+        {
+          "issuer": "ALIBABA GROUP HLDG LTD",
+          "value_usd": 538698,
+          "pct": 0.035
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "REDDIT INC",
+          "value_usd": 11660579,
+          "pct": 1.404
+        },
+        {
+          "issuer": "SPRINGWORKS THERAPEUTICS INC",
+          "value_usd": 1335241,
+          "pct": 0.161
+        },
+        {
+          "issuer": "MERUS N V",
+          "value_usd": 1246369,
+          "pct": 0.15
+        },
+        {
+          "issuer": "COMPASS PATHWAYS PLC",
+          "value_usd": 704475,
+          "pct": 0.085
+        },
+        {
+          "issuer": "XENON PHARMACEUTICALS INC",
+          "value_usd": 582160,
+          "pct": 0.07
+        },
+        {
+          "issuer": "MOONLAKE IMMUNOTHERAPEUTICS",
+          "value_usd": 570813,
+          "pct": 0.069
+        },
+        {
+          "issuer": "WARNER BROS DISCOVERY INC",
+          "value_usd": 520759,
+          "pct": 0.063
+        },
+        {
+          "issuer": "MSCI INC",
+          "value_usd": 472193,
+          "pct": 0.057
+        },
+        {
+          "issuer": "CLOUDFLARE INC",
+          "value_usd": 465297,
+          "pct": 0.056
+        },
+        {
+          "issuer": "EXP WORLD HLDGS INC",
+          "value_usd": 353488,
+          "pct": 0.043
+        },
+        {
+          "issuer": "MAKEMYTRIP LIMITED MAURITIUS",
+          "value_usd": 349824,
+          "pct": 0.042
+        },
+        {
+          "issuer": "PENSKE AUTOMOTIVE GRP INC",
+          "value_usd": 347568,
+          "pct": 0.042
+        }
+      ],
+      "n_entries": 16,
+      "n_exits": 21,
+      "name_turnover_pct": 17.7
+    },
+    {
+      "period": "2025-09-30",
+      "entries": [
+        {
+          "issuer": "REDDIT INC",
+          "value_usd": 177093450,
+          "pct": 8.078
+        },
+        {
+          "issuer": "BITMINE IMMERSION TECHNOLOGIE",
+          "value_usd": 93173221,
+          "pct": 4.25
+        },
+        {
+          "issuer": "DATADOG INC",
+          "value_usd": 41671509,
+          "pct": 1.901
+        },
+        {
+          "issuer": "SNOWFLAKE INC",
+          "value_usd": 38412744,
+          "pct": 1.752
+        },
+        {
+          "issuer": "OMADA HEALTH INC",
+          "value_usd": 13639062,
+          "pct": 0.622
+        },
+        {
+          "issuer": "THE REALREAL INC",
+          "value_usd": 10911525,
+          "pct": 0.498
+        },
+        {
+          "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+          "value_usd": 7718114,
+          "pct": 0.352
+        },
+        {
+          "issuer": "BITDEER TECHNOLOGIES GROUP",
+          "value_usd": 5414608,
+          "pct": 0.247
+        },
+        {
+          "issuer": "CEA INDUSTRIES INC",
+          "value_usd": 3643123,
+          "pct": 0.166
+        },
+        {
+          "issuer": "NEXTDOOR HOLDINGS INC",
+          "value_usd": 2492312,
+          "pct": 0.114
+        },
+        {
+          "issuer": "WIX.COM LTD",
+          "value_usd": 2047363,
+          "pct": 0.093
+        },
+        {
+          "issuer": "TESLA INC",
+          "value_usd": 1700609,
+          "pct": 0.078
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "SEMLER SCIENTIFIC INC",
+          "value_usd": 12761266,
+          "pct": 0.831
+        },
+        {
+          "issuer": "BIONTECH SE",
+          "value_usd": 10230596,
+          "pct": 0.667
+        },
+        {
+          "issuer": "COLUMBUS CIRCLE CAP CORP. I",
+          "value_usd": 4190493,
+          "pct": 0.273
+        },
+        {
+          "issuer": "ZOOM COMMUNICATIONS INC",
+          "value_usd": 484958,
+          "pct": 0.032
+        },
+        {
+          "issuer": "NU HLDGS LTD",
+          "value_usd": 462913,
+          "pct": 0.03
+        },
+        {
+          "issuer": "APPLIED MATLS INC",
+          "value_usd": 417766,
+          "pct": 0.027
+        },
+        {
+          "issuer": "BRAZE INC",
+          "value_usd": 382020,
+          "pct": 0.025
+        },
+        {
+          "issuer": "UNITEDHEALTH GROUP INC",
+          "value_usd": 367189,
+          "pct": 0.024
+        },
+        {
+          "issuer": "EVGO INC",
+          "value_usd": 360109,
+          "pct": 0.023
+        },
+        {
+          "issuer": "BLUEPRINT MEDICINES CORP",
+          "value_usd": 182400,
+          "pct": 0.012
+        },
+        {
+          "issuer": "ULTRAGENYX PHARMACEUTICAL IN",
+          "value_usd": 74720,
+          "pct": 0.005
+        },
+        {
+          "issuer": "ANAPTYSBIO INC",
+          "value_usd": 60073,
+          "pct": 0.004
+        }
+      ],
+      "n_entries": 23,
+      "n_exits": 13,
+      "name_turnover_pct": 28.2
+    },
+    {
+      "period": "2025-12-31",
+      "entries": [
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 143325204,
+          "pct": 6.247
+        },
+        {
+          "issuer": "NETSKOPE INC",
+          "value_usd": 27682979,
+          "pct": 1.207
+        },
+        {
+          "issuer": "INTEL CORP",
+          "value_usd": 23504009,
+          "pct": 1.025
+        },
+        {
+          "issuer": "COHERENT CORP",
+          "value_usd": 21219090,
+          "pct": 0.925
+        },
+        {
+          "issuer": "GRAIL INC",
+          "value_usd": 13374550,
+          "pct": 0.583
+        },
+        {
+          "issuer": "PURE STORAGE INC",
+          "value_usd": 11279726,
+          "pct": 0.492
+        },
+        {
+          "issuer": "APPLIED DIGITAL CORP",
+          "value_usd": 10448462,
+          "pct": 0.455
+        },
+        {
+          "issuer": "PERCEPTIVE CAP SOLUTIONS COR",
+          "value_usd": 9645640,
+          "pct": 0.42
+        },
+        {
+          "issuer": "LUMENTUM HLDGS INC",
+          "value_usd": 7896304,
+          "pct": 0.344
+        },
+        {
+          "issuer": "SITIME CORP",
+          "value_usd": 5704019,
+          "pct": 0.249
+        },
+        {
+          "issuer": "CIRCLE INTERNET GROUP INC",
+          "value_usd": 1919060,
+          "pct": 0.084
+        },
+        {
+          "issuer": "ALBEMARLE CORP",
+          "value_usd": 1697280,
+          "pct": 0.074
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "SHARPLINK GAMING INC",
+          "value_usd": 20681081,
+          "pct": 0.943
+        },
+        {
+          "issuer": "STRATEGY INC",
+          "value_usd": 5840056,
+          "pct": 0.266
+        },
+        {
+          "issuer": "CORE SCIENTIFIC INC NEW",
+          "value_usd": 4491333,
+          "pct": 0.205
+        },
+        {
+          "issuer": "D MARKET ELECTR SVCS & TRADI",
+          "value_usd": 4137250,
+          "pct": 0.189
+        },
+        {
+          "issuer": "CEA INDUSTRIES INC",
+          "value_usd": 3643123,
+          "pct": 0.166
+        },
+        {
+          "issuer": "NEXTDOOR HOLDINGS INC",
+          "value_usd": 2492312,
+          "pct": 0.114
+        },
+        {
+          "issuer": "WIX.COM LTD",
+          "value_usd": 2047363,
+          "pct": 0.093
+        },
+        {
+          "issuer": "TESLA INC",
+          "value_usd": 1700609,
+          "pct": 0.078
+        },
+        {
+          "issuer": "BULLISH",
+          "value_usd": 1461758,
+          "pct": 0.067
+        },
+        {
+          "issuer": "GEMINI SPACE STA INC",
+          "value_usd": 1440787,
+          "pct": 0.066
+        },
+        {
+          "issuer": "KINDLY MD INC",
+          "value_usd": 1101981,
+          "pct": 0.05
+        },
+        {
+          "issuer": "SUI GROUP HOLDINGS LIMITED",
+          "value_usd": 618835,
+          "pct": 0.028
+        }
+      ],
+      "n_entries": 27,
+      "n_exits": 30,
+      "name_turnover_pct": 15.4
+    },
+    {
+      "period": "2026-03-31",
+      "entries": [
+        {
+          "issuer": "FREEPORT MCMORAN INC",
+          "value_usd": 55273479,
+          "pct": 3.085
+        },
+        {
+          "issuer": "BLOOM ENERGY CORP",
+          "value_usd": 34426519,
+          "pct": 1.921
+        },
+        {
+          "issuer": "SUNRUN INC",
+          "value_usd": 31011422,
+          "pct": 1.731
+        },
+        {
+          "issuer": "NOKIA CORP",
+          "value_usd": 27306357,
+          "pct": 1.524
+        },
+        {
+          "issuer": "TOWER SEMICONDUCTOR LTD",
+          "value_usd": 26964257,
+          "pct": 1.505
+        },
+        {
+          "issuer": "STRATEGY INC",
+          "value_usd": 13264243,
+          "pct": 0.74
+        },
+        {
+          "issuer": "DEFINIUM THERAPEUTICS INC",
+          "value_usd": 5244958,
+          "pct": 0.293
+        },
+        {
+          "issuer": "AGNICO EAGLE MINES LTD",
+          "value_usd": 3854184,
+          "pct": 0.215
+        },
+        {
+          "issuer": "NAVAN INC",
+          "value_usd": 3042592,
+          "pct": 0.17
+        },
+        {
+          "issuer": "NEWMONT CORP",
+          "value_usd": 1051216,
+          "pct": 0.059
+        },
+        {
+          "issuer": "BIONTECH SE",
+          "value_usd": 812985,
+          "pct": 0.045
+        },
+        {
+          "issuer": "SPOTIFY TECHNOLOGY S A",
+          "value_usd": 665297,
+          "pct": 0.037
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "DATADOG INC",
+          "value_usd": 89525073,
+          "pct": 3.902
+        },
+        {
+          "issuer": "RUBRIK INC.",
+          "value_usd": 69626015,
+          "pct": 3.035
+        },
+        {
+          "issuer": "ALPHABET INC",
+          "value_usd": 34831800,
+          "pct": 1.518
+        },
+        {
+          "issuer": "DUOLINGO INC",
+          "value_usd": 31398705,
+          "pct": 1.369
+        },
+        {
+          "issuer": "NETSKOPE INC",
+          "value_usd": 27682979,
+          "pct": 1.207
+        },
+        {
+          "issuer": "PALO ALTO NETWORKS INC",
+          "value_usd": 26359204,
+          "pct": 1.149
+        },
+        {
+          "issuer": "THE REALREAL INC",
+          "value_usd": 17880949,
+          "pct": 0.779
+        },
+        {
+          "issuer": "OMADA HEALTH INC",
+          "value_usd": 14836956,
+          "pct": 0.647
+        },
+        {
+          "issuer": "GRAIL INC",
+          "value_usd": 13374550,
+          "pct": 0.583
+        },
+        {
+          "issuer": "HIMS & HERS HEALTH INC",
+          "value_usd": 12219370,
+          "pct": 0.533
+        },
+        {
+          "issuer": "CLEANSPARK INC",
+          "value_usd": 8942578,
+          "pct": 0.39
+        },
+        {
+          "issuer": "XOMETRY INC",
+          "value_usd": 6527011,
+          "pct": 0.285
+        }
+      ],
+      "n_entries": 23,
+      "n_exits": 34,
+      "name_turnover_pct": 25.1
+    },
+    {
+      "period": "2026-06-30",
+      "entries": [
+        {
+          "issuer": "SANDISK CORP",
+          "value_usd": 194956431,
+          "pct": 6.683
+        },
+        {
+          "issuer": "MARVELL TECHNOLOGY INC",
+          "value_usd": 150158902,
+          "pct": 5.147
+        },
+        {
+          "issuer": "SILICON MOTION TECHNOLOGY CO",
+          "value_usd": 116397169,
+          "pct": 3.99
+        },
+        {
+          "issuer": "CIENA CORP",
+          "value_usd": 82838905,
+          "pct": 2.84
+        },
+        {
+          "issuer": "KEEL INFRASTRUCTURE CORP",
+          "value_usd": 43981229,
+          "pct": 1.508
+        },
+        {
+          "issuer": "CORE SCIENTIFIC INC NEW",
+          "value_usd": 14793349,
+          "pct": 0.507
+        },
+        {
+          "issuer": "SEMTECH CORP",
+          "value_usd": 12138750,
+          "pct": 0.416
+        },
+        {
+          "issuer": "IDEAYA BIOSCIENCES INC",
+          "value_usd": 11603381,
+          "pct": 0.398
+        },
+        {
+          "issuer": "HIVE DIGITAL TECHNOLOGIES LT",
+          "value_usd": 5141744,
+          "pct": 0.176
+        },
+        {
+          "issuer": "EIGHTCO HOLDINGS INC",
+          "value_usd": 3623874,
+          "pct": 0.124
+        },
+        {
+          "issuer": "UXIN LTD",
+          "value_usd": 3304594,
+          "pct": 0.113
+        },
+        {
+          "issuer": "CANADIAN SOLAR INC",
+          "value_usd": 3075616,
+          "pct": 0.105
+        }
+      ],
+      "exits": [
+        {
+          "issuer": "ADVANCED MICRO DEVICES INC",
+          "value_usd": 93027318,
+          "pct": 5.192
+        },
+        {
+          "issuer": "LEMONADE INC",
+          "value_usd": 36592333,
+          "pct": 2.042
+        },
+        {
+          "issuer": "SUNRUN INC",
+          "value_usd": 31011422,
+          "pct": 1.731
+        },
+        {
+          "issuer": "TOWER SEMICONDUCTOR LTD",
+          "value_usd": 26964257,
+          "pct": 1.505
+        },
+        {
+          "issuer": "BITMINE IMMERSION TECNOLOGIE",
+          "value_usd": 20483001,
+          "pct": 1.143
+        },
+        {
+          "issuer": "STRATEGY INC",
+          "value_usd": 13264243,
+          "pct": 0.74
+        },
+        {
+          "issuer": "BITFARMS LTD",
+          "value_usd": 11152590,
+          "pct": 0.622
+        },
+        {
+          "issuer": "META PLATFORMS INC",
+          "value_usd": 3975731,
+          "pct": 0.222
+        },
+        {
+          "issuer": "JPMORGAN CHASE & CO",
+          "value_usd": 1493156,
+          "pct": 0.083
+        },
+        {
+          "issuer": "NU HLDGS LTD",
+          "value_usd": 1073482,
+          "pct": 0.06
+        },
+        {
+          "issuer": "NEWMONT CORP",
+          "value_usd": 1051216,
+          "pct": 0.059
+        },
+        {
+          "issuer": "BROADCOM INC",
+          "value_usd": 977123,
+          "pct": 0.055
+        }
+      ],
+      "n_entries": 32,
+      "n_exits": 26,
+      "name_turnover_pct": 50.8
+    }
+  ],
+  "survival": [
+    {
+      "issuer": "IREN LIMITED",
+      "pct": 11.024,
+      "quarters_held": 17,
+      "quarters_material": 14,
+      "first_seen": "2022-06-30"
+    },
+    {
+      "issuer": "AMAZON COM INC",
+      "pct": 7.625,
+      "quarters_held": 25,
+      "quarters_material": 17,
+      "first_seen": "2020-06-30"
+    },
+    {
+      "issuer": "MICRON TECHNOLOGY INC",
+      "pct": 7.253,
+      "quarters_held": 22,
+      "quarters_material": 14,
+      "first_seen": "2021-03-31"
+    },
+    {
+      "issuer": "ROBINHOOD MKTS INC",
+      "pct": 6.817,
+      "quarters_held": 10,
+      "quarters_material": 1,
+      "first_seen": "2021-09-30"
+    },
+    {
+      "issuer": "SANDISK CORP",
+      "pct": 6.683,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "TAIWAN SEMICONDUCTOR MANUFAC",
+      "pct": 5.619,
+      "quarters_held": 10,
+      "quarters_material": 6,
+      "first_seen": "2021-03-31"
+    },
+    {
+      "issuer": "MARVELL TECHNOLOGY INC",
+      "pct": 5.147,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2022-03-31"
+    },
+    {
+      "issuer": "NAVAN INC",
+      "pct": 4.085,
+      "quarters_held": 2,
+      "quarters_material": 1,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "FIGURE TECHNOLOGY SOLUTIO",
+      "pct": 4.034,
+      "quarters_held": 4,
+      "quarters_material": 2,
+      "first_seen": "2025-09-30"
+    },
+    {
+      "issuer": "SILICON MOTION TECHNOLOGY CO",
+      "pct": 3.99,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "OSCAR HEALTH INC",
+      "pct": 3.342,
+      "quarters_held": 10,
+      "quarters_material": 7,
+      "first_seen": "2022-03-31"
+    },
+    {
+      "issuer": "HINGE HEALTH INC",
+      "pct": 3.287,
+      "quarters_held": 5,
+      "quarters_material": 5,
+      "first_seen": "2025-06-30"
+    },
+    {
+      "issuer": "FREEPORT MCMORAN INC",
+      "pct": 3.104,
+      "quarters_held": 2,
+      "quarters_material": 2,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "COMPASS PATHWAYS PLC",
+      "pct": 3.08,
+      "quarters_held": 4,
+      "quarters_material": 2,
+      "first_seen": "2021-03-31"
+    },
+    {
+      "issuer": "CIENA CORP",
+      "pct": 2.84,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2023-06-30"
+    },
+    {
+      "issuer": "INTEL CORP",
+      "pct": 2.767,
+      "quarters_held": 3,
+      "quarters_material": 3,
+      "first_seen": "2023-03-31"
+    },
+    {
+      "issuer": "TERAWULF INC",
+      "pct": 2.378,
+      "quarters_held": 9,
+      "quarters_material": 3,
+      "first_seen": "2023-03-31"
+    },
+    {
+      "issuer": "NOKIA CORP",
+      "pct": 2.102,
+      "quarters_held": 2,
+      "quarters_material": 2,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "NVIDIA CORPORATION",
+      "pct": 1.774,
+      "quarters_held": 24,
+      "quarters_material": 5,
+      "first_seen": "2020-09-30"
+    },
+    {
+      "issuer": "HYPERLIQUID STRATEGIES INC",
+      "pct": 1.539,
+      "quarters_held": 2,
+      "quarters_material": 1,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "KEEL INFRASTRUCTURE CORP",
+      "pct": 1.508,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "SOCIEDAD QUIMICA Y MINERA DE",
+      "pct": 0.947,
+      "quarters_held": 3,
+      "quarters_material": 2,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "AFFIRM HLDGS INC",
+      "pct": 0.926,
+      "quarters_held": 6,
+      "quarters_material": 1,
+      "first_seen": "2021-06-30"
+    },
+    {
+      "issuer": "ALBEMARLE CORP",
+      "pct": 0.671,
+      "quarters_held": 3,
+      "quarters_material": 2,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "GALAXY DIGITAL INC.",
+      "pct": 0.57,
+      "quarters_held": 5,
+      "quarters_material": 1,
+      "first_seen": "2025-06-30"
+    },
+    {
+      "issuer": "CIPHER DIGITAL INC",
+      "pct": 0.535,
+      "quarters_held": 14,
+      "quarters_material": 1,
+      "first_seen": "2021-12-31"
+    },
+    {
+      "issuer": "HUT 8 CORP",
+      "pct": 0.53,
+      "quarters_held": 11,
+      "quarters_material": 11,
+      "first_seen": "2023-12-31"
+    },
+    {
+      "issuer": "REDDIT INC",
+      "pct": 0.522,
+      "quarters_held": 4,
+      "quarters_material": 1,
+      "first_seen": "2024-06-30"
+    },
+    {
+      "issuer": "CORE SCIENTIFIC INC NEW",
+      "pct": 0.507,
+      "quarters_held": 1,
+      "quarters_material": 1,
+      "first_seen": "2024-06-30"
+    },
+    {
+      "issuer": "APPLIED DIGITAL CORP",
+      "pct": 0.494,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2023-06-30"
+    },
+    {
+      "issuer": "SEMTECH CORP",
+      "pct": 0.416,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "IDEAYA BIOSCIENCES INC",
+      "pct": 0.398,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2023-03-31"
+    },
+    {
+      "issuer": "BITDEER TECHNOLOGIES GROUP",
+      "pct": 0.387,
+      "quarters_held": 4,
+      "quarters_material": 0,
+      "first_seen": "2023-12-31"
+    },
+    {
+      "issuer": "RIOT PLATFORMS INC",
+      "pct": 0.223,
+      "quarters_held": 20,
+      "quarters_material": 0,
+      "first_seen": "2021-09-30"
+    },
+    {
+      "issuer": "BLOOM ENERGY CORP",
+      "pct": 0.209,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "DEFINIUM THERAPEUTICS INC",
+      "pct": 0.207,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "HIVE DIGITAL TECHNOLOGIES LT",
+      "pct": 0.176,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2023-09-30"
+    },
+    {
+      "issuer": "ALPHABET INC",
+      "pct": 0.154,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2021-06-30"
+    },
+    {
+      "issuer": "CIRCLE INTERNET GROUP INC",
+      "pct": 0.151,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "EIGHTCO HOLDINGS INC",
+      "pct": 0.124,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "UXIN LTD",
+      "pct": 0.113,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "CANADIAN SOLAR INC",
+      "pct": 0.105,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2023-03-31"
+    },
+    {
+      "issuer": "ULTRAGENYX PHARMACEUTICAL IN",
+      "pct": 0.105,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2023-12-31"
+    },
+    {
+      "issuer": "KASPI KZ JSC",
+      "pct": 0.089,
+      "quarters_held": 10,
+      "quarters_material": 0,
+      "first_seen": "2024-03-31"
+    },
+    {
+      "issuer": "COINBASE GLOBAL INC",
+      "pct": 0.087,
+      "quarters_held": 21,
+      "quarters_material": 0,
+      "first_seen": "2021-06-30"
+    },
+    {
+      "issuer": "CLEANSPARK INC",
+      "pct": 0.086,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2021-12-31"
+    },
+    {
+      "issuer": "HIMS & HERS HEALTH INC",
+      "pct": 0.073,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2022-12-31"
+    },
+    {
+      "issuer": "ARCUS BIOSCIENCES INC",
+      "pct": 0.063,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2023-12-31"
+    },
+    {
+      "issuer": "ENTEGRIS INC",
+      "pct": 0.063,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2021-03-31"
+    },
+    {
+      "issuer": "ASTERA LABS INC",
+      "pct": 0.061,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "IMMUNOME INC ",
+      "pct": 0.061,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2025-09-30"
+    },
+    {
+      "issuer": "ATAIBECKLEY INC",
+      "pct": 0.058,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "LUMENTUM HLDGS INC",
+      "pct": 0.052,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "NEKTAR THERAPEUTICS",
+      "pct": 0.05,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "GRINDR INC",
+      "pct": 0.047,
+      "quarters_held": 12,
+      "quarters_material": 0,
+      "first_seen": "2023-09-30"
+    },
+    {
+      "issuer": "PERCEPTIVE CAP SOLUTIONS COR",
+      "pct": 0.045,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "IONIS PHARMACEUTICALS INC",
+      "pct": 0.044,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "ALIBABA GROUP HLDG LTD",
+      "pct": 0.041,
+      "quarters_held": 5,
+      "quarters_material": 0,
+      "first_seen": "2020-06-30"
+    },
+    {
+      "issuer": "PALISADE BIO INC",
+      "pct": 0.041,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "DIANTHUS THERAPEUTICS INC",
+      "pct": 0.04,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "REGAL REXNORD CORPORATION",
+      "pct": 0.037,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "REVOLUTION MEDICINES INC",
+      "pct": 0.037,
+      "quarters_held": 6,
+      "quarters_material": 0,
+      "first_seen": "2025-03-31"
+    },
+    {
+      "issuer": "EDITAS MEDICINE INC",
+      "pct": 0.036,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "ELEDON PHARMACEUTICALS INC",
+      "pct": 0.036,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "ROCKET PHARMACEUTICALS INC ",
+      "pct": 0.035,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "CISCO SYS INC",
+      "pct": 0.034,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "APPLE INC",
+      "pct": 0.033,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2020-06-30"
+    },
+    {
+      "issuer": "NETFLIX INC.",
+      "pct": 0.029,
+      "quarters_held": 8,
+      "quarters_material": 0,
+      "first_seen": "2021-12-31"
+    },
+    {
+      "issuer": "TREVI THERAPEUTICS INC",
+      "pct": 0.029,
+      "quarters_held": 6,
+      "quarters_material": 0,
+      "first_seen": "2025-03-31"
+    },
+    {
+      "issuer": "ARM HOLDINGS PLC",
+      "pct": 0.028,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "VIR BIOTECHNOLOGY INC",
+      "pct": 0.028,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2021-12-31"
+    },
+    {
+      "issuer": "RUBRIK INC.",
+      "pct": 0.023,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2024-09-30"
+    },
+    {
+      "issuer": "AGNICO EAGLE MINES LTD",
+      "pct": 0.023,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "COSTCO WHOLESALE CORPORATION",
+      "pct": 0.022,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "PMV PHARMACEUTICALS INC ",
+      "pct": 0.019,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "ALLOGENE THERAPEUTICS INC",
+      "pct": 0.016,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2026-06-30"
+    },
+    {
+      "issuer": "NEBIUS GROUP N.V.",
+      "pct": 0.015,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2020-09-30"
+    },
+    {
+      "issuer": "DYNE THERAPEUTICS INC",
+      "pct": 0.012,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2025-12-31"
+    },
+    {
+      "issuer": "KINIKSA PHARMACEUTICALS INTL",
+      "pct": 0.011,
+      "quarters_held": 3,
+      "quarters_material": 0,
+      "first_seen": "2025-03-31"
+    },
+    {
+      "issuer": "AMERICAN ELEC PWR CO INC",
+      "pct": 0.01,
+      "quarters_held": 2,
+      "quarters_material": 0,
+      "first_seen": "2026-03-31"
+    },
+    {
+      "issuer": "XOMETRY INC",
+      "pct": 0.009,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2025-06-30"
+    },
+    {
+      "issuer": "KLA CORP",
+      "pct": 0.005,
+      "quarters_held": 1,
+      "quarters_material": 0,
+      "first_seen": "2022-06-30"
+    }
+  ]
+}

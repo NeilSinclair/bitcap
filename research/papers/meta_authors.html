@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta AI contributors — papers authored</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --line:#2a323d; --tx:#e6edf3;
+    --dim:#9aa7b4; --faint:#6e7c8c; --accent:#4c9aff;
+    --staff:#3fb950; --fellow:#d29922; --external:#8b949e; --res:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px 80px}
+  header{border-bottom:1px solid var(--line);padding:34px 0 22px;margin-bottom:24px}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
+  h2{font-size:15px;margin:34px 0 10px;color:var(--dim);font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em}
+  .sub{color:var(--dim);font-size:14px} .sub b{color:var(--tx);font-weight:600}
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:12px 16px;min-width:130px;flex:1}
+  .stat b{display:block;font-size:22px;letter-spacing:-.02em}
+  .stat span{display:block;color:var(--faint);font-size:12px;
+    text-transform:uppercase;letter-spacing:.05em}
+  .stat em{display:block;color:var(--faint);font-size:11.5px;font-style:normal;margin-top:4px}
+  .note{background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:13px 16px;margin:24px 0 0;font-size:13.5px;color:var(--dim)}
+  .note b{color:var(--tx);font-weight:600}
+  .note p{margin:0 0 8px} .note p:last-child{margin:0}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--faint);padding:10px 12px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dt{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ti{min-width:260px} .lk{white-space:nowrap} .lk a{margin-right:8px}
+  .barcell{width:180px}
+  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+  .filters button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel);color:var(--tx);cursor:pointer}
+  .filters button[aria-pressed="true"]{background:var(--tx);color:var(--bg);
+    border-color:var(--tx)}
+  .row{border:1px solid var(--line);border-radius:8px;background:var(--panel);
+    margin-bottom:6px}
+  .row summary{display:flex;align-items:center;gap:12px;padding:9px 14px;
+    cursor:pointer;list-style:none}
+  .row summary::-webkit-details-marker{display:none}
+  .rank{color:var(--faint);font-size:12px;min-width:26px;
+    font-variant-numeric:tabular-nums}
+  .name{font-weight:600;min-width:190px}
+  .bar{flex:1;height:6px;background:#0d1117;border-radius:3px;overflow:hidden;
+    min-width:60px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+  .count{font-variant-numeric:tabular-nums;color:var(--dim);min-width:20px;
+    text-align:right}
+  .flags{min-width:150px;text-align:right}
+  .tag{font-size:11px;padding:2px 7px;border-radius:4px;background:#0d1117;
+    white-space:nowrap;cursor:help}
+  .t-staff{color:var(--staff)} .t-fellow{color:var(--fellow)}
+  .t-external{color:var(--external)} .t-res{color:var(--res)}
+  .affs{padding:0 14px 4px 52px}
+  .aff{display:inline-block;background:#0d1117;border-radius:4px;padding:1px 7px;
+    font-size:11.5px;color:var(--dim);margin:0 4px 4px 0}
+  .papers{margin:0;padding:4px 14px 12px 52px;list-style:none}
+  .papers li{padding:3px 0;font-size:13px;border-top:1px solid var(--line)}
+  .papers .d{color:var(--faint);font-size:11.5px;margin-left:8px;
+    font-variant-numeric:tabular-nums}
+  .none{color:var(--faint)}
+  footer{color:var(--faint);font-size:12px;margin-top:30px;
+    border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Meta AI — contributors from papers</h1>
+  <p class="sub">Every author on every Meta AI paper harvested in the window,
+  <b>2026-06-11 to 2026-07-30</b>. Generated 2026-09-03.</p>
+  <div class="stats"><div class="stat"><b>5</b><span>papers</span><em>2026-06-11 to 2026-07-30</em></div><div class="stat"><b>5/5</b><span>cite a primary source</span><em>every insight needs one</em></div><div class="stat"><b>41</b><span>distinct authors</span><em>24 lab staff</em></div><div class="stat"><b>16</b><span>external co-authors</span><em>across 17 affiliations</em></div><div class="stat"><b>0</b><span>staff on 2+ papers</span><em>the followable core</em></div></div>
+</header>
+
+<h2>Papers</h2>
+<div class="scroll"><table>
+<thead><tr><th>Date</th><th>Title</th><th>Authors</th><th>Staff</th>
+<th>arXiv match</th><th>Links</th></tr></thead>
+<tbody><tr><td class="dt">2026-07-30</td><td class="ti">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</td><td class="n">7</td><td class="n">5</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.28760v1" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-28</td><td class="ti">Reinforcement Learning for Code Optimization</td><td class="n">5</td><td class="n">4</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.25970v1" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-02</td><td class="ti">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</td><td class="n">10</td><td class="n">8</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.02689v2" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-29</td><td class="ti">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</td><td class="n">12</td><td class="n">3</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2608.18114v1" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-11</td><td class="ti">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</td><td class="n">7</td><td class="n">4</td><td><span class="tag t-res" title="Title matched an arXiv record exactly.">exact</span></td><td class="lk"><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2606.13680v1" rel="noopener">arXiv</a></td></tr></tbody>
+</table></div>
+
+<h2>Co-authoring institutions</h2>
+<p class="sub">Ranked by how many people carry the affiliation. Each is a
+candidate source the register does not yet track.</p>
+<div class="scroll"><table>
+<thead><tr><th>Institution</th><th></th><th>People</th></tr></thead>
+<tbody><tr><td class="ti">Meta Superintelligence Labs</td><td class="barcell"><span class="bar"><i style="width:100%"></i></span></td><td class="n">5</td></tr><tr><td class="ti">Rice University</td><td class="barcell"><span class="bar"><i style="width:60%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">Inria</td><td class="barcell"><span class="bar"><i style="width:60%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">École Normale Supérieure, Paris</td><td class="barcell"><span class="bar"><i style="width:60%"></i></span></td><td class="n">3</td></tr><tr><td class="ti">École Normale Supérieure, Université PSL, CNRS</td><td class="barcell"><span class="bar"><i style="width:40%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette</td><td class="barcell"><span class="bar"><i style="width:40%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">Reality Labs, Meta</td><td class="barcell"><span class="bar"><i style="width:40%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">Hospital Foundation Adolphe de Rothschild</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Univ. Lille, CNRS, UMR 9193-SCALab-Sciences Cognitives et Sciences Affectives, F-59000 Lille, France</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Paris Cité University</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Université Paris Dauphine</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Sorbonne University, Paris</td><td class="barcell"><span class="bar"><i style="width:20%"></i></span></td><td class="n">1</td></tr></tbody>
+</table></div>
+
+<h2>People</h2>
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (41)</button>
+  <button data-f="staff" aria-pressed="false">Lab staff (24)</button>
+  <button data-f="external" aria-pressed="false">External (16)</button>
+</div>
+
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">1</span>
+        <span class="name">Avinash Atreya</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta Superintelligence Labs</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">2</span>
+        <span class="name">Barlas Oguz</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">3</span>
+        <span class="name">Benoit Sagot</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Inria</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">Reinforcement Learning for Code Optimization</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">4</span>
+        <span class="name">Brian Karrer</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">5</span>
+        <span class="name">Cedric Rommel</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta AI</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">6</span>
+        <span class="name">Corentin Bel</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette</span> <span class="aff">École Normale Supérieure, Université PSL, CNRS</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">7</span>
+        <span class="name">Daniel Nieto</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Basque Center on Cognition, Brain and Language, San Sebastian</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">8</span>
+        <span class="name">Devendra Singh Sachan</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">9</span>
+        <span class="name">Gabriel Synnaeve</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR at Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">Reinforcement Learning for Code Optimization</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">10</span>
+        <span class="name">Gargi Ghosh</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">11</span>
+        <span class="name">Giulio Biroli</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">École Normale Supérieure, Paris</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">12</span>
+        <span class="name">Hanjie Chen</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Rice University</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">13</span>
+        <span class="name">Jakob Verbeek</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">14</span>
+        <span class="name">Jarod Lévy</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta AI</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">15</span>
+        <span class="name">Jason Chen</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta Superintelligence Labs</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">16</span>
+        <span class="name">Jean-Rémi King</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Inria, Université Paris-Saclay, Palaiseau, France</span> <span class="aff">Paris Cité University</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">17</span>
+        <span class="name">Julie Bonnaire</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">CNRS, INSERM, CEA, Neurospin center, Gif-sur-Yvette</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">18</span>
+        <span class="name">Juliette Decugis</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR at Meta</span> <span class="aff">Inria</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">Reinforcement Learning for Code Optimization</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">19</span>
+        <span class="name">Jérémy Rapin</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta AI</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">20</span>
+        <span class="name">Krunoslav Lehman Pavasovic</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span> <span class="aff">École Normale Supérieure, Paris</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">21</span>
+        <span class="name">Kunhao Zheng</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR at Meta</span> <span class="aff">Université Paris Dauphine</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">Reinforcement Learning for Code Optimization</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">22</span>
+        <span class="name">Luke Zettlemoyer</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">23</span>
+        <span class="name">Mingfang (Lucy) Zhang</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">École Normale Supérieure, Université PSL, CNRS</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">24</span>
+        <span class="name">Pedro Rodriguez</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">25</span>
+        <span class="name">Pierre Bourdillon</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Hospital Foundation Adolphe de Rothschild</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">26</span>
+        <span class="name">Pierre Chambon</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR at Meta</span> <span class="aff">Inria</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/" rel="noopener">Reinforcement Learning for Code Optimization</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">27</span>
+        <span class="name">Qi Ma</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta Superintelligence Labs</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">28</span>
+        <span class="name">Seungwhan Moon</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Reality Labs, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">29</span>
+        <span class="name">Shang-Wen Li</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">30</span>
+        <span class="name">Stéphane Mallat</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">École Normale Supérieure, Paris</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">31</span>
+        <span class="name">Stéphane d’Ascoli</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="none">no affiliation stated</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">32</span>
+        <span class="name">Svetlana Pinet</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Univ. Lille, CNRS, UMR 9193-SCALab-Sciences Cognitives et Sciences Affectives, F-59000 Lille, France</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">33</span>
+        <span class="name">Thomas Moreau</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="none">no affiliation stated</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/" rel="noopener">Accurate Decoding of Natural Sentences from Non-Invasive Brain Recordings</a><span class="d">2026-06-29</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">34</span>
+        <span class="name">Théophane Vallaeys</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span> <span class="aff">Sorbonne University, Paris</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/" rel="noopener">WaiT for the Signal: Simple Frequency-Aware Flow-Matching</a><span class="d">2026-07-30</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">35</span>
+        <span class="name">Vicente Ordonez</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Rice University</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">36</span>
+        <span class="name">Wen-Tau Yih</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">37</span>
+        <span class="name">Xiaodong Wang</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">38</span>
+        <span class="name">Xin Dong</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Reality Labs, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">39</span>
+        <span class="name">Xintao Chen</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta Superintelligence Labs</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">40</span>
+        <span class="name">Xuanyi Zhao</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">FAIR, Meta</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/" rel="noopener">S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval</a><span class="d">2026-07-02</span></li></ul>
+    </details>
+    <details class="row" data-tier="fellow">
+      <summary>
+        <span class="rank">41</span>
+        <span class="name">Zilin Xiao</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-fellow">fellow</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Meta Superintelligence Labs</span> <span class="aff">Rice University</span></div>
+      <ul class="papers"><li><a href="https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/" rel="noopener">Learning to Reason by Analogy via Retrieval-Augmented Reinforcement Fine-Tuning</a><span class="d">2026-06-11</span></li></ul>
+    </details>
+
+<div class="note">
+<p><b>What "lab staff" means here.</b> The person carried a Meta AI
+affiliation on at least one paper's own byline. It is the paper's claim, not an
+employment check &mdash; someone who has since left still shows as staff, and a
+paper that states no affiliation for an author leaves them external by default.</p>
+<p><b>Why the affiliation table matters.</b> Every institution in it is a group
+that publishes with this lab and is not itself in the register. That is the
+cheapest available list of sources to consider adding next, ranked by how
+much of this lab's output they actually touch.</p>
+</div>
+
+<footer>Generated from <code>research/docs/meta_contributors.json</code>.
+Built by <code>research/papers/build_lab_authors_page.py</code>.</footer>
+</div>
+<script>
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll(".row").forEach(r => {
+      r.style.display = (f === "all" || r.dataset.tier === f) ? "" : "none";
+    });
+  });
+});
+</script>
+</body>
+</html>

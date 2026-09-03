@@ -1,0 +1,178 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 51995,
+    "output_tokens": 44,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.10443,
+    "seconds": 3.49,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23464,
+    "output_tokens": 469,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.051618,
+    "seconds": 5.7,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/subtle-reasoning/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 22847,
+    "output_tokens": 699,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.052684,
+    "seconds": 7.99,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/petri/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 4226,
+    "output_tokens": 44,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.008892,
+    "seconds": 2.58,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 8334,
+    "output_tokens": 203,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.018698,
+    "seconds": 3.64,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/petri-v2/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 4808,
+    "output_tokens": 622,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.015836,
+    "seconds": 7.25,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/ai-organizations/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 25748,
+    "output_tokens": 1006,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.061556,
+    "seconds": 10.85,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/automated-w2s-researcher/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23995,
+    "output_tokens": 203,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.05002,
+    "seconds": 3.91,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/automated-alignment-researchers/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 51995,
+    "output_tokens": 94,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.10493,
+    "seconds": 3.79,
+    "stop_reason": "end_turn",
+    "url": "https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23464,
+    "output_tokens": 566,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.052588,
+    "seconds": 6.75,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/subtle-reasoning/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 22847,
+    "output_tokens": 460,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.050294,
+    "seconds": 4.51,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/petri/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 4226,
+    "output_tokens": 44,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.008892,
+    "seconds": 2.65,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 8334,
+    "output_tokens": 203,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.018698,
+    "seconds": 3.64,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/petri-v2/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 4808,
+    "output_tokens": 738,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.016996,
+    "seconds": 7.77,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/ai-organizations/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 25748,
+    "output_tokens": 1544,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.066936,
+    "seconds": 16.52,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/automated-w2s-researcher/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 23995,
+    "output_tokens": 203,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.05002,
+    "seconds": 3.66,
+    "stop_reason": "end_turn",
+    "url": "https://alignment.anthropic.com/2026/automated-alignment-researchers/"
+  }
+]

@@ -1,0 +1,182 @@
+# Category vocabulary: the "kind of company" layer between a lab signal and a holding.
+#
+# Why this exists. An article rarely names a holding. Far more often it says something
+# about a *kind* of company — "NAND contract pricing is rolling over", "AI datacentre
+# demand is surging". Categories are how those articles reach the book.
+#
+# Three routes exist from an article to a holding, and the output must state which one
+# fired (see docs/decisions.md D8, D9):
+#   1. named    - the article names a holding directly. Narrowest, highest confidence.
+#   2. category - the article describes a kind of company we hold. This file.
+#   3. mechanism - the article implies a behavioural driver (mechanisms.yaml). Broadest.
+#
+# CATEGORIES ARE NOT A PARTITION. A company may sit in several. IREN and TeraWulf are
+# both `ai_compute_hosting` and `crypto`, because they are single companies with two
+# independent demand drivers. Weights therefore sum to more than 100%, and any figure
+# the system emits must name its category rather than imply exclusivity.
+#
+# `boundary` is mandatory and not decorative. "Memory and storage" ranged from 5% to
+# 16% of this fund at end-2025 purely on where the line was drawn - a 3x swing from a
+# definitional choice. Every category figure must be able to state its own boundary or
+# it will disagree with BIT's reporting and read as broken.
+#
+# Scope: BIT Global Technology Leaders only (docs/decisions.md D8).
+
+# v2 (2026-09-02): definitions sharpened against the v6 gold run, where category
+# precision was 0.50 — every spurious tag came from a company or platform being
+# MENTIONED rather than transmitted to. The classifier reads `definition` only,
+# so the tagging boundaries live there; `boundary` remains fund accounting.
+version: 2
+scope:
+  fund: BIT Global Technology Leaders
+  as_of: 2026-06-30
+  positions: 26
+  source: research/docs/portfolio_views.json
+
+categories:
+  - id: memory_storage
+    label: Memory and storage
+    definition: >
+      Makers of DRAM, HBM, NAND and the storage devices built from them.
+      The binding constraint on AI serving, and the fund's largest category.
+    boundary: >
+      Memory and storage makers, INCLUDING NAND controller silicon (Silicon Motion),
+      whose demand tracks NAND volume directly. EXCLUDES accelerator and interconnect
+      silicon (Marvell, Astera, Credo) - those are accelerator_custom_si. Widening to
+      include them moves this category from 19.08% to 24.16% of the fund.
+    lab_signal_routable: true
+
+  - id: foundry_logic
+    label: Foundry and logic
+    definition: Contract manufacture of leading-edge logic, and merchant logic makers.
+    boundary: >
+      Manufacturers of logic silicon. EXCLUDES the equipment used to make it
+      (semicap_equipment) and fabless accelerator designers (accelerator_custom_si).
+    lab_signal_routable: true
+
+  - id: semicap_equipment
+    label: Semiconductor capital equipment
+    definition: Tools and assembly equipment sold to fabs and packaging houses.
+    boundary: >
+      Sells equipment to chipmakers rather than chips to end customers. One step
+      further from the lab than foundry_logic, and slower to react.
+    lab_signal_routable: true
+
+  - id: accelerator_custom_si
+    label: Accelerators and custom silicon
+    definition: >
+      AI accelerators, custom ASICs, and the controller and interconnect silicon that
+      surrounds them. Tag when demand or supply for the silicon itself moves;
+      software efficiency work (kernels, serving stacks) runs on accelerators
+      without being a signal about them.
+    boundary: >
+      Fabless designers of compute and data-movement silicon. EXCLUDES NAND
+      controllers (memory_storage), whose demand tracks storage volume rather than
+      accelerator attach rates. This is the category most exposed to a lab moving to in-house
+      silicon - the direction of a hit here is not uniform across its members.
+    lab_signal_routable: true
+
+  - id: analog_power_semi
+    label: Analog, power and embedded semiconductors
+    definition: Power delivery, analog, and embedded silicon for datacentre and edge.
+    boundary: >
+      Non-logic silicon. Reached by datacentre power draw and by on-device inference,
+      not by training demand directly.
+    lab_signal_routable: true
+
+  - id: networking_optical
+    label: Networking and optical
+    definition: Optical transport, transceivers and datacentre interconnect.
+    boundary: >
+      Moves data between and within datacentres. Reached when the bottleneck shifts
+      from FLOPs to bandwidth.
+    lab_signal_routable: true
+
+  - id: ai_compute_hosting
+    label: AI compute hosting
+    definition: >
+      Operators whose business is hosting AI compute for third parties - datacentre
+      capacity, power and GPU fleets sold under contract (neoclouds). A hyperscale
+      cloud distributing models or apps is hyperscale_platform, not this.
+    boundary: >
+      The AI demand driver ONLY. These same companies also mine crypto; that side of
+      the business is the `crypto` category, not this one. A frontier-lab signal
+      routes here and never to crypto.
+    lab_signal_routable: true
+
+  - id: crypto
+    label: Crypto mining and adoption
+    definition: >
+      Mining economics, hashprice, and crypto adoption generally - including holders
+      of digital assets.
+    boundary: >
+      The crypto demand driver. Overlaps ai_compute_hosting on IREN and TeraWulf,
+      which do both. Kept deliberately even though it is expected to stay empty of
+      lab signal.
+    lab_signal_routable: false
+    routing_note: >
+      A frontier-lab signal arriving here is a BUG, not a finding - alert on it.
+      Keeping the category makes a crypto-driven move in IREN explicitly out of scope
+      rather than silently misattributed to an AI signal. If it stays empty, that is
+      a recordable result, and the category is cheap to delete (docs/decisions.md D9).
+
+  - id: hyperscale_platform
+    label: Hyperscale platforms
+    definition: >
+      Cloud and platform businesses that both build and buy frontier AI. Tag when
+      the platform relationship IS the announcement - models distributed through
+      the platform, the platform buying or selling frontier compute. A platform
+      named as a rollout venue or region ("pricing changes will begin rolling out
+      in AWS") is a mention, not a signal.
+    boundary: >
+      Care needed: a hyperscaler can be a lab, a compute supplier and a customer at
+      once. Amazon is all three. Guard against counting one event three times.
+    lab_signal_routable: true
+
+  - id: fintech_consumer_fin
+    label: Fintech and consumer finance
+    definition: Consumer brokerage, lending and financial infrastructure.
+    boundary: >
+      Application-layer businesses in finance. Reached by capability thresholds in
+      financial advice and by agentic displacement, not by compute demand.
+    lab_signal_routable: true
+
+  - id: health_insurance
+    label: Health and insurance
+    definition: >
+      Digital health, health insurance and clinical-stage businesses. Tag when a
+      capability or product crosses into clinical, care or underwriting workflows.
+      A lab doing research WITH a pharma or biotech partner is a story about the
+      lab, not a health signal.
+    boundary: >
+      Application layer in a regulated vertical. Reached when a model crosses a
+      clinical or underwriting threshold - cuts both ways, enabling the incumbent or
+      threatening the workflow it sells.
+    lab_signal_routable: true
+
+  - id: consumer_marketplace
+    label: Consumer marketplaces and apps
+    definition: Marketplaces and booking or transaction platforms.
+    boundary: >
+      Application layer outside regulated verticals. Most exposed to agents
+      transacting directly and bypassing the marketplace.
+    lab_signal_routable: true
+
+  - id: materials_mining
+    label: Materials and mining
+    definition: Copper, lithium and specialty chemicals.
+    boundary: >
+      Reached only through datacentre buildout (copper, grid). Lithium and specialty
+      chemicals have no credible frontier-lab transmission path - expect few hits,
+      and treat a strong one as suspicious.
+    lab_signal_routable: true
+
+# Secondary exposures: a company whose primary category is elsewhere but which carries
+# material revenue from another. Flagged, NOT dual membership - the distinction is
+# whether it is the operating business (IREN/crypto) or a revenue line (Robinhood).
+secondary_exposures:
+  - isin: US7707001027
+    name: Robinhood Markets Inc. Cl. A
+    primary: fintech_consumer_fin
+    secondary: crypto
+    note: Material crypto revenue, but crypto is a revenue line rather than the business.

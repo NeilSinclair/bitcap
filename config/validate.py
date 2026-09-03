@@ -1,0 +1,560 @@
+"""Validate the config files against each other and against the portfolio.
+
+Run before anything consumes them. Catches the failure modes that would otherwise
+degrade silently: a mechanism or category id that does not exist, an ISIN that the
+fund does not hold, a holding with no entry, a category with no members, and a claim
+with neither a source nor an explicit `unverified` note.
+
+Scope is BIT Global Technology Leaders alone (docs/decisions.md D8).
+"""
+
+import json
+import re
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).parent
+PORTFOLIOS = ROOT.parent / "research" / "docs" / "portfolio_views.json"
+
+# Mirrors research/announcements/fetch_announcements.py's METHODS dict: each
+# discovery function indexes these keys directly (lab["page_param"], etc.)
+# rather than reading them defensively, so a missing one does not fail at
+# config-load time -- it fails deep into a live run, after every earlier lab
+# in the loop has already done its work, with no output written for any of
+# them (bitcap-reviewer finding #7, confirmed by tracing collect()'s loop).
+SOURCE_METHOD_REQUIRED_KEYS = {
+    "sitemap": {"index_url", "url_contains", "text_source", "date_from"},
+    "rss": {"index_url"},
+    "listing_pagination": {"index_url", "page_param", "url_contains", "text_source"},
+    "wayback_cdx": {"index_url", "url_contains"},
+}
+
+
+def check_registry(root: Path, views: dict) -> tuple[list[str], list[str]]:
+    """Validate holdings.yaml against categories.yaml and the fund's real positions.
+
+    Args:
+        root: Directory holding the config files.
+        views: Parsed portfolio_views.json.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    cats = yaml.safe_load((root / "categories.yaml").read_text())
+    hold = yaml.safe_load((root / "holdings.yaml").read_text())
+    errors, warnings = [], []
+
+    valid = {c["id"] for c in cats["categories"]}
+    for c in cats["categories"]:
+        # D8: a category figure is meaningless without the boundary that produced it.
+        if not c.get("boundary"):
+            errors.append(f"category {c['id']}: no boundary definition")
+        if "lab_signal_routable" not in c:
+            errors.append(f"category {c['id']}: lab_signal_routable not declared")
+
+    scope = hold["scope"]
+    actual = {
+        p["isin"]: p for p in views["positions"]
+        if p["fund_full"] == "BIT Global Technology Leaders"
+        and p["as_of"] == "30.06.2026"
+    }
+
+    seen, used = set(), set()
+    for h in hold["holdings"]:
+        isin, name = h.get("isin"), h.get("name", "?")
+        if isin in seen:
+            errors.append(f"{isin}: duplicate holding")
+        seen.add(isin)
+        if isin not in actual:
+            errors.append(f"{isin} ({name}): not a Technology Leaders position at 30.06.2026")
+        if not h.get("categories"):
+            errors.append(f"{name}: no category — every holding must be reachable")
+        for cid in h.get("categories", []):
+            if cid not in valid:
+                errors.append(f"{name}: unknown category '{cid}'")
+            used.add(cid)
+        if h.get("ticker") and not h.get("ticker_verified", False):
+            warnings.append(f"{name}: ticker {h['ticker']} unverified")
+
+    for isin, p in actual.items():
+        if isin not in seen:
+            errors.append(f"{isin} ({p['name']}): held but absent from holdings.yaml")
+
+    for cid in sorted(valid - used):
+        warnings.append(f"category {cid}: no holdings — delete it or add members")
+
+    if len(seen) != scope["positions"]:
+        errors.append(
+            f"scope says {scope['positions']} positions, file has {len(seen)}"
+        )
+
+    return errors, warnings
+
+
+def check_lab_exposure(company: dict, enums: dict, tracked: set[str]) -> tuple[list[str], list[str]]:
+    """Validate one company's direct-to-lab exposure links.
+
+    `lab` is resolved against sources.yaml rather than a list held here, so a lab
+    added to the register activates its edges without touching this file. An id
+    the register does not carry is a dormant edge, not an error: the exposure is
+    real and worth recording before the lab is ingestible. Dormant edges are
+    reported by name, which is also how a typo'd id surfaces.
+
+    Args:
+        company: One entry from companies.yaml.
+        enums: The shared sign/magnitude/confidence vocabularies.
+        tracked: Lab ids currently in sources.yaml.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    kinds = {"equity", "revenue_contract", "cloud_partnership", "supply", "credit_support"}
+    name = company.get("name", "?")
+    errors, warnings = [], []
+    seen = set()
+
+    for x in company.get("lab_exposure", []):
+        lab, kind = x.get("lab"), x.get("kind")
+        tag = f"{name}/lab_exposure/{lab or '?'}"
+        if not lab:
+            errors.append(f"{name}/lab_exposure: entry has no 'lab'")
+            continue
+        if kind not in kinds:
+            errors.append(f"{tag}: kind='{kind}' not in {sorted(kinds)}")
+        # One edge per (lab, kind): an equity stake and a supply contract with the
+        # same lab are different exposures, two equity entries are a duplicate.
+        if (lab, kind) in seen:
+            errors.append(f"{tag}: duplicate ({lab}, {kind}) exposure")
+        seen.add((lab, kind))
+
+        for field in ("sign", "magnitude", "confidence"):
+            if x.get(field) not in enums[field]:
+                errors.append(f"{tag}: {field}='{x.get(field)}' not in vocabulary")
+        if not x.get("why"):
+            errors.append(f"{tag}: no 'why' — every link must explain itself")
+        if not x.get("source") and not x.get("unverified"):
+            errors.append(f"{tag}: neither source nor 'unverified' note")
+
+        if lab not in tracked:
+            warnings.append(
+                f"{tag}: dormant — '{lab}' is not in sources.yaml, so this edge "
+                "routes nothing until the lab is added to the register"
+            )
+
+    return errors, warnings
+
+
+def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], list[str]]:
+    """Validate practices.yaml, the AI-team axis.
+
+    Mechanisms and practices are separate vocabularies consumed by separate
+    renderers, so an id present in both is ambiguous at the join: the renderer
+    cannot tell which axis produced a tag. That collision is an error, not a
+    warning.
+
+    Args:
+        root: Directory holding the config files.
+        mechanism_ids: Currently valid mechanism ids, for the collision check.
+
+    Returns:
+        A (errors, warnings) pair of human-readable message lists.
+    """
+    path = root / "practices.yaml"
+    errors, warnings = [], []
+    if not path.exists():
+        return [f"{path.name}: missing"], []
+
+    doc = yaml.safe_load(path.read_text())
+    for key in ("version", "practices", "enums", "required_per_tag"):
+        if key not in doc:
+            errors.append(f"practices.yaml: no '{key}' block")
+    if errors:
+        return errors, warnings
+
+    seen = set()
+    for pr in doc["practices"]:
+        pid = pr.get("id", "?")
+        if pid in seen:
+            errors.append(f"practice {pid}: duplicate id")
+        seen.add(pid)
+        if pid in mechanism_ids:
+            errors.append(
+                f"practice {pid}: id also defined in mechanisms.yaml - "
+                "a tag with this id is ambiguous at the join"
+            )
+        for field in ("label", "description", "adopt_note"):
+            if not pr.get(field):
+                errors.append(f"practice {pid}: no '{field}'")
+
+        # An undifferentiated "it got better" is the thing this tag replaced.
+        if pid == "model_capability":
+            dims = pr.get("dimensions")
+            if not dims:
+                errors.append("practice model_capability: no 'dimensions' vocabulary")
+            else:
+                for name, desc in dims.items():
+                    if not desc:
+                        errors.append(f"model_capability/{name}: dimension has no definition")
+
+    for enum in ("action", "impact", "confidence"):
+        if not doc["enums"].get(enum):
+            errors.append(f"practices.yaml: enums.{enum} missing or empty")
+
+    # The citation guarantee has to hold on both axes or the AI-team digest can
+    # surface a recommendation with nothing behind it.
+    if "quote" not in doc["required_per_tag"]:
+        errors.append("practices.yaml: 'quote' not required per tag - no citation guarantee")
+
+    if "model_capability" in seen and "dimensions" not in doc.get(
+        "required_per_tag_model_capability", []
+    ):
+        errors.append(
+            "practices.yaml: model_capability does not require 'dimensions'"
+        )
+
+    return errors, warnings
+
+
+def check_sources(root: Path) -> list[str]:
+    """Validate sources.yaml: every lab carries the keys its method needs.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    errors = []
+    srcs = yaml.safe_load((root / "sources.yaml").read_text())
+    for lab in srcs["labs"]:
+        lab_id = lab.get("id", "?")
+        method = lab.get("method")
+        if method not in SOURCE_METHOD_REQUIRED_KEYS:
+            errors.append(f"sources.yaml/{lab_id}: unknown method '{method}'")
+            continue
+        for key in sorted(SOURCE_METHOD_REQUIRED_KEYS[method]):
+            if key not in lab:
+                errors.append(
+                    f"sources.yaml/{lab_id}: method '{method}' requires '{key}', missing"
+                )
+    return errors
+
+
+def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Validate github_sources.yaml, previously not read by this file at all.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids currently in sources.yaml, to catch a `lab:`
+            typo here that would otherwise silently misfile a whole org's
+            worth of GitHub-derived people under no register entry at all.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "github_sources.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+
+    doc = yaml.safe_load(path.read_text())
+    errors = []
+    for org, entry in doc.get("orgs", {}).items():
+        lab = entry.get("lab")
+        if not lab:
+            errors.append(f"github_sources.yaml/{org}: no 'lab'")
+        elif lab not in tracked_labs:
+            errors.append(f"github_sources.yaml/{org}: lab '{lab}' not in sources.yaml")
+
+        if not isinstance(entry.get("domain_shared", False), bool):
+            errors.append(f"github_sources.yaml/{org}: domain_shared is not a bool")
+
+        suffix = entry.get("work_suffix")
+        if suffix is not None:
+            try:
+                re.compile(suffix)
+            except re.error as exc:
+                errors.append(f"github_sources.yaml/{org}: work_suffix does not compile: {exc}")
+    return errors
+
+
+def check_pipeline(root: Path) -> list[str]:
+    """Validate pipeline.yaml — the file that decides what the cron spends.
+
+    Every value here fails *silently* when wrong, because each is read with a
+    `.get(..., default)` or fed straight into a comparison:
+
+    * `content_band: High` (capitalised) makes the band filter match nothing, so
+      **zero content alerts are raised, forever**, with no error anywhere.
+    * a mistyped `cadence` key means that leg never runs, and the register
+      quietly covers less than anyone thinks.
+    * a `channel` with no delivery function, or a `budget` that is absent or
+      non-numeric, is not discovered until a cron fires unattended.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "pipeline.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+
+    budget = doc.get("budget") or {}
+    for key in ("per_run_usd", "per_month_usd"):
+        value = budget.get(key)
+        if not isinstance(value, (int, float)) or value <= 0:
+            errors.append(f"pipeline.yaml/budget: '{key}' must be a positive number")
+    if all(isinstance(budget.get(k), (int, float)) for k in ("per_run_usd", "per_month_usd")):
+        if budget["per_month_usd"] < budget["per_run_usd"]:
+            errors.append(
+                "pipeline.yaml/budget: per_month_usd is below per_run_usd, so a single "
+                "run can never complete inside the monthly ceiling"
+            )
+
+    legs = {"announcements", "papers", "github"}
+    for key, value in (doc.get("cadence") or {}).items():
+        if key not in legs | {"drift"}:
+            errors.append(
+                f"pipeline.yaml/cadence: '{key}' is not a leg {sorted(legs)} or 'drift'"
+            )
+        if not isinstance(value, int) or value < 1:
+            errors.append(f"pipeline.yaml/cadence/{key}: must be an integer >= 1")
+
+    alerts = doc.get("alerts") or {}
+    bands = ("none", "low", "medium", "high")
+    if alerts.get("content_band") not in bands:
+        errors.append(
+            f"pipeline.yaml/alerts: content_band {alerts.get('content_band')!r} is not "
+            f"one of {list(bands)} -- a mismatch silently raises no content alerts"
+        )
+    if alerts.get("channel") not in ("stdout", "webhook"):
+        errors.append(
+            f"pipeline.yaml/alerts: channel {alerts.get('channel')!r} is not stdout|webhook"
+        )
+    floor = alerts.get("drift_agreement_floor")
+    if not isinstance(floor, (int, float)) or not 0 <= floor <= 1:
+        errors.append("pipeline.yaml/alerts: drift_agreement_floor must be between 0 and 1")
+    for key in ("source_down_runs", "max_deliveries_per_run"):
+        if key in alerts and (not isinstance(alerts[key], int) or alerts[key] < 1):
+            errors.append(f"pipeline.yaml/alerts/{key}: must be an integer >= 1")
+
+    classification = doc.get("classification") or {}
+    if not classification.get("model"):
+        errors.append("pipeline.yaml/classification: no 'model'")
+    if not isinstance(classification.get("workers", 1), int) or classification.get("workers", 1) < 1:
+        errors.append("pipeline.yaml/classification: workers must be an integer >= 1")
+    return errors
+
+
+def check_papers_sources(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Validate papers_sources.yaml — the papers register.
+
+    The silent failure this catches: a mistyped `url_field`. Every paper then
+    resolves to `url: None`, the register drops the lot as `skipped_no_url`, and
+    the source is still recorded SUCCEEDED with a healthy `items_seen`. A whole
+    lab's papers and people vanish and the run looks fine.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids in sources.yaml.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "papers_sources.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    url_fields = {"url", "meta_url", "announcement_url"}
+    returns = {"papers", "papers_and_unresolved"}
+
+    for entry in doc.get("labs", []):
+        lab = entry.get("lab", "?")
+        if lab not in tracked_labs:
+            errors.append(f"papers_sources.yaml/{lab}: lab not in sources.yaml")
+        if entry.get("url_field") not in url_fields:
+            errors.append(
+                f"papers_sources.yaml/{lab}: url_field {entry.get('url_field')!r} not in "
+                f"{sorted(url_fields)} -- every paper would resolve to a null citation "
+                "and be dropped while the source still reports success"
+            )
+        if entry.get("returns") not in returns:
+            errors.append(f"papers_sources.yaml/{lab}: returns must be one of {sorted(returns)}")
+        if entry.get("enabled", True):
+            if not entry.get("module") or not entry.get("entry"):
+                errors.append(f"papers_sources.yaml/{lab}: enabled but names no module/entry")
+        elif not (entry.get("notes") or "").strip():
+            # A lab that is off must say why, or a deliberate exclusion is
+            # indistinguishable from an oversight.
+            errors.append(f"papers_sources.yaml/{lab}: disabled with no note explaining why")
+    return errors
+
+
+
+def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
+    """Check people.yaml joins the register and cites everything it claims.
+
+    The people leg's failure mode is not a crash but a stale attribution: a
+    researcher who has left still rendered as a voice of the lab. So the join
+    to sources.yaml is enforced, and so is the rule that a claim without a
+    citation does not belong in the file.
+
+    Args:
+        root: Directory holding the config files.
+        tracked_labs: Lab ids in sources.yaml.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "people.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    tiers = {"own_site", "self_post", "lab_post", "search_index"}
+
+    for lab, entry in (doc.get("labs") or {}).items():
+        if lab not in tracked_labs:
+            errors.append(f"people.yaml/{lab}: lab not in sources.yaml")
+        current = {p.get("name") for p in entry.get("people", [])}
+        for person in entry.get("people", []):
+            who = f"people.yaml/{lab}/{person.get('name', '?')}"
+            if not person.get("role"):
+                errors.append(f"{who}: no role")
+            if not person.get("sources"):
+                errors.append(f"{who}: no citation -- every claim here needs one")
+            if person.get("x_handle") and person.get("x_evidence") not in tiers:
+                errors.append(
+                    f"{who}: x_handle with x_evidence {person.get('x_evidence')!r} not in "
+                    f"{sorted(tiers)} -- an unattributed handle is a guess"
+                )
+        for gone in entry.get("departed") or []:
+            if gone.get("name") in current:
+                errors.append(
+                    f"people.yaml/{lab}/{gone['name']}: listed as both current and departed"
+                )
+            if not str(gone.get("source", "")).startswith("https://"):
+                errors.append(f"people.yaml/{lab}/{gone.get('name')}: departure with no source")
+    for lab in tracked_labs - set(doc.get("labs") or {}):
+        errors.append(f"people.yaml/{lab}: registered lab with no people entry")
+    return errors
+
+
+def main() -> int:
+    mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
+    comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
+    srcs = yaml.safe_load((ROOT / "sources.yaml").read_text())
+    views = json.loads(PORTFOLIOS.read_text())
+
+    valid_ids = {m["id"] for m in mech["mechanisms"]}
+    tracked_labs = {lab["id"] for lab in srcs["labs"]}
+    enums = mech["enums"]
+    held = {p["isin"]: p for p in views["positions"]}
+    # Kept out of `warnings`: the ticker warnings are truncated at five, and a
+    # dormant lab edge is the one thing this file is asked to make visible.
+    lab_warnings: list[str] = []
+    # A security can sit in several funds, so keep the Technology Leaders set
+    # separately rather than relying on whichever row landed in `held` last.
+    tech_leaders = {
+        p["isin"]: p["name"] for p in views["positions"]
+        if p["fund_full"] == "BIT Global Technology Leaders"
+    }
+    errors, warnings = [], []
+
+    seen: set = set()
+    alias_owner: dict[str, str] = {}  # an alias must mean exactly one company
+    for c in comp["companies"]:
+        isin, name = c.get("isin"), c.get("name", "?")
+        if not isin:
+            errors.append(f"{name}: missing isin")
+            continue
+        if isin in seen:
+            errors.append(f"{isin}: duplicate entry")
+        seen.add(isin)
+        if isin not in held:
+            errors.append(f"{isin} ({name}): not held by any fund in portfolio_views.json")
+        if c.get("ai_role") not in enums["ai_role"]:
+            errors.append(f"{name}: ai_role '{c.get('ai_role')}' not in vocabulary")
+
+        # Aliases feed the named-mention join directly. A two-character alias
+        # ("ON", "SE") would fire on ordinary prose and attribute an article to
+        # a company nobody wrote about, so the floor is enforced here.
+        for alias in c.get("aliases", []):
+            if not isinstance(alias, str) or len(alias.strip()) < 3:
+                errors.append(f"{name}: alias {alias!r} shorter than 3 characters")
+            elif alias in alias_owner and alias_owner[alias] != isin:
+                errors.append(f"{name}: alias '{alias}' also claimed by {alias_owner[alias]}")
+            else:
+                alias_owner[alias] = isin
+
+        for m in c.get("mechanisms", []):
+            if m["id"] not in valid_ids:
+                errors.append(f"{name}: unknown mechanism '{m['id']}'")
+            for field in ("sign", "magnitude", "confidence"):
+                if m.get(field) not in enums[field]:
+                    errors.append(f"{name}/{m['id']}: {field}='{m.get(field)}' not in vocabulary")
+            if not m.get("why"):
+                errors.append(f"{name}/{m['id']}: no 'why' — every link must explain itself")
+
+        le_errors, le_warnings = check_lab_exposure(c, enums, tracked_labs)
+        errors += le_errors
+        lab_warnings += le_warnings
+
+        for bucket in ("tailwinds", "headwinds"):
+            for item in c.get(bucket, []):
+                if not item.get("source") and not item.get("unverified"):
+                    errors.append(f"{name}/{bucket}: claim has neither source nor 'unverified' note")
+
+        if c.get("ticker") and not c.get("ticker_verified", False):
+            warnings.append(f"{name}: ticker {c['ticker']} unverified")
+
+    missing = [(i, n) for i, n in tech_leaders.items() if i not in seen]
+
+    for e in errors:
+        print(f"ERROR   {e}")
+    for w in warnings[:5]:
+        print(f"warn    {w}")
+    if len(warnings) > 5:
+        print(f"warn    ... and {len(warnings) - 5} more unverified tickers")
+
+    if lab_warnings:
+        print(f"\n{len(lab_warnings)} dormant lab edge(s) — "
+              f"register carries {len(tracked_labs)}: {', '.join(sorted(tracked_labs))}")
+        for w in lab_warnings:
+            print(f"dormant {w}")
+        print()
+
+    reg_errors, reg_warnings = check_registry(ROOT, views)
+    prac_errors, prac_warnings = check_practices(ROOT, valid_ids)
+    src_errors = check_sources(ROOT)
+    gh_errors = check_github_sources(ROOT, tracked_labs)
+    pipe_errors = check_pipeline(ROOT)
+    papers_errors = check_papers_sources(ROOT, tracked_labs)
+    people_errors = check_people(ROOT, tracked_labs)
+    new_errors = (reg_errors + prac_errors + src_errors + gh_errors
+                  + pipe_errors + papers_errors + people_errors)
+    for e in new_errors:
+        print(f"ERROR   {e}")
+    for w in reg_warnings + prac_warnings:
+        print(f"warn    {w}")
+    errors += new_errors
+    warnings += prac_warnings
+
+    print(f"\n{len(seen)} companies described, {len(errors)} errors, "
+          f"{len(warnings) + len(reg_warnings)} warnings, "
+          f"{len(lab_warnings)} dormant lab edges")
+    if missing:
+        print(f"{len(missing)} Technology Leaders holdings still undescribed:")
+        for i, n in sorted(missing, key=lambda x: x[1])[:30]:
+            print(f"   {i}  {n}")
+    return 1 if errors else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

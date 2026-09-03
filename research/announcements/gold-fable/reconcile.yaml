@@ -1,0 +1,1341 @@
+# Reconciling test/articles against gold-fable/articles.
+#
+# One row per disagreement between the two label sets. Every quote below is a
+# verified literal substring of its article, so each call can be made from the
+# quote alone -- no need to reopen the corpus.
+#
+# `source` names the test side these rows were computed against. Decisions are
+# only meaningful against that source -- a different run has different quotes.
+#
+# `fable` is gold-fable/articles. `gold` is the classifier run under test.
+# `impact` is what
+# siding with fable does to THAT article's score, holding everything else fixed.
+#
+# Set `decision` on each row to one of:
+#   fable   - take gold-fable's value (for `presence`: add the tag / drop it)
+#   gold    - keep gold's value
+#   <value> - a literal third answer, e.g. `medium`, or a list for dimensions
+# Leave it null to defer; apply_reconcile.py treats null as `gold` and reports
+# how many are still open.
+#
+# Rows are sorted by impact. Everything below the first zero-impact row is
+# bookkeeping -- real disagreements, but they do not move a number.
+
+source: claude-sonnet-5 @ v6, gold_run_20260902T051622Z_v6.json
+generated: '2026-09-02T06:17:05Z'
+rows:
+- id: d01
+  article: '10'
+  title: Statement on the US government directive to suspend access to Fable 5 and Mythos
+    5
+  kind: mechanism
+  tag: export_controls
+  field: presence
+  fable: present (high/high/positive)
+  gold: absent
+  impact:
+    score: 80.0
+    ai_score: 0.0
+  quote: The US government, citing national security authorities, has issued an export control
+    directive to suspend all access to Fable 5 and Mythos 5 by any foreign national
+  note: A government export-control directive forcibly suspending a deployed frontier model
+    is a step change in how far controls now reach.
+  decision: null
+- id: d02
+  article: '10'
+  title: Statement on the US government directive to suspend access to Fable 5 and Mythos
+    5
+  kind: mechanism
+  tag: inference_volume_up
+  field: presence
+  fable: present (medium/high/negative)
+  gold: absent
+  impact:
+    score: 53.3
+    ai_score: 0.0
+  quote: we must abruptly disable Fable 5 and Mythos 5 for all our customers to ensure compliance
+  note: The lab's two most capable models go dark for all customers at once; some volume shifts
+    to other models, but the flagship serving volume stops.
+  decision: null
+- id: d03
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: practice
+  tag: model_capability
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 50.0
+  quote: GPT‑5.6 Luna is the biggest step change in agentic behavior we’ve seen since putting
+    GPT‑4o mini into production. Luna moved us from a single structured-output call to a full
+    tool-calling agent loop, increasing prompt-cache reuse from 24% to 90%. Across thousands
+    of production calls, Luna handles 2.2× more context with 8.5× fewer output tokens—at 87%
+    lower cost than GPT‑5.4 mini.
+  note: ''
+  decision: null
+- id: d04
+  article: '23'
+  title: Confidential submission of draft S-1 to the SEC
+  kind: mechanism
+  tag: lab_capital_access
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 40.0
+    ai_score: 0.0
+  quote: We recently submitted a confidential S-1.
+  note: ''
+  decision: fable
+- id: d05
+  article: '19'
+  title: 'DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live'
+  kind: practice
+  tag: integration
+  field: impact
+  fable: low
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: -33.4
+  quote: 'Images are tokenized for billing: up to 384 tokens each, at V4-Flash pricing'
+  note: ''
+  decision: null
+- id: d06
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: practice
+  tag: integration
+  field: action
+  fable: investigate
+  gold: adopt
+  impact:
+    score: 0.0
+    ai_score: -33.3
+  quote: For GPT‑5.6 and later models, cache writes are billed at 1.25x the model’s uncached
+    input rate, while cache reads continue to receive the 90% cached-input discount.
+  note: ''
+  decision: null
+- id: d07
+  article: '30'
+  title: GPT-5.6 is now the preferred model in Microsoft 365 Copilot
+  kind: practice
+  tag: model_capability
+  field: presence
+  fable: absent
+  gold: present (adopt/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: -33.3
+  quote: In Word, GPT‑5.6 can help people draft, edit, and refine documents with fewer rounds
+    of prompting.
+  note: Teams building on GPT-5.6 could expect better performance-per-dollar, stronger handling
+    of complex tasks, and fewer prompting rounds needed for quality output.
+  decision: null
+- id: d08
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: mechanism
+  tag: agentic_workflows
+  field: presence
+  fable: present (medium/high/positive)
+  gold: absent
+  impact:
+    score: 26.7
+    ai_score: 0.0
+  quote: Codex on Amazon Bedrock brings OpenAI’s leading software engineering agent - used
+    by more than 5 million people every week - into AWS
+  note: A coding agent with stated multi-million weekly usage moves into enterprise environments
+    where the displaced work lives.
+  decision: null
+- id: d09
+  article: '19'
+  title: 'DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live'
+  kind: practice
+  tag: integration
+  field: action
+  fable: watch
+  gold: adopt
+  impact:
+    score: 0.0
+    ai_score: -22.3
+  quote: 'Images are tokenized for billing: up to 384 tokens each, at V4-Flash pricing'
+  note: ''
+  decision: null
+- id: d10
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: practice
+  tag: integration
+  field: action
+  fable: investigate
+  gold: adopt
+  impact:
+    score: 0.0
+    ai_score: -22.3
+  quote: Customers can now bring OpenAI capabilities into AWS environments with the controls
+    their teams already trust, helping them move faster from evaluation to real deployment.
+  note: ''
+  decision: fable
+- id: d11
+  article: '25'
+  title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+  kind: practice
+  tag: evaluation
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 22.2
+  quote: Commonly used robustness evaluations have already been saturated by our latest models.
+  note: ''
+  decision: null
+- id: d12
+  article: '25'
+  title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+  kind: practice
+  tag: model_capability
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 22.2
+  quote: GPT‑5.6 Sol is our most robust model to prompt injections to date, achieving 6x fewer
+    failures on our hardest direct prompt injection benchmark compared to our best production
+    model from just four months earlier.
+  note: ''
+  decision: null
+- id: d13
+  article: '26'
+  title: A scorecard for the AI age
+  kind: practice
+  tag: evaluation
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 22.2
+  quote: 'Teams can make this concrete by tracking three outcomes: Ready to use: The result
+    met the quality bar as delivered. Needs correction: The result required another attempt
+    or human edits. Needs escalation: A person needed to step in and finish the work.'
+  note: ''
+  decision: null
+- id: d14
+  article: '26'
+  title: A scorecard for the AI age
+  kind: practice
+  tag: model_capability
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 22.2
+  quote: GPT‑5.6 Sol reaches a new high of 72.7%, above Claude Fable 5’s 69.9%, at 36.2% lower
+    estimated API cost.
+  note: ''
+  decision: null
+- id: d15
+  article: '29'
+  title: How agents are transforming work
+  kind: practice
+  tag: orchestration
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 22.2
+  quote: users moved from only asking Codex for one answer at a time into increasingly orchestrating
+    multiple agent tasks over the course of a day.
+  note: ''
+  decision: null
+- id: d16
+  article: '25'
+  title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+  kind: mechanism
+  tag: training_compute_up
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 20.0
+    ai_score: 0.0
+  quote: We trained GPT‑Red at the compute scale of some of our largest post-training runs
+    at OpenAI—an unprecedented amount of compute dedicated purely for improving safety.
+  note: ''
+  decision: null
+- id: d17
+  article: '29'
+  title: How agents are transforming work
+  kind: mechanism
+  tag: agentic_workflows
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 20.0
+    ai_score: 0.0
+  quote: Agentic AI changes the unit of knowledge work from single interactions to delegated,
+    long-horizon tasks.
+  note: ''
+  decision: null
+- id: d18
+  article: '29'
+  title: How agents are transforming work
+  kind: mechanism
+  tag: inference_volume_up
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 20.0
+    ai_score: 0.0
+  quote: 'Research saw the biggest jump: by June 2026, median use was 56 times higher than
+    in November 2025.'
+  note: ''
+  decision: null
+- id: d19
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: mechanism
+  tag: capability_jump
+  field: presence
+  fable: absent
+  gold: present (medium/medium/positive)
+  impact:
+    score: -13.3
+    ai_score: 0.0
+  quote: As we’ve tested MHS, we’ve found that Claude interacts with experiments and hardware
+    in an exploratory manner, much as a scientist would.
+  note: Claude demonstrates exploratory reasoning, real-time adjustment, and autonomous error
+    recovery while operating physical lab hardware, extending agentic tool use into a new
+    task domain.
+  decision: null
+- id: d20
+  article: '23'
+  title: Confidential submission of draft S-1 to the SEC
+  kind: mechanism
+  tag: lab_capital_access
+  field: magnitude
+  fable: medium
+  gold: high
+  impact:
+    score: -13.3
+    ai_score: 0.0
+  quote: We recently submitted a confidential S-1.
+  note: ''
+  decision: null
+- id: d21
+  article: '28'
+  title: How HSP GRUPPE builds AI capabilities for tax advisory
+  kind: mechanism
+  tag: agentic_workflows
+  field: presence
+  fable: present (low/high/positive)
+  gold: absent
+  impact:
+    score: 13.3
+    ai_score: 0.0
+  quote: Partner Magdalene Posnak reduced the time required to evaluate multiple real estate
+    investments from nine hours to around two
+  note: Quantified displacement of professional-services hours at a single mid-market customer
+    — real but small evidence for the mechanism.
+  decision: null
+- id: d22
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: practice
+  tag: integration
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 11.1
+  quote: MHS works with any device that has a programmable interface. It is also model-agnostic,
+    and any agent harness can access it using standard protocols, such as the Model Context
+    Protocol .
+  note: ''
+  decision: null
+- id: d23
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: practice
+  tag: orchestration
+  field: impact
+  fable: medium
+  gold: high
+  impact:
+    score: 0.0
+    ai_score: -11.1
+  quote: The agent can sequence steps across instruments, monitor results, and adjust parameters
+    as conditions change in real time.
+  note: ''
+  decision: null
+- id: d24
+  article: '25'
+  title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+  kind: practice
+  tag: evaluation
+  field: impact
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 11.1
+  quote: Commonly used robustness evaluations have already been saturated by our latest models.
+  note: ''
+  decision: null
+- id: d25
+  article: '28'
+  title: How HSP GRUPPE builds AI capabilities for tax advisory
+  kind: practice
+  tag: orchestration
+  field: confidence
+  fable: high
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 11.1
+  quote: the organization also began standardizing successful use cases into custom Agents
+  note: ''
+  decision: null
+- id: d26
+  article: '29'
+  title: How agents are transforming work
+  kind: practice
+  tag: orchestration
+  field: action
+  fable: watch
+  gold: investigate
+  impact:
+    score: 0.0
+    ai_score: -11.1
+  quote: users moved from only asking Codex for one answer at a time into increasingly orchestrating
+    multiple agent tasks over the course of a day.
+  note: ''
+  decision: null
+- id: d27
+  article: '22'
+  title: 'Learning never stops: How AI makes learning continuous'
+  kind: mechanism
+  tag: inference_volume_up
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 10.0
+    ai_score: 0.0
+  quote: prompts related to classwork and homework peak at more than 460 million messages
+    per week during the school year and climb on Sunday evenings
+  note: ''
+  decision: null
+- id: d28
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: mechanism
+  tag: inference_volume_up
+  field: confidence
+  fable: medium
+  gold: low
+  impact:
+    score: 6.7
+    ai_score: 0.0
+  quote: opening a new path for millions of AWS customers to build with OpenAI through the
+    platform they already use to run their business
+  note: ''
+  decision: null
+- id: d29
+  article: '27'
+  title: Data science workflows with ChatGPT Work
+  kind: practice
+  tag: orchestration
+  field: confidence
+  fable: medium
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 5.6
+  quote: Learn practical ChatGPT Work workflows for root-cause briefs, KPI memos, scoped analyses,
+    and dashboard specifications.
+  note: ''
+  decision: null
+- id: d30
+  article: '01'
+  title: Investigating three real-world incidents in our cybersecurity evaluations
+  kind: practice
+  tag: model_capability
+  field: presence
+  fable: absent
+  gold: present (watch/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: the behavior we most want to see—recognizing that a target is real and stopping without
+    being prompted—occurred only in the most recent of the three models (and even that model
+    went further before stopping than we would want).
+  note: Across the three models observed, only the most recent one recognized it was operating
+    on real systems and stopped unprompted, a reliability/alignment behavior difference worth
+    monitoring across model generations.
+  decision: null
+- id: d31
+  article: '01'
+  title: Investigating three real-world incidents in our cybersecurity evaluations
+  kind: practice
+  tag: orchestration
+  field: presence
+  fable: absent
+  gold: present (investigate/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: it’s likely, for instance, that Claude wouldn’t have accessed the internet to begin
+    with if the prompt had clearly explained which systems were in and out of scope for the
+    evaluation.
+  note: The document suggests that clearer prompt scoping of in/out-of-scope systems could
+    have prevented the model from treating real systems as part of the simulation, a prompt-structure
+    fix relevant to agentic task design.
+  decision: null
+- id: d32
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: mechanism
+  tag: agentic_workflows
+  field: presence
+  fable: absent
+  gold: present (medium/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Luna moved us from a single structured-output call to a full tool-calling agent loop,
+    increasing prompt-cache reuse from 24% to 90%.
+  note: A customer describes moving from single-call structured output to a full tool-calling
+    agent loop enabled by the new model, consistent with a shift toward agentic, tool-using
+    systems.
+  decision: null
+- id: d33
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: mechanism
+  tag: memory_intensity_up
+  field: presence
+  fable: absent
+  gold: present (low/low/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Luna handles 2.2× more context with 8.5× fewer output tokens—at 87% lower cost than
+    GPT‑5.4 mini.
+  note: A cited production deployment reports handling substantially more context per call,
+    which increases KV-cache and memory pressure even as output tokens fall.
+  decision: null
+- id: d34
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: category
+  tag: accelerator_custom_si
+  field: presence
+  fable: absent
+  gold: present (low/mixed)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: The kernel work helped reduce the end-to-end cost of serving the model by 20%, while
+    its experiments increased token-generation efficiency by more than 15%.
+  note: Serving-side efficiency gains reduce hardware work needed per token even as volume
+    growth could increase aggregate accelerator demand, pulling in opposite directions for
+    chip makers.
+  decision: null
+- id: d35
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: category
+  tag: hyperscale_platform
+  field: presence
+  fable: absent
+  gold: present (low/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Pricing changes will begin rolling out in AWS later today.
+  note: The new pricing is being rolled out through AWS, tying the change to a hyperscale
+    cloud platform's hosted API usage.
+  decision: null
+- id: d36
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: practice
+  tag: serving_efficiency
+  field: presence
+  fable: absent
+  gold: present (watch/low/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Within a human-led process, Sol autonomously rewrote and optimized production kernels,
+    designed and ran hundreds of experiments to improve token generation, and monitored training,
+    intervening when problems arose.
+  note: The described kernel rewriting and token-generation experiments are internal OpenAI
+    engineering work, directionally interesting but not a technique an external team can directly
+    replicate.
+  decision: null
+- id: d37
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: practice
+  tag: integration
+  field: action
+  fable: watch
+  gold: adopt
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: 'Fast mode is backward compatible: requests tagged priority will automatically use
+    Fast mode.'
+  note: ''
+  decision: null
+- id: d38
+  article: '04'
+  title: Advancing the price-performance frontier with GPT-5.6
+  kind: practice
+  tag: model_capability
+  field: dimensions
+  fable:
+  - cost
+  - latency
+  gold:
+  - cost
+  - agentic_tool_use
+  - long_context
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: GPT‑5.6 Luna is the biggest step change in agentic behavior we’ve seen since putting
+    GPT‑4o mini into production. Luna moved us from a single structured-output call to a full
+    tool-calling agent loop, increasing prompt-cache reuse from 24% to 90%. Across thousands
+    of production calls, Luna handles 2.2× more context with 8.5× fewer output tokens—at 87%
+    lower cost than GPT‑5.4 mini.
+  note: ranking only; does not enter the score
+  decision: null
+- id: d39
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: mechanism
+  tag: agentic_workflows
+  field: presence
+  fable: present (low/high/positive)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: MHS also helps researchers and engineers more readily orchestrate autonomous, round-the-clock
+    experiments and workflows
+  note: A standard for agents to operate physical instruments moves lab and manufacturing
+    work from human operators to agents, though only at research-preview scale.
+  decision: null
+- id: d40
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: mechanism
+  tag: inference_volume_up
+  field: presence
+  fable: absent
+  gold: present (low/low/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: MHS also helps researchers and engineers more readily orchestrate autonomous, round-the-clock
+    experiments and workflows, with agents able to reason through each step in an experiment,
+    update parameters in real time, and, in some cases, recover from hardware errors without
+    intervention.
+  note: Enabling autonomous round-the-clock agent-run experiments implies more continuous
+    per-step inference calls than human-supervised lab workflows.
+  decision: null
+- id: d41
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: category
+  tag: health_insurance
+  field: presence
+  fable: absent
+  gold: present (low/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Researchers at Genentech implemented and tested MHS as a proof-of-concept for automating
+    the BCA protein assay, a standard procedure to measure total protein concentration in
+    a sample, which requires coordinating across a liquid handler, a robotic arm, and a plate
+    reader.
+  note: A biotech/drug-discovery company is adopting AI-agent-driven lab automation to speed
+    up experimental workflows.
+  decision: null
+- id: d42
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: practice
+  tag: model_capability
+  field: presence
+  fable: absent
+  gold: present (investigate/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Claude encountered several unexpected errors, including tip pickup failures and fluid
+    detection errors, but managed to recover on its own—a capability that current scientific
+    instruments mostly lack.
+  note: Claude showed autonomous error recovery, exploratory reasoning, and tool-use across
+    multiple physical instruments, though with noted limits on physical-world troubleshooting.
+  decision: null
+- id: d43
+  article: '05'
+  title: Previewing the Model Hardware Standard
+  kind: practice
+  tag: integration
+  field: action
+  fable: watch
+  gold: investigate
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: MHS works with any device that has a programmable interface. It is also model-agnostic,
+    and any agent harness can access it using standard protocols, such as the Model Context
+    Protocol .
+  note: ''
+  decision: null
+- id: d44
+  article: '07'
+  title: More details on Fable 5’s cyber safeguards and our jailbreak framework
+  kind: practice
+  tag: integration
+  field: presence
+  fable: present (watch/medium/high)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: For Fable 5, we expect to block these types of actions until we have better controls
+    to limit access to known good actors.
+  note: The published classifier categories define what security-adjacent products can and
+    cannot build on Fable 5 — pen-testing-class requests are blocked.
+  decision: null
+- id: d45
+  article: '07'
+  title: More details on Fable 5’s cyber safeguards and our jailbreak framework
+  kind: practice
+  tag: evaluation
+  field: action
+  fable: investigate
+  gold: watch
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we train our safety classifiers to discern between four categories of cybersecurity
+    use, from the most clearly potentially dangerous to the most clearly potentially benign.
+  note: ''
+  decision: null
+- id: d46
+  article: '07'
+  title: More details on Fable 5’s cyber safeguards and our jailbreak framework
+  kind: practice
+  tag: evaluation
+  field: impact
+  fable: medium
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we train our safety classifiers to discern between four categories of cybersecurity
+    use, from the most clearly potentially dangerous to the most clearly potentially benign.
+  note: ''
+  decision: null
+- id: d47
+  article: '07'
+  title: More details on Fable 5’s cyber safeguards and our jailbreak framework
+  kind: practice
+  tag: evaluation
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we train our safety classifiers to discern between four categories of cybersecurity
+    use, from the most clearly potentially dangerous to the most clearly potentially benign.
+  note: ''
+  decision: null
+- id: d48
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: mechanism
+  tag: inference_cost_down
+  field: presence
+  fable: absent
+  gold: present (medium/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: 'Fable 5 is also more token-efficient than past Claude models: on Cognition’s FrontierCode
+    evaluation, which tests whether models can pass difficult coding tasks while meeting the
+    standards of high-quality production codebases, Fable 5 scores highest among frontier
+    models, even at medium effort.'
+  note: The document states the model is more token-efficient than prior Claude models on
+    a coding evaluation, implying reduced work per token for comparable output.
+  decision: null
+- id: d49
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: mechanism
+  tag: memory_intensity_up
+  field: presence
+  fable: absent
+  gold: present (medium/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Fable 5 stays focused across millions of tokens in long-running tasks and improves
+    its outputs using its own notes.
+  note: Sustained attention across millions of tokens and persistent notes increase context
+    and memory demands per session.
+  decision: null
+- id: d50
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: mechanism
+  tag: agentic_workflows
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: a future where developers can hand increasingly ambitious work to agents and trust
+    the results across the software lifecycle.
+  note: ''
+  decision: null
+- id: d51
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: mechanism
+  tag: inference_volume_up
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Fable 5 and Mythos 5 can work autonomously for longer than any previous Claude models.
+  note: ''
+  decision: null
+- id: d52
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: category
+  tag: health_insurance
+  field: presence
+  fable: present (medium/positive)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: our internal protein design experts accelerated aspects of the drug design process
+    by around 10 times
+  note: A stated ~10x acceleration of drug design steps reaches clinical-stage businesses
+    as an enabling capability.
+  decision: null
+- id: d53
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: practice
+  tag: evaluation
+  field: action
+  fable: watch
+  gold: investigate
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: We extensively red-teamed our classifiers to test their robustness against jailbreaks.
+    As well as internal testing, we ran an external bug bounty that produced no universal
+    jailbreaks in over 1,000 hours of testing.
+  note: ''
+  decision: null
+- id: d54
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: practice
+  tag: evaluation
+  field: impact
+  fable: low
+  gold: high
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: We extensively red-teamed our classifiers to test their robustness against jailbreaks.
+    As well as internal testing, we ran an external bug bounty that produced no universal
+    jailbreaks in over 1,000 hours of testing.
+  note: ''
+  decision: null
+- id: d55
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: practice
+  tag: model_capability
+  field: dimensions
+  fable:
+  - coding
+  - agentic_tool_use
+  - vision_multimodal
+  gold:
+  - coding
+  - reasoning
+  - vision_multimodal
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: showing exceptional performance in software engineering, knowledge work, vision,
+    scientific research, and many other areas.
+  note: ranking only; does not enter the score
+  decision: null
+- id: d56
+  article: '12'
+  title: Claude Fable 5 and Claude Mythos 5
+  kind: practice
+  tag: orchestration
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: giving it access to persistent file-based memory improved its performance three times
+    more than for Opus 4.8; Fable also reached the game’s final act three times more often.
+  note: ''
+  decision: null
+- id: d57
+  article: '15'
+  title: Jalapeño’s first results show industry-leading speed and efficiency in AI inference
+  kind: mechanism
+  tag: ai_capex_investments
+  field: presence
+  fable: absent
+  gold: present (low/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: 'It is the first generation of a multigenerational roadmap: Gen 2 is deep in development,
+    and Gen 3 is taking shape.'
+  note: OpenAI states it will deploy the chip into its own compute infrastructure and continue
+    a multigenerational hardware roadmap, implying continued capital commitment to custom
+    silicon.
+  decision: null
+- id: d58
+  article: '15'
+  title: Jalapeño’s first results show industry-leading speed and efficiency in AI inference
+  kind: mechanism
+  tag: inference_volume_up
+  field: magnitude
+  fable: medium
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: By producing more useful work from the same power and hardware, Jalapeño can help
+    us serve more demand and lower the cost of delivering a successful result.
+  note: ''
+  decision: null
+- id: d59
+  article: '15'
+  title: Jalapeño’s first results show industry-leading speed and efficiency in AI inference
+  kind: category
+  tag: accelerator_custom_si
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Jalapeño is working first-party silicon with measured results, and it is the beginning
+    of a multigenerational platform.
+  note: ''
+  decision: null
+- id: d60
+  article: '15'
+  title: Jalapeño’s first results show industry-leading speed and efficiency in AI inference
+  kind: practice
+  tag: evaluation
+  field: presence
+  fable: present (watch/low/high)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we tested it on InferenceX, a public benchmark from SemiAnalysis that measures the
+    full process of serving an AI request
+  note: InferenceX is a public, third-party way to compare serving systems end to end at matched
+    user experience.
+  decision: null
+- id: d61
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: mechanism
+  tag: export_controls
+  field: presence
+  fable: present (medium/high/positive)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: At their request, we are starting with a limited preview for a small group of trusted
+    partners whose participation has been shared with the government, before releasing more
+    broadly.
+  note: 'The US government now gates frontier release timing: launch is a limited preview
+    at the government''s request, pending a cyber Executive Order framework.'
+  decision: null
+- id: d62
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: mechanism
+  tag: inference_volume_up
+  field: presence
+  fable: absent
+  gold: present (medium/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we’re introducing a new `ultra` mode that goes beyond the capabilities of a single
+    agent by leveraging subagents to accelerate complex work
+  note: New max reasoning effort and multi-agent ultra mode increase the amount of test-time
+    compute and number of agent calls spent per task.
+  decision: null
+- id: d63
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: mechanism
+  tag: inference_cost_down
+  field: magnitude
+  fable: medium
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: On GeneBench v1 , which evaluates long-horizon genomics and quantitative-biology
+    analyses, it achieves stronger results than GPT‑5.5 while using fewer tokens.
+  note: ''
+  decision: null
+- id: d64
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: mechanism
+  tag: inference_cost_down
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: On GeneBench v1 , which evaluates long-horizon genomics and quantitative-biology
+    analyses, it achieves stronger results than GPT‑5.5 while using fewer tokens.
+  note: ''
+  decision: null
+- id: d65
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: category
+  tag: accelerator_custom_si
+  field: sign
+  fable: mixed
+  gold: positive
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: We're also launching GPT‑5.6 Sol on Cerebras at up to 750 tokens per second in July,
+    bringing frontier intelligence to customers at unprecedented speed.
+  note: ''
+  decision: null
+- id: d66
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: practice
+  tag: evaluation
+  field: presence
+  fable: present (watch/medium/high)
+  gold: absent
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: We dedicated over 700,000 A100-equivalent GPU hours to automated red teaming aimed
+    at finding universal jailbreaks
+  note: Compute-scale automated red-teaming for universal jailbreaks signals where safety
+    evaluation practice is heading.
+  decision: null
+- id: d67
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: practice
+  tag: orchestration
+  field: presence
+  fable: absent
+  gold: present (investigate/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: we’re introducing a new `ultra` mode that goes beyond the capabilities of a single
+    agent by leveraging subagents to accelerate complex work
+  note: The new multi-agent 'ultra' mode changes how complex tasks could be decomposed across
+    subagents, relevant to pipeline design.
+  decision: null
+- id: d68
+  article: '16'
+  title: 'Previewing GPT-5.6 Sol: a next-generation model'
+  kind: practice
+  tag: serving_efficiency
+  field: presence
+  fable: absent
+  gold: present (investigate/medium/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: We're also launching GPT‑5.6 Sol on Cerebras at up to 750 tokens per second in July,
+    bringing frontier intelligence to customers at unprecedented speed.
+  note: Hardware-specific deployment on Cerebras promising very high token throughput is a
+    serving option worth evaluating for latency-sensitive use cases.
+  decision: null
+- id: d69
+  article: '19'
+  title: 'DeepSeek-V4-Flash-Vision-Exp Release: Multimodal API Now Live'
+  kind: practice
+  tag: orchestration
+  field: presence
+  fable: absent
+  gold: present (watch/low/medium)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: DeepSeek Harness 0.1.1 was released today with out-of-the-box support for the new
+    model.
+  note: Support for the new model in the DeepSeek Harness suggests agent scaffolding compatibility
+    worth monitoring but with no described change in orchestration technique.
+  decision: null
+- id: d70
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: mechanism
+  tag: inference_volume_up
+  field: magnitude
+  fable: medium
+  gold: low
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: opening a new path for millions of AWS customers to build with OpenAI through the
+    platform they already use to run their business
+  note: ''
+  decision: null
+- id: d71
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: category
+  tag: ai_compute_hosting
+  field: presence
+  fable: absent
+  gold: present (medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Today, OpenAI frontier models and Codex are generally available on AWS
+  note: AWS now hosts OpenAI inference workloads for third-party enterprise customers under
+    its own security and compliance framework.
+  decision: null
+- id: d72
+  article: '20'
+  title: OpenAI frontier models and Codex are now available on AWS
+  kind: category
+  tag: hyperscale_platform
+  field: confidence
+  fable: high
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: OpenAI models on Amazon Bedrock allows teams to build AI applications using AWS-native
+    security and governance controls.
+  note: ''
+  decision: null
+- id: d73
+  article: '21'
+  title: New OpenAI Academy courses for the next era of work
+  kind: practice
+  tag: integration
+  field: presence
+  fable: absent
+  gold: present (watch/low/low)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Agents and Workflows focuses on how to direct agent-assisted work by providing context,
+    defining outputs and boundaries, and reviewing results.
+  note: The course discusses directing agent-assisted work with defined outputs and boundaries,
+    relevant to how teams would integrate agents, but is training material rather than an
+    API or protocol change.
+  decision: null
+- id: d74
+  article: '21'
+  title: New OpenAI Academy courses for the next era of work
+  kind: practice
+  tag: orchestration
+  field: presence
+  fable: absent
+  gold: present (watch/low/low)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Applied AI Foundations teaches how to turn effective prompts into structured, repeatable
+    workflows. Learners understand how to develop a workflow plan that defines the right inputs,
+    models, tools, checkpoints, and human review, while balancing quality, speed, and cost.
+  note: The course teaches building structured, repeatable workflows around models including
+    inputs, tools, checkpoints and human review, but offers no concrete technique an engineering
+    team could adopt directly.
+  decision: null
+- id: d75
+  article: '24'
+  title: A blueprint for democratic governance of frontier AI
+  kind: event_type
+  tag: '-'
+  field: event_type
+  fable: safety_policy
+  gold: regulatory_action
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: ''
+  note: weights 1 vs 4
+  decision: null
+- id: d76
+  article: '25'
+  title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+  kind: practice
+  tag: evaluation
+  field: action
+  fable: investigate
+  gold: watch
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Commonly used robustness evaluations have already been saturated by our latest models.
+  note: ''
+  decision: null
+- id: d77
+  article: '26'
+  title: A scorecard for the AI age
+  kind: mechanism
+  tag: capability_jump
+  field: presence
+  fable: absent
+  gold: present (low/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: 'DeepSWE v1.1 : Long-horizon engineering tasks; GPT‑5.6 Sol reaches a new high of
+    72.7%, above Claude Fable 5’s 69.9%, at 36.2% lower estimated API cost.'
+  note: A specific coding benchmark result is cited as a new state-of-the-art result surpassing
+    a named competitor model.
+  decision: null
+- id: d78
+  article: '26'
+  title: A scorecard for the AI age
+  kind: practice
+  tag: model_capability
+  field: action
+  fable: watch
+  gold: investigate
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: GPT‑5.6 Sol reaches a new high of 72.7%, above Claude Fable 5’s 69.9%, at 36.2% lower
+    estimated API cost.
+  note: ''
+  decision: null
+- id: d79
+  article: '26'
+  title: A scorecard for the AI age
+  kind: practice
+  tag: model_capability
+  field: impact
+  fable: low
+  gold: medium
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: GPT‑5.6 Sol reaches a new high of 72.7%, above Claude Fable 5’s 69.9%, at 36.2% lower
+    estimated API cost.
+  note: ''
+  decision: null
+- id: d80
+  article: '29'
+  title: How agents are transforming work
+  kind: mechanism
+  tag: capability_jump
+  field: presence
+  fable: absent
+  gold: present (low/medium/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: 25.6% made at least one Codex request estimated to exceed eight hours.
+  note: Users increasingly delegate tasks that would take many hours of human work, indicating
+    agents crossing new task-horizon thresholds.
+  decision: null
+- id: d81
+  article: '29'
+  title: How agents are transforming work
+  kind: practice
+  tag: evaluation
+  field: presence
+  fable: absent
+  gold: present (watch/low/low)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Task horizon is estimated using an LLM-as-judge with access to Codex transcripts.
+  note: The paper uses an LLM-as-judge method to estimate task horizon, which is a measurement
+    technique worth tracking but not detailed enough to adopt.
+  decision: null
+- id: d82
+  article: '30'
+  title: GPT-5.6 is now the preferred model in Microsoft 365 Copilot
+  kind: mechanism
+  tag: inference_cost_down
+  field: presence
+  fable: absent
+  gold: present (low/low/positive)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: GPT‑5.6 is OpenAI’s latest flagship model series, which delivers more useful work
+    from every token, with stronger performance per dollar and on demand capability for the
+    most complex tasks.
+  note: The model is described as delivering more work per token and better performance per
+    dollar, implying reduced compute per unit of useful output.
+  decision: null
+- id: d83
+  article: '30'
+  title: GPT-5.6 is now the preferred model in Microsoft 365 Copilot
+  kind: practice
+  tag: integration
+  field: presence
+  fable: absent
+  gold: present (watch/low/low)
+  impact:
+    score: 0.0
+    ai_score: 0.0
+  quote: Microsoft will also access OpenAI models directly through the API to bring GPT‑5.6
+    to Microsoft 365 customers.
+  note: Microsoft's shift to consuming OpenAI models directly via API for a major enterprise
+    surface signals a distribution pattern worth tracking, though no new API surface for external
+    developers is described.
+  decision: null

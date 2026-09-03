@@ -1,0 +1,469 @@
+"""Two kinds of alert, one dispatcher, and a dedupe key that does the real work.
+
+CLAUDE.md requires system-failure alerting **distinct from** content alerting,
+and the distinction is not cosmetic. A `system` alert says the pipeline is
+broken and someone has to fix it. A `content` alert says the pipeline is working
+and found something. They share a table because they share a lifecycle — raise,
+record, deliver — and nothing else; every consumer filters on `kind`.
+
+**The dedupe key is the design.** Rules are re-evaluated on every firing, so a
+naive implementation alerts about the same dead source every night for a week
+and trains everyone to ignore it. Each rule therefore keys on the thing that
+identifies the *episode* rather than the check:
+
+* `source_down` keys on the source's `last_success_at` — the moment the outage
+  began. That value does not change while the source stays down, so one outage
+  produces one alert however many runs it spans, and a recovery followed by a
+  new failure produces a genuinely new one.
+* Content rules key on the item, so an article alerts once ever, not once per
+  run for as long as it stays in the rolling window.
+* `run_failed` keys on the run id — each failed run is a distinct event.
+* `drift` keys on the last snapshot that was *above* the floor, which is the
+  episode's start and does not move while agreement stays down. Keying on the
+  measurement re-alerted every firing, since a snapshot is written each time.
+
+Delivery is capped per run. Recording is not. Everything raised is written and
+visible; beyond the cap it is simply not pushed, with the reason recorded —
+which is what stops the first run (16 high-band articles already in the corpus)
+from firing sixteen notifications, without silently dropping fifteen of them.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app import models as m
+from app.models import utcnow
+from app.pipeline import state as state_mod
+
+CONFIG = Path(__file__).parent.parent.parent / "config" / "pipeline.yaml"
+
+SYSTEM, CONTENT = "system", "content"
+INFO, WARNING, CRITICAL = "info", "warning", "critical"
+
+# Ascending, so "at or above `content_band`" is an index comparison.
+BANDS = ("none", "low", "medium", "high")
+
+WEBHOOK_ENV = "ALERT_WEBHOOK_URL"
+DELIVERY_TIMEOUT_S = 10
+
+
+@dataclass(frozen=True)
+class Candidate:
+    """An alert a rule wants raised, before dedupe decides whether it is new."""
+
+    kind: str
+    rule: str
+    severity: str
+    subject: str
+    body: str
+    dedupe_key: str
+    payload: dict = field(default_factory=dict)
+    run_id: int | None = None
+
+
+def settings(path: Path = CONFIG) -> dict:
+    """The `alerts` block of config/pipeline.yaml."""
+    return yaml.safe_load(path.read_text(encoding="utf-8"))["alerts"]
+
+
+# --------------------------------------------------------------------------
+# System rules — the pipeline is broken
+# --------------------------------------------------------------------------
+
+def run_failed(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """Runs that failed and have not been alerted on.
+
+    This is the standing query `app/runs.py` was written around
+    (``status='failed' AND alerted_at IS NULL``) and which nothing has ever
+    executed until now.
+    """
+    runs = session.scalars(
+        select(m.PipelineRun).where(
+            m.PipelineRun.status == "failed", m.PipelineRun.alerted_at.is_(None)
+        )
+    ).all()
+    return [
+        Candidate(
+            kind=SYSTEM, rule="run_failed", severity=CRITICAL,
+            subject=f"Pipeline run {run.id} ({run.kind}) failed",
+            body=(run.error or "no error recorded")[:2000],
+            dedupe_key=f"run_failed:{run.id}",
+            payload={"run_id": run.id, "kind": run.kind, "stats": run.stats or {}},
+            run_id=run.id,
+        )
+        for run in runs
+    ]
+
+
+def source_down(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """Sources that have failed `source_down_runs` scheduled runs in a row.
+
+    One firing down and back up is noise and the next run's own per-request
+    retries handle it; N in a row is an incident (planning.md §4b).
+
+    Keyed on `last_success_at`, which is when the outage started and does not
+    move while it continues. That is what makes a week-long outage one alert.
+    """
+    threshold = int(config.get("source_down_runs", 3))
+    out = []
+    for st in state_mod.failing(session, threshold):
+        since = st.last_success_at.isoformat() if st.last_success_at else "never"
+        out.append(Candidate(
+            kind=SYSTEM, rule="source_down", severity=WARNING,
+            subject=f"{st.leg}/{st.source_id} has failed {st.consecutive_failures} runs",
+            body=(
+                f"Last succeeded: {since}. "
+                f"Last error: {(st.last_error or 'none recorded')[:500]}"
+            ),
+            dedupe_key=f"source_down:{st.leg}:{st.source_id}:{since}",
+            payload={
+                "leg": st.leg, "source_id": st.source_id,
+                "consecutive_failures": st.consecutive_failures,
+                "last_success_at": since,
+            },
+            run_id=context.get("run_id"),
+        ))
+    return out
+
+
+def budget_exceeded(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """The run hit a spending ceiling and stopped classifying.
+
+    Not derived from the database: the breach is a fact about the run in
+    progress, handed in by the worker as `context["budget_breach"]`.
+    """
+    breach = context.get("budget_breach")
+    if breach is None:
+        return []
+    run_id = context.get("run_id")
+    # A per-run breach is this run's problem; a per-month breach is the month's,
+    # so it must not re-alert on every subsequent run in the same month.
+    scope_key = (
+        f"run:{run_id}" if breach.scope == "per-run"
+        else datetime.now(timezone.utc).strftime("%Y-%m")
+    )
+    return [Candidate(
+        kind=SYSTEM, rule="budget_exceeded",
+        severity=WARNING if breach.scope == "per-run" else CRITICAL,
+        subject=f"{breach.scope} LLM budget exceeded",
+        body=(
+            f"${breach.spent:.4f} spent against a ${breach.limit:.2f} ceiling. "
+            "Classification stopped; ingested data was still committed."
+        ),
+        dedupe_key=f"budget_exceeded:{breach.scope}:{scope_key}",
+        payload={"scope": breach.scope, "spent": breach.spent, "limit": breach.limit,
+                 "skipped": context.get("skipped_for_budget")},
+        run_id=run_id,
+    )]
+
+
+def prompt_version_of(context: dict) -> str:
+    """Which classifier the drift alert is about; versions are not comparable."""
+    return str((context.get("drift") or {}).get("prompt_version") or "current")
+
+
+def drift(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """Classifier agreement fell below the floor.
+
+    A **system** alert, deliberately. A scorer quietly becoming less consistent
+    is the pipeline degrading, not a finding about the world — it is precisely
+    the silent failure this project exists to catch (planning.md §6a).
+    """
+    from app.pipeline import drift as drift_mod
+
+    metrics = context.get("drift")
+    if not metrics:
+        return []
+    floor = float(config.get("drift_agreement_floor", 0.8))
+    if not drift_mod.below_floor(metrics, floor):
+        return []
+    # Keyed on the episode, not the measurement. `record()` writes a fresh
+    # snapshot every firing, so keying on its id re-alerted nightly for one
+    # ongoing degradation -- the failure `source_down` avoids by keying on
+    # `last_success_at`. The analogue here is the last snapshot that was *above*
+    # the floor: it does not move while agreement stays down, and it changes the
+    # moment the scorer recovers and slips again.
+    last_ok = session.scalar(
+        select(m.GoldSnapshot.id)
+        .where(m.GoldSnapshot.metrics["mechanism_f1"].as_float() >= floor)
+        .order_by(m.GoldSnapshot.id.desc()).limit(1)
+    ) if session is not None else None
+    episode = last_ok if last_ok is not None else "since-first-measurement"
+    return [Candidate(
+        kind=SYSTEM, rule="drift", severity=WARNING,
+        subject=f"Classifier agreement {metrics['mechanism_f1']:.2f} is below {floor:.2f}",
+        body=(
+            f"Mechanism micro-F1 {metrics['mechanism_f1']:.3f} over "
+            f"{metrics.get('compared')} gold items. Mechanisms gate every "
+            "non-zero investment score, so this is score drift."
+        ),
+        dedupe_key=f"drift:{prompt_version_of(context)}:since:{episode}",
+        payload=metrics,
+        run_id=context.get("run_id"),
+    )]
+
+
+# --------------------------------------------------------------------------
+# Content rules — the pipeline found something
+# --------------------------------------------------------------------------
+
+def high_band_items(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """Newly classified articles at or above the configured band.
+
+    Keyed on the article **URL**, not its row id. `articles` is derived: every
+    load wipes the clean layer and rebuilds it, handing every article a fresh
+    autoincrement id. Keying on the id therefore invents a new dedupe key on
+    every firing and re-raises every content alert forever — measured live,
+    135 alerts re-raised on the very next run. The URL is the one identifier
+    that survives the rebuild, and it is also the citation.
+    """
+    floor = config.get("content_band", "high")
+    wanted = set(BANDS[BANDS.index(floor):]) if floor in BANDS else {floor}
+
+    rows = session.execute(
+        select(m.Article, m.Classification)
+        .join(m.Classification, m.Classification.article_id == m.Article.id)
+        .where(m.Classification.band.in_(wanted))
+        .order_by(m.Classification.score.desc())
+    ).all()
+
+    return [
+        Candidate(
+            kind=CONTENT, rule="high_band_item", severity=INFO,
+            subject=f"[{article.lab}] {article.title}"[:300],
+            body=f"{cls.summary}\n\nScore {cls.score:.1f} ({cls.band}). {article.url}",
+            dedupe_key=f"high_band:{article.url}:{cls.prompt_version}",
+            payload={
+                "article_id": article.id, "lab": article.lab, "url": article.url,
+                "score": cls.score, "band": cls.band,
+                "published_on": str(article.published_on),
+            },
+            run_id=context.get("run_id"),
+        )
+        for article, cls in rows
+    ]
+
+
+def holding_impact(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """Article-to-holding links above a strength threshold.
+
+    One alert per (article, holding) rather than per connection row: an article
+    can reach the same holding by several routes, and a reader does not want the
+    same position named four times for one event.
+
+    Keyed on the article URL and the ISIN, both of which survive the rebuild
+    that `load_refs` performs on every load. Row ids do not — see
+    :func:`high_band_items`.
+    """
+    threshold = float(config.get("content_min_strength", 0.5))
+    rows = session.execute(
+        select(m.Connection, m.Article, m.Holding)
+        .join(m.Article, m.Article.id == m.Connection.article_id)
+        .join(m.Holding, m.Holding.isin == m.Connection.isin)
+        .where(m.Connection.strength >= threshold)
+        .order_by(m.Connection.strength.desc())
+    ).all()
+
+    best: dict[tuple[int, str], tuple] = {}
+    for conn, article, holding in rows:
+        key = (conn.article_id, conn.isin)
+        if key not in best:  # rows arrive strongest-first
+            best[key] = (conn, article, holding)
+
+    return [
+        Candidate(
+            kind=CONTENT, rule="holding_impact", severity=INFO,
+            subject=f"{holding.name}: {article.title}"[:300],
+            body=(
+                f"{conn.direction} via {conn.route} ({conn.via}), "
+                f"strength {conn.strength:.2f}\n"
+                f"Evidence: {(conn.article_quote or conn.holding_why or '')[:400]}\n"
+                f"{article.url}"
+            ),
+            dedupe_key=f"holding_impact:{article.url}:{conn.isin}",
+            payload={
+                "article_id": conn.article_id, "isin": conn.isin,
+                "holding": holding.name, "ticker": holding.ticker,
+                "route": conn.route, "via": conn.via,
+                "direction": conn.direction, "strength": conn.strength,
+            },
+            run_id=context.get("run_id"),
+        )
+        for conn, article, holding in best.values()
+    ]
+
+
+RULES = {
+    "run_failed": run_failed,
+    "source_down": source_down,
+    "budget_exceeded": budget_exceeded,
+    "drift": drift,
+    "high_band_item": high_band_items,
+    "holding_impact": holding_impact,
+}
+
+
+def evaluate(
+    session: Session, config: dict | None = None, context: dict | None = None,
+    rules: tuple[str, ...] | None = None,
+) -> list[Candidate]:
+    """Run every rule and return what wants raising.
+
+    Args:
+        session: Open session.
+        config: The `alerts` block; read from disk when omitted.
+        context: This run's facts that no query can supply — `run_id`,
+            `budget_breach`, `drift`, `snapshot_id`.
+        rules: Restrict to named rules; defaults to all.
+
+    Returns:
+        Candidates, system first, then by severity. A rule that raises is a bug
+        in the rule, and is allowed to propagate: an alerter that silently
+        swallows its own failures is the worst component in the system to have
+        fail quietly.
+    """
+    config = config if config is not None else settings()
+    context = context or {}
+    names = rules if rules is not None else tuple(RULES)
+    out = [c for name in names for c in RULES[name](session, config, context)]
+    order = {CRITICAL: 0, WARNING: 1, INFO: 2}
+    return sorted(out, key=lambda c: (c.kind != SYSTEM, order.get(c.severity, 3)))
+
+
+# --------------------------------------------------------------------------
+# Delivery
+# --------------------------------------------------------------------------
+
+def deliver_stdout(alert: m.Alert) -> None:
+    """Print. The dev channel, and the fallback when no webhook is configured."""
+    print(f"[{alert.severity.upper()}] {alert.kind}/{alert.rule}: {alert.subject}")
+
+
+def deliver_webhook(alert: m.Alert) -> None:
+    """POST the alert as JSON to `ALERT_WEBHOOK_URL`.
+
+    Raises:
+        RuntimeError: If no URL is configured — a webhook channel with no URL is
+            a misconfiguration, not a silent no-op.
+        urllib.error.URLError: On a delivery failure, which the caller records
+            rather than treating as fatal.
+    """
+    url = os.environ.get(WEBHOOK_ENV)
+    if not url:
+        raise RuntimeError(f"channel is 'webhook' but {WEBHOOK_ENV} is not set")
+    body = json.dumps({
+        "kind": alert.kind, "rule": alert.rule, "severity": alert.severity,
+        "subject": alert.subject, "text": alert.body, "payload": alert.payload,
+    }).encode()
+    request = urllib.request.Request(
+        url, data=body, headers={"Content-Type": "application/json"}
+    )
+    with urllib.request.urlopen(request, timeout=DELIVERY_TIMEOUT_S) as response:
+        response.read()
+
+
+CHANNELS = {"stdout": deliver_stdout, "webhook": deliver_webhook}
+
+
+def dispatch(
+    session: Session, candidates: list[Candidate], config: dict | None = None,
+    channel: str | None = None,
+) -> dict:
+    """Record new alerts and deliver what the cap allows.
+
+    Recording and delivery are separate on purpose. Everything new is written
+    and visible in the app; delivery is capped so a first run over an existing
+    corpus, or a genuinely busy day, does not fire dozens of notifications. The
+    undelivered ones say why in `delivery_error` rather than looking like
+    failures.
+
+    Args:
+        session: Open session; committed here.
+        candidates: What the rules produced.
+        config: The `alerts` block; read from disk when omitted.
+        channel: Override the configured channel.
+
+    Returns:
+        ``{raised, duplicate, delivered, suppressed, failed}``.
+    """
+    config = config if config is not None else settings()
+    channel = channel or config.get("channel", "stdout")
+    cap = int(config.get("max_deliveries_per_run", 10))
+    send = CHANNELS.get(channel)
+    if send is None:
+        raise ValueError(f"unknown alert channel {channel!r}")
+
+    stats = {"raised": 0, "duplicate": 0, "delivered": 0, "suppressed": 0, "failed": 0}
+    fresh: list[m.Alert] = []
+
+    for candidate in candidates:
+        exists = session.scalar(
+            select(m.Alert).where(m.Alert.dedupe_key == candidate.dedupe_key)
+        )
+        if exists is not None:
+            stats["duplicate"] += 1
+            continue
+        alert = m.Alert(
+            kind=candidate.kind, rule=candidate.rule, severity=candidate.severity,
+            subject=candidate.subject, body=candidate.body,
+            payload=candidate.payload, dedupe_key=candidate.dedupe_key,
+            run_id=candidate.run_id,
+        )
+        session.add(alert)
+        fresh.append(alert)
+        stats["raised"] += 1
+    session.flush()
+
+    for index, alert in enumerate(fresh):
+        if index >= cap:
+            alert.delivery_error = f"suppressed: over the per-run cap of {cap}"
+            stats["suppressed"] += 1
+            continue
+        try:
+            send(alert)
+        except Exception as exc:  # noqa: BLE001 — delivery is best-effort
+            # A channel being down must not fail the run, and must not lose the
+            # alert: the row is the record of truth, delivery is a courtesy.
+            alert.delivery_error = f"{type(exc).__name__}: {exc}"[:1000]
+            stats["failed"] += 1
+        else:
+            alert.sent_at = utcnow()
+            stats["delivered"] += 1
+
+    # Runs alerted on are marked so the standing query stops returning them.
+    for alert in fresh:
+        if alert.rule == "run_failed" and alert.run_id:
+            run = session.get(m.PipelineRun, alert.run_id)
+            if run is not None:
+                run.alerted_at = utcnow()
+
+    session.commit()
+    return stats
+
+
+def recent(session: Session, kind: str | None = None, limit: int = 50) -> list[dict]:
+    """Recent alerts, newest first, for the API and the ops view."""
+    query = select(m.Alert).order_by(m.Alert.id.desc()).limit(limit)
+    if kind:
+        query = query.where(m.Alert.kind == kind)
+    return [
+        {
+            "id": a.id, "kind": a.kind, "rule": a.rule, "severity": a.severity,
+            "subject": a.subject, "body": a.body, "payload": a.payload,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+            "sent_at": a.sent_at.isoformat() if a.sent_at else None,
+            "delivery_error": a.delivery_error, "run_id": a.run_id,
+        }
+        for a in session.scalars(query)
+    ]

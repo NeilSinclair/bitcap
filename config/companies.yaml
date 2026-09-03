@@ -1,0 +1,3269 @@
+# Holdings reference data for the lab -> public equity mapping layer.
+#
+# One entry per security held by a BIT fund, keyed on ISIN (never on name: the
+# fund reports abbreviate inconsistently, and "FTInterInc.Cl.A" is Figure
+# Technology Solutions).
+#
+# `mechanisms` are the joinable key. An LLM tags a lab publication with mechanism
+# ids; deterministic code propagates through these links to reach a holding, with
+# the `why` string as the explanation the UI shows. Ids must exist in
+# mechanisms.yaml — validate.py enforces this.
+#
+# `lab_exposure` is the second joinable key, and it is keyed on the lab rather
+# than the mechanism. Some holdings are exposed to a specific lab directly: an
+# equity stake whose mark lands in the income statement, or a contract whose
+# counterparty is one lab. That exposure survives a publication carrying no
+# mechanism at all — an Anthropic funding round tags nothing, and still moves
+# TeraWulf. Mechanism-only routing drops exactly those items.
+#
+# `lab` ids resolve against sources.yaml. An id not yet in the register is
+# allowed and reported as a dormant edge, so adding the lab to sources.yaml
+# activates it with no change here.
+#
+# Sourcing rule: any number that could move a decision carries a `source`. Where
+# a fact is model knowledge rather than a cited filing, it says so in
+# `unverified`. Fabricated financial detail is the one error class that would
+# discredit the whole tool.
+
+version: 2
+schema:
+  isin: "Primary key, taken from the fund Vermoegensaufstellung."
+  name: "Legal name. This -- not the custodian string in holdings.yaml -- is what the\n    named-mention join matches against."
+  aliases: "Other names the company is called in prose, for the named-mention join.\n    Only add a name that unambiguously means this company: 'AWS' qualifies, 'Figure'\n    and 'Hyperliquid' do not (a common word and a protocol of the same name).\n    Minimum 3 characters; validate.py enforces it."
+  ticker: "Best-effort. ticker_verified stays false until a security master confirms it."
+  ai_role: "primary | secondary | none - see mechanisms.yaml enums."
+  mechanisms: "List of {id, sign, magnitude, confidence, why, source}."
+  lab_exposure: >
+    Direct exposure to one named lab. List of {lab, kind, sign, magnitude,
+    confidence, why, source}. `lab` resolves against sources.yaml; `kind` is
+    equity | revenue_contract | cloud_partnership | supply | credit_support.
+    Same sourcing rule as tailwinds: a source, or an explicit `unverified`.
+  held_by: "Short fund names holding it, from portfolio_views.json."
+
+companies:
+  - isin: US5951121038
+    name: Micron Technology, Inc.
+    ticker: MU
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 8.64
+
+    what_it_does: >
+      Designs and manufactures memory and storage: DRAM, NAND flash and, critically
+      for the AI thesis, high-bandwidth memory (HBM) stacked alongside AI
+      accelerators. One of only three companies at scale in DRAM, with SK Hynix
+      and Samsung.
+
+    revenue_model: >
+      Sells memory chips and modules to hyperscalers, OEMs, handset makers and
+      automotive customers. Historically a brutal commodity cycle — price is set
+      by industry supply against demand, and Micron is a price taker. The AI
+      cycle has partly broken that: HBM is sold under multi-year contracts,
+      which management calls "Strategic Customer Agreements" and explicitly
+      frames as improving "durability and predictability".
+
+    financials:
+      as_of: FQ3 2026, quarter ended 2026-05-28
+      revenue_usd_m: 41456
+      revenue_yoy_pct: 346
+      gaap_gross_margin_pct: 84.6
+      gaap_operating_margin_pct: 80.4
+      diluted_eps_usd: 24.67
+      capex_usd_m: 7100
+      segments:
+        - {name: Cloud Memory, revenue_usd_m: 13769, gross_margin_pct: 83}
+        - {name: Core Data Center, revenue_usd_m: 11524, gross_margin_pct: 87}
+        - {name: Mobile and Client, revenue_usd_m: 11521, gross_margin_pct: 87}
+        - {name: Automotive and Embedded, revenue_usd_m: 4634}
+      derived:
+        datacenter_share_of_revenue_pct: 61.0
+        note: Cloud Memory plus Core Data Center as a share of total revenue.
+      source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      Memory is the binding constraint on AI serving. 61% of revenue is now
+      datacentre, up from roughly a third two years ago, and gross margin has
+      gone from 37.7% to 84.6% year on year — a shortage, not a cycle.
+
+    mechanisms:
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Long context, KV-cache pressure and mixture-of-experts weights raise HBM
+          and DRAM content per accelerator independently of unit volume. This is
+          the single strongest link in the portfolio.
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: Every training cluster ships with HBM attached to each accelerator.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Test-time reasoning and agentic loops raise memory bandwidth demand per
+          served request, not just accelerator count.
+      - id: inference_cost_down
+        sign: negative
+        magnitude: medium
+        confidence: medium
+        why: >
+          Quantisation, sparsity and cheaper attention cut the resident bytes per
+          token, so the same traffic needs less HBM. Tagged on the efficiency
+          alone; the volume offset is deliberately left to inference_volume_up
+          rather than netted off here.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Accelerator, datacentre and power capex converts into memory demand:
+          61% of revenue is now datacentre, so committed AI infrastructure
+          spending lands directly in Cloud Memory and Core Data Center. The
+          converse is the exposure -- a capex pause hits the highest-margin
+          revenue first, which is recorded as the first headwind below.
+      - id: export_controls
+        sign: mixed
+        magnitude: medium
+        confidence: medium
+        why: >
+          Restrictions on HBM to China cut a market but tighten global supply,
+          which supports price. Direction depends on the specific measure.
+      - id: on_device_inference
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Mobile and Client is 28% of revenue; on-device models raise DRAM content
+          per handset and PC.
+
+    tailwinds:
+      - claim: HBM output contracted under multi-year agreements, reducing spot exposure.
+        source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+      - claim: HBM4 in high-volume shipment to lead customer; HBM4E targeted for calendar 2027.
+        source: https://futurumgroup.com/insights/micron-q3-fy-2026-hbm-and-lpdram-drive-the-next-phase-of-ai-memory-growth/
+        sourcing: secondary
+      - claim: Only three credible DRAM suppliers worldwide, so supply response is slow and visible.
+        unverified: Structural industry fact, not from a cited filing.
+
+    headwinds:
+      - claim: >
+          84.6% gross margin is far above any historical memory peak and invites
+          supply addition from all three players; capex was $7.1bn in the quarter.
+        source: https://www.sec.gov/Archives/edgar/data/723125/000072312526000013/a2026q3ex991-pressrelease.htm
+      - claim: >
+          Customer concentration in HBM — a small number of accelerator platforms
+          determine demand, so one platform's slip is material.
+        unverified: Directional judgement, not a disclosed concentration figure.
+      - claim: >
+          Any credible efficiency breakthrough that cuts memory per token hits the
+          highest-margin revenue first.
+        unverified: Mechanism-level judgement.
+
+    peers_in_portfolio:
+      - isin: US80004C2008
+        name: SanDisk
+        relation: NAND supplier; both geared to storage demand
+      - isin: US82706C1080
+        name: Silicon Motion
+        relation: controller silicon for NAND
+      - isin: US5738741041
+        name: Marvell Technology
+        relation: custom accelerator and interconnect silicon
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2021-03-31
+      quarters_held_any_size: 22
+      quarters_held_material: 14
+      material_since: 2023-03-31
+      comment: >
+        The raw 22-quarter streak is misleading. Through 2022 the holding was
+        4,000 shares worth $0.2m — 0.04% of the book, a residual stub. The real
+        position was built in Q1 2023, close to the memory-cycle trough, and has
+        been material ever since.
+      source: research/docs/analysis.json (derived from SEC Form 13F-HR)
+
+    open_questions:
+      - >
+        Does BIT hold Micron for the AI cycle or as a memory-cycle trade? They
+        rebuilt in Q1 2023 near the trough, and cut shares 40% in Q2 2026 while
+        the weight still rose — trimming into strength. That looks like cycle
+        discipline rather than a structural AI holding.
+
+  # ---------------------------------------------------------------- semis
+  # Batch 1. Every financial figure below is from the company's own quarterly
+  # release for the quarter ended June/July 2026, cited per entry. Infineon and
+  # BESI are not SEC registrants; their primary source is the IR press release.
+
+  - isin: US67066G1040
+    name: NVIDIA Corporation
+    ticker: NVDA
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 2.54
+
+    what_it_does: >
+      Designs the accelerators most frontier training and inference runs on, plus
+      the networking (NVLink, Spectrum, InfiniBand) and the CUDA software layer
+      that makes them hard to leave. Sells increasingly at rack scale — Vera Rubin
+      is a system, not a chip.
+
+    revenue_model: >
+      Sells GPUs, systems and networking to hyperscalers, neoclouds and
+      enterprises, overwhelmingly through Data Center. Fabless: TSMC manufactures,
+      memory comes from SK Hynix, Micron and Samsung. Customer concentration is
+      extreme and the buyers are the same labs this system tracks.
+
+    financials:
+      as_of: Q2 FY2027, quarter ended 2026-07-26
+      revenue_usd_m: 96221
+      revenue_yoy_pct: 106
+      gaap_gross_margin_pct: 75.0
+      gaap_operating_margin_pct: 66.2
+      diluted_eps_usd: 2.46
+      capex_usd_m: 2677
+      segments:
+        - {name: Data Center, revenue_usd_m: 89000, yoy_pct: 117}
+        - {name: Edge Computing, revenue_usd_m: 7200, yoy_pct: 27}
+      derived:
+        datacenter_share_of_revenue_pct: 92.5
+        note: Data Center as a share of total revenue. Operating margin is GAAP operating income over revenue.
+      source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      92.5% of revenue is Data Center and it grew 117% year on year. There is no
+      part of this business that is not an AI business.
+
+    mechanisms:
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Every frontier training cluster announced by a lab is priced in NVIDIA
+          accelerators unless it explicitly names custom silicon. The most direct
+          link in the portfolio.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Management framed the quarter as inference-led — "compute is revenue" —
+          and shipped Groq 3 LPX, a dedicated interactive inference accelerator.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Revenue is the capex line of its customers. NVIDIA has gone further and
+          is helping fund it: partnerships with Apollo, BlackRock, Blackstone,
+          Brookfield, Goldman Sachs and KKR to mobilise over $500 billion of
+          third-party capital for AI infrastructure.
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Spectrum-6 switch systems supporting pluggable and co-packaged optics
+          ship as part of Vera Rubin, so rack-scale bandwidth is NVIDIA revenue
+          rather than only a cost to it.
+      - id: custom_silicon_substitution
+        sign: negative
+        magnitude: medium
+        confidence: medium
+        why: >
+          Every lab TPU, Trainium or Broadcom-designed inference part is a socket
+          NVIDIA does not fill. Medium rather than high because total accelerator
+          demand is still growing faster than the substitution.
+      - id: export_controls
+        sign: negative
+        magnitude: medium
+        confidence: high
+        why: >
+          The Q3 FY2027 outlook of $108 billion explicitly assumes no Data Center
+          compute revenue from China at all. The exposure is disclosed and
+          currently assumed to be zero, which caps downside but confirms the loss.
+
+    tailwinds:
+      - claim: >
+          Q3 FY2027 revenue guided to $108.0 billion +/- 2%, against $96.2 billion
+          delivered — sequential growth guided to continue at scale.
+        source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+      - claim: >
+          Gross margin 75.0%, up 2.6 points year on year, while revenue doubled —
+          pricing power has not eroded with volume.
+        source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+      - claim: >
+          Demand has broadened beyond one buyer: "This time last year, one lab
+          alone was driving the buildout; today... multiple frontier labs scaling
+          in parallel" (Jensen Huang).
+        source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+
+    headwinds:
+      - claim: >
+          Outlook assumes zero Data Center compute revenue from China, so any
+          re-tightening elsewhere has no offset already assumed away.
+        source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+      - claim: >
+          Accounts receivable rose $22.3 billion in the quarter against $96.2
+          billion of revenue, and inventories rose $5.8 billion — growth is being
+          carried on the balance sheet.
+        source: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+      - claim: >
+          Customer concentration in a handful of buyers who are simultaneously
+          funding their own custom silicon programmes.
+        unverified: Directional judgement; the 10-Q concentration table was not read for this entry.
+
+    peers_in_portfolio:
+      - isin: US5738741041
+        name: Marvell Technology
+        relation: custom accelerator and interconnect silicon — the substitution counterparty
+      - isin: US8740391003
+        name: Taiwan Semiconductor
+        relation: manufactures NVIDIA's silicon
+      - isin: US5951121038
+        name: Micron Technology
+        relation: HBM attached to each accelerator
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2020-09-30
+      quarters_present: 24
+      peak_weight_pct: 6.12
+      peak_quarter: 2025-06-30
+      latest_weight_pct: 1.53
+      comment: >
+        Held continuously for 24 quarters but traded hard throughout, swinging
+        between 0.16% and 6.12% of the book. The position was cut from $85.6m to
+        $51.7m in Q2 2026 — the same quarter SanDisk, Silicon Motion, Marvell and
+        Semtech were all bought. This is not a buy-and-hold AI position.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US8740391003
+    name: Taiwan Semiconductor Manufacturing Company Limited
+    aliases: [TSMC]
+    ticker: TSM
+    ticker_verified: false
+    exchange: NYSE (ADR); Taiwan Stock Exchange 2330
+    country: Taiwan
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 4.84
+
+    what_it_does: >
+      Manufactures the leading-edge logic almost every AI accelerator is made on —
+      NVIDIA, AMD, Broadcom-designed custom parts, Apple silicon — plus the
+      advanced packaging (CoWoS) that attaches HBM to a die. Effectively the only
+      supplier at the leading node.
+
+    revenue_model: >
+      Pure-play foundry: sells wafer capacity and packaging, priced by node.
+      Because it serves both merchant GPU vendors and every custom-silicon
+      programme competing with them, it is largely indifferent to which one wins.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      currency: USD headline; statutory figures in NT$
+      revenue_usd_m: 40200
+      revenue_yoy_pct: 33.7
+      gaap_gross_margin_pct: 67.7
+      gaap_operating_margin_pct: 60.3
+      diluted_eps_usd: 4.31
+      eps_note: US$4.31 per ADR unit; NT$27.25 per share.
+      segments:
+        - {name: High Performance Computing, revenue_ntd_m: 830369, share_of_revenue_pct: 65.4}
+        - {name: Smartphone, revenue_ntd_m: 283279, share_of_revenue_pct: 22.3}
+        - {name: Internet of Things, revenue_ntd_m: 64054, share_of_revenue_pct: 5.0}
+        - {name: Automotive, revenue_ntd_m: 53663, share_of_revenue_pct: 4.2}
+      derived:
+        hpc_share_of_revenue_pct: 65.4
+        hpc_share_prior_year_pct: 60.1
+        advanced_nodes_share_of_wafer_revenue_pct: 77
+        note: >
+          HPC share computed from the platform table (NT$830,369m of NT$1,270,380m).
+          Prior-year comparison NT$561,155m of NT$933,792m. "Advanced" is 7nm and below.
+      source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000451/a2q26e_withguidancexfinal.htm
+      segment_source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000541/a2026q2consolidatedreport-.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      High Performance Computing is 65.4% of revenue, up from 60.1% a year ago,
+      and 2-nanometer reached 3% of wafer revenue in its first quarter of shipment.
+      The AI mix is rising and the leading node is where it lands.
+
+    mechanisms:
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Every accelerator in every announced cluster is a TSMC wafer plus CoWoS
+          packaging, whoever designed it.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          HPC is 65.4% of revenue and rising. Committed datacentre spending
+          converts into leading-edge wafer starts with a lag of a few quarters.
+      - id: custom_silicon_substitution
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Uniquely in the portfolio, TSMC is positive on both sides: a lab TPU or
+          Trainium part displaces an NVIDIA GPU but is fabricated in the same
+          fabs. Substitution changes the customer name, not the wafer demand.
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          TSMC does not make DRAM, but CoWoS advanced packaging attaches HBM
+          stacks to logic die and is a TSMC-supplied, capacity-constrained step.
+          Medium because the revenue is packaging, not the memory itself.
+      - id: export_controls
+        sign: mixed
+        magnitude: medium
+        confidence: medium
+        why: >
+          Restrictions cut Chinese customers but concentrate leading-edge demand
+          in customers TSMC already serves. Direction depends on the measure, and
+          the larger exposure is geopolitical rather than commercial.
+
+    tailwinds:
+      - claim: >
+          Q3 2026 guided to US$44.6-45.8 billion against US$40.20 billion
+          delivered, with gross margin guided to 65-67%.
+        source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000451/a2q26e_withguidancexfinal.htm
+      - claim: >
+          Advanced technologies (7nm and below) were 77% of total wafer revenue;
+          2-nanometer reached 3% in its first quarter of shipment.
+        source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000451/a2q26e_withguidancexfinal.htm
+      - claim: >
+          HPC platform revenue grew from NT$561,155m to NT$830,369m year on year,
+          taking its share of revenue from 60.1% to 65.4%.
+        source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000541/a2026q2consolidatedreport-.htm
+
+    headwinds:
+      - claim: >
+          Gross margin guidance of 65-67% is below the 67.7% delivered, on an
+          assumed rate of NT$32 to the dollar — margin is exposed to the currency.
+        source: https://www.sec.gov/Archives/edgar/data/1046179/000104617926000451/a2q26e_withguidancexfinal.htm
+      - claim: >
+          Concentration of leading-edge capacity in Taiwan is a single-point
+          geopolitical exposure that no operating result reflects.
+        unverified: Structural judgement, not a disclosed risk figure.
+
+    peers_in_portfolio:
+      - isin: US67066G1040
+        name: NVIDIA
+        relation: largest leading-edge customer
+      - isin: NL0012866412
+        name: BE Semiconductor Industries
+        relation: supplies the hybrid bonding tools used in advanced packaging
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2021-03-31
+      quarters_present: 20
+      latest_value_usd_m: 165.1
+      latest_weight_pct: 4.89
+      comment: >
+        A residual stub from 2021 to early 2024 (often under 0.3% of the book),
+        then built deliberately from Q1 2025 onward and never trimmed. Now the
+        largest of the semis by value at $165m. The opposite pattern to NVIDIA.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US5738741041
+    name: Marvell Technology, Inc.
+    ticker: MRVL
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Aggressive Growth, Defensive Growth]
+    weight_technology_leaders: 5.07
+
+    what_it_does: >
+      Data-infrastructure silicon: custom accelerators (XPUs) co-designed with
+      hyperscalers, plus the connectivity around them — electro-optics DSPs,
+      ethernet switching, data centre interconnect. The main listed way to own
+      the custom-silicon side of the accelerator argument.
+
+    revenue_model: >
+      Sells into two end markets, data center and "communications and other".
+      Custom programmes are multi-year, single-customer designs, which makes
+      revenue lumpy and concentration high; connectivity is broader-based.
+
+    financials:
+      as_of: Q2 FY2027, quarter ended 2026-08-01
+      revenue_usd_m: 2739.3
+      revenue_yoy_pct: 37
+      gaap_gross_margin_pct: 53.1
+      non_gaap_gross_margin_pct: 58.9
+      diluted_eps_usd: 0.33
+      non_gaap_diluted_eps_usd: 0.94
+      cash_from_operations_usd_m: 605.5
+      segments:
+        - {name: Data center, revenue_usd_m: 2171.5, share_of_revenue_pct: 79, yoy_pct: 46}
+        - {name: Communications and other, revenue_usd_m: 567.8, share_of_revenue_pct: 21, yoy_pct: 10}
+      derived:
+        datacenter_share_of_revenue_pct: 79
+        note: Data centre share was 74% a year earlier and 76% last quarter — the mix is still shifting.
+      source: https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/q227_8kx812026ex-991.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      79% of revenue is data center, growing 46% year on year, and management
+      attributes the acceleration to AI bookings and a custom-silicon ramp
+      starting in the second half of fiscal 2027.
+
+    mechanisms:
+      - id: custom_silicon_substitution
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The direct beneficiary. Every lab or hyperscaler that designs its own
+          accelerator rather than buying merchant GPUs needs a partner to build
+          it, and management guided to "a significant acceleration in our Custom
+          business beginning in the second half of fiscal 2027".
+      - id: training_compute_up
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Custom XPUs are training and inference parts, but Marvell captures a
+          design fee and a per-unit price rather than the full accelerator ASP,
+          so the sensitivity is real but smaller than NVIDIA's.
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Connectivity — electro-optics DSPs, ethernet switching, data centre
+          interconnect — sits inside the data center segment and management
+          called out "strong demand in Connectivity" alongside custom. Scale-out
+          bandwidth per accelerator is the growth driver here, not unit count.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Data centre capex converts into both halves of the business at once:
+          the accelerator and the interconnect between accelerators.
+
+    tailwinds:
+      - claim: >
+          Q3 FY2027 revenue guided to $3.150 billion +/- 5% against $2.739 billion
+          delivered, with full-year FY2027 and FY2028 outlooks raised again.
+        source: https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/q227_8kx812026ex-991.htm
+      - claim: >
+          Data centre revenue growth accelerated to 46% year on year, taking the
+          segment from 74% to 79% of total revenue in four quarters.
+        source: https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/q227_8kx812026ex-991.htm
+
+    headwinds:
+      - claim: >
+          GAAP gross margin is 53.1% against non-GAAP 58.9%, and GAAP EPS $0.33
+          against non-GAAP $0.94 — the gap is amortisation of acquired intangibles
+          and stock compensation, and it is large.
+        source: https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/q227_8kx812026ex-991.htm
+      - claim: >
+          The company discloses risk from "our dependence on a few customers for a
+          significant portion of our revenue, particularly as our major customers
+          comprise an increasing percentage of our revenue".
+        source: https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/q227_8kx812026ex-991.htm
+
+    peers_in_portfolio:
+      - isin: US67066G1040
+        name: NVIDIA
+        relation: the incumbent custom silicon displaces
+      - isin: US8168501018
+        name: Semtech
+        relation: also sells into AI data centre networking, at a much smaller scale
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2022-03-31
+      quarters_present: 7
+      latest_value_usd_m: 150.2
+      latest_weight_pct: 4.45
+      comment: >
+        Six of the seven appearances were stubs of $0.04m to $3.6m between 2022
+        and 2024. The position as it exists today was created from nothing in
+        Q2 2026 at $150m. Treat it as a new holding, not a seven-quarter one.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US4581401001
+    name: Intel Corporation
+    ticker: INTC
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 2.56
+
+    what_it_does: >
+      Two businesses in one: Intel Products (Xeon server CPUs, client processors,
+      edge) and Intel Foundry, which manufactures for Intel and increasingly for
+      external customers on the 18A process. The foundry is the second credible
+      leading-edge alternative to TSMC.
+
+    revenue_model: >
+      Sells CPUs and ASICs, and sells wafer capacity. Segment revenues include
+      large intersegment transactions — Foundry's $5.8 billion is mostly Intel
+      Products buying from Intel Foundry, eliminated at $5.5 billion — so
+      external foundry revenue is far smaller than the headline.
+
+    financials:
+      as_of: Q2 2026, quarter ended June 2026
+      revenue_usd_m: 16100
+      revenue_yoy_pct: 25
+      gaap_gross_margin_pct: 40.4
+      gaap_operating_margin_pct: 11.1
+      diluted_eps_usd: -2.16
+      non_gaap_diluted_eps_usd: 0.42
+      cash_from_operations_usd_m: 7000
+      segments:
+        - {name: Client Computing and Physical AI Group, revenue_usd_m: 8900, yoy_pct: 13}
+        - {name: Data Center and AI, revenue_usd_m: 6300, yoy_pct: 59}
+        - {name: Intel Foundry, revenue_usd_m: 5800, yoy_pct: 31}
+        - {name: All other, revenue_usd_m: 700, yoy_pct: -33}
+        - {name: Intersegment eliminations, revenue_usd_m: -5500}
+      derived:
+        note: >
+          Segment revenues include intersegment transactions and do not sum to
+          total revenue. GAAP net loss of $11.0bn against $2.2bn non-GAAP net
+          income — the difference is not explained in the release and was not
+          traced for this entry.
+      source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+
+    ai_role: secondary
+    ai_role_reason: >
+      Data Center and AI grew 59% and is 39% of Intel Products revenue, but the
+      largest segment is still client computing and the company is loss-making on
+      a GAAP basis. AI is a real driver, not yet the core one.
+
+    mechanisms:
+      - id: inference_volume_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Xeon is the host CPU in most accelerator racks and Intel is pushing
+          disaggregated inference — rack-scale infrastructure with SambaNova and
+          Foxconn. Volume growth pulls host CPUs with it, at a fraction of the
+          accelerator's value.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Both directions at once: Data Center and AI revenue rose 59% on AI
+          demand, and the CFO said Intel is "meaningfully increasing our
+          investments in equipment, clean room space, and substrates" to serve it.
+      - id: custom_silicon_substitution
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Intel Foundry is the alternative fab for a custom accelerator programme
+          that does not want to depend solely on TSMC, and Xeon 6+ is the first
+          server product on 18A. Medium confidence: external foundry revenue is
+          not disclosed separately from intersegment sales.
+      - id: export_controls
+        sign: mixed
+        magnitude: medium
+        confidence: low
+        why: >
+          Domestic leading-edge capacity is the strategic beneficiary of
+          restrictions, while Intel also sells into China. Low confidence because
+          neither effect is quantified in the release.
+
+    tailwinds:
+      - claim: >
+          Q2 2026 revenue of $16.1 billion, up 25% year on year — described by the
+          CEO as "our strongest revenue growth in more than fifteen years".
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+      - claim: >
+          Gross margin 40.4%, up 12.9 points year on year; operating margin swung
+          from (24.7)% to 11.1%.
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+      - claim: >
+          Xeon 6+ launched as Intel's first server-class product on Intel 18A.
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+
+    headwinds:
+      - claim: >
+          GAAP net loss attributable to Intel of $11.0 billion and diluted EPS of
+          $(2.16), against non-GAAP EPS of $0.42, in a quarter of record growth.
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+      - claim: >
+          Third-quarter revenue guided to $15.8-16.8 billion, the midpoint of which
+          is below the $16.1 billion just delivered.
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+      - claim: >
+          Rising capital intensity — equipment, clean room space and substrates —
+          against a business that does not yet cover it from GAAP earnings.
+        source: https://www.sec.gov/Archives/edgar/data/50863/000005086326000155/q226earningsrelease.htm
+
+    peers_in_portfolio:
+      - isin: US8740391003
+        name: Taiwan Semiconductor
+        relation: the foundry incumbent Intel Foundry competes with
+      - isin: NL0012866412
+        name: BE Semiconductor Industries
+        relation: sells packaging equipment into Intel's capacity additions
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2023-03-31
+      quarters_present: 5
+      latest_value_usd_m: 84.2
+      latest_weight_pct: 2.50
+      comment: >
+        Two small appearances in 2023, then nothing until Q4 2025. Built from
+        $23.5m to $66.1m to $84.2m across the last three quarters — an actively
+        accumulating position, unlike NVIDIA.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US80004C2008
+    name: Sandisk Corporation
+    ticker: SNDK
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Defensive Growth]
+    weight_technology_leaders: 6.31
+
+    what_it_does: >
+      NAND flash memory and storage — SSDs, embedded products, wafers and
+      components — spun out of Western Digital. Historically a consumer and
+      client business; datacentre SSD is the new growth pillar.
+
+    revenue_model: >
+      Sells NAND and drives to hyperscalers, OEMs and consumers. The same
+      commodity-cycle dynamics as DRAM, being partly displaced by "New Business
+      Model" agreements: ten signed to date, framed by management as shifting mix
+      toward higher-value customers.
+
+    financials:
+      as_of: FQ4 2026, quarter ended 2026-08 (fiscal year ended)
+      revenue_usd_m: 8965
+      revenue_yoy_pct: 372
+      gaap_gross_margin_pct: 84.6
+      gaap_operating_margin_pct: 78.5
+      diluted_eps_usd: 43.97
+      non_gaap_diluted_eps_usd: 39.25
+      segments:
+        - {name: Datacenter, revenue_usd_m: 2977, share_of_revenue_pct: 33.2, qoq_pct: 103}
+        - {name: Edge, revenue_usd_m: 5432, share_of_revenue_pct: 60.6, qoq_pct: 48}
+        - {name: Consumer, revenue_usd_m: 556, share_of_revenue_pct: 6.2, qoq_pct: -32}
+      full_year:
+        revenue_usd_m: 20248
+        revenue_yoy_pct: 175
+        gaap_gross_margin_pct: 71.5
+        datacenter_revenue_usd_m: 5153
+        datacenter_yoy_pct: 437
+      derived:
+        datacenter_share_of_revenue_pct: 33.2
+        note: >
+          Operating margin is GAAP operating income $7,037m over revenue $8,965m.
+          Datacentre was $213m in the year-ago quarter — the base is one year old.
+      source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      Datacenter revenue grew 437% over the fiscal year to $5.15 billion and
+      management describes it as an established growth pillar. Gross margin went
+      from 30.1% to 71.5% in one year — that is a shortage, not a cycle.
+
+    mechanisms:
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Model checkpoints, KV-cache spill and retrieval corpora all land on
+          NAND rather than DRAM. Datacentre revenue rose from $213m to $2,977m in
+          four quarters, which is the mechanism showing up in the accounts.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Serving at scale needs fast local storage for weights and context.
+          Medium because the link runs through capacity build rather than through
+          tokens served directly.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Datacentre buildouts buy storage alongside accelerators, and the
+          quarter's sequential growth came roughly two-thirds from pricing —
+          the signature of buyers competing for constrained supply.
+      - id: on_device_inference
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Edge is 60.6% of revenue; local model execution raises NAND content per
+          phone and PC. Medium because Edge here also covers non-AI client demand.
+      - id: inference_cost_down
+        sign: negative
+        magnitude: medium
+        confidence: low
+        why: >
+          Smaller distilled models and quantised weights mean fewer bytes to hold
+          resident, so less NAND per unit of output. Low confidence because the
+          storage link is weaker than the DRAM one and the release says nothing
+          about it. The volume offset sits in inference_volume_up.
+
+    tailwinds:
+      - claim: >
+          Q1 FY2027 revenue guided to $10.30-10.80 billion against $8.965 billion
+          delivered, with non-GAAP EPS guided to $44.00-46.00.
+        source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+      - claim: >
+          Ten New Business Model agreements signed, including three with new
+          customers — management frames these as a mix shift to higher-value
+          customers.
+        source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+      - claim: >
+          Board approved an additional $14 billion buyback, taking remaining
+          authorisation to $15.5 billion.
+        source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+
+    headwinds:
+      - claim: >
+          Sequential revenue growth came approximately one-third from volume and
+          two-thirds from pricing — most of the growth is price, which mean-reverts.
+        source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+      - claim: >
+          Consumer revenue fell 32% sequentially to $556 million even as the total
+          rose 51% — the non-AI business is shrinking underneath.
+        source: https://www.sec.gov/Archives/edgar/data/2023554/000162828026053346/sndkq4-26ex991xpressrelease.htm
+      - claim: >
+          84.6% gross margin, up 58.4 points year on year, is far above any
+          historical NAND peak and invites supply addition across the industry.
+        unverified: >
+          The margin figure is sourced; the supply-response inference is judgement,
+          by analogy with the same argument recorded against Micron.
+
+    peers_in_portfolio:
+      - isin: US5951121038
+        name: Micron Technology
+        relation: the DRAM and HBM analogue of the same memory shortage
+      - isin: US82706C1080
+        name: Silicon Motion
+        relation: supplies the controllers inside NAND drives
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-06-30
+      quarters_present: 1
+      latest_value_usd_m: 195.0
+      latest_weight_pct: 5.78
+      comment: >
+        Brand new. Appears for the first time in Q2 2026 at $195m — the single
+        largest new position of that quarter, and now the largest Technology
+        Leaders semi weight at 6.31%. No history to read.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US82706C1080
+    name: Silicon Motion Technology Corporation
+    ticker: SIMO
+    ticker_verified: false
+    exchange: Nasdaq (ADS)
+    country: Taiwan
+    held_by: [Technology Leaders]
+    weight_technology_leaders: 3.64
+
+    what_it_does: >
+      Designs NAND flash controllers — the silicon between the host and the flash
+      that determines a drive's speed, endurance and power. Sells SSD controllers,
+      eMMC/UFS controllers for mobile, and increasingly complete storage solutions
+      for enterprise and edge.
+
+    revenue_model: >
+      Fabless controller vendor selling to NAND makers, module houses and OEMs.
+      Historically consumer-weighted and cyclical with handset volumes;
+      management describes an ongoing shift toward AI infrastructure and edge.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 451.0
+      revenue_yoy_pct: 127
+      gaap_gross_margin_pct: 50.2
+      gaap_operating_margin_pct: 22.4
+      diluted_eps_usd: 3.99
+      eps_note: Per diluted American depositary share. Non-GAAP $2.43.
+      product_lines:
+        - {name: SSD controllers, yoy_growth_pct_range: "50-55"}
+        - {name: eMMC and UFS controllers, yoy_growth_pct_range: "95-100"}
+        - {name: Ferri and Boot Drive solutions, yoy_growth_pct_range: "1690-1695"}
+      derived:
+        note: >
+          Silicon Motion reports product-line growth ranges rather than segment
+          revenue, so no share-of-revenue split is available from this release.
+      source: https://www.sec.gov/Archives/edgar/data/1329394/000119312526324391/d114913dex991.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      Revenue grew 127% year on year and the CEO describes the company's "shift
+      from a consumer-focused NAND flash controller maker to a diversified leader
+      in controllers and storage solutions from AI infrastructure to the edge".
+      The reservation is that this is management framing, not a reported segment.
+
+    mechanisms:
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: high
+        confidence: medium
+        why: >
+          Controller demand scales with drives shipped, so more NAND content per
+          system pulls controllers with it. Medium confidence rather than high
+          because the company does not report a datacentre revenue line to verify
+          where the growth landed.
+      - id: on_device_inference
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          eMMC and UFS controller sales grew 95-100% year on year; those are
+          handset and client parts, and on-device models raise storage content
+          per unit.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Enterprise SSD controllers ship into datacentre storage build. Medium
+          because Silicon Motion sits two steps from the capex decision — behind
+          the drive maker, behind the NAND maker.
+
+    tailwinds:
+      - claim: >
+          Q2 2026 net sales of $451.0 million, up 32% sequentially and 127% year
+          on year, with gross margin of 50.2% and operating margin of 22.4%.
+        source: https://www.sec.gov/Archives/edgar/data/1329394/000119312526324391/d114913dex991.htm
+      - claim: >
+          Ferri and Boot Drive solutions sales grew 1,690-1,695% year on year,
+          the fastest-growing line in the business.
+        source: https://www.sec.gov/Archives/edgar/data/1329394/000119312526324391/d114913dex991.htm
+
+    headwinds:
+      - claim: >
+          GAAP EPS of $3.99 against non-GAAP $2.43 — GAAP net income of $136.1m
+          exceeds non-GAAP $83.1m, so the gap flatters rather than depresses the
+          headline, and the driver was not traced for this entry.
+        source: https://www.sec.gov/Archives/edgar/data/1329394/000119312526324391/d114913dex991.htm
+      - claim: >
+          The company raised convertible debt in the same month as these results —
+          a proposed offering of 0.00% convertible senior notes due 2031.
+        source: https://www.sec.gov/Archives/edgar/data/1329394/000119312526341199/d124768dex991.htm
+      - claim: >
+          Controllers are a component of a component: pricing power sits with the
+          NAND makers above them, and gross margin at 50.2% is roughly 35 points
+          below SanDisk's.
+        unverified: Structural judgement from comparing the two releases, not a disclosed claim.
+
+    peers_in_portfolio:
+      - isin: US80004C2008
+        name: Sandisk
+        relation: customer and the NAND supplier whose drives contain these controllers
+      - isin: US5951121038
+        name: Micron Technology
+        relation: NAND and DRAM supplier exposed to the same storage demand
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-06-30
+      quarters_present: 1
+      latest_value_usd_m: 116.4
+      latest_weight_pct: 3.45
+      comment: >
+        New in Q2 2026 at $116m, and held only by Technology Leaders — one of the
+        few positions with no exposure elsewhere in the fund complex.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: DE0006231004
+    name: Infineon Technologies AG
+    ticker: IFX
+    ticker_verified: false
+    exchange: Frankfurt (Xetra)
+    country: Germany
+    filer_status: >
+      Not an SEC registrant. Primary source is the quarterly press release
+      published by the company; figures are IFRS and reported in euro.
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth]
+    weight_technology_leaders: 4.66
+
+    what_it_does: >
+      Power semiconductors, microcontrollers and sensors. For the AI thesis the
+      relevant part is power delivery: the conversion stages that take grid power
+      down to the sub-volt levels an accelerator rack consumes, where Infineon is
+      a leading supplier.
+
+    revenue_model: >
+      Sells into automotive, industrial and infrastructure, consumer and
+      datacentre through four segments. Largely its own manufacturer (IDM), so
+      utilisation drives margin. AI power is being sold under multi-year capacity
+      reservation agreements with prepayments — unusual for this industry.
+
+    financials:
+      as_of: Q3 FY2026, quarter ended 2026-06-30
+      currency: EUR
+      revenue_eur_m: 4172
+      revenue_yoy_pct: 13
+      revenue_qoq_pct: 9
+      gross_margin_pct: 40.8
+      adjusted_gross_margin_pct: 42.8
+      segment_result_eur_m: 797
+      segment_result_margin_pct: 19.1
+      diluted_eps_eur: 0.32
+      adjusted_diluted_eps_eur: 0.44
+      segments:
+        - {name: Automotive, revenue_eur_m: 1932, segment_result_eur_m: 356, margin_pct: 18.4}
+        - {name: Power & Sensor Systems, revenue_eur_m: 1442, segment_result_eur_m: 359, margin_pct: 24.9}
+        - {name: Green Industrial Power, revenue_eur_m: 447, segment_result_eur_m: 44, margin_pct: 9.8}
+        - {name: Connected Secure Systems, revenue_eur_m: 350, segment_result_eur_m: 34, margin_pct: 9.7}
+      derived:
+        pss_share_of_revenue_pct: 34.6
+        note: >
+          Power & Sensor Systems is the AI-levered segment and is now the most
+          profitable one (24.9% vs 18.4% for the larger Automotive segment).
+          Revenue was a record; group revenue guidance for FY2026 is ~EUR 16.3bn.
+      source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+
+    ai_role: secondary
+    ai_role_reason: >
+      AI is the stated growth driver — "Our power supply solutions for AI data
+      centers remain in very high demand and continue to be our most important
+      growth driver" — but Automotive is still the largest segment at 46% of
+      revenue. Materially exposed, not AI-native.
+
+    mechanisms:
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The most direct power link in the portfolio. Power & Sensor Systems
+          revenue rose 14% sequentially, which management attributes mainly to
+          "further rising demand in the area of servers and data centers for
+          artificial intelligence".
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Unusually, the capex is contracted rather than inferred: multi-year
+          capacity reservation agreements with leading AI customers covering a
+          cumulative revenue volume of a high single-digit billion euro amount,
+          with prepayments.
+      - id: training_compute_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Each accelerator deployed needs power conversion silicon, so cluster
+          builds pull Infineon content. Medium because the value per accelerator
+          is small relative to the accelerator itself.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: low
+        confidence: medium
+        why: >
+          Power content is sold with the rack, not with the token. Rising
+          utilisation of installed racks adds little; it is the next rack that
+          matters. Low magnitude is the point of this tag.
+
+    tailwinds:
+      - claim: >
+          Q3 FY2026 revenue of EUR 4.172 billion was the highest quarterly revenue
+          in Infineon's history; Q4 is guided to rise a good 13% to around
+          EUR 4.7 billion with Segment Result Margin around 23%.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+      - claim: >
+          Multi-year capacity reservation agreements with leading AI customers,
+          concluded or in negotiation, covering a cumulative revenue volume of a
+          high single-digit billion euro amount and featuring certain prepayments.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+      - claim: >
+          Power & Sensor Systems Segment Result Margin improved to 24.9% from
+          20.4% in the prior quarter — the AI-levered segment is also the most
+          profitable.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+
+    headwinds:
+      - claim: >
+          Group gross margin of 40.8% is below the 40.9% of the year-ago quarter
+          despite record revenue — mix and the cost base are absorbing the growth.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+      - claim: >
+          Free Cash Flow guidance for FY2026 was cut to around EUR 0.9 billion
+          from EUR 1.25 billion, reflecting the ams OSRAM sensor portfolio
+          acquisition completed in July 2026.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+      - claim: >
+          46% of revenue is still Automotive, a cyclical end market with a
+          Segment Result Margin six points below the AI-driven segment.
+        source: https://www.infineon.com/row/public/documents/corporate/press/2026/infpr202608-125e.pdf
+
+    peers_in_portfolio:
+      - isin: US8168501018
+        name: Semtech
+        relation: also analog/power semis levered to AI data centre, far smaller
+      - isin: US5951121038
+        name: Micron Technology
+        relation: both sell content that scales with racks deployed rather than tokens served
+
+    position_history:
+      note: >
+        Not 13F-reportable — Infineon is a German-listed security and does not
+        appear in BIT's Form 13F-HR. Position history is therefore unavailable
+        from the same source used for the US holdings, and is not estimated here.
+      source: absent by design; see note
+
+  - isin: NL0012866412
+    name: BE Semiconductor Industries N.V.
+    aliases: [Besi]
+    ticker: BESI
+    ticker_verified: false
+    exchange: Euronext Amsterdam
+    country: Netherlands
+    filer_status: >
+      Not an SEC registrant. Primary source is the company's quarterly results
+      press release; figures are IFRS and reported in euro.
+    held_by: [Technology Leaders, Defensive Growth]
+    weight_technology_leaders: 2.02
+
+    what_it_does: >
+      Makes back-end semiconductor assembly equipment — die attach, flip chip,
+      packaging and, critically, hybrid bonding tools. Hybrid bonding is the
+      step that stacks logic and memory die directly, which is how HBM and
+      advanced accelerator packaging is built.
+
+    revenue_model: >
+      Sells capital equipment to assembly and test operations, foundries and IDMs.
+      Order-driven and lumpy: orders lead revenue by two to three quarters, which
+      makes the order line the more informative number.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      currency: EUR
+      revenue_eur_m: 249.9
+      revenue_yoy_pct: 68.7
+      revenue_qoq_pct: 35.2
+      gross_margin_pct: 65.7
+      net_income_eur_m: 89.0
+      net_income_yoy_pct: 177.3
+      orders_eur_m: 292.9
+      orders_yoy_pct: 128.8
+      half_year:
+        revenue_eur_m: 434.7
+        revenue_yoy_pct: 48.8
+        orders_eur_m: 562.6
+        orders_yoy_pct: 116.5
+        gross_margin_pct: 64.7
+        net_income_eur_m: 140.6
+      derived:
+        book_to_bill: 1.17
+        note: >
+          Orders of EUR 292.9m against revenue of EUR 249.9m. Above 1.0 means the
+          backlog is still building. BESI does not report revenue by end market,
+          so AI exposure is management commentary, not a segment figure.
+      source: https://www.besi.com/investor-relations/press-releases/details/be-semiconductor-industries-nv-announces-q2-26-and-h1-26-results/
+
+    ai_role: primary
+    ai_role_reason: >
+      Management attributes growth specifically to "hybrid bonding, photonics and
+      datacenter applications" and orders growth to "AI computing applications".
+      Hybrid bonding is a step that exists because of AI packaging requirements.
+
+    mechanisms:
+      - id: memory_intensity_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Hybrid bonding is how memory is stacked onto and beside logic. More HBM
+          content per accelerator is more bonding steps, and bonding tools are
+          what BESI sells. Growth was attributed to hybrid bonding by name.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Sells the capital equipment itself, so the exposure is to the capex
+          decision rather than to the output. Orders up 128.8% year on year, with
+          a book-to-bill of 1.17, is that decision already made and not yet shipped.
+      - id: training_compute_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Accelerator volume drives packaging capacity additions, with a lag of
+          two to three quarters between the cluster announcement and the tool order.
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Photonics was named alongside hybrid bonding as a growth driver.
+          Co-packaged optics require the same precision die-attach step, so
+          optical interconnect adoption pulls BESI content.
+
+    tailwinds:
+      - claim: >
+          Q2 2026 orders of EUR 292.9 million, up 128.8% year on year, against
+          revenue of EUR 249.9 million — a book-to-bill of 1.17.
+        source: https://www.besi.com/investor-relations/press-releases/details/be-semiconductor-industries-nv-announces-q2-26-and-h1-26-results/
+      - claim: >
+          H1 2026 orders of EUR 562.6 million rose 116.5% year on year "due to
+          broad based growth across end-user markets with strength in photonics,
+          hybrid bonding and datacenter computing applications".
+        source: https://www.besi.com/investor-relations/press-releases/details/be-semiconductor-industries-nv-announces-q2-26-and-h1-26-results/
+      - claim: >
+          Gross margin of 65.7%, up 2.4 points year on year, on a favourable
+          product mix — the AI mix carries higher margin than the base business.
+        source: https://www.besi.com/investor-relations/press-releases/details/be-semiconductor-industries-nv-announces-q2-26-and-h1-26-results/
+
+    headwinds:
+      - claim: >
+          Capital equipment revenue is order-driven and lumpy; a book-to-bill above
+          1.0 reverses quickly when customers pause capacity additions.
+        unverified: Structural feature of the business model, not a disclosed risk figure.
+      - claim: >
+          No revenue-by-end-market disclosure, so the AI share of the business
+          cannot be verified from the release — only management attribution.
+        source: https://www.besi.com/investor-relations/press-releases/details/be-semiconductor-industries-nv-announces-q2-26-and-h1-26-results/
+
+    peers_in_portfolio:
+      - isin: US8740391003
+        name: Taiwan Semiconductor
+        relation: advanced packaging customer; CoWoS capacity additions are BESI orders
+      - isin: US5951121038
+        name: Micron Technology
+        relation: HBM stacking is the demand BESI's bonding tools serve
+
+    position_history:
+      note: >
+        Not 13F-reportable — a Dutch-listed security, absent from BIT's Form
+        13F-HR. No position history is derived or estimated here.
+      source: absent by design; see note
+
+  - isin: US8168501018
+    name: Semtech Corporation
+    ticker: SMTC
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders]
+    weight_technology_leaders: 0.68
+
+    what_it_does: >
+      High-performance analog and mixed-signal semiconductors. Two things matter:
+      Signal Integrity — the optical DSPs, CopperEdge and active copper products
+      that move data between accelerators and switches inside an AI data centre —
+      and an IoT business that is partly being divested.
+
+    revenue_model: >
+      Sells components to networking OEMs, hyperscalers and IoT customers. The
+      cellular module business is classified as held for sale, so the reported
+      total overstates the continuing business and depresses reported margin.
+
+    financials:
+      as_of: Q2 FY2027, quarter ended 2026-07-26
+      revenue_usd_m: 341.9
+      revenue_yoy_pct: 33
+      gaap_gross_margin_pct: 53.8
+      gaap_operating_margin_pct: 16.3
+      diluted_eps_usd: 1.59
+      non_gaap_diluted_eps_usd: 0.71
+      segments:
+        - {name: Signal Integrity, revenue_usd_m: 126.2, gross_margin_pct: 65.3}
+        - {name: Analog Mixed Signal and Wireless, revenue_usd_m: 117.4, gross_margin_pct: 60.1}
+        - {name: IoT Systems, revenue_usd_m: 98.3, gross_margin_pct: 34.0, note: cellular module business held for sale}
+      derived:
+        signal_integrity_share_of_revenue_pct: 36.9
+        semiconductor_products_revenue_usd_m: 243.5
+        adjusted_gross_margin_ex_held_for_sale_pct: 59.7
+        note: >
+          Signal Integrity is the AI data centre networking segment and carries
+          the highest margin at 65.3%. Excluding the held-for-sale business,
+          adjusted gross margin is 59.7% rather than the reported 54.5%.
+      source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      The company describes itself as "a leading provider of high-performance
+      semiconductors powering AI data center networking", and Signal Integrity is
+      both the largest and highest-margin segment. The caveat is scale: at 0.68%
+      of the fund this is the smallest holding in the batch.
+
+    mechanisms:
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The purest expression of this mechanism in the portfolio. Signal
+          Integrity sells the optical DSPs and active copper that carry traffic
+          between accelerators; more bandwidth per rack is directly more content.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Interconnect ships with the rack, so the exposure is to buildout rather
+          than utilisation. Management cites "accelerating bookings and record
+          backlog" pointing to growth into next fiscal year.
+      - id: training_compute_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Training clusters are bandwidth-bound as much as compute-bound, so
+          scale-out fabric grows with cluster size. Medium: Semtech's content per
+          rack is small relative to the accelerators it connects.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: low
+        confidence: low
+        why: >
+          Higher utilisation of installed fabric adds little revenue; the sale
+          happens when the fabric is built. Kept at low/low deliberately rather
+          than dropped, to record that the link is weak rather than absent.
+
+    tailwinds:
+      - claim: >
+          Record net sales of $341.9 million, up 17% sequentially and 33% year on
+          year, with GAAP operating margin improving from (6.3)% to 16.3%.
+        source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+      - claim: >
+          Signal Integrity gross margin of 65.3% against 34.0% for the
+          held-for-sale IoT Systems segment — mix shift is margin accretive.
+        source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+      - claim: >
+          Management cites "accelerating bookings and record backlog" pointing to
+          "a strong inflection in growth... extending well into next fiscal year".
+        source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+
+    headwinds:
+      - claim: >
+          GAAP diluted EPS of $1.59 exceeds non-GAAP $0.71 — GAAP net income of
+          $160.1m against operating income of $55.8m includes items below the
+          operating line that were not traced for this entry.
+        source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+      - claim: >
+          The company discloses risk from "the loss of any one of our small number
+          of customers", alongside the pending divestiture of the cellular module
+          business.
+        source: https://www.sec.gov/Archives/edgar/data/88941/000008894126000028/smtc-07262026x8k991.htm
+      - claim: >
+          At 0.68% of Technology Leaders this is a starter position; even a large
+          move in the stock has limited effect on the fund.
+        source: research/docs/portfolio_views.json (weight at 30.06.2026)
+
+    peers_in_portfolio:
+      - isin: US5738741041
+        name: Marvell Technology
+        relation: competes and overlaps in electro-optics and data centre interconnect
+      - isin: DE0006231004
+        name: Infineon Technologies
+        relation: the other analog/power semi levered to rack buildout
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-06-30
+      quarters_present: 1
+      latest_value_usd_m: 12.1
+      latest_weight_pct: 0.36
+      comment: >
+        New in Q2 2026 at $12.1m, the smallest of the four positions opened that
+        quarter and held only by Technology Leaders. Reads as a starter position.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  # ------------------------------------- hyperscale, hosting and networking
+  # Batch 2. Same sourcing rule: every figure from the company's own quarterly
+  # release for the period ended May-July 2026, cited per entry.
+
+  - isin: US0231351067
+    name: Amazon.com, Inc.
+    aliases: [Amazon, AWS, Amazon Web Services]
+    ticker: AMZN
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 11.03
+
+    what_it_does: >
+      Retail, advertising and AWS. For this system AWS is the whole point: it
+      hosts frontier training and inference, designs its own accelerators
+      (Trainium) and Graviton CPUs, and holds a large equity stake in Anthropic.
+      The largest holding in Technology Leaders.
+
+    revenue_model: >
+      Three reported segments — North America, International and AWS. AWS is 21%
+      of sales but 60% of operating income, so the earnings sensitivity to AI is
+      far higher than the revenue mix suggests. Amazon is simultaneously a buyer
+      of accelerators, a designer of them, and an investor in a frontier lab.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 200600
+      revenue_yoy_pct: 20
+      operating_income_usd_m: 27500
+      operating_income_yoy_pct: 43
+      net_income_usd_m: 62600
+      diluted_eps_usd: 5.75
+      capex_ttm_usd_m: 169007
+      capex_ttm_yoy_pct: 64
+      free_cash_flow_ttm_usd_m: -7604
+      segments:
+        - {name: North America, revenue_usd_m: 116200, yoy_pct: 16, operating_income_usd_m: 9100}
+        - {name: International, revenue_usd_m: 42200, yoy_pct: 15, operating_income_usd_m: 1700}
+        - {name: AWS, revenue_usd_m: 42200, yoy_pct: 37, operating_income_usd_m: 16600}
+      derived:
+        aws_share_of_revenue_pct: 21.0
+        aws_share_of_operating_income_pct: 60.4
+        aws_operating_margin_pct: 39.3
+        aws_annualized_run_rate_usd_m: 169000
+        note: >
+          Net income includes non-operating pre-tax other income of $53.4 billion,
+          primarily from the Anthropic investment. Excluding it, earnings are far
+          lower; the reported EPS of $5.75 is not a run-rate figure.
+      source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      AWS grew 37%, its fastest in 18 quarters, to a $169bn run rate; the chips
+      business alone passed a $25bn run rate. Trailing free cash flow has gone
+      negative because of AI capital spending. AI is now the dominant swing
+      factor in both the earnings and the cash flow.
+
+    mechanisms:
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Amazon is on both sides. It sells the capacity, and it is the spender:
+          trailing purchases of property and equipment reached $169.0 billion, up
+          64% year on year, which the company attributes primarily to AI. A capex
+          pause would relieve the cash flow and remove the growth at once.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          AWS revenue is metered consumption. More tokens served by customers on
+          Bedrock, SageMaker or raw instances converts directly into segment
+          revenue at a 39.3% operating margin.
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          AWS hosts frontier training under multi-year contracts, and the release
+          names Anthropic and OpenAI as making "multi-year, multi-gigawatt
+          commitments" on Trainium.
+      - id: custom_silicon_substitution
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Trainium is the substitution. Every workload moved from merchant GPUs to
+          Amazon's own silicon improves AWS margin and reduces what Amazon pays
+          NVIDIA — the chips business passed $25bn run rate growing triple digits.
+      - id: lab_capital_access
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The only holding where a lab's own valuation lands in the income
+          statement: $53.4 billion of non-operating pre-tax other income in one
+          quarter, primarily from the Anthropic investment.
+      - id: datacenter_power_up
+        sign: negative
+        magnitude: medium
+        confidence: medium
+        why: >
+          Amazon buys power rather than selling it. Rising power cost and scarcity
+          is a cost line and a constraint on how fast capacity can be added.
+      - id: inference_cost_down
+        sign: mixed
+        magnitude: medium
+        confidence: medium
+        why: >
+          Cheaper serving lowers the price AWS can charge per token but raises
+          volume and improves the margin on capacity already built. Genuinely
+          two-sided, and the release does not settle it.
+
+    lab_exposure:
+      - lab: anthropic
+        kind: equity
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The only holding where a lab's own valuation lands in the income
+          statement. Q2 2026 net income of $62.6bn includes $53.4bn of
+          non-operating pre-tax other income, primarily from the Anthropic
+          investment. The mark is non-cash and can reverse, so Anthropic's
+          funding rounds and valuation moves read directly into reported EPS.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - lab: anthropic
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Separate from the stake: Anthropic is also an AWS customer committing
+          capacity on Trainium. "Continued gaining momentum with Trainium, with
+          the two leading AI labs in the world, Anthropic and OpenAI, making
+          multi-year, multi-gigawatt commitments."
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - lab: openai
+        kind: revenue_contract
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          Named in the same Trainium commitment as Anthropic. No equity link,
+          so the exposure is contracted capacity revenue alone.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+    tailwinds:
+      - claim: >
+          AWS net sales grew 37% year on year to $42.2 billion, its fastest growth
+          in 18 quarters, at a $169 billion annualized run rate.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - claim: >
+          AWS operating income rose from $10.2 billion to $16.6 billion year on
+          year — a 39.3% segment operating margin on 37% growth.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - claim: >
+          "Continued gaining momentum with Trainium, with the two leading AI labs
+          in the world, Anthropic and OpenAI, making multi-year, multi-gigawatt
+          commitments."
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+
+    headwinds:
+      - claim: >
+          Trailing twelve month free cash flow is an outflow of $7.6 billion,
+          against an inflow of $18.2 billion a year earlier — a $66.1 billion
+          year-on-year increase in property and equipment purchases, primarily AI.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - claim: >
+          Net income of $62.6 billion includes $53.4 billion of non-operating
+          pre-tax income from the Anthropic stake. The mark is non-cash, it can
+          reverse, and it makes the headline EPS unrepresentative.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+      - claim: >
+          79% of revenue is still retail, growing 15-16%, at operating margins
+          around 4-8% — the AI story is carried by a fifth of the business.
+        source: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm
+
+    peers_in_portfolio:
+      - isin: US67066G1040
+        name: NVIDIA
+        relation: supplier, and the incumbent Trainium substitutes for
+      - isin: AU0000185993
+        name: IREN
+        relation: competes for the same AI hosting workloads at much smaller scale
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2020-06-30
+      quarters_present: 25
+      latest_value_usd_m: 551.7
+      latest_weight_pct: 16.34
+      comment: >
+        Held every quarter since the first filing but sized erratically, between
+        0.00% and 8.6% of the book through 2025. Then $88m to $292m to $552m
+        across the last two quarters, taking it to 16.3% of the 13F book — by far
+        the largest position and the largest single change in the file.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: AU0000185993
+    name: IREN Limited
+    ticker: IREN
+    ticker_verified: false
+    exchange: Nasdaq
+    country: Australia
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Multi Asset, Global Crypto Leaders]
+    weight_technology_leaders: 9.02
+
+    what_it_does: >
+      Owns and operates power-connected data centres and increasingly rents GPU
+      capacity to AI customers. Built as a bitcoin miner; converting sites to
+      liquid-cooled AI Cloud capacity, with a data centre pipeline above 5GW.
+
+    revenue_model: >
+      Two revenue lines in transition: bitcoin mining, which is falling, and AI
+      Cloud Services, which is rising and sold on multi-year contracts with
+      customer prepayments. Contracts are priced per megawatt of critical IT
+      capacity — recent three-year deals above $20m of revenue per MW.
+
+    financials:
+      as_of: FY2026, year ended 2026-06-30 (with Q4 detail)
+      revenue_usd_m: 707.0
+      revenue_prior_year_usd_m: 501.0
+      net_income_usd_m: -702.6
+      adjusted_ebitda_usd_m: 245.7
+      segments:
+        - {name: AI Cloud Services, revenue_usd_m: 128.8, prior_year_usd_m: 16.4}
+        - {name: Bitcoin Mining, revenue_usd_m: 578.2, prior_year_usd_m: 484.6}
+      quarter_detail:
+        as_of: Q4 FY2026, quarter ended 2026-06-30
+        total_revenue_usd_m: 137.2
+        ai_cloud_revenue_usd_m: 70.5
+        bitcoin_mining_revenue_usd_m: 66.7
+      derived:
+        ai_cloud_share_of_q4_revenue_pct: 51.4
+        contracted_arr_usd_m: 4000
+        operating_arr_usd_m: 1000
+        note: >
+          The FY net loss of $702.6m includes non-cash impairments of $638.8m,
+          primarily from decommissioning bitcoin mining hardware as sites convert
+          to AI. In Q4 AI Cloud revenue exceeded mining revenue for the first time.
+      source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      AI Cloud Services grew roughly eightfold to $128.8m in FY26 and overtook
+      bitcoin mining within the fourth quarter. Contracted ARR for 2026 capacity
+      is $4bn against $1bn operating today, and the customer list is frontier
+      labs and AI startups.
+
+    mechanisms:
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Sells capacity directly to the spenders. 2026 capacity is described as
+          largely sold out, with customer prepayments representing 45-55% of GPU
+          capex — the spending commitment arrives as cash before delivery.
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The company disclosed "a new multi-year AI Cloud contract with a leading
+          frontier AI lab" alongside Microsoft, Cohere and Perplexity. This is the
+          most direct lab-to-holding link in the portfolio.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Capacity is contracted per megawatt rather than metered per token, so
+          rising inference demand shows up at contract renewal and in pricing —
+          recent deals above $20m per MW with discussions at ~$25m — not
+          immediately in revenue.
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The asset is power. A pipeline above 5GW with sites at Sweetwater,
+          Kiowa, Bundey and Badajoz is valuable precisely because interconnect
+          capacity is the binding constraint on AI buildout.
+      - id: lab_capital_access
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          IREN's contracts are only as good as its counterparties' funding. Labs
+          able to raise capital sign longer leases and prepay; a funding freeze
+          would hit the contracted ARR before it hit the operating ARR.
+
+    lab_exposure:
+      - lab: microsoft
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          $3.6bn of investment grade GPU financing was raised specifically for
+          the Microsoft contract at 6.0%, which together with prepayments funds
+          96% of the associated GPU capex. The financing spread prices the
+          counterparty: $2.4bn for non-investment grade customer deployments
+          costs 9.0%, three points more.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+    tailwinds:
+      - claim: >
+          $4bn contracted ARR for 2026 capacity against $1bn operating today, with
+          2026 capacity described as largely sold out.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+      - claim: >
+          Recent three-year contracts above $20m revenue per MW (IT), representing
+          an approximately two-year payback, with active discussions at ~$25m per MW.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+      - claim: >
+          $3.6bn investment grade GPU financing for the Microsoft contract at 6.0%
+          which, together with prepayments, funds 96% of associated GPU capex.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+
+    headwinds:
+      - claim: >
+          FY2026 net loss of $702.6m, including $638.8m of non-cash impairments
+          from decommissioning bitcoin mining hardware as sites convert.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+      - claim: >
+          Adjusted EBITDA fell to $19.2m in Q4 from $59.5m in Q3, on employee costs
+          and platform investment ahead of the AI Cloud revenue ramp.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+      - claim: >
+          $2.4bn of the new GPU financing is priced at 9.0% fixed for non-investment
+          grade customer deployments — three points above the Microsoft facility,
+          which prices the counterparty risk explicitly.
+        source: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000051/irenreportsfy26results.htm
+
+    peers_in_portfolio:
+      - isin: US88080T1043
+        name: TeraWulf
+        relation: same model — power-advantaged sites converted to AI leases
+      - isin: US0231351067
+        name: Amazon.com
+        relation: the hyperscaler alternative customers can choose instead
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2024-12-31
+      quarters_present: 7
+      latest_value_usd_m: 357.5
+      latest_weight_pct: 10.59
+      comment: >
+        Unusually consistent for this book: between 8.6% and 13.7% of the 13F in
+        every quarter it has been held, never trimmed below $100m. Added to in
+        Q2 2026 from $230m to $357m. A conviction position, not a trade.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US88080T1043
+    name: TeraWulf Inc.
+    ticker: WULF
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Global Leaders, Aggressive Growth, Defensive Growth, Global Crypto Leaders]
+    weight_technology_leaders: 1.13
+
+    what_it_does: >
+      Owns power-advantaged sites and builds data centres on them, then leases
+      critical IT capacity to AI tenants on long-duration contracts. Same
+      bitcoin-mining origin as IREN, but leases the buildings rather than
+      renting GPUs.
+
+    revenue_model: >
+      HPC lease revenue under multi-year contracts, plus residual mining. Build
+      cost guidance is $8-10 million per critical IT MW, and the economics are a
+      spread between that and contracted rent. Capital-intensive and financed
+      with debt and equity ahead of revenue.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 44.8
+      hpc_lease_revenue_usd_m: 31.9
+      operating_loss_usd_m: -140.5
+      net_loss_usd_m: -940.8
+      diluted_eps_usd: -1.94
+      adjusted_ebitda_usd_m: -18.3
+      cash_and_restricted_cash_usd_m: 3028.6
+      operating_capacity:
+        revenue_generating_mw_at_quarter_end: 81
+        revenue_generating_mw_after_cb3: 102
+        mw_under_construction: 336
+      derived:
+        hpc_share_of_revenue_pct: 71.2
+        note: >
+          The $940.8m net loss is dominated by a $755.7m non-cash change in the
+          fair value of warrants, not by operations. Adjusted EBITDA of $(18.3)m
+          is the better read on the operating business, and it is negative.
+      source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      71% of revenue is already HPC lease revenue, and the subsequent-events
+      disclosure is a 20-year, approximately 401 MW lease with Anthropic. This is
+      a pure AI infrastructure landlord with a residual mining business.
+
+    mechanisms:
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Long-duration leases are the counterparty's capex commitment converted
+          into TeraWulf's contracted revenue. The Anthropic lease alone is
+          approximately $19 billion over the initial term.
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The whole thesis. Management states that "access to power becomes the
+          defining constraint on AI infrastructure development", and the company
+          contracted up to 1 GW of electric service with Kentucky Power and won
+          FERC authorisation toward a further up-to-1 GW campus.
+      - id: training_compute_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          A named frontier lab signed a 20-year lease for roughly 401 MW of
+          critical IT capacity. Lab compute commitments land here as contracted
+          rent with no inference required.
+      - id: lab_capital_access
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          A 20-year lease is an unsecured 20-year bet on one lab's solvency. The
+          Google credit support of $600m behind Fluidstack's obligations shows
+          the market pricing exactly this risk on the earlier contract.
+
+    lab_exposure:
+      - lab: anthropic
+        kind: revenue_contract
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          A 20-year lease for approximately 401 MW of critical IT capacity,
+          approximately $19bn of contracted revenue over the initial term and up
+          to approximately $33bn if both five-year extensions are exercised. The
+          exposure is asymmetric: TeraWulf captures none of Anthropic's upside
+          beyond the contracted rent, and the whole position is an unsecured
+          20-year view on one private counterparty's solvency.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - lab: google
+        kind: credit_support
+        sign: positive
+        magnitude: medium
+        confidence: low
+        unverified: >
+          Carried over from the mechanisms prose, which cites no filing for it.
+          Needs a primary source before it is used for anything.
+        why: >
+          Google credit support of approximately $600m is understood to sit
+          behind Fluidstack's obligations on the earlier contract, which is the
+          market pricing the same counterparty risk the Anthropic lease carries.
+    tailwinds:
+      - claim: >
+          Entered a 20-year data center lease with Anthropic for approximately
+          401 MW of critical IT capacity, representing approximately $19 billion
+          of contracted revenue over the initial term and up to approximately
+          $33 billion if both five-year extensions are exercised.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - claim: >
+          102 MW of revenue-generating critical IT capacity online after CB-3
+          delivery, with a further 336 MW under construction across CB-4 and CB-5.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - claim: >
+          Approximately $3.0 billion of cash and restricted cash at quarter end,
+          plus an agreement to sell the Abernathy JV interest for ~$530 million.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+
+    headwinds:
+      - claim: >
+          Adjusted EBITDA of $(18.3)m in Q2 2026 against $14.5m a year earlier —
+          the operating business is currently loss-making as it builds.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - claim: >
+          Interest expense of $56.4m in the quarter against $44.8m of revenue, and
+          $1.38 billion of property and equipment purchases in the half year.
+        source: https://www.sec.gov/Archives/edgar/data/1083301/000108330126000162/a_wulfearningsreleaseq22026.htm
+      - claim: >
+          Concentration is extreme: a single 20-year Anthropic lease dominates
+          contracted revenue, so the position is largely a credit view on one
+          private counterparty.
+        unverified: >
+          The lease terms are sourced; characterising it as the dominant exposure
+          is judgement from comparing it with current revenue.
+
+    peers_in_portfolio:
+      - isin: AU0000185993
+        name: IREN
+        relation: same power-to-AI conversion model, further along and larger
+      - isin: DE0006231004
+        name: Infineon Technologies
+        relation: supplies power conversion silicon into the racks these sites host
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2023-03-31
+      quarters_present: 13
+      latest_value_usd_m: 69.4
+      latest_weight_pct: 2.06
+      comment: >
+        A small position for most of its life, under 0.7% of the book through
+        2024 and cut back to $4.2m in mid-2025. Rebuilt hard since: $13.3m to
+        $35.4m to $69.4m over the last three quarters, tracking the shift from
+        mining to AI leases.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US1717793095
+    name: Ciena Corporation
+    ticker: CIEN
+    ticker_verified: false
+    exchange: NYSE
+    country: United States
+    held_by: [Technology Leaders]
+    weight_technology_leaders: 2.87
+
+    what_it_does: >
+      Optical networking: the coherent transceivers, line systems and routing
+      that move traffic between data centres and across wide-area networks. The
+      relevant AI exposure is data centre interconnect — linking the multiple
+      sites a single training run now spans.
+
+    revenue_model: >
+      Sells optical systems, pluggable modules and software to carriers, cloud
+      providers and enterprises, plus services. Cloud provider revenue is the
+      fastest-growing part and the customer base there is concentrated.
+
+    financials:
+      as_of: Q2 FY2026, quarter ended 2026-05-02
+      revenue_usd_m: 1570.7
+      revenue_yoy_pct: 39.5
+      gaap_gross_margin_pct: 44.0
+      non_gaap_gross_margin_pct: 44.9
+      gaap_operating_margin_pct: 15.1
+      non_gaap_operating_margin_pct: 19.5
+      diluted_eps_usd: 1.49
+      non_gaap_diluted_eps_usd: 1.64
+      ebitda_usd_m: 283.1
+      adjusted_ebitda_usd_m: 341.8
+      outlook:
+        q3_fy2026_revenue_usd_m: 1625
+        fy2026_revenue_usd_m: 6300
+        fy2026_revenue_yoy_pct: 32
+      derived:
+        note: >
+          Ciena does not break out AI or cloud revenue in the press release, so
+          the AI share is management characterisation rather than a segment
+          figure. Adjusted EPS rose 290% year on year on 39.5% revenue growth —
+          the operating leverage is the story.
+      source: https://www.sec.gov/Archives/edgar/data/936395/000162828026040614/ex9912026q2earningspressre.htm
+
+    ai_role: primary
+    ai_role_reason: >
+      Management frames the strategy as high-speed connectivity "both across the
+      WAN and in and around the data center", explicitly "tightly aligned to the
+      structural, multi-year opportunities created by AI-driven demand", and full
+      year guidance was raised to 32% growth. The caveat is that no AI revenue
+      line is disclosed.
+
+    mechanisms:
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The direct link. Training runs now span multiple buildings and campuses,
+          and the traffic between them is coherent optical. Revenue grew 39.5%
+          with full-year guidance raised twice.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Interconnect is bought when the site is built, not when it is used, so
+          the exposure is to the buildout decision. Guidance raised to $6.3bn for
+          FY2026, a 32% increase year on year at the midpoint.
+      - id: training_compute_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Larger clusters need more inter-site bandwidth, but the relationship is
+          to campus topology rather than accelerator count, so it is looser than
+          for the silicon holdings.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: low
+        confidence: low
+        why: >
+          Traffic growth eventually forces capacity upgrades, but on a multi-year
+          cycle and with substantial headroom in installed fibre. Recorded at
+          low/low to mark the link as weak rather than absent.
+
+    tailwinds:
+      - claim: >
+          Fiscal 2026 revenue guidance raised to $6.3 billion +/- $100 million, a
+          32% increase year on year at the midpoint.
+        source: https://www.sec.gov/Archives/edgar/data/936395/000162828026040614/ex9912026q2earningspressre.htm
+      - claim: >
+          Adjusted EPS of $1.64 against $0.42 a year earlier — a 290% increase on
+          39.5% revenue growth, with adjusted operating margin up 11.3 points.
+        source: https://www.sec.gov/Archives/edgar/data/936395/000162828026040614/ex9912026q2earningspressre.htm
+
+    headwinds:
+      - claim: >
+          Management describes "a dynamic supply environment" — growth is
+          currently constrained by supply rather than demand, which caps upside.
+        source: https://www.sec.gov/Archives/edgar/data/936395/000162828026040614/ex9912026q2earningspressre.htm
+      - claim: >
+          No AI or cloud revenue disclosure in the release, so the AI share of the
+          business cannot be verified from the primary source.
+        source: https://www.sec.gov/Archives/edgar/data/936395/000162828026040614/ex9912026q2earningspressre.htm
+      - claim: >
+          Gross margin of 44.0% is roughly 20 points below the semiconductor
+          holdings — this is a systems business, and volume growth converts to
+          profit less efficiently.
+        unverified: Comparison drawn across the batch, not a disclosed claim.
+
+    peers_in_portfolio:
+      - isin: US6549022043
+        name: Nokia
+        relation: direct competitor in optical and IP networks
+      - isin: US5738741041
+        name: Marvell Technology
+        relation: supplies the electro-optics DSPs inside coherent modules
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2023-06-30
+      quarters_present: 2
+      latest_value_usd_m: 82.8
+      latest_weight_pct: 2.45
+      comment: >
+        Effectively new. A $2.3m stub in Q2 2023, nothing for eleven quarters,
+        then $82.8m in Q2 2026. Held only by Technology Leaders.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US6549022043
+    name: Nokia Corporation
+    ticker: NOK
+    ticker_verified: false
+    exchange: NYSE (ADR); Nasdaq Helsinki
+    country: Finland
+    held_by: [Technology Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 2.25
+
+    what_it_does: >
+      Two businesses: Network Infrastructure — optical networks, IP networks,
+      fixed and submarine — and Mobile Infrastructure, the RAN business. The AI
+      exposure is entirely in the first: optical and IP capacity sold to
+      hyperscalers and AI operators.
+
+    revenue_model: >
+      Sells network equipment and licences to carriers, hyperscalers and
+      enterprises. Reports Network Infrastructure, Mobile Infrastructure and
+      Portfolio Businesses. Order intake leads revenue, and the company states
+      about half of AI and Cloud orders convert within twelve months.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      currency: EUR
+      revenue_eur_m: 4815
+      revenue_yoy_pct: 8
+      revenue_yoy_constant_currency_pct: 9
+      reported_gross_margin_pct: 44.6
+      comparable_gross_margin_pct: 46.0
+      reported_operating_margin_pct: -1.0
+      comparable_operating_margin_pct: 9.0
+      comparable_operating_profit_eur_m: 434
+      reported_diluted_eps_eur: 0.00
+      comparable_diluted_eps_eur: 0.07
+      segments:
+        - {name: Network Infrastructure, revenue_eur_m: 2037, yoy_pct: 12, operating_margin_pct: 8.1}
+        - {name: Mobile Infrastructure, revenue_eur_m: 2680, yoy_pct: 6, operating_margin_pct: 11.6}
+        - {name: Portfolio Businesses, revenue_eur_m: 94, yoy_pct: 6, operating_margin_pct: 0.0}
+      outlook:
+        fy2026_comparable_operating_profit_eur_m: "2100 to 2600"
+      derived:
+        ai_cloud_order_intake_eur_m: 2800
+        ai_cloud_sales_yoy_pct: 105
+        optical_networks_yoy_pct: 20
+        ip_networks_yoy_pct: 16
+        note: >
+          The AI exposure is disclosed as a customer grouping rather than a
+          segment: net sales to AI & Cloud customers grew 105% and order intake
+          was EUR 2.8bn in the quarter, about half of which converts within
+          twelve months.
+      source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+
+    ai_role: secondary
+    ai_role_reason: >
+      AI is the stated growth engine — the report is headlined "Solid Q2 fueled by
+      growing AI & Cloud demand" and those sales more than doubled — but Mobile
+      Infrastructure is still the larger segment at 56% of revenue and grew 6%.
+      Materially exposed, not AI-native.
+
+    mechanisms:
+      - id: networking_bandwidth_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          The clearest disclosed evidence for this mechanism anywhere in the
+          portfolio: net sales to AI & Cloud customers grew 105%, with Optical
+          Networks up 20% and IP Networks up 16%, and EUR 2.8bn of AI & Cloud
+          order intake in a single quarter.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        why: >
+          Orders are the customer's capex decision made visible before revenue.
+          Management notes customers are placing longer-term orders because
+          "supply continues to be the main industry constraint".
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: low
+        confidence: low
+        why: >
+          Network equipment ships alongside datacentre build, so there is a weak
+          co-movement with power buildout, but Nokia sells no power content.
+          Recorded at low/low rather than dropped.
+
+    tailwinds:
+      - claim: >
+          "In Q2, our AI & Cloud order intake was EUR 2.8 billion, while sales more
+          than doubled year-on-year... We expect around half of these orders to
+          convert to revenue over the next twelve months."
+        source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+      - claim: >
+          Network Infrastructure net sales grew 12% on a constant currency basis,
+          led by Optical Networks growing 20% and IP Networks growing 16%.
+        source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+      - claim: >
+          Comparable gross margin expanded 70bps year on year to 46.0% and
+          comparable operating margin rose 70bps to 9.0%.
+        source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+
+    headwinds:
+      - claim: >
+          Reported operating margin was (1.0)%, down 430bps year on year, on a
+          faster pace of restructuring; reported diluted EPS was EUR 0.00.
+        source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+      - claim: >
+          Mobile Infrastructure is 56% of revenue, grew 6%, and saw gross margin
+          decline from 50.0% to 49.3% — the majority of the business is not the
+          AI business.
+        source: https://www.sec.gov/Archives/edgar/data/924613/000110465926086081/tm2621179d1_6k.htm
+      - claim: >
+          Comparable operating margin of 9.0% is roughly half Ciena's 19.5%, on a
+          business four times larger — Nokia converts AI demand less efficiently
+          than the pure-play optical competitor in the same portfolio.
+        unverified: Comparison drawn across the two entries, not a disclosed claim.
+
+    peers_in_portfolio:
+      - isin: US1717793095
+        name: Ciena
+        relation: direct competitor in optical and IP; the pure-play version of this exposure
+      - isin: US8168501018
+        name: Semtech
+        relation: supplies signal integrity components into optical equipment
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+        The ADR is 13F-reportable; the Helsinki line would not be.
+      first_seen: 2026-03-31
+      quarters_present: 2
+      latest_value_usd_m: 61.3
+      latest_weight_pct: 1.82
+      comment: >
+        New. First appears Q1 2026 at $27.3m, more than doubled to $61.3m in
+        Q2 2026 — bought in the same two quarters as Ciena, which reads as a
+        deliberate move into optical rather than a single-name view.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  # -------------------------------------------- application layer and the tail
+  # Batch 3. The remaining eleven. Several have no AI transmission path at all;
+  # those say `ai_role: none` and carry no mechanism links rather than being
+  # given an invented one. Two — Navan and Hinge Health — are the portfolio's
+  # only application-layer AI exposure, and are the first holdings to route
+  # `agentic_workflows` and to take `inference_cost_down` positively.
+
+  - isin: US7707001027
+    name: Robinhood Markets, Inc.
+    ticker: HOOD
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Crypto Leaders]
+    weight_technology_leaders: 5.29
+
+    what_it_does: >
+      Retail brokerage and crypto exchange: commission-free equities and options,
+      event contracts, a credit card, subscriptions (Gold) and a growing set of
+      adjacent financial products.
+
+    revenue_model: >
+      Transaction-based revenue from order flow across equities, options, crypto
+      and event contracts, plus net interest on customer balances and margin
+      lending, plus subscription and other revenue.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 1310
+      revenue_yoy_pct: 32
+      net_income_usd_m: 573
+      net_income_yoy_pct: 48
+      diluted_eps_usd: 0.62
+      segments:
+        - {name: Transaction-based, revenue_usd_m: 776, yoy_pct: 44}
+        - {name: Net interest, revenue_usd_m: 389, yoy_pct: 9}
+        - {name: Other, revenue_usd_m: 143, yoy_pct: 54}
+      derived:
+        note: >
+          Net income includes $129m of gains primarily related to the
+          deconsolidation of Robinhood Ventures Fund I. Crypto revenue fell 38%
+          to $100m; growth came from event contracts (up over 10x to $156m),
+          options and equities.
+      source: https://www.sec.gov/Archives/edgar/data/1783879/000178387926000113/q22026robinhoodexhibit991.htm
+
+    ai_role: none
+    ai_role_reason: >
+      Revenue is driven by retail trading volumes, interest rates and crypto
+      prices. Nothing a frontier lab publishes changes any of those. Held for
+      reasons outside this system's scope.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Record revenue of $1.31 billion, up 32% year on year, with record net
+          deposits of $22 billion and Gold subscribers at a record 4.8 million.
+        source: https://www.sec.gov/Archives/edgar/data/1783879/000178387926000113/q22026robinhoodexhibit991.htm
+      - claim: >
+          Thirteen business lines have reached $100 million or more in annualized
+          revenue — diversification away from single-product dependence.
+        source: https://www.sec.gov/Archives/edgar/data/1783879/000178387926000113/q22026robinhoodexhibit991.htm
+
+    headwinds:
+      - claim: >
+          Cryptocurrencies revenue fell 38% year on year to $100 million, so the
+          growth is carried by event contracts and options rather than crypto.
+        source: https://www.sec.gov/Archives/edgar/data/1783879/000178387926000113/q22026robinhoodexhibit991.htm
+      - claim: >
+          Net interest revenue growth slowed to 9%, partly on lower short-term
+          rates — a rate-sensitive third of the business.
+        source: https://www.sec.gov/Archives/edgar/data/1783879/000178387926000113/q22026robinhoodexhibit991.htm
+
+    peers_in_portfolio:
+      - isin: US3493811034
+        name: Figure Technology Solutions
+        relation: the other fintech/crypto-adjacent holding
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2021-09-30
+      quarters_present: 18
+      latest_value_usd_m: 216.3
+      latest_weight_pct: 6.42
+      comment: >
+        Long history, traded aggressively. Near-zero through 2022-23, rebuilt from
+        Q4 2024, cut to $6.0m in Q1 2026 and then taken to $216.3m in Q2 2026 —
+        a 36x move in one quarter and the second-largest position in the file.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US4333131039
+    name: Hinge Health, Inc.
+    ticker: HNGE
+    ticker_verified: false
+    exchange: NYSE
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 4.45
+
+    what_it_does: >
+      Digital musculoskeletal care delivered through an app with connected
+      hardware and clinician oversight, sold to employers and health plans.
+      Expanding into migraine and, via the Cylinder Health acquisition,
+      gastrointestinal care.
+
+    revenue_model: >
+      Contracts with employers and health plans, priced per member. The margin
+      structure depends on how much of the care pathway is automated rather than
+      delivered by a clinician — GAAP gross margin rose from 70% to 86% in a year.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 212.8
+      revenue_yoy_pct: 53
+      gaap_gross_margin_pct: 86
+      non_gaap_gross_margin_pct: 87
+      gaap_operating_income_usd_m: 40.4
+      free_cash_flow_usd_m: 100
+      outlook:
+        fy2026_revenue_usd_m: 858
+        fy2026_revenue_yoy_pct: 46
+      derived:
+        note: >
+          The prior-year operating loss of $580.7m included $591.0m of
+          stock-based compensation on IPO, so the swing to $40.4m of operating
+          income overstates the underlying improvement.
+      source: https://www.sec.gov/Archives/edgar/data/1673743/000162828026052558/hnge-q2202684xex991.htm
+
+    ai_role: secondary
+    ai_role_reason: >
+      The company describes itself as "focused on scaling and automating the
+      delivery of health care" through "an AI-powered care model". AI is the cost
+      structure rather than the product, which is a real but indirect exposure —
+      and the opposite direction to every other holding in the portfolio.
+
+    mechanisms:
+      - id: inference_cost_down
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          One of only two holdings that benefits when serving gets cheaper. Care
+          delivered by an automated pathway rather than a clinician has model
+          inference in its cost of goods, and gross margin moved from 70% to 86%
+          in a year. Medium confidence: the release does not attribute the margin
+          gain to inference cost specifically.
+      - id: agentic_workflows
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          A multi-condition care platform that triages, monitors and escalates is
+          an agentic workflow in a regulated setting. Better tool use and longer
+          task horizons raise the share of the pathway that can be automated
+          safely, which is what drives the margin.
+
+    tailwinds:
+      - claim: >
+          Revenue of $212.8 million, up 53% year on year, with 2026 guidance
+          midpoint raised to $858 million, or 46% growth.
+        source: https://www.sec.gov/Archives/edgar/data/1673743/000162828026052558/hnge-q2202684xex991.htm
+      - claim: >
+          GAAP gross margin of 86%, up from 70% a year earlier, with free cash
+          flow of $100 million, up 3x year on year.
+        source: https://www.sec.gov/Archives/edgar/data/1673743/000162828026052558/hnge-q2202684xex991.htm
+      - claim: >
+          Signed a definitive agreement to acquire Cylinder Health, combining its
+          clinical footprint with "Hinge Health's AI-powered care model and
+          technology platform", with a GI programme expected to launch in 2027.
+        source: https://www.sec.gov/Archives/edgar/data/1673743/000162828026052558/hnge-q2202684xex991.htm
+
+    headwinds:
+      - claim: >
+          The year-ago operating loss included $591.0 million of IPO stock-based
+          compensation, so year-on-year profitability comparisons are distorted.
+        source: https://www.sec.gov/Archives/edgar/data/1673743/000162828026052558/hnge-q2202684xex991.htm
+      - claim: >
+          Cheaper and more capable models lower the barrier for competitors to
+          automate the same pathways — the mechanism that helps margin also
+          erodes the moat.
+        unverified: Structural judgement, not a disclosed risk.
+
+    peers_in_portfolio:
+      - isin: US6391931010
+        name: Navan
+        relation: the other application-layer holding that benefits from cheaper inference
+      - isin: US6877931096
+        name: Oscar Health
+        relation: also health-sector, but an insurer rather than a care provider
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2025-06-30
+      quarters_present: 5
+      latest_value_usd_m: 95.9
+      latest_weight_pct: 2.84
+      comment: >
+        Bought at IPO in Q2 2025 and built to $154.0m by Q4 2025, then trimmed to
+        $89.1m and held around $96m. Present every quarter since listing.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US6877931096
+    name: Oscar Health, Inc.
+    ticker: OSCR
+    ticker_verified: false
+    exchange: NYSE
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 4.39
+
+    what_it_does: >
+      A health insurer built on its own technology platform, selling
+      predominantly into the US individual market (ACA exchanges) rather than
+      through employers.
+
+    revenue_model: >
+      Premiums from individual and small group members. Profitability is the
+      spread between premium and the medical loss ratio, plus administrative
+      leverage — MLR fell from 91.1% to 79.2% year on year.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 4880.2
+      revenue_yoy_pct: 70.4
+      medical_loss_ratio_pct: 79.2
+      sga_expense_ratio_pct: 14.2
+      earnings_from_operations_usd_m: 388.6
+      net_income_usd_m: 361.8
+      adjusted_ebitda_usd_m: 415.3
+      members: 2963002
+      members_prior_year: 2027148
+      derived:
+        membership_growth_pct: 46.2
+        note: >
+          A swing from a $230.5m operating loss a year earlier to $388.6m of
+          operating income, driven by an 11.9 point improvement in MLR.
+      source: https://www.sec.gov/Archives/edgar/data/1568651/000156865126000066/oscarhealthsecondquarter20.htm
+
+    ai_role: none
+    ai_role_reason: >
+      No mechanism in the current vocabulary carries Oscar's AI exposure, and it
+      is more honest to say so than to force a tag. The CEO argues AI will grow
+      the individual market by pushing people out of full-time employment — a
+      genuine transmission, but it is labour-market displacement, which
+      mechanisms.yaml does not represent. Recorded here rather than invented.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Medical loss ratio improved from 91.1% to 79.2% year on year, turning a
+          $230.5 million operating loss into $388.6 million of operating income.
+        source: https://www.sec.gov/Archives/edgar/data/1568651/000156865126000066/oscarhealthsecondquarter20.htm
+      - claim: >
+          Membership grew 46% year on year to 2,963,002, with full year 2026
+          guidance raised.
+        source: https://www.sec.gov/Archives/edgar/data/1568651/000156865126000066/oscarhealthsecondquarter20.htm
+      - claim: >
+          "More people are moving between full- and part-time jobs, gig work, and
+          retirement - a shift AI will accelerate. A durable individual market
+          gives them greater choice" (Mark Bertolini, CEO).
+        source: https://www.sec.gov/Archives/edgar/data/1568651/000156865126000066/oscarhealthsecondquarter20.htm
+      - claim: >
+          A demand tailwind from AI-driven labour displacement is the inverse of
+          every other AI exposure in the portfolio, which is levered to the
+          buildout rather than to its social consequences.
+        unverified: Portfolio-level observation, not a disclosed claim.
+
+    headwinds:
+      - claim: >
+          The company discloses "uncertainties associated with our utilization of
+          certain artificial intelligence and machine learning models" as a risk
+          factor — AI is a stated model risk here, not only an opportunity.
+        source: https://www.sec.gov/Archives/edgar/data/1568651/000156865126000066/oscarhealthsecondquarter20.htm
+      - claim: >
+          An MLR of 79.2% is exceptionally low for an ACA insurer and is the
+          entire source of the earnings swing; it is a ratio that mean-reverts
+          with pricing cycles and risk-pool composition.
+        unverified: Structural judgement about insurance cycles, not a disclosed claim.
+
+    peers_in_portfolio:
+      - isin: US4333131039
+        name: Hinge Health
+        relation: sells care services into the same health system Oscar insures
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2022-03-31
+      quarters_present: 12
+      latest_value_usd_m: 97.5
+      latest_weight_pct: 2.89
+      comment: >
+        Stub positions in 2022 and early 2024, then a real position from Q4 2024.
+        Traded actively since — $60.1m, cut to $18.2m by Q3 2025, back to $97.5m.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: DE000A2LQ884
+    name: AUTO1 Group SE
+    ticker: AG1
+    ticker_verified: false
+    exchange: Frankfurt (Xetra)
+    country: Germany
+    filer_status: >
+      Not an SEC registrant. Primary source is the company's EQS corporate
+      announcement; figures are IFRS and reported in euro.
+    held_by: [Technology Leaders, Leaders, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 4.38
+
+    what_it_does: >
+      European used-car marketplace. Two segments: Merchant (AUTO1.com), a
+      wholesale platform selling to dealers, and Retail (Autohero), selling
+      refurbished cars direct to consumers.
+
+    revenue_model: >
+      Buys and resells vehicles, earning a gross profit per unit. Merchant is
+      high-volume and low GPU (EUR 959); Retail is lower-volume and high GPU
+      (EUR 2,503). Profitability is unit growth against a largely fixed cost base.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      currency: EUR
+      revenue_eur_m: 2432.1
+      revenue_yoy_pct: 23.4
+      gross_profit_eur_m: 280.7
+      gross_profit_yoy_pct: 21.4
+      gross_profit_per_unit_eur: 1174
+      adjusted_ebitda_eur_m: 58.6
+      adjusted_ebitda_yoy_pct: 38.4
+      adjusted_ebitda_margin_pct: 2.4
+      units_sold: 240298
+      units_sold_yoy_pct: 19.9
+      segments:
+        - {name: Merchant (AUTO1.com), units: 206883, revenue_eur_m: 1833.7, gross_profit_eur_m: 198.5, gpu_eur: 959}
+        - {name: Retail (Autohero), units: 33415, revenue_eur_m: 598.3, gross_profit_eur_m: 82.2, gpu_eur: 2503}
+      outlook:
+        fy2026_units: "940,000 to 1,000,000"
+        fy2026_gross_profit_eur_m: "1100 to 1200"
+        fy2026_adjusted_ebitda_eur_m: "250 to 275"
+      derived:
+        note: >
+          A 2.4% adjusted EBITDA margin on EUR 2.4bn of revenue — this is a
+          working-capital-intensive trading business, not a software marketplace.
+      source: https://www.tradingview.com/news/eqs:864c48efd094b:0-auto1-group-reports-strong-q2-2026-unit-and-profitability-growth/
+      sourcing: >
+        secondary host, primary text. AUTO1's own IR pages returned 404; this is
+        the EQS corporate announcement republished verbatim. Should be replaced
+        with the company-hosted release when the IR site is reachable.
+
+    ai_role: none
+    ai_role_reason: >
+      Revenue is European used-car volumes and gross profit per unit. No frontier
+      lab publication changes either. Held for reasons outside this system.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Q2 2026 revenue of EUR 2,432.1 million, up 23.4% year on year, with
+          units sold up 19.9% to 240,298.
+        source: https://www.tradingview.com/news/eqs:864c48efd094b:0-auto1-group-reports-strong-q2-2026-unit-and-profitability-growth/
+        sourcing: secondary host, primary EQS announcement text
+      - claim: >
+          Retail (Autohero) units grew 40.3% at a gross profit per unit of
+          EUR 2,503, against EUR 959 in Merchant — mix shift is margin accretive.
+        source: https://www.tradingview.com/news/eqs:864c48efd094b:0-auto1-group-reports-strong-q2-2026-unit-and-profitability-growth/
+        sourcing: secondary host, primary EQS announcement text
+
+    headwinds:
+      - claim: >
+          Adjusted EBITDA margin is 2.4%. Even at the top of full-year guidance,
+          EUR 275m of adjusted EBITDA sits on roughly EUR 10bn of revenue.
+        source: https://www.tradingview.com/news/eqs:864c48efd094b:0-auto1-group-reports-strong-q2-2026-unit-and-profitability-growth/
+        sourcing: secondary host, primary EQS announcement text
+      - claim: >
+          Gross profit per unit grew only 2.3% year on year, so almost all growth
+          is volume rather than price or mix.
+        source: https://www.tradingview.com/news/eqs:864c48efd094b:0-auto1-group-reports-strong-q2-2026-unit-and-profitability-growth/
+        sourcing: secondary host, primary EQS announcement text
+
+    peers_in_portfolio: []
+
+    position_history:
+      note: >
+        Not 13F-reportable — a German-listed security, absent from BIT's Form
+        13F-HR. No position history is derived or estimated here.
+      source: absent by design; see note
+
+  - isin: US6391931010
+    name: Navan, Inc.
+    ticker: NAVN
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Defensive Growth]
+    weight_technology_leaders: 3.14
+
+    what_it_does: >
+      Business travel and expense management software, self-described as an
+      "AI-powered" platform. Books travel, manages expense policy and issues
+      payments, replacing both a travel agency and an expense workflow.
+
+    revenue_model: >
+      Usage revenue tied to gross booking volume and payments (92% of revenue),
+      plus subscription. GBV of $3.1 billion converted to $220 million of revenue
+      in the quarter, so take rate rather than seat count is the driver.
+
+    financials:
+      as_of: Q1 FY2027, quarter ended 2026-04-30
+      revenue_usd_m: 220
+      revenue_yoy_pct: 40
+      gross_booking_volume_usd_m: 3100
+      gross_booking_volume_yoy_pct: 50
+      net_loss_usd_m: -21
+      non_gaap_net_income_usd_m: 22
+      segments:
+        - {name: Usage revenue, revenue_usd_m: 202, yoy_pct: 41}
+        - {name: Subscription revenue, revenue_usd_m: 18}
+      outlook:
+        fy2027_revenue_growth_pct: 30
+        note: raised from 24% previously
+      derived:
+        usage_share_of_revenue_pct: 91.8
+        note: >
+          Net loss narrowed from $61m to $21m year on year, and non-GAAP net
+          income turned positive at $22m from a $7m loss. A recent IPO with only
+          a few quarters of public reporting.
+      source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+
+    ai_role: secondary
+    ai_role_reason: >
+      The company describes a "proprietary, AI-led platform... seamlessly
+      orchestrating human and AI agents" and shipped Travel Admin Companion,
+      Expense Admin Companion, Book with AI and an AI-powered Audit Engine in the
+      quarter. AI is how the service is delivered, not what is sold, so the
+      exposure is to cost and capability rather than to demand.
+
+    mechanisms:
+      - id: agentic_workflows
+        sign: positive
+        magnitude: medium
+        confidence: high
+        why: >
+          The clearest agentic application in the portfolio: booking, policy
+          enforcement and audit are multi-step tasks with tool calls, and the
+          company shipped four agent products in one quarter. Better tool use and
+          longer task horizons directly expand what the platform can automate.
+      - id: inference_cost_down
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Agent-delivered service has inference in its cost of goods. Cheaper
+          serving improves unit economics on a business already running a 40%
+          growth rate at a small net loss. The opposite sign to the suppliers.
+      - id: capability_jump
+        sign: positive
+        magnitude: low
+        confidence: low
+        why: >
+          Recorded at low/low, and the only company link this mechanism has. A
+          frontier capability step raises the ceiling on what the agents can be
+          trusted to do unsupervised, but Navan buys models rather than making
+          them, so the benefit is diffuse and shared with every competitor.
+
+    tailwinds:
+      - claim: >
+          Revenue growth accelerated to 40% year on year to $220 million, with
+          gross booking volume up 50% to a record $3.1 billion.
+        source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+      - claim: >
+          Fiscal 2027 revenue growth guidance raised to 30% from 24% previously,
+          alongside a raised non-GAAP operating profit outlook.
+        source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+      - claim: >
+          Launched Travel Admin Companion, Expense Admin Companion, Book with AI
+          and an AI-powered Audit Engine providing real-time protection.
+        source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+
+    headwinds:
+      - claim: >
+          The company lists "Navan's ability to utilize AI successfully in its
+          current and future products" among its risk factors — the AI dependency
+          is disclosed as a risk as well as a strategy.
+        source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+      - claim: >
+          Still loss-making on a GAAP basis at $21 million, and 92% of revenue is
+          usage-based, so revenue tracks corporate travel volumes and would fall
+          with them.
+        source: https://www.sec.gov/Archives/edgar/data/1639723/000162828026042206/exhibit991-earningspressre.htm
+      - claim: >
+          A travel and expense workflow is exactly the kind of task a general
+          agent from a frontier lab could absorb — the capability that helps
+          Navan is also the capability that could disintermediate it.
+        unverified: >
+          Structural judgement. This is the clearest case in the portfolio where a
+          lab capability release could be read either sign.
+
+    peers_in_portfolio:
+      - isin: US4333131039
+        name: Hinge Health
+        relation: the other application-layer holding levered to cheaper inference
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-03-31
+      quarters_present: 2
+      latest_value_usd_m: 119.2
+      latest_weight_pct: 3.53
+      comment: >
+        New. A $3.0m stub in Q1 2026 became $119.2m in Q2 2026 — bought in the
+        same quarter as SanDisk, Marvell, Silicon Motion, Ciena and Robinhood.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US35671D8570
+    name: Freeport-McMoRan Inc.
+    ticker: FCX
+    ticker_verified: false
+    exchange: NYSE
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth]
+    weight_technology_leaders: 3.06
+
+    what_it_does: >
+      Copper mining, with gold and molybdenum by-products. Major assets at
+      Grasberg in Indonesia and in the Americas. Copper is the physical input to
+      electrification: grid, transformers, busbars and the power distribution
+      inside a datacentre.
+
+    revenue_model: >
+      Sells copper, gold and molybdenum at market prices. Earnings are volume
+      times realised price less unit cash cost — $6.17 per pound realised against
+      $1.97 per pound net cash cost in the quarter.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 7029
+      revenue_prior_year_usd_m: 7582
+      operating_income_usd_m: 2003
+      net_income_usd_m: 984
+      diluted_eps_usd: 0.68
+      adjusted_net_income_usd_m: 1100
+      adjusted_diluted_eps_usd: 0.74
+      operating_cash_flow_usd_m: 2000
+      capex_usd_m: 1100
+      production:
+        copper_m_lbs: 786
+        gold_k_oz: 192
+        molybdenum_m_lbs: 23
+      realised_prices:
+        copper_usd_per_lb: 6.17
+        gold_usd_per_oz: 4520
+        molybdenum_usd_per_lb: 28.75
+      unit_net_cash_cost_usd_per_lb: 1.97
+      outlook:
+        fy2026_copper_sales_bn_lbs: 3.1
+        fy2026_operating_cash_flow_usd_m: 8300
+        fy2026_capex_usd_m: 4300
+      derived:
+        cash_margin_usd_per_lb: 4.20
+        note: >
+          Realised copper price less unit net cash cost. Revenue fell year on
+          year while net income rose 27%, on price and mix rather than volume.
+      source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+
+    ai_role: secondary
+    ai_role_reason: >
+      Copper demand is driven by electrification broadly — grid, EVs, buildings —
+      of which AI datacentre buildout is a growing but minority share. Real
+      exposure, indirect and undisclosed: the release does not quantify a
+      datacentre end-market.
+
+    mechanisms:
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        why: >
+          Datacentre buildout is copper-intensive — substation, transformers,
+          busbar and distribution inside the hall — and it lands on top of grid
+          investment that AI load growth is itself driving. Medium confidence
+          because Freeport reports no datacentre end-market split, so the link is
+          inferred from the physical requirement rather than from disclosure.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: low
+        confidence: low
+        why: >
+          Copper is bought early in a build and priced on a global market, so an
+          individual capex commitment barely moves it. Recorded at low/low to
+          mark that the link exists but is heavily diluted.
+
+    tailwinds:
+      - claim: >
+          Realised copper price of $6.17 per pound against unit net cash costs of
+          $1.97 per pound — a cash margin of over $4 per pound.
+        source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+      - claim: >
+          Operating cash flow expected to approximate $8.3 billion for 2026 at
+          assumed prices of $6.00 copper, against capex of $4.3 billion.
+        source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+      - claim: >
+          Grasberg Block Cave ramp-up progressing on schedule, with organic
+          growth projects and a potential major expansion at El Abra in Chile.
+        source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+
+    headwinds:
+      - claim: >
+          Revenue fell from $7,582 million to $7,029 million year on year — the
+          earnings improvement came from price and cost, not from growth.
+        source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+      - claim: >
+          Earnings are a levered function of a commodity price Freeport does not
+          control, and Indonesian and Chilean assets carry jurisdictional risk.
+        unverified: Structural feature of the business, not a disclosed risk figure.
+      - claim: >
+          No datacentre or AI end-market disclosure, so the AI share of copper
+          demand cannot be verified from the primary source.
+        source: https://www.sec.gov/Archives/edgar/data/831259/000083125926000033/a2q2026exhibit991.htm
+
+    peers_in_portfolio:
+      - isin: DE0006231004
+        name: Infineon Technologies
+        relation: both sell into the power path, one as metal and one as silicon
+      - isin: US88080T1043
+        name: TeraWulf
+        relation: builds the datacentre power infrastructure copper goes into
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-03-31
+      quarters_present: 2
+      latest_value_usd_m: 90.6
+      latest_weight_pct: 2.68
+      comment: >
+        New. $55.3m in Q1 2026, $90.6m in Q2 2026 — added in both quarters it has
+        been held, alongside the Albemarle and SQM materials positions.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US3493811034
+    name: Figure Technology Solutions, Inc.
+    ticker: FIGR
+    ticker_verified: false
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Defensive Growth, Crypto Leaders]
+    weight_technology_leaders: 2.78
+
+    what_it_does: >
+      A blockchain-native capital marketplace for originating, funding, selling
+      and trading tokenised assets — principally home equity lending, moving into
+      adjacent asset classes via the pending Kiavi acquisition.
+
+    revenue_model: >
+      Originates consumer loans and sells them through its marketplace, earning
+      gain-on-sale and marketplace fees. Increasingly capital-light: 65% of
+      volume now runs through Figure Connect rather than the balance sheet.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 225.6
+      revenue_yoy_pct: 113
+      adjusted_net_revenue_usd_m: 218
+      adjusted_net_revenue_yoy_pct: 95
+      net_income_usd_m: 87
+      net_income_yoy_pct: 192
+      net_income_margin_pct: 38.8
+      adjusted_ebitda_usd_m: 119
+      adjusted_ebitda_margin_pct: 54.6
+      cash_usd_m: 1400
+      consumer_loan_marketplace_volume_usd_m: 4300
+      consumer_loan_marketplace_volume_yoy_pct: 132
+      derived:
+        figure_connect_share_of_volume_pct: 65
+        note: >
+          Named in the fund report as "FT Inter Inc." — the abbreviation does not
+          resolve to the company name, which is why the register keys on ISIN.
+      source: https://www.sec.gov/Archives/edgar/data/2064124/000206412426000031/ex991-pressrelease2q26.htm
+
+    ai_role: none
+    ai_role_reason: >
+      Revenue is loan origination volume and marketplace take rate. Nothing a
+      frontier lab publishes changes either. The blockchain angle is unrelated to
+      AI.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Consumer Loan Marketplace volume of $4.3 billion, up 132% year on year,
+          with net revenue up 113% to $225.6 million.
+        source: https://www.sec.gov/Archives/edgar/data/2064124/000206412426000031/ex991-pressrelease2q26.htm
+      - claim: >
+          Adjusted EBITDA margin of 54.6%, up 7 points year on year, with 65% of
+          volume now running through the capital-light Figure Connect platform.
+        source: https://www.sec.gov/Archives/edgar/data/2064124/000206412426000031/ex991-pressrelease2q26.htm
+
+    headwinds:
+      - claim: >
+          Weekly applications surpassing $1 billion and a pending Kiavi
+          acquisition mean growth depends on integration and on continued
+          consumer credit demand.
+        source: https://www.sec.gov/Archives/edgar/data/2064124/000206412426000031/ex991-pressrelease2q26.htm
+      - claim: >
+          Home equity origination is rate-sensitive and credit-cyclical; the
+          business has not been tested through a downturn as a public company.
+        unverified: Structural judgement; the company listed in 2025.
+
+    peers_in_portfolio:
+      - isin: US7707001027
+        name: Robinhood Markets
+        relation: the other fintech and crypto-adjacent holding
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2025-09-30
+      quarters_present: 4
+      latest_value_usd_m: 120.8
+      latest_weight_pct: 3.58
+      comment: >
+        Bought shortly after listing at $7.7m, then scaled hard: $10.7m to $84.9m
+        to $120.8m over three quarters.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US20451W1018
+    name: COMPASS Pathways plc
+    ticker: CMPS
+    ticker_verified: false
+    exchange: Nasdaq (ADS)
+    country: United Kingdom
+    held_by: [Technology Leaders, Leaders, Aggressive Growth, Defensive Growth]
+    weight_technology_leaders: 1.53
+
+    what_it_does: >
+      Clinical-stage biotechnology developing COMP360, a psilocybin treatment for
+      treatment-resistant depression, with a late-stage PTSD trial underway.
+      Pre-revenue.
+
+    revenue_model: >
+      None yet. A rolling NDA submission is underway with final submission
+      expected in Q4 2026 and commercial launch expected in the first half of
+      2027. Value is entirely contingent on approval.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 0
+      net_loss_usd_m: -253.8
+      net_loss_per_share_usd: -1.88
+      half_year_net_loss_usd_m: -162.6
+      cash_and_equivalents_usd_m: 433.3
+      debt_usd_m: 50.7
+      derived:
+        note: >
+          The quarterly net loss exceeds the half-year loss because of non-cash
+          fair value adjustments that moved in opposite directions across the two
+          quarters. Cash of $433.3m against $149.6m at December 2025 — the
+          company raised during the period.
+      source: https://www.sec.gov/Archives/edgar/data/1816590/000181659026000059/q22026pressrelease.htm
+
+    ai_role: none
+    ai_role_reason: >
+      A single-asset clinical biotech. Value is determined by trial data and FDA
+      decisions. No frontier lab publication has any bearing on it.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Two positive Phase 3 trials demonstrated rapid onset of effect and
+          durable benefit through at least 6 months; rolling NDA submission and
+          initial review underway with final submission expected in Q4 2026.
+        source: https://www.sec.gov/Archives/edgar/data/1816590/000181659026000059/q22026pressrelease.htm
+      - claim: >
+          Cash of $433.3 million at 30 June 2026, described as providing cash
+          well beyond launch and into 2028.
+        source: https://www.sec.gov/Archives/edgar/data/1816590/000181659026000059/q22026pressrelease.htm
+
+    headwinds:
+      - claim: >
+          Pre-revenue with a net loss of $253.8 million in the quarter; the entire
+          position is contingent on an approval that has not happened.
+        source: https://www.sec.gov/Archives/edgar/data/1816590/000181659026000059/q22026pressrelease.htm
+      - claim: >
+          Single-asset concentration: COMP360 in TRD carries the value, with PTSD
+          still in late-stage trial.
+        source: https://www.sec.gov/Archives/edgar/data/1816590/000181659026000059/q22026pressrelease.htm
+
+    peers_in_portfolio: []
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2021-03-31
+      quarters_present: 10
+      latest_value_usd_m: 89.8
+      latest_weight_pct: 2.66
+      comment: >
+        Sub-$1m stubs from 2021 through 2025, then $2.0m, $19.3m and $89.8m over
+        the last three quarters — scaled sharply into the Phase 3 readouts and
+        the NDA filing.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US8336351056
+    name: Sociedad Quimica y Minera de Chile S.A.
+    aliases: [SQM]
+    ticker: SQM
+    ticker_verified: false
+    exchange: NYSE (ADR); Santiago Stock Exchange
+    country: Chile
+    held_by: [Technology Leaders, Leaders, Defensive Growth, Multi Asset]
+    weight_technology_leaders: 1.41
+
+    what_it_does: >
+      Chilean producer of lithium, iodine, specialty plant nutrition and
+      industrial chemicals, extracted from the Salar de Atacama and Chilean
+      nitrate deposits. Lithium is the swing factor.
+
+    revenue_model: >
+      Sells commodities at market prices across four lines. Lithium carbonate
+      equivalent volumes and price dominate earnings; iodine and plant nutrition
+      provide diversification.
+
+    financials:
+      as_of: H1 2026, six months ended 2026-06-30
+      revenue_usd_m: 4228.5
+      revenue_prior_year_usd_m: 2079.3
+      revenue_yoy_pct: 103.4
+      gross_profit_usd_m: 2038.6
+      gross_margin_pct: 48.2
+      net_income_usd_m: 1024.7
+      net_income_yoy_pct: 353.5
+      eps_usd: 3.59
+      quarter_detail:
+        as_of: Q2 2026
+        net_income_usd_m: 660.0
+        eps_usd: 2.31
+      derived:
+        lithium_volumes_kt_lce_quarterly: 84
+        note: >
+          Record quarterly lithium volumes above 84 thousand metric tons LCE, and
+          record iodine price and quarterly revenue. Over $1.6 billion accrued in
+          payments to the Chilean State in the half.
+      source: https://www.sec.gov/Archives/edgar/data/909037/000090903726000034/a6-k_2q2026earningsrelease.htm
+
+    ai_role: none
+    ai_role_reason: >
+      Lithium demand is dominated by electric vehicles. Grid and datacentre
+      storage is a plausible secondary channel, but the release makes no mention
+      of energy storage or datacentre demand, so tagging a mechanism here would
+      be inference on top of inference. Recorded as none rather than invented.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          H1 2026 revenue of $4,228.5 million against $2,079.3 million a year
+          earlier, with net income up 353.5% to $1,024.7 million.
+        source: https://www.sec.gov/Archives/edgar/data/909037/000090903726000034/a6-k_2q2026earningsrelease.htm
+      - claim: >
+          Record quarterly lithium sales volumes surpassing 84 thousand metric
+          tons LCE, and record iodine price and quarterly revenue.
+        source: https://www.sec.gov/Archives/edgar/data/909037/000090903726000034/a6-k_2q2026earningsrelease.htm
+
+    headwinds:
+      - claim: >
+          Over $1.6 billion accrued in payments to the Chilean State during the
+          first half — a substantial and politically determined claim on profit.
+        source: https://www.sec.gov/Archives/edgar/data/909037/000090903726000034/a6-k_2q2026earningsrelease.htm
+      - claim: >
+          Earnings are levered to a lithium price that more than doubled revenue
+          in a year; the same leverage applies in reverse.
+        unverified: Structural judgement about commodity leverage, not a disclosed claim.
+
+    peers_in_portfolio:
+      - isin: US0126531013
+        name: Albemarle
+        relation: the other lithium producer, with the same price exposure
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+        The ADR is 13F-reportable.
+      first_seen: 2025-12-31
+      quarters_present: 3
+      latest_value_usd_m: 27.6
+      latest_weight_pct: 0.82
+      comment: >
+        A $1.6m stub in Q4 2025, then $16.7m and $27.6m — built alongside
+        Albemarle and Freeport as a materials sleeve.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US0126531013
+    name: Albemarle Corporation
+    ticker: ALB
+    ticker_verified: false
+    exchange: NYSE
+    country: United States
+    held_by: [Technology Leaders, Leaders, Multi Asset]
+    weight_technology_leaders: 1.00
+
+    what_it_does: >
+      Speciality chemicals in two segments: Energy Storage, which is lithium for
+      batteries, and Specialties, covering bromine, catalysts and other
+      applications. Sold a 51% stake in the Ketjen refining catalyst business in
+      March 2026.
+
+    revenue_model: >
+      Sells lithium under a mix of contract structures and spot, plus speciality
+      chemicals. Earnings track lithium price with operating leverage — Energy
+      Storage adjusted EBITDA grew 229% on 73% higher pricing.
+
+    financials:
+      as_of: Q2 2026, quarter ended 2026-06-30
+      revenue_usd_m: 1700
+      revenue_yoy_pct: 31
+      net_income_usd_m: 480
+      diluted_eps_usd: 3.52
+      adjusted_ebitda_usd_m: 858
+      adjusted_ebitda_yoy_pct: 155
+      operating_cash_flow_usd_m: 710
+      free_cash_flow_usd_m: 638
+      segments:
+        - {name: Energy Storage, adjusted_ebitda_yoy_pct: 229, price_yoy_pct: 73}
+        - {name: Specialties, adjusted_ebitda_yoy_pct: 61, price_yoy_pct: 11, volume_yoy_pct: 8}
+      outlook:
+        fy2026_specialties_revenue_usd_m: "1400 to 1600"
+        fy2026_specialties_adjusted_ebitda_usd_m: "275 to 325"
+        fy2026_capex_usd_m: 500
+      derived:
+        operating_cash_conversion_pct: 83
+        note: >
+          Cash conversion was flattered by the timing of an increased dividend
+          from the Talison joint venture and non-recurring working capital
+          benefits, per the company.
+      source: https://www.sec.gov/Archives/edgar/data/915913/000091591326000101/a2q26earningsreleaseex991.htm
+
+    ai_role: none
+    ai_role_reason: >
+      Same reasoning as SQM. Energy Storage is a reported segment, but the
+      release attributes its growth to pricing rather than to any datacentre or
+      grid-storage end market, and no AI linkage is disclosed. Recorded as none.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Net sales of $1.7 billion, up 31%, with adjusted EBITDA up 155% to
+          $858 million on higher Energy Storage pricing (+73%).
+        source: https://www.sec.gov/Archives/edgar/data/915913/000091591326000101/a2q26earningsreleaseex991.htm
+      - claim: >
+          Full-year capital expenditure forecast reduced to approximately
+          $500 million on capital efficiency improvements, with free cash flow of
+          $638 million in the quarter.
+        source: https://www.sec.gov/Archives/edgar/data/915913/000091591326000101/a2q26earningsreleaseex991.htm
+
+    headwinds:
+      - claim: >
+          A fire at the Talison CGP3 facility occurred on 9 June 2026, though the
+          company expects minimal impact to Energy Storage sales volume.
+        source: https://www.sec.gov/Archives/edgar/data/915913/000091591326000101/a2q26earningsreleaseex991.htm
+      - claim: >
+          Operating cash conversion of 83% was driven by the timing of a Talison
+          joint venture dividend and non-recurring working capital benefits, so it
+          is not a run rate.
+        source: https://www.sec.gov/Archives/edgar/data/915913/000091591326000101/a2q26earningsreleaseex991.htm
+
+    peers_in_portfolio:
+      - isin: US8336351056
+        name: Sociedad Quimica y Minera de Chile
+        relation: the other lithium producer
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2025-12-31
+      quarters_present: 3
+      latest_value_usd_m: 19.6
+      latest_weight_pct: 0.58
+      comment: >
+        $1.7m, $17.2m, $19.6m over three quarters — the smallest of the three
+        materials positions and roughly flat in the latest quarter.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)
+
+  - isin: US44916Y1064
+    name: Hyperliquid Strategies Inc
+    ticker: PURR
+    ticker_verified: false
+    ticker_note: >
+      Trades as PURR on Nasdaq per the company's own release. holdings.yaml
+      carried no ticker for this ISIN.
+    exchange: Nasdaq
+    country: United States
+    held_by: [Technology Leaders]
+    weight_technology_leaders: 0.82
+
+    what_it_does: >
+      A digital asset treasury vehicle holding HYPE tokens and operating a
+      validator on the Hyperliquid network. Formerly a biotech; that business was
+      exited during the fiscal year.
+
+    revenue_model: >
+      Not an operating business. Value is the HYPE token treasury plus staking
+      yield and validator economics. Earnings are dominated by unrealised marks
+      on the token holding.
+
+    financials:
+      as_of: FY2026, year ended 2026-06-30
+      revenue_usd_m: 0
+      equity_raised_usd_m: 647
+      cash_and_equivalents_usd_m: 149.9
+      debt_usd_m: 0
+      treasury_hype_tokens_m: 29.3
+      treasury_hype_tokens_initial_m: 12.5
+      derived:
+        note: >
+          Net income was primarily $709.9 million of net unrealised gains on HYPE
+          tokens, offset by a one-time loss on tokens contributed at completion of
+          the transaction. There is no operating revenue; the figure is a mark.
+      source: https://www.sec.gov/Archives/edgar/data/2078856/000119312526369668/purr-ex99_1.htm
+
+    ai_role: none
+    ai_role_reason: >
+      A single-token treasury vehicle. Its value tracks the HYPE token price. No
+      frontier lab publication has any bearing on it.
+
+    mechanisms: []
+
+    tailwinds:
+      - claim: >
+          Raised $647 million in equity through a committed equity facility and
+          increased the treasury from 12.5 million to 29.3 million HYPE tokens.
+        source: https://www.sec.gov/Archives/edgar/data/2078856/000119312526369668/purr-ex99_1.htm
+      - claim: >
+          $149.9 million in cash and cash-like instruments with zero debt, and
+          substantially all tokens staked and earning.
+        source: https://www.sec.gov/Archives/edgar/data/2078856/000119312526369668/purr-ex99_1.htm
+
+    headwinds:
+      - claim: >
+          No operating revenue. Reported net income is essentially $709.9 million
+          of unrealised marks on a single token, which reverse with its price.
+        source: https://www.sec.gov/Archives/edgar/data/2078856/000119312526369668/purr-ex99_1.htm
+      - claim: >
+          First public reporting period — the S-1 was filed in May 2026 and the
+          first 10-K in August 2026, so there is no operating history to assess.
+        source: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002078856
+
+    peers_in_portfolio:
+      - isin: AU0000185993
+        name: IREN
+        relation: also carries crypto exposure, but with an operating business behind it
+
+    position_history:
+      note: >
+        All BIT funds combined; the 13F cannot attribute a position to one fund.
+      first_seen: 2026-03-31
+      quarters_present: 2
+      latest_value_usd_m: 44.9
+      latest_weight_pct: 1.33
+      comment: >
+        New. A $0.4m stub in Q1 2026 became $44.9m in Q2 2026. Held only by
+        Technology Leaders.
+      source: research/docs/13f_raw (SEC Form 13F-HR, derived)

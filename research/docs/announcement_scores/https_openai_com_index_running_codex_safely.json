@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "safety_policy", "summary": "OpenAI describes how it runs its Codex coding agent securely using sandboxing, approvals, network policies, and telemetry.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

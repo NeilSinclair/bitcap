@@ -1,0 +1,548 @@
+<title>xAI GitHub Register</title>
+<style>
+:root {
+  --bg: #fbfaf8; --fg: #1a1a18; --muted: #6b6b64; --line: #e2e0da;
+  --card: #ffffff; --accent: #b8552e; --chip: #f0eee8;
+  --ok: #2d6a4a; --mid: #8a6d1f; --weak: #8a4a4a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+    --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+    --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16161a; --fg: #e8e6e1; --muted: #93918a; --line: #2c2c33;
+  --card: #1d1d22; --accent: #e08a5c; --chip: #26262c;
+  --ok: #6bbf8f; --mid: #d4b155; --weak: #d98a8a;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); margin: 0;
+  font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 40px 22px 80px; }
+h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -0.02em; }
+.sub { color: var(--muted); margin: 0 0 30px; font-size: 14px; }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 26px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 15px 16px; }
+.card .v { font-size: 25px; font-weight: 600; letter-spacing: -0.02em; }
+.card .l { font-size: 13px; margin-top: 1px; }
+.card .n { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+.note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: 13px 16px; margin: 0 0 26px; font-size: 13.5px; }
+.note b { font-weight: 600; }
+.note p { margin: 0 0 8px; } .note p:last-child { margin: 0; }
+.filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+.filters button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; background: var(--card); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-weight: 600; font-size: 11.5px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted); padding: 11px 10px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; position: sticky; top: 0; background: var(--card); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dt { color: var(--muted); font-size: 12px; }
+.who a { color: var(--fg); text-decoration: none; font-weight: 600; }
+.who a:hover { color: var(--accent); }
+.who .name { color: var(--muted); font-size: 12px; }
+.alias { color: var(--muted); font-size: 11px; font-weight: 400; }
+.tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--chip);
+  white-space: nowrap; cursor: help; }
+.t-confirmed { color: var(--ok); } .t-profile { color: var(--ok); }
+.t-confirmed_org_wide { color: var(--mid); }
+.t-handle { color: var(--mid); } .t-vendor { color: var(--weak); }
+.repo { display: inline-block; background: var(--chip); border-radius: 4px;
+  padding: 1px 6px; font-size: 11.5px; margin: 1px 2px 1px 0; }
+.more, .none { color: var(--muted); font-size: 11.5px; }
+.ch a, .own { color: var(--accent); text-decoration: none; font-size: 12px;
+  margin-right: 7px; white-space: nowrap; }
+.ch a:hover, .own:hover { text-decoration: underline; }
+.own-c { max-width: 260px; }
+footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+<div class="wrap">
+<h1>xAI GitHub Register</h1>
+<p class="sub">Contributors to the <code>xai-org</code> organisation, 12 months to 2026-09-03.</p>
+
+<div class="cards"><div class="card"><div class="v">8</div><div class="l">repositories</div><div class="n">pushed in last 12 months</div></div><div class="card"><div class="v">241</div><div class="l">human commits</div><div class="n">66 bot commits removed</div></div><div class="card"><div class="v">33</div><div class="l">distinct people</div><div class="n">0 accounts merged</div></div><div class="card"><div class="v">12</div><div class="l">identified as staff</div><div class="n">12 by commit email, 0 by profile</div></div><div class="card"><div class="v">4</div><div class="l">with a channel to follow</div><div class="n">5 also publish their own repos</div></div></div>
+
+<div class="note">
+<p><b>How employment is decided.</b> A commit made from an <code>@x.ai</code> address is direct, lab-specific evidence and outranks everything else (12 people). A GitHub profile naming the lab is accepted next (0). No work-handle convention is known for this org, so no account was merged on handle resemblance alone.</p>
+<p><b>What was removed.</b> 66 of 307 commits were made by
+release automation and code generators, which otherwise outrank every human in the
+org. Mirrored repositories were excluded (none) &mdash; their contributors
+are upstream open-source maintainers, not lab staff, or their commits are already
+counted under another repository.</p>
+<p><b>Read the ranking with care.</b> Commit count measures who maintains public
+code, not seniority or influence. It is shown alongside repository breadth and
+recency rather than collapsed into a single score.</p>
+<p><b>On this organisation.</b> Lab-specific domain, still in active use as of September 2026 despite the February 2026 SpaceX acquisition -- no migration to spacex.com observed in commit history yet. No confirmed official SpaceX GitHub org exists to conflate this with.</p>
+</div>
+
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (33)</button>
+  <button data-f="staff" aria-pressed="false">Staff (12)</button>
+  <button data-f="confirmed" aria-pressed="false">Commit-email confirmed (12)</button>
+  <button data-f="unknown" aria-pressed="false">No evidence (21)</button>
+</div>
+
+<div class="scroll"><table>
+<thead><tr>
+  <th>Commits</th><th>Repos</th><th>Contributor</th><th>Evidence</th>
+  <th>Where they commit</th><th>Channels</th><th>Own projects</th><th>Last seen</th>
+</tr></thead>
+<tbody>
+<tr class="p" data-emp="confirmed">
+  <td class="num">65</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/Omar-V2" rel="noopener">Omar-V2</a>
+    <div class="name">Omar</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/Omar-V2/mcp-ical" rel="noopener">mcp-ical ★329</a> <a class="own" href="https://github.com/Omar-V2/intelligent-collision-avoidance" rel="noopener">intelligent-collision-avoidance ★8</a> <a class="own" href="https://github.com/Omar-V2/temporal-coffeeshop" rel="noopener">temporal-coffeeshop ★6</a></td>
+  <td class="num dt">2026-08-18</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">40</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/shawnthapa" rel="noopener">shawnthapa</a>
+    <div class="name">Shawn Thapa</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><a href="https://x.com/thapa_shawn" rel="noopener">@thapa_shawn</a></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-05-30</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">39</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/ykeremy" rel="noopener">ykeremy</a>
+    <div class="name">Kerem Yilmaz</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/ykeremy/scripts" rel="noopener">scripts ★6</a> <a class="own" href="https://github.com/ykeremy/object-localization-and-recognition" rel="noopener">object-localization-and-recognition ★1</a> <a class="own" href="https://github.com/ykeremy/UniDogru18Lab" rel="noopener">UniDogru18Lab ★1</a></td>
+  <td class="num dt">2026-07-17</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">21</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/mark-xai" rel="noopener">mark-xai</a>
+    <div class="name">Mark Yang</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-14</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">9</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/double-di" rel="noopener">double-di</a>
+    <div class="name">Denis Dorozhkin</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><a href="https://x.com/di_doubled" rel="noopener">@di_doubled</a></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-12</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">6</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/gyang-xai" rel="noopener">gyang-xai</a>
+    <div class="name">Ming Yang</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-13</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">5</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/zhaohan-dong" rel="noopener">zhaohan-dong</a>
+    <div class="name">Zhaohan Dong</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">xai-proto</span> <span class="repo">xai-cookbook</span></td>
+  <td class="ch"><a href="https://x.com/zhaohan_dong" rel="noopener">@zhaohan_dong</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/zhaohan-dong/arm64-asm-notes" rel="noopener">arm64-asm-notes ★5</a> <a class="own" href="https://github.com/zhaohan-dong/american-options-pricing" rel="noopener">american-options-pricing ★0</a> <a class="own" href="https://github.com/zhaohan-dong/yfinance-extended" rel="noopener">yfinance-extended ★0</a></td>
+  <td class="num dt">2026-01-28</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">3</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/ushiromiya-lion" rel="noopener">ushiromiya-lion</a>
+    <div class="name">Baqiao</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><a href="https://runeblaze.github.io/" rel="noopener">site</a> <a href="https://x.com/hyl0m0rphism" rel="noopener">@hyl0m0rphism</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/ushiromiya-lion/ushiromiya-lion" rel="noopener">ushiromiya-lion ★0</a></td>
+  <td class="num dt">2026-05-27</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">3</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/aaditjuneja" rel="noopener">aaditjuneja</a>
+    <div class="name">aaditjuneja</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-01-21</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/gilisho" rel="noopener">gilisho</a>
+    <div class="name">Gili Shohat</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/gilisho/bojack-horseman-random-quotes-generator" rel="noopener">bojack-horseman-random-quotes-generator ★3</a> <a class="own" href="https://github.com/gilisho/gilisho" rel="noopener">gilisho ★0</a> <a class="own" href="https://github.com/gilisho/wix-app-widget" rel="noopener">wix-app-widget ★0</a></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/10ishq" rel="noopener">10ishq</a>
+    <div class="name">Tanishq</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/10ishq/Brailled-Text-to-Braille-Reader-with-Optical-Character-Recognition-" rel="noopener">Brailled-Text-to-Braille-Reader-with-Optical-Character-Recognition- ★4</a> <a class="own" href="https://github.com/10ishq/quizzie" rel="noopener">quizzie ★3</a> <a class="own" href="https://github.com/10ishq/GyroCube-Gyroscope-controlled-RGB-LED-" rel="noopener">GyroCube-Gyroscope-controlled-RGB-LED- ★3</a></td>
+  <td class="num dt">2026-07-27</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/seiflotfy" rel="noopener">seiflotfy</a>
+    <div class="name">Seif Lotfy</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><a href="https://seif.codes" rel="noopener">site</a> <a href="https://x.com/seiflotfy" rel="noopener">@seiflotfy</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/seiflotfy/cuckoofilter" rel="noopener">cuckoofilter ★1233</a> <a class="own" href="https://github.com/seiflotfy/hyperbitbit" rel="noopener">hyperbitbit ★135</a> <a class="own" href="https://github.com/seiflotfy/count-min-log" rel="noopener">count-min-log ★70</a></td>
+  <td class="num dt">2026-06-26</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">2</td>
+  <td class="num">2</td>
+  <td class="who">
+    <a href="https://github.com/jkylekelly" rel="noopener">jkylekelly</a>
+    <div class="name">Kyle Kelly</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span> <span class="repo">xai-proto</span></td>
+  <td class="ch"><a href="https://www.cramhacks.com/" rel="noopener">site</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/jkylekelly/pip-clean" rel="noopener">pip-clean ★8</a> <a class="own" href="https://github.com/jkylekelly/dependency-tester" rel="noopener">dependency-tester ★0</a> <a class="own" href="https://github.com/jkylekelly/connect-4-game" rel="noopener">connect-4-game ★0</a></td>
+  <td class="num dt">2026-07-10</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">2</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/egec1" rel="noopener">egec1</a>
+    <div class="name">egec1</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-03-23</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/laithrw" rel="noopener">laithrw</a>
+    <div class="name">laithrw</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-24</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/kayleegeorge" rel="noopener">kayleegeorge</a>
+    <div class="name">Kaylee George</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-21</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/seancdavis" rel="noopener">seancdavis</a>
+    <div class="name">Sean C Davis</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-19</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/nirinchev" rel="noopener">nirinchev</a>
+    <div class="name">Nikola Irinchev</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-10</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/Zechereh" rel="noopener">Zechereh</a>
+    <div class="name">Zachary Lyon</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/lakshyaag-tavily" rel="noopener">lakshyaag-tavily</a>
+    <div class="name">Lakshya Agarwal</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-22</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/m-abdelwahab" rel="noopener">m-abdelwahab</a>
+    <div class="name">Mahmoud Abdelwahab</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-14</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/StephenXie" rel="noopener">StephenXie</a>
+    <div class="name">Stephen Xie</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-07-09</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/rakshith48" rel="noopener">rakshith48</a>
+    <div class="name">Rakshith Ramprakash</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-18</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/evanpurkhiser" rel="noopener">evanpurkhiser</a>
+    <div class="name">Evan Purkhiser</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-16</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/andrelandgraf" rel="noopener">andrelandgraf</a>
+    <div class="name">Andre Landgraf</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">plugin-marketplace</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-06-12</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/yanxi0830" rel="noopener">yanxi0830</a>
+    <div class="name">Xi Yan</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-17</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/dcbert" rel="noopener">dcbert</a>
+    <div class="name">Davide bert</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">xai-sdk-python</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-28</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/mittalpk" rel="noopener">mittalpk</a>
+    <div class="name">Praveen Kumar Mittal</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">grok-build-plugin-cc</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/raghavagrawal-x" rel="noopener">raghavagrawal-x</a>
+    <div class="name">Raghav Agrawal</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">grok-build-plugin-cc</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="unknown">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/railapex" rel="noopener">railapex</a>
+    <div class="name">Chris Hynes</div>
+  </td>
+  <td><span class="tag t-unknown" title="No employment evidence found.">none</span></td>
+  <td class="rep"><span class="repo">grok-build-plugin-cc</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-08-04</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/aksheyd" rel="noopener">aksheyd</a>
+    <div class="name">Akshey D</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">grok-build-plugin-cc</span></td>
+  <td class="ch"><a href="https://aksheyd.github.io" rel="noopener">site</a> <a href="https://x.com/aksheyd" rel="noopener">@aksheyd</a></td>
+  <td class="own-c"><a class="own" href="https://github.com/aksheyd/quantize" rel="noopener">quantize ★1</a> <a class="own" href="https://github.com/aksheyd/aksheyd.github.io" rel="noopener">aksheyd.github.io ★1</a> <a class="own" href="https://github.com/aksheyd/deep-ocean-research" rel="noopener">deep-ocean-research ★0</a></td>
+  <td class="num dt">2026-07-10</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/tagakov-xai" rel="noopener">tagakov-xai</a>
+    <div class="name">Tagakov</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><span class="none">—</span></td>
+  <td class="num dt">2026-04-16</td>
+</tr>
+<tr class="p" data-emp="confirmed">
+  <td class="num">1</td>
+  <td class="num">1</td>
+  <td class="who">
+    <a href="https://github.com/damien-xai" rel="noopener">damien-xai</a>
+    <div class="name">Damien Murphy</div>
+  </td>
+  <td><span class="tag t-confirmed" title="Committed under an @x.ai address, which belongs to the lab itself.">commit email</span></td>
+  <td class="rep"><span class="repo">xai-cookbook</span></td>
+  <td class="ch"><span class="none">—</span></td>
+  <td class="own-c"><a class="own" href="https://github.com/damien-xai/version-txt" rel="noopener">version-txt ★0</a></td>
+  <td class="num dt">2025-12-16</td>
+</tr></tbody>
+</table></div>
+
+<footer>Generated 2026-09-03 from the GitHub REST and GraphQL APIs.
+Source: <code>research/github/</code>. Counts cover the default branch only.</footer>
+</div>
+<script>
+const staffSet = ["confirmed", "confirmed_org_wide", "profile", "handle"];
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll("tr.p").forEach(r => {
+      const e = r.dataset.emp;
+      const show = f === "all" || (f === "staff" ? staffSet.includes(e) : e === f);
+      r.style.display = show ? "" : "none";
+    });
+  });
+});
+</script>

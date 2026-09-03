@@ -1,0 +1,203 @@
+# Announcement scoring rule.
+#
+# The LLM classifies and tags with evidence; it does NOT emit a score. The score
+# is computed here, deterministically, from those tags. This split is deliberate
+# (docs/decisions.md): an opaque 1-10 from a model cannot be defended in a room,
+# whereas every number this file produces can be argued line by line and changed
+# without touching code.
+#
+#   strongest = max over mechanism tags of (magnitude * confidence)   # 0..3
+#   score     = 100 * (event_weight/5) * (strongest/3)
+#
+# EVERYTHING MULTIPLIES, AND THAT IS THE POINT.
+#
+# Inside a mechanism tag, magnitude and confidence multiply because the product
+# reads as an expected magnitude: confidence is a probability weight on how large
+# the effect is. Since v4 that weight runs 0 to 1 and is literally a probability:
+# "a big thing we are not confident of" is worth nothing, "a small thing we are
+# certain of" is worth its size.
+#
+# The two axes then multiply for two reasons.
+#
+# 1. NO MECHANISM, NO SCORE. A product cannot score an item that carries no
+#    quote-backed tag. Every mechanism tag must cite the document verbatim, so
+#    multiplying makes "cites a primary source" a structural property of any
+#    non-zero score rather than a convention. An additive form was tried in v2
+#    and abandoned: it let an item score 40 on its event label alone, with no
+#    tags and no quotes, which the brief does not permit.
+# 2. THE AXES ARE NOT INDEPENDENT. `compute_commitment` is weighted 5 precisely
+#    because it tends to fire training_compute_up at high magnitude. Event weight
+#    is a proxy for expected mechanism strength, so adding the two double-counts
+#    the same quantity. The product reads correctly as "importance of this kind
+#    of event, times the strength of the evidence actually found".
+#
+# WHAT v1 ACTUALLY GOT WRONG was the vocabulary, not the arithmetic. An S-1
+# filing scored 0 because it landed in a weight-0 residual and no mechanism could
+# express it; the first US export control on a frontier model scored 20 because
+# it was classified `safety_policy` (weight 1) rather than as an action taken ON
+# the lab. Both are fixed by `corporate_finance`, `regulatory_action` and the
+# `lab_capital_access` mechanism -- under this multiplicative rule, unchanged.
+
+version: 4
+
+# What kind of announcement it is. Rationale is recorded because these numbers
+# are the most arguable thing in the system.
+event_weight:
+  frontier_model_release: 5    # a new top-of-range model resets expectations
+  compute_commitment: 5        # disclosed clusters and capex, the cleanest signal
+  open_weights: 5              # the DeepSeek-R1 shape: undercuts API rent directly
+  pricing_change: 5            # moves unit economics with no capability change
+  capability_result: 4         # a crossed threshold, transmission slower
+  corporate_finance: 4         # IPO filings, raises, M&A, restructurings
+  regulatory_action: 4         # action taken ON a lab: export controls, rulings
+  research_result: 3           # may precede a capability jump by quarters
+  incremental_model_release: 2 # point releases, distinct from a frontier launch
+  developer_tooling: 2         # application layer; reaches software, not silicon
+  product_launch: 2
+  enterprise_partnership: 2    # adoption evidence, rarely sized in the release
+  safety_policy: 1             # the lab's OWN voluntary policy, not enforcement
+  personnel: 1                 # tracked as an event elsewhere, weak as a score
+  other: 0                     # a true residual - see below
+
+# `other` is deliberately meaningless and weighted 0. Its job is to give the
+# classifier somewhere to put genuinely uncategorisable items so it never
+# force-fits one into a wrong type, where the error would be invisible.
+#
+# ITS SIZE IS A HEALTH METRIC. A residual filling with things that matter means
+# the vocabulary is incomplete. In the v1 run it held 48 of 375 items, and among
+# the noise (office openings, student club forms, "our principles") sat both
+# labs' confidential S-1 filings and three acquisitions, all scoring zero. That
+# is what produced `corporate_finance`. It was named `corporate_other` in v1,
+# which implied a corporate-events bucket and invited exactly that misreading.
+
+magnitude:
+  high: 3
+  medium: 2
+  low: 1
+
+# CONFIDENCE IS A GATE, NOT A DISCOUNT (v4, changed on empirical evidence).
+#
+# Low confidence scores ZERO, so a low-confidence tag contributes nothing at all.
+# The statable rule is "we do not score what we are not confident the document
+# says", which is a stronger version of the citation guarantee: a quote that is
+# there but weak now buys nothing.
+#
+# WHY IT CHANGED. A hand review of a 20-article gold run (docs/gold_review.md)
+# found that every tag a human reader rejected as unsupported was low
+# confidence, and the model had already marked them so. Two examples, both
+# quoting marketing copy rather than a claim: `inference_volume_up` on OpenAI's
+# $122bn raise, cited to "meet growing demand for ChatGPT, Codex, and enterprise
+# AI"; and the same tag on a pricing item, cited to "deploy AI workflows at
+# scale". The model's own confidence field was already the correct filter; the
+# scale was paying for it anyway.
+#
+# WHAT IT COSTS. Across the 192-article register the change moves 34 items and
+# drops 5 to zero. All five are `enterprise_partnership` items scoring 4.4 whose
+# only tags were low/low -- precisely the noise the review objected to. No item
+# above 5 is destroyed; the largest fall is 66.7 -> 50.0.
+#
+# This abandons the equal 1-3 scales the v3 file argued for. That symmetry was
+# about not favouring one axis; this is about not scoring evidence we distrust,
+# which is the more important property. Magnitude keeps 1-3 because a small
+# effect is still an effect -- an unsupported claim is not.
+confidence:
+  high: 1.0
+  medium: 0.5
+  low: 0.0
+
+# Denominators: each axis normalised by its own maximum before multiplying.
+# 5 = top event weight; 3 = magnitude 3 * confidence 1.0.
+max_event_weight: 5
+max_mechanism: 3
+
+# ---------------------------------------------------------------------------
+# AI-TEAM RULE. A second renderer over the same extraction, not a second system.
+#
+#   strongest = max over practice tags of (impact * confidence)   # 0..3
+#   ai_score  = 100 * (action_weight/3) * (strongest/3)
+#
+# NO EVENT WEIGHT HERE, DELIBERATELY. `event_weight` above is an investment
+# taxonomy: compute_commitment is 5 because clusters move semiconductor demand,
+# which is worth nothing to an engineer deciding what to build with. The practice
+# tag already says what kind of thing the item is, so an event weight would only
+# import the wrong priorities. This is why the two audiences rank the same corpus
+# differently rather than seeing one list in two colours.
+#
+# NO PRACTICE TAG, NO AI SCORE -- the same structural guarantee as the mechanism
+# side. Every practice tag carries a verbatim quote, so a non-zero AI score
+# cannot exist without a citation an engineer can go and read.
+ai_team:
+  # What the reader should do about it. This replaces event weight as the first
+  # axis because "should we act" is the AI team's actual question.
+  action_weight:
+    adopt: 3        # concrete enough to implement, and the gain is stated
+    investigate: 2  # credible and relevant, but unproven for our setting
+    watch: 1        # directionally interesting, no action yet -- the default
+
+  # Mirrors the investment rule, including the v4 confidence gate: a practice
+  # tag we are not confident of scores zero. Kept identical so the two numbers
+  # are readable side by side; changing one alone would make them incomparable.
+  impact:
+    high: 3
+    medium: 2
+    low: 1
+  confidence:
+    high: 1.0
+    medium: 0.5
+    low: 0.0
+
+  max_action: 3
+  max_practice: 3
+
+  bands:
+    - min: 60
+      label: high
+    - min: 30
+      label: medium
+    - min: 1
+      label: low
+    - min: 0
+      label: none
+
+# ---------------------------------------------------------------------------
+# JOIN RULE. Connection strength, for the article -> holding routes in
+# app/connect.py.
+#
+# THE FOUR ROUTES DO NOT CARRY THE SAME EVIDENCE, so their raw strengths were
+# never comparable, yet they share one column that the digest sorts on. A bare
+# name mention was landing at 1.0 alongside a mechanism tag corroborated on both
+# sides -- the two look identical to anything doing ORDER BY strength DESC.
+#
+# Each route is therefore capped at what it can actually prove. The ceiling is
+# the score a perfect instance of that route earns:
+#
+#   mechanism    both sides quoted, signed and sized. The only route with
+#     1.00       evidence on the article AND the holding. Full credit.
+#   category     the article's tag is quoted, but category membership carries
+#     0.60       no sign and no magnitude -- one side of the argument only.
+#   lab_exposure the holding edge is sourced, but nothing ties THIS article to
+#     0.60       it beyond the publisher, and there is no lab-sentiment axis.
+#   named        a string matched. No quote, no reason, no `why`. It says "this
+#     0.30       article mentions the company" and nothing more.
+#
+# These are judgement, not measurement, and they are here rather than in code so
+# the ordering can be argued and changed without a deploy. A renderer may still
+# filter by route; the ceiling only stops one route from dominating another by
+# construction.
+join:
+  route_ceiling:
+    mechanism: 1.0
+    category: 0.6
+    lab_exposure: 0.6
+    named: 0.3
+
+# Bands used for presentation only. They label a score, they do not change it.
+bands:
+  - min: 60
+    label: high
+  - min: 30
+    label: medium
+  - min: 1
+    label: low
+  - min: 0
+    label: none

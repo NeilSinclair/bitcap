@@ -1,0 +1,64 @@
+{
+  "note": "Provenance for every file in research/docs. Retrieved 2026-08-24.",
+  "warning_rolling_urls": "The anevis factsheet URLs end in '_ultimo' and always serve the LATEST month-end. The same URL will return different data next month. The saved PDFs are snapshots of the 31.07.2026 edition; re-downloading does not reproduce them. Any ingestion of this source must snapshot and date-stamp, not re-fetch and assume stability.",
+  "factsheets": {
+    "retrieved": "2026-08-24",
+    "as_of": "31.07.2026",
+    "url_pattern": "https://documents.anevis-solutions.com/bitcap/BIT_<Fund_Name>_<ShareClass>_EN_ultimo.pdf",
+    "found_via": "Document links on each fund page at bitcap.com/en/fonds/<fund-slug>",
+    "files": {
+      "Global_Technology_Leaders_R-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Technology_Leaders_R-I_EN_ultimo.pdf",
+      "Global_Leaders_R-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Leaders_R-I_EN_ultimo.pdf",
+      "Global_Crypto_Leaders_R-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Crypto_Leaders_R-I_EN_ultimo.pdf",
+      "Aggressive_Growth_R-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Aggressive_Growth_R-I_EN_ultimo.pdf",
+      "Crypto_Opportunities_I-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Crypto_Opportunities_I-I_EN_ultimo.pdf",
+      "Defensive_Growth_I-I.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Defensive_Growth_I-I_EN_ultimo.pdf",
+      "BIT_Global_Multi_Asset_R-II_EN_ultimo.pdf": "https://documents.anevis-solutions.com/bitcap/BIT_Global_Multi_Asset_R-II_EN_ultimo.pdf"
+    },
+    "not_found": {
+      "BIT Global Technology Opportunities": "LU1640611676. No factsheet on the anevis endpoint under any share-class suffix tried (I, A, R-II, bare). Likely hosted elsewhere as a Luxembourg SICAV. Fund excluded from the report."
+    },
+    "role": "AUM, allocations, top 10 and manager commentary only. Superseded as a position source by the statutory reports."
+  },
+  "statutory_reports": {
+    "retrieved": "2026-08-25",
+    "role": "PRIMARY position source: full Vermögensaufstellung, every holding with its weight.",
+    "url_pattern": "https://fondsapi.hansainvest.com/api/fund/<ISIN>/document/{jb|hjb}/de/de  (jb=annual, hjb=semi-annual)",
+    "note": "Each fund has its own financial year-end, so the freshest complete statement is sometimes the annual report and sometimes the semi-annual one. Both endpoints serve rolling latest editions.",
+    "files": {
+      "hjb_GTL.pdf": "DE000A2N8127 semi-annual, 30.06.2026",
+      "jb_GTL.pdf": "DE000A2N8127 annual, 31.12.2025",
+      "hjb_GlobalLeaders.pdf": "DE000A2QDRW2 semi-annual, 30.04.2026",
+      "jb_GlobalLeaders.pdf": "DE000A2QDRW2 annual, 31.10.2025",
+      "hjb_CryptoLeaders.pdf": "DE000A3CNGM3 semi-annual, 28.02.2026",
+      "jb_CryptoLeaders.pdf": "DE000A3CNGM3 annual, 31.08.2025",
+      "hjb_AggressiveGrowth.pdf": "DE000A2QJLA8 semi-annual, 31.10.2025",
+      "jb_AggressiveGrowth.pdf": "DE000A2QJLA8 annual, 30.04.2026",
+      "hjb_DefensiveGrowth.pdf": "DE000A3EKR20 semi-annual, 30.11.2025",
+      "jb_DefensiveGrowth.pdf": "DE000A3EKR20 annual, 31.05.2026",
+      "hjb_MultiAsset.pdf": "DE000A40J9Z0 semi-annual, 30.09.2025",
+      "jb_MultiAsset.pdf": "DE000A40J9Z0 annual, 31.03.2026"
+    },
+    "not_available": {
+      "BIT Crypto Opportunities": "DE000A3CNGP6 — AIF, returns 404 on the hjb endpoint. Fund has no full portfolio in this dataset."
+    },
+    "validation": "parse_portfolios.py reconciles each parsed portfolio against that report's own 'Summe Wertpapiervermögen' line and reports OK/!! per fund. All six currently reconcile to within EUR 1."
+  },
+  "sec_13f": {
+    "retrieved": "2026-08-24",
+    "cik": "0002053305",
+    "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002053305&type=13F",
+    "coverage": "26 filings, periods 2020-06-30 to 2026-06-30",
+    "note": "SEC requires a descriptive User-Agent header and rate-limits aggressively; the fetcher backs off on 429/503. Raw XML kept in docs/13f_raw/."
+  },
+  "firm_profile": {
+    "retrieved": "2026-08-24",
+    "urls": [
+      "https://bitcap.com/en",
+      "https://bitcap.com/en/investmentansatz",
+      "https://bitcap.com/en/investmentprodukte",
+      "https://bitcap.com/en/team"
+    ],
+    "note": "Marketing copy. Claims about the data platform (petabytes, token counts, share of trades touched by signals) are BIT's own and unverified."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "24",
+  "lab": "openai",
+  "date": "2026-06-03",
+  "title": "A blueprint for democratic governance of frontier AI",
+  "url": "https://openai.com/index/frontier-safety-blueprint",
+  "text_source": "full_text_archived",
+  "text": "A blueprint for democratic governance of frontier AI | OpenAI Research Products Business Developers Company Foundation Log in Try ChatGPT Research Products Business Developers Company Foundation Try ChatGPT Login OpenAI June 3, 2026 Global Affairs A blueprint for democratic governance of frontier AI How the U.S. can build durable institutions for frontier AI safety. Read the blueprint Share We\u2019re releasing a blueprint outlining how the U.S. can build a durable federal framework for governing increasingly capable AI systems. The blueprint outlines a three-part strategy: building a national framework that leverages the emerging consensus reflected in state frontier safety laws; strengthening CAISI as the U.S. federal government\u2019s primary institution for frontier AI safety; and mobilizing a broader resilience plan across government to address the national security and public safety challenges posed by frontier AI. This is an important moment to seize. States have started developing harmonized approaches to frontier AI governance, including California\u2019s SB 53, New York\u2019s RAISE Act, and Illinois\u2019s SB 315, and the White House\u2019s new executive order on Promoting Advanced Artificial Intelligence Innovation and Security is another important step forward. The federal government must now build on that foundation and create a durable federal framework capable of evolving alongside the technology itself. Read the full blueprint here . 2026 Author OpenAI Keep reading View all OpenAI public policy agenda Global Affairs Jun 3, 2026 Advancing youth safety and opportunity through global leadership Global Affairs Jun 2, 2026 Codex is becoming a productivity tool for everyone Global Affairs Jun 2, 2026 Our Research Research Index Research Overview Research Residency Economic Research Latest Advancements GPT-5.5 GPT-5.4 GPT-5.3 Instant GPT-5.3-Codex Safety Safety Approach Security & Privacy Trust & Transparency ChatGPT Explore ChatGPT Business Enterprise Education Pricing Download API Platform Platform Overview Pricing API log in Documentation Developer Forum For Business Business Overview Solutions Contact Sales Company About Us Our Charter Foundation Careers Brand Support Help Center More News Stories Academy Livestreams Podcast RSS Terms & Policies Terms of Use Privacy Policy Other Policies OpenAI \u00a9 2015\u20132026 Your privacy choices English United States",
+  "gold": {
+    "event_type": "safety_policy",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [],
+    "notes": ""
+  },
+  "review": {
+    "adjudicated": true,
+    "adjudicator": "claude-opus-5",
+    "classifier": "claude-sonnet-5",
+    "runs_compared": 2,
+    "departures": 1,
+    "why_event": "The first run said regulatory_action, which the prompt defines as action taken *on* the lab by a government. This is OpenAI publishing its own policy position. Neither label fits well -- advocacy is not a voluntary safety commitment either -- and safety_policy is the closer of the two. Recorded as a vocabulary gap.\n"
+  },
+  "system": {
+    "score": 0.0,
+    "band": "none",
+    "ai_score": 0.0,
+    "ai_band": "none",
+    "summary": "OpenAI published a policy blueprint calling on the U.S. federal government to build a durable national framework for governing frontier AI, including strengthening CAISI and referencing state laws and a new executive order.",
+    "model": "claude-sonnet-5",
+    "prompt": "v5",
+    "votes": 1,
+    "note": "The system's own answer, kept for comparison. Edit `gold`, not this."
+  },
+  "archive_snapshot": "http://web.archive.org/web/20260604130707id_/https://openai.com/index/frontier-safety-blueprint"
+}

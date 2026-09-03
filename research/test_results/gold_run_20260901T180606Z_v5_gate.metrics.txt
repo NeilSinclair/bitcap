@@ -1,0 +1,38 @@
+run       : gold_run_20260901T180606Z_v5_gate.json
+model     : claude-sonnet-5   prompt: v5
+reference : gold/articles (20 files)
+compared  : 20 articles   cost: $0.9283
+
+Reference: adjudicated labels (gold/adjudication.yaml), not human truth.
+NOTE: if the adjudication was derived from this run, these are
+      optimistic -- use them as a baseline for the next run.
+
+==========================================================================
+
+EVENT TYPE   agreement 19/20 = 95%   Cohen's kappa +0.944
+   22  other                      -> research_result
+
+axis          ref  run  hit   prec    rec     F1  macroF1  identical
+mechanisms     27   29   24   0.83   0.89   0.86     0.82      13/20
+categories      4    5    4   0.80   1.00   0.89     0.95      19/20
+practices      37   37   37   1.00   1.00   1.00     1.00      20/20
+
+ATTRIBUTE agreement, on tags present in BOTH (the shared subset only)
+   mech.sign          24/ 24 = 100%   kappa +1.000
+   mech.magnitude     22/ 24 =  92%   kappa +0.870
+   mech.confidence    22/ 24 =  92%   kappa +0.833
+   prac.action        37/ 37 = 100%   kappa +1.000
+   prac.impact        37/ 37 = 100%   kappa +1.000
+   prac.confidence    37/ 37 = 100%   kappa +1.000
+
+SCORES
+   investment  MAE   5.8   RMSE  12.0   r +0.953   rho +0.902
+               identical 13/20   agree on zero-vs-nonzero 17/20   both zero 7
+   AI-team     MAE   0.0   RMSE   0.0   r +1.000   rho +1.000
+               identical 20/20   agree on zero-vs-nonzero 20/20   both zero 7
+
+CITATION GATE   71 tags survived   0 dropped for an unverifiable quote   0 dropped for an unknown id or over-cap
+                snap count not recorded for this run
+
+DIMENSION CAP   7 model_capability tags, counts {1: 1, 2: 3, 3: 3}, max 3
+ACTION MIX      adopt 10  investigate 15  watch 12   (the prompt says watch should lead)

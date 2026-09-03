@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google DeepMind contributors — papers authored</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b23; --line:#2a323d; --tx:#e6edf3;
+    --dim:#9aa7b4; --faint:#6e7c8c; --accent:#4c9aff;
+    --staff:#3fb950; --fellow:#d29922; --external:#8b949e; --res:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px 80px}
+  header{border-bottom:1px solid var(--line);padding:34px 0 22px;margin-bottom:24px}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
+  h2{font-size:15px;margin:34px 0 10px;color:var(--dim);font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em}
+  .sub{color:var(--dim);font-size:14px} .sub b{color:var(--tx);font-weight:600}
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:12px 16px;min-width:130px;flex:1}
+  .stat b{display:block;font-size:22px;letter-spacing:-.02em}
+  .stat span{display:block;color:var(--faint);font-size:12px;
+    text-transform:uppercase;letter-spacing:.05em}
+  .stat em{display:block;color:var(--faint);font-size:11.5px;font-style:normal;margin-top:4px}
+  .note{background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:13px 16px;margin:24px 0 0;font-size:13.5px;color:var(--dim)}
+  .note b{color:var(--tx);font-weight:600}
+  .note p{margin:0 0 8px} .note p:last-child{margin:0}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--faint);padding:10px 12px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dt{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ti{min-width:260px} .lk{white-space:nowrap} .lk a{margin-right:8px}
+  .barcell{width:180px}
+  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+  .filters button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel);color:var(--tx);cursor:pointer}
+  .filters button[aria-pressed="true"]{background:var(--tx);color:var(--bg);
+    border-color:var(--tx)}
+  .row{border:1px solid var(--line);border-radius:8px;background:var(--panel);
+    margin-bottom:6px}
+  .row summary{display:flex;align-items:center;gap:12px;padding:9px 14px;
+    cursor:pointer;list-style:none}
+  .row summary::-webkit-details-marker{display:none}
+  .rank{color:var(--faint);font-size:12px;min-width:26px;
+    font-variant-numeric:tabular-nums}
+  .name{font-weight:600;min-width:190px}
+  .bar{flex:1;height:6px;background:#0d1117;border-radius:3px;overflow:hidden;
+    min-width:60px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+  .count{font-variant-numeric:tabular-nums;color:var(--dim);min-width:20px;
+    text-align:right}
+  .flags{min-width:150px;text-align:right}
+  .tag{font-size:11px;padding:2px 7px;border-radius:4px;background:#0d1117;
+    white-space:nowrap;cursor:help}
+  .t-staff{color:var(--staff)} .t-fellow{color:var(--fellow)}
+  .t-external{color:var(--external)} .t-res{color:var(--res)}
+  .affs{padding:0 14px 4px 52px}
+  .aff{display:inline-block;background:#0d1117;border-radius:4px;padding:1px 7px;
+    font-size:11.5px;color:var(--dim);margin:0 4px 4px 0}
+  .papers{margin:0;padding:4px 14px 12px 52px;list-style:none}
+  .papers li{padding:3px 0;font-size:13px;border-top:1px solid var(--line)}
+  .papers .d{color:var(--faint);font-size:11.5px;margin-left:8px;
+    font-variant-numeric:tabular-nums}
+  .none{color:var(--faint)}
+  footer{color:var(--faint);font-size:12px;margin-top:30px;
+    border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Google DeepMind — contributors from papers</h1>
+  <p class="sub">Every author on every Google DeepMind paper harvested in the window,
+  <b>2025-07-21 to 2026-08-26</b>. Generated 2026-09-03.</p>
+  <div class="stats"><div class="stat"><b>15</b><span>papers</span><em>2025-07-21 to 2026-08-26</em></div><div class="stat"><b>15/15</b><span>cite a primary source</span><em>every insight needs one</em></div><div class="stat"><b>65</b><span>distinct authors</span><em>38 lab staff</em></div><div class="stat"><b>26</b><span>external co-authors</span><em>across 25 affiliations</em></div><div class="stat"><b>3</b><span>staff on 2+ papers</span><em>the followable core</em></div></div>
+</header>
+
+<h2>Papers</h2>
+<div class="scroll"><table>
+<thead><tr><th>Date</th><th>Title</th><th>Authors</th><th>Staff</th>
+<th>arXiv match</th><th>Links</th></tr></thead>
+<tbody><tr><td class="dt">2026-08-26</td><td class="ti">Visual General Intelligence: A White Paper</td><td class="n">21</td><td class="n">1</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/270149/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2608.25924" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-08-05</td><td class="ti">A moral Turing test: How belief and source shape detection of and agreement with LLM judgments</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/118955/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/118955/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-28</td><td class="ti">Visual prompt engineering for video models</td><td class="n">10</td><td class="n">10</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/264392/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2607.25537" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-10</td><td class="ti">Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment</td><td class="n">3</td><td class="n">2</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/225819/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2606.00369" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-07-02</td><td class="ti">Towards Structural Understanding of LLM Overthinking</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/203490/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/203490/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-26</td><td class="ti">Bridging the Scale Gap: Augmenting Human Red-Teaming to Uncover Latent Risks in T2I Models</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/149262/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/149262/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-26</td><td class="ti">Real-Time Group Dynamics with LLM Facilitation: Evidence from a Charity Allocation Task</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/224297/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/224297/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-25</td><td class="ti">Going PLACES: Participatory Localized Red Teaming forText-to-Image Safety in the Global South</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/224397/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/224397/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-15</td><td class="ti">Artificial Minds, Human Disagreement: The Politics of AI Consciousness</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/248131/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/248131/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-12</td><td class="ti">From AGI to ASI</td><td class="n">14</td><td class="n">14</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/239142/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2606.12683" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-06-04</td><td class="ti">Solipsistic superintelligence is unlikely to be cooperative</td><td class="n">5</td><td class="n">4</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/231466/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2606.03237" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-05-06</td><td class="ti">Did US Worker Retraining Reduce Participant Automation Exposure?</td><td class="n">2</td><td class="n">1</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/239849/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2605.03767" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2026-03-22</td><td class="ti">Strategic Tradeoffs Between Humans and AI in Multi-Agent Bargaining</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/146950/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/146950/" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2025-09-18</td><td class="ti">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</td><td class="n">13</td><td class="n">9</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/118251/" rel="noopener">lab</a> <a href="https://arxiv.org/html/2507.13383" rel="noopener">arXiv</a></td></tr><tr><td class="dt">2025-07-21</td><td class="ti">&quot;Just a Strange Pic&quot;: Rethinking &#x27;Safety&#x27; in GenAI Image Safety Annotation Tasks from Diverse Annotators’ Perspectives</td><td class="n">0</td><td class="n">0</td><td><span class="tag t-res" title="arXiv link taken from the lab&#x27;s own page; no matching needed.">direct link</span></td><td class="lk"><a href="https://deepmind.google/research/publications/139779/" rel="noopener">lab</a> <a href="https://deepmind.google/research/publications/139779/" rel="noopener">arXiv</a></td></tr></tbody>
+</table></div>
+
+<h2>Co-authoring institutions</h2>
+<p class="sub">Ranked by how many people carry the affiliation. Each is a
+candidate source the register does not yet track.</p>
+<div class="scroll"><table>
+<thead><tr><th>Institution</th><th></th><th>People</th></tr></thead>
+<tbody><tr><td class="ti">Visual Geometry Group (VGG), University of Oxford</td><td class="barcell"><span class="bar"><i style="width:100%"></i></span></td><td class="n">7</td></tr><tr><td class="ti">National Institute of Advanced Industrial Science and Technology (AIST)</td><td class="barcell"><span class="bar"><i style="width:57%"></i></span></td><td class="n">4</td></tr><tr><td class="ti">Google Research</td><td class="barcell"><span class="bar"><i style="width:57%"></i></span></td><td class="n">4</td></tr><tr><td class="ti">University of Technology Nuremberg</td><td class="barcell"><span class="bar"><i style="width:29%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">Carnegie Mellon University</td><td class="barcell"><span class="bar"><i style="width:29%"></i></span></td><td class="n">2</td></tr><tr><td class="ti">CADDi</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">OpenAI</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">University of Cambridge</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">University of Tsukuba</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">New York University</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Imperial College London</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Harvard University</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Stanford University</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Princeton University</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">University of Oxford</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Forecasting Research Institute</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Australian National University</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">University College London</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">Independent Researcher, CA, USA</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr><tr><td class="ti">University of Washington, Seattle, WA, USA</td><td class="barcell"><span class="bar"><i style="width:14%"></i></span></td><td class="n">1</td></tr></tbody>
+</table></div>
+
+<h2>People</h2>
+<div class="filters">
+  <button data-f="all" aria-pressed="true">All (65)</button>
+  <button data-f="staff" aria-pressed="false">Lab staff (38)</button>
+  <button data-f="external" aria-pressed="false">External (26)</button>
+</div>
+
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">1</span>
+        <span class="name">Charvi Rastogi</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">2</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span> <span class="aff">Google DeepMind, New York, NY, USA</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/225819/" rel="noopener">Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment</a><span class="d">2026-07-10</span></li><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">2</span>
+        <span class="name">Lora Aroyo</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">2</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span> <span class="aff">Google DeepMind, New York, NY, USA</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/225819/" rel="noopener">Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment</a><span class="d">2026-07-10</span></li><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">3</span>
+        <span class="name">Robert Geirhos</span>
+        <span class="bar"><i style="width:100%"></i></span>
+        <span class="count">2</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">4</span>
+        <span class="name">Adam Bales</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">5</span>
+        <span class="name">Aditi Raghunathan</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Carnegie Mellon University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">6</span>
+        <span class="name">Aida Mostafazadeh Davani</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Research</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">7</span>
+        <span class="name">Alexander Lerchner</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">8</span>
+        <span class="name">Alexander Sasha Vezhnevets</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Deepmind, London, UK</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/231466/" rel="noopener">Solipsistic superintelligence is unlikely to be cooperative</a><span class="d">2026-06-04</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">9</span>
+        <span class="name">Alicia Parrish</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">10</span>
+        <span class="name">Allan Dafoe</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">11</span>
+        <span class="name">Andrew J. Davison</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Imperial College London</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="fellow">
+      <summary>
+        <span class="rank">12</span>
+        <span class="name">Arkadiy Saakyan</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-fellow">fellow</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Columbia University, New York, NY, USA. Work done during an internship at Google DeepMind.</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/225819/" rel="noopener">Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment</a><span class="d">2026-07-10</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">13</span>
+        <span class="name">Been Kim</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">14</span>
+        <span class="name">Christian Rupprecht</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">15</span>
+        <span class="name">Cole Wyeth</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span> <span class="aff">University of Waterloo (work conducted while at Google DeepMind)</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">16</span>
+        <span class="name">David Fouhey</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">New York University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">17</span>
+        <span class="name">Deva Ramanan</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Carnegie Mellon University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">18</span>
+        <span class="name">Ding Wang</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Research</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">19</span>
+        <span class="name">Hirokatsu Kataoka</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">National Institute of Advanced Industrial Science and Technology (AIST)</span> <span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">20</span>
+        <span class="name">Iason Gabriel</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">21</span>
+        <span class="name">Jiajun Wu</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Stanford University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">22</span>
+        <span class="name">Jianyuan Wang</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">23</span>
+        <span class="name">Joel Z Leibo</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Deepmind, London, UK</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/231466/" rel="noopener">Solipsistic superintelligence is unlikely to be cooperative</a><span class="d">2026-06-04</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">24</span>
+        <span class="name">Joel Z. Leibo</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">25</span>
+        <span class="name">Jordan Canedy</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Forecasting Research Institute</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239849/" rel="noopener">Did US Worker Retraining Reduce Participant Automation Exposure?</a><span class="d">2026-05-06</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">26</span>
+        <span class="name">Julian Jacobs</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span> <span class="aff">University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239849/" rel="noopener">Did US Worker Retraining Reduce Participant Automation Exposure?</a><span class="d">2026-05-06</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">27</span>
+        <span class="name">Kevin Swersky</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">28</span>
+        <span class="name">Kohsuke Ide</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">National Institute of Advanced Industrial Science and Technology (AIST)</span> <span class="aff">University of Tsukuba</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">29</span>
+        <span class="name">Koichi Namekata</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">30</span>
+        <span class="name">Laurent Orseau</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">31</span>
+        <span class="name">Logan Cross</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Deepmind, London, UK</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/231466/" rel="noopener">Solipsistic superintelligence is unlikely to be cooperative</a><span class="d">2026-06-04</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">32</span>
+        <span class="name">Mani Malek</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">33</span>
+        <span class="name">Marcus Hutter</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Australian National University</span> <span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">34</span>
+        <span class="name">Mark Diaz</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Research</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">35</span>
+        <span class="name">Matija Franklin</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">36</span>
+        <span class="name">Michela Paganini</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">37</span>
+        <span class="name">Natasha Jaques</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Deepmind, London, UK</span> <span class="aff">University of Washington, Seattle, WA, USA</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/231466/" rel="noopener">Solipsistic superintelligence is unlikely to be cooperative</a><span class="d">2026-06-04</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">38</span>
+        <span class="name">Neha Kalibhat</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">39</span>
+        <span class="name">Oishi Deb</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">40</span>
+        <span class="name">Oyvind Tafjord</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">41</span>
+        <span class="name">Priyank Jaini</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">42</span>
+        <span class="name">Pushkar Mishra</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">43</span>
+        <span class="name">Rakshit S Trivedi</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Independent Researcher, CA, USA</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/231466/" rel="noopener">Solipsistic superintelligence is unlikely to be cooperative</a><span class="d">2026-06-04</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">44</span>
+        <span class="name">Roma Patel</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">45</span>
+        <span class="name">Ryousuke Yamada</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">National Institute of Advanced Industrial Science and Technology (AIST)</span> <span class="aff">University of Technology Nuremberg</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">46</span>
+        <span class="name">Samuel Albanie</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">47</span>
+        <span class="name">Shane Legg</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">48</span>
+        <span class="name">Shangzhe Wu</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">University of Cambridge</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">49</span>
+        <span class="name">Stephanie Chan</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">50</span>
+        <span class="name">Thaddäus Wiedemer</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">51</span>
+        <span class="name">Thore Graepel</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span> <span class="aff">University College London</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">52</span>
+        <span class="name">Tian Huey Teh</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">53</span>
+        <span class="name">Tim Genewein</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/239142/" rel="noopener">From AGI to ASI</a><span class="d">2026-06-12</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">54</span>
+        <span class="name">Verena Rieser</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">55</span>
+        <span class="name">Vinodkumar Prabhakaran</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google Research</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">56</span>
+        <span class="name">Xianzheng Ma</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">57</span>
+        <span class="name">Yilun Du</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Harvard University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">58</span>
+        <span class="name">Yiming Chen</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Visual Geometry Group (VGG), University of Oxford</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">59</span>
+        <span class="name">Yonglong Tian</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">OpenAI</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">60</span>
+        <span class="name">Yoshihiro Fukuhara</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">CADDi</span> <span class="aff">National Institute of Advanced Industrial Science and Technology (AIST)</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">61</span>
+        <span class="name">Yuki M. Asano</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">University of Technology Nuremberg</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">62</span>
+        <span class="name">Yuxuan Li</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="external">
+      <summary>
+        <span class="rank">63</span>
+        <span class="name">Zhuang Liu</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-external">external collaborator</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Princeton University</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/270149/" rel="noopener">Visual General Intelligence: A White Paper</a><span class="d">2026-08-26</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">64</span>
+        <span class="name">Zi Wang</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/264392/" rel="noopener">Visual prompt engineering for video models</a><span class="d">2026-07-28</span></li></ul>
+    </details>
+    <details class="row" data-tier="staff">
+      <summary>
+        <span class="rank">65</span>
+        <span class="name">Zoe Ashwood</span>
+        <span class="bar"><i style="width:50%"></i></span>
+        <span class="count">1</span>
+        <span class="flags"><span class="tag t-staff">lab staff</span></span>
+      </summary>
+      <div class="affs"><span class="aff">Google DeepMind</span></div>
+      <ul class="papers"><li><a href="https://deepmind.google/research/publications/118251/" rel="noopener">Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models</a><span class="d">2025-09-18</span></li></ul>
+    </details>
+
+<div class="note">
+<p><b>What "lab staff" means here.</b> The person carried a Google DeepMind
+affiliation on at least one paper's own byline. It is the paper's claim, not an
+employment check &mdash; someone who has since left still shows as staff, and a
+paper that states no affiliation for an author leaves them external by default.</p>
+<p><b>Why the affiliation table matters.</b> Every institution in it is a group
+that publishes with this lab and is not itself in the register. That is the
+cheapest available list of sources to consider adding next, ranked by how
+much of this lab's output they actually touch.</p>
+</div>
+
+<footer>Generated from <code>research/docs/deepmind_contributors.json</code>.
+Built by <code>research/papers/build_lab_authors_page.py</code>.</footer>
+</div>
+<script>
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button")
+      .forEach(x => x.setAttribute("aria-pressed", x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll(".row").forEach(r => {
+      r.style.display = (f === "all" || r.dataset.tier === f) ? "" : "none";
+    });
+  });
+});
+</script>
+</body>
+</html>

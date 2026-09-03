@@ -1,0 +1,904 @@
+# Senior people at each frontier lab, and the channels they publish on.
+#
+# The register tracks labs. Labs do not post -- people do. This file is the
+# people leg: for each lab in sources.yaml, the senior figures whose personal
+# channels are worth watching alongside the lab's own announcement feed.
+#
+# Adding a person is a config change, not a code change.
+#
+# SOURCING RULE, same as research/labs/frontier_labs.md: no field here comes
+# from model knowledge. Every role and every channel was fetched on the date
+# recorded below, and the fetch is cited at the person who states it. Where
+# nothing could be sourced the field is `null` with a `notes` line saying so --
+# it is never filled from memory. This matters more than usual for people data:
+# the seven labs have churned hard through 2025-2026, and a name remembered in
+# the right seat is the single easiest way to publish a wrong attribution.
+#
+# X HANDLES ARE NOT FETCH-VERIFIED. x.com returns HTTP 402 Payment Required to
+# the fetcher, so no profile page here was read directly. Each handle instead
+# carries `x_evidence` recording how it was established, strongest first:
+#
+#   own_site      the person's own website or newsletter links the handle
+#   self_post     a post from the handle itself, quoted with its status URL,
+#                 in which the person states their own role
+#   lab_post      the lab's official account names the person and the handle
+#   search_index  the profile URL appears in search results and nowhere better
+#
+# `search_index` is the weak tier. Treat it as a lead, not a fact, and do not
+# ship an insight that depends on one without promoting it first.
+#
+# `departed` is not trivia. It is the guard against the most likely error this
+# file can cause: attributing to a lab someone who left it. Four of the seven
+# labs lost a named research leader in the last twelve months, and in xAI's
+# case the entire founding bench. A person listed under `departed` must never
+# be rendered as a voice of that lab.
+
+version: 1
+researched: 2026-09-03
+fetcher_notes: >
+  Unreachable to this fetcher on the research date: x.com (402), cnbc.com (403),
+  axios.com (403), bloomberg.com and reuters.com. Where a story was only
+  available from one of those, an equivalent dated report was used instead and
+  is the URL cited.
+
+labs:
+
+  # ---------------------------------------------------------------- anthropic
+  anthropic:
+    label: Anthropic
+    people:
+      - name: Dario Amodei
+        role: Co-founder and CEO
+        x_handle: DarioAmodei
+        x_url: https://x.com/DarioAmodei
+        x_evidence: search_index
+        blog: https://darioamodei.com/
+        sources:
+          - url: https://darioamodei.com/
+            published: null
+            fetched: 2026-09-03
+            supports: [role, blog]
+            note: >
+              Self-described "CEO of Anthropic, a public benefit corporation".
+              Essays carry no dates on the index; "The Adolescence of
+              Technology" and "Machines of Loving Grace" are both listed.
+          - url: https://x.com/AnthropicAI/status/2064783418844762489
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle_context]
+            note: >
+              Anthropic's own account calling him "our CEO Dario Amodei" and
+              pointing at his latest essay. Confirms the person and the essay
+              channel; does not itself name the handle.
+
+      - name: Daniela Amodei
+        role: Co-founder and President
+        x_handle: DanielaAmodei
+        x_url: https://x.com/DanielaAmodei
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://www.anthropic.com/news/rahul-patil-joins-anthropic
+            published: 2025-10-07
+            fetched: 2026-09-03
+            supports: [role]
+            note: Quoted on the lab's own site in her capacity as President.
+
+      - name: Jared Kaplan
+        role: Co-founder and Chief Science Officer
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://physics-astronomy.jhu.edu/directory/jared-kaplan/
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              JHU faculty directory: associate professor of Physics &
+              Astronomy, and co-founder / chief science officer of Anthropic.
+        notes: >
+          No X handle found on any fetched page. Left null rather than guessed.
+
+      - name: Chris Olah
+        role: Co-founder; leads the interpretability team
+        x_handle: ch402
+        x_url: https://x.com/ch402
+        x_evidence: own_site
+        blog: https://colah.github.io/
+        sources:
+          - url: https://colah.github.io/
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, blog]
+            note: >
+              His own blog links @ch402 threads. Most recent dated post is
+              2021 -- the blog is a low-frequency channel; X is the live one.
+          - url: https://x.com/AnthropicAI/status/2058983299092009421
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Anthropic's official account: "Anthropic co-founder Chris Olah
+              was invited to speak at today's presentation of Pope Leo XIV's
+              encyclical". Lab-owned confirmation of the co-founder title.
+
+      - name: Jack Clark
+        role: Co-founder; policy
+        x_handle: jackclarkSF
+        x_url: https://x.com/jackclarkSF
+        x_evidence: own_site
+        blog: https://jack-clark.net/
+        sources:
+          - url: https://importai.substack.com/about
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle, blog]
+            note: >
+              His own About page: "Co-founder of Anthropic", handle
+              @jackclarkSF, contact at jack-clark.net.
+          - url: https://jack-clark.net/
+            published: 2026-08-31
+            fetched: 2026-09-03
+            supports: [blog_cadence]
+            note: >
+              Import AI 471 dated 2026-08-31 -- weekly, and the highest-signal
+              individual newsletter across all seven labs.
+
+      - name: Sam McCandlish
+        role: Co-founder and Chief Architect; leads pretraining
+        x_handle: samsamoa
+        x_url: https://x.com/samsamoa
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://www.anthropic.com/news/rahul-patil-joins-anthropic
+            published: 2025-10-07
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Lab's own announcement: previously CTO, moved to Chief
+              Architect focused "on large-scale model training, continuing to
+              lead pretraining while expanding his scope".
+
+      - name: Rahul Patil
+        role: Chief Technology Officer
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://www.anthropic.com/news/rahul-patil-joins-anthropic
+            published: 2025-10-07
+            fetched: 2026-09-03
+            supports: [role]
+
+      - name: Jan Leike
+        role: Leads the Alignment Science team
+        x_handle: janleike
+        x_url: https://x.com/janleike
+        x_evidence: own_site
+        blog: https://aligned.substack.com
+        sources:
+          - url: https://jan.leike.name/
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle, blog]
+            note: >
+              His own site, first person: "I lead the Alignment Science team
+              at Anthropic." Links @janleike and aligned.substack.com.
+        notes: >
+          CONTESTED. A secondary aggregator reports he stepped back from
+          running alignment in May 2026 in favour of a new research project
+          at Anthropic, with the team passing to others. His own site still
+          states the leadership role. Both were live on 2026-09-03; the
+          aggregator is not a source this project should ship on. Treat the
+          team-leadership claim as unsettled and re-check before use.
+
+      - name: Andrej Karpathy
+        role: Pretraining team; leads a new team using Claude to accelerate
+          pretraining research
+        x_handle: karpathy
+        x_url: https://x.com/karpathy
+        x_evidence: own_site
+        blog: https://karpathy.bearblog.dev
+        sources:
+          - url: https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/
+            published: 2026-05-19
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Joined under pretraining lead Nick Joseph; Anthropic spokesperson
+              says he will "start a team focused on using Claude to accelerate
+              pre-training research". Quotes his own post from @karpathy.
+          - url: https://karpathy.ai/
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, blog]
+            note: >
+              His own site links @karpathy plus karpathy.github.io,
+              medium.com/@karpathy and karpathy.bearblog.dev. STALE on
+              affiliation -- it still reads "OpenAI 2023-2024" -- which is
+              exactly why the role above is cited to the dated report instead.
+
+      - name: Nick Joseph
+        role: Pretraining lead
+        x_handle: nickevanjoseph
+        x_url: https://x.com/nickevanjoseph
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/
+            published: 2026-05-19
+            fetched: 2026-09-03
+            supports: [role]
+            note: Named as the pretraining team lead Karpathy joined under.
+          - url: https://x.com/nickevanjoseph/status/2027586342750982556
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle]
+            note: >
+              Post from the handle stating "I've been at Anthropic since its
+              founding" in the context of a public disagreement over
+              surveillance use -- self-identification, and a live channel.
+
+      - name: Mike Krieger
+        role: Co-leads Anthropic Labs (moved from Chief Product Officer)
+        x_handle: mikeyk
+        x_url: https://x.com/mikeyk
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/mikeyk/status/2011177881884639435
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              His own post: "putting my product founder hat back on and
+              joining our Labs team to be hands-on". Instagram co-founder.
+          - url: https://techcrunch.com/2026/04/16/anthropic-cpo-leaves-figmas-board-after-reports-he-will-offer-a-competing-product/
+            published: 2026-04-16
+            fetched: 2026-09-03
+            supports: [role_context]
+            note: >
+              Dated coverage of the same period; he resigned from Figma's
+              board on 2026-04-14 as Anthropic moved toward design tooling.
+
+      - name: Ben Mann
+        role: Co-founder; co-leads Anthropic Labs
+        x_handle: 8enmann
+        x_url: https://x.com/8enmann
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://x.com/mikeyk/status/2011177881884639435
+            published: null
+            fetched: 2026-09-03
+            supports: [role_context]
+            note: >
+              Krieger's own post announcing he joins the Labs team; contemporary
+              coverage of the same announcement names Mann as the co-lead.
+    departed: []
+
+  # ------------------------------------------------------------------- openai
+  openai:
+    label: OpenAI
+    people:
+      - name: Sam Altman
+        role: Chief Executive Officer
+        x_handle: sama
+        x_url: https://x.com/sama
+        x_evidence: search_index
+        blog: https://blog.samaltman.com/
+        sources:
+          - url: https://blog.samaltman.com/
+            published: null
+            fetched: 2026-09-03
+            supports: [blog]
+            note: >
+              Personal blog, undated index. Posts seen: "The Gentle
+              Singularity", "Abundant Intelligence", "Three Observations",
+              "Reflections", "Jakub and Szymon".
+          - url: https://x.com/sama/status/1920341429655634024
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Post from the handle: "i'll remain ceo of openai" -- announcing
+              Fidji Simo's hire as CEO of Applications.
+
+      - name: Greg Brockman
+        role: Co-founder and President
+        x_handle: gdb
+        x_url: https://x.com/gdb
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://x.com/WSJTech/status/2060512811311087719
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              WSJ Tech's account: "OpenAI co-founder and president Greg
+              Brockman". Secondary; the WSJ article itself is not fetchable.
+
+      - name: Jakub Pachocki
+        role: Chief Scientist
+        x_handle: merettm
+        x_url: https://x.com/merettm
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://www.technologyreview.com/2025/07/31/1120885/the-two-people-shaping-the-future-of-openais-research/
+            published: 2025-07-31
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              "I am responsible for setting the research roadmap and
+              establishing our long-term technical vision."
+          - url: https://x.com/markchen90/status/1839147190486446277
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle]
+            note: >
+              Mark Chen: "honored to lead research at @OpenAI alongside
+              @merettm" -- a colleague naming the handle.
+
+      - name: Mark Chen
+        role: Chief Research Officer
+        x_handle: markchen90
+        x_url: https://x.com/markchen90
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/markchen90/status/1905072034117525760
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Post from the handle: "I'm Mark Chen (@markchen90), Chief
+              Research Officer at OpenAI". Self-stated handle and title.
+          - url: https://www.technologyreview.com/2025/07/31/1120885/the-two-people-shaping-the-future-of-openais-research/
+            published: 2025-07-31
+            fetched: 2026-09-03
+            supports: [role]
+            note: '"Chen shapes and manages the research teams."'
+
+      - name: Noam Brown
+        role: Research scientist; reasoning (o-series)
+        x_handle: polynoamial
+        x_url: https://x.com/polynoamial
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/polynoamial/status/2083470822258467194
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, activity]
+            note: >
+              Posting OpenAI research results in 2026 ("upcoming Astra
+              models"), so the affiliation is live as of the research date.
+          - url: https://x.com/polynoamial/status/1834280155730043108
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Announced the o1 series as "the fruit of our effort at @OpenAI
+              to create AI models capable of truly general reasoning".
+        notes: >
+          Not a titled executive. Included because the ask was star people,
+          and on the reasoning line he is the channel that moves first.
+    departed:
+      - name: Fidji Simo
+        was: CEO of Applications
+        left: 2026-07-09
+        now: Part-time adviser to OpenAI
+        source: https://techcrunch.com/2026/07/09/fidji-simo-steps-down-from-openais-no-2-role/
+        note: >
+          Stepped down from the number-two role citing a chronic illness after
+          three months' medical leave. Do not render as a current OpenAI voice.
+      - name: Jerry Tworek
+        was: Vice President of Research
+        left: 2026-01-05
+        now: CEO, Core Automation
+        source: https://www.trendforce.com/news/2026/01/07/news-openai-loses-key-reasoning-leader-jerry-tworek-7-year-vp-departs-citing-research-limitations/
+        note: >
+          Seven-year tenure, led work behind o1/o3. Left to found an AI
+          research lab of his own. Secondary source; the primary reports are
+          behind fetch-blocked outlets.
+
+  # ---------------------------------------------------------- google-deepmind
+  google-deepmind:
+    label: Google DeepMind
+    people:
+      - name: Demis Hassabis
+        role: Chair of Google DeepMind and Chief Scientist of Alphabet
+          (from CEO of Google DeepMind)
+        x_handle: demishassabis
+        x_url: https://x.com/demishassabis
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/demishassabis/status/2085034334914769203
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              His own post: "I'm stepping into a new role as Chair of Google
+              DeepMind & Chief Scientist of Alphabet." Continues to lead
+              Isomorphic Labs.
+          - url: https://blog.google/company-news/inside-google/message-ceo/next-chapter-ai-momentum/
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Google's own announcement, carrying Sundar Pichai's and
+              Hassabis's messages to staff. The page itself shows no date;
+              contemporaneous reporting dates the announcement 2026-08-05.
+
+      - name: Koray Kavukcuoglu
+        role: SVP of Google DeepMind; runs day-to-day (from CTO)
+        x_handle: koraykv
+        x_url: https://x.com/koraykv
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/koraykv/status/2085036328258036102
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              His own post: "honored to lead GDM into this next chapter...
+              as we double down on our Gemini models, frontier AI research".
+          - url: https://blog.google/company-news/inside-google/message-ceo/next-chapter-ai-momentum/
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Google's own post: promoted from CTO to SVP, overseeing Gemini
+              model development and frontier AI research.
+
+      - name: Shane Legg
+        role: Co-founder and Chief AGI Scientist
+        x_handle: ShaneLegg
+        x_url: https://x.com/ShaneLegg
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/ShaneLegg/status/1989012603356737799
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, activity]
+            note: >
+              Own post on the SIMA project and Gemini-based game agents,
+              linking the DeepMind blog -- an active first-party channel.
+          - url: https://x.com/dwarkesh_sp/status/1717566262472237134
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: '"Founder & Chief AGI Scientist, Google DeepMind."'
+
+      - name: Pushmeet Kohli
+        role: VP of Research (AI for Science and Strategic Initiatives);
+          Chief Scientist, Google Cloud
+        x_handle: pushmeet
+        x_url: https://x.com/pushmeet
+        x_evidence: self_post
+        blog: https://blog.google/authors/pushmeet-kohli/
+        sources:
+          - url: https://x.com/pushmeet/status/2001776670257352973
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, activity]
+            note: >
+              Own post announcing DeepMind's Department of Energy "Genesis
+              Mission" partnership -- 2026 activity from the handle.
+          - url: https://blog.google/authors/pushmeet-kohli/
+            published: null
+            fetched: 2026-09-03
+            supports: [blog]
+            note: >
+              Google's own author page for him. This is the lab-owned blog
+              channel; he has no separate personal blog that was found.
+
+      - name: Josh Woodward
+        role: VP, Google Labs and the Gemini app
+        x_handle: joshwoodward
+        x_url: https://x.com/joshwoodward
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/joshwoodward/status/2079595879808569534
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, activity]
+            note: >
+              Own post shipping Gemini 3.6 Flash / 3.5 Flash-Lite and
+              trailing 3.5 Pro -- the earliest public word on Gemini releases.
+          - url: https://x.com/Techmeme/status/2002549864555819467
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Pointer to a CNBC profile: head of Google Labs, credited with
+              the Gemini app turnaround (350M MAU in March to 650M by
+              October). CNBC itself is not fetchable from here.
+        notes: >
+          Product rather than research. Included because Gemini app numbers
+          reach this register through him before they reach a press release.
+    departed:
+      - name: Jeff Dean
+        was: Chief Scientist, Google
+        left: 2026-08-05
+        now: CEO, Discovery Loop
+        source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+      - name: Oriol Vinyals
+        was: Senior Research Scientist, Google DeepMind
+        left: 2026-08-05
+        now: Co-founder, Discovery Loop
+        source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+      - name: Quoc Le
+        was: AI researcher, founding member of Google Brain
+        left: 2026-08-05
+        now: Co-founder, Discovery Loop
+        source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+      - name: Sanjay Ghemawat
+        was: Senior Fellow, Google
+        left: 2026-08-05
+        now: Co-founder, Discovery Loop
+        source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+
+  # ----------------------------------------------------------------- deepseek
+  deepseek:
+    label: DeepSeek
+    people:
+      - name: Liang Wenfeng
+        role: Founder and CEO
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://www.scmp.com/tech/big-tech/article/3338427/deepseek-kicks-2026-paper-signalling-push-train-bigger-models-less
+            published: 2026-01-01
+            fetched: 2026-09-03
+            supports: [role, activity]
+            note: >
+              Co-author on the 19-author mHC paper opening 2026 -- he still
+              signs the research, not just the company.
+        notes: >
+          No X account and no blog. He is reported to have made no public
+          appearance for over a year (SCMP, "DeepSeek mystery: who is speaking
+          for start-up as CEO Liang Wenfeng remains out of sight?"). For this
+          lab the papers ARE the channel; there is no personal-channel leg to
+          watch, and pretending otherwise would be the fabrication this file
+          exists to prevent.
+
+      - name: Zhenda Xie
+        role: Researcher; pretraining and scaling. Co-led the 2026 mHC paper
+        x_handle: zdaxie
+        x_url: https://x.com/zdaxie
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://www.scmp.com/tech/big-tech/article/3338427/deepseek-kicks-2026-paper-signalling-push-train-bigger-models-less
+            published: 2026-01-01
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Named as one of three researchers leading the mHC
+              (Manifold-Constrained Hyper-Connections) paper.
+
+      - name: Daya Guo
+        role: Researcher; reasoning. First author of DeepSeek-R1
+        x_handle: Guodaya
+        x_url: https://x.com/Guodaya
+        x_evidence: search_index
+        blog: null
+        sources:
+          - url: https://arxiv.org/abs/2501.12948
+            published: 2025-01-22
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              DeepSeek-R1 paper; he is its first author. The arXiv record is
+              the resolvable primary citation.
+    departed: []
+    notes: >
+      DeepSeek is the weakest lab in this file and the gap is real, not
+      laziness. Its researchers overwhelmingly do not run public personal
+      channels, and the two handles listed sit on the `search_index` tier. The
+      honest reading: for DeepSeek, watch arXiv and the GitHub org, not people.
+
+  # ------------------------------------------------------------------ mistral
+  mistral:
+    label: Mistral AI
+    people:
+      - name: Arthur Mensch
+        role: Co-founder and CEO
+        x_handle: arthurmensch
+        x_url: https://x.com/arthurmensch
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://mistral.ai/about
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Lab's own About page. Most recent dated item on its timeline is
+              2026-04-07 (the "European AI playbook").
+          - url: https://x.com/arthurmensch/status/1725076260827566562
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle]
+            note: >
+              Own post issuing Mistral's position on the EU AI Act -- he uses
+              the account for company policy statements, not just commentary.
+
+      - name: Guillaume Lample
+        role: Co-founder and Chief Science Officer
+        x_handle: GuillaumeLample
+        x_url: https://x.com/GuillaumeLample
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://mistral.ai/about
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+          - url: https://x.com/GuillaumeLample/status/2019097517569302840
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle, activity]
+            note: >
+              Own post announcing Voxtral 2. He announces Mistral model
+              releases from this account, often first.
+
+      - name: Timothee Lacroix
+        role: Co-founder and Chief Technology Officer
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://mistral.ai/about
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+          - url: https://x.com/bfmtech_/status/2060071157127143870
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              BFM Tech, in French: "co-fondateur et CTO de Mistral AI",
+              alongside Mensch and Lample.
+        notes: >
+          No personal X account surfaced. He is quoted via others' accounts
+          and via interviews. Left null rather than guessed.
+    departed:
+      - name: Devendra Chaplot
+        was: Founding team member; led the multimodal research team
+          (Pixtral 12B, Pixtral Large)
+        left: 2026-03
+        now: Pretraining lead at xAI / SpaceX
+        source: https://americanbazaaronline.com/2026/03/16/iit-graduate-devendra-chaplot-to-help-musk-build-superintelligence-476880/
+        note: >
+          Also named an adviser to Sarvam AI in 2026. Listed here because he
+          is a Mistral founding-team name that now speaks for a different lab.
+
+  # ------------------------------------------------------------------ meta-ai
+  meta-ai:
+    label: Meta AI
+    people:
+      - name: Alexandr Wang
+        role: Chief AI Officer; leads Meta Superintelligence Labs, and heads
+          TBD Lab within it
+        x_handle: alexandr_wang
+        x_url: https://x.com/alexandr_wang
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://www.meta.com/about/leadership/alexandr-wang/
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Meta's own leadership page: joined June 2025 as the company's
+              first Chief AI Officer, leading Meta Superintelligence Labs.
+              Page served in German to this fetcher; no page date.
+          - url: https://x.com/alexandr_wang/status/1948834974205182454
+            published: null
+            fetched: 2026-09-03
+            supports: [x_handle]
+            note: Own post announcing Shengjia Zhao as MSL Chief Scientist.
+          - url: https://www.cnbc.com/2026/06/14/meta-hired-alexandr-wang-to-build-ai-its-zuckerbergs-job-to-sell-it.html
+            published: 2026-06-14
+            fetched: null
+            supports: [role_still_current]
+            note: >
+              NOT FETCHED -- cnbc.com returns 403 here. Recorded because the
+              headline and date establish he was still in post mid-2026, and
+              this file should say when a claim rests on a URL it could not
+              read. Promote before shipping anything that depends on it.
+
+      - name: Shengjia Zhao
+        role: Chief Scientist, Meta Superintelligence Labs
+        x_handle: shengjia_zhao
+        x_url: https://x.com/shengjia_zhao
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/shengjia_zhao/status/1948848412264206577
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Own post: "I am very excited to take up the role of chief
+              scientist for meta super-intelligence labs."
+          - url: https://techcrunch.com/2025/07/25/meta-names-shengjia-zhao-as-chief-scientist-of-ai-superintelligence-unit/
+            published: 2025-07-25
+            fetched: 2026-09-03
+            supports: [role]
+          - url: https://x.com/AIatMeta/status/1948836042406330676
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Meta's own AI account naming "@shengjia_zhao at the helm as
+              Chief Scientist" -- lab_post tier confirmation of the handle.
+        notes: >
+          Appointment sourced to July 2025. No 2026-dated confirmation that he
+          remains in post was found; searches returned only the 2025 reports.
+          Treat the title as last-confirmed 2025-07-25.
+
+      - name: Nat Friedman
+        role: Heads Products and Applied Research within Meta Superintelligence
+          Labs
+        x_handle: natfriedman
+        x_url: https://x.com/natfriedman
+        x_evidence: self_post
+        blog: https://nat.org/
+        sources:
+          - url: https://x.com/natfriedman/status/1940682802644852999
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Own post: "Started work at Meta this week. My job is to make
+              amazing AI products that billions of people love to use."
+          - url: https://x.com/Techmeme/status/1957849012326805902
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Pointer to Bloomberg's memo story: Wang heads TBD Lab, Robert
+              Fergus heads FAIR, Friedman heads products, Aparna Ramani heads
+              Infra. Bloomberg is not fetchable from here.
+          - url: https://nat.org/
+            published: null
+            fetched: 2026-09-03
+            supports: [blog]
+            note: >
+              Personal site. STALE on affiliation -- lists GitHub 2018-2021
+              and the Herculaneum Papyri work, no Meta role, no social links.
+              It is an essay channel, not a status page.
+
+      - name: Robert Fergus
+        role: Head of FAIR (Fundamental AI Research)
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://x.com/ylecun/status/1920556537233207483
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              Announced by Yann LeCun, then Meta's Chief AI Scientist: "Rob
+              Fergus is the new head of Meta-FAIR!"
+          - url: https://x.com/Techmeme/status/1957849012326805902
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+        notes: >
+          No X handle found. Co-founded FAIR with LeCun in 2014; returned to
+          Meta from five years at Google DeepMind.
+    departed:
+      - name: Yann LeCun
+        was: Chief AI Scientist (12 years)
+        left: 2025-11
+        now: Executive Chairman, AMI Labs (Advanced Machine Intelligence Labs),
+          announced 2026-03-10
+        source: https://the-decoder.com/you-certainly-dont-tell-a-researcher-like-me-what-to-do-says-lecun-as-he-exits-meta-for-his-own-startup/
+        note: >
+          The single most likely stale-attribution error in this file's whole
+          scope. LeCun is not a Meta voice and has not been since Nov 2025.
+          His @ylecun posts are cited above only as evidence of what he said
+          while he WAS at Meta, and are dated accordingly.
+
+  # --------------------------------------------------------------------- xai
+  xai:
+    label: xAI / SpaceXAI
+    people:
+      - name: Elon Musk
+        role: Founder; runs the AI division after folding xAI into SpaceX
+        x_handle: elonmusk
+        x_url: https://x.com/elonmusk
+        x_evidence: self_post
+        blog: null
+        sources:
+          - url: https://x.com/elonmusk/status/2052105373621121284
+            published: null
+            fetched: 2026-09-03
+            supports: [role, x_handle]
+            note: >
+              Own post: "xAI will be dissolved as a separate company, so it
+              will just be SpaceXAI, the AI products from SpaceX."
+
+      - name: Michael Nicolls
+        role: President
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://en.wikipedia.org/wiki/SpaceXAI
+            published: null
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              TERTIARY. "Michael Nicolls, vice president of SpaceX's Starlink,
+              became xAI's president", dated 2026-04-10. Promote to the
+              underlying report before shipping.
+
+      - name: Jack Garabedian
+        role: Leads the team training Grok
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://tribune.net.ph/2026/06/09/xai-shakes-up-grok-leadership
+            published: 2026-06-10
+            fetched: 2026-09-03
+            supports: [role]
+            note: >
+              SpaceX executive since 2021; replaced Diego Pasini and now
+              "manage[s] hundreds of experts who train Grok".
+
+      - name: Devendra Chaplot
+        role: Pretraining lead
+        x_handle: null
+        x_url: null
+        x_evidence: null
+        blog: null
+        sources:
+          - url: https://americanbazaaronline.com/2026/03/16/iit-graduate-devendra-chaplot-to-help-musk-build-superintelligence-476880/
+            published: 2026-03-16
+            fetched: 2026-09-03
+            supports: [role]
+            note: Mistral founding-team member; joined SpaceX/xAI March 2026.
+    departed:
+      - name: all twelve original co-founders
+        was: Founding research bench (incl. Igor Babuschkin, Tony Wu,
+          Guodong Zhang, Zihang Dai, Toby Pohlen, Greg Yang, Christian
+          Szegedy, Manuel Kroiss, Ross Nordeen)
+        left: 2026-03-28
+        now: Dispersed
+        source: https://techcrunch.com/2026/03/28/elon-musks-last-co-founder-reportedly-leaves-xai/
+        note: >
+          The last two, Manuel Kroiss (pretraining lead) and Ross Nordeen
+          (Musk's "right-hand operator"), left in the same week of March 2026.
+          Musk: xAI "was not built right [the] first time around" and is
+          "being rebuilt from the foundations up".
+    notes: >
+      xAI is the one lab where the people leg mostly reports an absence. Every
+      researcher who made it a frontier lab has left, and the replacements are
+      SpaceX operators with no public research channel: three of the four names
+      above have no findable X handle and none has a blog. Musk's own account
+      is effectively the lab's channel. This is a finding, not a gap in the
+      research -- and it matches D16/D17's existing decision not to run a
+      papers harvester for xAI.

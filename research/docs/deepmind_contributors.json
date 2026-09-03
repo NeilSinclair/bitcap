@@ -1,0 +1,1860 @@
+{
+  "generated": "2026-09-03",
+  "lab": "Google DeepMind",
+  "papers": [
+    {
+      "url": "https://deepmind.google/research/publications/270149/",
+      "source_url": "https://arxiv.org/html/2608.25924",
+      "title": "Visual General Intelligence: A White Paper",
+      "date": "2026-08-26",
+      "authors": [
+        {
+          "name": "Hirokatsu Kataoka",
+          "affiliations": [
+            "National Institute of Advanced Industrial Science and Technology (AIST)",
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Yoshihiro Fukuhara",
+          "affiliations": [
+            "National Institute of Advanced Industrial Science and Technology (AIST)",
+            "CADDi"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Yonglong Tian",
+          "affiliations": [
+            "OpenAI"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Shangzhe Wu",
+          "affiliations": [
+            "University of Cambridge"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Oishi Deb",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Ryousuke Yamada",
+          "affiliations": [
+            "National Institute of Advanced Industrial Science and Technology (AIST)",
+            "University of Technology Nuremberg"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Christian Rupprecht",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Jianyuan Wang",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Kohsuke Ide",
+          "affiliations": [
+            "National Institute of Advanced Industrial Science and Technology (AIST)",
+            "University of Tsukuba"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Koichi Namekata",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Xianzheng Ma",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Yiming Chen",
+          "affiliations": [
+            "Visual Geometry Group (VGG), University of Oxford"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Robert Geirhos",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Aditi Raghunathan",
+          "affiliations": [
+            "Carnegie Mellon University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Yuki M. Asano",
+          "affiliations": [
+            "University of Technology Nuremberg"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Deva Ramanan",
+          "affiliations": [
+            "Carnegie Mellon University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "David Fouhey",
+          "affiliations": [
+            "New York University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Andrew J. Davison",
+          "affiliations": [
+            "Imperial College London"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Yilun Du",
+          "affiliations": [
+            "Harvard University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Jiajun Wu",
+          "affiliations": [
+            "Stanford University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Zhuang Liu",
+          "affiliations": [
+            "Princeton University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/118955/",
+      "source_url": "https://deepmind.google/research/publications/118955/",
+      "title": "A moral Turing test: How belief and source shape detection of and agreement with LLM judgments",
+      "date": "2026-08-05",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/264392/",
+      "source_url": "https://arxiv.org/html/2607.25537",
+      "title": "Visual prompt engineering for video models",
+      "date": "2026-07-28",
+      "authors": [
+        {
+          "name": "Robert Geirhos",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [
+            "*"
+          ],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Yuxuan Li",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [
+            "*"
+          ],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Thadd\u00e4us Wiedemer",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [
+            "*"
+          ],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Neha Kalibhat",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Zi Wang",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Mani Malek",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Oyvind Tafjord",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Kevin Swersky",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Been Kim",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Priyank Jaini",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [
+            "*"
+          ],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/203490/",
+      "source_url": "https://deepmind.google/research/publications/203490/",
+      "title": "Towards Structural Understanding of LLM Overthinking",
+      "date": "2026-07-02",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/118251/",
+      "source_url": "https://arxiv.org/html/2507.13383",
+      "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+      "date": "2025-09-18",
+      "authors": [
+        {
+          "name": "Charvi Rastogi",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Tian Huey Teh",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Pushkar Mishra",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Roma Patel",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Ding Wang",
+          "affiliations": [
+            "Google Research"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Mark Diaz",
+          "affiliations": [
+            "Google Research"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Alicia Parrish",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Aida Mostafazadeh Davani",
+          "affiliations": [
+            "Google Research"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Zoe Ashwood",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Michela Paganini",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Vinodkumar Prabhakaran",
+          "affiliations": [
+            "Google Research"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Verena Rieser",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Lora Aroyo",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/149262/",
+      "source_url": "https://deepmind.google/research/publications/149262/",
+      "title": "Bridging the Scale Gap: Augmenting Human Red-Teaming to Uncover Latent Risks in T2I Models",
+      "date": "2026-06-26",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/224397/",
+      "source_url": "https://deepmind.google/research/publications/224397/",
+      "title": "Going PLACES: Participatory Localized Red Teaming forText-to-Image Safety in the Global South",
+      "date": "2026-06-25",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/139779/",
+      "source_url": "https://deepmind.google/research/publications/139779/",
+      "title": "\"Just a Strange Pic\": Rethinking 'Safety' in GenAI Image Safety Annotation Tasks from Diverse Annotators\u2019 Perspectives",
+      "date": "2025-07-21",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/225819/",
+      "source_url": "https://arxiv.org/html/2606.00369",
+      "title": "Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment",
+      "date": "2026-07-10",
+      "authors": [
+        {
+          "name": "Arkadiy Saakyan",
+          "affiliations": [
+            "Columbia University, New York, NY, USA. Work done during an internship at Google DeepMind."
+          ],
+          "marks": [],
+          "is_fellow": true,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Charvi Rastogi",
+          "affiliations": [
+            "Google DeepMind, New York, NY, USA"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Lora Aroyo",
+          "affiliations": [
+            "Google DeepMind, New York, NY, USA"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/224297/",
+      "source_url": "https://deepmind.google/research/publications/224297/",
+      "title": "Real-Time Group Dynamics with LLM Facilitation: Evidence from a Charity Allocation Task",
+      "date": "2026-06-26",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/248131/",
+      "source_url": "https://deepmind.google/research/publications/248131/",
+      "title": "Artificial Minds, Human Disagreement: The Politics of AI Consciousness",
+      "date": "2026-06-15",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/239849/",
+      "source_url": "https://arxiv.org/html/2605.03767",
+      "title": "Did US Worker Retraining Reduce Participant Automation Exposure?",
+      "date": "2026-05-06",
+      "authors": [
+        {
+          "name": "Julian Jacobs",
+          "affiliations": [
+            "University of Oxford",
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Jordan Canedy",
+          "affiliations": [
+            "Forecasting Research Institute"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/239142/",
+      "source_url": "https://arxiv.org/html/2606.12683",
+      "title": "From AGI to ASI",
+      "date": "2026-06-12",
+      "authors": [
+        {
+          "name": "Tim Genewein",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Matija Franklin",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Alexander Lerchner",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Laurent Orseau",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Samuel Albanie",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Adam Bales",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Cole Wyeth",
+          "affiliations": [
+            "Google DeepMind",
+            "University of Waterloo (work conducted while at Google DeepMind)"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Stephanie Chan",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Iason Gabriel",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Joel Z. Leibo",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Allan Dafoe",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Marcus Hutter",
+          "affiliations": [
+            "Google DeepMind",
+            "Australian National University"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Thore Graepel",
+          "affiliations": [
+            "Google DeepMind",
+            "University College London"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Shane Legg",
+          "affiliations": [
+            "Google DeepMind"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/146950/",
+      "source_url": "https://deepmind.google/research/publications/146950/",
+      "title": "Strategic Tradeoffs Between Humans and AI in Multi-Agent Bargaining",
+      "date": "2026-03-22",
+      "authors": [],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    },
+    {
+      "url": "https://deepmind.google/research/publications/231466/",
+      "source_url": "https://arxiv.org/html/2606.03237",
+      "title": "Solipsistic superintelligence is unlikely to be cooperative",
+      "date": "2026-06-04",
+      "authors": [
+        {
+          "name": "Rakshit S Trivedi",
+          "affiliations": [
+            "Independent Researcher, CA, USA"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": false
+        },
+        {
+          "name": "Natasha Jaques",
+          "affiliations": [
+            "University of Washington, Seattle, WA, USA",
+            "Google Deepmind, London, UK"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Logan Cross",
+          "affiliations": [
+            "Google Deepmind, London, UK"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Alexander Sasha Vezhnevets",
+          "affiliations": [
+            "Google Deepmind, London, UK"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        },
+        {
+          "name": "Joel Z Leibo",
+          "affiliations": [
+            "Google Deepmind, London, UK"
+          ],
+          "marks": [],
+          "is_fellow": false,
+          "is_lab_staff": true
+        }
+      ],
+      "order_meaningful": true,
+      "star_means": null,
+      "truncated": false
+    }
+  ],
+  "people": [
+    {
+      "appearances": 2,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        },
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Robert Geirhos"
+    },
+    {
+      "appearances": 2,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind",
+        "Google DeepMind, New York, NY, USA"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        },
+        {
+          "title": "Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment",
+          "url": "https://deepmind.google/research/publications/225819/",
+          "date": "2026-07-10"
+        }
+      ],
+      "name": "Charvi Rastogi"
+    },
+    {
+      "appearances": 2,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind",
+        "Google DeepMind, New York, NY, USA"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        },
+        {
+          "title": "Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment",
+          "url": "https://deepmind.google/research/publications/225819/",
+          "date": "2026-07-10"
+        }
+      ],
+      "name": "Lora Aroyo"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "National Institute of Advanced Industrial Science and Technology (AIST)",
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Hirokatsu Kataoka"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "CADDi",
+        "National Institute of Advanced Industrial Science and Technology (AIST)"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Yoshihiro Fukuhara"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "OpenAI"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Yonglong Tian"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "University of Cambridge"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Shangzhe Wu"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Oishi Deb"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "National Institute of Advanced Industrial Science and Technology (AIST)",
+        "University of Technology Nuremberg"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Ryousuke Yamada"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Christian Rupprecht"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Jianyuan Wang"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "National Institute of Advanced Industrial Science and Technology (AIST)",
+        "University of Tsukuba"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Kohsuke Ide"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Koichi Namekata"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Xianzheng Ma"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Visual Geometry Group (VGG), University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Yiming Chen"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Carnegie Mellon University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Aditi Raghunathan"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "University of Technology Nuremberg"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Yuki M. Asano"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Carnegie Mellon University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Deva Ramanan"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "New York University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "David Fouhey"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Imperial College London"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Andrew J. Davison"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Harvard University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Yilun Du"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Stanford University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Jiajun Wu"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Princeton University"
+      ],
+      "papers": [
+        {
+          "title": "Visual General Intelligence: A White Paper",
+          "url": "https://deepmind.google/research/publications/270149/",
+          "date": "2026-08-26"
+        }
+      ],
+      "name": "Zhuang Liu"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Yuxuan Li"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Thadd\u00e4us Wiedemer"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Neha Kalibhat"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Zi Wang"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Mani Malek"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Oyvind Tafjord"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Kevin Swersky"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Been Kim"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Visual prompt engineering for video models",
+          "url": "https://deepmind.google/research/publications/264392/",
+          "date": "2026-07-28"
+        }
+      ],
+      "name": "Priyank Jaini"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Tian Huey Teh"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Pushkar Mishra"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Roma Patel"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Research"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Ding Wang"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Research"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Mark Diaz"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Alicia Parrish"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Research"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Aida Mostafazadeh Davani"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Zoe Ashwood"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Michela Paganini"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Research"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Vinodkumar Prabhakaran"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "Whose View of Safety? A Deep DIVE Dataset for Pluralistic Alignment of Text-to-Image Models",
+          "url": "https://deepmind.google/research/publications/118251/",
+          "date": "2025-09-18"
+        }
+      ],
+      "name": "Verena Rieser"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": true,
+      "affiliations": [
+        "Columbia University, New York, NY, USA. Work done during an internship at Google DeepMind."
+      ],
+      "papers": [
+        {
+          "title": "Quantifying the Salience of Geo-Cultural Values for Pluralistic Safety Alignment",
+          "url": "https://deepmind.google/research/publications/225819/",
+          "date": "2026-07-10"
+        }
+      ],
+      "name": "Arkadiy Saakyan"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind",
+        "University of Oxford"
+      ],
+      "papers": [
+        {
+          "title": "Did US Worker Retraining Reduce Participant Automation Exposure?",
+          "url": "https://deepmind.google/research/publications/239849/",
+          "date": "2026-05-06"
+        }
+      ],
+      "name": "Julian Jacobs"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Forecasting Research Institute"
+      ],
+      "papers": [
+        {
+          "title": "Did US Worker Retraining Reduce Participant Automation Exposure?",
+          "url": "https://deepmind.google/research/publications/239849/",
+          "date": "2026-05-06"
+        }
+      ],
+      "name": "Jordan Canedy"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Tim Genewein"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Matija Franklin"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Alexander Lerchner"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Laurent Orseau"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Samuel Albanie"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Adam Bales"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind",
+        "University of Waterloo (work conducted while at Google DeepMind)"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Cole Wyeth"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Stephanie Chan"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Iason Gabriel"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Joel Z. Leibo"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Allan Dafoe"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Australian National University",
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Marcus Hutter"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind",
+        "University College London"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Thore Graepel"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google DeepMind"
+      ],
+      "papers": [
+        {
+          "title": "From AGI to ASI",
+          "url": "https://deepmind.google/research/publications/239142/",
+          "date": "2026-06-12"
+        }
+      ],
+      "name": "Shane Legg"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": false,
+      "is_fellow": false,
+      "affiliations": [
+        "Independent Researcher, CA, USA"
+      ],
+      "papers": [
+        {
+          "title": "Solipsistic superintelligence is unlikely to be cooperative",
+          "url": "https://deepmind.google/research/publications/231466/",
+          "date": "2026-06-04"
+        }
+      ],
+      "name": "Rakshit S Trivedi"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Deepmind, London, UK",
+        "University of Washington, Seattle, WA, USA"
+      ],
+      "papers": [
+        {
+          "title": "Solipsistic superintelligence is unlikely to be cooperative",
+          "url": "https://deepmind.google/research/publications/231466/",
+          "date": "2026-06-04"
+        }
+      ],
+      "name": "Natasha Jaques"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Deepmind, London, UK"
+      ],
+      "papers": [
+        {
+          "title": "Solipsistic superintelligence is unlikely to be cooperative",
+          "url": "https://deepmind.google/research/publications/231466/",
+          "date": "2026-06-04"
+        }
+      ],
+      "name": "Logan Cross"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Deepmind, London, UK"
+      ],
+      "papers": [
+        {
+          "title": "Solipsistic superintelligence is unlikely to be cooperative",
+          "url": "https://deepmind.google/research/publications/231466/",
+          "date": "2026-06-04"
+        }
+      ],
+      "name": "Alexander Sasha Vezhnevets"
+    },
+    {
+      "appearances": 1,
+      "is_lab_staff": true,
+      "is_fellow": false,
+      "affiliations": [
+        "Google Deepmind, London, UK"
+      ],
+      "papers": [
+        {
+          "title": "Solipsistic superintelligence is unlikely to be cooperative",
+          "url": "https://deepmind.google/research/publications/231466/",
+          "date": "2026-06-04"
+        }
+      ],
+      "name": "Joel Z Leibo"
+    }
+  ]
+}

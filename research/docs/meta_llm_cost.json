@@ -1,0 +1,74 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 29259,
+    "output_tokens": 2142,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.079938,
+    "seconds": 20.7,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/accurate-decoding-of-natural-sentences-from-non-invasive-brain-recordings/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 30245,
+    "output_tokens": 1527,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.07576,
+    "seconds": 14.85,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/learning-to-reason-by-analogy-via-retrieval-augmented-reinforcement-fine-tuning/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 28852,
+    "output_tokens": 139,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.059094,
+    "seconds": 3.45,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 30566,
+    "output_tokens": 2347,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.084602,
+    "seconds": 22.02,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/s-ember-a-large-scale-benchmark-for-streaming-egocentric-memory-retrieval/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 29784,
+    "output_tokens": 1334,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.072908,
+    "seconds": 13.6,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/wait-for-the-signal-simple-frequency-aware-flow-matching/"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "prompt_version": "v2",
+    "input_tokens": 28498,
+    "output_tokens": 339,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "usd": 0.060386,
+    "seconds": 4.88,
+    "stop_reason": "end_turn",
+    "url": "https://ai.meta.com/research/publications/reinforcement-learning-for-code-optimization/"
+  }
+]

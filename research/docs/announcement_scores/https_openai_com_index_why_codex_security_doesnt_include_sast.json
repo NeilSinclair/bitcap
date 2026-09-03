@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "OpenAI published a blog post explaining why its Codex Security product uses AI-driven constraint reasoning and validation instead of traditional static application security testing (SAST) to find vulnerabilities.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

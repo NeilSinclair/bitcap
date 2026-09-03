@@ -1,0 +1,29 @@
+{
+  "id": "24",
+  "lab": "openai",
+  "date": "2026-06-03",
+  "title": "A blueprint for democratic governance of frontier AI",
+  "url": "https://openai.com/index/frontier-safety-blueprint",
+  "text_source": "full_text_archived",
+  "text": "A blueprint for democratic governance of frontier AI | OpenAI Research Products Business Developers Company Foundation Log in Try ChatGPT Research Products Business Developers Company Foundation Try ChatGPT Login OpenAI June 3, 2026 Global Affairs A blueprint for democratic governance of frontier AI How the U.S. can build durable institutions for frontier AI safety. Read the blueprint Share We’re releasing a blueprint outlining how the U.S. can build a durable federal framework for governing increasingly capable AI systems. The blueprint outlines a three-part strategy: building a national framework that leverages the emerging consensus reflected in state frontier safety laws; strengthening CAISI as the U.S. federal government’s primary institution for frontier AI safety; and mobilizing a broader resilience plan across government to address the national security and public safety challenges posed by frontier AI. This is an important moment to seize. States have started developing harmonized approaches to frontier AI governance, including California’s SB 53, New York’s RAISE Act, and Illinois’s SB 315, and the White House’s new executive order on Promoting Advanced Artificial Intelligence Innovation and Security is another important step forward. The federal government must now build on that foundation and create a durable federal framework capable of evolving alongside the technology itself. Read the full blueprint here . 2026 Author OpenAI Keep reading View all OpenAI public policy agenda Global Affairs Jun 3, 2026 Advancing youth safety and opportunity through global leadership Global Affairs Jun 2, 2026 Codex is becoming a productivity tool for everyone Global Affairs Jun 2, 2026 Our Research Research Index Research Overview Research Residency Economic Research Latest Advancements GPT-5.5 GPT-5.4 GPT-5.3 Instant GPT-5.3-Codex Safety Safety Approach Security & Privacy Trust & Transparency ChatGPT Explore ChatGPT Business Enterprise Education Pricing Download API Platform Platform Overview Pricing API log in Documentation Developer Forum For Business Business Overview Solutions Contact Sales Company About Us Our Charter Foundation Careers Brand Support Help Center More News Stories Academy Livestreams Podcast RSS Terms & Policies Terms of Use Privacy Policy Other Policies OpenAI © 2015–2026 Your privacy choices English United States",
+  "gold": {
+    "event_type": "safety_policy",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [],
+    "notes": "Policy advocacy toward government, not the lab's own operational policy; safety_policy is the nearest type. Vocabulary gap: nothing covers a lab lobbying for a regulatory framework."
+  },
+  "review": {
+    "labeller": "claude-fable-5",
+    "method": "independent read of the article text only; existing gold/system labels not consulted",
+    "quote_rule": "every quote snapped to an exact substring of the stored text via verbatim.snap",
+    "caveat": "the labeller adjudicated an earlier gold pass in the same session, so blindness is best-effort, not perfect"
+  },
+  "computed": {
+    "score": 0.0,
+    "band": "none",
+    "ai_score": 0.0,
+    "ai_band": "none",
+    "note": "Deterministic rule from config/scoring.yaml (score_of / ai_score_of) applied to the fable labels above."
+  }
+}

@@ -1,0 +1,609 @@
+{
+  "votes": 3,
+  "passes": [
+    {
+      "https://www.anthropic.com/news/google-broadcom-partnership-compute": {
+        "event_type": "compute_commitment",
+        "is_signal": true,
+        "summary": "Anthropic announced an expanded agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity, expected online starting in 2027, to power Claude models and support accelerating customer demand.",
+        "mechanisms": [
+          {
+            "id": "custom_silicon_substitution",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The expansion is built on Google TPUs co-developed with Broadcom rather than merchant GPU capacity, deepening Anthropic's use of custom accelerator silicon.",
+            "quote": "The partnership deepens our existing work with Google Cloud\u2014building on the increased TPU capacity we announced last October\u2014as well as our relationship with Broadcom.",
+            "votes": "3/3"
+          },
+          {
+            "id": "datacenter_power_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The disclosed capacity is measured in multiple gigawatts, a direct statement of new datacentre power demand.",
+            "quote": "a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity",
+            "votes": "3/3"
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "Rapid revenue and large-customer growth indicates sharply rising inference volume driving the need for new capacity.",
+            "quote": "Our run-rate revenue has now surpassed $30 billion\u2014up from approximately $9 billion at the end of 2025.",
+            "votes": "3/3"
+          },
+          {
+            "id": "training_compute_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "A multi-gigawatt next-generation TPU capacity agreement directly expands the compute available for training and serving frontier Claude models.",
+            "quote": "We have signed a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity that we expect to come online starting in 2027.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "The deal expands deployment of Google TPUs, a custom AI accelerator, co-developed with Broadcom.",
+            "quote": "a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity",
+            "votes": "3/3"
+          },
+          {
+            "id": "hyperscale_platform",
+            "sign": "positive",
+            "confidence": "high",
+            "reason": "Google Cloud's TPU infrastructure business is directly expanded by this partnership.",
+            "quote": "The partnership deepens our existing work with Google Cloud\u2014building on the increased TPU capacity we announced last October",
+            "votes": "3/3"
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A named multi-gigawatt compute deal with disclosed hyperscaler and silicon partners, alongside concrete revenue growth figures, is a significant, quantifiable infrastructure signal.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "compute_commitment": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "custom_silicon_substitution": 3,
+            "datacenter_power_up": 3,
+            "inference_volume_up": 3,
+            "training_compute_up": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 100.0,
+        "band": "high"
+      },
+      "https://www.anthropic.com/news/confidential-draft-s1-sec": {
+        "event_type": "corporate_finance",
+        "is_signal": true,
+        "summary": "Anthropic announced it has confidentially submitted a draft S-1 registration statement to the SEC as a step toward a potential future initial public offering.",
+        "mechanisms": [
+          {
+            "id": "lab_capital_access",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "A confidential S-1 filing is a direct step toward an IPO, which would materially change the lab's access to capital for future compute commitments.",
+            "quote": "Anthropic, PBC confidentially submitted a draft registration statement on Form S-1 to the U.S. Securities and Exchange Commission for a proposed initial public offering of our common stock.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [],
+        "notable": true,
+        "notable_reason": "A confidential S-1 filing signals Anthropic is preparing for a public listing, a major corporate finance milestone that changes its long-term capital access for compute buildout.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "corporate_finance": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "lab_capital_access": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 80.0,
+        "band": "high"
+      },
+      "https://www.anthropic.com/news/redeploying-fable-5": {
+        "event_type": "regulatory_action",
+        "is_signal": true,
+        "summary": "Anthropic reports that US government export controls applied to Claude Fable 5 and Mythos 5 on June 12 have now been lifted, restoring global access, while detailing new cybersecurity safeguards, a proposed industry jailbreak-severity framework, and expanded voluntary government collaboration commitments.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The document states Mythos 5 exceeds nearly all human experts and other models at offensive cybersecurity tasks, indicating a capability threshold has been crossed.",
+            "quote": "Claude Mythos 5 can be used to find and exploit software vulnerabilities more effectively than any other model\u2014and all but the most skilled human security experts.",
+            "votes": "3/3"
+          },
+          {
+            "id": "export_controls",
+            "sign": "mixed",
+            "magnitude": "medium",
+            "confidence": "high",
+            "reason": "The US government applied export controls directly to specific frontier AI models and then lifted them weeks later, an unprecedented trade-policy action on model access rather than hardware.",
+            "quote": "On Friday, June 12, the US government applied export controls to our newest models, Claude Fable 5 and Claude Mythos 5.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [],
+        "notable": true,
+        "notable_reason": "This is the first disclosed instance of the US government applying export controls directly to a specific frontier AI model's access rather than to hardware, and its resolution sets a precedent for government-lab coordination on frontier model release gating.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "regulatory_action": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "capability_jump": 3,
+            "export_controls": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 53.3,
+        "band": "medium"
+      },
+      "https://www.anthropic.com/news/claude-opus-4-8": {
+        "event_type": "incremental_model_release",
+        "is_signal": true,
+        "summary": "Anthropic released Claude Opus 4.8, an incremental upgrade to Opus 4.7 at unchanged base pricing, alongside new features including dynamic workflows in Claude Code, effort control, and cheaper fast-mode pricing.",
+        "mechanisms": [
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The new dynamic workflows feature lets the model run many parallel subagents to handle large, multi-step engineering tasks autonomously.",
+            "quote": "Claude can plan the work and then run hundreds of parallel subagents in a single session (and with Opus 4.8, the agents can run for even longer).",
+            "votes": "3/3"
+          },
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "The model shows benchmark and agentic improvements over its predecessor but the lab itself characterizes the gain as modest.",
+            "quote": "Users will find Opus 4.8 to be a modest but tangible improvement on its predecessor.",
+            "votes": "2/3"
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "high",
+            "reason": "Fast mode pricing for the new model is explicitly cut to a third of its prior cost while running faster.",
+            "quote": "fast mode for Opus 4.8\u2014where the model can work at 2.5\u00d7 the speed\u2014is now three times cheaper than it was for previous models.",
+            "votes": "3/3"
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "New effort controls let users push the model to spend more tokens per task for better results, increasing tokens consumed per request.",
+            "quote": "On higher effort settings, Claude will think more frequently and more deeply to give better responses.",
+            "votes": "2/3"
+          }
+        ],
+        "categories": [],
+        "notable": false,
+        "notable_reason": "",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "incremental_model_release": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "agentic_workflows": 3,
+            "capability_jump": 2,
+            "inference_cost_down": 3,
+            "inference_volume_up": 2
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 17.8,
+        "band": "low"
+      },
+      "https://www.anthropic.com/news/sydney-fourth-office-asia-pacific": {
+        "event_type": "other",
+        "is_signal": true,
+        "summary": "Anthropic announced it will open a fourth Asia-Pacific office in Sydney, expanding into Australia and New Zealand with plans to hire locally, deepen enterprise and government partnerships, and explore compute capacity in the region.",
+        "mechanisms": [
+          {
+            "id": "datacenter_power_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "The announcement mentions exploratory plans to expand compute capacity and longer-term infrastructure in Australia, though nothing is committed yet.",
+            "quote": "We're also exploring opportunities to expand our compute capacity in Australia",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [
+          {
+            "id": "ai_compute_hosting",
+            "sign": "positive",
+            "confidence": "low",
+            "reason": "Anthropic states it is exploring adding local compute capacity through third-party infrastructure partners in Australia.",
+            "quote": "We're exploring adding local capacity through our third-party partners in Australia, using infrastructure already in place.",
+            "votes": "2/3"
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "other": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "datacenter_power_up": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 0.0,
+        "band": "none"
+      },
+      "https://openai.com/index/openai-broadcom-jalapeno-inference-chip": {
+        "event_type": "compute_commitment",
+        "is_signal": true,
+        "summary": "OpenAI and Broadcom announced a custom AI chip, Jalape\u00f1o, designed for LLM inference to improve performance, efficiency and scale.",
+        "mechanisms": [
+          {
+            "id": "custom_silicon_substitution",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "medium",
+            "reason": "OpenAI is co-developing a custom inference chip with Broadcom, displacing merchant accelerators for its inference workloads.",
+            "quote": "OpenAI and Broadcom introduce Jalape\u00f1o, a custom AI chip built for LLM inference to improve performance, efficiency, and scale across AI systems.",
+            "votes": "3/3"
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "The chip is described as improving inference efficiency, which could lower per-token serving costs, though no specifics are given.",
+            "quote": "to improve performance, efficiency, and scale across AI systems",
+            "votes": "2/3"
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "The announcement describes a new custom AI inference chip built specifically for LLM workloads.",
+            "quote": "OpenAI and Broadcom introduce Jalape\u00f1o, a custom AI chip built for LLM inference to improve performance, efficiency, and scale across AI systems.",
+            "votes": "3/3"
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A frontier lab partnering with a merchant chip maker to build custom inference silicon signals a structural shift away from merchant GPUs for inference workloads.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "compute_commitment": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "custom_silicon_substitution": 3,
+            "inference_cost_down": 2
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 66.7,
+        "band": "high"
+      }
+    },
+    {
+      "https://www.anthropic.com/news/google-broadcom-partnership-compute": {
+        "event_type": "compute_commitment",
+        "is_signal": true,
+        "summary": "Anthropic announced a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity to come online starting in 2027, expanding its compute infrastructure alongside a $50 billion U.S. infrastructure commitment.",
+        "mechanisms": [
+          {
+            "id": "custom_silicon_substitution",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The deal is for Google TPUs co-designed with Broadcom, expanding use of custom accelerator silicon alongside merchant GPUs.",
+            "quote": "We train and run Claude on a range of AI hardware\u2014AWS Trainium, Google TPUs, and NVIDIA GPUs\u2014which means we can match workloads to the chips best suited for them.",
+            "votes": "3/3"
+          },
+          {
+            "id": "datacenter_power_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "Multiple gigawatts of new compute capacity sited predominantly in the US directly implies a large increase in datacentre power demand.",
+            "quote": "The vast majority of the new compute will be sited in the United States, making this partnership a major expansion of our November 2025 commitment to invest $50 billion in strengthening American computing infrastructure.",
+            "votes": "3/3"
+          },
+          {
+            "id": "training_compute_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "A multi-gigawatt next-generation TPU capacity agreement directly expands the compute available to train and run frontier Claude models.",
+            "quote": "We have signed a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity that we expect to come online starting in 2027.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "The agreement expands deployment of Google TPUs, a custom AI accelerator co-designed with Broadcom.",
+            "quote": "signed a new agreement with Google and Broadcom for multiple gigawatts of next-generation TPU capacity",
+            "votes": "3/3"
+          },
+          {
+            "id": "hyperscale_platform",
+            "sign": "positive",
+            "confidence": "high",
+            "reason": "Google Cloud's TPU infrastructure and partnership with Anthropic is expanded, deepening a hyperscaler's role as both compute provider and platform.",
+            "quote": "The partnership deepens our existing work with Google Cloud\u2014building on the increased TPU capacity we announced last October",
+            "votes": "3/3"
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A disclosed multi-gigawatt, multi-year TPU compute commitment with Google and Broadcom, alongside major revenue growth figures, is a significant infrastructure and demand signal for the sector.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "compute_commitment": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "custom_silicon_substitution": 3,
+            "datacenter_power_up": 3,
+            "inference_volume_up": 1,
+            "training_compute_up": 3
+          },
+          "mechanisms_dropped": [
+            "inference_volume_up"
+          ]
+        },
+        "score": 100.0,
+        "band": "high"
+      },
+      "https://www.anthropic.com/news/confidential-draft-s1-sec": {
+        "event_type": "corporate_finance",
+        "is_signal": true,
+        "summary": "Anthropic announced it has confidentially submitted a draft S-1 registration statement to the SEC, giving it the option to pursue an initial public offering.",
+        "mechanisms": [
+          {
+            "id": "lab_capital_access",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "An IPO filing is a direct step toward substantially expanding the capital Anthropic can raise and deploy toward future compute commitments.",
+            "quote": "Anthropic, PBC confidentially submitted a draft registration statement on Form S-1 to the U.S. Securities and Exchange Commission for a proposed initial public offering of our common stock.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [],
+        "notable": true,
+        "notable_reason": "A confidential S-1 filing signals a frontier AI lab moving toward a public listing, a major corporate finance milestone with implications for its future capital-raising capacity and compute spending.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "corporate_finance": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "lab_capital_access": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 80.0,
+        "band": "high"
+      },
+      "https://www.anthropic.com/news/redeploying-fable-5": {
+        "event_type": "regulatory_action",
+        "is_signal": true,
+        "summary": "Anthropic announced that US government export controls applied to Claude Fable 5 and Mythos 5 on June 12 have been lifted, restoring access to the models, alongside new safety classifiers, a proposed industry jailbreak-severity framework, and expanded government collaboration commitments.",
+        "mechanisms": [
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The document states Mythos 5 exceeds any other model and nearly all human experts at finding and exploiting software vulnerabilities, describing a capability threshold that triggered national-security-driven export restrictions.",
+            "quote": "Claude Mythos 5 can be used to find and exploit software vulnerabilities more effectively than any other model\u2014and all but the most skilled human security experts.",
+            "votes": "3/3"
+          },
+          {
+            "id": "export_controls",
+            "sign": "mixed",
+            "magnitude": "medium",
+            "confidence": "high",
+            "reason": "The document describes both the application of US export controls to two frontier models, which suspended global access, and their subsequent lifting, so it genuinely cuts both ways within the same announcement.",
+            "quote": "On Friday, June 12, the US government applied export controls to our newest models, Claude Fable 5 and Claude Mythos 5.",
+            "votes": "3/3"
+          },
+          {
+            "id": "model_commoditisation",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "Anthropic's own testing found that competing models from other labs could reproduce the same flagged cybersecurity capability, indicating convergence in this capability across providers.",
+            "quote": "many less capable models\u2014including Claude Opus 4.8, GPT-5.5, and Kimi K2.7\u2014could identify the same vulnerabilities as Fable 5 did in the report",
+            "votes": "2/3"
+          }
+        ],
+        "categories": [],
+        "notable": true,
+        "notable_reason": "This is a rare, precedent-setting case of US export controls being applied directly to an AI model's deployment rather than to hardware, followed by their reversal and new formal government-lab security collaboration commitments.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "regulatory_action": 2,
+            "safety_policy": 1
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "capability_jump": 3,
+            "export_controls": 3,
+            "model_commoditisation": 2
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 53.3,
+        "band": "medium"
+      },
+      "https://www.anthropic.com/news/claude-opus-4-8": {
+        "event_type": "incremental_model_release",
+        "is_signal": true,
+        "summary": "Anthropic released Claude Opus 4.8, an incremental upgrade to Opus 4.7 with the same base pricing, alongside new features including effort control, dynamic workflows for Claude Code, and a cheaper fast mode.",
+        "mechanisms": [
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The new dynamic workflows feature lets Claude run hundreds of parallel subagents to autonomously complete large, multi-step tasks like codebase-scale migrations, a step toward agent-driven work displacing manual workflows.",
+            "quote": "Claude can plan the work and then run hundreds of parallel subagents in a single session (and with Opus 4.8, the agents can run for even longer).",
+            "votes": "3/3"
+          },
+          {
+            "id": "capability_jump",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "high",
+            "reason": "Anthropic explicitly characterizes this release as a modest capability improvement rather than a step change.",
+            "quote": "Users will find Opus 4.8 to be a modest but tangible improvement on its predecessor.",
+            "votes": "2/3"
+          },
+          {
+            "id": "inference_cost_down",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "high",
+            "reason": "The document states fast mode pricing for Opus 4.8 is now three times cheaper than for previous models, a direct reduction in cost per unit of inference for that mode.",
+            "quote": "fast mode for Opus 4.8\u2014where the model can work at 2.5\u00d7 the speed\u2014is now three times cheaper than it was for previous models.",
+            "votes": "3/3"
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "Higher effort settings and longer-running agent sessions increase token consumption per task, and Anthropic raised rate limits specifically to accommodate this higher usage.",
+            "quote": "We have increased rate limits in Claude Code to accommodate the higher token usage of higher effort levels",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [],
+        "notable": false,
+        "notable_reason": "",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "incremental_model_release": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "agentic_workflows": 3,
+            "capability_jump": 2,
+            "inference_cost_down": 3,
+            "inference_volume_up": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 17.8,
+        "band": "low"
+      },
+      "https://www.anthropic.com/news/sydney-fourth-office-asia-pacific": {
+        "event_type": "other",
+        "is_signal": true,
+        "summary": "Anthropic announced it will open a fourth Asia-Pacific office in Sydney to serve customers in Australia and New Zealand, alongside exploratory discussions about future compute capacity in the region.",
+        "mechanisms": [
+          {
+            "id": "datacenter_power_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "The announcement mentions exploring expanded compute capacity and longer-term infrastructure in Australia, though only in early, non-committed terms.",
+            "quote": "We're also exploring opportunities to expand our compute capacity in Australia\u2014a natural fit given our longstanding belief that democracies should lead in AI development",
+            "votes": "2/3"
+          }
+        ],
+        "categories": [],
+        "notable": false,
+        "notable_reason": "",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "other": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "datacenter_power_up": 2
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 0.0,
+        "band": "none"
+      },
+      "https://openai.com/index/openai-broadcom-jalapeno-inference-chip": {
+        "event_type": "compute_commitment",
+        "is_signal": true,
+        "summary": "OpenAI and Broadcom announced a custom AI inference chip called Jalape\u00f1o, designed for large language model inference.",
+        "mechanisms": [
+          {
+            "id": "custom_silicon_substitution",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "medium",
+            "reason": "A frontier lab is co-designing a custom inference chip with a silicon partner, displacing merchant accelerators for inference workloads.",
+            "quote": "OpenAI and Broadcom introduce Jalape\u00f1o, a custom AI chip built for LLM inference to improve performance, efficiency, and scale across AI systems.",
+            "votes": "3/3"
+          }
+        ],
+        "categories": [
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "medium",
+            "reason": "The announcement describes a new custom AI accelerator chip built specifically for inference.",
+            "quote": "OpenAI and Broadcom introduce Jalape\u00f1o, a custom AI chip built for LLM inference to improve performance, efficiency, and scale across AI systems.",
+            "votes": "3/3"
+          }
+        ],
+        "notable": true,
+        "notable_reason": "A named frontier lab's custom inference silicon partnership with a major chip designer is a concrete instance of the custom silicon substitution trend.",
+        "vote_notes": {
+          "runs": 3,
+          "event_counts": {
+            "compute_commitment": 3
+          },
+          "event_tie": false,
+          "mechanisms_seen": {
+            "custom_silicon_substitution": 3
+          },
+          "mechanisms_dropped": []
+        },
+        "score": 66.7,
+        "band": "high"
+      }
+    }
+  ],
+  "usd": 1.1475
+}

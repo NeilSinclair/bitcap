@@ -1,0 +1,126 @@
+# Papers sources: which labs have a papers harvester, and how to call it.
+#
+# This file exists because "which labs are covered" was previously encoded in
+# which files happened to exist under research/papers/. That made xAI's
+# *deliberate* absence (D16, reconfirmed D17) indistinguishable from work nobody
+# had got round to. A register you cannot enumerate is not a register.
+#
+# Unlike the announcements leg, there is no shared discovery method here: each
+# lab's harvester is genuinely different, because the labs publish differently
+# (D13, D16, D17). What is uniform is the call — every entry names a module and
+# an entry function, and the adapter in app/pipeline/adapters.py normalises the
+# result. Adding a lab whose harvester already exists is a config change.
+#
+# Keys:
+#   lab          Lab id; must match an id in sources.yaml.
+#   module       Importable module name under research/papers/.
+#   entry        Function to call. Takes keyword args from `args` below.
+#   args         Arguments the entry accepts. Absent keys are not passed, so a
+#                harvester with no `months` parameter is simply not given one.
+#   returns      `papers` for a bare list, `papers_and_unresolved` for the
+#                (papers, unresolved) pair. THIS ALSO SAYS WHETHER THE LAB CAN
+#                REPORT ITS OWN GAPS, and only two labs can.
+#
+#                Meta and Mistral return the candidates they could not resolve,
+#                each with a reason, and those reach `unresolved_items`. The
+#                other four drop failures inside the harvester and return only
+#                what worked -- observed live: DeepMind lost two papers to a 403
+#                and a 404, Anthropic one to an unparseable byline, and none of
+#                the three left a record anywhere.
+#
+#                So `unresolved_items` is a floor, not a census. A lab absent
+#                from it has either lost nothing or cannot say, and today those
+#                two look identical. Closing this means changing four
+#                harvesters' return signatures under research/ -- deliberately
+#                not done here, and pinned by a test so the count cannot drift
+#                without someone noticing.
+#   url_field    Which attribute carries the primary citation. Differs per lab
+#                and is load-bearing: it is the URL a human clicks, never the
+#                arXiv page the byline happened to be scraped from.
+#   enabled      false records a lab that is deliberately not covered.
+
+version: 1
+
+labs:
+  - lab: anthropic
+    module: harvest_contributors
+    entry: collect
+    args: [months, model]
+    returns: papers
+    url_field: url
+    enabled: true
+    notes: >
+      Deterministic parser in production with an LLM fallback (planning.md §11);
+      `llm_fallback` is left at its default here so a scheduled run does not
+      silently start paying for pages the parser already reads.
+
+  - lab: openai
+    module: openai_harvest
+    entry: collect
+    args: []
+    returns: papers
+    url_field: url
+    enabled: true
+    notes: >
+      Corpus is a hardcoded list in the module, not a discovered index — OpenAI
+      publishes no papers listing that can be enumerated. Takes no window
+      argument, so `months` is not passed.
+
+  - lab: deepseek
+    module: deepseek_harvest
+    entry: collect
+    args: []
+    returns: papers
+    url_field: url
+    enabled: true
+    notes: >
+      arXiv `au:"DeepSeek-AI"` plus a small extra-titles list. 300-author papers;
+      per D11a the register follows 15 core contributors and counts the rest.
+
+  - lab: google-deepmind
+    module: deepmind_harvest
+    entry: collect
+    args: [months, model, limit]
+    returns: papers
+    url_field: url
+    enabled: true
+    notes: Sitemap discovery, LLM byline extraction off the linked arXiv page (D13).
+
+  - lab: meta-ai
+    module: meta_harvest
+    entry: collect
+    args: [months, model, limit]
+    returns: papers_and_unresolved
+    url_field: meta_url
+    enabled: true
+    notes: >
+      Meta's listing 500s, so discovery goes via ai.meta.com/results/ and the
+      arXiv id is resolved from the title (D16). `meta_url` stays the citation
+      regardless of how confident that resolution was.
+
+  - lab: mistral
+    module: mistral_harvest
+    entry: collect
+    args: [months, model, limit]
+    returns: papers_and_unresolved
+    url_field: announcement_url
+    enabled: true
+    notes: >
+      No publications page exists at all, so candidate titles come from
+      Mistral's own announcements corpus (D17). This is the one papers source
+      that depends on the announcements leg having run first.
+    after: announcements
+
+  - lab: xai
+    module: null
+    entry: null
+    args: []
+    returns: papers
+    url_field: url
+    enabled: false
+    notes: >
+      Not a gap. Checked twice, live (D16, reconfirmed D17): arXiv has no
+      affiliation search field, and every query for "xAI" or "Grok" collides
+      with an unrelated acronym (eXplainable AI), the grokking phenomenon, or
+      third-party papers *about* Grok. No corpus published by xAI was found.
+      Do not build a harvester here without new evidence that one now exists.

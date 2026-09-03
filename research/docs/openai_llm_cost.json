@@ -1,0 +1,26 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 65968,
+    "output_tokens": 37049,
+    "usd": 0.502426,
+    "seconds": 252.6,
+    "title": "GPT-4 Technical Report"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 53617,
+    "output_tokens": 29382,
+    "usd": 0.401054,
+    "seconds": 219.4,
+    "title": "GPT-4o System Card"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 66694,
+    "output_tokens": 19128,
+    "usd": 0.324668,
+    "seconds": 150.9,
+    "title": "OpenAI o1 System Card"
+  }
+]

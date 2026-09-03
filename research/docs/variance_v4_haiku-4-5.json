@@ -1,0 +1,519 @@
+{
+  "records": [
+    {
+      "url": "https://openai.com/index/introducing-gpt-5-5",
+      "lab": "openai",
+      "title": "Introducing GPT-5.5",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "frontier_model_release",
+        "frontier_model_release",
+        "incremental_model_release"
+      ],
+      "event_stable": false,
+      "mechanism_sets": [
+        [
+          "inference_volume_up",
+          "training_compute_up"
+        ],
+        [
+          "inference_volume_up",
+          "training_compute_up"
+        ],
+        []
+      ],
+      "mechanisms_stable": false,
+      "strengths": [
+        6,
+        6,
+        0
+      ],
+      "scores": [
+        66.7,
+        66.7,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 66.7,
+      "score_range": 66.7,
+      "score_stdev": 38.51
+    },
+    {
+      "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview",
+      "lab": "anthropic",
+      "title": "Previewing the Model Hardware Standard",
+      "text_source": "full_text",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "product_launch",
+        "product_launch",
+        "product_launch"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "agentic_workflows"
+        ],
+        [
+          "agentic_workflows",
+          "capability_jump"
+        ],
+        [
+          "agentic_workflows",
+          "inference_volume_up"
+        ]
+      ],
+      "mechanisms_stable": false,
+      "strengths": [
+        9,
+        6,
+        6
+      ],
+      "scores": [
+        40.0,
+        26.7,
+        26.7
+      ],
+      "score_min": 26.7,
+      "score_max": 40.0,
+      "score_range": 13.3,
+      "score_stdev": 7.68
+    },
+    {
+      "url": "https://openai.com/index/gpt-5-6-in-kiro",
+      "lab": "openai",
+      "title": "Advancing price-performance for developers with GPT\u20115.6 in Kiro",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "product_launch",
+        "product_launch",
+        "product_launch"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "inference_cost_down"
+        ],
+        [
+          "inference_cost_down"
+        ],
+        []
+      ],
+      "mechanisms_stable": false,
+      "strengths": [
+        2,
+        2,
+        0
+      ],
+      "scores": [
+        8.9,
+        8.9,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 8.9,
+      "score_range": 8.9,
+      "score_stdev": 5.14
+    },
+    {
+      "url": "https://openai.com/index/openai-submits-confidential-s-1",
+      "lab": "openai",
+      "title": "Confidential submission of draft S-1 to the SEC",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "corporate_finance",
+        "corporate_finance",
+        "corporate_finance"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [],
+        [],
+        []
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://www.anthropic.com/news/fable-mythos-access",
+      "lab": "anthropic",
+      "title": "Statement on the US government directive to suspend access to Fable 5 and Mythos 5",
+      "text_source": "full_text",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "regulatory_action",
+        "regulatory_action",
+        "regulatory_action"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "export_controls"
+        ],
+        [
+          "export_controls"
+        ],
+        [
+          "export_controls"
+        ]
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        9,
+        9,
+        9
+      ],
+      "scores": [
+        80.0,
+        80.0,
+        80.0
+      ],
+      "score_min": 80.0,
+      "score_max": 80.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://openai.com/index/designing-agents-to-resist-prompt-injection",
+      "lab": "openai",
+      "title": "Designing AI agents to resist prompt injection",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "research_result",
+        "research_result",
+        "safety_policy"
+      ],
+      "event_stable": false,
+      "mechanism_sets": [
+        [],
+        [],
+        []
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://www.anthropic.com/news/donation-public-first-action",
+      "lab": "anthropic",
+      "title": "Donating another $20 million to Public First Action",
+      "text_source": "full_text",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "safety_policy",
+        "safety_policy",
+        "safety_policy"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [],
+        [],
+        []
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://www.anthropic.com/news/redeploying-fable-5",
+      "lab": "anthropic",
+      "title": "Redeploying Claude Fable 5",
+      "text_source": "full_text",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "regulatory_action",
+        "regulatory_action",
+        "regulatory_action"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "export_controls"
+        ],
+        [
+          "export_controls"
+        ],
+        [
+          "export_controls"
+        ]
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        9,
+        9,
+        9
+      ],
+      "scores": [
+        80.0,
+        80.0,
+        80.0
+      ],
+      "score_min": 80.0,
+      "score_max": 80.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://openai.com/index/introducing-chatgpt-images-2-0",
+      "lab": "openai",
+      "title": "Introducing ChatGPT Images 2.0",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "incremental_model_release",
+        "incremental_model_release",
+        "product_launch"
+      ],
+      "event_stable": false,
+      "mechanism_sets": [
+        [],
+        [],
+        []
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://www.anthropic.com/news/australia-MOU",
+      "lab": "anthropic",
+      "title": "Australian government and Anthropic sign MOU for AI safety and research",
+      "text_source": "full_text",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "enterprise_partnership",
+        "enterprise_partnership",
+        "enterprise_partnership"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "inference_volume_up",
+          "lab_capital_access"
+        ],
+        [
+          "inference_volume_up",
+          "lab_capital_access"
+        ],
+        [
+          "datacenter_power_up",
+          "inference_volume_up",
+          "lab_capital_access"
+        ]
+      ],
+      "mechanisms_stable": false,
+      "strengths": [
+        2,
+        2,
+        2
+      ],
+      "scores": [
+        8.9,
+        8.9,
+        8.9
+      ],
+      "score_min": 8.9,
+      "score_max": 8.9,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://openai.com/index/openai-to-acquire-astral",
+      "lab": "openai",
+      "title": "OpenAI to acquire Astral",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "corporate_finance",
+        "corporate_finance",
+        "corporate_finance"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [],
+        [],
+        []
+      ],
+      "mechanisms_stable": true,
+      "strengths": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_min": 0.0,
+      "score_max": 0.0,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    },
+    {
+      "url": "https://openai.com/index/balyasny-asset-management",
+      "lab": "openai",
+      "title": "How Balyasny Asset Management built an AI research engine",
+      "text_source": "rss_summary",
+      "runs": 3,
+      "is_signal": [
+        null,
+        null,
+        null
+      ],
+      "is_signal_stable": true,
+      "event_types": [
+        "enterprise_partnership",
+        "enterprise_partnership",
+        "enterprise_partnership"
+      ],
+      "event_stable": true,
+      "mechanism_sets": [
+        [
+          "agentic_workflows"
+        ],
+        [
+          "agentic_workflows"
+        ],
+        [
+          "inference_volume_up"
+        ]
+      ],
+      "mechanisms_stable": false,
+      "strengths": [
+        2,
+        2,
+        2
+      ],
+      "scores": [
+        8.9,
+        8.9,
+        8.9
+      ],
+      "score_min": 8.9,
+      "score_max": 8.9,
+      "score_range": 0.0,
+      "score_stdev": 0.0
+    }
+  ],
+  "usd": 0.2018
+}

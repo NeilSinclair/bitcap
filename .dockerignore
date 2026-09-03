@@ -1,0 +1,25 @@
+# The image needs the harvesters and the committed artifacts the ETL loads;
+# it does not need ~300 MB of disposable fetch cache rebuilt into every deploy.
+research/docs/announcement_cache/
+research/docs/contributor_cache/
+research/docs/github_cache/
+research/docs/github_profiles/
+research/docs/*_cache/
+research/docs/wayback_cache/
+research/docs/arxiv_cache/
+research/docs/13f_raw/
+research/docs/funds/
+research/docs/prices/
+
+# Generated review pages, not inputs to anything.
+research/**/*.html
+research/docs/*.html
+
+frontend/
+.venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+.env
+bitcap.db

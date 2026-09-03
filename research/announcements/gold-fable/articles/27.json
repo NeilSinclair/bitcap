@@ -1,0 +1,39 @@
+{
+  "id": "27",
+  "lab": "openai",
+  "date": "2026-07-14",
+  "title": "Data science workflows with ChatGPT Work",
+  "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+  "text_source": "rss_summary",
+  "text": "Data science workflows with ChatGPT Work. Learn practical ChatGPT Work workflows for root-cause briefs, KPI memos, scoped analyses, and dashboard specifications.",
+  "gold": {
+    "event_type": "other",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [
+      {
+        "id": "orchestration",
+        "action": "watch",
+        "impact": "low",
+        "confidence": "medium",
+        "dimensions": [],
+        "reason": "Named, concrete data-science workflow templates; marginal, and only a summary is available.",
+        "quote": "Learn practical ChatGPT Work workflows for root-cause briefs, KPI memos, scoped analyses, and dashboard specifications."
+      }
+    ],
+    "notes": "RSS summary only; an academy tutorial page, not an announcement."
+  },
+  "review": {
+    "labeller": "claude-fable-5",
+    "method": "independent read of the article text only; existing gold/system labels not consulted",
+    "quote_rule": "every quote snapped to an exact substring of the stored text via verbatim.snap",
+    "caveat": "the labeller adjudicated an earlier gold pass in the same session, so blindness is best-effort, not perfect"
+  },
+  "computed": {
+    "score": 0.0,
+    "band": "none",
+    "ai_score": 5.6,
+    "ai_band": "low",
+    "note": "Deterministic rule from config/scoring.yaml (score_of / ai_score_of) applied to the fable labels above."
+  }
+}

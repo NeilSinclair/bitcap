@@ -1,0 +1,64 @@
+{
+  "id": "20",
+  "lab": "openai",
+  "date": "2026-06-01",
+  "title": "OpenAI frontier models and Codex are now available on AWS",
+  "url": "https://openai.com/index/openai-frontier-models-and-codex-are-now-available-on-aws",
+  "text_source": "full_text_archived",
+  "text": "OpenAI frontier models and Codex are now available on AWS | OpenAI Research Products Business Developers Company Foundation Log in Try ChatGPT Research Products Business Developers Company Foundation Try ChatGPT Login OpenAI Table of contents Bringing OpenAI capabilities into AWS environments Helping customers move from interest to implementation What’s next, including cyber availability June 1, 2026 Product OpenAI frontier models and Codex are now available on AWS Helping enterprises bring AI into production through their existing security, governance, and deployment workflows. Get started with OpenAI on AWS Share Today, OpenAI frontier models and Codex are generally available on AWS, opening a new path for millions of AWS customers to build with OpenAI through the platform they already use to run their business. For enterprises, this removes one of the biggest barriers to AI adoption: getting frontier AI into production through existing security, compliance, procurement, billing, and governance workflows. Customers can now bring OpenAI capabilities into AWS environments with the controls their teams already trust, helping them move faster from evaluation to real deployment. Bringing OpenAI capabilities into AWS environments OpenAI on AWS gives enterprises access to OpenAI frontier capabilities, a familiar AWS operating model, and a faster path to production. They are available in two ways: OpenAI models on Amazon Bedrock allows teams to build AI applications using AWS-native security and governance controls. Codex on Amazon Bedrock brings OpenAI’s leading software engineering agent - used by more than 5 million people every week - into AWS, helping teams write, review, debug, and modernize code in the environments where they already build and ship. Together, these offerings help customers adopt OpenAI with less friction and ship with the best models available right in AWS, in both Commercial and GovCloud regions. Helping customers move from interest to implementation As customers begin using these capabilities, the AWS path helps reduce friction around procurement, security review, and production readiness. By making OpenAI capabilities available within familiar AWS environments, organizations can spend less time navigating operational barriers and more time building. 1 of 2 “ At Amgen, we’re focused on applying advanced AI in ways that may help accelerate the delivery of potential new therapies while equipping our teams with advanced tools. OpenAI’s GPT‑5.5 and frontier models offer compelling advances in capability, quality, and consistency that matter in a field where the questions are complex and the standards for scientific accuracy and decision quality are exceptionally high. Making these models available on AWS gives us an important new path to explore and scale those capabilities within the responsible AI framework, including security, governance, and operational frameworks across the enterprise. ” — Sean Bruich, Senior Vice President, Chief Technology Officer at Amgen “ Autodesk is the technology platform for the people who design and make the world around us. Workflows like building design are highly iterative, requiring precision, coordination, and continuous refinement across teams. With OpenAI models and Codex now generally available on Amazon Bedrock, our teams are evaluating how frontier AI capabilities and AI-powered development tools on scalable, secure AWS infrastructure can help accelerate development workflows and support more informed decision-making for our customers. ” — Ritesh Bansal, VP of Analytics Data, Agentic AI and AI/ML Platform at Autodesk “ At Amgen, we’re focused on applying advanced AI in ways that may help accelerate the delivery of potential new therapies while equipping our teams with advanced tools. OpenAI’s GPT‑5.5 and frontier models offer compelling advances in capability, quality, and consistency that matter in a field where the questions are complex and the standards for scientific accuracy and decision quality are exceptionally high. Making these models available on AWS gives us an important new path to explore and scale those capabilities within the responsible AI framework, including security, governance, and operational frameworks across the enterprise. ” — Sean Bruich, Senior Vice President, Chief Technology Officer at Amgen “ Autodesk is the technology platform for the people who design and make the world around us. Workflows like building design are highly iterative, requiring precision, coordination, and continuous refinement across teams. With OpenAI models and Codex now generally available on Amazon Bedrock, our teams are evaluating how frontier AI capabilities and AI-powered development tools on scalable, secure AWS infrastructure can help accelerate development workflows and support more informed decision-making for our customers. ” — Ritesh Bansal, VP of Analytics Data, Agentic AI and AI/ML Platform at Autodesk — Sean Bruich, Senior Vice President, Chief Technology Officer at Amgen — Ritesh Bansal, VP of Analytics Data, Agentic AI and AI/ML Platform at Autodesk — Sean Bruich, Senior Vice President, Chief Technology Officer at Amgen — Ritesh Bansal, VP of Analytics Data, Agentic AI and AI/ML Platform at Autodesk What’s next, including cyber availability OpenAI on AWS is the start of a broader path for customers to bring frontier AI into the environments where they already build, govern, and ship. We’ll continue expanding the OpenAI capabilities available through AWS so teams can move from evaluation to production with less friction and more confidence. That includes future availability for Daybreak, OpenAI’s vision for changing how software is built and defended. Daybreak, which includes cyber models and Codex Security, is designed to help cyber defenders see risk earlier, act sooner, and make software more resilient by design by bringing secure code review, threat modeling, patch validation, dependency risk analysis, detection, and remediation guidance into the everyday development loop. As specialized capabilities like Daybreak become available to customers, AWS can provide an important path for security teams to adopt them using the security, governance, procurement, and operational frameworks they already use. Together, OpenAI and AWS can help more organizations put advanced AI to work in production. API Platform 2026 Codex Author OpenAI Keep reading View all Strengthening societal resilience with Rosalind Biodefense Product May 29, 2026 A new personal finance experience in ChatGPT Product May 15, 2026 Work with Codex from anywhere Product May 14, 2026 Our Research Research Index Research Overview Research Residency Economic Research Latest Advancements GPT-5.5 GPT-5.4 GPT-5.3 Instant GPT-5.3-Codex Safety Safety Approach Security & Privacy Trust & Transparency ChatGPT Explore ChatGPT Business Enterprise Education Pricing Download API Platform Platform Overview Pricing API log in Documentation Developer Forum For Business Business Overview Solutions Contact Sales Company About Us Our Charter Foundation Careers Brand Support Help Center More News Stories Academy Livestreams Podcast RSS Terms & Policies Terms of Use Privacy Policy Other Policies OpenAI © 2015–2026 Manage Cookies English United States",
+  "gold": {
+    "event_type": "enterprise_partnership",
+    "mechanisms": [
+      {
+        "id": "inference_volume_up",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "medium",
+        "reason": "Distribution through the largest cloud removes procurement and governance friction for a very large customer base; adoption is projected, not yet measured.",
+        "quote": "opening a new path for millions of AWS customers to build with OpenAI through the platform they already use to run their business"
+      },
+      {
+        "id": "agentic_workflows",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "high",
+        "reason": "A coding agent with stated multi-million weekly usage moves into enterprise environments where the displaced work lives.",
+        "quote": "Codex on Amazon Bedrock brings OpenAI’s leading software engineering agent - used by more than 5 million people every week - into AWS"
+      }
+    ],
+    "categories": [
+      {
+        "id": "hyperscale_platform",
+        "sign": "positive",
+        "confidence": "high",
+        "reason": "AWS gains frontier OpenAI models and Codex natively on Bedrock, strengthening the platform's pull on AI workloads.",
+        "quote": "OpenAI frontier models and Codex are generally available on AWS"
+      }
+    ],
+    "practices": [
+      {
+        "id": "integration",
+        "action": "investigate",
+        "impact": "medium",
+        "confidence": "high",
+        "dimensions": [],
+        "reason": "Teams standardised on AWS can now reach OpenAI models under AWS-native security and governance instead of a separate vendor path — worth evaluating against direct API use.",
+        "quote": "OpenAI models on Amazon Bedrock allows teams to build AI applications using AWS-native security and governance controls."
+      }
+    ],
+    "notes": ""
+  },
+  "review": {
+    "labeller": "claude-fable-5",
+    "method": "independent read of the article text only; existing gold/system labels not consulted",
+    "quote_rule": "every quote snapped to an exact substring of the stored text via verbatim.snap",
+    "caveat": "the labeller adjudicated an earlier gold pass in the same session, so blindness is best-effort, not perfect"
+  },
+  "computed": {
+    "score": 26.7,
+    "band": "low",
+    "ai_score": 44.4,
+    "ai_band": "medium",
+    "note": "Deterministic rule from config/scoring.yaml (score_of / ai_score_of) applied to the fable labels above."
+  }
+}

@@ -1,0 +1,62 @@
+# Person aliases for the contributor register.
+#
+# HUMAN-OWNED CONFIG. Never written by code. `research/papers/alias_candidates.py`
+# proposes into config/aliases_proposed.yaml; merging a proposal into this file is
+# a deliberate human act.
+#
+# This separation exists because the generator overwrote this file once and
+# destroyed ten confirmed merges: after the aliases took effect the duplicate
+# spellings no longer appear in the register, so regeneration correctly proposed
+# nothing - and wrote that nothing over the config.
+#
+# Aliases apply at AGGREGATION time only. Per-article bylines keep exactly what
+# each page published, so any merge is reversible by editing here.
+#
+# verdict is the evidence that supported the merge, recorded at confirmation time.
+
+version: 1
+aliases:
+  - canonical: Clement Dumas
+    variant: Clément Dumas
+    confirmed: true
+    verdict: same_string
+
+  - canonical: Nicholas L. Turner
+    variant: Nicholas L Turner
+    confirmed: true
+    verdict: same_string
+
+  - canonical: Nicholas L. Turner
+    variant: Nick Turner
+    confirmed: true
+    verdict: review
+
+  - canonical: Samuel Marks
+    variant: Sam Marks
+    confirmed: true
+    verdict: likely_same
+
+  - canonical: Paul C. Bogdan
+    variant: Paul Bogdan
+    confirmed: true
+    verdict: likely_same
+
+  - canonical: Samuel Zimmerman
+    variant: Sam Zimmerman
+    confirmed: true
+    verdict: likely_same
+
+  - canonical: Jonathan Kutasov
+    variant: Jon Kutasov
+    confirmed: true
+    verdict: likely_same
+
+  - canonical: Christopher Olah
+    variant: Chris Olah
+    confirmed: true
+    verdict: review
+
+  - canonical: Jeffrey Wu
+    variant: Jeff Wu
+    confirmed: true
+    verdict: review

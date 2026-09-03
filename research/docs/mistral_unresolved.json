@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Mistral x HUMAIN",
+    "announcement_url": "https://mistral.ai/news/mistral-x-humain/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "Agentic Search. More accurate and efficient results from your AI systems",
+    "announcement_url": "https://mistral.ai/news/agentic-search/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "In-region inference, open models, and new European infrastructure for sovereign AI",
+    "announcement_url": "https://mistral.ai/news/regional-inference-open-models-new-compute/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "Your Prompts and Skills need a system of record",
+    "announcement_url": "https://mistral.ai/news/manage-prompts-and-skills-in-studio/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "Leanstral 1.5: Proof Abundance for All",
+    "announcement_url": "https://mistral.ai/news/leanstral-1-5/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "Bringing more control over your connectors",
+    "announcement_url": "https://mistral.ai/news/more-control-over-connectors/",
+    "reason": "no_arxiv_match"
+  },
+  {
+    "title": "Mistral OCR 4",
+    "announcement_url": "https://mistral.ai/news/ocr-4/",
+    "reason": "no_arxiv_match"
+  }
+]

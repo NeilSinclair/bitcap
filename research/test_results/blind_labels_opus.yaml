@@ -1,0 +1,166 @@
+# Blind labels: written by the adjudicator from the articles alone, with no
+# sight of any classifier output for these five. Committed to disk before
+# run_blind.py was executed, so the ordering is checkable in git.
+#
+# Purpose: the adjudicated gold set is 85% classifier output that the
+# adjudicator read and let stand. Reviewing is a weaker act than authoring --
+# it is easier to accept a plausible wrong tag than to notice a missing one.
+# These five test whether the review pass catches what a from-scratch pass
+# would, by measuring what the adjudicator produces with nothing to anchor on.
+#
+# Drawn at random (seed 5150) from the 171 corpus articles that are in neither
+# the gold set nor hard_cases, so the adjudicator had not seen tags for any.
+
+author: claude-opus-5
+mode: blind
+drawn: seed 5150 from 171 unseen corpus articles
+date: 2026-09-01
+
+articles:
+
+  B1:
+    title: Government of Alberta uses Claude to find and fix cybersecurity vulnerabilities
+    event_type: enterprise_partnership
+    mechanisms:
+      - id: agentic_workflows
+        sign: positive
+        magnitude: medium
+        confidence: high
+        quote: Around 50 agents worked autonomously and in parallel to scan the systems
+        why: >
+          Work moving from humans to agents is the mechanism, and this is a
+          large named deployment of exactly that -- a review the team estimates
+          would have taken 6.5 years done in 20 hours.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: medium
+        confidence: medium
+        quote: Assess 466 million lines of government code in 20 hours.
+        why: >
+          466 million lines through 50 parallel agents is a large token
+          workload. Confidence medium because the volume is implied by the
+          scale of the task rather than stated as usage.
+    categories: []
+    practices:
+      - id: orchestration
+        action: investigate
+        impact: medium
+        confidence: high
+        quote: >-
+          A “red team” agent probes an application from the outside, the way an
+          attacker might, and maps how a vulnerability might be exploited.
+      - id: evaluation
+        action: investigate
+        impact: medium
+        confidence: medium
+        quote: Every application is checked against roughly 95 security controls on each pass.
+
+  B2:
+    title: Codex for every role, tool, and workflow
+    event_type: product_launch
+    mechanisms:
+      - id: agentic_workflows
+        sign: positive
+        magnitude: medium
+        confidence: high
+        quote: >-
+          Non-developers—including analysts, marketers, operators, designers,
+          researchers, investors, and bankers— make up about 20% of overall
+          Codex users
+        why: >
+          Plugins for public equity investing and investment banking are agents
+          doing work that was seat-licensed software plus an analyst. That is
+          the mechanism stated almost literally.
+      - id: inference_volume_up
+        sign: positive
+        magnitude: medium
+        confidence: high
+        quote: More than 5 million people now use Codex every week.
+    categories: []
+    practices:
+      - id: integration
+        action: investigate
+        impact: medium
+        confidence: medium
+        quote: Together, they include 62 popular apps and 110 skills.
+      - id: orchestration
+        action: investigate
+        impact: medium
+        confidence: medium
+        quote: Each plugin bundles the relevant apps, skills, instructions, and workflows.
+
+  B3:
+    title: Supporting Thailand’s next generation of AI startups
+    event_type: other
+    why_event: >
+      The prompt lists regional expansion, grants and community programmes as
+      the canonical noise category. An eight-week startup accelerator is that,
+      even though a government ministry is named as the partner.
+    mechanisms:
+      - id: inference_volume_up
+        sign: positive
+        magnitude: low
+        confidence: medium
+        quote: >-
+          weekly active usage of Codex in Thailand has grown more than 350-fold
+        why: >
+          A real usage statistic, tagged even though the event type weights it
+          to zero -- the register should hold the evidence regardless of what
+          the score does with it.
+    categories: []
+    practices: []
+
+  B4:
+    title: Introducing Intelligence Age
+    event_type: other
+    why_event: >
+      A signed essay on concentration-of-power risk that opens by disclaiming
+      that it represents OpenAI. Not a lab policy, not a research result.
+    mechanisms: []
+    categories: []
+    practices: []
+    note: >
+      The register's title is "Introducing Intelligence Age"; the page itself is
+      headed "Introducing AI Futures". A title-extraction mismatch worth
+      checking separately from the classification.
+
+  B5:
+    title: OpenAI joins PORTS-Pike project
+    event_type: compute_commitment
+    mechanisms:
+      - id: datacenter_power_up
+        sign: positive
+        magnitude: high
+        confidence: high
+        quote: >-
+          OpenAI has entered into an agreement to secure approximately 8
+          gigawatts-IT at the PORTS-Pike Technology Campus in Pike County, Ohio
+        why: 8 GW is a very large power commitment and it is stated outright.
+      - id: ai_capex_investments
+        sign: positive
+        magnitude: high
+        confidence: high
+        quote: >-
+          SB Energy will pay the full cost of the grid upgrades and new
+          transmission lines needed to serve the data center.
+        why: A six-year build with grid and transmission work is infrastructure capex.
+    categories:
+      - id: accelerator_custom_si
+        sign: positive
+        confidence: high
+        quote: working with SB Energy, NVIDIA, and the U.S. Department of Energy
+        why: NVIDIA is named as a project partner and is a holding.
+      - id: ai_compute_hosting
+        sign: positive
+        confidence: medium
+        quote: >-
+          The project is expected to create 35,000 construction jobs during its
+          six-year buildout through 2032
+        why: >
+          Demand for contracted AI datacentre capacity, the bucket IREN sits in
+          at 9.02% of the fund.
+    practices: []
+    note: >
+      training_compute_up was considered and rejected. The document says
+      "data center" and "gigawatts-IT" and never says training, and inferring it
+      would be the padding I criticised in the gold review.

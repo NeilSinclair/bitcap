@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "safety_policy", "summary": "OpenAI describes a challenge/training approach (IH-Challenge) to improve instruction hierarchy, safety steerability, and resistance to prompt injection in frontier LLMs.", "mechanisms": [], "categories": [], "notable": false, "notable_reason": "", "dropped_tags": []}

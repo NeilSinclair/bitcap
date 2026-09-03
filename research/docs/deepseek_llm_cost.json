@@ -1,0 +1,26 @@
+[
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 44586,
+    "output_tokens": 5411,
+    "usd": 0.143282,
+    "seconds": 37.5,
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 7594,
+    "output_tokens": 10532,
+    "usd": 0.120508,
+    "seconds": 69.4,
+    "title": "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models"
+  },
+  {
+    "model": "claude-sonnet-5",
+    "input_tokens": 51263,
+    "output_tokens": 12280,
+    "usd": 0.225326,
+    "seconds": 81.9,
+    "title": "DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence"
+  }
+]

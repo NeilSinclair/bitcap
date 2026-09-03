@@ -1,0 +1,152 @@
+# GitHub organisations tracked per lab, and the evidence each org's commit
+# email domain provides.
+#
+# Adding a lab or an org is a config change, not a code change -- this file
+# used to be a hardcoded `LABS` dict in aggregate_github.py, which already
+# violated the project's "adding a lab is a config change" rule for the two
+# labs it covered.
+#
+# `domain_shared: true` marks a commit-email domain that belongs to the
+# whole parent company rather than the lab itself (e.g. @google.com covers
+# all of Alphabet, not just DeepMind). A match there is still real evidence,
+# but weaker than a lab-owned domain, so it is tagged `confirmed_org_wide`
+# rather than `confirmed` -- the two must never be conflated when reading
+# the register.
+#
+# `work_suffix` is the lab's work-handle convention (e.g. "-ant", "-oai"),
+# used only to merge a personal account onto a work account that shares no
+# commit email. Omit or set null where no convention is known -- an absent
+# suffix must yield zero merges, never a guess.
+#
+# `company_pattern` is a regex matched (case-insensitively) against the
+# free-text GitHub profile `company` field by enrich_github.py. It is the
+# second employment signal, catching staff who commit under a personal
+# address. People write this field by hand -- "Anthropic", "@anthropic",
+# "Anthropic PBC" all occur -- so the pattern is deliberately loose, but must
+# still be anchored enough not to match an unrelated word (see `xai-org`).
+#
+# `label` is the lab's display name, used for page titles and headings.
+#
+# Top-level key is the GitHub organisation login itself (matches the harvest
+# file name `github_commits_{org}.json` and the CLI invocation
+# `python aggregate_github.py <org>`). `lab` records which sources.yaml
+# register id this org belongs to.
+
+version: 1
+
+orgs:
+  anthropics:
+    lab: anthropic
+    label: "Anthropic"
+    company_pattern: 'anthropic'
+    domain: anthropic.com
+    domain_shared: false
+    work_suffix: "[-_](ant|anthropic)$"
+
+  openai:
+    lab: openai
+    label: "OpenAI"
+    company_pattern: 'open\s*ai'
+    domain: openai.com
+    domain_shared: false
+    work_suffix: "[-_](oai|openai)$"
+
+  google-deepmind:
+    lab: google-deepmind
+    label: "Google DeepMind"
+    company_pattern: 'deepmind|\bgoogle\b'
+    domain: google.com
+    domain_shared: true
+    work_suffix: null
+    notes: >
+      Org login is `google-deepmind`, not `deepmind` -- the latter is a dead
+      redirect stub with 0 public repos, confirmed via the GitHub API.
+      @google.com is Alphabet-wide, not DeepMind-specific, hence
+      domain_shared -- materially weaker "confirmed" evidence than
+      Anthropic's or OpenAI's lab-owned domains.
+
+  mistralai:
+    lab: mistral
+    label: "Mistral AI"
+    company_pattern: 'mistral'
+    domain: null
+    domain_shared: false
+    work_suffix: null
+    notes: >
+      No individual staff email evidence found in recent commits -- almost
+      all use GitHub's privacy-relay noreply addresses. Only an org-level
+      contact email (contact@mistral.ai) is confirmed, which is not commit
+      evidence. Expect a near-zero `confirmed` tier here: a real finding
+      about this org, not a harvesting bug.
+
+  xai-org:
+    lab: xai
+    label: "xAI"
+    company_pattern: '\bx\.?ai\b'
+    domain: x.ai
+    domain_shared: false
+    work_suffix: null
+    notes: >
+      Lab-specific domain, still in active use as of September 2026 despite
+      the February 2026 SpaceX acquisition -- no migration to spacex.com
+      observed in commit history yet. No confirmed official SpaceX GitHub
+      org exists to conflate this with.
+
+  facebookresearch:
+    lab: meta-ai
+    label: "Meta AI (FAIR)"
+    company_pattern: '\bmeta\b|facebook|\bfair\b'
+    domain: [meta.com, fb.com]
+    domain_shared: true
+    work_suffix: null
+    notes: >
+      Meta's general-purpose FAIR/research org (1441 repos), directly linked
+      from ai.meta.com's own site footer. Both @meta.com and @fb.com are
+      confirmed active in real recent commits -- fb.com is the legacy
+      domain, not yet retired. Both are Meta-corporation-wide, not specific
+      to the AI org, hence domain_shared -- weaker evidence than a
+      lab-owned domain, same reasoning as google.com for DeepMind.
+
+  meta-llama:
+    lab: meta-ai
+    label: "Meta AI (Llama)"
+    company_pattern: '\bmeta\b|facebook|\bfair\b'
+    domain: [meta.com, fb.com]
+    domain_shared: true
+    work_suffix: null
+    notes: >
+      Llama-specific org (12 repos), not directly linked from ai.meta.com
+      but independently confirmed active and official. Recent commits here
+      are mostly external contributors (@redhat.com, @gmail.com etc.), so
+      expect a lower confirmed-tier yield than facebookresearch specifically
+      -- a real difference between the two orgs, not a harvesting gap.
+      A third candidate org, `meta-ai`, was checked and found dead/squatted
+      (0 repos, no content) -- excluded, not tracked here.
+
+  deepseek-ai:
+    lab: deepseek
+    label: "DeepSeek"
+    company_pattern: 'deepseek'
+    domain: deepseek.com
+    domain_shared: false
+    work_suffix: null
+    notes: >
+      Org login is `deepseek-ai`, not `deepseek` -- the latter is a dead
+      redirect stub with 0 public repos, confirmed via the GitHub API, same
+      pattern as `deepmind`/`meta-ai`/`mistral-ai`. deepseek.com is a
+      genuine, lab-specific, actively-used commit domain (3,274 commits),
+      no shared-parent-company ambiguity. No work-handle convention found
+      -- confirmed staff use personal-looking logins, not a "-ds" suffix or
+      similar, so work_suffix is null, same as Mistral.
+
+      One repo, `deepseek-harness` (created 2026-08-13, "Everything is a
+      Plugin"), accounts for 14,981 of 15,359 total commits (97.5%) and has
+      210,256 stars / 24,586 forks after roughly three weeks -- an unusual
+      growth rate, checked for being an undeclared mirror the way
+      `OpenROAD-flow-scripts` was for Anthropic (fork=false, mirror_url=null
+      reported either way). Not excluded: unlike that case, its top
+      committers use deepseek.com and .cn-personal-provider (qq.com,
+      sina.com) emails consistent with a genuinely large, fast-viral
+      DeepSeek release, not an external open-source community mirrored in.
+      Recorded here because it dominates any raw per-repo ranking and a
+      reader should know why before trusting one.

@@ -1,0 +1,587 @@
+{
+  "people": [
+    {
+      "login": "heyjustinai",
+      "commits": 87,
+      "repo_count": 2,
+      "repos": {
+        "prompt-ops": 86,
+        "llama-cookbook": 1
+      },
+      "first_commit": "2025-09-15T20:54:31Z",
+      "last_commit": "2025-12-30T16:00:35Z",
+      "names": [
+        "Justin Lee"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "outlook.com": 87
+      }
+    },
+    {
+      "login": "connortreacy",
+      "commits": 64,
+      "repo_count": 2,
+      "repos": {
+        "prompt-ops": 39,
+        "llama-cookbook": 25
+      },
+      "first_commit": "2025-10-16T16:49:57Z",
+      "last_commit": "2025-12-19T16:24:24Z",
+      "names": [
+        "Connor Treacy"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 64
+      }
+    },
+    {
+      "login": "JinpengMiao",
+      "commits": 43,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 43
+      },
+      "first_commit": "2025-09-08T15:30:57Z",
+      "last_commit": "2026-05-04T23:31:34Z",
+      "names": [
+        "Jinpeng Miao"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 43,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 43
+      }
+    },
+    {
+      "login": "albertodepaola",
+      "commits": 15,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 15
+      },
+      "first_commit": "2025-10-07T15:40:09Z",
+      "last_commit": "2025-11-01T00:39:26Z",
+      "names": [
+        "Beto de Paola",
+        "albertodepaola"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 13,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 13,
+        "gmail.com": 2
+      }
+    },
+    {
+      "login": "Riandy",
+      "commits": 10,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 10
+      },
+      "first_commit": "2025-10-22T04:57:39Z",
+      "last_commit": "2025-10-24T16:11:25Z",
+      "names": [
+        "Riandy"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "windowslive.com": 10
+      }
+    },
+    {
+      "login": "IgorKasianenko",
+      "commits": 7,
+      "repo_count": 2,
+      "repos": {
+        "llama-cookbook": 6,
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-09-08T16:55:45Z",
+      "last_commit": "2025-10-27T10:46:34Z",
+      "names": [
+        "Igor Kasianenko"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 7,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 7
+      }
+    },
+    {
+      "login": "amontilla0",
+      "commits": 6,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 6
+      },
+      "first_commit": "2025-09-22T10:44:22Z",
+      "last_commit": "2026-06-02T15:51:02Z",
+      "names": [
+        "Abraham Montilla"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 6,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 6
+      }
+    },
+    {
+      "login": "varunfb",
+      "commits": 6,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 6
+      },
+      "first_commit": "2025-10-07T17:05:42Z",
+      "last_commit": "2025-11-03T16:25:19Z",
+      "names": [
+        "varunfb"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 6,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 6
+      }
+    },
+    {
+      "login": "init27",
+      "commits": 4,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 4
+      },
+      "first_commit": "2025-09-29T19:41:49Z",
+      "last_commit": "2025-10-25T13:31:44Z",
+      "names": [
+        "Sanyam Bhutani"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 4
+      }
+    },
+    {
+      "login": "SimonWan",
+      "commits": 3,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 3
+      },
+      "first_commit": "2025-09-14T03:12:39Z",
+      "last_commit": "2026-01-13T17:31:01Z",
+      "names": [
+        "Shengye Wan"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 3,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 3
+      }
+    },
+    {
+      "login": "daruuro",
+      "commits": 3,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 3
+      },
+      "first_commit": "2025-09-23T09:08:04Z",
+      "last_commit": "2025-10-01T17:47:27Z",
+      "names": [
+        "Abdullahi Abdalla"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 3,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 3
+      }
+    },
+    {
+      "login": "LeonKarabchevsky",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 2
+      },
+      "first_commit": "2025-09-22T14:25:46Z",
+      "last_commit": "2025-09-24T13:20:45Z",
+      "names": [
+        "Leon Karabchevsky"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 2,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 2
+      }
+    },
+    {
+      "login": "nelish01",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "llama-cookbook": 2
+      },
+      "first_commit": "2025-10-10T05:29:31Z",
+      "last_commit": "2025-10-13T07:49:53Z",
+      "names": [
+        "Nilesh",
+        "llamatest"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1,
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "ghyathmoussa",
+      "commits": 2,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 2
+      },
+      "first_commit": "2025-10-18T11:35:47Z",
+      "last_commit": "2025-10-24T19:28:00Z",
+      "names": [
+        "ghyath"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "hotmail.com": 2
+      }
+    },
+    {
+      "login": "dwjsong",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-03-11T19:49:24Z",
+      "last_commit": "2026-03-11T19:49:24Z",
+      "names": [
+        "Daniel Song"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "Lookess244",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-22T22:32:40Z",
+      "last_commit": "2026-01-22T22:32:40Z",
+      "names": [
+        "Lookess244"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "duck.com": 1
+      }
+    },
+    {
+      "login": "hc3001meta",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-16T20:00:02Z",
+      "last_commit": "2026-01-16T20:00:02Z",
+      "names": [
+        "Henry Choi"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "akashkathole7",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-16T13:53:22Z",
+      "last_commit": "2026-01-16T13:53:22Z",
+      "names": [
+        "unknown"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "bowiechen",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2026-01-12T10:51:16Z",
+      "last_commit": "2026-01-12T10:51:16Z",
+      "names": [
+        "Bowie Chen"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "Kravchie",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2025-11-11T19:07:42Z",
+      "last_commit": "2025-11-11T19:07:42Z",
+      "names": [
+        "Klaudia Krawiecka"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "SteveLeungYL",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "PurpleLlama": 1
+      },
+      "first_commit": "2025-11-04T00:57:03Z",
+      "last_commit": "2025-11-04T00:57:03Z",
+      "names": [
+        "Steve Leung"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "yanxi0830",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-api-python": 1
+      },
+      "first_commit": "2025-10-01T21:06:29Z",
+      "last_commit": "2025-10-01T21:06:29Z",
+      "names": [
+        "Xi Yan"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "Yuanchen-Wu",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "prompt-ops": 1
+      },
+      "first_commit": "2025-11-11T17:36:23Z",
+      "last_commit": "2025-11-11T17:36:23Z",
+      "names": [
+        "Yuanchen-Wu"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "psu.edu": 1
+      }
+    },
+    {
+      "login": "yuanchenwu726",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "prompt-ops": 1
+      },
+      "first_commit": "2025-11-04T20:41:09Z",
+      "last_commit": "2025-11-04T20:41:09Z",
+      "names": [
+        "Yuanchen Wu"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "raghotham",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-verifications": 1
+      },
+      "first_commit": "2025-09-08T16:38:21Z",
+      "last_commit": "2025-09-08T16:38:21Z",
+      "names": [
+        "raghotham"
+      ],
+      "merged_from": [],
+      "employment": "confirmed_org_wide",
+      "corp_commits": 1,
+      "vendor_domains": [],
+      "domains": {
+        "meta.com": 1
+      }
+    },
+    {
+      "login": "ashwinb",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "llama-models": 1
+      },
+      "first_commit": "2025-10-10T00:22:05Z",
+      "last_commit": "2025-10-10T00:22:05Z",
+      "names": [
+        "Ashwin Bharambe"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "gmail.com": 1
+      }
+    },
+    {
+      "login": "Khadija-Bayoud",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-10-18T11:37:43Z",
+      "last_commit": "2025-10-18T11:37:43Z",
+      "names": [
+        "Khadija-Bayoud"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    },
+    {
+      "login": "ghd3v",
+      "commits": 1,
+      "repo_count": 1,
+      "repos": {
+        "synthetic-data-kit": 1
+      },
+      "first_commit": "2025-09-19T02:04:23Z",
+      "last_commit": "2025-09-19T02:04:23Z",
+      "names": [
+        "Amir Youssefi"
+      ],
+      "merged_from": [],
+      "employment": "unknown",
+      "corp_commits": 0,
+      "vendor_domains": [],
+      "domains": {
+        "users.noreply.github.com": 1
+      }
+    }
+  ],
+  "aliases": {},
+  "mirrors_excluded": [],
+  "totals": {
+    "repos": 8,
+    "commits": 351,
+    "people": 28,
+    "bot_commits": 54,
+    "unattributed_commits": 29,
+    "employment": {
+      "confirmed": 0,
+      "confirmed_org_wide": 16,
+      "handle": 0,
+      "vendor": 0,
+      "unknown": 12
+    }
+  }
+}

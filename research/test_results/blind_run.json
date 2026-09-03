@@ -1,0 +1,262 @@
+{
+  "model": "claude-sonnet-5",
+  "prompt": "v5",
+  "results": [
+    {
+      "title": "Government of Alberta uses Claude to find and fix cybersecurity vulnerabilities",
+      "url": "https://www.anthropic.com/news/alberta-government-claude-cybersecurity",
+      "run": {
+        "event_type": "enterprise_partnership",
+        "summary": "Anthropic published a case study describing how the Government of Alberta used Claude Code with Opus and Sonnet models to scan, remediate, and continuously monitor security vulnerabilities across its government codebases.",
+        "mechanisms": [
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "The case study describes dozens of autonomous agents performing scanning, remediation and continuous review work that previously required manual engineering effort.",
+            "quote": "Around 50 agents worked autonomously and in parallel to scan the systems for security vulnerabilities, weaknesses in underlying infrastructure and deployment processes, and gaps in technical documentation."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "A single large-scale deployment scanning hundreds of millions of lines of code in hours implies substantial token volume, though this is one customer example rather than an industry-wide trend statement.",
+            "quote": "scanned 466 million lines of code in 20 hours"
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "orchestration",
+            "action": "adopt",
+            "impact": "high",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "Describes a concrete multi-agent scaffolding pattern (rules-engine pre-filter plus LLM review, red team/blue team agent roles) that a security engineering team could replicate.",
+            "quote": "Claude Code ran a two-stage routine, first scanning each repository with a rules engine to flag known patterns, then reviewing those flags and citing the exact file and line for each finding so developers could verify them."
+          },
+          {
+            "id": "evaluation",
+            "action": "adopt",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "Describes a structured security evaluation methodology checking each application against a fixed set of controls on every pass, which is a reusable eval/monitoring pattern.",
+            "quote": "Every application is checked against roughly 95 security controls on each pass."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://www.anthropic.com/news/alberta-government-claude-cybersecurity",
+        "model": "claude-sonnet-5",
+        "input_tokens": 9857,
+        "output_tokens": 2469,
+        "usd": 0.044404,
+        "seconds": 26.56,
+        "at": "2026-09-01T18:28:37.423787+00:00"
+      },
+      "score": 6.7,
+      "ai_score": 50.0
+    },
+    {
+      "title": "Codex for every role, tool, and workflow",
+      "url": "https://openai.com/index/codex-for-every-role-tool-workflow",
+      "run": {
+        "event_type": "product_launch",
+        "summary": "OpenAI announced new Codex features\u2014role-specific plugins for six non-engineering functions, a preview of shareable interactive 'Sites,' and in-place annotation editing\u2014aimed at extending Codex beyond software development to broader knowledge work.",
+        "mechanisms": [
+          {
+            "id": "agentic_workflows",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "The plugins let Codex autonomously operate third-party tools (Salesforce, Figma, Snowflake, etc.) on behalf of non-developer roles, shifting work from humans using software to an agent calling APIs.",
+            "quote": "Each plugin bundles the relevant apps, skills, instructions, and workflows."
+          },
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "medium",
+            "reason": "Stated rapid growth in weekly users and non-developer adoption implies more tokens/calls served in aggregate.",
+            "quote": "More than 5 million people now use Codex every week ... Non-developers ... are growing more than 3x as fast as developers.",
+            "quote_repaired": true
+          }
+        ],
+        "categories": [],
+        "practices": [
+          {
+            "id": "orchestration",
+            "action": "investigate",
+            "impact": "medium",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "The role-specific plugin bundles and multi-tool skill sets represent a new pattern for structuring agent access to external systems that a team could adapt for its own tool-use pipelines.",
+            "quote": "Plugins help Codex work with the tools, context, and workflows your team already uses."
+          },
+          {
+            "id": "integration",
+            "action": "watch",
+            "impact": "low",
+            "confidence": "medium",
+            "dimensions": [],
+            "reason": "New plugin directory, admin permission controls, and preview 'Sites' rollout create new interface and configuration surface for teams already building on Codex.",
+            "quote": "Role-specific plugins are rolling out in Codex in supported regions. You can install them from the Codex plugin directory and Codex will help get you set up."
+          }
+        ],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/codex-for-every-role-tool-workflow",
+        "model": "claude-sonnet-5",
+        "input_tokens": 9766,
+        "output_tokens": 2292,
+        "usd": 0.042452,
+        "seconds": 25.63,
+        "at": "2026-09-01T18:28:36.487655+00:00"
+      },
+      "score": 13.3,
+      "ai_score": 22.2
+    },
+    {
+      "title": "Supporting Thailand\u2019s next generation of AI startups",
+      "url": "https://openai.com/index/supporting-next-generation-ai-startups-thailand",
+      "run": {
+        "event_type": "enterprise_partnership",
+        "summary": "OpenAI and Thailand's Ministry of Higher Education, Science, Research and Innovation launched an eight-week accelerator providing API credits, mentorship and access to OpenAI models to ten Thai startups in healthcare and education.",
+        "mechanisms": [
+          {
+            "id": "inference_volume_up",
+            "sign": "positive",
+            "magnitude": "low",
+            "confidence": "low",
+            "reason": "The document cites large regional growth in Codex usage in Thailand, indicating rising inference volume in that market, though this is background context rather than a new commitment.",
+            "quote": "Since the start of 2026, weekly active usage of Codex in Thailand has grown more than 350-fold, also placing the country among the top 20 globally for Codex usage."
+          }
+        ],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/supporting-next-generation-ai-startups-thailand",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10422,
+        "output_tokens": 1205,
+        "usd": 0.032894,
+        "seconds": 15.83,
+        "at": "2026-09-01T18:28:26.679137+00:00"
+      },
+      "score": 0.0,
+      "ai_score": 0.0
+    },
+    {
+      "title": "Introducing Intelligence Age",
+      "url": "https://openai.com/index/introducing-ai-futures",
+      "run": {
+        "event_type": "safety_policy",
+        "summary": "OpenAI announces the launch of AI Futures, a new blog and Strategic Futures team dedicated to researching how free society should be restructured to preserve individual rights and prevent concentration of power as transformative AI emerges.",
+        "mechanisms": [],
+        "categories": [],
+        "practices": [],
+        "notable": false,
+        "notable_reason": "",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/introducing-ai-futures",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10377,
+        "output_tokens": 440,
+        "usd": 0.025154,
+        "seconds": 7.38,
+        "at": "2026-09-01T18:28:18.242816+00:00"
+      },
+      "score": 0.0,
+      "ai_score": 0.0
+    },
+    {
+      "title": "OpenAI joins PORTS-Pike project",
+      "url": "https://openai.com/index/openai-joins-ports-pike-project",
+      "run": {
+        "event_type": "compute_commitment",
+        "summary": "OpenAI announced an agreement with SB Energy, NVIDIA and the U.S. Department of Energy to secure approximately 8 gigawatts-IT of data center capacity at the PORTS-Pike Technology Campus in Ohio, with NVIDIA investing $1.5 billion in SB Energy and OpenAI committing community and education funding.",
+        "mechanisms": [
+          {
+            "id": "datacenter_power_up",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "The announcement discloses a large new data center power commitment with multi-gigawatt scale and future power plant buildout.",
+            "quote": "OpenAI has entered into an agreement to secure approximately 8 gigawatts-IT at the PORTS-Pike Technology Campus in Pike County, Ohio"
+          },
+          {
+            "id": "training_compute_up",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "OpenAI states the capacity is being contracted to meet projected frontier training needs.",
+            "quote": "We are contracting for this capacity based on our projected long-term needs for frontier training and growing demand for our products."
+          },
+          {
+            "id": "ai_capex_investments",
+            "sign": "positive",
+            "magnitude": "high",
+            "confidence": "high",
+            "reason": "NVIDIA is committing direct capital investment and credit support toward the buildout of the data center campus.",
+            "quote": "NVIDIA will invest $1.5 billion in SB Energy and will provide credit support for the land, power, and shell buildout associated with the initial 4.25 IT-GW."
+          },
+          {
+            "id": "lab_capital_access",
+            "sign": "positive",
+            "magnitude": "medium",
+            "confidence": "medium",
+            "reason": "OpenAI states it will fund its lease commitments partly through capital raised from investors, tying its infrastructure buildout to its fundraising capacity.",
+            "quote": "OpenAI will begin paying only as completed capacity becomes available for lease and will fund those commitments through revenue and cash flow from the significant growth of our business and capital raised from investors."
+          }
+        ],
+        "categories": [
+          {
+            "id": "ai_compute_hosting",
+            "sign": "positive",
+            "confidence": "high",
+            "reason": "SB Energy will build, own and operate the data center capacity that OpenAI leases, a hosting arrangement for third-party AI compute.",
+            "quote": "SB Energy will build, own, and operate the data center under a 20-year lease to OpenAI and deliver capacity over time."
+          },
+          {
+            "id": "accelerator_custom_si",
+            "sign": "positive",
+            "confidence": "high",
+            "reason": "The site will exclusively host NVIDIA accelerators, directly increasing demand for that hardware.",
+            "quote": "OpenAI will be the customer and will utilize capacity at the site, which will exclusively host NVIDIA AI compute infrastructure."
+          }
+        ],
+        "practices": [],
+        "notable": true,
+        "notable_reason": "An 8 GW-IT data center commitment with a $1.5 billion direct NVIDIA investment is a large, concrete infrastructure and capital deployment signal for the sector.",
+        "dropped_tags": []
+      },
+      "cost": {
+        "url": "https://openai.com/index/openai-joins-ports-pike-project",
+        "model": "claude-sonnet-5",
+        "input_tokens": 10279,
+        "output_tokens": 2259,
+        "usd": 0.043148,
+        "seconds": 21.71,
+        "at": "2026-09-01T18:28:32.567209+00:00"
+      },
+      "score": 100.0,
+      "ai_score": 0.0
+    }
+  ],
+  "usd": 0.1881
+}

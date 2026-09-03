@@ -1,0 +1,263 @@
+# Holdings register: BIT Global Technology Leaders, the 26 positions in scope.
+#
+# Scope is this fund alone (docs/decisions.md D8). The other five BIT funds each report
+# on a DIFFERENT as_of date, so no combined snapshot of "the book" exists and any
+# combined percentage blends six dates. Every weight here is share of Technology Leaders
+# at 2026-06-30 and must be quoted that way.
+#
+# `categories` are non-exclusive - IREN and TeraWulf carry two. Category weights
+# therefore sum to more than 100 percent. Ids must exist in categories.yaml, and
+# validate.py enforces that.
+#
+# `ticker` is best-effort and unverified against a security master. Per docs/decisions.md
+# D1 it exists so that extraction NEVER has to guess whether a company is listed: the
+# extractor reports what a document says, and this file answers what an entity is.
+#
+# Generated from research/docs/portfolio_views.json. Regenerate rather than hand-edit the
+# weights; hand-edit the categories and notes.
+
+version: 1
+scope:
+  fund: BIT Global Technology Leaders
+  as_of: 2026-06-30
+  positions: 26
+  total_value_eur_m: 1507.3
+  weight_basis: >
+    `weight_pct` is share of the fund's reported position value. `pct_of_fund` is the
+    fund's own NAV percentage as filed - the two differ because NAV includes cash and
+    other assets.
+  source: research/docs/portfolio_views.json
+
+holdings:
+  - isin: US0231351067
+    name: Amazon.com Inc.
+    ticker: AMZN
+    ticker_verified: false
+    weight_pct: 11.03
+    pct_of_fund: 10.43
+    categories: [hyperscale_platform]
+
+  - isin: US5951121038
+    name: Micron Technology Inc.
+    ticker: MU
+    ticker_verified: false
+    weight_pct: 9.14
+    pct_of_fund: 8.64
+    categories: [memory_storage]
+
+  - isin: AU0000185993
+    name: IREN Ltd.
+    ticker: IREN
+    ticker_verified: false
+    weight_pct: 9.02
+    pct_of_fund: 8.53
+    categories: [ai_compute_hosting, crypto]
+    note: >
+      Formerly Iris Energy. Bitcoin miner that moved into AI compute hosting - the dual
+      membership is deliberate (D9).
+
+  - isin: US80004C2008
+    name: San Disk Corp.
+    ticker: SNDK
+    ticker_verified: false
+    weight_pct: 6.31
+    pct_of_fund: 5.96
+    categories: [memory_storage]
+    note: >
+      Spun out of Western Digital.
+
+  - isin: US7707001027
+    name: Robinhood Markets Inc. Cl. A
+    ticker: HOOD
+    ticker_verified: false
+    weight_pct: 5.29
+    pct_of_fund: 5.0
+    categories: [fintech_consumer_fin]
+    note: >
+      Material crypto revenue - see secondary_exposures in categories.yaml. Flagged, not
+      dual membership.
+
+  - isin: US5738741041
+    name: Marvell Technology Inc.
+    ticker: MRVL
+    ticker_verified: false
+    weight_pct: 5.07
+    pct_of_fund: 4.8
+    categories: [accelerator_custom_si]
+
+  - isin: US8740391003
+    name: Taiwan Semiconduct. Manufact.
+    ticker: TSM
+    ticker_verified: false
+    weight_pct: 4.84
+    pct_of_fund: 4.57
+    categories: [foundry_logic]
+    note: >
+      ADR.
+
+  - isin: DE0006231004
+    name: Infineon Technologies AG
+    ticker: IFX
+    ticker_verified: false
+    weight_pct: 4.66
+    pct_of_fund: 4.4
+    categories: [analog_power_semi]
+
+  - isin: US4333131039
+    name: Hinge Health Inc.
+    ticker: null   # not mapped
+    weight_pct: 4.45
+    pct_of_fund: 4.21
+    categories: [health_insurance]
+
+  - isin: US6877931096
+    name: Oscar Health Inc. Cl. A
+    ticker: OSCR
+    ticker_verified: false
+    weight_pct: 4.39
+    pct_of_fund: 4.15
+    categories: [health_insurance]
+
+  - isin: DE000A2LQ884
+    name: AUTO1 Group SE
+    ticker: null   # not mapped
+    weight_pct: 4.38
+    pct_of_fund: 4.14
+    categories: [consumer_marketplace]
+
+  - isin: US82706C1080
+    name: Silicon Motion Technology Corp Reg. Shs(Sp. AD Rs)/4
+    ticker: SIMO
+    ticker_verified: false
+    weight_pct: 3.64
+    pct_of_fund: 3.44
+    categories: [memory_storage]
+    note: >
+      NAND controller silicon. In memory_storage, not accelerator_custom_si - demand
+      tracks NAND volume rather than accelerator attach rates.
+
+  - isin: US6391931010
+    name: Navan Inc. Registered Shares A
+    ticker: null   # not mapped
+    weight_pct: 3.14
+    pct_of_fund: 2.97
+    categories: [consumer_marketplace]
+
+  - isin: US35671D8570
+    name: Freeport-Mc Mo Ran Inc.
+    ticker: FCX
+    ticker_verified: false
+    weight_pct: 3.06
+    pct_of_fund: 2.89
+    categories: [materials_mining]
+    note: >
+      Copper - the only materials name with a credible datacentre-buildout path.
+
+  - isin: US1717793095
+    name: Ciena
+    ticker: CIEN
+    ticker_verified: false
+    weight_pct: 2.87
+    pct_of_fund: 2.72
+    categories: [networking_optical]
+
+  - isin: US3493811034
+    name: FT Inter Inc. Reg. Shares Cl. Ao. N.
+    ticker: null   # not mapped
+    weight_pct: 2.78
+    pct_of_fund: 2.63
+    categories: [fintech_consumer_fin]
+    note: >
+      ENTITY HAZARD: this is Figure Technology Solutions, a fintech lender. It is NOT
+      Figure AI, the humanoid-robotics company. A name match on 'Figure' routes robotics
+      news here with total confidence and no error.
+
+  - isin: US4581401001
+    name: Intel Corp.
+    ticker: INTC
+    ticker_verified: false
+    weight_pct: 2.56
+    pct_of_fund: 2.42
+    categories: [foundry_logic]
+
+  - isin: US67066G1040
+    name: NVIDIA Corp.
+    ticker: NVDA
+    ticker_verified: false
+    weight_pct: 2.54
+    pct_of_fund: 2.4
+    categories: [accelerator_custom_si]
+    note: >
+      Direction of a hit is not uniform with Marvell - a lab moving to in-house silicon
+      is negative here and positive there.
+
+  - isin: US6549022043
+    name: Nokia Corp. Reg AD Rs
+    ticker: NOK
+    ticker_verified: false
+    weight_pct: 2.25
+    pct_of_fund: 2.12
+    categories: [networking_optical]
+    note: >
+      ADR.
+
+  - isin: NL0012866412
+    name: BE Semiconductor Inds N. V.
+    ticker: null   # not mapped
+    weight_pct: 2.02
+    pct_of_fund: 1.91
+    categories: [semicap_equipment]
+
+  - isin: US20451W1018
+    name: Compass Pathways PLC (Spons. AD Rs)
+    ticker: CMPS
+    ticker_verified: false
+    weight_pct: 1.53
+    pct_of_fund: 1.44
+    categories: [health_insurance]
+    note: >
+      Clinical-stage. ADR.
+
+  - isin: US8336351056
+    name: Soc. Quimicay Min.de Chile SAB (Sp. AD Rs)
+    ticker: null   # not mapped
+    weight_pct: 1.41
+    pct_of_fund: 1.34
+    categories: [materials_mining]
+    note: >
+      Lithium - no credible frontier-lab path. A strong hit here is suspicious.
+
+  - isin: US88080T1043
+    name: Terawulf Inc.
+    ticker: WULF
+    ticker_verified: false
+    weight_pct: 1.13
+    pct_of_fund: 1.07
+    categories: [ai_compute_hosting, crypto]
+    note: >
+      Dual driver, same as IREN.
+
+  - isin: US0126531013
+    name: Albemarle
+    ticker: ALB
+    ticker_verified: false
+    weight_pct: 1.00
+    pct_of_fund: 0.95
+    categories: [materials_mining]
+    note: >
+      Lithium - see SQM note.
+
+  - isin: US44916Y1064
+    name: Hyperliquid Strategies Inc.
+    ticker: null   # not mapped
+    weight_pct: 0.82
+    pct_of_fund: 0.78
+    categories: [crypto]
+
+  - isin: US8168501018
+    name: Semtech
+    ticker: SMTC
+    ticker_verified: false
+    weight_pct: 0.68
+    pct_of_fund: 0.64
+    categories: [analog_power_semi]

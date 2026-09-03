@@ -1,0 +1,194 @@
+# Transmission mechanisms: the joinable key between a lab event and a holding.
+#
+# The pipeline splits the work here. An LLM reads a lab publication and tags it
+# with mechanism ids (extraction, where judgement is needed). Deterministic code
+# then propagates those tags to holdings through the links in companies.yaml
+# (propagation, where judgement is not needed and reproducibility matters).
+#
+# Adding a mechanism is a config change. Every link a company declares must cite
+# a mechanism id defined here, and validate.py enforces that.
+#
+# `polarity_note` records what a POSITIVE sign means, so "negative exposure to
+# inference_cost_down" is never ambiguous.
+
+# v2 (2026-09-02): descriptions sharpened against the v6 gold run's actual
+# confusions — every boundary added below corresponds to a spurious or missed
+# tag in gold_run_20260902T051622Z_v6. Ids, labels and polarity are unchanged.
+version: 2
+
+mechanisms:
+  - id: training_compute_up
+    label: Training compute demand rises
+    description: >
+      Frontier labs commit more accelerators, power and capital to training runs.
+      Triggered by scaling-law results, new frontier model announcements, or
+      disclosed cluster build-outs.
+    polarity_note: Positive sign = company benefits when training demand rises.
+
+  - id: inference_cost_down
+    label: Compute and memory needed per token falls
+    description: >
+      Efficiency: the same output takes less hardware. Distillation, quantisation,
+      sparsity, grouped-query attention and better serving stacks reduce the FLOPs
+      and the resident bytes required per token. The DeepSeek-R1 shock of January
+      2025 is the canonical event.
+
+      Tag this only when the *work* per token falls, not whenever a price falls. A
+      cheaper accelerator, a discount, or margin competition lowers the price of a
+      token without changing the hardware content of one; that is a pricing_change
+      event, not this mechanism. It also needs a stated figure, price, or
+      technique: product copy that calls a model "efficient" — typically in a
+      partnership or distribution re-announcement of a model tagged elsewhere —
+      is not evidence.
+    polarity_note: >
+      Positive sign = company benefits, meaning it buys inference as an input and
+      its cost of goods falls. Negative sign = company is hurt, meaning it sells
+      hardware or capacity consumed per unit of work.
+
+      This mechanism is deliberately NOT netted against demand elasticity. Cheaper
+      inference reliably raises total tokens served, and historically that offset
+      has dominated for suppliers -- but that offset is `inference_volume_up` and
+      is tagged separately. An efficiency release should fire both, with opposite
+      signs for a supplier, so the tension is shown rather than pre-resolved into
+      a single guess about elasticity.
+
+  - id: inference_volume_up
+    label: Inference volume rises
+    description: >
+      More tokens served in aggregate: consumer adoption, deployment into
+      high-volume surfaces, agentic workflows that issue many calls per task, or
+      reasoning models that spend more compute at test time. Often the
+      second-order offset to inference_cost_down. The direction cuts both ways:
+      a model suspended, withdrawn or disabled for customers is this mechanism
+      with a negative sign, not an absent tag.
+    polarity_note: Positive sign = company benefits when total tokens served rises. Indicates a potential increase in data center demand, benefiting infrastructure suppliers as well as chip manufacturers.
+
+  - id: memory_intensity_up
+    label: Memory content per accelerator rises
+    description: >
+      Longer context windows, KV-cache pressure, mixture-of-experts weights and
+      test-time reasoning increase HBM and NAND content per system, independently
+      of unit accelerator volume. Tag from stated model or serving properties —
+      a larger offered context, a deeper reasoning mode, a cache architecture —
+      not from a customer's anecdote about feeding a model more context.
+    polarity_note: Positive sign = company benefits when memory content rises.
+
+  - id: datacenter_power_up
+    label: Datacentre power demand rises
+    description: >
+      Accelerator deployment converts into megawatts: grid interconnect queues,
+      power purchase agreements, cooling, and siting near cheap generation.
+    polarity_note: Positive sign = company benefits when datacentre power demand rises.
+
+  - id: networking_bandwidth_up
+    label: Interconnect and optical bandwidth demand rises
+    description: >
+      Scale-up and scale-out fabrics, optical transceivers, DCI between campuses,
+      and the shift of bottleneck from FLOPs to bandwidth.
+    polarity_note: Positive sign = company benefits when interconnect demand rises.
+
+
+
+  - id: capability_jump
+    label: Step change in model capability
+    description: >
+      A capability threshold is crossed that puts new tasks in reach -- long-horizon
+      agents, reliable tool use, domain expert performance. Reserve it for the
+      step itself: a frontier-class release or a first demonstration of a task
+      class. An incremental release, a "close to X" comparison, or a partnership,
+      usage report or opinion piece restating what an already-released model can
+      do is NOT a jump -- that restatement is where most false tags come from.
+    polarity_note: >
+      Positive sign = company benefits. Negative sign = the capability threatens
+      the company's own product or moat.
+
+  - id: agentic_workflows
+    label: Agentic and tool-using systems displace seat-based software
+    description: >
+      The unit of work shifts from humans operating software to agents executing
+      delegated tasks: agents calling APIs in place of seats, and agents running
+      autonomously at scale (parallel agents, round-the-clock workflows). Both
+      routes count -- seat displacement and the growth of agent-executed work.
+      Tag from what the lab states or measures at scale; one customer's
+      testimonial about their own agent architecture is not an industry shift.
+    polarity_note: Positive sign = company benefits from the shift to agents.
+
+  - id: on_device_inference
+    label: Inference moves to edge and client devices
+    description: >
+      Smaller models and NPUs push a share of inference off datacentre GPUs and
+      onto phones, PCs and embedded devices.
+    polarity_note: Positive sign = company benefits when inference moves on-device.
+
+  - id: export_controls
+    label: Export controls and trade policy tighten
+    description: >
+      Government restrictions on the AI stack reaching particular parties or
+      jurisdictions: advanced accelerators, HBM, semiconductor capital equipment,
+      tariffs on hardware -- and equally model weights or model access withdrawn
+      or gated under national-security or export authority. A directive that
+      forces a lab to cut off access to a model is this mechanism, not only a
+      chip story.
+    polarity_note: >
+      Positive sign = company benefits from tightening (protected incumbents,
+      onshore capacity). Negative sign = company is hurt by tightening.
+
+  - id: ai_capex_investments
+    label: AI infrastructure capital expenditure
+    description: >
+      Capital committed to AI infrastructure -- datacentre build-outs, accelerator
+      and chip purchases, power and energy supply. A positive sign is spending
+      being committed or accelerated; negative is spending slowed or withdrawn
+      because of financing cost, depreciation, utilisation or weak returns.
+      It requires capital to be stated: an amount, a build-out, a purchase, a
+      supply agreement. A performance result -- even on first-party silicon --
+      discloses no spending and is custom_silicon_substitution, not capex.
+    polarity_note: >
+      Positive sign = company benefits from capital being spent on AI
+      infrastructure, chips or energy. Most infrastructure suppliers are positive
+      here.
+
+  - id: custom_silicon_substitution
+    label: Labs move to in-house and custom accelerators
+    description: >
+      A frontier lab designs, co-designs or deploys its own inference or training
+      silicon, displacing merchant accelerators. 
+    polarity_note: >
+      Positive sign = company benefits when labs go custom (ASIC and IP vendors
+      designing the parts, and the foundries building them). Negative sign =
+      company is displaced, usually merchant accelerator vendors losing share of
+      a lab's fleet. The direction is not uniform inside one category.
+
+  - id: lab_capital_access
+    label: A lab's access to capital changes
+    description: >
+      Funding rounds, IPO filings, credit facilities and other events that change
+      how much a lab can commit to future compute. The transmission is indirect
+      but real: capital raised is the precondition for the cluster and power
+      commitments that reach suppliers.
+    polarity_note: >
+      Positive sign = company benefits when labs can raise more. Applies to
+      suppliers whose order book depends on lab capex being financeable. Also
+      applies to companies that have a financial investment in the lab.
+
+# Controlled vocabularies used by companies.yaml.
+  # RETIRED: open_weights_release moved to practices.yaml. It reached 0 of 26
+  # holdings -- no company ever declared a link to it -- and the investment side
+  # keeps it through the `open_weights` event weight of 5 in scoring.yaml.
+  #
+  # capability_jump was retired alongside it and then put back. The argument
+  # against was routing: it reaches 1 of 26 holdings. The argument for, which
+  # won, is that a capability step is the headline transmission of a frontier
+  # release and drives the adoption everything else in this file depends on.
+  # It also exists as a `model_capability` dimension in practices.yaml -- the
+  # same event read twice, once as demand and once as a build decision, which
+  # is the point of having two axes.
+
+enums:
+  sign: [positive, negative, mixed]
+  magnitude: [high, medium, low]
+  confidence: [high, medium, low]
+  ai_role:
+    primary: Core business is AI infrastructure, models, or AI-driven demand.
+    secondary: Materially exposed to AI but it is not the core driver.
+    none: No meaningful AI linkage. Say so plainly rather than inventing one.

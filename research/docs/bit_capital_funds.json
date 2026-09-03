@@ -1,0 +1,986 @@
+[
+  {
+    "name": "BIT Global Technology Leaders",
+    "share_class_file": "Global_Technology_Leaders_R-I.pdf",
+    "isin": "DE000A2N8127",
+    "as_of": "31.07.2026",
+    "fund_assets": "1,406.8 M EUR",
+    "inception": "02.01.2019",
+    "fund_type": "UCITS",
+    "sfdr": "Article 8",
+    "management_fee": "1.87%",
+    "ongoing_costs": "1.9% p.a.",
+    "n_positions": "23",
+    "performance": {
+      "cumulative": {
+        "mtd": "-13.3%",
+        "ytd": "18.7%",
+        "1y": "33.4%",
+        "3y": "185.0%",
+        "5y": "97.8%",
+        "since_inception": "862.4%"
+      },
+      "volatility": {
+        "mtd": "38.9%",
+        "ytd": "35.9%",
+        "1y": "33.5%",
+        "3y": "29.0%",
+        "5y": "32.1%",
+        "since_inception": "31.6%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "0.9",
+        "3y": "1.3",
+        "5y": "0.4",
+        "since_inception": "1.0"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "65.3%"
+      },
+      {
+        "name": "RoW",
+        "pct": "22.1%"
+      },
+      {
+        "name": "Europe",
+        "pct": "12.5%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Information Technology",
+        "pct": "38.9%"
+      },
+      {
+        "name": "Consumer Discretionary",
+        "pct": "23.4%"
+      },
+      {
+        "name": "Financials",
+        "pct": "19.9%"
+      },
+      {
+        "name": "Materials",
+        "pct": "7.2%"
+      },
+      {
+        "name": "Health Care",
+        "pct": "6.8%"
+      },
+      {
+        "name": "Communication Services",
+        "pct": "3.9%"
+      }
+    ],
+    "top10": [
+      {
+        "name": "Amazon",
+        "pct": "10.1%"
+      },
+      {
+        "name": "IREN",
+        "pct": "9.0%"
+      },
+      {
+        "name": "Micron",
+        "pct": "7.9%"
+      },
+      {
+        "name": "Robinhood",
+        "pct": "6.7%"
+      },
+      {
+        "name": "Navan",
+        "pct": "5.0%"
+      },
+      {
+        "name": "TSMC",
+        "pct": "4.6%"
+      },
+      {
+        "name": "Auto1",
+        "pct": "4.5%"
+      },
+      {
+        "name": "Infineon",
+        "pct": "4.1%"
+      },
+      {
+        "name": "Oscar Health",
+        "pct": "4.0%"
+      },
+      {
+        "name": "Hinge Health",
+        "pct": "3.8%"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "84.1%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "15.9%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "88.6%"
+      },
+      {
+        "name": "EUR",
+        "pct": "11.4%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Global Leaders",
+    "share_class_file": "Global_Leaders_R-I.pdf",
+    "isin": "DE000A2QDRW2",
+    "as_of": "31.07.2026",
+    "fund_assets": "112.2 M EUR",
+    "inception": "02.11.2020",
+    "fund_type": "UCITS",
+    "sfdr": "Article 8",
+    "management_fee": "1.87%",
+    "ongoing_costs": "1.9% p.a.",
+    "n_positions": "32",
+    "performance": {
+      "cumulative": {
+        "mtd": "-12.2%",
+        "ytd": "16.7%",
+        "1y": "32.8%",
+        "3y": "185.3%",
+        "5y": "88.1%",
+        "since_inception": "175.5%"
+      },
+      "volatility": {
+        "mtd": "46.4%",
+        "ytd": "37.3%",
+        "1y": "34.5%",
+        "3y": "30.1%",
+        "5y": "32.0%",
+        "since_inception": "32.7%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "0.9",
+        "3y": "1.3",
+        "5y": "0.3",
+        "since_inception": "0.5"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "59.5%"
+      },
+      {
+        "name": "RoW",
+        "pct": "28.1%"
+      },
+      {
+        "name": "Europe",
+        "pct": "11.2%"
+      },
+      {
+        "name": "China",
+        "pct": "1.2%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Information Technology",
+        "pct": "51.1%"
+      },
+      {
+        "name": "Consumer Discretionary",
+        "pct": "20.6%"
+      },
+      {
+        "name": "Financials",
+        "pct": "16.3%"
+      },
+      {
+        "name": "Communication Services",
+        "pct": "6.1%"
+      },
+      {
+        "name": "Health Care",
+        "pct": "3.1%"
+      },
+      {
+        "name": "Industrials",
+        "pct": "2.8%"
+      }
+    ],
+    "top10": [
+      {
+        "name": "Amazon",
+        "pct": "10.2%"
+      },
+      {
+        "name": "IREN",
+        "pct": "10.0%"
+      },
+      {
+        "name": "SK Hynix",
+        "pct": "7.7%"
+      },
+      {
+        "name": "Nvidia",
+        "pct": "6.9%"
+      },
+      {
+        "name": "TSMC",
+        "pct": "4.9%"
+      },
+      {
+        "name": "Micron",
+        "pct": "4.7%"
+      },
+      {
+        "name": "Reddit",
+        "pct": "4.5%"
+      },
+      {
+        "name": "Robinhood",
+        "pct": "4.4%"
+      },
+      {
+        "name": "Auto1",
+        "pct": "4.3%"
+      },
+      {
+        "name": "Infineon",
+        "pct": "4.3%"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "95.5%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "4.5%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "81.7%"
+      },
+      {
+        "name": "EUR",
+        "pct": "18.3%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Global Crypto Leaders",
+    "share_class_file": "Global_Crypto_Leaders_R-I.pdf",
+    "isin": "DE000A3CNGM3",
+    "as_of": "31.07.2026",
+    "fund_assets": "197.0 M EUR",
+    "inception": "01.09.2021",
+    "fund_type": "UCITS",
+    "sfdr": "Article 6",
+    "management_fee": "1.02%",
+    "ongoing_costs": "1.1% p.a.",
+    "n_positions": "36",
+    "performance": {
+      "cumulative": {
+        "mtd": "-15.4%",
+        "ytd": "2.6%",
+        "1y": "-3.8%",
+        "3y": "135.4%",
+        "5y": "-",
+        "since_inception": "-9.3%"
+      },
+      "volatility": {
+        "mtd": "74.7%",
+        "ytd": "61.3%",
+        "1y": "62.2%",
+        "3y": "64.1%",
+        "5y": "-",
+        "since_inception": "63.1%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "neg.",
+        "3y": "0.5",
+        "5y": "-",
+        "since_inception": "neg."
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "74.8%"
+      },
+      {
+        "name": "RoW",
+        "pct": "13.2%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "12.1%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Mining",
+        "pct": "52.1%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "12.1%"
+      },
+      {
+        "name": "Broker",
+        "pct": "11.7%"
+      },
+      {
+        "name": "Banking & Fintech",
+        "pct": "10.0%"
+      },
+      {
+        "name": "Energy",
+        "pct": "8.0%"
+      },
+      {
+        "name": "Cloud Networking",
+        "pct": "5.1%"
+      },
+      {
+        "name": "Treasury",
+        "pct": "1.1%"
+      }
+    ],
+    "top10": [
+      {
+        "name": "IREN",
+        "pct": "9.6%"
+      },
+      {
+        "name": "Hut8",
+        "pct": "9.2%"
+      },
+      {
+        "name": "Terawulf",
+        "pct": "9.0%"
+      },
+      {
+        "name": "Keel",
+        "pct": "7.1%"
+      },
+      {
+        "name": "Core Scientific",
+        "pct": "4.6%"
+      },
+      {
+        "name": "Galaxy Digital",
+        "pct": "4.5%"
+      },
+      {
+        "name": "Applied Digital",
+        "pct": "4.5%"
+      },
+      {
+        "name": "Xtrackers ETH",
+        "pct": "4.3%"
+      },
+      {
+        "name": "Cipher Mining",
+        "pct": "4.2%"
+      },
+      {
+        "name": "Cleanspark",
+        "pct": "4.1%"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "78.6%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "10.8%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "10.7%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "78.7%"
+      },
+      {
+        "name": "EUR",
+        "pct": "21.3%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Aggressive Growth",
+    "share_class_file": "Aggressive_Growth_R-I.pdf",
+    "isin": "DE000A2QJLA8",
+    "as_of": "31.07.2026",
+    "fund_assets": "72.0 M EUR",
+    "inception": "03.05.2021",
+    "fund_type": "UCITS",
+    "sfdr": "Article 6",
+    "management_fee": "1.02%",
+    "ongoing_costs": "1.1% p.a.",
+    "n_positions": "22",
+    "performance": {
+      "cumulative": {
+        "mtd": "-14.3%",
+        "ytd": "10.9%",
+        "1y": "33.9%",
+        "3y": "209.7%",
+        "5y": "101.2%",
+        "since_inception": "103.3%"
+      },
+      "volatility": {
+        "mtd": "50.7%",
+        "ytd": "40.4%",
+        "1y": "38.6%",
+        "3y": "32.8%",
+        "5y": "35.8%",
+        "since_inception": "35.5%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "0.8",
+        "3y": "1.3",
+        "5y": "0.3",
+        "since_inception": "0.3"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "54.8%"
+      },
+      {
+        "name": "RoW",
+        "pct": "31.1%"
+      },
+      {
+        "name": "Europe",
+        "pct": "9.8%"
+      },
+      {
+        "name": "China",
+        "pct": "4.3%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Information Technology",
+        "pct": "48.0%"
+      },
+      {
+        "name": "Consumer Discretionary",
+        "pct": "15.5%"
+      },
+      {
+        "name": "Financials",
+        "pct": "14.4%"
+      },
+      {
+        "name": "Health Care",
+        "pct": "9.5%"
+      },
+      {
+        "name": "Materials",
+        "pct": "8.5%"
+      },
+      {
+        "name": "Communication Services",
+        "pct": "4.1%"
+      }
+    ],
+    "top10": [
+      {
+        "name": "IREN",
+        "pct": "11.4%"
+      },
+      {
+        "name": "Amazon",
+        "pct": "10.0%"
+      },
+      {
+        "name": "SK Hynix",
+        "pct": "9.9%"
+      },
+      {
+        "name": "TSMC",
+        "pct": "4.9%"
+      },
+      {
+        "name": "Infineon",
+        "pct": "4.8%"
+      },
+      {
+        "name": "Figure Technology",
+        "pct": "4.8%"
+      },
+      {
+        "name": "Robinhood",
+        "pct": "4.8%"
+      },
+      {
+        "name": "Navan",
+        "pct": "4.7%"
+      },
+      {
+        "name": "Compass Pathways",
+        "pct": "4.5%"
+      },
+      {
+        "name": "Zijin Mining",
+        "pct": "4.1%"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "95.2%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "4.8%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "80.2%"
+      },
+      {
+        "name": "EUR",
+        "pct": "15.4%"
+      },
+      {
+        "name": "HKD",
+        "pct": "4.3%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Crypto Opportunities",
+    "share_class_file": "Crypto_Opportunities_I-I.pdf",
+    "isin": "DE000A3CNGP6",
+    "as_of": "31.07.2026",
+    "fund_assets": "57.5 M EUR",
+    "inception": "30.07.2021",
+    "fund_type": "AIF",
+    "sfdr": "Article 6",
+    "management_fee": "1.06%",
+    "ongoing_costs": "1.2% p.a.",
+    "n_positions": "31",
+    "performance": {
+      "cumulative": {
+        "mtd": "-13.8%",
+        "ytd": "13.1%",
+        "1y": "17.5%",
+        "3y": "223.2%",
+        "5y": "53.0%",
+        "since_inception": "53.0%"
+      },
+      "volatility": {
+        "mtd": "86.4%",
+        "ytd": "70.1%",
+        "1y": "68.6%",
+        "3y": "63.6%",
+        "5y": "64.3%",
+        "since_inception": "64.3%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "0.2",
+        "3y": "0.7",
+        "5y": "0.1",
+        "since_inception": "0.1"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "52.2%"
+      },
+      {
+        "name": "RoW",
+        "pct": "29.8%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "17.9%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Mining",
+        "pct": "61.5%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "17.9%"
+      },
+      {
+        "name": "Broker",
+        "pct": "10.0%"
+      },
+      {
+        "name": "Energy",
+        "pct": "6.8%"
+      },
+      {
+        "name": "Cloud Networking",
+        "pct": "3.4%"
+      },
+      {
+        "name": "Treasury",
+        "pct": "0.3%"
+      }
+    ],
+    "top10": [],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "78.7%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "17.2%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "4.2%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "89.4%"
+      },
+      {
+        "name": "EUR",
+        "pct": "10.6%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Defensive Growth",
+    "share_class_file": "Defensive_Growth_I-I.pdf",
+    "isin": "DE000A3EKR20",
+    "as_of": "31.07.2026",
+    "fund_assets": "22.8 M EUR",
+    "inception": "28.06.2024",
+    "fund_type": "UCITS",
+    "sfdr": "Article 8",
+    "management_fee": "1.47%",
+    "ongoing_costs": "1.8% p.a.",
+    "n_positions": "36",
+    "performance": {
+      "cumulative": {
+        "mtd": "-16.4%",
+        "ytd": "-4.3%",
+        "1y": "-6.5%",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "33.2%"
+      },
+      "volatility": {
+        "mtd": "27.0%",
+        "ytd": "25.5%",
+        "1y": "22.9%",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "20.4%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "neg.",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "0.6"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [
+      {
+        "name": "United States",
+        "pct": "61.0%"
+      },
+      {
+        "name": "RoW",
+        "pct": "22.4%"
+      },
+      {
+        "name": "Europe",
+        "pct": "16.6%"
+      }
+    ],
+    "sector": [
+      {
+        "name": "Information Technology",
+        "pct": "45.9%"
+      },
+      {
+        "name": "Consumer Discretionary",
+        "pct": "18.7%"
+      },
+      {
+        "name": "Health Care",
+        "pct": "15.7%"
+      },
+      {
+        "name": "Financials",
+        "pct": "13.7%"
+      },
+      {
+        "name": "Communication Services",
+        "pct": "4.8%"
+      },
+      {
+        "name": "Consumer Staples",
+        "pct": "1.2%"
+      }
+    ],
+    "top10": [
+      {
+        "name": "Amazon",
+        "pct": "7.5%"
+      },
+      {
+        "name": "SK Hynix",
+        "pct": "6.3%"
+      },
+      {
+        "name": "TSMC",
+        "pct": "4.5%"
+      },
+      {
+        "name": "IREN",
+        "pct": "4.4%"
+      },
+      {
+        "name": "Auto1",
+        "pct": "4.3%"
+      },
+      {
+        "name": "Compass Pathways",
+        "pct": "3.8%"
+      },
+      {
+        "name": "Infineon",
+        "pct": "3.6%"
+      },
+      {
+        "name": "Ideaya",
+        "pct": "3.4%"
+      },
+      {
+        "name": "Micron",
+        "pct": "3.4%"
+      },
+      {
+        "name": "Oscar Health",
+        "pct": "3.3%"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Equity",
+        "pct": "76.7%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "23.3%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "79.6%"
+      },
+      {
+        "name": "EUR",
+        "pct": "19.8%"
+      },
+      {
+        "name": "JPY",
+        "pct": "0.6%"
+      }
+    ]
+  },
+  {
+    "name": "BIT Global Multi Asset",
+    "share_class_file": "BIT_Global_Multi_Asset_R-II_EN_ultimo.pdf",
+    "isin": "DE000A40J9Z0",
+    "as_of": "31.07.2026",
+    "fund_assets": "28.1 M EUR",
+    "inception": "28.04.2025",
+    "fund_type": "UCITS",
+    "sfdr": "Article 8",
+    "management_fee": "1.57%",
+    "ongoing_costs": "1.9% p.a.",
+    "n_positions": "67",
+    "performance": {
+      "cumulative": {
+        "mtd": "-6.9%",
+        "ytd": "2.9%",
+        "1y": "3.5%",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "12.2%"
+      },
+      "volatility": {
+        "mtd": "13.0%",
+        "ytd": "15.4%",
+        "1y": "13.0%",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "12.0%"
+      },
+      "sharpe": {
+        "mtd": "-",
+        "ytd": "-",
+        "1y": "0.1",
+        "3y": "-",
+        "5y": "-",
+        "since_inception": "0.6"
+      }
+    },
+    "strategy": "",
+    "commentary": "",
+    "region": [],
+    "sector": [],
+    "top10": [
+      {
+        "name": "BlackRock ICS",
+        "pct": "6.3%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "Micron",
+        "pct": "3.6%",
+        "note": "Equity"
+      },
+      {
+        "name": "Amazon",
+        "pct": "3.3%",
+        "note": "Equity"
+      },
+      {
+        "name": "Xetra Gold",
+        "pct": "3.0%",
+        "note": "Precious Metals"
+      },
+      {
+        "name": "KLA",
+        "pct": "2.5%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "Coinbase",
+        "pct": "2.5%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "Nvidia",
+        "pct": "2.4%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "Intel",
+        "pct": "2.2%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "ASML",
+        "pct": "2.1%",
+        "note": "Fixed Income"
+      },
+      {
+        "name": "Apple",
+        "pct": "2.1%",
+        "note": "Fixed Income"
+      }
+    ],
+    "asset_classes": [
+      {
+        "name": "Fixed Income",
+        "pct": "50.7%"
+      },
+      {
+        "name": "Equity",
+        "pct": "27.9%"
+      },
+      {
+        "name": "Crypto Assets",
+        "pct": "3.2%"
+      },
+      {
+        "name": "Precious Metals",
+        "pct": "3.0%"
+      },
+      {
+        "name": "Cash & Derivatives",
+        "pct": "15.2%"
+      }
+    ],
+    "currencies": [
+      {
+        "name": "USD",
+        "pct": "70.9%"
+      },
+      {
+        "name": "EUR",
+        "pct": "28.8%"
+      },
+      {
+        "name": "JPY",
+        "pct": "0.3%"
+      },
+      {
+        "name": "Yield to maturity",
+        "pct": "4.1%"
+      },
+      {
+        "name": "Average Coupon",
+        "pct": "3.4%"
+      }
+    ]
+  }
+]

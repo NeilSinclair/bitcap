@@ -1,0 +1,4846 @@
+{
+  "summary": {
+    "papers": 3,
+    "gold_authors": 1014,
+    "llm_authors": 1105,
+    "name_precision": 0.8425,
+    "name_recall": 0.9181,
+    "name_f1": 0.8787,
+    "names_missed": 83,
+    "names_invented": 174,
+    "role_disagreements": 905,
+    "usd": 1.2281
+  },
+  "papers": [
+    {
+      "title": "GPT-4 Technical Report",
+      "url": "https://arxiv.org/abs/2303.08774v6",
+      "gold_n": 330,
+      "llm_n": 284,
+      "matched": 283,
+      "missed": [
+        "Akhila Yerukola",
+        "Alex Rosenblatt",
+        "Alice Hunsberger",
+        "Andrew D. White",
+        "Andrew J. Lohn",
+        "Andrew MacPherson",
+        "Anna Katariina Wisakanto",
+        "Anna Mills",
+        "Aviv Ovadya",
+        "Boru Gollo Jattani",
+        "Bryan West",
+        "C\u00e8sar Ferri",
+        "Ciel Qi",
+        "D. Katz (Stanford CodeX)",
+        "Dan Hendrycks",
+        "Dan Kaszeta",
+        "Eric Liddick",
+        "Gavin Hartnett",
+        "George Shih",
+        "Heather Frase",
+        "Jake J. Hecla",
+        "Jan Hendrik Kirchner",
+        "Jimin Mun",
+        "Jose Hernandez-Orallo",
+        "Lauren Kahn",
+        "Lexin Zhou",
+        "M. Bommarito (Stanford CodeX)",
+        "Maarten Sap",
+        "Madeleine B. Thompson",
+        "Mantas Mazeika",
+        "Melanie Subbiah",
+        "Michael",
+        "Mohammad Bavarian",
+        "Muhammad Shoker",
+        "Nathan Labenz",
+        "Noam Kolt",
+        "OpenAI",
+        "Paul R\u00f6ttger",
+        "Pokorny",
+        "Rajiv W. Jain",
+        "Roya Pakzad",
+        "Sara Kingsley",
+        "Sophie Duba",
+        "Vitchyr H. Pong",
+        "Wout Schellaert",
+        "Yael Moros",
+        "Yifan Peng"
+      ],
+      "invented": [
+        "Janko"
+      ],
+      "role_diffs": [
+        {
+          "name": "Aalok Mehta",
+          "gold": "Core contributors",
+          "llm": "Communications"
+        },
+        {
+          "name": "Adam Perelman",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Aditya Ramesh",
+          "gold": null,
+          "llm": "Architecture research"
+        },
+        {
+          "name": "Adrien Ecoffet",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Akila Welihinda",
+          "gold": null,
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Alan Hickey",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Alec Radford",
+          "gold": "Core contributors",
+          "llm": "Architecture research"
+        },
+        {
+          "name": "Alethea Power",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Alex Paino",
+          "gold": "Core contributors",
+          "llm": "Contamination investigations"
+        },
+        {
+          "name": "Alex Passos",
+          "gold": "Core contributors",
+          "llm": "Dataset contributions"
+        },
+        {
+          "name": "Ali Kamali",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Alvin Wang",
+          "gold": "Core contributors",
+          "llm": "Capability evaluations"
+        },
+        {
+          "name": "Amin Tootoonchian",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Andrea Vallone",
+          "gold": "Core contributors",
+          "llm": "Trust & safety policy"
+        },
+        {
+          "name": "Andrew Cann",
+          "gold": "Core contributors",
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Andrew Kondrich",
+          "gold": "Core contributors",
+          "llm": "Novel capability discovery"
+        },
+        {
+          "name": "Andrew Mayne",
+          "gold": "Core contributors",
+          "llm": "Communications"
+        },
+        {
+          "name": "Andrew Peng",
+          "gold": "Core contributors",
+          "llm": "GPT-4 API & ChatML deployment"
+        },
+        {
+          "name": "Andrey Mishchenko",
+          "gold": "Core contributors",
+          "llm": "ChatML format"
+        },
+        {
+          "name": "Angela Jiang",
+          "gold": "Core contributors",
+          "llm": "Product management"
+        },
+        {
+          "name": "Anna Makanju",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Anna-Luisa Brakman",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Aris Konstantinidis",
+          "gold": "Core contributors",
+          "llm": "Data infrastructure"
+        },
+        {
+          "name": "Arka Dhar",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Arun Vijayvergiya",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Arvind Neelakantan",
+          "gold": "Core contributors",
+          "llm": "Inference research"
+        },
+        {
+          "name": "Ashley Pantuliano",
+          "gold": "Launch partners & product operations",
+          "llm": "Legal"
+        },
+        {
+          "name": "Ashvin Nair",
+          "gold": "Core contributors",
+          "llm": "Code capability"
+        },
+        {
+          "name": "Atty Eleti",
+          "gold": "Core contributors",
+          "llm": "GPT-4 API & ChatML deployment"
+        },
+        {
+          "name": "Barret Zoph",
+          "gold": null,
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Ben Chess",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Ben Wang",
+          "gold": "Core contributors",
+          "llm": "Long context research"
+        },
+        {
+          "name": "Benjamin Sokolowsky",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Bob Rotsted",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Boris Power",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Brandon Houghton",
+          "gold": "Core contributors",
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "Brooke Chan",
+          "gold": "Core contributors",
+          "llm": "Contracting, revenue, pricing, & finance support"
+        },
+        {
+          "name": "Cameron Raymond",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Carl Ross",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Carroll Wainwright",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Casey Chu",
+          "gold": null,
+          "llm": "Architecture research"
+        },
+        {
+          "name": "Chak Ming Li",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Che Chang",
+          "gold": "Core contributors",
+          "llm": "Legal"
+        },
+        {
+          "name": "Chelsea Carlson",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Chelsea Voss",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Chester Cho",
+          "gold": "Core contributors",
+          "llm": "GPT-4 API & ChatML deployment"
+        },
+        {
+          "name": "Chong Zhang",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Chris Hallacy",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Chris Hesse",
+          "gold": "Core contributors",
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "Christian Gibson",
+          "gold": "Core contributors",
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Christina Kim",
+          "gold": "Core contributors",
+          "llm": "ChatML format"
+        },
+        {
+          "name": "Christine McLeavey",
+          "gold": "Core contributors",
+          "llm": "Architecture research"
+        },
+        {
+          "name": "Christopher Berner",
+          "gold": null,
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "CJ Weinmann",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Clemens Winter",
+          "gold": "Core contributors",
+          "llm": "Long context research"
+        },
+        {
+          "name": "Cory Decareaux",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Cullen O\u2019Keefe",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Damien Deville",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Dan Mossing",
+          "gold": "Core contributors",
+          "llm": "Foundational RLHF and InstructGPT work"
+        },
+        {
+          "name": "Daniel Kokotajlo",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Daniel Levy",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Daniel Mossing",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Daniel Selsam",
+          "gold": "Core contributors",
+          "llm": "Dataset contributions"
+        },
+        {
+          "name": "Dave Cummings",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Dave Willner",
+          "gold": "Core contributors",
+          "llm": "Trust & safety policy"
+        },
+        {
+          "name": "David Dohan",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "David Farhi",
+          "gold": "Core contributors",
+          "llm": "Authorship & credit attribution"
+        },
+        {
+          "name": "David Medina",
+          "gold": "Core contributors",
+          "llm": "Data infrastructure"
+        },
+        {
+          "name": "David M\u00e9ly",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "David Schnurr",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Derek Chen",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Diogo Almeida",
+          "gold": null,
+          "llm": "Instruction following and API evals"
+        },
+        {
+          "name": "Elie Georges",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Elizabeth Proehl",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Elizabeth Tseng",
+          "gold": "Core contributors",
+          "llm": "Compute allocation support"
+        },
+        {
+          "name": "Emy Parparita",
+          "gold": "Core contributors",
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Eric Sigler",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Evan Morikawa",
+          "gold": null,
+          "llm": "Deployment compute"
+        },
+        {
+          "name": "Felipe Petroski Such",
+          "gold": null,
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Filipe de Avila Belbute Peres",
+          "gold": null,
+          "llm": "Launch partners & product operations"
+        },
+        {
+          "name": "Florencia Leoni Aleman",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Fotis Chantzis",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Francis Real",
+          "gold": "Core contributors",
+          "llm": "System administration & on-call support"
+        },
+        {
+          "name": "Gabriel Bernadett-Shapiro",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Gabriel Goh",
+          "gold": "Core contributors",
+          "llm": "Long context research"
+        },
+        {
+          "name": "Giambattista Parascandolo",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Girish Sastry",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Greg Brockman",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Gretchen Krueger",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Haiming Bao",
+          "gold": null,
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Hannah Wong",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Haozhun Jin",
+          "gold": "Core contributors",
+          "llm": "Code capability"
+        },
+        {
+          "name": "Heather Schmidt",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Heewoo Jun",
+          "gold": "Core contributors",
+          "llm": "Long context research"
+        },
+        {
+          "name": "Hendrik Kirchner",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Henri Roussez",
+          "gold": "Core contributors",
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Henrique Ponde de Oliveira Pinto",
+          "gold": null,
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Hyeonwoo Noh",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Hyung Won Chung",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Ian Sohl",
+          "gold": "Core contributors",
+          "llm": "Data"
+        },
+        {
+          "name": "Igor Babuschkin",
+          "gold": null,
+          "llm": "Optimization & architecture"
+        },
+        {
+          "name": "Ikai Lan",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Ilge Akkaya",
+          "gold": null,
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Ingmar Kanitscheider",
+          "gold": "Core contributors",
+          "llm": "Contamination investigations"
+        },
+        {
+          "name": "Irwan Bello",
+          "gold": null,
+          "llm": "Data infrastructure"
+        },
+        {
+          "name": "Jack Rae",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Jacob Menick",
+          "gold": "Core contributors",
+          "llm": "ChatML format"
+        },
+        {
+          "name": "Jade Leung",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Jake Berdine",
+          "gold": null,
+          "llm": "Legal"
+        },
+        {
+          "name": "Jake McNeil",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Jakub Pachocki",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Jamie Kiros",
+          "gold": "Core contributors",
+          "llm": "Safety and policy evaluations"
+        },
+        {
+          "name": "Jan Leike",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Janko Altenschmidt",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Jason Chen",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Jason Wei",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Jeff Belgum",
+          "gold": "Core contributors",
+          "llm": "Trust & safety engineering"
+        },
+        {
+          "name": "Jeff Harris",
+          "gold": null,
+          "llm": "Product management"
+        },
+        {
+          "name": "Jeff Wu",
+          "gold": "Core contributors",
+          "llm": "Foundational RLHF and InstructGPT work"
+        },
+        {
+          "name": "Jeremiah Currier",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Jerry Tworek",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Jesse Han",
+          "gold": "Core contributors",
+          "llm": "Optimization & architecture"
+        },
+        {
+          "name": "Jessica Shieh",
+          "gold": "Core contributors",
+          "llm": "Launch partners & product operations"
+        },
+        {
+          "name": "Jiayi Weng",
+          "gold": "Core contributors",
+          "llm": "Flagship training runs"
+        },
+        {
+          "name": "Jie Tang",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Joanne Jang",
+          "gold": "Core contributors",
+          "llm": "Product management"
+        },
+        {
+          "name": "Joe Palermo",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Joel Parish",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Johannes Heidecke",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "John Schulman",
+          "gold": "Core contributors",
+          "llm": "Model safety"
+        },
+        {
+          "name": "Jonathan Gordon",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Jonathan Ward",
+          "gold": "Core contributors",
+          "llm": "Data infrastructure"
+        },
+        {
+          "name": "Jong Wook Kim",
+          "gold": "Core contributors",
+          "llm": "Data"
+        },
+        {
+          "name": "Joost Huizinga",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Jordan Sitkin",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Josh Achiam",
+          "gold": null,
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Joshua Gross",
+          "gold": "Core contributors",
+          "llm": "Data infrastructure"
+        },
+        {
+          "name": "Juan Felipe Cer\u00f3n Uribe",
+          "gold": "Core contributors",
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Juntang Zhuang",
+          "gold": null,
+          "llm": "Capability evaluations"
+        },
+        {
+          "name": "Justin Jay Wang",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Juston Forte",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Kai Xiao",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Katarina Slama",
+          "gold": "Core contributors",
+          "llm": "Foundational RLHF and InstructGPT work"
+        },
+        {
+          "name": "Kendra Rimbach",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Kenny Hsu",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Kevin Button",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Kevin Yu",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Kim Malfacini",
+          "gold": "Core contributors",
+          "llm": "Trust & safety policy"
+        },
+        {
+          "name": "Kyle Kosic",
+          "gold": "Core contributors",
+          "llm": "Flagship training runs"
+        },
+        {
+          "name": "Lama Ahmad",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Lenny Bogdonoff",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Leo Gao",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Liam Fedus",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Logan Kilpatrick",
+          "gold": "Core contributors",
+          "llm": "OpenAI Evals library"
+        },
+        {
+          "name": "Long Ouyang",
+          "gold": "Core contributors",
+          "llm": "Foundational RLHF and InstructGPT work"
+        },
+        {
+          "name": "Luke Metz",
+          "gold": "Core contributors",
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Maddie Simens",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Madelaine Boyd",
+          "gold": "Core contributors",
+          "llm": "Trust & safety engineering"
+        },
+        {
+          "name": "Madeleine Thompson",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Mario Salterelli",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Mark Chen",
+          "gold": "Core contributors",
+          "llm": "Deployment & post-training"
+        },
+        {
+          "name": "Marvin Zhang",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Mateusz Litwin",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Matt Knight",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Matt Wiethoff",
+          "gold": "Core contributors",
+          "llm": "Code capability"
+        },
+        {
+          "name": "Michael Lampe",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Michael Petrov",
+          "gold": "Core contributors",
+          "llm": "Hardware correctness"
+        },
+        {
+          "name": "Michael Rai Pokorny",
+          "gold": "Core contributors",
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Michael Wu",
+          "gold": null,
+          "llm": "Inference research"
+        },
+        {
+          "name": "Michelle Pokrass",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Mike Heaton",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Mikhail Pavlov",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Miles Brundage",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Mo Bavarian",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Molly Lin",
+          "gold": "Core contributors",
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Morgan Grafstein",
+          "gold": null,
+          "llm": "System administration & on-call support"
+        },
+        {
+          "name": "Natalie Staudacher",
+          "gold": "Core contributors",
+          "llm": "Launch partners & product operations"
+        },
+        {
+          "name": "Natalie Summers",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Nick Ryder",
+          "gold": "Core contributors",
+          "llm": "Capability evaluations"
+        },
+        {
+          "name": "Nick Turley",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Niko Felix",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Nikolas Tezak",
+          "gold": "Core contributors",
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "Nitish Shirish Keskar",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Noah Deutsch",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Oleg Boiko",
+          "gold": "Core contributors",
+          "llm": "Hardware correctness"
+        },
+        {
+          "name": "Oleg Murk",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Pamela Mishkin",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Paul Baltescu",
+          "gold": null,
+          "llm": "Inference research"
+        },
+        {
+          "name": "Paul McMillan",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Peter Hoeschele",
+          "gold": "Core contributors",
+          "llm": "Deployment compute"
+        },
+        {
+          "name": "Peter Welinder",
+          "gold": null,
+          "llm": "Additional contributions"
+        },
+        {
+          "name": "Phil Tillet",
+          "gold": "Core contributors",
+          "llm": "Long context kernels"
+        },
+        {
+          "name": "Pranav Shyam",
+          "gold": "Core contributors",
+          "llm": "Data"
+        },
+        {
+          "name": "Qiming Yuan",
+          "gold": "Core contributors",
+          "llm": "Contamination investigations"
+        },
+        {
+          "name": "Rachel Lim",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Rai Pokorny",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Rajeev Nayak",
+          "gold": "Core contributors",
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Rapha Gontijo-Lopes",
+          "gold": "Core contributors",
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Raul Puri",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Red Avila",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Reiichiro Nakano",
+          "gold": "Core contributors",
+          "llm": "Deployment & post-training"
+        },
+        {
+          "name": "Richard Ngo",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Roger Jiang",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Rory Carmichael",
+          "gold": "Core contributors",
+          "llm": "Compute cluster scaling"
+        },
+        {
+          "name": "Rosie Campbell",
+          "gold": null,
+          "llm": "Trust & safety policy"
+        },
+        {
+          "name": "Rowan Zellers",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Ruby Chen",
+          "gold": null,
+          "llm": "Communications"
+        },
+        {
+          "name": "Ryan Greene",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Ryan Lowe",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Sam Manning",
+          "gold": "Core contributors",
+          "llm": "Economic impact evaluation"
+        },
+        {
+          "name": "Sam Wolrich",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Samuel Wolrich",
+          "gold": null,
+          "llm": "Trust & safety monitoring and response"
+        },
+        {
+          "name": "Sandhini Agarwal",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Sarah Shoker",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Sarah Yoo",
+          "gold": "Core contributors",
+          "llm": "Code capability"
+        },
+        {
+          "name": "Scott Gray",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Scott Mayer McKinney",
+          "gold": "Core contributors",
+          "llm": "Contamination investigations"
+        },
+        {
+          "name": "Shantanu Jain",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Shawn Jain",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Sheila Dunning",
+          "gold": "Core contributors",
+          "llm": "Legal"
+        },
+        {
+          "name": "Shengjia Zhao",
+          "gold": "Core contributors",
+          "llm": "ChatGPT evaluations"
+        },
+        {
+          "name": "Shengli Hu",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Sherwin Wu",
+          "gold": null,
+          "llm": "GPT-4 API & ChatML deployment"
+        },
+        {
+          "name": "Shibani Santurkar",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Shixiang Shane Gu",
+          "gold": "Core contributors",
+          "llm": "Vision evaluations"
+        },
+        {
+          "name": "Shyamal Anadkat",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Stephanie Lin",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Steve Dowling",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Suchir Balaji",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Sully Chen",
+          "gold": null,
+          "llm": "Capability evaluations"
+        },
+        {
+          "name": "Szymon Sidor",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Tabarak Khan",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Tao Xu",
+          "gold": "Core contributors",
+          "llm": "Data"
+        },
+        {
+          "name": "Tarun Gogineni",
+          "gold": "Core contributors",
+          "llm": "Dataset contributions"
+        },
+        {
+          "name": "Ted Sanders",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Teddy Lee",
+          "gold": "Core contributors",
+          "llm": "Launch partners & product operations"
+        },
+        {
+          "name": "Theresa Lopez",
+          "gold": null,
+          "llm": "Compute allocation support"
+        },
+        {
+          "name": "Thomas Degry",
+          "gold": "Blog post & paper content",
+          "llm": "Communications"
+        },
+        {
+          "name": "Tianhao Zheng",
+          "gold": null,
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "Tim Brooks",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Todor Markov",
+          "gold": "Core contributors",
+          "llm": "System card & broader impacts analysis"
+        },
+        {
+          "name": "Tomer Kaftan",
+          "gold": "Core contributors",
+          "llm": "Inference infrastructure"
+        },
+        {
+          "name": "Tong Mu",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Trevor Cai",
+          "gold": "Core contributors",
+          "llm": "Training run babysitting"
+        },
+        {
+          "name": "Tyna Eloundou",
+          "gold": "Core contributors",
+          "llm": "Blog post & paper content"
+        },
+        {
+          "name": "Valerie Balcom",
+          "gold": null,
+          "llm": "GPT-4 web experience"
+        },
+        {
+          "name": "Vik Goel",
+          "gold": "Core contributors",
+          "llm": "Trust & safety engineering"
+        },
+        {
+          "name": "Vinnie Monaco",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Vishal Kuo",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Vitchyr Pong",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Wade Hickey",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "William Zhuk",
+          "gold": "Core contributors",
+          "llm": "Code capability"
+        },
+        {
+          "name": "Wojciech Zaremba",
+          "gold": "Core contributors",
+          "llm": "Coding evaluations"
+        },
+        {
+          "name": "Xin Hu",
+          "gold": "Core contributors",
+          "llm": "Security & privacy engineering"
+        },
+        {
+          "name": "Yang Song",
+          "gold": "Core contributors",
+          "llm": "OpenAI adversarial testers"
+        },
+        {
+          "name": "Yongjik Kim",
+          "gold": "Core contributors",
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "Yuchen He",
+          "gold": "Core contributors",
+          "llm": "Inference research"
+        },
+        {
+          "name": "Yufei Guo",
+          "gold": "Core contributors",
+          "llm": "Reliability engineering"
+        },
+        {
+          "name": "Yunxing Dai",
+          "gold": "Core contributors",
+          "llm": "Distributed training infrastructure"
+        },
+        {
+          "name": "\u0141ukasz Kaiser",
+          "gold": null,
+          "llm": "Dataset contributions"
+        },
+        {
+          "name": "\u0141ukasz Kondraciuk",
+          "gold": null,
+          "llm": "Distributed training infrastructure"
+        }
+      ],
+      "departed_diffs": [],
+      "order_meaningful_llm": false,
+      "truncated": true
+    },
+    {
+      "title": "GPT-4o System Card",
+      "url": "https://arxiv.org/abs/2410.21276v1",
+      "gold_n": 420,
+      "llm_n": 523,
+      "matched": 416,
+      "missed": [
+        "OpenAI",
+        "Shuaiqi",
+        "Vinnie Monaco GTM",
+        "Xia"
+      ],
+      "invented": [
+        "Adam Kuzdrali\u0144ski",
+        "Alexa W",
+        "Amer Sawan",
+        "Ana-Diamond Aaba Atach",
+        "Anna Becker",
+        "Arjun Singh Puri",
+        "Baybars Orsek",
+        "Ben Kobren",
+        "Bertie Vidgen",
+        "Blue Sheffer",
+        "Broderick McDonald",
+        "Bruce Bassett",
+        "Bruno Arsioli",
+        "Caroline Friedman Levy",
+        "Casey Williams",
+        "Choice Mpanza",
+        "Christophe Ego",
+        "Ciel Qi",
+        "Cory Alpert",
+        "Dani Madrid-Morales",
+        "Daniel Kang",
+        "Darius Emrani",
+        "David Adelani",
+        "Dominik Haenni",
+        "Drin Ferizaj",
+        "Edward Bayes",
+        "Emily Lynell Edwards",
+        "Emmett Alton Sartor",
+        "Farhan Sahito",
+        "Francesco De Toni",
+        "Gabriel Chua",
+        "Gaines Hubbell",
+        "Gelei Deng",
+        "George Gor",
+        "Gerardo Adesso",
+        "Grant Brailsford",
+        "Hao Zhao",
+        "Hasan Sawan",
+        "Henry Silverman",
+        "Herman Wasserman",
+        "Hugo Gobato Souto",
+        "Igneciah Pocia Thete",
+        "Imaan Khadir",
+        "Ioana Tanase",
+        "Isabella Andric",
+        "Israel A. Azime",
+        "Ivan Carbajal",
+        "Jacy Reese Anthis",
+        "Jake Okechukwu Effoduh",
+        "Javier Garc\u00eda Arredondo",
+        "Jennifer Victoria Scurrell",
+        "Jesujoba Oluwadara Alabi",
+        "Jianlong Zhu",
+        "Joanna Brzyska",
+        "Jonas Kgomo",
+        "Kate Turetsky",
+        "Kelly Bare",
+        "Kristen Menou",
+        "Latisha Harry",
+        "Lee Elkin",
+        "Liseli Akayombokwa",
+        "Louise Giam",
+        "M. Alexandra Garc\u00eda P\u00e9rez",
+        "Manas Chawla",
+        "Marjana Skenduli",
+        "Martin Ryd\u00e9n",
+        "Mateusz Garncarek",
+        "Matt Groh",
+        "Maureen Robinson",
+        "Maximilian M\u00fcller",
+        "Micah Bornfree",
+        "Michael Richter",
+        "Michela Passoni",
+        "Mikael von Strauss",
+        "Mohamed Sakher Sawan",
+        "Mohammed Elzubeir",
+        "Muhammad Saad Naeem",
+        "Murat Ata",
+        "Nanditha Narayanamoorthy",
+        "Naome A. Etori",
+        "Naomi Hart",
+        "Nathan Heath",
+        "Patrick Caughey",
+        "Per Wikman-Svahn",
+        "Piyalitt Ittichaiwong",
+        "Prerna Juneja",
+        "Rafael Gonzalez-Vazquez",
+        "Rand Forrester",
+        "Richard Fang",
+        "Rosa Ana del Roc\u00edo Valderrama",
+        "Saad Hermak",
+        "Sangeet Kumar",
+        "Sara Kingsley",
+        "Shamsuddeen Hassan Muhammad",
+        "Shelby Grossman",
+        "Shezaad Dastoor",
+        "Susan Nesbitt",
+        "Theresa Kennedy",
+        "Thomas Hagen",
+        "Thorsten Holz",
+        "Tony Younes",
+        "Torin van den Bulk",
+        "Viktoria Holz",
+        "Vincent Nestler",
+        "Xudong Han",
+        "Xuelong Fan",
+        "Zhicong Zhao"
+      ],
+      "role_diffs": [
+        {
+          "name": "Aaron Hurst",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Adam Lerer",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Adam P. Goucher",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Adam Perelman",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Aditya Ramesh",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Aidan Clark",
+          "gold": null,
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "AJ Ostrow",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Akila Welihinda",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alan Hayes",
+          "gold": null,
+          "llm": "Legal"
+        },
+        {
+          "name": "Alec Radford",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Aleksander M\u0105dry",
+          "gold": null,
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Alex Baker-Whitcomb",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Alex Beutel",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alex Borzunov",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alex Carney",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Alex Chow",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alex Kirillov",
+          "gold": null,
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Alex Nichol",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Alex Paino",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Alex Renzin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alex Tachard Passos",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alexander Kirillov",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Alexi Christakis",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Alexis Conneau",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Ali Kamali",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Allan Jabri",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Allison Moyer",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Allison Tam",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Amadou Crookes",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Amin Tootoochian",
+          "gold": null,
+          "llm": "Model distribution leads"
+        },
+        {
+          "name": "Amin Tootoonchian",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ananya Kumar",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Andrea Vallone",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Andrej Karpathy",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Andrew Braunstein",
+          "gold": null,
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Andrew Cann",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Andrew Codispoti",
+          "gold": null,
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Andrew Galu",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Andrew Kondrich",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Andrew Tulloch",
+          "gold": "Pre-training leads",
+          "llm": "Data Systems lead"
+        },
+        {
+          "name": "Andrey Mishchenko",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Angela Baek",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Angela Jiang",
+          "gold": "Pre-training leads",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Antoine Pelisse",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Antonia Woodford",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Anuj Gosalia",
+          "gold": "Pre-training leads",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Arka Dhar",
+          "gold": null,
+          "llm": "Human data lead"
+        },
+        {
+          "name": "Ashley Pantuliano",
+          "gold": "Model Launch and Deployment",
+          "llm": "Legal"
+        },
+        {
+          "name": "Avi Nayak",
+          "gold": "Pre-training leads",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Avital Oliver",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Barret Zoph",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Behrooz Ghorbani",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ben Leimberger",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ben Rossen",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Ben Sokolowsky",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Ben Wang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Benjamin Zweig",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Beth Hoover",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Blake Samic",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Bob McGrew",
+          "gold": "Model Launch and Deployment",
+          "llm": "Resource Allocation & Problem Solving"
+        },
+        {
+          "name": "Bobby Spero",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Bogo Giertler",
+          "gold": "Multimodal lead",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Bowen Cheng",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Brad Lightcap",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Brandon Walkin",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Brendan Quinn",
+          "gold": "Multimodal lead",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Brian Guarraci",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Brian Hsu",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Bright Kellogg",
+          "gold": "Model Launch and Deployment",
+          "llm": "Legal"
+        },
+        {
+          "name": "Brydon Eastman",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Camillo Lugaresi",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Carroll Wainwright",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Cary Bassin",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Cary Hudson",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Casey Chu",
+          "gold": "Multimodal lead",
+          "llm": "Visual generation leads"
+        },
+        {
+          "name": "Chad Nelson",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Chak Li",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Chan Jun Shern",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Channing Conger",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Charlotte Barette",
+          "gold": "Pre-training leads",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Chelsea Voss",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Chen Ding",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Cheng Lu",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Chong Zhang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Chris Beaumont",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Chris Hallacy",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Chris Koch",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Christian Gibson",
+          "gold": "Pre-training leads",
+          "llm": "Supercomputing leads"
+        },
+        {
+          "name": "Christina Kim",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Christine Choi",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Christine McLeavey",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Christopher Hesse",
+          "gold": "Pre-training leads",
+          "llm": "ML leads"
+        },
+        {
+          "name": "Claudia Fischer",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Clemens Winter",
+          "gold": null,
+          "llm": "Architecture leads"
+        },
+        {
+          "name": "Coley Czarnecki",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Colin Jarvis",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Colin Wei",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Constantin Koumouzelis",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Dane Sherburn",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Daniel Kappler",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Daniel Levin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Daniel Levy",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "David Carr",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "David Farhi",
+          "gold": "Pre-training leads",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "David Mely",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "David Robinson",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "David Sasaki",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Denny Jin",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Dev Valladares",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Dimitris Tsipras",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Doug Li",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Duc Phong Nguyen",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Duncan Findlay",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Edede Oiwoh",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Edmund Wong",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ehsan Asdar",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Elizabeth Proehl",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Elizabeth Yang",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Eric Antonow",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Eric Kramer",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Eric Peterson",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Eric Sigler",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Eric Wallace",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Eugene Brevdo",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Evan Mays",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Farzad Khorasani",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Felipe Petroski Such",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Filippo Raso",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Francis Zhang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Fred von Lohmann",
+          "gold": null,
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Freddie Sulit",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Gabriel Goh",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Gene Oden",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Geoff Salmon",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Giulio Starace",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Greg Brockman",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Hadi Salman",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Haiming Bao",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Haitang Hu",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Hannah Wong",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Haoyu Wang",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Heather Schmidt",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Heather Whitney",
+          "gold": "Model Launch and Deployment",
+          "llm": "Legal"
+        },
+        {
+          "name": "Heewoo Jun",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Hendrik Kirchner",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Henrique Ponde de Oliveira Pinto",
+          "gold": null,
+          "llm": "Inference Productionization lead"
+        },
+        {
+          "name": "Hongyu Ren",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Huiwen Chang",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Hyung Won Chung",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ian Kivlichan",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ian O\u2019Connell",
+          "gold": "Pre-training leads",
+          "llm": "Runtime lead"
+        },
+        {
+          "name": "Ian Osband",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ian Silber",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ian Sohl",
+          "gold": "Pre-training leads",
+          "llm": "Data acquisition leads"
+        },
+        {
+          "name": "Ibrahim Okuyucu",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ikai Lan",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Ilya Kostrikov",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ilya Sutskever",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Ingmar Kanitscheider",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ishaan Gulrajani",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jacob Coxon",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jacob Menick",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jakub Pachocki",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "James Aung",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "James Betker",
+          "gold": "Multimodal lead",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "James Crooks",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "James Lennon",
+          "gold": "Pre-training leads",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Jamie Kiros",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jan Leike",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Jane Park",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jason Kwon",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jason Phang",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Jason Teplitz",
+          "gold": "Pre-training leads",
+          "llm": "Systems lead"
+        },
+        {
+          "name": "Jason Wei",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jason Wolfe",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jay Chen",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jeff Harris",
+          "gold": "Pre-training leads",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Jenia Varavva",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jessica Gan Lee",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Jessica Shieh",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Ji Lin",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jiahui Yu",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jiayi Weng",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jie Tang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jieqi Yu",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Joanne Jang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Joaquin Quinonero Candela",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Joe Beutler",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Joe Landers",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Joel Parish",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Johannes Heidecke",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "John Schulman",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jonathan Lachman",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Jonathan McKay",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jonathan Uesato",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Jonathan Ward",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jong Wook Kim",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Joost Huizinga",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Jordan Sitkin",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Jos Kraaijeveld",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Josh Gross",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Josh Kaplan",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Josh Snyder",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Joshua Achiam",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Joy Jiao",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Joyce Lee",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Juntang Zhuang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Justyn Harriman",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Kai Fricke",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Kai Hayashi",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Karan Singhal",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Katy Shi",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Kavin Karthik",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Kayla Wood",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Kendra Rimbach",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Kenny Hsu",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Kenny Nguyen",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Keren Gu-Lemberg",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Kevin Button",
+          "gold": null,
+          "llm": "Security and privacy"
+        },
+        {
+          "name": "Kevin Liu",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Kiel Howe",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Krithika Muthukumar",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Kyle Luther",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lama Ahmad",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Larry Kai",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lauren Itow",
+          "gold": "Pre-training leads",
+          "llm": "Resource Allocation & Problem Solving"
+        },
+        {
+          "name": "Lauren Workman",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Leher Pathak",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Leo Chen",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Li Jing",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lia Guy",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Liam Fedus",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Liang Zhou",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lien Mamitsuka",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lilian Weng",
+          "gold": "Pre-training leads",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Lindsay McCallum",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Lindsey Held",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Long Ouyang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Louis Feuvrier",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lu Zhang",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Lukas Kondraciuk",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Lukasz Kaiser",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Luke Hewitt",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Luke Metz",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Lyric Doshi",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mada Aflak",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Maddie Simens",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Madelaine Boyd",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Madeleine Thompson",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Marat Dukhan",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mark Chen",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Mark Gray",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Mark Hudnall",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Marvin Zhang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Marwan Aljubeh",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Mateusz Litwin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Matthew Zeng",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Max Johnson",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Maya Shetty",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Mayank Gupta",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Meghan Shah",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mehmet Yatbaz",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Meng Jia Yang",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Mengchao Zhong",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mia Glaese",
+          "gold": "Pre-training leads",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Mianna Chen",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Michael Janner",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Michael Lampe",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Michael Petrov",
+          "gold": "Pre-training leads",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Michael Wu",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Michele Wang",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Michelle Fradin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Michelle Pokrass",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Miguel Castro",
+          "gold": null,
+          "llm": "Model distribution leads"
+        },
+        {
+          "name": "Miguel Oom Temudo de Castro",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mikhail Pavlov",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Miles Brundage",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Miles Wang",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Minal Khan",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Mira Murati",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Mo Bavarian",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Molly Lin",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Murat Yesildal",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Nacho Soto",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Natalia Gimelshein",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Natalie Cone",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Natalie Staudacher",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Natalie Summers",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Natan LaFontaine",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Neil Chowdhury",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Nick Ryder",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Nick Stathas",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Nick Turley",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Nik Tezak",
+          "gold": "Pre-training leads",
+          "llm": "Resource Allocation & Problem Solving"
+        },
+        {
+          "name": "Niko Felix",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Nithanth Kudige",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Nitish Keskar",
+          "gold": null,
+          "llm": "Long-context lead"
+        },
+        {
+          "name": "Noah Deutsch",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Noel Bundick",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Nora Puckett",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Ofir Nachum",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ola Okelola",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Oleg Boiko",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Oleg Murk",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Oliver Jaffe",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Olivia Watkins",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Olivier Godement",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Owen Campbell-Moore",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Patrick Chao",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Paul McMillan",
+          "gold": "Model Launch and Deployment",
+          "llm": "Security and privacy"
+        },
+        {
+          "name": "Pavel Belov",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Peng Su",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Peter Bak",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Peter Bakkum",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Peter Deng",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Peter Dolan",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Peter Hoeschele",
+          "gold": "Model Launch and Deployment",
+          "llm": "Resource Allocation & Problem Solving"
+        },
+        {
+          "name": "Peter Welinder",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Phil Tillet",
+          "gold": null,
+          "llm": "Kernels lead"
+        },
+        {
+          "name": "Philip Pronin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Philippe Tillet",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Prafulla Dhariwal",
+          "gold": "Model Launch and Deployment",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Qiming Yuan",
+          "gold": null,
+          "llm": "Data acquisition leads"
+        },
+        {
+          "name": "Rachel Dias",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Rachel Lim",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Rahul Arora",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Rajan Troll",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Randall Lin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Rapha Gontijo Lopes",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Raul Puri",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Reah Miyara",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Reimar Leike",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Renaud Gaubert",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Reza Zamani",
+          "gold": "Pre-training leads",
+          "llm": "Hardware health leads"
+        },
+        {
+          "name": "Ricky Wang",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Rob Donnelly",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Rob Honsby",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Rocky Smith",
+          "gold": "Multimodal lead",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Rohan Sahai",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Rohit Ramchandani",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Romain Huet",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Rory Carmichael",
+          "gold": "Pre-training leads",
+          "llm": "Supercomputing leads"
+        },
+        {
+          "name": "Rowan Zellers",
+          "gold": "Multimodal lead",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Roy Chen",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Ruby Chen",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Ruslan Nigmatullin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Ryan Cheu",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Saachi Jain",
+          "gold": "Multimodal lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Sam Altman",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Sam Schoenholz",
+          "gold": null,
+          "llm": "Optimization leads"
+        },
+        {
+          "name": "Sam Toizer",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Samuel Miserendino",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Sandhini Agarwal",
+          "gold": "Safety lead",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Sara Culver",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Scott Ethersmith",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Scott Gray",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Sean Grove",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Sean Metzger",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Shamez Hermani",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Shantanu Jain",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Shengjia Zhao",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Sherwin Wu",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Shino Jomoto",
+          "gold": "Model Launch and Deployment",
+          "llm": "Security and privacy"
+        },
+        {
+          "name": "Shirong Wu",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Shuaiqi (Tony) Xia",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Sonia Phene",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Spencer Papay",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Srinivas Narayanan",
+          "gold": "Model Launch and Deployment",
+          "llm": "Additional Leadership"
+        },
+        {
+          "name": "Steve Coffey",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Steve Lee",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Stewart Hall",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Suchir Balaji",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Tal Broda",
+          "gold": "Pre-training leads",
+          "llm": "Resource Allocation & Problem Solving"
+        },
+        {
+          "name": "Tal Stramer",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Tao Xu",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Tarun Gogineni",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Taya Christianson",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Ted Sanders",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Tejal Patwardhan",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Thomas Cunninghman",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Thomas Degry",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Thomas Dimson",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Thomas Raoux",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Thomas Shadwell",
+          "gold": "Model Launch and Deployment",
+          "llm": "Security and privacy"
+        },
+        {
+          "name": "Tianhao Zheng",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Todd Underwood",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Todor Markov",
+          "gold": "Safety lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Toki Sherbakov",
+          "gold": "Model Launch and Deployment",
+          "llm": "GTM, Pricing, Finance"
+        },
+        {
+          "name": "Tom Rubin",
+          "gold": null,
+          "llm": "Legal"
+        },
+        {
+          "name": "Tom Stasi",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Tomer Kaftan",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Tristan Heywood",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Troy Peterson",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Tyce Walters",
+          "gold": "Model Launch and Deployment",
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Tyna Eloundou",
+          "gold": null,
+          "llm": "System Card Contributions"
+        },
+        {
+          "name": "Valerie Qi",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Veit Moeller",
+          "gold": "Model Launch and Deployment",
+          "llm": "Communications + Marketing"
+        },
+        {
+          "name": "Vinnie Monaco",
+          "gold": "Pre-training leads",
+          "llm": "Security and privacy"
+        },
+        {
+          "name": "Vishal Kuo",
+          "gold": "Model Launch and Deployment",
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Vlad Fomenko",
+          "gold": "Pre-training leads",
+          "llm": "Post-training Multimodal Infrastructure leads"
+        },
+        {
+          "name": "Wayne Chang",
+          "gold": "Model Launch and Deployment",
+          "llm": "Demo content + production"
+        },
+        {
+          "name": "Weiyi Zheng",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Wenda Zhou",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Wesam Manassra",
+          "gold": "Multimodal lead",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Will Sheu",
+          "gold": null,
+          "llm": "Inference Compute"
+        },
+        {
+          "name": "Wojciech Zaremba",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yash Patil",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yilei Qian",
+          "gold": null,
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yongjik Kim",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Youlong Cheng",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yu Zhang",
+          "gold": "Multimodal lead",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Yuchen He",
+          "gold": "Pre-training leads",
+          "llm": "Blog post authorship"
+        },
+        {
+          "name": "Yuchen Zhang",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yujia Jin",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yunxing Dai",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        },
+        {
+          "name": "Yury Malkov",
+          "gold": "Pre-training leads",
+          "llm": "Core contributors"
+        }
+      ],
+      "departed_diffs": [],
+      "order_meaningful_llm": false,
+      "truncated": true
+    },
+    {
+      "title": "OpenAI o1 System Card",
+      "url": "https://arxiv.org/abs/2412.16720v2",
+      "gold_n": 264,
+      "llm_n": 298,
+      "matched": 232,
+      "missed": [
+        "Adam Kalai",
+        "Alex Iftimie",
+        "Ally Bennett",
+        "Angela Jiang",
+        "Barret Zoph",
+        "Ben Rossen",
+        "Cary Bassin",
+        "Cary Hudson",
+        "Claudia Fischer",
+        "Clive Chan",
+        "David Robinson",
+        "Eddie Zhang",
+        "Filippo Raso",
+        "Fred von Lohmann",
+        "Freddie Sulit",
+        "James Lennon",
+        "Jerry Twore",
+        "Kayla Wood",
+        "Kendra Rimbach",
+        "Lindsay McCallum",
+        "Lindsey Held",
+        "Melody Y. Guan",
+        "OpenAI",
+        "Renny Hwang",
+        "Sasha Baker",
+        "Tal Broda",
+        "Thomas Degry",
+        "Tom Stasi",
+        "Tyna Eloundou",
+        "Vlad Fomenko",
+        "Wes McCabe",
+        "Yunyun Wang"
+      ],
+      "invented": [
+        "Adwith Mukherjee",
+        "Alexandra Garc\u00eda P\u00e9rez",
+        "Andre N. Assis",
+        "Andrew D. White",
+        "Andrew McAdams",
+        "Andrew Taylor",
+        "Arjun Singh Puri",
+        "Atty. Jamal Latiph Hadjiusman",
+        "Barret Zoph (organization)",
+        "Bowen Jiang",
+        "Caroline Friedman Levy",
+        "Chan Jun Shern",
+        "Dane Sherburn",
+        "Daniel Griffin",
+        "D\u00e1rio Passos",
+        "Dillon Semin",
+        "Emily Lynell Edwards",
+        "Eszter Cs\u00e1sz\u00e1r",
+        "George Frempong",
+        "Gigi Gronvall",
+        "Giulio Starace",
+        "Grace Kim",
+        "Grant Brailsford",
+        "Jake Hecla",
+        "James Aung",
+        "James Banal",
+        "Jeremie Rykner",
+        "Jerry Tworek (overall)",
+        "Jos\u00e9 Manuel N\u00e1poles Duarte",
+        "Josh Ip",
+        "Julie Goodman",
+        "Kate Turetsky",
+        "Krzysztof Szubiczuk",
+        "Mario Krenn",
+        "Mark Chen (organization)",
+        "Maureen Robinson",
+        "Maximilian M\u00fcller",
+        "Megan Cangemi",
+        "Michaela Hinks",
+        "M\u00f3nica Tal\u00e1n",
+        "Naomi Hart",
+        "Nathan Heath",
+        "Oliver Jaffe",
+        "Patrick Caughey",
+        "Pavle Nikacevic",
+        "Per Carlbring",
+        "Rafael Gonzalez-Vazquez",
+        "Randy Kart",
+        "Ranjit Singh",
+        "Richa Sharma",
+        "Robert Chen",
+        "Rosie Campbell",
+        "Russell Tait",
+        "Saad Hermak",
+        "Sam Barnett",
+        "Sam Cox",
+        "Sara Kingsley",
+        "Sarah Chittick",
+        "Shelby Grossman",
+        "Sissel Juul",
+        "Steven Adler",
+        "Susan Nesbitt",
+        "Tal Broda (organization)",
+        "Tomasz Giela",
+        "Vincent Nestler",
+        "Zhen Xiong Lim"
+      ],
+      "role_diffs": [
+        {
+          "name": "Aaron Jaech",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Adam Lerer",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Adam Richardson",
+          "gold": null,
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Ahmed El-Kishky",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Aidan Clark",
+          "gold": null,
+          "llm": "Supporting Leadership"
+        },
+        {
+          "name": "Aiden Low",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Alec Helyar",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Aleksander Madry",
+          "gold": null,
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Alex Beutel",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Alex Carney",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Alex Karpenko",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Alex Tachard Passos",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Alexander Neitz",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Alexander Prokofiev",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Alexander Wei",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Allison Tam",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Ananya Kumar",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Andre Saraiva",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Andrea Vallone",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Andrew Duberstein",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Andrew Kondrich",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Andrey Mishchenko",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Andy Applebaum",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Ashvin Nair",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Behrooz Ghorbani",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Benjamin Sokolowsky",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Boaz Barak",
+          "gold": null,
+          "llm": "o1 Safety Leads"
+        },
+        {
+          "name": "Bob McGrew",
+          "gold": null,
+          "llm": "Executive Leadership"
+        },
+        {
+          "name": "Bohan Zhang",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Borys Minaiev",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Botao Hao",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Bowen Baker",
+          "gold": null,
+          "llm": "Internal Red Teaming"
+        },
+        {
+          "name": "Brandon Houghton",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Brandon McKinzie",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Brydon Eastman",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Camillo Lugaresi",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Chak Ming Li",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Charles de Bourcy",
+          "gold": null,
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Chelsea Voss",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Chen Shen",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Chong Zhang",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Chris Koch",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Chris Orsinger",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Christopher Hesse",
+          "gold": null,
+          "llm": "Supporting Leadership"
+        },
+        {
+          "name": "Dan Roberts",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Daniel Kappler",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Daniel Levy",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Daniel Selsam",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "David Dohan",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "David Farhi",
+          "gold": null,
+          "llm": "Supporting Leadership"
+        },
+        {
+          "name": "David Mely",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Dimitris Tsipras",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Doug Li",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Dragos Oprica",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Eben Freeman",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Edmund Wong",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Elizabeth Proehl",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Enoch Cheung",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Eric Mitchell",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Eric Wallace",
+          "gold": null,
+          "llm": "o1 Safety Leads"
+        },
+        {
+          "name": "Erik Ritter",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Evan Mays",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Fan Wang",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Felipe Petroski Such",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Florencia Leoni",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Foivos Tsimpourlas",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Francis Song",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Geoff Salmon",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Giambattista Parascandolo",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Gildas Chabot",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Grace Zhao",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Greg Brockman",
+          "gold": null,
+          "llm": "Executive Leadership"
+        },
+        {
+          "name": "Guillaume Leclerc",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Hadi Salman",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Haiming Bao",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Hao Sheng",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Hart Andrin",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Hessam Bagherinezhad",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Hongyu Ren",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Hunter Lightman",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Hyung Won Chung",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Ian Kivlichan",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Ian O\u2019Connell",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Ian Osband",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Ignasi Clavera Gilaberte",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Ilge Akkaya",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Ilya Kostrikov",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Ilya Sutskever",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Irina Kofman",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Jakub Pachocki",
+          "gold": null,
+          "llm": "Executive Leadership"
+        },
+        {
+          "name": "Jason Wei",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Jean Harb",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Jiacheng Feng",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Jiahui Yu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Jiayi Weng",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Jie Tang",
+          "gold": null,
+          "llm": "Supporting Leadership"
+        },
+        {
+          "name": "Joaquin Quinonero Candela",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Joe Palermo",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Joel Parish",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Johannes Heidecke",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "John Hallman",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "John Rizzo",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Jonathan Gordon",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Jonathan Uesato",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Jonathan Ward",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Joost Huizinga",
+          "gold": "o1 Safety Leads",
+          "llm": "Internal Red Teaming"
+        },
+        {
+          "name": "Julie Wang",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Kai Chen",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Karan Singhal",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Karina Nguyen",
+          "gold": null,
+          "llm": "Internal Red Teaming"
+        },
+        {
+          "name": "Karl Cobbe",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Katy Shi",
+          "gold": null,
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Keren GuLemberg",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Kevin Liu",
+          "gold": null,
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Kevin Lu",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Kevin Stone",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Kevin Yu",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Lama Ahmad",
+          "gold": "o1 Safety Leads",
+          "llm": "External Red Teaming"
+        },
+        {
+          "name": "Lauren Yang",
+          "gold": "o1 Safety Leads",
+          "llm": "Program Managers"
+        },
+        {
+          "name": "Leo Liu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Leon Maksin",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Leyton Ho",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Liam Fedus",
+          "gold": null,
+          "llm": "Leadership"
+        },
+        {
+          "name": "Lilian Weng",
+          "gold": null,
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Linden Li",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Lorenz Kuhn",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Lukas Kondraciuk",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Lukasz Kaiser",
+          "gold": null,
+          "llm": "Leadership"
+        },
+        {
+          "name": "Luke Metz",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Madelaine Boyd",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Maja Trebacz",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Manas Joglekar",
+          "gold": null,
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Mark Chen",
+          "gold": null,
+          "llm": "Leadership"
+        },
+        {
+          "name": "Marko Tintor",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Mason Meyer",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Matt Jones",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Matt Kaufer",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Max Schwarzer",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Meghan Shah",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Mehmet Yatbaz",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Melody Guan",
+          "gold": null,
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Mengyuan Xu",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Mengyuan Yan",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Mia Glaese",
+          "gold": null,
+          "llm": "Safety Leadership"
+        },
+        {
+          "name": "Mianna Chen",
+          "gold": "o1 Safety Leads",
+          "llm": "Program Managers"
+        },
+        {
+          "name": "Michael Lampe",
+          "gold": "o1 Safety Leads",
+          "llm": "External Red Teaming"
+        },
+        {
+          "name": "Michael Malek",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Michele Wang",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Michelle Fradin",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Mike McClay",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Mikhail Pavlov",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Miles Wang",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Mingxuan Wang",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Mira Murati",
+          "gold": null,
+          "llm": "Executive Leadership"
+        },
+        {
+          "name": "Mo Bavarian",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Mostafa Rohaninejad",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Nat McAleese",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Neil Chowdhury",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Nick Ryder",
+          "gold": null,
+          "llm": "Supporting Leadership"
+        },
+        {
+          "name": "Nikolas Tezak",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Noam Brown",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Ofir Nachum",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Oleg Boiko",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Oleg Murk",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Olivia Watkins",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Patrick Chao",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Paul Ashbourne",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Pavel Izmailov",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Peter Zhokhov",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Rachel Dias",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Rahul Arora",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Randall Lin",
+          "gold": null,
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Rapha Gontijo Lopes",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Raz Gaon",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Reah Miyara",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Reimar Leike",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Rhythm Garg",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Robin Brown",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Roshan James",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Rui Shu",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Ryan Cheu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Ryan Greene",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Saachi Jain",
+          "gold": null,
+          "llm": "o1 Safety Leads"
+        },
+        {
+          "name": "Sam Altman",
+          "gold": null,
+          "llm": "Executive Leadership"
+        },
+        {
+          "name": "Sam Toyer",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Samuel Miserendino",
+          "gold": "o1 Safety Leads",
+          "llm": "Preparedness Evaluations"
+        },
+        {
+          "name": "Santiago Hernandez",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Scott McKinney",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Scottie Yan",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Shengjia Zhao",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Shengli Hu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Shibani Santurkar",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Shraman Ray Chaudhuri",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Shuyuan Zhang",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Siyuan Fu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Spencer Papay",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Steph Lin",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Research"
+        },
+        {
+          "name": "Suchir Balaji",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Suvansh Sanjeev",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Szymon Sidor",
+          "gold": null,
+          "llm": "Leadership"
+        },
+        {
+          "name": "Tao Wang",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Taylor Gordon",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Ted Sanders",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Tejal Patwardhan",
+          "gold": null,
+          "llm": "o1 Safety Leads"
+        },
+        {
+          "name": "Thibault Sottiaux",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Thomas Dimson",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Tianhao Zheng",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Timur Garipov",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Trapit Bansal",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Trevor Creech",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Troy Peterson",
+          "gold": "o1 Safety Leads",
+          "llm": "External Red Teaming"
+        },
+        {
+          "name": "Valerie Qi",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Vineet Kosaraju",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Vinnie Monaco",
+          "gold": "o1 Safety Leads",
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Vitchyr Pong",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Weiyi Zheng",
+          "gold": null,
+          "llm": "Core Contributors"
+        },
+        {
+          "name": "Wenda Zhou",
+          "gold": null,
+          "llm": "Foundational Contributors"
+        },
+        {
+          "name": "Wenting Zhan",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Wojciech Zaremba",
+          "gold": null,
+          "llm": "Internal Red Teaming"
+        },
+        {
+          "name": "Yann Dubois",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Yinghai Lu",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Yining Chen",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Young Cha",
+          "gold": null,
+          "llm": "Safety Infrastructure"
+        },
+        {
+          "name": "Yu Bai",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Yuchen He",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Yuchen Zhang",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Zheng Shao",
+          "gold": null,
+          "llm": "Contributors"
+        },
+        {
+          "name": "Zhuohan Li",
+          "gold": null,
+          "llm": "Contributors"
+        }
+      ],
+      "departed_diffs": [],
+      "order_meaningful_llm": true,
+      "truncated": true
+    }
+  ]
+}
