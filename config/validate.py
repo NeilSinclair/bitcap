@@ -29,6 +29,8 @@ SOURCE_METHOD_REQUIRED_KEYS = {
     "rss": {"index_url"},
     "listing_pagination": {"index_url", "page_param", "url_contains", "text_source"},
     "wayback_cdx": {"index_url", "url_contains"},
+    "model_index": {"index_url"},
+    "discourse": {"index_url"},
 }
 
 
@@ -230,15 +232,38 @@ def check_sources(root: Path) -> list[str]:
     srcs = yaml.safe_load((root / "sources.yaml").read_text())
     for lab in srcs["labs"]:
         lab_id = lab.get("id", "?")
-        method = lab.get("method")
-        if method not in SOURCE_METHOD_REQUIRED_KEYS:
-            errors.append(f"sources.yaml/{lab_id}: unknown method '{method}'")
-            continue
-        for key in sorted(SOURCE_METHOD_REQUIRED_KEYS[method]):
-            if key not in lab:
+        # A lab's secondary channels are validated exactly like its primary
+        # one. They are the redundancy that catches an incomplete feed, so a
+        # typo silently disabling one puts the lab back on a single channel
+        # while the run still reports success.
+        # Disabled channels are validated too. A channel turned off while it
+        # misbehaves is meant to be turned back on, and a config error that
+        # only surfaces on re-enabling is one found at the worst moment.
+        for channel in [lab] + list(lab.get("also", [])):
+            method = channel.get("method")
+            if method not in SOURCE_METHOD_REQUIRED_KEYS:
+                errors.append(f"sources.yaml/{lab_id}: unknown method '{method}'")
+                continue
+            # `channels()` reads `enabled` by truthiness, so `enabled: "false"`
+            # (quoted) or `enabled: flase` parses as a truthy string and the
+            # channel keeps running while the file says it is off. Same shape
+            # as the `domain_shared is not a bool` check in
+            # check_github_sources.
+            if not isinstance(channel.get("enabled", True), bool):
                 errors.append(
-                    f"sources.yaml/{lab_id}: method '{method}' requires '{key}', missing"
+                    f"sources.yaml/{lab_id}: method '{method}' has "
+                    f"enabled: {channel['enabled']!r}, which is not a bool"
                 )
+            for key in sorted(SOURCE_METHOD_REQUIRED_KEYS[method]):
+                # Checked on the channel's own keys, not the merged view. A
+                # secondary channel inherits `id` and `label` deliberately,
+                # but inheriting `index_url` would point it at the primary
+                # feed and it would appear to work.
+                if key not in channel:
+                    errors.append(
+                        f"sources.yaml/{lab_id}: method '{method}' requires "
+                        f"'{key}', missing"
+                    )
     return errors
 
 
@@ -446,6 +471,108 @@ def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
     return errors
 
 
+
+def check_digest(path: Path | None = None) -> list[str]:
+    """Validate digest.yaml — every value here fails by emptying the digest.
+
+    Nothing downstream raises on a bad value, and that is by design: an
+    unrecognised band ranks below everything so a vocabulary change quietens the
+    report rather than taking down the firing that publishes it. The cost of
+    that choice is that a typo is indistinguishable from a quiet fortnight, and
+    the page will state — truthfully and misleadingly — that the filter is
+    working. Four edits that each empty a digest permanently and raise nothing:
+
+    * ``ai.actions: []`` — no action can ever match.
+    * ``ai.min_band: med`` — unknown floor ranks 99, so every item is rejected.
+    * ``investment.always_band: higgh`` — same, killing the early-signal leg.
+    * ``window_hours: 6`` — the window is compared at date resolution, so
+      anything under 24 puts start and end on the same day and nothing is ever
+      in window.
+
+    Args:
+        path: digest.yaml to check. Defaults to the shipped one; tests override.
+
+    Returns:
+        Error message list.
+    """
+    path = path or ROOT / "digest.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+
+    # Bands come from scoring.yaml so the two files cannot drift apart: the
+    # digest filters on the bands the scorer actually assigns.
+    scoring = yaml.safe_load((ROOT / "scoring.yaml").read_text()) or {}
+    bands = {b["label"] for b in scoring.get("bands", [])}
+    if not bands:
+        errors.append("scoring.yaml: no bands — digest thresholds cannot be checked")
+
+    window = doc.get("window_hours")
+    if not isinstance(window, int) or window < 24:
+        errors.append(
+            f"digest.yaml: window_hours={window!r} must be an integer >= 24 — "
+            "the window is compared at date resolution, so anything smaller "
+            "puts start and end on the same day and every digest is empty"
+        )
+    elif window % 24:
+        errors.append(
+            f"digest.yaml: window_hours={window} must be a multiple of 24, or "
+            "the period grid and the date-resolution comparison disagree"
+        )
+
+    if not isinstance(doc.get("max_holdings_shown"), int) or doc["max_holdings_shown"] < 1:
+        errors.append("digest.yaml: max_holdings_shown must be a positive integer")
+
+    for kind in ("investment", "ai"):
+        rules = doc.get(kind)
+        if not isinstance(rules, dict):
+            errors.append(f"digest.yaml: missing '{kind}' block")
+            continue
+        cap = rules.get("max_items")
+        if not isinstance(cap, int) or cap < 1:
+            errors.append(f"digest.yaml/{kind}: max_items must be a positive integer")
+
+    inv = doc.get("investment") or {}
+    strength = inv.get("min_strength")
+    if not isinstance(strength, (int, float)) or not 0 < strength <= 1:
+        errors.append(
+            f"digest.yaml/investment: min_strength={strength!r} must be in (0, 1]"
+        )
+    if bands and inv.get("always_band") not in bands:
+        errors.append(
+            f"digest.yaml/investment: always_band='{inv.get('always_band')}' not a "
+            f"band in scoring.yaml ({', '.join(sorted(bands))}) — an unknown band "
+            "rejects every item silently"
+        )
+
+    ai = doc.get("ai") or {}
+    if bands and ai.get("min_band") not in bands:
+        errors.append(
+            f"digest.yaml/ai: min_band='{ai.get('min_band')}' not a band in "
+            f"scoring.yaml ({', '.join(sorted(bands))}) — an unknown band "
+            "rejects every item silently"
+        )
+    actions = ai.get("actions")
+    # The vocabulary the classifier actually emits, from practices.yaml.
+    practices = yaml.safe_load((ROOT / "practices.yaml").read_text()) or {}
+    known = set(practices.get("enums", {}).get("action", [])) or {"adopt", "investigate", "watch"}
+    if not isinstance(actions, list) or not actions:
+        errors.append(
+            f"digest.yaml/ai: actions={actions!r} must be a non-empty list — "
+            "an empty list matches nothing and empties the AI digest forever"
+        )
+    else:
+        for action in actions:
+            if action not in known:
+                errors.append(
+                    f"digest.yaml/ai: action '{action}' not in the practice "
+                    f"vocabulary ({', '.join(sorted(known))})"
+                )
+
+    return errors
+
+
 def main() -> int:
     mech = yaml.safe_load((ROOT / "mechanisms.yaml").read_text())
     comp = yaml.safe_load((ROOT / "companies.yaml").read_text())
@@ -537,8 +664,10 @@ def main() -> int:
     pipe_errors = check_pipeline(ROOT)
     papers_errors = check_papers_sources(ROOT, tracked_labs)
     people_errors = check_people(ROOT, tracked_labs)
+    digest_errors = check_digest()
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
-                  + pipe_errors + papers_errors + people_errors)
+                  + pipe_errors + papers_errors + people_errors
+                  + digest_errors)
     for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:

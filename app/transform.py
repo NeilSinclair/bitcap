@@ -85,7 +85,17 @@ def transform(session: Session, prompt_version: str, run_id: int | None = None) 
             session.flush()
         else:
             art.raw_article_id, art.lab, art.title = raw.id, p["lab"], p["title"]
-            art.published_on, art.text = date.fromisoformat(p["date"]), p["text"]
+            art.text = p["text"]
+            # A `first_seen` date is when discovery noticed the item, not when
+            # the lab published it -- model spec pages carry no publication
+            # date at all (fetch_announcements.from_model_index). Re-emitting
+            # one on a later run would otherwise walk `published_on` forward:
+            # `_settled_urls` only skips items already classified under the
+            # current PROMPT_VERSION, so a version bump or a budget-capped run
+            # re-emits it dated today, and a September launch silently becomes
+            # a November one and re-enters the digest as fresh.
+            if p.get("date_basis") != "first_seen":
+                art.published_on = date.fromisoformat(p["date"])
             art.text_source = p["text_source"]
             art.feed_category = p.get("feed_category")
             art.archive_snapshot = p.get("archive_snapshot")

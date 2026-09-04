@@ -353,6 +353,120 @@ class TestAnnouncementsAdapter:
         assert adapters.fetch_announcements(source).watermark == {}
 
 
+def _raise(message):
+    """A discovery method that fails, for the channel-isolation tests."""
+    def method(lab, cutoff, skip=None):
+        raise RuntimeError(message)
+    return method
+
+
+class TestMultipleDiscoveryChannels:
+    """The production path for a lab with more than one discovery channel.
+
+    The silent degradation this exists to catch: someone simplifies the adapter
+    back to a single `METHODS[lab["method"]]` call, OpenAI drops to one
+    channel, the GPT-6 Astra blind spot returns, and every run still reports
+    success. `channels()` being tested in isolation does not prove the pipeline
+    runs them.
+    """
+
+    def _source(self, **extra):
+        config = {
+            "id": "openai", "method": "rss", "window_months": 3,
+            "also": [{"method": "model_index"}],
+            **extra,
+        }
+        return Source(leg="announcements", id="openai", label="OpenAI", stage=1,
+                      enabled=True, config=config)
+
+    def test_every_channel_runs_and_their_items_are_combined(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [
+            {"url": "rss-1", "date": "2026-09-01"}])
+        monkeypatch.setitem(fa.METHODS, "model_index", lambda lab, cutoff, skip=None: [
+            {"url": "model-1", "date": "2026-09-04"}])
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert sorted(a["url"] for a in result.items) == ["model-1", "rss-1"]
+
+    def test_each_channel_is_given_the_same_settled_urls(self, monkeypatch):
+        # A channel that does not receive `skip` re-downloads and re-classifies
+        # everything it already has, which costs money rather than correctness
+        # and so would not show up as a failure.
+        import fetch_announcements as fa
+        seen = {}
+
+        def record(name):
+            def method(lab, cutoff, skip=None):
+                seen[name] = skip
+                return []
+            return method
+
+        monkeypatch.setitem(fa.METHODS, "rss", record("rss"))
+        monkeypatch.setitem(fa.METHODS, "model_index", record("model_index"))
+        adapters.fetch_announcements(self._source())
+
+        assert seen["rss"] == seen["model_index"]
+        assert seen["rss"] is not None
+
+    def test_one_broken_channel_does_not_discard_the_others_items(self, monkeypatch):
+        # The regression that matters most: channels are redundancy, and an
+        # unguarded loop made the lab strictly LESS available than before they
+        # existed — a raising second channel threw away the first channel's
+        # already-fetched articles and failed the whole source.
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [
+            {"url": "rss-1", "date": "2026-09-01"}])
+
+        def broken(lab, cutoff, skip=None):
+            raise RuntimeError("model index parsed 0 models")
+
+        monkeypatch.setitem(fa.METHODS, "model_index", broken)
+        result = adapters.fetch_announcements(self._source())
+
+        assert [a["url"] for a in result.items] == ["rss-1"]
+        assert result.watermark == {"max_published": "2026-09-01"}
+
+    def test_a_dead_channel_is_recorded_rather_than_swallowed(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [
+            {"url": "rss-1", "date": "2026-09-01"}])
+        monkeypatch.setitem(fa.METHODS, "model_index", _raise("page shape changed"))
+        result = adapters.fetch_announcements(self._source())
+
+        assert len(result.unresolved) == 1
+        assert result.unresolved[0]["name"] == "openai:model_index"
+        assert "page shape changed" in result.unresolved[0]["reason"]
+
+    def test_all_channels_failing_still_fails_the_source(self, monkeypatch):
+        # Isolation must not turn a genuinely dead lab into a silent success.
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", _raise("rss down"))
+        monkeypatch.setitem(fa.METHODS, "model_index", _raise("index down"))
+
+        with pytest.raises(RuntimeError):
+            adapters.fetch_announcements(self._source())
+
+    def test_a_disabled_channel_is_not_run(self, monkeypatch):
+        import fetch_announcements as fa
+        ran = []
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [])
+        monkeypatch.setitem(
+            fa.METHODS, "model_index",
+            lambda lab, cutoff, skip=None: ran.append("model_index") or [])
+
+        source = self._source(also=[{"method": "model_index", "enabled": False}])
+        adapters.fetch_announcements(source)
+
+        assert ran == []
+
+
 class TestIncrementalWindow:
     """What a run fetches, and — the point of the whole thing — what it doesn't.
 

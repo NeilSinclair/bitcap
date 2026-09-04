@@ -213,9 +213,10 @@ def _cost_log_total(lab: str) -> float:
 def fetch_announcements(source, state=None, session=None) -> FetchResult:
     """Fetch one lab's in-window announcements.
 
-    Calls the lab's discovery method directly rather than `collect()`, which
+    Calls the lab's discovery methods directly rather than `collect()`, which
     loops over every lab with no error handling between them — one
-    Cloudflare-blocked lab would abort the other six.
+    Cloudflare-blocked lab would abort the other six. A lab may declare more
+    than one channel (`also` in sources.yaml); all of them run here.
 
     Args:
         source: An announcements source; its config is the lab's sources.yaml
@@ -241,17 +242,45 @@ def fetch_announcements(source, state=None, session=None) -> FetchResult:
     import fetch_announcements as fa
 
     lab = source.config
-    method = fa.METHODS.get(lab["method"])
-    if method is None:
-        raise ValueError(f"{source}: unknown discovery method {lab['method']!r}")
+    since = _window_start(state, lab["window_months"])
+    settled = _settled_urls(session)
 
-    items = method(
-        lab,
-        _window_start(state, lab["window_months"]),
-        _settled_urls(session),
-    )
+    # Each channel is isolated. Channels exist to make a lab *more* available,
+    # and an unguarded loop did the opposite: a second channel raising — which
+    # `from_model_index` and `from_discourse` both do by design on a page-shape
+    # change — discarded the primary channel's already-fetched articles and
+    # marked the whole lab FAILED. One dead channel must cost only that
+    # channel's items.
+    #
+    # A failure is recorded as an unresolved item rather than swallowed: a gap
+    # this pipeline knows about is never dropped, and a channel that is quietly
+    # dead is the failure mode this whole change exists to close. If every
+    # channel fails the source really is down, so the last error propagates.
+    items, unresolved, errors = [], [], []
+    channels = fa.channels(lab)
+    for channel in channels:
+        method = fa.METHODS.get(channel["method"])
+        if method is None:
+            raise ValueError(
+                f"{source}: unknown discovery method {channel['method']!r}"
+            )
+        try:
+            items.extend(method(channel, since, settled))
+        except Exception as exc:
+            errors.append(exc)
+            unresolved.append({
+                "kind": "channel",
+                "name": f"{lab['id']}:{channel['method']}",
+                "reason": f"discovery channel failed: {exc}",
+            })
+    if errors and len(errors) == len(channels):
+        raise errors[-1]
     newest = max((a["date"] for a in items), default=None)
-    return FetchResult(items=items, watermark={"max_published": newest} if newest else {})
+    return FetchResult(
+        items=items,
+        watermark={"max_published": newest} if newest else {},
+        unresolved=unresolved,
+    )
 
 
 def fetch_papers(source, state=None, session=None) -> FetchResult:

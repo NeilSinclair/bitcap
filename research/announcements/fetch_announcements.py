@@ -688,12 +688,293 @@ def from_wayback_cdx(
     return out
 
 
+# A model's spec page carries no publication date -- only a knowledge cutoff,
+# which is a different thing and must never be read as one. "New" therefore
+# means "absent from the baseline below and not already stored", and the date
+# recorded is the date we first saw it, labelled `date_basis: first_seen` so a
+# discovery date is never silently consumed as a publication date.
+#
+# The baseline is a committed file, not written state, because the deployed
+# shape has no disk (see adapters.fetch_announcements): anything this method
+# wrote at runtime would reset on the next deploy and re-emit the entire
+# catalogue. A committed list also makes each new model a visible git diff.
+MODEL_BASELINE = ROOT / "research" / "docs" / "model_index_baseline.json"
+
+def _model_link_re(index_url: str) -> re.Pattern:
+    """Link pattern for one model index, derived from its own URL.
+
+    The path is taken from the configured `index_url` rather than hardcoded,
+    so pointing this method at a lab whose docs live elsewhere stays the
+    config-only change non-negotiable #6 promises. Hardcoding OpenAI's
+    `/api/docs/models/` made a configuration mismatch present as
+    "parsed 0 models", which reads as a page-shape change.
+    """
+    path = urllib.parse.urlsplit(index_url).path.removesuffix(".md")
+    return re.compile(re.escape(path) + r"/([A-Za-z0-9][A-Za-z0-9._-]*)")
+
+
+def from_model_index(
+    lab: dict, cutoff: datetime, skip: set[str] | None = None
+) -> list[dict]:
+    """Discover model launches from a docs model index.
+
+    Exists because OpenAI's RSS feed and sitemap are not complete. GPT-6 Astra
+    launched on 2026-09-03 and `openai.com/index/gpt-6-astra` appeared in
+    neither -- only the satellite posts did -- so the register missed the
+    launch entirely while every fetch in the run reported success. A feed we
+    cannot audit is a single point of failure, and this is the second channel.
+
+    The index is read as Markdown (`.md`), which OpenAI publishes explicitly
+    for machine consumption and which is served from `developers.openai.com` --
+    a subdomain Cloudflare does not block, unlike the apex.
+
+    Args:
+        lab: Lab entry from sources.yaml. `index_url` is the Markdown index.
+        cutoff: Unused. A model index carries no dates, so nothing can be
+            filtered by one; accepted to match the other discovery methods.
+        skip: URLs already stored and already classified, which must not be
+            re-emitted.
+
+    Returns:
+        List of article dicts, one per model not already known.
+
+    Raises:
+        RuntimeError: If the index yields no model ids at all. That means the
+            page shape changed, and a parser that silently returns nothing is
+            indistinguishable from a lab that shipped nothing -- the exact
+            failure this method was added to close.
+    """
+    skip = skip or set()
+    index = fetch(lab["index_url"], max_age_hours=DISCOVERY_MAX_AGE_HOURS)
+    pattern = _model_link_re(lab["index_url"])
+    ids = sorted({re.sub(r"\.md$", "", m) for m in pattern.findall(index)})
+    if not ids:
+        raise RuntimeError(f"model index parsed 0 models: {lab['index_url']}")
+
+    # Indexed, not `.get(..., [])`. Defaulting to an empty baseline would make
+    # a lab's first run emit its whole catalogue as launches -- the exact flood
+    # the committed baseline exists to prevent, through the door a default
+    # leaves open. Adding a `model_index` channel is a config-only change, so
+    # the missing-entry case is reachable by design and must be loud.
+    baselines = json.loads(MODEL_BASELINE.read_text())
+    if lab["id"] not in baselines:
+        raise RuntimeError(
+            f"no model baseline for {lab['id']!r} in {MODEL_BASELINE.name}; "
+            "seed it before enabling this channel"
+        )
+    baseline = set(baselines[lab["id"]])
+    page = lab["index_url"].removesuffix(".md")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    out = []
+    for model_id in ids:
+        url = f"{page}/{model_id}"
+        if model_id in baseline or url in skip:
+            continue
+        try:
+            text = fetch(f"{url}.md")
+        except RuntimeError as exc:
+            # Not marked seen anywhere, so the next run retries it. Dropping a
+            # launch silently is the failure being fixed; skipping it once is
+            # recoverable.
+            print(f"    SKIP model spec {model_id}: {exc}", flush=True)
+            continue
+        heading = re.search(r"^#\s+(.+)$", text, re.M)
+        out.append(
+            {
+                "lab": lab["id"],
+                "url": url,
+                "date": today,
+                "date_basis": "first_seen",
+                "title": heading.group(1).strip() if heading else model_id,
+                "text": text[:24000],
+                "text_source": "model_spec",
+                "feed_category": "model-launch",
+            }
+        )
+    return out
+
+
+# Announcement links only. Matching any `*.openai.com` URL and taking the first
+# hit picked the wrong page on most real posts -- measured over the 16 cached
+# topics it returned the pricing page, a transcription guide, a showcase filter
+# and an events URL, while the actual announcement sat second. This field is the
+# compensating control for citing the forum topic instead of the canonical page
+# (D47), so a confident wrong link is worse than none.
+#
+# The apex is the newsroom; developers/platform/events subdomains are reference
+# material. A `#fragment` is stripped because the same announcement appears both
+# with and without one, and two spellings of one URL defeat the free exact-match
+# dedupe pass planned in docs/next_steps_0309.md.
+CANONICAL_LINK = re.compile(r'https?://openai\.com/[^\s"\'<>]+')
+
+
+# Ten pages of 30 is 300 topics against a category publishing a few dozen a
+# year -- a backstop against a listing that never stops paginating, not a
+# working limit.
+DISCOURSE_MAX_PAGES = 10
+
+
+def _canonical_link(cooked: str) -> str | None:
+    """The announcement URL a forum post points at, if it points at one.
+
+    Args:
+        cooked: Discourse's rendered post HTML.
+
+    Returns:
+        Newsroom URL without fragment or trailing slash, preferring an
+        `/index/` article where the post links to several. None when the post
+        links nowhere on the newsroom -- an absent link, not a guessed one.
+    """
+    found = [u.split("#")[0].rstrip("/") for u in CANONICAL_LINK.findall(cooked)]
+    if not found:
+        return None
+    return next((u for u in found if "/index/" in u), found[0])
+
+
+def from_discourse(
+    lab: dict, cutoff: datetime, skip: set[str] | None = None
+) -> list[dict]:
+    """Discover announcements from a Discourse forum category.
+
+    OpenAI's developer forum is staff-authored, dated, served as JSON, and not
+    behind the apex's Cloudflare rule. It carried the GPT-6 Astra launch at
+    19:51 on 2026-09-03 -- with a link to `openai.com/index/gpt-6-astra`,
+    which appeared in neither the RSS feed nor any sitemap.
+
+    The forum topic is the citation, not the link it contains: the topic URL
+    is one this pipeline can actually fetch and re-verify, while the canonical
+    openai.com page returns 403 to everything we can send. The canonical link
+    is kept alongside as `canonical_url` so the real announcement is never
+    lost, but a citation we cannot resolve is not allowed to be the citation.
+
+    Coverage is narrow by construction -- three posts in the ten days to
+    2026-09-04, all developer-facing. It catches launches, not policy or
+    programme posts (`the-defense-factory` is not there).
+
+    Args:
+        lab: Lab entry from sources.yaml. `index_url` is a category JSON
+            endpoint, e.g. `/c/announcements/6.json`.
+        cutoff: Earliest publication date to keep.
+        skip: Topic URLs already stored and already classified.
+
+    Returns:
+        List of article dicts.
+
+    Raises:
+        RuntimeError: If the category lists no topics at all -- a shape change
+            must not read as "the lab announced nothing".
+    """
+    skip = skip or set()
+    parts = urllib.parse.urlsplit(lab["index_url"])
+    base = f"{parts.scheme}://{parts.netloc}"
+    cutoff_day = cutoff.strftime("%Y-%m-%d")
+    sep = "&" if parts.query else "?"
+
+    # Discourse pages at 30 and orders the listing by `bumped_at`, not
+    # `created_at` -- the cached OpenAI listing carries four 2021 topics in the
+    # top five because they were bumped recently, and a full page plus a
+    # `more_topics_url`. Reading page one only would drop an in-window launch
+    # behind a month of busy threads: no error, no count, run reports success.
+    #
+    # Termination is sound rather than heuristic: `bumped_at >= created_at`
+    # always, and pages descend by `bumped_at`, so once a page carries nothing
+    # bumped since the cutoff, no later page can hold a topic created in-window.
+    topics, page = [], 0
+    while True:
+        url = lab["index_url"] if not page else f"{lab['index_url']}{sep}page={page}"
+        payload = json.loads(fetch(url, max_age_hours=DISCOVERY_MAX_AGE_HOURS))
+        listing = payload.get("topic_list", {})
+        found = listing.get("topics", [])
+        if not page and not found:
+            raise RuntimeError(f"discourse category listed 0 topics: {lab['index_url']}")
+        topics.extend(found)
+        if not any(
+            (t.get("bumped_at") or t.get("created_at") or "")[:10] >= cutoff_day
+            for t in found
+        ):
+            break
+        if not listing.get("more_topics_url"):
+            break
+        page += 1
+        if page >= DISCOURSE_MAX_PAGES:
+            # Silently truncating here would be the original bug in a new
+            # place: a capped sweep that reports success looks identical to a
+            # category with nothing older.
+            raise RuntimeError(
+                f"discourse pagination hit {DISCOURSE_MAX_PAGES} pages still "
+                f"inside the window: {lab['index_url']}"
+            )
+
+    out = []
+    for topic in topics:
+        created = (topic.get("created_at") or "")[:10]
+        if not created or created < cutoff.strftime("%Y-%m-%d"):
+            continue
+        url = f"{base}/t/{topic['slug']}/{topic['id']}"
+        if url in skip:
+            continue
+        try:
+            body = json.loads(fetch(f"{base}/t/{topic['id']}.json"))
+        except (RuntimeError, ValueError) as exc:
+            print(f"    SKIP topic {topic['id']}: {exc}", flush=True)
+            continue
+        posts = body.get("post_stream", {}).get("posts", [])
+        if not posts:
+            print(f"    SKIP topic {topic['id']}: no posts", flush=True)
+            continue
+        cooked = posts[0].get("cooked", "")
+        canonical = _canonical_link(cooked)
+        out.append(
+            {
+                "lab": lab["id"],
+                "url": url,
+                "date": created,
+                "title": html.unescape(topic.get("title", "")),
+                "text": strip_html(cooked)[:24000],
+                "text_source": "forum_post",
+                "canonical_url": canonical,
+                "feed_category": "announcement",
+            }
+        )
+    return out
+
+
 METHODS = {
     "sitemap": from_sitemap,
     "rss": from_rss,
     "listing_pagination": from_listing_pagination,
     "wayback_cdx": from_wayback_cdx,
+    "model_index": from_model_index,
+    "discourse": from_discourse,
 }
+
+
+def channels(lab: dict) -> list[dict]:
+    """Every discovery channel configured for one lab.
+
+    A lab's primary `method` plus any entries under `also`, each merged over
+    the lab's own keys so a second channel overrides only what it names
+    (`method`, its own `index_url`) and inherits `id` and `label`.
+
+    More than one channel exists because a single feed is a single point of
+    failure that fails silently: OpenAI's RSS omitted the GPT-6 Astra launch
+    post entirely, and the run reported success. See the `openai` entry's
+    notes in sources.yaml.
+
+    `enabled: false` drops a channel here rather than deleting its config, so
+    a source that starts misbehaving is turned off in one line and the entry
+    stays readable -- including why it was added and what it was covering.
+    Same key and same default as `enabled` in papers_sources.yaml.
+
+    Args:
+        lab: Lab entry from sources.yaml.
+
+    Returns:
+        One dict per enabled channel, primary first, each a complete lab entry.
+    """
+    every = [lab] + [{**lab, **extra} for extra in lab.get("also", [])]
+    return [c for c in every if c.get("enabled", True)]
 
 
 def collect() -> list[dict]:
@@ -710,12 +991,13 @@ def collect() -> list[dict]:
 
     articles = []
     for lab in config["labs"]:
-        method = METHODS.get(lab["method"])
-        if not method:
-            sys.exit(f"{lab['id']}: unknown method {lab['method']!r}")
-        found = method(lab, cutoff)
-        print(f"{lab['label']:<12} {len(found)} announcements")
-        articles.extend(found)
+        for channel in channels(lab):
+            method = METHODS.get(channel["method"])
+            if not method:
+                sys.exit(f"{lab['id']}: unknown method {channel['method']!r}")
+            found = method(channel, cutoff)
+            print(f"{lab['label']:<12} {channel['method']:<18} {len(found)} announcements")
+            articles.extend(found)
 
     articles.sort(key=lambda a: a["date"], reverse=True)
     return articles

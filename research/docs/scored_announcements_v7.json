@@ -463,6 +463,67 @@
       "band": "high"
     },
     {
+      "lab": "openai",
+      "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+      "date": "2026-09-04",
+      "date_basis": "first_seen",
+      "title": "GPT-6 Astra",
+      "text": "# GPT-6 Astra\n\n> For the complete documentation index, see [llms.txt](/llms.txt). Markdown versions of documentation pages are available by appending `.md` to the page URL.\n\n> Our most capable model, built for the hardest end-to-end work\n\nModel ID: `gpt-6-astra`\n\nGPT\u20116 Astra is rolling out today for enterprises in our [Trusted Access Program\u2060](https://openai.com/form/enterprise-trusted-access-for-cyber/), with access through API and our Plus, Pro, Business and Enterprise plans coming in the coming days.\n\nGPT-6 Astra is our most capable model, built for the hardest end-to-end work.\nUse it for complex reasoning, coding, computer use, research, and document creation.\n`reasoning.effort` supports `low`, `medium`, `high`, `xhigh`, and `max`.\n\nGet started with GPT-6 Astra using the [model guide](/api/docs/guides/latest-model?model=gpt-6-astra).\n\n## Model details\n\n- Default snapshot: `gpt-6-astra`\n- Input modalities: text, image\n- Output modalities: text\n- 1,050,000 context window\n- Maximum input tokens: 922,000\n- 128,000 max output tokens\n- Apr 30, 2026 knowledge cutoff\n- Reasoning token support\n\n## Pricing\n\nPricing is based on the number of tokens used, or other metrics based on the model type. For tool-specific models, like search and computer use, there\u2019s a fee per tool call. See details in the [pricing page](/api/docs/pricing).\n\n### Text tokens\n\n| Metric | Price | Unit |\n| --- | ---: | --- |\n| Input | $10 | 1M tokens |\n| Cached input | $1 | 1M tokens |\n| Cache writes | $12.5 | 1M tokens |\n| Output | $50 | 1M tokens |\n\n- Prompts with more than 272K input tokens are priced at 2x input and cache rates and 1.5x output for the full request.\n- Cache writes are billed at 1.25x the uncached input token rate.\n- Batch and Flex are priced at 50% of Standard rates. Fast mode is priced at 2x the applicable rates.\n\n## Endpoints\n\n| Endpoint | Route | Support |\n| --- | --- | --- |\n| Chat Completions | `v1/chat/completions` | Supported |\n| Responses | `v1/responses` | Supported |\n| Realtime | `v1/realtime` | Not supported |\n| Realtime translation | `v1/realtime/translations` | Not supported |\n| Realtime transcription | `v1/realtime/transcription_sessions` | Not supported |\n| Assistants | `v1/assistants` | Not supported |\n| Batch | `v1/batch` | Supported |\n| Fine-tuning | `v1/fine-tuning` | Not supported |\n| Embeddings | `v1/embeddings` | Not supported |\n| Image generation | `v1/images/generations` | Not supported |\n| Videos | `v1/videos` | Not supported |\n| Image edit | `v1/images/edits` | Not supported |\n| Speech generation | `v1/audio/speech` | Not supported |\n| Transcription | `v1/audio/transcriptions` | Not supported |\n| Translation | `v1/audio/translations` | Not supported |\n| Moderation | `v1/moderations` | Not supported |\n| Completions (legacy) | `v1/completions` | Not supported |\n\n## Supported features\n\n- streaming\n- structured_outputs\n- function_calling\n- file_search\n- image_input\n- web_search\n- prompt_caching\n\n## Supported tools\n\nTools supported by this model when using the Responses API.\n\n- web_search\n- file_search\n- image_generation\n- code_interpreter\n- hosted_shell\n- apply_patch\n- skills\n- computer_use\n- mcp\n- tool_search\n\n## Snapshots\n\nSnapshots let you lock in a specific version of the model so that performance and behavior remain consistent. Below is a list of all available snapshots and aliases for GPT-6 Astra.\n\n- `gpt-6-astra`\n\n## Rate limits\n\nRate limits ensure fair and reliable access to the API by placing specific caps on requests, tokens, audio duration, or other usage within a given time period. Your usage tier determines how high these limits are set and automatically increases as you send more requests and spend more on the API.\n\n### Standard\n\n| Tier | RPM | TPM | Batch queue limit |\n| --- | ---: | ---: | ---: |\n| Tier 1 | 500 | 500,000 | 1,500,000 |\n| Tier 2 | 5,000 | 1,000,000 | 3,000,000 |\n| Tier 3 | 5,000 | 2,000,000 | 100,000,000 |\n| Tier 4 | 10,000 | 4,000,000 | 200,000,000 |\n| Tier 5 | 15,000 | 40,000,000 | 15,000,000,000 |\n",
+      "text_source": "model_spec",
+      "feed_category": "model-launch",
+      "is_signal": true,
+      "event_type": "frontier_model_release",
+      "summary": "OpenAI released GPT-6 Astra, a new flagship model with a 1.05M-token context window, reasoning-effort controls, and tool support for coding, computer use and document creation, rolling out to enterprise Trusted Access customers and general API/plan access in the coming days.",
+      "mechanisms": [
+        {
+          "id": "capability_jump",
+          "sign": "positive",
+          "magnitude": "high",
+          "confidence": "medium",
+          "reason": "The document introduces a new top-of-range model family described as the most capable yet, which is the kind of frontier release the mechanism is reserved for.",
+          "quote": "GPT-6 Astra is our most capable model, built for the hardest end-to-end work."
+        },
+        {
+          "id": "memory_intensity_up",
+          "sign": "positive",
+          "magnitude": "high",
+          "confidence": "high",
+          "reason": "The model offers a very large context window and reasoning token support, both of which raise KV-cache and memory content per accelerator.",
+          "quote": "1,050,000 context window"
+        }
+      ],
+      "categories": [],
+      "practices": [
+        {
+          "id": "model_capability",
+          "action": "investigate",
+          "impact": "high",
+          "confidence": "medium",
+          "dimensions": [
+            "reasoning",
+            "coding",
+            "long_context"
+          ],
+          "reason": "Engineers evaluating a new flagship model would need to test its stated gains in reasoning, coding and long-context handling before relying on it, since no benchmark figures are given.",
+          "quote": "Use it for complex reasoning, coding, computer use, research, and document creation."
+        },
+        {
+          "id": "integration",
+          "action": "adopt",
+          "impact": "medium",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "Adopting the new model requires updating endpoint usage, pricing assumptions, and rate-limit tier planning to integrate it into production pipelines.",
+          "quote": "| Chat Completions | `v1/chat/completions` | Supported |"
+        }
+      ],
+      "notable": true,
+      "notable_reason": "This is a new frontier-class model release from OpenAI (GPT-6 Astra) with a substantially expanded context window and reasoning capabilities, which is the kind of launch a sector-tracking reader would want to see immediately.",
+      "dropped_tags": [],
+      "score": 100.0,
+      "band": "high"
+    },
+    {
       "lab": "anthropic",
       "url": "https://www.anthropic.com/news/redeploying-fable-5",
       "date": "2026-06-30",

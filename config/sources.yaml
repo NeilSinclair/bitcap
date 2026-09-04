@@ -63,6 +63,58 @@ labs:
       returned errors on 20 of 24; backfill_openai.py fetches serially with a
       2s delay and exponential backoff. Snapshot discovery uses one bulk CDX
       wildcard query rather than one lookup per URL.
+    also:
+      - method: model_index
+        enabled: true
+        index_url: https://developers.openai.com/api/docs/models.md
+        notes: >
+          Second discovery channel, because the RSS feed is not complete and
+          fails silently when it is not. GPT-6 Astra launched 2026-09-03 and
+          openai.com/index/gpt-6-astra appeared in neither news/rss.xml nor
+          any of the 37 child sitemaps -- only the satellite posts did
+          (path-to-astra, safety-overview-gpt-6-astra, and the customer
+          stories). The register recorded the launch day as routine while
+          every fetch in the run reported success.
+
+          developers.openai.com is not behind the apex's Cloudflare rule:
+          probed 2026-09-04, the Markdown index returns 200 to plain urllib
+          where openai.com/news/ returns 403. Markdown is a published
+          interface -- the pages advertise `.md` variants and an llms.txt
+          index -- so this is a supported surface, not a scrape workaround,
+          and it needs no HTML stripping.
+
+          A model spec page has no publication date, so "new" means "not in
+          research/docs/model_index_baseline.json and not already stored",
+          dated by first sight and labelled `date_basis: first_seen`. The
+          baseline is committed rather than written at runtime: the deployed
+          shape has no disk, so runtime state would reset on deploy and
+          re-emit all 96 models. gpt-6-astra is deliberately absent from the
+          baseline so the first run after this change emits it.
+      - method: discourse
+        enabled: true
+        index_url: https://community.openai.com/c/announcements/6.json
+        notes: >
+          Third channel. OpenAI's developer forum is staff-authored, dated,
+          served as JSON and not behind the apex's Cloudflare rule. It carried
+          the GPT-6 Astra launch at 19:51 on 2026-09-03 with a link to
+          openai.com/index/gpt-6-astra -- a post that reached neither the RSS
+          feed nor any sitemap.
+
+          The forum topic is the citation, not the openai.com link it
+          contains. The topic URL is one this pipeline can fetch and
+          re-verify; the canonical page returns 403 to everything we can send,
+          and a citation we cannot resolve is not allowed to be the citation.
+          The canonical link is kept as `canonical_url` so the real
+          announcement is never lost.
+
+          Coverage is narrow and that is expected: three posts in the ten days
+          to 2026-09-04, all developer-facing. It catches launches, not policy
+          or programme posts -- `the-defense-factory`, published the same
+          night, is not there and is not reachable from any machine-readable
+          OpenAI surface.
+
+          Set `enabled: false` to turn this channel off without deleting the
+          entry or the reasoning behind it.
 
   - id: deepseek
     label: DeepSeek
