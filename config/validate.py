@@ -305,6 +305,42 @@ def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
 
 
 
+
+def check_entities(root: Path) -> list[str]:
+    """Validate entities.yaml — the first-mention vocabulary.
+
+    `research/corpus/first_mention.py` indexes `model_families`,
+    `max_version_parts`, `new_within_days` and `unannounced_top` directly, so a
+    mistyped key is a KeyError deep into a run. An empty `model_families` is
+    worse than that: it raises nothing, matches nothing, and reports a quiet
+    week for ever.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "entities.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    for key in ("new_within_days", "max_version_parts", "unannounced_top"):
+        value = doc.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(
+                f"entities.yaml: {key} must be a positive integer, not {value!r}")
+    families = doc.get("model_families")
+    if not families or not all(isinstance(f, str) and f for f in families):
+        errors.append(
+            "entities.yaml: model_families must be a non-empty list of strings "
+            "-- an empty one matches nothing and reports a quiet week for ever")
+    if not isinstance(doc.get("deny") or [], list):
+        errors.append("entities.yaml: deny must be a list")
+    return errors
+
+
 def check_repo_signals(root: Path) -> list[str]:
     """Validate repo_signals.yaml — what the releases leg reads at runtime.
 
@@ -326,7 +362,7 @@ def check_repo_signals(root: Path) -> list[str]:
     doc = yaml.safe_load(path.read_text()) or {}
     errors = []
     for key in ("releases_watch", "releases_backfill", "releases_per_run",
-                "releases_max_pages", "window_days", "new_within_days"):
+                "releases_max_pages", "new_within_days"):
         value = doc.get(key)
         if not isinstance(value, int) or isinstance(value, bool) or value < 1:
             errors.append(
@@ -719,9 +755,11 @@ def main() -> int:
     people_errors = check_people(ROOT, tracked_labs)
     digest_errors = check_digest()
     signal_errors = check_repo_signals(ROOT)
+    entity_errors = check_entities(ROOT)
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
                   + pipe_errors + papers_errors + people_errors
-                  + digest_errors + signal_errors)
+                  + digest_errors + signal_errors
+                  + entity_errors)
     for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:

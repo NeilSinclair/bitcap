@@ -159,13 +159,16 @@ def _settled_urls(session, prompt_version: str = PROMPT_VERSION) -> set[str]:
     stored in `raw_articles` yields nothing new by being fetched a second time,
     and its text is already in the database for everything downstream.
 
-    **Stored is not enough on its own — it has to be classified too.** An
-    article that is stored but still pending (a run that hit its budget ceiling,
-    say) has to be refetched, because `classify_new` reads article *text* from
-    the corpus file rather than from the database, and on a container with no
-    disk that file resets to the image copy every firing. Skipping it here would
-    leave it pending for ever with nothing able to classify it, which is
-    planning.md §13.3 turned from an edge case into the normal path.
+    **Stored is not enough on its own — it has to be classified too.** That
+    was originally because `classify_new` read article text from the corpus
+    file, which resets to the image copy every firing on a container with no
+    disk, so a stored-but-pending article could never be classified unless the
+    page was fetched again. `classify_new` now reads the payload from
+    `raw_articles` (D53), so the hazard is gone and the refetch is no longer
+    load-bearing — it is left in place only because a stored article that is
+    still pending is also the one case where the stored *text* may be a
+    partial fetch worth replacing. Dropping the classified check would be safe
+    for the classifier and is the obvious next simplification.
 
     Args:
         session: Open session, or None when there is no database to ask.
@@ -535,11 +538,15 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
 
     Returns:
         Release notes in the announcements item shape, with the advanced
-        cursors as the watermark.
+        cursors as the watermark. The documents are also written into
+        `session` here rather than by the worker's landing phase, so that the
+        cursor and the rows it describes become durable together.
 
     Raises:
-        RuntimeError: When bronze holds no repositories for this org, which is
-            "the github leg has not run" and not "this org ships nothing".
+        RuntimeError: When bronze holds no repositories for this org ("the
+            github leg has not run", not "this org ships nothing"), when the
+            live listing comes back empty against a non-empty bronze, or when
+            every watched repository failed.
     """
     import harvest_github
     import rank_repos
@@ -592,6 +599,7 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
 
     items: list[dict] = []
     truncated = 0
+    reached_all = True
     failures: list[str] = []
 
     for row in ranked:
@@ -610,20 +618,66 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
             failures.append(f"{repo}: {exc}")
             continue
         truncated += stats["truncated"]
+        reached_all = reached_all and stats["reached_cursor"]
         if found:
             items += found
             cursors[repo] = fr.next_cursor(found)
+
+    # Land the documents here, not in the worker's landing phase, because the
+    # cursor gates every future fetch. `run_source` commits the advanced
+    # watermark as soon as this returns; the landing phase commits its rows a
+    # phase later. Anything failing in between -- the register load, a
+    # redeploy, an OOM kill during a 9-30 minute firing -- rolls the rows back
+    # while the cursor stays advanced, and `new_releases` then filters those
+    # releases out for ever as already-seen. They would not appear in
+    # `truncated`, no alert would name them, and a missing release is
+    # indistinguishable from a quiet week.
+    #
+    # Writing them into the same session makes both durable at the same commit.
+    # The failure direction is safe too: if this raises after landing,
+    # `record_failure` leaves the watermark alone, so the next firing refetches
+    # and the url-keyed upsert absorbs the duplicate.
+    #
+    # This is the first leg whose watermark gates future fetches. The github
+    # leg is immune because it re-derives from `pushed_at` against bronze.
+    if session is not None and items:
+        from app.load_raw import load_article_records
+        from app.pipeline.registry import CORPUS_LABELS, RELEASES
+
+        load_article_records(session, items, CORPUS_LABELS[RELEASES])
 
     newest = max((i["published_at"] for i in items), default=None)
     watermark = {
         "cursors": cursors,
         "repos_watched": len(ranked),
+        # The new/established split of what is being watched. Surfaced because
+        # a star ranking is a hall of fame -- if this reads "established: 10"
+        # every night, the leg is watching archives and the cut needs to become
+        # a filter rather than a label.
+        "watching": {age: sum(1 for r in ranked if r["age"] == age)
+                     for age in ("new", "established", "unknown")},
         "truncated": truncated,
+        # Kept because a walk that never reached the cursor left releases above
+        # it unfetched and uncounted -- `truncated` only counts what this call
+        # saw and dropped. Discarding it made that case indistinguishable from
+        # a clean run.
+        "reached_cursor": reached_all,
     }
     if newest:
         watermark["max_published"] = newest
     if failures:
         watermark["repo_failures"] = failures
+
+    # Every watched repository failing is a broken source, not a quiet week --
+    # a token rotated to one without the right scope 404s on all of them. Left
+    # as a success it would reset `consecutive_failures` to zero every firing,
+    # so `source_down` could never fire and the leg would stay dead behind
+    # eight green rows.
+    if ranked and len(failures) == len(ranked):
+        raise RuntimeError(
+            f"{org}: all {len(ranked)} watched repositories failed -- "
+            f"first was {failures[0]}"
+        )
     return FetchResult(items=items, watermark=watermark)
 
 

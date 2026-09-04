@@ -325,3 +325,20 @@ class TestTheCorpusIsBronze:
         for row in first_mentions(docs, CFG, date(2026, 9, 4)):
             collapsed = " ".join(by_url[row["url"]]["text"].split())
             assert row["quote"] in collapsed, row["name"]
+
+    def test_a_quote_never_splices_the_title_into_the_body(self, session):
+        """A window around a name near the end of the title must not run past
+        the join and emit a string appearing in neither field -- the same
+        splice `research/announcements/verbatim.py` exists to catch in the
+        model's output."""
+        session.add(m.RawArticle(
+            url="https://openai.com/x", content_hash="h",
+            source_file="research/docs/announcements.json",
+            payload={"lab": "openai", "date": "2026-09-01",
+                     "title": "Introducing GPT-6", "text_source": "rss_summary",
+                     "text": "Today we are releasing it to everyone."}))
+        session.commit()
+
+        row = first_mentions(load_corpus(session), CFG, date(2026, 9, 4))[0]
+        assert row["quote"] in "Introducing GPT-6"
+        assert "Today we are releasing" not in row["quote"]

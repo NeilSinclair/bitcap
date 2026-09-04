@@ -4527,3 +4527,88 @@ than routing around it.
 budget ceiling *which* articles were paid for was whatever the engine returned
 -- and differently arbitrary on the sqlite the tests use and the Postgres that
 runs.
+
+---
+
+## D54 — What the review of the port changed (2026-09-04)
+
+Ten findings on the releases leg, four major, all fixed. Three of them share a
+shape worth naming: the leg introduced the system's **first watermark that
+gates future fetches**, and every existing habit around watermarks was built for
+ones that do not.
+
+**The cursor was durable a phase before the documents it described.**
+`orchestrator._record` commits after each source, which makes the advanced
+`cursors` dict permanent as soon as the adapter returns; the release rows were
+landed in the worker's phase 2 and committed later. A failure in between -- the
+register load, a redeploy, an OOM kill during a 9-30 minute firing -- rolls the
+rows back and leaves the cursor advanced, and `new_releases` then filters those
+releases out for ever as already-seen. They would not appear in `truncated`, no
+alert would name them, and a missing release is indistinguishable from a quiet
+week.
+
+The github leg is immune because it is not cursor-gated: it re-derives from
+`pushed_at` against bronze and is self-healing. Fixed by landing the documents
+inside `fetch_releases`, in the session the orchestrator is about to commit, so
+rows and cursor become durable together. The failure direction is safe too --
+raising after landing leaves the watermark alone, and the url-keyed upsert
+absorbs the refetch.
+
+**An org whose every repository failed reported success.** Per-repository
+`try/except` is right, but the org-level result was then an empty success:
+`record_success` reset `consecutive_failures` to zero, no alert rule reads
+`repo_failures`, and `source_down` keys only on the streak. A token rotated to
+one without the right scope 404s on all of them, so the leg would sit
+permanently dead behind eight green rows. All-failed now raises, which is the
+same reasoning the `if not listing` guard already applied one level up.
+
+**The change that actually spends money had no test.** `classify_new` reading
+payloads from bronze -- the whole of D53 -- was exercised by nothing: one test
+passed `articles_path` (the legacy file branch), one returned at the `pending:
+0` short-circuit, and the worker tests monkeypatch `classify_new` away. Revert
+it and the suite stayed green while every release row sat pending for ever.
+Three tests now put `raw_articles` rows in front of it and assert the payloads
+reach the scorer.
+
+**The `ORDER BY` was on the wrong list.** `pending_urls` was ordered, but the
+articles handed to the scorer were rebuilt with an unordered
+`select(...).where(url.in_(pending))` -- and that is the list the scorer slices
+when the budget binds. The ordering claim in D53 was not delivered until the
+rebuild followed `pending` order.
+
+**A deterministic quote could splice two fields together.** `load_corpus`
+joined title and body for non-release documents, and `quote_for` took a
+±140-character window around the identifier in the joined string -- so a name
+near the end of a title produced a quote running past the join into the body, a
+string appearing in neither field. This repository already has
+`research/announcements/verbatim.py` because that splice was seen once from the
+model; the deterministic path must not reproduce it. Fields are now kept apart
+and a quote is cut from the single field the identifier is in. The test that
+claimed to check this asserted the quote was a substring of the joined string it
+had just been cut from -- true by construction, green either way.
+
+**Dead weight removed rather than kept for later.** `config/entities.yaml`
+still carried a `corpora:` block from the pre-port file design, naming a file
+this port deliberately stopped producing, and nothing read it -- while the rule
+it documented had moved into `first_mention.text_fields`. An operator following
+the file's own instruction would have changed nothing. `rank_repos.row` computed
+twelve fields for three consumers; the activity evidence is gone until there is
+a page that shows it, and the null-login rule it needed still lives in
+`aggregate_github`, which the people register uses. `config/validate.py` gained
+`check_entities`, so a typo in a key the code indexes directly is an error
+rather than a KeyError deep into a run.
+
+**Two comments were asserting things that had stopped being true.** The stage
+comment claimed the ordering makes the ranking non-empty on firing 1; it does
+not -- `raw_github_repos` is written in the landing phase, after ingest, so
+against a freshly rebuilt database every releases source fails once and
+self-heals on firing 2. And `_settled_urls` still explained itself by saying
+`classify_new` reads text from a corpus file, which D53 had just stopped being
+true. Both now say what the code does.
+
+**Also surfaced:** `reached_cursor` was computed, tested at the fetch level and
+discarded by the adapter, so a walk that never found the cursor -- more than
+`releases_max_pages x 100` releases since the last run -- was indistinguishable
+from a clean one. It reaches the watermark now, alongside the new/established
+split of what is being watched, which is the number that says whether the leg
+is looking at archives.

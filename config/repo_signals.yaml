@@ -34,9 +34,6 @@
 
 version: 1
 
-# Window for the displayed activity evidence (commits_90d, authors_90d).
-# Not a filter and not a ranking input.
-window_days: 90
 
 # A repository whose `created_at` falls inside this many days is cut as `new`.
 # Matches the commit harvest window so the two views describe the same period.

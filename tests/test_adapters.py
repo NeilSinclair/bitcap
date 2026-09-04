@@ -12,7 +12,14 @@ proven separately by running them; what these pin down is the translation.
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
+# The stats dict `new_releases` really returns. Faking a subset of it is how
+# a field the adapter newly reads becomes a KeyError in production that no
+# test saw.
+STATS = {"seen": 0, "kept": 0, "truncated": 0, "empty": 0,
+         "drafts": 0, "reached_cursor": True}
+
 import pytest
+from sqlalchemy import select
 
 from app.pipeline import adapters
 from app.pipeline.registry import Source
@@ -717,7 +724,7 @@ class TestReleasesAdapter:
                                    self.listed_repo("loud", 2)])
         seen = []
         self.released(monkeypatch,
-                      lambda org, repo, *a: seen.append(repo) or ([], {"truncated": 0}))
+                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
 
         adapters.fetch_releases(self.release_source(), session=session)
         assert seen == ["quiet", "loud"]
@@ -731,7 +738,7 @@ class TestReleasesAdapter:
         self.listing(monkeypatch, [self.listed_repo("here", 1)])
         seen = []
         self.released(monkeypatch,
-                      lambda org, repo, *a: seen.append(repo) or ([], {"truncated": 0}))
+                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
 
         adapters.fetch_releases(self.release_source(), session=session)
         assert seen == ["here"]
@@ -754,7 +761,7 @@ class TestReleasesAdapter:
 
         def fake(org, repo, token, lab, cursor, *a):
             seen["cursor"] = cursor
-            return [], {"truncated": 0}
+            return [], STATS
 
         self.released(monkeypatch, fake)
         state = SimpleNamespace(watermark={"cursors": {"grok": "2026-08-01T00:00:00Z"}})
@@ -769,7 +776,7 @@ class TestReleasesAdapter:
         self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
-                      lambda *a: ([self.item("grok")], {"truncated": 0}))
+                      lambda *a: ([self.item("grok")], STATS))
 
         result = adapters.fetch_releases(self.release_source(), session=session)
         assert result.watermark["cursors"]["grok"] == "2026-09-03T00:00:00Z"
@@ -784,8 +791,8 @@ class TestReleasesAdapter:
         self.listing(monkeypatch, [self.listed_repo("a", 20),
                                    self.listed_repo("b", 10)])
         self.released(monkeypatch, lambda org, repo, token, lab, cursor, *a: (
-            ([self.item("a")], {"truncated": 0}) if repo == "a"
-            else ([], {"truncated": 0})))
+            ([self.item("a")], STATS) if repo == "a"
+            else ([], STATS)))
 
         state = SimpleNamespace(watermark={"cursors": {"b": "2026-01-01T00:00:00Z"}})
         result = adapters.fetch_releases(self.release_source(), state=state,
@@ -804,7 +811,7 @@ class TestReleasesAdapter:
         def fake(org, repo, token, lab, *a):
             if repo == "dead":
                 raise RuntimeError("HTTP Error 404: Not Found")
-            return [self.item("live")], {"truncated": 0}
+            return [self.item("live")], STATS
 
         self.released(monkeypatch, fake)
         result = adapters.fetch_releases(self.release_source(), session=session)
@@ -815,7 +822,7 @@ class TestReleasesAdapter:
         self.stored(session, "grok", stars=10, org="anthropics")
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda org, repo, token, lab, *a: (
-            [self.item("grok", lab=lab)], {"truncated": 0}))
+            [self.item("grok", lab=lab)], STATS))
 
         result = adapters.fetch_releases(
             self.release_source("anthropics", "anthropic"), session=session)
@@ -826,7 +833,7 @@ class TestReleasesAdapter:
         watermark is where the ops view can see it."""
         self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
-        self.released(monkeypatch, lambda *a: ([], {"truncated": 7}))
+        self.released(monkeypatch, lambda *a: ([], {**STATS, "truncated": 7}))
 
         result = adapters.fetch_releases(self.release_source(), session=session)
         assert result.watermark["truncated"] == 7
@@ -837,8 +844,89 @@ class TestReleasesAdapter:
         self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
-                      lambda *a: ([self.item("grok")], {"truncated": 0}))
+                      lambda *a: ([self.item("grok")], STATS))
 
         before = set(adapters.DOCS.glob("release*"))
         adapters.fetch_releases(self.release_source(), session=session)
         assert set(adapters.DOCS.glob("release*")) == before
+
+    def test_the_documents_land_in_the_same_call_that_advances_the_cursor(
+            self, session, monkeypatch):
+        """The cursor gates every future fetch and `run_source` commits it as
+        soon as the adapter returns. Landing the rows a phase later means a
+        failure in between -- the register load, a redeploy, an OOM kill during
+        a 9-30 minute firing -- rolls the rows back while the cursor stays
+        advanced, and those releases are filtered out as already-seen for ever.
+        """
+        from app import models as m
+
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+
+        landed = session.scalars(select(m.RawArticle)).all()
+        assert [r.url for r in landed] == [result.items[0]["url"]]
+        assert landed[0].source_file == "github_releases"
+
+    def test_relanding_the_same_release_does_not_duplicate_it(self, session,
+                                                              monkeypatch):
+        """A firing that landed rows and then failed leaves the cursor alone,
+        so the next one refetches. The url-keyed upsert has to absorb that."""
+        from app import models as m
+
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        adapters.fetch_releases(self.release_source(), session=session)
+
+        assert len(session.scalars(select(m.RawArticle)).all()) == 1
+
+    def test_every_repo_failing_fails_the_source(self, session, monkeypatch):
+        """A token rotated to one without the right scope 404s on all of them.
+        Reported as a success it would reset `consecutive_failures` to zero
+        every firing, so `source_down` could never fire and the leg would stay
+        dead behind a green row."""
+        self.stored(session, "a", stars=20)
+        self.stored(session, "b", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("a", 20),
+                                   self.listed_repo("b", 10)])
+        self.released(monkeypatch, lambda *a: (_ for _ in ()).throw(
+            RuntimeError("HTTP Error 404: Not Found")))
+
+        with pytest.raises(RuntimeError, match="all 2 watched repositories failed"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_some_repos_failing_does_not_fail_the_source(self, session,
+                                                         monkeypatch):
+        self.stored(session, "dead", stars=20)
+        self.stored(session, "live", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("dead", 20),
+                                   self.listed_repo("live", 10)])
+
+        def fake(org, repo, token, lab, *a):
+            if repo == "dead":
+                raise RuntimeError("404")
+            return [self.item("live")], STATS
+
+        self.released(monkeypatch, fake)
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert len(result.items) == 1
+
+    def test_an_unreached_cursor_reaches_the_watermark(self, session,
+                                                       monkeypatch):
+        """A walk that never found the cursor left releases above it unfetched
+        and uncounted -- `truncated` only counts what this call saw and
+        dropped. Discarding the flag made that indistinguishable from a clean
+        run."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([], {**STATS, "reached_cursor": False}))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["reached_cursor"] is False

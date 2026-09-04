@@ -133,11 +133,17 @@ def classify_new(
         # at all: the work list still names it, and the file no longer holds
         # its text. `_settled_urls` documents that hazard and works around it
         # by refetching the page; reading the payload here removes it.
-        articles = [
-            row.payload for row in session.scalars(
+        # Rebuilt *in `pending` order*, not in whatever order the rows come
+        # back. Ordering `pending_urls` alone does nothing: this is the list
+        # the scorer slices when the budget binds, so which articles a
+        # truncated run paid for would still be whatever Postgres returned --
+        # and differently arbitrary from the sqlite the tests run on.
+        by_url = {
+            row.url: row.payload for row in session.scalars(
                 select(m.RawArticle).where(m.RawArticle.url.in_(pending))
             )
-        ]
+        }
+        articles = [by_url[url] for url in pending if url in by_url]
 
     budget = budget if budget is not None else Budget.from_config(session, config_path)
     config = settings(config_path)

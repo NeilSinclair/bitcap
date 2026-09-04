@@ -169,14 +169,22 @@ def load_corpus(session) -> list[dict]:
     docs = []
     for row in session.scalars(select(m.RawArticle)):
         payload = row.payload or {}
+        fields = [str(payload.get(f) or "") for f in text_fields(payload)]
         docs.append({
             "url": row.url,
             "date": payload.get("date") or "",
             "lab": payload.get("lab"),
             "source": payload.get("text_source") or "",
             "corpus": row.source_file,
-            "text": " ".join(
-                str(payload.get(f) or "") for f in text_fields(payload)),
+            # Kept apart as well as joined. The joined form is what identifiers
+            # are matched against; `fields` is what a quote may be cut from, so
+            # a window around a name in the title cannot run past the join and
+            # emit a string that appears in neither the title nor the body.
+            # This repository already has `verbatim.py` because a spliced quote
+            # was seen once from the model; the deterministic path must not
+            # reproduce it.
+            "fields": fields,
+            "text": " ".join(fields),
         })
     return docs
 
@@ -220,6 +228,31 @@ def quote_for(text: str, raw: str, width: int = 140) -> str:
         return ""
     start, end = max(0, idx - width), min(len(text), idx + len(raw) + width)
     return " ".join(text[start:end].split())
+
+
+
+def quote_from_fields(fields: list[str], raw: str, width: int = 140) -> str:
+    """Quote from the single field the identifier appears in.
+
+    Quoting from the joined text lets a window around a name near the end of
+    the title run past the join and into the body, producing a string that
+    appears in neither -- exactly the splice `research/announcements/
+    verbatim.py` exists to catch in the model's output.
+
+    Args:
+        fields: The document's primary-source fields, in order.
+        raw: The identifier as spelled in this document.
+        width: Characters of context either side.
+
+    Returns:
+        A single-line excerpt from one field, or "" if the identifier is in
+        none of them.
+    """
+    for field in fields:
+        found = quote_for(field, raw, width)
+        if found:
+            return found
+    return ""
 
 
 def first_mentions(docs: list[dict], cfg: dict,
@@ -275,7 +308,8 @@ def first_mentions(docs: list[dict], cfg: dict,
             "url": doc["url"],
             "lab": doc["lab"],
             "source": doc["source"],
-            "quote": quote_for(doc["text"], doc["raw"]),
+            "quote": quote_from_fields(doc.get("fields") or [doc["text"]],
+                                       doc["raw"]),
             "mentions": counts[key],
             "corpora": sorted(corpora[key]),
         })

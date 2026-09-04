@@ -51,8 +51,7 @@ from app import models as m
 from app.cli import PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
-from app.load_raw import (load_article_records, load_articles,
-                          load_classifications, load_costs)
+from app.load_raw import load_articles, load_classifications, load_costs
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import drift as drift_mod
@@ -327,17 +326,12 @@ def _phases(
     note("landing")
     if "announcements" in chosen:
         stats["corpus"] = merge_announcements(report.items_for("announcements"))
+    # Releases are deliberately absent here. They go into bronze inside their
+    # own adapter, in the same transaction that advances the cursor gating
+    # every future fetch — landing them a phase later would let a failure in
+    # between lose them permanently and silently (docs/decisions.md D52).
     if "releases" in chosen:
-        # Straight into bronze, no corpus file. Release notes share the
-        # announcements item shape, so everything downstream — classification,
-        # transform, the API, the frontend — needs no change; but they have no
-        # committed corpus to merge into and the container has no disk to keep
-        # one on, so the database is the only store. `source_file` records the
-        # provenance a shared table would otherwise lose, and is what
-        # `dead_corpora` matches on when the leg is switched off.
-        stats["releases"] = load_article_records(
-            session, report.items_for("releases"),
-            source_file=CORPUS_LABELS["releases"], run_id=run.id)
+        stats["releases"] = {"landed_in": "adapter"}
     # Into bronze here, not in the ETL. `classify_new` picks its work list from
     # `raw_articles` (a LEFT JOIN against `raw_llm_responses`), so while this
     # ran in phase 5 the classifier in phase 3 could only ever see articles

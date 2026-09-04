@@ -64,39 +64,9 @@ deny: []
 # live in config together.
 unannounced_top: 40
 
-# Corpora scanned, in the shape each one is stored on disk. `date_field` and
-# `text_fields` say how to read a document; `source` labels where a first
-# mention was found, which is the point of scanning them together.
-#
-# `text_fields` MUST list only text written by the primary source. Everything
-# downstream assumes it: a quote is cited as verbatim from the document, and
-# the unannounced-repository pass asks whether a repository is named in prose
-# anyone actually wrote. Listing a field this pipeline synthesises breaks both
-# silently -- see the `releases` entry below.
-corpora:
-  - name: announcements
-    path: research/docs/announcements.json
-    source: announcement
-    date_field: date
-    url_field: url
-    # Both are the publisher's own words.
-    text_fields: [title, text]
-  - name: announcements_archive
-    path: research/docs/announcements_archive_6mo.json
-    source: announcement
-    date_field: date
-    url_field: url
-    text_fields: [title, text]
-  - name: releases
-    path: research/docs/releases.json
-    source: release
-    date_field: date
-    url_field: url
-    # `text` only, deliberately. A release item's `title` is built by
-    # fetch_releases.as_announcement as "{org}/{repo} {tag}" -- our string, not
-    # GitHub's. Including it did two invisible kinds of damage: the emitted
-    # quote began with text that appears nowhere in the release note, and every
-    # repository that cuts a release injected its own name into the prose used
-    # by unannounced_repos, so `anthropics/claude-code` -- named in zero
-    # announcements and zero release bodies -- was scored as "written about".
-    text_fields: [text]
+# NOTE: there is no `corpora` list here any more. The corpus is `raw_articles`,
+# read in one query, so this file no longer decides *what* is scanned -- only
+# how identifiers are recognised in it. Which fields of a document count as
+# primary-source text is a property of the document, not of a config entry, and
+# lives in `first_mention.text_fields`: a release item's title is built by this
+# pipeline and must never reach a quote or the unannounced-repository text.

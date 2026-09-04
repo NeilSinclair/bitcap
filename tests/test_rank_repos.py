@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "research" / "github"))
 
 import rank_repos
-from rank_repos import activity, is_mirror, rank
+from rank_repos import is_mirror, rank
 
 NOW = datetime(2026, 9, 4, tzinfo=timezone.utc)
 CFG = {"window_days": 90, "new_within_days": 365, "min_stars": 0}
@@ -72,11 +72,14 @@ class TestStarsAreTheOnlyRanking:
                     CFG, NOW)
         assert [r["repo"] for r in rows] == ["alpha", "zeta"]
 
-    def test_commits_are_reported_but_do_not_move_the_row(self):
-        """Evidence, not an input: a reader must still see whether a
-        repository is alive."""
+    def test_commits_are_absent_from_the_row_entirely(self):
+        """Not merely unweighted: a row carries no commit field at all, so
+        there is nothing for a later sort key to reach for. The activity
+        evidence returns with the page that displays it -- until then the
+        null-login rule it needed lives in `aggregate_github`, which the people
+        register still uses."""
         rows = rank([("o", "r", payload(10, [commit(1), commit(2)]))], CFG, NOW)
-        assert rows[0]["commits_window"] == 2
+        assert not [k for k in rows[0] if "commit" in k or "author" in k]
         assert rows[0]["stars"] == 10
 
     def test_a_repo_below_the_floor_is_dropped(self):
@@ -114,34 +117,6 @@ class TestAgeCut:
         rows = rank([("o", "r", payload(10, [commit(5)]))], CFG, NOW)
         assert rows[0]["age"] == "unknown"
 
-
-class TestActivityEvidence:
-    """The displayed columns, and the bot-detection hole they have to survive."""
-
-    def test_a_null_login_counts_as_unattributed_not_human(self):
-        """xAI's CI commits carry `login: null` with `email: support@x.ai`, and
-        every one of `x-algorithm`'s 19 commits has that shape. Counting them
-        as human reports an automated code dump as a team at work."""
-        act = activity([commit(1, login=None, name="CI agent",
-                               email="support@x.ai")], NOW - timedelta(days=90))
-        assert act == {**act, "human": 0, "unattributed": 1, "authors": 0}
-
-    def test_a_bot_login_is_counted_as_a_bot(self):
-        act = activity([commit(1, login="grokkybara[bot]")],
-                       NOW - timedelta(days=90))
-        assert act["bot"] == 1 and act["human"] == 0
-
-    def test_commits_outside_the_window_are_excluded(self):
-        act = activity([commit(5), commit(200)], NOW - timedelta(days=90))
-        assert act["commits"] == 1
-
-    def test_authors_counts_distinct_humans(self):
-        act = activity([commit(1, login="a"), commit(2, login="a"),
-                        commit(3, login="b")], NOW - timedelta(days=90))
-        assert act["authors"] == 2
-
-    def test_an_empty_window_reports_no_last_commit(self):
-        assert activity([], NOW - timedelta(days=90))["last_commit"] is None
 
 
 class TestMirrorExclusion:
