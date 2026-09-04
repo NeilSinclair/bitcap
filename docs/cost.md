@@ -407,3 +407,39 @@ here because planning.md §6a requires the app to report its own variance, and
 because a scorer that quietly degrades is the failure this system exists to
 catch. If the monthly budget ever binds, `cadence.drift` is the first dial to
 turn.
+
+## 2026-09-04 — v8 prompt probe, and the per-run ceiling raised
+
+| Workflow | Calls | $ | Note |
+|---|---:|---:|---|
+| Astra re-score probe, v8 draft 1 (`model_spec` only) | 2 | 0.0836 | Score went *down*, 50 → 33.3 — see D52 |
+| Astra re-score probe, v8 final (n=3, practice confidence) | 3 | 0.1420 | 100 / 33.3 / 100 — modal answer now high |
+
+**Subtotal: $0.226.** Running total across all workflows: **$16.42**.
+
+Paid deliberately rather than committing to a $6.25 corpus re-run on a guess.
+It earned its price twice: it caught that the first fix made the score worse,
+and n=3 exposed run-to-run instability (two identical calls disagreeing 66.7 vs
+100 on the investment axis) that a single sample had hidden. Called
+`classify()` directly, so nothing was written to cache, `announcements.json` or
+the database — these are eval calls, not pipeline spend, and none of them
+appear in `raw_costs`.
+
+**Ceilings raised: `per_run_usd` 5.00 → 15.00, `per_month_usd` 75.00 → 250.00.**
+
+*Per-run.* The old value no longer admitted what its own comment claimed: a
+full re-classification is ~$6.25 at 250 articles ($0.025/article measured over
+583 calls), so the v8 bump would have aborted mid-stage and split the corpus
+across two prompt versions — spending the money without producing the result.
+
+*Per-month.* A change of kind, not degree, and recorded plainly: **$250 is more than double the €100 budget**, so the config
+no longer contains a control that protects it. It is a runaway guard — it stops
+a loop or a retry storm, not deliberate overspend. From here the budget control
+is this file and someone reading it, which is weaker than a number the
+pipeline enforces. Decided by Neil, 2026-09-04.
+
+**Committed but unspent: ~$6.25.** `PROMPT_VERSION` is `v8`, so all 250
+articles are pending. Month stands at $14.58 in `raw_costs`, and drift adds
+~$0.75 nightly, so the re-run lands September near $41. That is inside the
+€100 project budget — which is now the only limit that matters, since the
+config ceiling no longer binds below it.

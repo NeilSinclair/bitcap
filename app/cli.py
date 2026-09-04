@@ -23,7 +23,7 @@ from app.load_refs import load_refs
 from app.runs import tracked, watermarks
 from app.transform import transform
 
-PROMPT_VERSION = "v7"
+PROMPT_VERSION = "v8"
 
 
 _load_env = load_env  # kept as a name here; the implementation lives in app.db

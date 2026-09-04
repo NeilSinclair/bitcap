@@ -4411,3 +4411,84 @@ carrying it to `articles` needs a column on `m.Article` and a migration chained
 onto the uncommitted digests work, while that work is in flight. Held as a
 coordination call, not an oversight — until it lands, the canonical link is
 recorded but reaches no reader.
+
+## D52 — The AI-team score was wrong because the prompt never described what it was reading (2026-09-04)
+
+**Decision.** Prompt `v8`: describe `model_spec` and `forum_post` in the
+"What you are reading" section, and calibrate practice `confidence` the way
+mechanism confidence was already calibrated in v7. Not a scoring-rule change —
+`config/scoring.yaml` is untouched.
+
+**Symptom.** GPT-6 Astra scored 100 for the investment audience and **50** for
+the AI team, band `medium`. A new flagship frontier model is the single most
+adopt-relevant item an AI team can see; 50 is not defensible.
+
+**Where the 50 came from.** Two practice tags: `model_capability`
+(investigate/high/**medium**) and `integration` (adopt/medium/**medium**).
+`ai_score_of` maxes each axis independently, so action = 3 (already maxed) and
+strongest = 3 x 0.5 = 1.5, giving `100 * (3/3) * (1.5/3) = 50`. The entire
+shortfall was the confidence gate. Nothing else was binding.
+
+**Two causes, and the first was the obvious one that turned out not to matter.**
+
+1. The `model_index` channel (D46) introduced `text_source: model_spec` and the
+   prompt's text_source section was never told about it. It described
+   `full_text`, `rss_summary` and `full_text_archived` only. `forum_post` from
+   the discourse channel had the same hole and had simply not been scored yet.
+   The run succeeded; the score was quietly wrong. This is the silent
+   degradation the project is meant to be built against, introduced by our own
+   change three commits earlier.
+2. **The actual lever.** Practice `confidence` was defined in one line — "in
+   the tag itself given the text" — while mechanism confidence got a calibrated
+   paragraph in v7 saying it rates *how plainly the text states the thing, not
+   how plausible you find it*. The model filled the vacuum with the wrong
+   question: "is the claimed benefit proven?" Every rejected tag's `reason`
+   said so outright — *"no benchmark figures are given to confirm the gain."*
+   A spec sheet never publishes benchmarks, so the tag could not win.
+   Unverified is not the same as unstated.
+
+Fixing (1) alone made it **worse**, measured, not assumed: AI score went 50 ->
+33.3, because the added "never build a tag on a table row alone" cost the
+`integration` tag its `adopt`. Fixing (2) is what moved it.
+
+**Evidence, n=3 on the same document** (single samples were misleading here —
+two identical v8 calls disagreed 66.7 vs 100 on the investment axis before this
+was understood):
+
+| run | investment | AI team | band |
+| --- | --- | --- | --- |
+| 1 | 100.0 | 100.0 | high |
+| 2 | 100.0 | 33.3 | medium |
+| 3 | 100.0 | 100.0 | high |
+
+Modal answer is now 100/high. Caveat recorded honestly: **1 run in 3 still
+lands at 33.3**, and the probe called `classify()` directly, bypassing
+`drop_unknown_tags`, so the raw output included junk tags (`placeholder`, one
+tag with an empty id) the real path would have discarded. Instability on this
+axis is not fixed, only improved, and `research/announcements/variance.py`
+exists to measure it properly.
+
+**Rejected: a floor keyed on `frontier_model_release`.** Roughly four lines
+(`ai_team.floor` in config plus a `max()` in `ai_score_of`) and it would
+guarantee 100. Rejected because `scoring.yaml` argues in capitals that there is
+NO EVENT WEIGHT in the AI rule deliberately — event weight is an investment
+taxonomy, and importing it would make the two audiences a re-colouring of one
+list. It also breaks "no practice tag, no AI score" unless guarded. The number
+would be the one thing in the system that cannot be defended line by line.
+Fixing the prompt's calibration produces the same score for a reason we can
+state.
+
+**Consequence — this costs money to realise.** Re-scoring is keyed entirely on
+`prompt_version` (`classify.pending_urls`); editing a prompt file in place
+re-runs nothing, by design. `PROMPT_VERSION` is now `v8` in `app/cli.py`,
+`score_announcements.py` and `run_gold.py`, so all 250 articles are pending. At
+the measured $0.025/article that is **~$6.25, above `per_run_usd: 5.00`**. With
+`on_exceed: abort_llm_stage` a single scheduled firing stops partway and leaves
+a mixed-version corpus, so the re-classification should be run deliberately
+rather than discovered by the nightly cron. Month spend is $14.58 of $75.
+
+**Regression test.** `test_prompt_describes_every_text_source_we_emit` parses
+the text_source literals out of `fetch_announcements.py`, `backfill_openai.py`
+and `sources.yaml` and asserts each is described in the current prompt.
+Verified to fail against v7 naming `model_spec`. Any future channel that
+invents a text_source now fails at test time rather than scoring quietly wrong.
