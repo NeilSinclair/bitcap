@@ -23,6 +23,8 @@ from fetch_announcements import (
     date_from_slug,
     from_listing_pagination,
     from_rss,
+    from_discourse,
+    from_model_index,
     from_wayback_cdx,
     strip_html,
 )
@@ -1441,3 +1443,489 @@ class TestRunBatch:
         _, failures, costs, cost_path = self._run(monkeypatch, tmp_path, items, articles)
         assert len(costs) == 2  # both items billed, including the failed one
         assert json.loads(cost_path.read_text()) == costs
+
+
+def _models_md(*ids):
+    """A Markdown model index linking each given model id."""
+    return "# Models\n\n" + "\n".join(
+        f"- [{i}](/api/docs/models/{i}) ([md](/api/docs/models/{i}.md))" for i in ids
+    )
+
+
+class TestModelIndex:
+    """The second OpenAI discovery channel.
+
+    The silent failure this exists to catch: a lab ships a flagship model, the
+    RSS feed omits the launch post, and the run reports success having found
+    nothing. That is exactly what happened with GPT-6 Astra on 2026-09-03.
+    """
+
+    def _baseline(self, tmp_path, monkeypatch, ids):
+        path = tmp_path / "baseline.json"
+        path.write_text(json.dumps({"openai": list(ids)}))
+        monkeypatch.setattr(fetch_announcements, "MODEL_BASELINE", path)
+
+    def _lab(self):
+        return {"id": "openai", "index_url": "https://dev.example/models.md"}
+
+    def test_model_absent_from_baseline_is_emitted(self, tmp_path, monkeypatch):
+        def fake_fetch(url, **kw):
+            if url.endswith("models.md"):
+                return _models_md("gpt-5", "gpt-6-astra")
+            assert url == "https://dev.example/models/gpt-6-astra.md"
+            return "# GPT-6 Astra\n\nOur most capable model.\n"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        self._baseline(tmp_path, monkeypatch, ["gpt-5"])
+        out = from_model_index(self._lab(), datetime(2025, 1, 1))
+
+        assert len(out) == 1
+        assert out[0]["url"] == "https://dev.example/models/gpt-6-astra"
+        assert out[0]["title"] == "GPT-6 Astra"
+        assert out[0]["text_source"] == "model_spec"
+
+    def test_discovery_date_is_labelled_not_passed_off_as_publication(
+        self, tmp_path, monkeypatch
+    ):
+        # A model spec page carries a knowledge cutoff, never a publication
+        # date. If `date` were emitted unlabelled, a first-seen date would be
+        # scored as though the lab had published that day.
+        monkeypatch.setattr(
+            fetch_announcements,
+            "fetch",
+            lambda url, **kw: _models_md("m1") if url.endswith("models.md") else "# M1\n",
+        )
+        self._baseline(tmp_path, monkeypatch, [])
+        out = from_model_index(self._lab(), datetime(2025, 1, 1))
+
+        assert out[0]["date_basis"] == "first_seen"
+
+    def test_baseline_models_are_not_re_emitted(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(
+            fetch_announcements,
+            "fetch",
+            lambda url, **kw: _models_md("gpt-4o", "gpt-5"),
+        )
+        self._baseline(tmp_path, monkeypatch, ["gpt-4o", "gpt-5"])
+
+        assert from_model_index(self._lab(), datetime(2025, 1, 1)) == []
+
+    def test_already_stored_model_is_skipped(self, tmp_path, monkeypatch):
+        # The deployed run has no disk, so the settled-URL set is the only
+        # thing preventing a re-emit once the baseline is out of date.
+        monkeypatch.setattr(
+            fetch_announcements, "fetch", lambda url, **kw: _models_md("gpt-6-astra")
+        )
+        self._baseline(tmp_path, monkeypatch, [])
+        out = from_model_index(
+            self._lab(),
+            datetime(2025, 1, 1),
+            skip={"https://dev.example/models/gpt-6-astra"},
+        )
+
+        assert out == []
+
+    def test_parsing_nothing_raises_rather_than_reporting_no_launches(
+        self, tmp_path, monkeypatch
+    ):
+        # The whole point of this channel is redundancy. A parser that returns
+        # [] when the page shape changes is indistinguishable from "the lab
+        # shipped nothing", which is the failure it was added to close.
+        monkeypatch.setattr(
+            fetch_announcements, "fetch", lambda url, **kw: "<html>redesigned</html>"
+        )
+        self._baseline(tmp_path, monkeypatch, [])
+
+        with pytest.raises(RuntimeError, match="parsed 0 models"):
+            from_model_index(self._lab(), datetime(2025, 1, 1))
+
+    def test_one_unreachable_spec_page_does_not_lose_the_others(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        def fake_fetch(url, **kw):
+            if url.endswith("models.md"):
+                return _models_md("broken", "fine")
+            if "broken" in url:
+                raise RuntimeError("fetch failed: 503")
+            return "# Fine\n\nBody.\n"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        self._baseline(tmp_path, monkeypatch, [])
+        out = from_model_index(self._lab(), datetime(2025, 1, 1))
+
+        assert [a["title"] for a in out] == ["Fine"]
+        assert "SKIP model spec broken" in capsys.readouterr().out
+
+
+class TestChannels:
+    def test_lab_without_also_has_one_channel(self):
+        lab = {"id": "mistral", "method": "rss", "index_url": "https://m.example/rss"}
+        assert fetch_announcements.channels(lab) == [lab]
+
+    def test_secondary_channel_inherits_identity_and_overrides_its_own_keys(self):
+        lab = {
+            "id": "openai",
+            "label": "OpenAI",
+            "method": "rss",
+            "index_url": "https://openai.example/rss",
+            "also": [{"method": "model_index", "index_url": "https://dev.example/m.md"}],
+        }
+        primary, second = fetch_announcements.channels(lab)
+
+        assert primary["method"] == "rss"
+        assert second["method"] == "model_index"
+        assert second["index_url"] == "https://dev.example/m.md"
+        assert second["id"] == "openai" and second["label"] == "OpenAI"
+
+
+class TestOpenAIHasRedundantDiscovery:
+    def test_openai_declares_a_second_channel(self):
+        # Regression guard on the incident itself: OpenAI's RSS feed omitted
+        # the GPT-6 Astra launch post entirely. Dropping back to one channel
+        # restores the blind spot without failing anything.
+        srcs = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
+        openai = next(l for l in srcs["labs"] if l["id"] == "openai")
+
+        assert [c["method"] for c in openai.get("also", [])] == [
+            "model_index",
+            "discourse",
+        ]
+
+    def test_baseline_covers_the_catalogue_but_not_the_missed_launch(self):
+        baseline = json.loads(
+            (ROOT / "research" / "docs" / "model_index_baseline.json").read_text()
+        )["openai"]
+
+        assert len(baseline) > 50
+        assert "gpt-5" in baseline
+        assert "gpt-6-astra" not in baseline
+
+
+def _category_json(*topics):
+    """A Discourse category listing."""
+    return json.dumps({"topic_list": {"topics": [
+        {"id": i, "slug": f"slug-{i}", "title": t, "created_at": f"{d}T19:51:25.371Z"}
+        for i, (t, d) in enumerate(topics, start=100)
+    ]}})
+
+
+def _topic_json(cooked):
+    return json.dumps({"post_stream": {"posts": [{"cooked": cooked}]}})
+
+
+class TestDiscourse:
+    """OpenAI's developer forum, the third channel.
+
+    It carried the GPT-6 Astra launch that reached neither the RSS feed nor
+    any sitemap.
+    """
+
+    def _lab(self):
+        return {"id": "openai", "index_url": "https://forum.example/c/announcements/6.json"}
+
+    def test_topic_is_emitted_and_the_canonical_link_is_kept(self, monkeypatch):
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                return _category_json(("Introducing GPT-6-Astra", "2026-09-03"))
+            return _topic_json('<p>Astra is here. <a href="https://openai.com/index/gpt-6-astra/">Read more</a></p>')
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert len(out) == 1
+        assert out[0]["date"] == "2026-09-03"
+        assert out[0]["text_source"] == "forum_post"
+        assert out[0]["canonical_url"] == "https://openai.com/index/gpt-6-astra"
+
+    def test_citation_is_the_topic_not_the_unfetchable_canonical_page(self, monkeypatch):
+        # openai.com returns 403 to everything this pipeline can send, so the
+        # canonical link cannot be the citation — it could never be
+        # re-verified. The forum topic can.
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                return _category_json(("Launch", "2026-09-03"))
+            return _topic_json('<p>x <a href="https://openai.com/index/thing/">c</a></p>')
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert out[0]["url"] == "https://forum.example/t/slug-100/100"
+
+    def test_topic_without_a_canonical_link_still_stands_alone(self, monkeypatch):
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                return _category_json(("No link here", "2026-09-03"))
+            return _topic_json("<p>Body with no outbound link.</p>")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert out[0]["canonical_url"] is None
+        assert out[0]["url"].startswith("https://forum.example/t/")
+
+    def test_topic_older_than_the_window_is_dropped(self, monkeypatch):
+        # The category listing carries pinned topics from 2021.
+        monkeypatch.setattr(
+            fetch_announcements,
+            "fetch",
+            lambda url, **kw: _category_json(("Welcome to the forum", "2021-02-26")),
+        )
+        assert from_discourse(self._lab(), datetime(2026, 6, 1)) == []
+
+    def test_already_stored_topic_is_skipped(self, monkeypatch):
+        monkeypatch.setattr(
+            fetch_announcements,
+            "fetch",
+            lambda url, **kw: _category_json(("Launch", "2026-09-03")),
+        )
+        out = from_discourse(
+            self._lab(), datetime(2026, 6, 1),
+            skip={"https://forum.example/t/slug-100/100"},
+        )
+        assert out == []
+
+    def test_empty_category_raises_rather_than_reporting_no_announcements(
+        self, monkeypatch
+    ):
+        monkeypatch.setattr(
+            fetch_announcements, "fetch", lambda url, **kw: json.dumps({"topic_list": {"topics": []}})
+        )
+        with pytest.raises(RuntimeError, match="listed 0 topics"):
+            from_discourse(self._lab(), datetime(2026, 6, 1))
+
+    def test_one_unreadable_topic_does_not_lose_the_others(self, monkeypatch, capsys):
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                return _category_json(("Broken", "2026-09-03"), ("Fine", "2026-09-03"))
+            if url.endswith("/100.json"):
+                return "not json at all"
+            return _topic_json("<p>Fine body.</p>")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert [a["title"] for a in out] == ["Fine"]
+        assert "SKIP topic 100" in capsys.readouterr().out
+
+
+class TestChannelsCanBeTurnedOff:
+    def test_disabled_channel_does_not_run(self):
+        lab = {
+            "id": "openai",
+            "method": "rss",
+            "index_url": "https://openai.example/rss",
+            "also": [
+                {"method": "model_index", "index_url": "https://a.example/m.md"},
+                {"method": "discourse", "enabled": False, "index_url": "https://f.example/c.json"},
+            ],
+        }
+        assert [c["method"] for c in fetch_announcements.channels(lab)] == [
+            "rss",
+            "model_index",
+        ]
+
+    def test_a_channel_is_on_unless_it_says_otherwise(self):
+        lab = {"id": "x", "method": "rss", "also": [{"method": "discourse"}]}
+        assert len(fetch_announcements.channels(lab)) == 2
+
+    def test_disabled_channels_are_still_validated(self, tmp_path):
+        # A channel turned off while it misbehaves is meant to come back on.
+        # A config error that only surfaces on re-enabling is found at the
+        # worst possible moment.
+        sys.path.insert(0, str(ROOT / "config"))
+        import validate
+
+        (tmp_path / "sources.yaml").write_text(yaml.safe_dump({
+            "window_months": 3,
+            "labs": [{
+                "id": "openai", "method": "rss", "index_url": "https://a.example/rss",
+                "also": [{"method": "discourse", "enabled": False}],  # no index_url
+            }],
+        }))
+        errors = validate.check_sources(tmp_path)
+
+        assert any("discourse" in e and "index_url" in e for e in errors)
+
+
+class TestCanonicalLink:
+    """The link a forum post points at.
+
+    This field is the compensating control for citing the forum topic rather
+    than the canonical page (D47). A confident wrong link is worse than none:
+    it sends a reader to a pricing page while claiming to preserve the
+    announcement.
+    """
+
+    def test_reference_subdomains_are_not_the_announcement(self):
+        cooked = '<p>See <a href="https://developers.openai.com/api/docs/pricing">pricing</a>.</p>'
+        assert fetch_announcements._canonical_link(cooked) is None
+
+    def test_an_index_article_wins_over_an_earlier_reference_link(self):
+        cooked = (
+            '<a href="https://developers.openai.com/api/docs/models/gpt-6-astra">docs</a>'
+            '<a href="https://openai.com/index/gpt-6-astra/">announcement</a>'
+        )
+        assert (fetch_announcements._canonical_link(cooked)
+                == "https://openai.com/index/gpt-6-astra")
+
+    def test_a_fragment_is_stripped_so_one_page_has_one_spelling(self):
+        # Two spellings of one URL defeat the free exact-match dedupe pass
+        # planned in docs/next_steps_0309.md.
+        cooked = '<a href="https://openai.com/index/previewing-gpt-5-6-sol/#pricing">x</a>'
+        assert (fetch_announcements._canonical_link(cooked)
+                == "https://openai.com/index/previewing-gpt-5-6-sol")
+
+    def test_a_newsroom_page_outside_index_still_counts(self):
+        cooked = '<a href="https://openai.com/webmcp-challenge/">x</a>'
+        assert (fetch_announcements._canonical_link(cooked)
+                == "https://openai.com/webmcp-challenge")
+
+
+class TestDiscoursePagination:
+    """Discourse pages at 30 and orders by activity, not creation date.
+
+    A launch announcement with few replies can sit past position 30 after a
+    busy month. Reading page one only would drop it with no error and no count
+    — the same silent failure this channel was built to close.
+    """
+
+    def _lab(self):
+        return {"id": "openai", "index_url": "https://forum.example/c/a/6.json"}
+
+    def _page(self, topics, more=None):
+        return json.dumps({"topic_list": {
+            "topics": topics, "more_topics_url": more}})
+
+    def _topic(self, tid, created, bumped):
+        return {"id": tid, "slug": f"s-{tid}", "title": f"T{tid}",
+                "created_at": f"{created}T10:00:00.000Z",
+                "bumped_at": f"{bumped}T10:00:00.000Z"}
+
+    def test_an_in_window_topic_on_page_two_is_still_found(self, monkeypatch):
+        def fake_fetch(url, **kw):
+            if "page=1" in url:
+                return self._page([self._topic(2, "2026-09-03", "2026-09-03")])
+            if url.endswith("6.json"):
+                # Page one: an old topic kept at the top by a recent bump.
+                return self._page([self._topic(1, "2021-02-26", "2026-09-04")],
+                                  more="/c/a/6?page=1")
+            return _topic_json("<p>body</p>")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert [a["title"] for a in out] == ["T2"]
+
+    def test_pagination_stops_once_a_page_predates_the_window(self, monkeypatch):
+        pages = []
+
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                pages.append(url)
+                return self._page([self._topic(1, "2020-01-01", "2020-01-01")],
+                                  more="/c/a/6?page=1")
+            if "page=" in url:
+                pages.append(url)
+                return self._page([self._topic(2, "2019-01-01", "2019-01-01")])
+            return _topic_json("<p>body</p>")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        from_discourse(self._lab(), datetime(2026, 6, 1))
+
+        assert len(pages) == 1
+
+    def test_endless_pagination_raises_rather_than_truncating(self, monkeypatch):
+        # A capped sweep that reports success is indistinguishable from a
+        # category with nothing older — the original bug in a new place.
+        def fake_fetch(url, **kw):
+            if "/t/" in url:
+                return _topic_json("<p>body</p>")
+            return self._page([self._topic(1, "2026-09-01", "2026-09-01")],
+                              more="/c/a/6?page=99")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        with pytest.raises(RuntimeError, match="hit .* pages still inside the window"):
+            from_discourse(self._lab(), datetime(2026, 6, 1))
+
+
+class TestModelBaselineIsRequired:
+    def test_a_lab_with_no_baseline_raises_instead_of_flooding(
+        self, tmp_path, monkeypatch
+    ):
+        # Adding a model_index channel is a config-only change, so this case is
+        # reachable by design. Defaulting to an empty baseline would emit a
+        # lab's entire catalogue as launches, each paying for a classification.
+        path = tmp_path / "baseline.json"
+        path.write_text(json.dumps({"openai": ["gpt-5"]}))
+        monkeypatch.setattr(fetch_announcements, "MODEL_BASELINE", path)
+        monkeypatch.setattr(
+            fetch_announcements, "fetch",
+            lambda url, **kw: _models_md("m1", "m2"))
+
+        with pytest.raises(RuntimeError, match="no model baseline for 'mistral'"):
+            from_model_index(
+                {"id": "mistral", "index_url": "https://d.example/models.md"},
+                datetime(2025, 1, 1))
+
+
+class TestStoredTextIsCapped:
+    def test_a_very_long_forum_post_is_capped_like_every_other_source(
+        self, monkeypatch
+    ):
+        # Uncapped text goes into the classifier prompt at full length while
+        # every other source is capped, so the only symptom is per-call cost
+        # drifting above what docs/cost.md was measured against.
+        def fake_fetch(url, **kw):
+            if url.endswith("6.json"):
+                return _category_json(("Long", "2026-09-03"))
+            return _topic_json("<p>" + ("word " * 20000) + "</p>")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_discourse(
+            {"id": "openai", "index_url": "https://f.example/c/a/6.json"},
+            datetime(2026, 6, 1))
+
+        assert len(out[0]["text"]) == 24000
+
+
+class TestModelIndexPathComesFromConfig:
+    def test_a_docs_path_other_than_openais_still_parses(self, tmp_path, monkeypatch):
+        # Hardcoding OpenAI's /api/docs/models/ made a configuration mismatch
+        # present as "parsed 0 models", which reads as a page-shape change.
+        path = tmp_path / "baseline.json"
+        path.write_text(json.dumps({"otherlab": []}))
+        monkeypatch.setattr(fetch_announcements, "MODEL_BASELINE", path)
+
+        def fake_fetch(url, **kw):
+            if url.endswith("catalogue.md"):
+                return "# Models\n- [A](/docs/model-catalogue/model-a)"
+            return "# Model A\n\nSpec.\n"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        out = from_model_index(
+            {"id": "otherlab",
+             "index_url": "https://lab.example/docs/model-catalogue.md"},
+            datetime(2025, 1, 1))
+
+        assert [a["url"] for a in out] == [
+            "https://lab.example/docs/model-catalogue/model-a"]
+
+
+class TestEnabledMustBeABool:
+    def test_a_quoted_false_is_rejected(self, tmp_path):
+        # channels() reads `enabled` by truthiness, so `enabled: "false"` keeps
+        # the channel running while the file says it is off.
+        sys.path.insert(0, str(ROOT / "config"))
+        import validate
+
+        (tmp_path / "sources.yaml").write_text(yaml.safe_dump({
+            "window_months": 3,
+            "labs": [{
+                "id": "openai", "method": "rss", "index_url": "https://a.example/rss",
+                "also": [{"method": "discourse", "enabled": "false",
+                          "index_url": "https://f.example/c.json"}],
+            }],
+        }))
+        errors = validate.check_sources(tmp_path)
+
+        assert any("not a bool" in e for e in errors)

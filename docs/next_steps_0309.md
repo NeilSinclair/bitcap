@@ -42,4 +42,29 @@
 
 - Figure out a way to disambiguate articles - it's likely that a researcher and lab might post on something similar and then recording the effect of both of these articles in the frontend just increases the flood of information, giving an unneccessary weight to something by having multiple (potentially relevant) sources related to it. Disambiguation could be done by embedding all the articles and then doing the semantic similarity between them. For articles with a sufficiently high semantic similarity (this threshold would need to be tweaked) we can then pass these to a language model to check if the articles are the same. A precondition for this check is that the person who posted the article / X post would need to be linked to that lab.
 
+  *Notes added by Claude, 2026-09-04 — from hitting a live instance of this while adding
+  OpenAI's second and third discovery channels (docs/decisions.md D46, D47):*
+
+  - *A live case exists now. GPT-6 Astra arrives on two channels as two URLs — its model
+    spec page and the forum announcement. Not yet ingested, so the duplicate has not
+    reached the digest, but it will once the forum channel's 16 items are scored.*
+
+  - *Consider a free exact pass before the embedding pass. `canonical_url` is already
+    populated on forum items (10 of 16), so two sources pointing at the same canonical
+    page is an exact match costing nothing. Model launches also carry a hard identifier —
+    the model id appears in every URL for the event. Running those first means embeddings
+    and the LLM adjudication are only spent on the genuinely ambiguous remainder. This is
+    an ordering refinement to the approach above, not an alternative to it: the exact pass
+    cannot see a researcher and a lab describing the same thing in different words, which
+    is the case that motivated the bullet.*
+
+  - *The precondition may be too narrow. "The person who posted would need to be linked to
+    that lab" would not fire on the Astra case: both items are lab-published, no person
+    involved. "Same lab" rather than "same person's lab" would cover both.*
+
+  - *Embeddings imply a second provider. Anthropic has no embeddings API, so this step
+    needs one — the OpenAI client already in research/announcements/providers.py is the
+    path of least resistance, and slots into the existing per-call cost instrumentation
+    rather than needing a new one.*
+
 - We need an assessment of the effort required to include a new lab in the pipeline. As far as I can tell, for each lab, we need a specific protocol for interacting with their data and finding a) their articles, b) their research papers and c) their github account. Once these have been found, we have a pipeline that is parameterised by this data. 

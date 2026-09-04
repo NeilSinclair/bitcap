@@ -1,0 +1,92 @@
+# The periodic digest. Config, not code.
+#
+# WHAT A DIGEST IS, AND WHY IT IS PERSISTED RATHER THAN COMPUTED ON READ.
+#
+# Every other clean table in this schema is a pure function of committed files,
+# so `rebuild` may drop it. A digest is not: it is a record of what the product
+# *said* at a point in time. Recomputing one later against a re-scored corpus
+# would silently rewrite history -- a reader opening last week's digest would
+# see today's opinions under last week's date. So `digests` is an ops table
+# (app/models.py OPS_TABLES) and survives a rebuild, on the same reasoning as
+# pipeline_runs and alerts.
+#
+# THE CUT IS THE PRODUCT. The dashboard shows every classified article; the
+# digest is the claim that a handful of them are worth a reader's attention and
+# the rest are not. Every threshold below is that claim in a number, and every
+# digest records how many items it suppressed so the claim is auditable rather
+# than asserted.
+
+version: 1
+
+# Hours of publication history one digest covers.
+#
+# 48h, decided on the corpus rather than assumed -- planning.md 7 listed this as
+# open and said it would be settled on evidence. Every window size was replayed
+# over the full 90-day corpus, counting how often an edition would have been
+# empty and how many items it carried when it was not:
+#
+#   window   audience      editions   empty   median items
+#     24h    investment          90     48%              1
+#     24h    ai                  90     33%              1
+#     48h    investment          45     31%              1
+#     48h    ai                  45     13%              1
+#     72h    investment          30     23%              2
+#     72h    ai                  30      3%              2
+#    168h    investment          12      0%              3
+#    168h    ai                  12      0%              6
+#
+# 24h is too tight: the investment digest is empty on half of all days, which
+# trains a reader to stop opening it. A week is never empty and carries a median
+# of six items to the AI team -- but a weekly report that reliably has something
+# in it has stopped being a filter, and a launch arrives up to seven days late
+# in a product whose whole claim is earliness.
+#
+# 48h keeps the brief's own default and now has the measurement behind it: it
+# fires on roughly two of every three windows with a median of one item. The
+# empty third is the correct answer, not a fault -- the labs really are quiet on
+# a third of two-day windows -- and the digest page says so in words rather than
+# rendering a blank list.
+#
+# This value does NOT have to agree with the cron schedule in render.yaml.
+# `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
+# publishes each 48-hour period once and re-publishes it harmlessly the next
+# night. Before that quantisation existed the two settings silently disagreed:
+# a daily cron over a 48-hour lookback put every article in two consecutive
+# editions (docs/decisions.md D51). The rows above count *periods*, which is
+# what an edition is, so they describe the archive under any cron frequency.
+window_hours: 48
+
+investment:
+  # A connection at or above this strength is worth a PM's attention. Matches
+  # `alerts.content_min_strength` deliberately: an item that alerted in real
+  # time and an item that reaches the digest should be the same class of thing,
+  # or the two surfaces disagree about what matters.
+  min_strength: 0.5
+
+  # A high-band article with NO holding connection still surfaces. A lab-level
+  # strategic shift that does not yet touch a name in the book is exactly the
+  # early signal this system exists to catch -- requiring a connection would
+  # filter out the most valuable case, which is the one that arrives before the
+  # market has priced it.
+  always_band: high
+
+  # Hard cap on rows. A digest nobody finishes reading has suppressed nothing.
+  max_items: 8
+
+ai:
+  # An item reaches the AI team only if it carries a practice tagged `adopt` or
+  # `investigate`. `monitor` is the null action and is not a recommendation;
+  # surfacing it would pad the digest with items whose own classification says
+  # to do nothing.
+  actions: [adopt, investigate]
+  min_band: medium
+  max_items: 8
+
+# Per event, how many affected holdings to name before collapsing to a count.
+#
+# This is the D-digest fan-out control. One xAI sentence -- "trained across tens
+# of thousands of NVIDIA GB300 GPUs" -- fires against seven holdings at once
+# (docs/insights.md). As seven connection rows that is the noise the brief asks
+# us to keep out; as one event naming its top holdings and counting the rest it
+# is a single, true line. The digest groups by event for this reason.
+max_holdings_shown: 4

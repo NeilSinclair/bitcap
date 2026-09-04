@@ -8906,5 +8906,17 @@
     "seconds": 84.05,
     "at": "2026-09-04T14:21:47.729685+00:00",
     "workflow": "drift"
+  },
+  {
+    "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+    "model": "claude-sonnet-5",
+    "mode": "interactive",
+    "input_tokens": 1716,
+    "output_tokens": 2905,
+    "cache_write_tokens": 9082,
+    "cache_read_tokens": 0,
+    "usd": 0.055187,
+    "seconds": 36.3,
+    "at": "2026-09-04T17:13:24.084704+00:00"
   }
 ]

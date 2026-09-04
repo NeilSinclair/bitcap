@@ -46,6 +46,7 @@ from sqlalchemy.orm import Session
 
 from sqlalchemy.exc import IntegrityError
 
+from app import digest as digest_mod
 from app import models as m
 from app.cli import PROMPT_VERSION
 from app.connect import connect as run_connect
@@ -333,14 +334,25 @@ def _phases(
         snapshot_id = drift_mod.record(session, drift_metrics, prompt_version, run.id).id
         session.commit()
 
-    # 6. A source that failed is escalated by `source_down`, not by this run's
+    # 6. Publish both audiences' digests for the window this firing closes.
+    #    After the ETL because the investment cut reads `connections`, which the
+    #    ETL rebuilds; free and deterministic, so it runs on every firing
+    #    including a dry one. Idempotent on (kind, window_end, prompt_version) —
+    #    a re-run updates the edition it already published rather than issuing a
+    #    second one for the same period.
+    note("digest")
+    published = digest_mod.publish(session, prompt_version, run.started_at, run_id=run.id)
+    stats["digest"] = {d.kind: d.stats for d in published}
+    session.commit()
+
+    # 7. A source that failed is escalated by `source_down`, not by this run's
     #    status. See the module docstring.
     run.status = "succeeded"
     run.finished_at = m.utcnow()
     run.stats = {**(run.stats or {}), **stats}
     session.commit()
 
-    # 7. Alerts last, so they see the finished state of everything above.
+    # 8. Alerts last, so they see the finished state of everything above.
     context = {
         "run_id": run.id,
         "budget_breach": budget_breach(stats.get("classify", {})),

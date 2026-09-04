@@ -3965,3 +3965,449 @@ event trains people to mute both.
 Verified in the container against the real failure: with `ANTHROPIC_API_KEY`
 unset, the existing `drift` rule stays silent and `drift_unavailable` fires
 CRITICAL.
+
+## D46 — OpenAI's feed omitted its own flagship launch (2026-09-04)
+
+GPT-6 Astra launched on 2026-09-03. The register recorded the day as routine:
+four satellite posts (`path-to-astra`, `safety-overview-gpt-6-astra`, two
+customer stories), no launch. `openai.com/index/gpt-6-astra` is **not** in
+`news/rss.xml` — checked live and against the cached copy — nor in any of the
+37 child sitemaps. Neither is `the-defense-factory`. Every fetch in the run
+succeeded. Hacker News corroborates a botched rollout: outlets published on
+embargo lift while OpenAI's own post 404'd.
+
+This is the fifth instance of the pattern in D36, D38, D45 and the cadence
+staggering — the run reports what it did, not what it failed to do — but with a
+new cause. The previous four were our bug. This one is the *source* being
+wrong, and no amount of correctness on our side detects it from a single feed.
+
+Three channels were probed before choosing. Wayback CDX, already implemented
+and used for backfill, returns **empty** for `openai.com/index/*` since
+2026-09-02: the archive lags by days, so it recovers history and cannot catch a
+launch. `developers.openai.com/rss.xml` is a docs changelog — one `<item>`, no
+model content. The models index at `developers.openai.com/api/docs/models.md`
+carries all 97 model ids including `gpt-6-astra`, returns 200 to plain urllib
+where the apex returns 403, and is Markdown that OpenAI publishes deliberately
+for machine reading (the pages advertise `.md` variants and an `llms.txt`).
+That is a supported interface, not a bypass, and it needs no HTML stripping.
+
+**Decision: a lab may declare more than one discovery channel** (`also` in
+sources.yaml), and OpenAI gets `model_index` as its second. Deterministic code,
+not a model: "which ids are on this page" is a set difference, and an LLM
+asked the same question would be slower, dearer and able to hallucinate a
+model that does not exist.
+
+Two consequences worth stating. **A model spec page has no publication date** —
+only a knowledge cutoff, which is a different thing — so items are dated by
+first sight and carry `date_basis: first_seen`, on the same reasoning as
+`text_source`: a discovery date must never be silently consumed as a
+publication date. And **the baseline of already-known models is committed to
+the repo**, not written at runtime, because the deployed shape has no disk
+(D-adapters): runtime state would reset on every deploy and re-emit the whole
+catalogue. A committed list also makes each new model a visible git diff.
+`gpt-6-astra` is deliberately excluded so the first run emits it — verified
+live, it emits exactly that one item with 4,010 characters of spec text.
+
+Rejected: making the parser tolerant of an empty result. `from_model_index`
+raises when it parses zero models. A redundant channel that silently returns
+nothing when the page shape changes is indistinguishable from a lab that
+shipped nothing, which is the failure it was added to close.
+
+## D47 — The forum as a third channel, and what stays unreachable (2026-09-04)
+
+Following D46, five routes were probed for the posts OpenAI leaves out of its
+own feed. Two results are worth keeping because they close off obvious ideas.
+
+A reader proxy against the Cloudflare-blocked `openai.com/news/` listing
+returns **the same eight items as the RSS feed**. The omission is not a
+fetching artifact and no amount of bypassing the apex recovers it — OpenAI's
+own navigation surfaces did not list the launch. Google News *does* index both
+`gpt-6-astra` and `the-defense-factory`, timestamped 19:42–23:36 GMT on
+2026-09-03, but its RSS links are opaque ids whose resolution needs Google's
+undocumented internal endpoint. Rejected: an unofficial API is not a
+dependency to be on call for, and it yields no citation.
+
+**Decision: `community.openai.com` is a third channel** (`discourse`). It is
+staff-authored, dated, JSON, and not behind the apex's rule. It carried Astra
+at 19:51 with a link to the canonical page.
+
+**The forum topic is the citation, not the openai.com link it contains.** The
+canonical page returns 403 to everything we can send, so it could never be
+re-verified, and non-negotiable #1 is a citation that *resolves*. The
+canonical link is kept as `canonical_url` so the real announcement is never
+lost. Sixteen topics in the three-month window, ten of the sixteen carrying a
+canonical link.
+
+**Rejected: a gap detector.** Reconciling Google News titles against the
+register would raise a system alert saying "posts exist that you do not have".
+It was rejected on product grounds — an alert nobody can act on is not a
+feature, it is a permanent open ticket in the UI. Silence with a known
+boundary beats noise with no remedy.
+
+**Channels carry `enabled`**, the same key and default as papers_sources.yaml.
+A source that starts misbehaving is turned off in one line, and the entry —
+including why it was added — stays in the file. Disabled channels are still
+validated: a channel turned off while it misbehaves is meant to come back on,
+and a config error that only surfaces on re-enabling is found at the worst
+moment. Validation also checks a secondary channel's *own* keys rather than
+the merged view, caught by that test: an `also` entry with no `index_url` was
+inheriting the lab's RSS feed and would have appeared to work.
+
+**What remains unreachable, stated plainly.** `the-defense-factory`, published
+the same night, is in no OpenAI machine-readable surface — not RSS, not any of
+the 37 sitemaps, not the listing page, not the forum. Three channels now cover
+model launches twice over and developer-facing announcements once. Policy and
+programme posts that OpenAI omits from its own feed remain uncovered, and no
+route was found that both discovers them and cites them.
+
+## D48 — A digest is a dated cut, and the cut is the product (2026-09-04)
+
+The brief asks for "a periodic digest readable in the app" and for past reports
+to be readable too. Nothing in the system was one. The dashboard is the corpus —
+every classified article, sorted and filtered, for someone going looking. A
+digest is the opposite claim: that a handful of things mattered this window and
+the rest did not. Building it as another view of the same list would have made
+the cut look like one more filter.
+
+**Every digest states what it discarded.** `stats` carries `considered`,
+`surfaced` and `suppressed`, and the page renders the suppressed count as
+prominently as the items. This is the only thing that makes the taste auditable
+rather than asserted: a digest that cannot say how much it threw away is just a
+shorter list. Over the corpus the investment cut runs 84 considered to 8
+surfaced on a 30-day window — that ratio *is* the answer to "did it keep the
+noise out", and it should be on the page, not in a design document.
+
+**The unit is the event, not the connection.** One xAI sentence — "trained
+across tens of thousands of NVIDIA GB300 GPUs" — fires against seven holdings at
+once, and the worst case in the corpus is an OpenAI datacentre post that fires
+against **fourteen**. Rendered per connection that is fourteen rows for one
+fact: the exact noise the brief asks us to suppress, and it would look like a
+*fuller* digest rather than a broken one. The digest groups by article, rolls
+each holding up to its strongest route, names the top four and collapses the
+rest to "+10 more". `max_holdings_shown` is the dial.
+
+**Persisted, not computed on read.** Every other derived table here is a pure
+function of committed files, so `rebuild` may drop it. A digest is not: it is a
+record of what the product *said* on a date. Recomputed against a later
+re-scored corpus, last week's edition would quietly restate itself in this
+week's terms, and "read past reports" would be a lie. So `digests` is an ops
+table alongside `pipeline_runs`, `alerts` and `gold_snapshots` — the sixth, and
+the reasoning is identical.
+
+Unique on `(kind, window_end, prompt_version)`. `prompt_version` is in the key
+because two classifier versions are not comparable: a re-scored corpus is a new
+edition, not a correction of the old one.
+
+**The window is half-open, `(start, end]`, and this was a bug first.** Closed at
+both ends a 48-hour window spans three calendar days, and consecutive editions
+both carried every article published on the day they shared — the same event in
+two reports that each looked complete. Caught by publishing fifteen editions
+over the corpus and counting articles that appeared in more than one: fourteen
+did. Now zero. Publication dates are dates, not timestamps — most labs publish
+without a time and the ones that do are not comparable across timezones — so the
+comparison stays at date resolution rather than pretending to an hour precision
+we do not have.
+
+**48h, and now it is measured.** planning.md §7 listed cadence as open and said
+it would be settled on evidence. Every window size was replayed over the full
+90-day corpus, counting how often an edition would have been empty:
+
+| Window | Investment empty | AI empty | Median items |
+|---|---:|---:|---:|
+| 24h | 48% | 33% | 1 |
+| **48h** | **31%** | **13%** | **1** |
+| 72h | 23% | 3% | 2 |
+| 168h | 0% | 0% | 3 / 6 |
+
+24h is too tight — empty on half of all days trains a reader to stop opening it.
+A week is never empty and carries a median of six items to the AI team, but a
+weekly report that reliably has something in it has stopped being a filter, and
+a launch arrives up to seven days late in a product whose whole claim is
+earliness. 48h fires on roughly two of every three windows. **The empty third is
+the correct answer, not a fault**, and the page says so in words rather than
+rendering a blank list — an empty digest that looks like a failed one is how a
+filter loses its reader's trust.
+
+**Two selection rules, one core.** Both audiences read the same
+`classifications` and the same tags; what differs is the rule and the framing.
+Investment surfaces an event with a connection at or above 0.5 — matching
+`alerts.content_min_strength` deliberately, because an item that alerted in real
+time and an item that reaches the digest should be the same class of thing, or
+the two surfaces disagree about what matters. AI surfaces an event only if it
+carries a practice tagged `adopt` or `investigate`; `watch` is the null action,
+and an item whose own analysis says do nothing is padding.
+
+**A high-band article with no holding connection still surfaces.** Requiring a
+connection would filter out a lab-level strategic shift that has not yet reached
+a name in the book — which is precisely the early signal this system exists to
+catch, and the case where being early is worth the most.
+
+**Rejected: a per-lab cap.** OpenAI is 150 of 250 articles and dominates the
+30-day digest accordingly. A cap would balance the page and would be a lie about
+the world: OpenAI published more, and more of it mattered. If the imbalance is
+wrong it is wrong in the register or the scorer, and fixing it in the renderer
+would hide that. Recorded as noticed and declined, not overlooked.
+
+**Rejected: cross-article deduplication.** A lab post and a researcher post
+about the same launch are still two rows. Grouping by event solves fan-out
+*within* an article, not duplication *across* them; the embedding-similarity
+approach for that is scoped in `docs/next_steps_0309.md` and unbuilt.
+
+Consequence: `app/digest.py`, `config/digest.yaml`, migration 0007, two API
+routes, a `/digest` route in the app, and 24 tests. Published as phase 6 of the
+firing — free, deterministic, and after the ETL because the investment cut reads
+`connections`.
+
+## D49 — The register becomes browsable, and the refusal to merge finally pays (2026-09-04)
+
+The brief asks for a surface to browse the register. It also names "a key
+researcher quietly moving to a competitor" as top-tier signal. Those were the
+same missing page: 4,941 people sat in Postgres with no way to look at them, and
+the four cross-lab names this project already knew about (docs/insights.md) were
+a hand-run query in a markdown file, not a feature.
+
+**Finding a move is a group-by, not a model.** D25 scoped `people` to
+`(lab, source_kind, canonical_name)` and refused to merge a name across labs.
+The consequence, stated there as a cost, turns out to be the mechanism: a
+researcher who moves is *one name with two records*, which is a visible anomaly
+rather than a row that got tidied away. Merging first and detecting later would
+have destroyed exactly the signal the brief asks for. So `move_candidates` is a
+`GROUP BY canonical_name HAVING count(distinct lab) > 1` — deterministic,
+free, and unable to invent a person, which an LLM asked the same question is
+not.
+
+**The evidence tier is the filter, and it does real work.** Fifty cross-lab
+names exist. Four are worth showing.
+
+| Leg | Cross-lab names | Kept | Rule |
+|---|---:|---:|---|
+| Papers | 4 | **4** | A byline is a published claim of authorship |
+| GitHub | 46 | **0** | Needs a lab-owned email domain on *both* sides |
+
+The GitHub 46 are drive-by open-source contributors — 5,076 of 6,429 evidence
+rows are tier `unknown`, an account that touched a repository with no evidence
+of employment. Admitting them would have produced a longer, more confident and
+entirely wrong list, and nothing about the page would have looked broken. The
+gate takes them to zero, and the page reports the reduction: a filter whose
+effect is invisible is indistinguishable from no filter.
+
+Asymmetric by design. Requiring employment evidence on the papers leg too would
+drop all four real candidates, because a paper byline carries no email domain to
+confirm. The two legs are different kinds of claim and are gated as such.
+
+**Candidates, never conclusions, and the page says so in words.** Same name is
+not same person. Every row carries both sides' dates, tiers and primary source
+URLs, so a human settles it in a minute. The wording never says "moved" — it
+says `OpenAI → Anthropic` under a heading that reads "possible". Nothing
+downstream consumes the list as fact.
+
+**The gap is shown, not filtered on.** Jeffrey Wu's two sides are 1,255 days
+apart; Yonglong Tian's are 250. The wide ones are usually a common name landing
+on a large author list of a landmark paper, and the narrow ones are the ones
+worth an hour. A threshold would be a guess, so the number is displayed and the
+reader decides. Ranking is by recency of the later side — "who moved last" is
+the question the list is opened with; alphabetical order says nothing.
+
+**No bare head count anywhere on the page.** "4,941 people" overstates what the
+system knows by roughly four to one: only 1,222 have any employment-tier
+evidence. Every total on the page carries its tier breakdown, because a raw
+contributor count is a measure of repository popularity rather than of a lab.
+
+Rejected: computing candidates at ingest and storing them. They are a pure
+function of the register, cost nothing to derive, and storing them would add a
+table that can go stale against the thing it summarises.
+
+Consequence: `app/people.py`, two API routes, a `/register` page, 18 tests.
+The four candidates are reproduced from the database rather than quoted from
+`insights.md`, which is the difference between a finding and a feature.
+
+## D50 — Two filters the reader actually arrives with (2026-09-04)
+
+The dashboard filtered on band and sorted on score or date. Neither is a
+question anyone opens the product holding. The two that are: *what has this lab
+been doing*, and *what has hit this position*. Both are now sidebar controls.
+
+**Options are built from the corpus, not from config.** `config/holdings.yaml`
+has 26 holdings; only 20 have ever been connected to an article. Listing all 26
+offers six dead ends that return nothing and look like a bug. Each option also
+carries its count, so the reader knows what is behind a click before spending
+one. The lab list is audience-aware for the same reason — DeepSeek has two
+AI-team items and zero investment items, so it appears on one side and not the
+other.
+
+**One count per article, not per connection.** An article linked to Amazon by
+three routes is still one thing that happened to Amazon. Counting rows would
+have inflated the busiest holdings precisely because they are busy.
+
+**The holding filter is removed on the AI side rather than disabled.** AI-team
+items carry practices, not connections, so the control has nothing to filter
+against. Left in place and set, it would silently return an empty list; greyed
+out, it would invite a click that does nothing. It is dropped, and the filter is
+ignored while that audience is selected.
+
+**A filtered card leads with the holding that was filtered on.** Without it, a
+list filtered to NVIDIA can show two impact pills naming other companies, and
+the reader has to open every card to see why it is in the list at all.
+
+**An empty result names the filters that produced it and offers to clear them.**
+`Mistral AI + Robinhood` is legitimately zero. An empty list with no explanation
+is indistinguishable from a failed fetch, which is the same reporting failure as
+D36/D38/D45 — the system saying what it did and not what it did not.
+
+Filtering stays client-side. `/api/items` already ships the whole corpus with
+connections nested (~250 items), so this is a re-render rather than a round trip
+per keystroke, and the server keeps one query instead of a filter grammar.
+
+Consequence: `frontend/app/page.js` only — no API or schema change.
+
+## D51 — Independent review of the digest and register: three headline claims were false (2026-09-04)
+
+`bitcap-reviewer` against the uncommitted digest/register work (D48, D49, D50),
+scoped to those files because a second agent session had unrelated changes in
+the same tree. Ten findings, every one reproduced before being accepted, three
+of them against live data. All fixed. The pattern in the worst three is the same
+and it is uncomfortable: **each module documented a property it did not have**,
+and the tests asserted the property in a form that happened to hold.
+
+**1. `publish` could never converge.** Idempotence is keyed on
+`(kind, window_end, prompt_version)`, and the worker passed `run.started_at` —
+a per-row wall clock. The key was microsecond-unique, so `uq_digests_kind_window`
+could never collide and every firing published a *new* edition rather than
+updating one. Steady state: two extra rows a night, forever, with two entries in
+the dropdown both labelled "Published 4 Sep" holding different item sets. A
+`--dry-run` rehearsal also entered the permanent record, because phase 6 is
+unconditional. The model docstring, the migration docstring, the `publish`
+docstring and the worker comment all asserted the idempotence the call site
+defeated.
+
+**2. The deployed cadence double-carried every article.** `render.yaml` fires
+daily; the window is 48 hours. D48's half-open interval fixed the three-calendar-
+day span *within* one window and did nothing about a 24-hour cadence over a
+48-hour lookback. Reproduced: the 3 Sep edition carried `[09-02, 09-03]` and the
+4 Sep edition carried `[09-03, 09-04]`. The module docstring claims "consecutive
+editions partition the timeline: every article belongs to exactly one." That was
+false in production from the moment it was written.
+
+The fix for both is one change: **periods are a fixed grid anchored at the epoch,
+not an offset from whenever a run started.** `window_for` snaps to
+`[EPOCH + kW, EPOCH + (k+1)W)`, so any number of firings inside a period resolve
+to the same `window_end` and update one edition, and editions partition the
+timeline exactly. It also decouples window from cron — the two settings no
+longer have to agree, which is why they were allowed to disagree unnoticed.
+
+The cost is freshness: the newest *published* edition can be a period behind.
+That is acceptable only because `/api/digests/preview` already existed and the
+page already opened on it — the live window is the default view and the
+published editions are the archive. Had that split not been there, this fix
+would have traded one real defect for another.
+
+**3. `gapDays` reported a career span, not a gap, and it libelled the best
+candidate on the register.** Written as `sides[0].firstSeen → sides[-1].lastSeen`,
+which measures the whole of both tenures. Live: Yao Li publishes at DeepSeek from
+2024-01-05 to 2026-04-26, then at OpenAI on 2026-08-18. The real gap is **114
+days**; it reported **956**, which the page rendered as "2.6 years apart" — and
+the page's own copy tells the reader that wide gaps are common names on large
+author lists. The number actively argued for dismissing the most move-like
+candidate the system has. 516 paper-leg rows span more than 180 days, so this
+was not an edge case. Now `sides[0].lastSeen → sides[-1].firstSeen`, and
+negative (overlapping tenures) is reported rather than clamped, because
+publishing at both labs at once is a different and more interesting thing.
+
+**4. `config/digest.yaml` was validated by nothing.** Every other config file has
+a `check_*` in `config/validate.py`; this one had a unit test, and the reviewer
+showed the test passing against four edits that each empty a digest permanently:
+`ai.actions: []` (the empty set satisfies `<= {adopt, investigate, watch}`),
+`min_band: med`, `always_band: higgh` (both rank 99 and reject everything), and
+`window_hours: 6` (below date resolution, so start and end land on the same day).
+None raises. `check_digest` now cross-checks bands against `scoring.yaml` and
+actions against `practices.yaml`, so the digest cannot filter on a vocabulary
+the scorer does not emit. **This is the `skipped > 0` failure from D43 again**,
+in a module written after D43 recorded it.
+
+**5. A band-only item named holdings the threshold had just rejected.**
+`_holdings_line(strong or conns, ...)` fell back to *every* connection when an
+item surfaced on band alone. A card selected precisely because it touches
+nothing yet rendered "2 positions · NVIDIA 0.20" beside `peakStrength: 0.0`.
+Now only the qualifying links are named and the rest are a count —
+`belowThreshold` — because naming them is the digest asserting what it just
+declined to assert.
+
+**6. The GitHub gate counted records, not sides.** `>= 2` equals "both sides"
+only for a two-lab name, and the register holds logins at three, four and five
+labs. At three, the candidate published as soon as any two were confirmed, with
+the unverified third attached and `readsAs` able to point straight at it. Now
+`all(...)`.
+
+**7. Phase 6 was untested.** Deleting `digest_mod.publish` from `_phases` left
+all 80 worker tests green — and the page would not have shown it either, because
+the digest tab opens on the live preview, which never depended on the firing.
+The only symptom of the pipeline silently ceasing to publish is an archive that
+stops growing.
+
+Also fixed: the lab filter survived an audience switch as a value with no
+matching `<option>`, so the reader saw "0 items" with no filter named as the
+cause (the digest page already reset its edition selector on the same switch —
+the pattern existed and was not applied); "github byline" on a candidate card,
+conflating a commit with a claim of authorship, which is the exact distinction
+`app/people.py` exists to refuse; `NaN%` on a fresh clone; and four docstring
+`Returns` that described something other than what was returned.
+
+**What the review is evidence of.** Three of ten findings were the module
+asserting a property in prose that its own tests confirmed in a weaker form —
+the same shape as D29 and D43. The tests were not absent; they were written
+against the implementation rather than against the claim. `test_digest.py`
+spaced its two editions exactly one window apart, which is the only cadence
+under which the partition property holds, and the deployed cron is not it.
+
+Tests added for each finding, written to fail against the old behaviour rather
+than to pass against the new: `test_digest.py` and `test_people_view.py` now
+hold **53** between them, plus three worker tests for phase 6 and the `Digest`
+row in the schema round-trip. (A whole-suite before/after is not quotable here —
+a second agent session was adding tests to `test_adapters.py` and
+`test_transform.py` in the same working tree while this ran.)
+
+### D47a — what independent review changed (2026-09-04)
+
+Twelve findings, six major. The ones that changed the design rather than the
+code:
+
+**Channels made the lab less available, not more.** The adapter looped channels
+with no isolation, so a secondary channel raising — which both new methods do
+by design on a page-shape change — discarded the primary channel's already
+fetched articles and marked the whole lab FAILED. Redundancy that reduces
+availability is worse than no redundancy. Each channel is now isolated, a dead
+one is recorded as an `unresolved` row rather than swallowed, and only *every*
+channel failing fails the source.
+
+**`date_basis` was a claim with no reader.** D46 said a discovery date would
+never be silently consumed as a publication date. Nothing implemented that:
+`transform` wrote `published_on` from it and no consumer branched on the label.
+Worse, the date moved forward on every re-emit — `_settled_urls` only skips
+items classified under the current PROMPT_VERSION, so a version bump would have
+re-dated the September launch to November and floated it back into the digest
+as fresh. `transform` now honours the label, which both stops the drift and
+gives the field the reader it claimed to have.
+
+**The canonical link was usually the wrong page.** Taking the first
+`*.openai.com` URL returned the pricing page, a transcription guide, a showcase
+filter and an events URL across the cached topics, with the real announcement
+second. Since this field is the compensating control for citing the forum topic
+instead of the canonical page, a confident wrong link is worse than none: it is
+now newsroom-apex only, fragment-stripped, `/index/` preferred, None rather
+than a guess. Eight of sixteen topics carry one, down from ten — the two lost
+were both wrong.
+
+Also fixed: a missing baseline entry meant "every model is new" (a config-only
+change could have flooded the corpus with a whole catalogue); Discourse
+pagination read page one of a listing ordered by *activity*, so a quiet launch
+could sit past position 30 unseen; `enabled` was read by truthiness, so
+`enabled: "false"` left a channel running while the file said it was off;
+stored text was uncapped where every other method caps at 24k; and D46's
+evidence sentence said Astra *was* in the RSS feed, the opposite of the finding
+it records.
+
+**Outstanding, deliberately.** `canonical_url` still stops at `raw_articles`:
+carrying it to `articles` needs a column on `m.Article` and a migration chained
+onto the uncommitted digests work, while that work is in flight. Held as a
+coordination call, not an oversight — until it lands, the canonical link is
+recorded but reaches no reader.
