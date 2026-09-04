@@ -66,7 +66,7 @@ def transform(session: Session, prompt_version: str, run_id: int | None = None) 
     raw_articles = {r.url: r for r in session.scalars(select(m.RawArticle))}
     raw_cls = {
         r.url: r for r in session.scalars(
-            select(m.RawClassification).where(m.RawClassification.prompt_version == prompt_version)
+            select(m.RawLlmResponse).where(m.RawLlmResponse.prompt_version == prompt_version)
         )
     }
     articles = {a.url: a for a in session.scalars(select(m.Article))}

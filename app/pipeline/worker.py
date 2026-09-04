@@ -1,7 +1,7 @@
 """`bitcap-worker`: one scheduled firing, start to finish.
 
-    sync schema -> ingest -> register -> classify (budgeted) -> drift
-                -> ETL -> alerts -> exit code
+    sync schema -> ingest -> land (corpus + raw_articles + register)
+                -> classify (budgeted) -> drift -> ETL -> alerts -> exit code
 
 Both LLM stages run before the ETL on purpose: each writes its cost records to
 the shared append-only log as it goes, and the ETL's `load_costs` is then the
@@ -25,9 +25,12 @@ and the platform's own cron alerting should fire. A source being down exits
 zero, because a nightly red cron for a transient outage makes the platform's
 alerting the noisy channel instead of ours.
 
-Cadence is per leg: a rolling 12-month GitHub window barely moves in a day, and
-re-harvesting it nightly is the most expensive thing here in wall-clock. The
-first firing runs everything regardless, so a fresh deployment gets a full sweep.
+Every leg runs on every firing except GitHub, which runs every 3rd. Skipping a
+*feed* leg is what was rejected: it produces "no new papers" meaning "we did not
+look", which nothing downstream can distinguish from "nothing was published".
+The GitHub leg is not a feed — it re-derives contribution weight over a full
+3-month history, so each run restates the whole picture and a skipped one loses
+nothing, while costing 14 minutes of wall-clock to do it.
 """
 
 from __future__ import annotations
@@ -124,7 +127,8 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
     """
     with tracked(session, KIND, stats, run=run):
         stats["refs"] = load_refs(session)
-        stats["articles"] = load_articles(session, run_id=run.id)
+        # `load_articles` is deliberately absent: phase 2 already put this
+        # firing's articles into bronze so the classifier could see them.
         stats["classifications"] = load_classifications(session, prompt_version, run_id=run.id)
         stats["costs"] = costs = load_costs(session, run_id=run.id)
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
@@ -214,6 +218,14 @@ def _phases(
     # 2. Land what was ingested where the loaders read it.
     if "announcements" in chosen:
         stats["corpus"] = merge_announcements(report.items_for("announcements"))
+    # Into bronze here, not in the ETL. `classify_new` picks its work list from
+    # `raw_articles` (a LEFT JOIN against `raw_llm_responses`), so while this
+    # ran in phase 5 the classifier in phase 3 could only ever see articles
+    # ingested by a *previous* firing: found tonight, scored tomorrow. Measured
+    # on run 12 — four OpenAI articles ingested, `classify` reported
+    # `pending: 0`, and the ETL then reported `classifications.missing: 4`
+    # (docs/decisions.md D38).
+    stats["articles"] = load_articles(session, run_id=run.id)
     stats["register"] = register_mod.load_report(session, report, run.id)
     session.commit()
 

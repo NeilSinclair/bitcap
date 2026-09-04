@@ -30,7 +30,7 @@ def test_every_table_round_trips(session):
     session.add_all([
         m.RawArticle(url="https://x/a", payload={"title": "t"}, content_hash="h",
                      source_file="announcements.json", load_run_id=run.id),
-        m.RawClassification(url="https://x/a", prompt_version="v7",
+        m.RawLlmResponse(url="https://x/a", prompt_version="v7",
                             payload={"event_type": "other"}, load_run_id=run.id),
         m.RawCost(url="https://x/a", model="claude-sonnet-5", input_tokens=1,
                   output_tokens=2, usd=0.01, seconds=1.0, at="2026-09-02T00:00:00+00:00"),

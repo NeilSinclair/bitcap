@@ -1,7 +1,7 @@
 """The LLM stage: classify what is new, and only what is new.
 
 The work list is a database query, not a file scan. `raw_articles` LEFT JOIN
-`raw_classifications` at the current prompt version is exactly "articles this
+`raw_llm_responses` at the current prompt version is exactly "articles this
 version has never seen", which is the only set worth paying for — every other
 article already has a cached result, and re-running it costs nothing but also
 achieves nothing.
@@ -48,8 +48,8 @@ def pending_urls(session: Session, prompt_version: str) -> list[str]:
         URLs needing classification. Empty means there is nothing to pay for,
         which is the steady state of a healthy schedule.
     """
-    classified = select(m.RawClassification.url).where(
-        m.RawClassification.prompt_version == prompt_version
+    classified = select(m.RawLlmResponse.url).where(
+        m.RawLlmResponse.prompt_version == prompt_version
     )
     return list(
         session.scalars(

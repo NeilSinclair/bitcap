@@ -182,10 +182,10 @@ class RawArticle(Base):
     load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
-class RawClassification(Base):
+class RawLlmResponse(Base):
     """One classifier result, payload verbatim from the per-URL score cache."""
 
-    __tablename__ = "raw_classifications"
+    __tablename__ = "raw_llm_responses"
     __table_args__ = (sa.UniqueConstraint("url", "prompt_version"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)

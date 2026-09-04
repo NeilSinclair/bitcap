@@ -136,7 +136,7 @@ class TestPendingWork:
         session.add_all([
             m.RawArticle(url="https://a/1", payload={}, content_hash="h", source_file="f"),
             m.RawArticle(url="https://a/2", payload={}, content_hash="h", source_file="f"),
-            m.RawClassification(url="https://a/1", prompt_version="v7", payload={}),
+            m.RawLlmResponse(url="https://a/1", prompt_version="v7", payload={}),
         ])
         session.commit()
         assert classify.pending_urls(session, "v7") == ["https://a/2"]
@@ -145,7 +145,7 @@ class TestPendingWork:
         """Bumping the classifier means the whole corpus is pending again."""
         session.add_all([
             m.RawArticle(url="https://a/1", payload={}, content_hash="h", source_file="f"),
-            m.RawClassification(url="https://a/1", prompt_version="v6", payload={}),
+            m.RawLlmResponse(url="https://a/1", prompt_version="v6", payload={}),
         ])
         session.commit()
         assert classify.pending_urls(session, "v7") == ["https://a/1"]
@@ -153,7 +153,7 @@ class TestPendingWork:
     def test_nothing_pending_is_the_steady_state(self, session):
         session.add_all([
             m.RawArticle(url="https://a/1", payload={}, content_hash="h", source_file="f"),
-            m.RawClassification(url="https://a/1", prompt_version="v7", payload={}),
+            m.RawLlmResponse(url="https://a/1", prompt_version="v7", payload={}),
         ])
         session.commit()
         assert classify.pending_urls(session, "v7") == []

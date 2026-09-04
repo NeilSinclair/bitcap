@@ -53,9 +53,27 @@ class TestTheSample:
         assert len(records) == len(drift.DEFAULT_SAMPLE)
         assert {r["id"] for r in records} == set(drift.DEFAULT_SAMPLE)
 
-    def test_the_sample_is_small(self):
-        """planning.md §6a: 5-6 items, never the corpus. It is pure cost."""
-        assert 4 <= len(drift.DEFAULT_SAMPLE) <= 8
+    def test_the_sample_is_every_gold_article(self):
+        """A gold article added to disk but not to the sample is silent under-coverage.
+
+        The sample is listed by hand (drift.py explains why), so the failure
+        mode is adjudicating a new article and forgetting to register it: the
+        check keeps passing while quietly measuring less than it claims to.
+        """
+        on_disk = {p.stem for p in drift.GOLD.glob("*.json")}
+        assert set(drift.DEFAULT_SAMPLE) == on_disk, (
+            f"unregistered: {sorted(on_disk - set(drift.DEFAULT_SAMPLE))}, "
+            f"missing from disk: {sorted(set(drift.DEFAULT_SAMPLE) - on_disk)}"
+        )
+
+    def test_the_sample_cannot_run_the_budget_away(self):
+        """Drift is uncached by design, so its size is a recurring per-run cost.
+
+        At the measured ~$0.0375 an item it fires on every run against a $75
+        monthly ceiling. This is the guard on growing the gold set without
+        noticing the bill (docs/decisions.md D35).
+        """
+        assert len(drift.DEFAULT_SAMPLE) * 0.0375 < 1.50
 
     def test_the_sample_spans_both_scoring_axes(self):
         """A sample of only richly-tagged articles cannot detect over-tagging."""

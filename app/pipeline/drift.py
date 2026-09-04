@@ -9,11 +9,21 @@ cache would report perfect agreement forever — the one failure mode that looks
 exactly like success. Drift therefore calls the uncached path, which means it
 always costs money, which is precisely why the sample is small.
 
-**Small and fixed, not random and broad.** planning.md §6a: variance probing is
-pure cost with no product output, and 12 items × 3 runs bought worse statistics
-than 6 × 5 for the same money. The sample is a fixed named list so results are
-comparable between runs; a random sample would make every movement ambiguous
-between real drift and a different draw.
+**Fixed, and the whole gold set.** The sample is a fixed named list rather than
+a draw, so a movement between runs is the classifier changing and never the
+sample changing -- a random sample would make every movement ambiguous.
+
+It was six items for its first weeks, on the §6a argument that variance probing
+is pure cost with no product output. Running it proved the sample itself was the
+variance: six articles carry ten reference mechanism tags, so a single tag
+missed or gained moves micro-F1 by ~0.05 and a floor set at 0.80 sits well
+inside the noise. The first firing to breach it scored 0.750 -- which is either
+real degradation or three tags of jitter, and six items cannot tell you which.
+A check that cannot distinguish drift from its own sampling error does not
+measure drift, and a false alarm a week is how a system-alert channel gets
+muted. All 20 gold articles cost ~$0.75 a run against a raised $75 monthly
+ceiling, which is affordable, and the wider tag base is what makes the floor
+mean something (docs/decisions.md D35).
 
 **The headline metric is mechanism micro-F1**, not a composite. Under
 `config/scoring.yaml` an article with no mechanism tag scores zero by
@@ -45,15 +55,16 @@ for _leg in ("announcements", "papers"):
     if _path not in sys.path:
         sys.path.insert(0, _path)
 
-# Chosen to span the failure modes rather than to cover the corpus, per §6a:
-#   12  frontier_model_release, 5 mechanism tags — the richly-tagged high-score case
-#   15  compute_commitment with a category tag — the other weight-5 event type
-#   10  regulatory_action — the shape v1 scored 20 instead of high (scoring.yaml)
-#   19  DeepSeek, practices only, no mechanisms — the AI-team axis alone
-#   21  product_launch, no tags at all — noise that must stay noise
-#   27  rss_summary, no tags — thin text, where text_source caps confidence
-# Two labs, both scoring axes, and both ends of the tag-density range.
-DEFAULT_SAMPLE = ("10", "12", "15", "19", "21", "27")
+# Every adjudicated gold article, not a curated subset. The six-item sample this
+# replaced was chosen to span the failure modes -- richly-tagged release, the
+# other weight-5 event type, a practices-only article, two with no tags at all
+# -- and it still does, because those six are in here. What it could not do was
+# carry enough reference tags for the floor to separate drift from jitter.
+# Still listed explicitly rather than globbed: `load_gold` raises on an id it
+# cannot find, and that guard against a silently shrinking sample is worth
+# more than the convenience. A new gold article is added here by hand.
+DEFAULT_SAMPLE = ("01", "04", "05", "07", "10", "12", "15", "16", "19", "20",
+                  "21", "22", "23", "24", "25", "26", "27", "28", "29", "30")
 
 
 def load_gold(sample: tuple[str, ...] = DEFAULT_SAMPLE) -> list[dict]:

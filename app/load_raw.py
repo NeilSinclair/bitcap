@@ -83,7 +83,7 @@ def load_classifications(session: Session, prompt_version: str,
                          articles_path: Path = ARTICLES,
                          scores_dir: Path = SCORES_DIR,
                          run_id: int | None = None, limit: int | None = None) -> dict:
-    """Upsert the per-URL score cache into raw_classifications.
+    """Upsert the per-URL score cache into raw_llm_responses.
 
     Reads the cache files (the true per-call provenance) rather than the merged
     register, keyed back to the real URL via the cache-key function.
@@ -103,7 +103,7 @@ def load_classifications(session: Session, prompt_version: str,
     cache = scores_dir / prompt_version
     existing = {
         r.url: r for r in session.scalars(
-            select(m.RawClassification).where(m.RawClassification.prompt_version == prompt_version)
+            select(m.RawLlmResponse).where(m.RawLlmResponse.prompt_version == prompt_version)
         )
     }
     counts = {"inserted": 0, "updated": 0, "unchanged": 0, "missing": 0}
@@ -115,7 +115,7 @@ def load_classifications(session: Session, prompt_version: str,
         payload = json.loads(file.read_text())
         row = existing.get(url)
         if row is None:
-            row = m.RawClassification(url=url, prompt_version=prompt_version,
+            row = m.RawLlmResponse(url=url, prompt_version=prompt_version,
                                       payload=payload, load_run_id=run_id)
             session.add(row)
             existing[url] = row  # same-file duplicates must not abort the load

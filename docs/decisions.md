@@ -3591,3 +3591,158 @@ The gap this exposes is that no test ever fed the code a URL in the shape a
 platform actually emits. `tests/test_db.py` now does, including asserting the
 resolved dialect is psycopg — `create_engine` resolves the DBAPI eagerly, so a
 regression fails in CI rather than on deploy.
+
+## D35 — The drift check goes to the whole gold set, because six items measured its own noise (2026-09-04)
+
+Firing 7 raised the first real drift alert: mechanism micro-F1 0.750 against
+the 0.80 floor. It is not clear that it means anything.
+
+The sample was six articles carrying ten reference mechanism tags, so one tag
+missed or gained moves micro-F1 by ~0.05 and the floor sits three tags away from
+the score. Precision was 1.00 and recall 0.60 — the classifier tagged nothing
+wrongly and found six of ten — which is the shape of under-tagging, and also the
+shape of a small sample. Six items cannot distinguish those. A check that cannot
+separate drift from its own sampling error is not measuring drift, and a system
+alert that fires ambiguously every week is how the channel gets muted — the same
+failure `max_deliveries_per_run` already exists to prevent on the content side.
+
+The original argument for six (planning.md §6a) was that variance probing is
+pure cost with no product output, and that 12 × 3 runs bought worse statistics
+than 6 × 5 for the same money. That reasoned about *total* spend across runs
+when the budget was the binding constraint. It is a real argument and it was
+answered by raising the budget rather than by disputing it.
+
+`DEFAULT_SAMPLE` is now all 20 adjudicated gold articles. The sample stays a
+fixed named list rather than a draw, which is the part of §6a that still holds:
+a movement between runs must be the classifier changing, never the sample. The
+six originals are still in it, so the failure-mode coverage that made them the
+choice is not lost — richly-tagged release, compute commitment, regulatory
+action, practices-only, and two with no tags at all.
+
+Cost, from the measured $0.2247 for six: ~$0.0375 an item, so ~$0.75 a run.
+Drift is uncached by design (a cached drift check reports perfect agreement
+forever — the failure mode that looks exactly like success) so this recurs every
+firing. At the nightly cadence that is ~$22/month, which is why `per_month_usd`
+goes 20.00 → 75.00. Cadence stays 1: the check runs whenever the pipeline runs,
+so a prompt or model regression is caught on the firing that introduces it
+rather than up to a week later.
+
+Rejected: dropping drift to weekly, which would have fitted the old ceiling at
+~$3/month. It buys a cheaper bill by making the detector slower than the thing
+it detects — a bad prompt version would ship and classify six nights of articles
+before anything noticed.
+
+Two tests replace the old `4 <= len(sample) <= 8` assertion, which encoded a
+policy that is no longer true. One asserts the sample is exactly what is on
+disk, so adjudicating a new gold article and forgetting to register it fails
+loudly instead of quietly measuring less than it claims. The other bounds
+per-run drift cost, so growing the gold set cannot walk the budget up unnoticed.
+
+Not addressed: 20 items is better than 6 and still small. The honest statement
+in the design doc is that this detects gross regression, not a two-point shift.
+
+## D36 — The page cache had no expiry, and it was caching the sitemaps (2026-09-04)
+
+A local firing reported zero new articles from all seven labs in 0.0 seconds
+each. That was read as a warm cache being fast. It was not: `fetch()` served any
+cached file on `if cached.exists()`, with no age check, and the cache holds
+*discovery* documents alongside article bodies —
+`https_www_anthropic_com_sitemap_xml.html` was two days old. The run was reading
+a sitemap as of 2026-09-02 and could not have discovered anything published
+since.
+
+This is the worst shape a bug can take here. Nothing failed, nothing was slow,
+no source errored, and "no new articles" is exactly what a correct quiet day
+looks like. Every layer above the cache — `items_seen=0`, `succeeded`, the run
+summary — reported success truthfully. Only the mtimes on disk showed it.
+
+The rule is a property of the document, not of the fetch: an article body is
+immutable, so caching it forever is correct and it keeps `max_age_hours=None`.
+A sitemap, an RSS feed, a listing page and a Wayback CDX query all exist to
+change, so an unexpiring copy of one is always wrong. `DISCOVERY_MAX_AGE_HOURS`
+= 6, passed at the four discovery call sites; the three body sites and the
+timestamped Wayback snapshot (immutable by construction) are untouched. Six
+against a nightly cadence: anything materially under 24h makes the scheduled
+firing always see a live feed, and six still spares a lab's server during an
+afternoon of local re-runs.
+
+Production was never affected, which is why this survived. Render cron jobs
+cannot mount a disk (D31), so the cache directory is empty on every boot and
+discovery is always live. The deployed system was correct and the development
+system was blind — the reverse of the usual asymmetry, and the reason the
+deployment work surfaced it rather than the pipeline work.
+
+The test that would have caught it asserts at the call site, not just on
+`fetch`: a perfect expiry policy is worthless if `from_rss` never passes one.
+Verified by re-breaking `_cache_is_fresh` and confirming the stale-sitemap test
+fails.
+
+## D37 — `raw_classifications` becomes `raw_llm_responses` (2026-09-04)
+
+The name put the table on the wrong side of the bronze/silver line for anyone
+reading the schema cold, and it prompted exactly that question: bronze is meant
+to be unprocessed, so why is a *classification* — the output of a processing
+step — sitting in it?
+
+The answer is that the row is not a classification. It is the provider's
+verbatim response to one prompt, unparsed and unscored, keyed by `url` and
+`prompt_version`. The LLM is an external system, and calling it is an
+acquisition, not a transformation: `raw_articles` holds what openai.com
+returned, `raw_llm_responses` holds what the model returned, and neither has any
+of our logic applied.
+
+The test that settles which layer it belongs to is reproducibility, not whether
+computation happened. Silver is whatever our own deterministic code can
+regenerate from bronze: `classifications` is dropped and rebuilt from
+`raw_llm_responses` + `config/scoring.yaml` on every `rebuild`, for free. The
+raw response cannot be regenerated at all — re-running the call costs money and
+returns a *different* answer, because the model is not deterministic. Putting it
+in silver would make every rebuild either re-spend the budget or be impossible.
+
+The two version columns say the same thing. Bronze carries `prompt_version`
+(which call produced this); silver adds `scoring_version` (which rules
+interpreted it). Change the rules and silver rebuilds free; change the prompt
+and new bronze must be bought.
+
+Rename only — `op.rename_table` in migration 0005, no column, constraint or data
+change, verified against the populated local database (236 rows, all v7,
+preserved). The baseline migration keeps the old name: it is history, and
+rewriting it would break any database that has already applied it.
+
+Not renamed: `load_classifications`, which is the domain operation that fills
+the table and still reads correctly. `raw_costs` has the same ambiguity and was
+left alone for now.
+
+## D38 — An article found tonight was not scored until tomorrow (2026-09-04)
+
+Run 12 ingested four OpenAI articles, and `classify` reported `pending: 0`.
+The ETL, later in the same firing, reported `classifications.missing: 4`.
+
+`classify_new` picks its work list with `pending_urls` — `raw_articles` LEFT
+JOIN `raw_llm_responses` at the current prompt version. `raw_articles` was
+filled by `load_articles`, which ran inside `_etl` at phase 5, two phases
+*after* the classifier. So the join could only ever see articles a previous
+firing had landed. Every article was scored exactly one firing late, and a first
+run against an empty database scored nothing at all.
+
+This is the same failure shape as D36 and as the cadence staggering removed
+earlier the same day: the run succeeded, the article was stored, the summary was
+truthful, and the only symptom was a number being lower than it should have
+been. Three instances in one day is a pattern, and the pattern is that "nothing
+to do" and "we did not look" are indistinguishable unless something asserts the
+difference.
+
+Fixed by moving `load_articles` from phase 5 to phase 2, next to
+`merge_announcements` — both are "land what was ingested where the loaders read
+it", which is what phase 2 already claimed to be. The phase-3 comment about LLM
+stages preceding the ETL still holds: that constraint is about `load_costs`
+being the single place spend is totalled, which is untouched.
+
+Safe outside the ETL's transaction because bronze is upsert-only and no ref
+reload deletes it. If a later phase fails, the articles stay landed and the next
+firing rebuilds the derived layer over them — the same guarantee `tracked` gives
+for everything else.
+
+The regression test asserts the ordering directly: it spies on `pending_urls` at
+the moment `classify_new` is called and requires this firing's article to be in
+it. Verified by restoring the old phase order and confirming it fails.

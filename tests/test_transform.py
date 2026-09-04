@@ -40,7 +40,7 @@ def session():
         s.add(m.RawArticle(url="https://x/a", content_hash="h", source_file="f", payload={
             "lab": "openai", "url": "https://x/a", "date": "2026-08-01", "title": "A",
             "text": "body", "text_source": "full_text"}))
-        s.add(m.RawClassification(url="https://x/a", prompt_version="v7", payload=RESULT))
+        s.add(m.RawLlmResponse(url="https://x/a", prompt_version="v7", payload=RESULT))
         s.commit()
         yield s
 

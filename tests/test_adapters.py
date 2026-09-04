@@ -471,7 +471,7 @@ class TestArticlesAreNotDownloadedTwice:
         session.add(m.RawArticle(url=url, payload={"url": url}, content_hash="h",
                                  source_file="announcements.json"))
         if classified_as:
-            session.add(m.RawClassification(url=url, prompt_version=classified_as,
+            session.add(m.RawLlmResponse(url=url, prompt_version=classified_as,
                                             payload={}))
         session.flush()
 

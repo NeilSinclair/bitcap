@@ -177,8 +177,8 @@ def _settled_urls(session, prompt_version: str = PROMPT_VERSION) -> set[str]:
     """
     if session is None:
         return set()
-    classified = select(m.RawClassification.url).where(
-        m.RawClassification.prompt_version == prompt_version
+    classified = select(m.RawLlmResponse.url).where(
+        m.RawLlmResponse.prompt_version == prompt_version
     )
     return set(session.scalars(
         select(m.RawArticle.url).where(m.RawArticle.url.in_(classified))

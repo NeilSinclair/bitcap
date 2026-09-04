@@ -144,7 +144,7 @@ class TestFromRssTextSource:
     def test_rss_summary_never_fetches_the_article_page(self, monkeypatch):
         calls = {"index": 0, "article": 0}
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             calls["index" if url == "https://feed.example/rss" else "article"] += 1
             return _rss_xml()
 
@@ -157,7 +157,7 @@ class TestFromRssTextSource:
         assert out[0]["text"] == "Example headline. A short summary."
 
     def test_full_text_fetches_and_strips_the_article_page(self, monkeypatch):
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if url == "https://feed.example/rss":
                 return _rss_xml(link="https://x.example/a")
             assert url == "https://x.example/a"
@@ -174,7 +174,7 @@ class TestFromRssTextSource:
         # A source declared full_text but temporarily unreachable must not
         # crash the whole run, and must not silently mislabel the fallback
         # text as full_text either.
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if url == "https://feed.example/rss":
                 return _rss_xml()
             raise RuntimeError("fetch failed: 500")
@@ -226,7 +226,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/?page=2": _listing_html(),  # empty -> stop
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages[url]
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert {a["url"] for a in out} == {
@@ -242,7 +242,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/old/": _article_html("January 1, 2020"),
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages[url]
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert [a["url"] for a in out] == ["https://ai.example/blog/new/"]
@@ -261,7 +261,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/?page=2": _listing_html(),
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages[url]
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert [a["url"] for a in out] == ["https://ai.example/blog/real/"]
@@ -275,7 +275,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/?page=2": _listing_html(),
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages[url]
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert out[0]["title"] == "The Real Headline"
@@ -294,7 +294,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/?page=2": _listing_html(),
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages[url]
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages[url]
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert out[0]["title"] == "Attributed Title"
@@ -309,7 +309,7 @@ class TestFromListingPagination:
             "https://ai.example/blog/real/": _article_html("September 1, 2026"),
         }
         monkeypatch.setattr(
-            "fetch_announcements.fetch", lambda url, user_agent=None: pages.get(url, "")
+            "fetch_announcements.fetch", lambda url, user_agent=None, **kw: pages.get(url, "")
         )
         out = from_listing_pagination(self._lab(), datetime(2026, 1, 1))
         assert [a["url"] for a in out] == ["https://ai.example/blog/real/"]
@@ -317,7 +317,7 @@ class TestFromListingPagination:
     def test_max_pages_is_a_hard_cap(self, monkeypatch):
         # Every page yields exactly one new, in-window article -- without a
         # cap this listing would paginate forever.
-        def fake_fetch(url, user_agent=None):
+        def fake_fetch(url, user_agent=None, **kw):
             if "?page=" in url:
                 n = url.split("page=")[-1]
                 return _listing_html(f"p{n}")
@@ -330,7 +330,7 @@ class TestFromListingPagination:
         assert len(out) == 3  # capped, not infinite
 
     def test_single_article_fetch_failure_does_not_abort_the_page(self, monkeypatch):
-        def fake_fetch(url, user_agent=None):
+        def fake_fetch(url, user_agent=None, **kw):
             if url.endswith("broken/"):
                 raise RuntimeError("fetch failed: 500")
             pages = {
@@ -347,7 +347,7 @@ class TestFromListingPagination:
     def test_user_agent_is_threaded_through_to_fetch(self, monkeypatch):
         seen_uas = []
 
-        def fake_fetch(url, user_agent=None):
+        def fake_fetch(url, user_agent=None, **kw):
             seen_uas.append(user_agent)
             if url == "https://ai.example/blog/":
                 return _listing_html("a")
@@ -406,7 +406,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/series-b": _xai_page(date_iso="2024-05-26", title="Series B"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(("https://x.ai/news/series-b", "20260828141342"))
             return pages[url.split("id_/", 1)[1]]
@@ -420,7 +420,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/composer-2-5": _xai_page(date_iso="2026-07-15", title="Composer 2.5"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(("https://x.ai/news/composer-2-5", "20260828151426"))
             return pages[url.split("id_/", 1)[1]]
@@ -439,7 +439,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/a": _xai_page(date_iso="2026-07-01", title="Grok 5"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(("https://x.ai/news/a", "20260801000000"))
             return pages[url.split("id_/", 1)[1]]
@@ -453,7 +453,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/a": _xai_page(title="Old-style Page", body_date_text="Jun 15, 2026"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(("https://x.ai/news/a", "20260801000000"))
             return pages[url.split("id_/", 1)[1]]
@@ -467,7 +467,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/real": _xai_page(date_iso="2026-07-01", title="Real Article"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(
                     ("https://x.ai/news", "20260801000000"),  # bare index -- excluded
@@ -486,7 +486,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/real": _xai_page(date_iso="2026-07-01", title="Real Article"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(
                     ("https://x.ai/news/real?_rsc=abc", "20260601000000"),
@@ -507,7 +507,7 @@ class TestFromWaybackCdx:
             "https://x.ai/news/good": _xai_page(date_iso="2026-07-01", title="Good"),
         }
 
-        def fake_fetch(url):
+        def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
                 return _cdx_rows(
                     ("https://x.ai/news/bad", "20260801000000"),
@@ -607,6 +607,114 @@ class TestFetchUserAgentOverride:
             assert captured["headers"].get("User-agent") != fa.UA
         finally:
             shutil.rmtree(fa.CACHE, ignore_errors=True)
+
+
+class TestDiscoveryCacheExpires:
+    """The silent failure this suite exists to catch: an unexpiring disk cache
+    pinning *discovery* to the day it was first written.
+
+    This was live. `fetch` served any cached file regardless of age, and the
+    cache holds sitemaps and RSS feeds as well as article bodies, so a local
+    run on 2026-09-04 read Anthropic's sitemap as of 2026-09-02 and reported
+    zero new articles. Nothing failed, nothing was slow, and "no new articles"
+    is exactly what a correct quiet day looks like -- the failure was invisible
+    at every layer above it (docs/decisions.md D36).
+    """
+
+    @staticmethod
+    def _fake_net(monkeypatch, cache_dir, body=b"live"):
+        """Point the module at an empty cache and count real fetches."""
+        calls = []
+
+        class FakeResponse:
+            def read(self):
+                return body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        def fake_urlopen(req, timeout=45):
+            calls.append(req.full_url)
+            return FakeResponse()
+
+        monkeypatch.setattr(fetch_announcements.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(fetch_announcements, "CACHE", cache_dir)
+        return calls
+
+    def _stale(self, cache_dir, url, age_hours, body="cached"):
+        """Write a cache entry and backdate it."""
+        import os
+        import re
+        import time
+
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        key = re.sub(r"[^a-zA-Z0-9]+", "_", url)[:140]
+        path = cache_dir / f"{key}.html"
+        path.write_text(body)
+        old = time.time() - age_hours * 3600
+        os.utime(path, (old, old))
+        return path
+
+    def test_a_stale_discovery_document_is_refetched(self, monkeypatch, tmp_path):
+        url = "https://lab.example/sitemap.xml"
+        self._stale(tmp_path / "c", url, age_hours=48)
+        calls = self._fake_net(monkeypatch, tmp_path / "c")
+
+        body = fetch_announcements.fetch(
+            url, max_age_hours=fetch_announcements.DISCOVERY_MAX_AGE_HOURS
+        )
+
+        assert calls == [url], "a two-day-old sitemap must not be served from disk"
+        assert body == "live"
+
+    def test_a_fresh_discovery_document_is_served_from_disk(self, monkeypatch, tmp_path):
+        url = "https://lab.example/sitemap.xml"
+        self._stale(tmp_path / "c", url, age_hours=1)
+        calls = self._fake_net(monkeypatch, tmp_path / "c")
+
+        body = fetch_announcements.fetch(
+            url, max_age_hours=fetch_announcements.DISCOVERY_MAX_AGE_HOURS
+        )
+
+        assert calls == [], "expiry must not turn into refetching on every call"
+        assert body == "cached"
+
+    def test_an_article_body_is_cached_forever(self, monkeypatch, tmp_path):
+        """Published article text is immutable; re-downloading it is pure waste."""
+        url = "https://lab.example/blog/some-post/"
+        self._stale(tmp_path / "c", url, age_hours=24 * 365)
+        calls = self._fake_net(monkeypatch, tmp_path / "c")
+
+        assert fetch_announcements.fetch(url) == "cached"
+        assert calls == []
+
+    def test_discovery_max_age_beats_the_nightly_cadence(self):
+        """A max age at or above 24h would let a nightly firing reuse yesterday's feed."""
+        assert 0 < fetch_announcements.DISCOVERY_MAX_AGE_HOURS < 24
+
+    def test_from_rss_expires_its_index_but_not_its_articles(self, monkeypatch):
+        """The integration-level check: the real bug was at the call site, not in `fetch`.
+
+        `fetch` could grow a perfect expiry policy and the pipeline stay blind
+        if `from_rss` never passed one, so assert what each call site asks for.
+        """
+        seen = {}
+
+        def fake_fetch(url, user_agent=None, max_age_hours=None, **kw):
+            seen[url] = max_age_hours
+            if url == "https://feed.example/rss":
+                return _rss_xml(link="https://x.example/a")
+            return "<html><body><p>Body.</p></body></html>"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        from_rss({"id": "openai", "index_url": "https://feed.example/rss",
+                  "text_source": "full_text"}, datetime(2025, 1, 1))
+
+        assert seen["https://feed.example/rss"] == fetch_announcements.DISCOVERY_MAX_AGE_HOURS
+        assert seen["https://x.example/a"] is None
 
 
 class TestScore:

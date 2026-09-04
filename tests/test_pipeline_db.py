@@ -19,6 +19,19 @@ from app.db import create_all
 
 ROOT = Path(__file__).parent.parent
 REGISTER = ROOT / "research" / "docs" / "scored_announcements_v7.json"
+CORPUS = ROOT / "research" / "docs" / "announcements.json"
+
+
+def corpus_size() -> int:
+    """How many articles the committed corpus holds.
+
+    Derived, not hardcoded. These assertions carried a literal 236, which
+    meant a firing that correctly discovered new articles turned the suite
+    red -- the test failed precisely when the pipeline worked. What is worth
+    asserting is that everything in the corpus loads and everything loaded is
+    classified, not what the corpus happens to contain this week.
+    """
+    return len(json.loads(CORPUS.read_text()))
 
 
 @pytest.fixture(scope="module")
@@ -33,17 +46,16 @@ def session():
 
 
 def test_corpus_fully_loaded(session):
-    # 236 raw articles now that xAI's wayback_cdx leg is configured (35
-    # in-window articles), and all 236 classified as of D24.
-    #
-    # This count was 175 while scoring stayed deactivated for every lab added
-    # after the original three (D10) -- their articles loaded with no
-    # Classification row at all. D10's switch was a *safety* measure against an
-    # uncontrolled LLM run; the per-run and per-month ceilings in
-    # config/pipeline.yaml replace it, so the four newest labs (xAI, DeepMind,
-    # Mistral, Meta AI) are now scored like the rest. Full corpus: $1.08.
-    assert session.scalar(select(func.count()).select_from(m.Article)) == 236
-    assert session.scalar(select(func.count()).select_from(m.Classification)) == 236
+    # Every corpus article loads, and every loaded article is classified. The
+    # second half is the one that catches something: scoring was once
+    # deactivated for every lab added after the original three (D10), and their
+    # articles loaded with no Classification row at all. The per-run and
+    # per-month ceilings in config/pipeline.yaml replaced that switch, so every
+    # lab is scored now, and an unclassified article means a real gap -- either
+    # a classifier failure or an article ingested but never sent to one.
+    expected = corpus_size()
+    assert session.scalar(select(func.count()).select_from(m.Article)) == expected
+    assert session.scalar(select(func.count()).select_from(m.Classification)) == expected
     assert session.scalar(select(func.count()).select_from(m.Holding)) == 26
 
 
@@ -158,7 +170,7 @@ class TestFailureLeavesTheDatabaseUsable:
     def test_a_failed_reload_keeps_the_previous_good_state(self, monkeypatch):
         s = self._loaded()
         before = session_counts(s)
-        assert before["articles"] == 236 and before["connections"] > 0
+        assert before["articles"] == corpus_size() and before["connections"] > 0
 
         import app.cli as cli
 

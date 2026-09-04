@@ -13,6 +13,9 @@ The silent failures these catch:
   really happened and, on the LLM legs, were really paid for.
 * **A firing that broke exiting zero.** The platform's own cron alerting keys
   off the exit code; a green light on a broken run is the worst outcome here.
+* **An article found tonight not being scored until tomorrow.** Phase order
+  decides this and nothing downstream complains about it: the run succeeds, the
+  article is stored, and it is simply unscored for a day (D38).
 """
 
 from pathlib import Path
@@ -51,6 +54,8 @@ def quiet(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(worker, "merge_announcements",
                         lambda items, *a, **k: {"added": 0, "kept": 0, "total": 0})
+    monkeypatch.setattr(worker, "load_articles",
+                        lambda s, run_id=None: {"inserted": 0, "updated": 0, "unchanged": 0})
     monkeypatch.setattr(worker, "_etl", lambda session, run, pv, stats: stats.update(etl="ok"))
     return tmp_path
 
@@ -291,3 +296,48 @@ class TestSystemExitIsNotAnEscapeHatch:
         with pytest.raises(KeyboardInterrupt):
             worker.run_once(session, legs=("announcements",),
                             config_path=config_file(quiet), spend=False, deliver=False)
+
+
+class TestAnArticleIsScoredTheFiringItIsFound:
+    """The silent failure this catches: bronze loaded *after* the classifier.
+
+    `classify_new` picks its work list with `pending_urls`, a LEFT JOIN of
+    `raw_articles` against `raw_llm_responses`. While `load_articles` ran in the
+    ETL (phase 5) and the classifier in phase 3, that join could only ever see
+    articles from a *previous* firing. Nothing failed — the run succeeded, the
+    article was stored, and it was simply unscored until the next night. Live on
+    run 12: four OpenAI articles ingested, `classify` reported `pending: 0`, the
+    ETL then reported `classifications.missing: 4` (D38).
+    """
+
+    def test_the_classifier_sees_articles_landed_this_firing(
+        self, session, quiet, monkeypatch
+    ):
+        from app.pipeline.classify import pending_urls
+
+        url = "https://lab.example/found-tonight"
+
+        def land_one(s, run_id=None):
+            s.add(m.RawArticle(url=url, payload={"title": "t"}, content_hash="h",
+                               source_file="announcements.json", load_run_id=run_id))
+            s.flush()
+            return {"inserted": 1, "updated": 0, "unchanged": 0}
+
+        saw = {}
+
+        def spy(s, prompt_version, budget=None, config_path=None):
+            saw["pending"] = pending_urls(s, prompt_version)
+            return {"pending": len(saw["pending"]), "classified": 0,
+                    "skipped_for_budget": 0, "failures": [], "cost_usd": 0.0,
+                    "bands": {}, "budget": None}
+
+        monkeypatch.setattr(worker, "load_articles", land_one)
+        monkeypatch.setattr(worker, "classify_new", spy)
+        monkeypatch.setattr(worker.drift_mod, "measure", lambda **kw: {})
+
+        worker.run_once(session, legs=("announcements",),
+                        config_path=config_file(quiet), spend=True, deliver=False)
+
+        assert saw["pending"] == [url], (
+            "the classifier ran before this firing's articles reached raw_articles"
+        )

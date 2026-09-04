@@ -19,7 +19,7 @@ research/docs/*  ─▶ load_raw  ─▶ raw_*                            ├─
 ```
 
 * **raw_*** (`load_raw.py`) — verbatim JSON payloads (`raw_articles`,
-  `raw_classifications`, `raw_costs`), **upsert-only** on natural keys
+  `raw_llm_responses`, `raw_costs`), **upsert-only** on natural keys
   (URL, or URL+prompt_version). Nothing here is ever deleted, so the DB
   accumulates history the file register doesn't keep — `research/docs/`'s
   fetch step drops articles older than ~3 months, but a row that already

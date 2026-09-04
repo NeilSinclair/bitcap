@@ -12,27 +12,46 @@ version: 1
 #
 # Calibration, from the real cost log (docs/cost.md, raw_costs): the classifier
 # averages ~$0.029 per article, and the full 191-article corpus cost $5.44.
-# A normal incremental run classifies a handful of new articles and costs cents.
-# `per_run_usd` is therefore set well above a normal run and well below a full
-# re-classification -- high enough never to fire in ordinary operation, low
-# enough that a loop or a prompt regression is stopped within one firing rather
-# than one month.
+# A normal incremental run classifies a handful of new articles and costs cents,
+# so `per_run_usd` sits two orders of magnitude above ordinary operation and
+# still stops a loop or a prompt regression within one firing rather than one
+# month. At 5.00 it now also admits a full re-classification of the corpus,
+# which is deliberate: that is a real operation (a prompt version bump) and
+# having it die halfway costs the money without producing the corpus.
+#
+# The ceiling is denominated in USD because the provider bills in USD and the
+# cost log records what was charged (docs/cost.md). 5.00 is the conservative
+# reading of a EUR 5 ceiling -- it can only ever stop a run sooner.
 budget:
-  per_run_usd: 3.00
-  per_month_usd: 20.00
+  per_run_usd: 5.00
+  # Raised from 20.00 when drift went to the full 20-item gold set (D35): that
+  # check is uncached by design and fires every run, so it is ~$0.75 nightly
+  # (~$22/mo) on its own and would have crowded out classification -- the stage
+  # that actually produces the product -- under the old ceiling.
+  per_month_usd: 75.00
   # abort_llm_stage: stop making calls, but keep everything already ingested and
   # let the ETL finish. The alternative (fail the whole run) would throw away
   # fetches that already happened and, worse, cost money to redo.
   on_exceed: abort_llm_stage
 
-# Not every leg deserves every firing. Values are "run on every Nth firing";
-# 1 means every run.
+# Values are "run on every Nth firing"; 1 means every run.
+#
+# Everything runs every firing except GitHub. Staggering was rejected in general
+# because it made a run's meaning depend on its own sequence number: "no new
+# papers" on firing 8 meant "we did not look", which nothing downstream can tell
+# apart from "nothing was published".
+#
+# GitHub is the exception because its leg is not a feed. Announcements and
+# papers ask "what is new since last time" and a skipped firing loses items;
+# GitHub re-derives contribution weight over a full 3-month history, so every
+# run restates the whole picture and a skipped one loses nothing. It is also the
+# only leg that costs 14 minutes of wall-clock (2,074 repos, measured run 12).
+# Every 3rd firing keeps the history intact and the nightly run short.
 cadence:
-  announcements: 1   # the insight stream; this is what the digest is made of
-  papers: 3          # labs publish papers weekly at best, not daily
-  github: 7          # a rolling 12-month commit window barely moves in a day,
-                     # and a cold re-harvest is the most expensive leg in time
-  drift: 1           # cheap by design -- a small fixed sample, not the corpus
+  announcements: 1
+  papers: 1
+  github: 3
+  drift: 1
 
 alerts:
   # Consecutive scheduled runs a source may fail before it is an incident

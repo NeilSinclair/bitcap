@@ -60,7 +60,38 @@ MONTH_PATTERN = "|".join(
 )
 
 
-def fetch(url: str, retries: int = 3, user_agent: str | None = UA) -> str:
+# How long a *discovery* document may be served from disk. Article bodies are
+# immutable -- once a lab publishes a post at a URL its content does not change,
+# so caching those forever is correct and they pass `max_age_hours=None`.
+# Sitemaps, RSS feeds, listing pages and CDX queries are the opposite: changing
+# is their entire purpose, and an unexpiring cache of one silently pins
+# discovery to the day it was first written. Locally that meant a run on
+# 2026-09-04 reading Anthropic's sitemap as of 2026-09-02 and reporting zero new
+# articles -- not slow, blind, and indistinguishable from "nothing was published".
+#
+# Six hours, against a nightly cadence: any value materially under 24h makes the
+# scheduled firing always see a live feed, and six still spares a lab's server
+# during an afternoon of local re-runs.
+DISCOVERY_MAX_AGE_HOURS = 6.0
+
+
+def _cache_is_fresh(path: Path, max_age_hours: float | None) -> bool:
+    """Whether a cached file may still be served instead of refetching.
+
+    Args:
+        path: An existing cache file.
+        max_age_hours: Maximum age to accept, or None to accept any age.
+
+    Returns:
+        True when the file may be served.
+    """
+    if max_age_hours is None:
+        return True
+    return (time.time() - path.stat().st_mtime) < max_age_hours * 3600
+
+
+def fetch(url: str, retries: int = 3, user_agent: str | None = UA,
+          max_age_hours: float | None = None) -> str:
     """Fetch a URL as text, with backoff, caching the result on disk.
 
     Args:
@@ -74,6 +105,10 @@ def fetch(url: str, retries: int = 3, user_agent: str | None = UA) -> str:
             other lab configured so far. An empty headers dict lets urllib
             send its own default (`Python-urllib/x.y`, not browser-shaped),
             which was verified live to also get 200 there.
+        max_age_hours: Refetch when the cached copy is older than this. Default
+            None caches forever, which is right for an article body and wrong
+            for anything that lists articles -- see
+            :data:`DISCOVERY_MAX_AGE_HOURS`.
 
     Returns:
         Response body as text.
@@ -85,7 +120,7 @@ def fetch(url: str, retries: int = 3, user_agent: str | None = UA) -> str:
     CACHE.mkdir(parents=True, exist_ok=True)
     key = re.sub(r"[^a-zA-Z0-9]+", "_", url)[:140]
     cached = CACHE / f"{key}.html"
-    if cached.exists():
+    if cached.exists() and _cache_is_fresh(cached, max_age_hours):
         return cached.read_text(errors="replace")
 
     headers = {"User-Agent": user_agent} if user_agent else {}
@@ -220,7 +255,7 @@ def from_sitemap(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> l
         List of article dicts with url, date, title and text.
     """
     skip = skip or set()
-    xml = fetch(lab["index_url"])
+    xml = fetch(lab["index_url"], max_age_hours=DISCOVERY_MAX_AGE_HOURS)
     entries = re.findall(r"<url>(.*?)</url>", xml, re.S)
 
     candidates = []
@@ -295,7 +330,7 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
         List of article dicts.
     """
     skip = skip or set()
-    xml = fetch(lab["index_url"])
+    xml = fetch(lab["index_url"], max_age_hours=DISCOVERY_MAX_AGE_HOURS)
     out = []
     for item in re.findall(r"<item>(.*?)</item>", xml, re.S):
 
@@ -387,7 +422,8 @@ def from_listing_pagination(
             else f"{lab['index_url']}?{lab['page_param']}={page}"
         )
         try:
-            listing_html = fetch(url, user_agent=user_agent)
+            listing_html = fetch(url, user_agent=user_agent,
+                                 max_age_hours=DISCOVERY_MAX_AGE_HOURS)
         except RuntimeError as exc:
             print(f"    SKIP listing page {page}: {exc}", flush=True)
             break
@@ -499,7 +535,8 @@ def _wayback_decompress(body: bytes, encoding: str) -> bytes:
     return body
 
 
-def fetch_wayback(url: str, retries: int = 4) -> str:
+def fetch_wayback(url: str, retries: int = 4,
+                  max_age_hours: float | None = None) -> str:
     """Fetch an archive.org URL as text, decompressing and caching to disk.
 
     A separate function from `fetch()`, not a parameterised branch of it:
@@ -511,6 +548,10 @@ def fetch_wayback(url: str, retries: int = 4) -> str:
         url: Absolute archive.org URL (typically an `id_`-suffixed snapshot
             or a `cdx/search/cdx` query).
         retries: Attempts before giving up.
+        max_age_hours: Refetch when the cached copy is older than this. A
+            timestamped snapshot is immutable and keeps the default None; a CDX
+            query is a listing of what has been archived *so far* and expires
+            like any other discovery document.
 
     Returns:
         Decoded response body.
@@ -521,7 +562,7 @@ def fetch_wayback(url: str, retries: int = 4) -> str:
     CACHE.mkdir(parents=True, exist_ok=True)
     key = "wb_" + re.sub(r"[^a-zA-Z0-9]+", "_", url)[:140]
     cached = CACHE / f"{key}.html"
-    if cached.exists():
+    if cached.exists() and _cache_is_fresh(cached, max_age_hours):
         return cached.read_text(errors="replace")
 
     for attempt in range(retries):
@@ -596,7 +637,7 @@ def from_wayback_cdx(
         f"&output=json&filter=statuscode:200&from={cdx_from}"
         "&fl=original,timestamp&limit=5000"
     )
-    rows = json.loads(fetch_wayback(query))
+    rows = json.loads(fetch_wayback(query, max_age_hours=DISCOVERY_MAX_AGE_HOURS))
 
     latest_snapshot: dict[str, str] = {}
     for original, timestamp in rows[1:]:

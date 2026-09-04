@@ -436,7 +436,7 @@ only the schema-shaped ones that need the real dialect.
 ### 13.3 A cold container can strand an article as permanently unclassified
 
 `classify_new` takes its work list from the database (`raw_articles` LEFT JOIN
-`raw_classifications`) but reads the article *text* from
+`raw_llm_responses`) but reads the article *text* from
 `research/docs/announcements.json`. On a platform where the cron container has
 no persistent disk — which is the deployed shape, since Render cron jobs cannot
 mount one — that file resets to the image copy on every firing.
@@ -452,7 +452,7 @@ quiet night.
 
 Not confirmed against a deployed instance — flagged by review, traced through
 the code, not reproduced. The query that would settle it:
-`SELECT count(*) FROM raw_articles a LEFT JOIN raw_classifications c ON
+`SELECT count(*) FROM raw_articles a LEFT JOIN raw_llm_responses c ON
 c.url = a.url AND c.prompt_version = 'v7' WHERE c.url IS NULL`, compared against
 the corpus file the container actually has.
 
@@ -483,3 +483,38 @@ service's secrets — `render.yaml` already declares it `sync: false`. Worth doi
 also the one most likely to surface something. Note the per-run delivery cap
 (`max_deliveries_per_run: 10`) exists precisely so switching this on does not
 fire 135 notifications on day one.
+
+
+### 13.5 Ship the corpus as a SQL dump, not as committed JSON
+
+**Do at final deployment.** The clone-to-running requirement (CLAUDE.md
+non-negotiable 4) is currently met by committing the harvesters' own output —
+`research/docs/announcements.json`, `announcement_scores/v7/*.json`,
+`scored_announcements_v7.json`, `announcement_cost.json`. Postgres is loaded
+*from* those files, so the files are the source of truth and the database is a
+mirror.
+
+**The hole.** It is not size — the whole corpus is ~2.5 MB and git does not care.
+It is churn. Every pipeline run rewrites those files, so ordinary operation
+dirties the working tree and data commits interleave with code commits in the
+history. It also forces a choice nobody should have to make before a deploy:
+push local scrape results, or push code only and leave the tree permanently
+modified. On 2026-09-04 that choice was made explicitly — code only, with the
+deployed cron rediscovering the four articles itself for ~$0.08.
+
+**The fix.** One `seed.sql.gz` at the repo root, regenerated deliberately rather
+than as a side effect of running the pipeline. README becomes `docker compose up`
+then restore the dump. Stop committing the JSON (the harvesters still write it
+locally; it becomes working state, not a deliverable). The reviewer gets one
+command and real data, and a normal run stops touching the repo at all.
+
+Worth doing *at* final deployment because that is when the corpus is at its
+fullest and the dump is taken once, from a database that is already correct.
+Doing it earlier means regenerating it on every subsequent run.
+
+**Watch out for:** the ops tables. `models.OPS_TABLES` (`pipeline_runs`,
+`gold_snapshots`, `run_sources`, `source_state`, `alerts`) record things that
+happened on *this* machine and are not part of a clean starting state — a dump
+that includes a local run history would ship someone else's `source_state`
+watermarks and suppress their first fetch. Dump the derived and raw layers;
+leave the ops tables to be created empty.
