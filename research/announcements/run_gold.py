@@ -34,7 +34,7 @@ from verbatim import enforce as enforce_quotes  # noqa: E402
 GOLD = Path(__file__).parent / "test" / "articles"
 RESULTS = ROOT / "research" / "test_results"
 MODEL = "claude-sonnet-5"
-PROMPT = "v7"
+PROMPT = "v8"
 
 
 def main() -> None:
