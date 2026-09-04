@@ -4,6 +4,35 @@ Tracks frontier AI labs, scores what they publish against a deterministic rule,
 and joins every signal to BIT's portfolio holdings and to AI-engineering
 practice — with a verbatim quote behind every tag.
 
+## Live
+
+**<https://bitcap-web.onrender.com/>** — the deployed system, running the nightly
+pipeline against managed Postgres.
+
+The whole site is behind a single login. That is a deliberate trade-out and not
+an accident of setup: `/pipeline` runs a real firing that spends real money on a
+public URL, and gating only the button while leaving the dashboard open would
+have put the credential check on the wrong side of the thing worth protecting
+(`docs/decisions.md` D39). **Credentials are in the submission email**, not here.
+
+Both services run on Render's `starter` plan, which does not spin down on idle.
+That is a requirement rather than a preference: a firing takes 9–30 minutes and
+runs in a thread on the API instance, so a plan that slept would kill a run
+mid-flight and leave a `running` row that blocks every later firing through the
+concurrency guard. It is the one failure here that code cannot defend against,
+and it is recorded on the service in [`render.yaml`](render.yaml) so the
+constraint travels with the config rather than living in someone's memory.
+
+Where to look first, in the order the brief asks its questions:
+
+| Page | Answers |
+|---|---|
+| `/digest` | Did it surface something worth knowing, and what did it suppress to get there |
+| `/` | The whole scored corpus, filterable by band, lab and holding |
+| `/register` | Who is tracked — and the four possible researcher moves in it |
+| `/ops` | Can any of the above be trusted: run history, source health, spend, classifier drift |
+| `/pipeline` | Run it yourself |
+
 ## Clone to running
 
 Prerequisites: [uv](https://docs.astral.sh/uv/), and Docker for the Postgres
@@ -163,6 +192,12 @@ assigns and let both services redeploy:
 | `FRONTEND_ORIGIN` | `bitcap-api` | the static site's URL — the API's CORS allow-list. Must not be blank: an empty value overrides the `http://localhost:3000` default and blocks every origin. |
 | `NEXT_PUBLIC_API_URL` | `bitcap-web` | the API's URL. Inlined into the bundle at build time, so a change rebuilds rather than restarts. |
 
+On this deployment those are `https://bitcap-web.onrender.com` and
+`https://bitcap-api.onrender.com` respectively. Because `NEXT_PUBLIC_API_URL` is
+baked in at build time, a frontend change needs a rebuild, not a restart — which
+is also why a new page appears as a 404 on the live site until the static export
+is redeployed.
+
 ## Running the web app
 
 A FastAPI service (`api/`) queries the database `bitcap-db` built above; a
@@ -195,6 +230,52 @@ ergonomics — the site is a static export, so its HTML is public either way; th
 guarantee is that the API returns 401 without a token and the page has nothing
 to render.
 
+### The digest
+
+`/digest` is the periodic report: one dated cut of the corpus per audience,
+covering a 48-hour publication window. Two things make it different from the
+dashboard.
+
+**It states what it suppressed.** Every edition carries `considered`,
+`surfaced` and `suppressed`, and the page shows the suppressed count as
+prominently as the items — the cut is the product, and a digest that cannot say
+how much it discarded is just a shorter list.
+
+**Its unit is the event, not the connection.** One sentence can fire against
+fourteen holdings at once; the digest renders that as one row naming the top
+four and counting the rest, rather than fourteen rows for one fact.
+
+Editions are published as phase 6 of every firing and stored, not recomputed on
+read: a digest is a record of what the product said on a date, and rebuilding it
+against a later re-scored corpus would restate last week's edition in this
+week's terms. `digests` therefore survives `rebuild`, like the other ops tables.
+Past editions are in the selector at the top of the page.
+
+Thresholds, the window, and the fan-out cap are in `config/digest.yaml`. The
+48-hour default is measured rather than assumed — see `docs/decisions.md` D48
+for the replay over the whole corpus that chose it.
+
+### The register
+
+`/register` browses the people the system tracks — 4,941 across seven labs, from
+paper bylines and GitHub commit history — and leads with the thing that falls
+out of it: **possible researcher moves**.
+
+The register keeps one record per (lab, person) and refuses to merge a name
+across labs, because same name is not same person. That refusal is what makes a
+move visible: a researcher at two labs is one name with two records rather than
+a row that got tidied away. Finding them is a group-by, not a model.
+
+Fifty cross-lab names exist; four are shown. The other 46 are GitHub logins with
+no lab-owned email domain on either side — drive-by open-source contributors,
+not moves — and the page reports that reduction rather than just the survivors.
+Every candidate carries both sides' dates, evidence tiers and primary source
+URLs, and is labelled a candidate, not a conclusion.
+
+No figure on the page is a bare head count: only 1,222 of the 4,941 have any
+employment-tier evidence, so every total carries its tier breakdown. See
+`docs/decisions.md` D49.
+
 ### The pipeline tab
 
 `/pipeline` runs the pipeline on demand: tick the legs, press run, watch it
@@ -212,7 +293,8 @@ counter that decides when the GitHub leg is due.
   `config/validate.py` gates every load.
 - `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v7.md`)
 - `research/` — ingestion, classification, evaluation (gold set), analyses
-- `app/` — the database package (`bitcap-db`)
+- `app/` — the database package (`bitcap-db`), the scheduled pipeline
+  (`app/pipeline/`), and the digest (`app/digest.py`)
 - `api/` — FastAPI service over the same database: the frontend's read model,
   the single-account gate (`api/auth.py`), and the manual trigger (`api/pipeline.py`)
 - `frontend/` — Next.js app (investment/AI-team dashboards, insight detail view)

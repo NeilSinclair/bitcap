@@ -1,0 +1,297 @@
+"use client";
+
+// The digest: one dated cut of the corpus, per audience.
+//
+// A separate route from the dashboard on purpose. The dashboard is the corpus —
+// every classified article, filterable, for someone going looking. The digest is
+// the opposite claim: that a handful of things mattered this window and the rest
+// did not. Putting them on one page would make the cut look like another filter.
+//
+// The suppressed count is rendered as prominently as the items. It is the only
+// thing on the page that says the taste is real: a digest that cannot state what
+// it discarded is just a shorter list.
+
+import { useEffect, useState } from "react";
+
+import { Gate, apiFetch, signOut } from "../auth";
+
+const ACCENT = "#5ac3f0";
+const NEGATIVE = "#f2545b";
+const MUTED = "#9a9992";
+
+function signColor(sign) {
+  return sign === "positive" ? ACCENT : sign === "negative" ? NEGATIVE : MUTED;
+}
+function signArrow(sign) {
+  return sign === "positive" ? "↑" : sign === "negative" ? "↓" : "↔";
+}
+function bandStyle(band) {
+  if (band === "high") return { background: ACCENT, color: "#0d0d0d", borderColor: ACCENT, fontWeight: 600 };
+  if (band === "medium") return { background: "transparent", color: ACCENT, borderColor: ACCENT };
+  return { background: "transparent", color: MUTED, borderColor: "#333331" };
+}
+function actionStyle(action) {
+  if (action === "adopt") return { background: ACCENT, color: "#0d0d0d", borderColor: ACCENT, fontWeight: 600 };
+  return { background: "transparent", color: ACCENT, borderColor: ACCENT };
+}
+
+function Pill({ children, style }) {
+  return (
+    <span style={{ fontSize: 10, letterSpacing: "0.06em", textTransform: "uppercase", border: "1px solid", padding: "2px 7px", whiteSpace: "nowrap", ...style }}>
+      {children}
+    </span>
+  );
+}
+
+function day(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+// The cut, stated. Considered / surfaced / suppressed, with the ratio spelled
+// out in words because "76" on its own reads as a failure rather than the point.
+function TheCut({ stats, windowStart, windowEnd }) {
+  if (!stats) return null;
+  const { considered = 0, surfaced = 0, suppressed = 0 } = stats;
+  return (
+    <div style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "16px 18px", display: "flex", flexWrap: "wrap", gap: 28, alignItems: "baseline" }}>
+      <div>
+        <span className="label-bracket">Window</span>
+        <div className="serif" style={{ fontSize: 18, marginTop: 4 }}>
+          {day(windowStart)} — {day(windowEnd)}
+        </div>
+      </div>
+      <div>
+        <span className="label-bracket">Considered</span>
+        <div className="serif" style={{ fontSize: 18, marginTop: 4 }}>{considered}</div>
+      </div>
+      <div>
+        <span className="label-bracket">Surfaced</span>
+        <div className="serif" style={{ fontSize: 18, marginTop: 4, color: ACCENT }}>{surfaced}</div>
+      </div>
+      <div>
+        <span className="label-bracket">Suppressed</span>
+        <div className="serif" style={{ fontSize: 18, marginTop: 4 }}>{suppressed}</div>
+      </div>
+      <div style={{ flex: "1 1 240px", fontSize: 12, color: "var(--muted-2)", lineHeight: 1.6 }}>
+        {considered === 0
+          ? "Nothing was published in this window."
+          : `${suppressed} of ${considered} items in this window did not clear the bar. Thresholds are in config/digest.yaml.`}
+      </div>
+    </div>
+  );
+}
+
+// One event. Never one connection: an article that fires against fourteen
+// holdings is one thing that happened, and rendering it fourteen times is the
+// noise this page exists to remove.
+function InvestmentItem({ item }) {
+  const h = item.holdings || { named: [], more: 0, total: 0 };
+  return (
+    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+        <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
+        <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
+        <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
+        <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.eventType?.replace(/_/g, " ")}</span>
+      </div>
+
+      <h3 className="serif" style={{ fontSize: 19, lineHeight: 1.3, margin: 0 }}>{item.title}</h3>
+      <p style={{ margin: 0, fontSize: 13, lineHeight: 1.65, color: "var(--muted)" }}>{item.summary}</p>
+
+      {item.mechanism ? (
+        <div style={{ borderLeft: "2px solid var(--border)", paddingLeft: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ fontSize: 12 }}>
+            <span style={{ color: signColor(item.mechanism.sign) }}>{signArrow(item.mechanism.sign)} {item.mechanism.label}</span>
+            <span style={{ color: "var(--muted-2)" }}> · {item.mechanism.magnitude} magnitude · {item.mechanism.confidence} confidence</span>
+          </div>
+          <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>{item.mechanism.reason}</div>
+          {/* The verbatim sentence, always. An insight without the line it came
+              from is an assertion, and this page is the one a PM would act on. */}
+          <blockquote className="serif" style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: "var(--text)", fontStyle: "italic" }}>
+            “{item.mechanism.quote}”
+          </blockquote>
+        </div>
+      ) : null}
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <span className="label-bracket">
+          {h.total === 0 ? "No position touched yet" : h.total === 1 ? "1 position" : `${h.total} positions`}
+        </span>
+        {h.named.map((x) => (
+          <span key={x.isin} title={x.why} style={{ fontSize: 12, border: "1px solid var(--border)", padding: "3px 9px", color: signColor(x.direction) }}>
+            {signArrow(x.direction)} {x.holding} <span style={{ color: "var(--muted-2)" }}>{x.strength.toFixed(2)}</span>
+          </span>
+        ))}
+        {h.more > 0 ? (
+          <span style={{ fontSize: 12, color: "var(--muted-2)" }}>+{h.more} more</span>
+        ) : null}
+        {/* Links that exist but did not clear the strength bar. Counted, never
+            named: naming them would be the digest asserting what it just
+            declined to assert. */}
+        {item.belowThreshold > 0 ? (
+          <span style={{ fontSize: 11, color: "var(--muted-2)" }}>
+            {item.belowThreshold} weaker link{item.belowThreshold === 1 ? "" : "s"} below the bar
+          </span>
+        ) : null}
+      </div>
+
+      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+        Primary source ↗
+      </a>
+    </article>
+  );
+}
+
+function AiItem({ item }) {
+  return (
+    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+        <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
+        <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
+        <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
+      </div>
+
+      <h3 className="serif" style={{ fontSize: 19, lineHeight: 1.3, margin: 0 }}>{item.title}</h3>
+      <p style={{ margin: 0, fontSize: 13, lineHeight: 1.65, color: "var(--muted)" }}>{item.summary}</p>
+
+      {(item.practices || []).map((p, i) => (
+        <div key={i} style={{ borderLeft: "2px solid var(--border)", paddingLeft: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <Pill style={actionStyle(p.action)}>{p.action}</Pill>
+            <span style={{ fontSize: 12 }}>{p.label}</span>
+            <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{p.impact} impact · {p.confidence} confidence</span>
+          </div>
+          <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>{p.reason}</div>
+          <blockquote className="serif" style={{ margin: 0, fontSize: 13, lineHeight: 1.6, fontStyle: "italic" }}>
+            “{p.quote}”
+          </blockquote>
+        </div>
+      ))}
+
+      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+        Primary source ↗
+      </a>
+    </article>
+  );
+}
+
+function DigestView() {
+  const [kind, setKind] = useState("investment");
+  // "current" previews the window as it stands right now; an id reads a
+  // published edition back verbatim. The distinction matters — a published
+  // digest is what the product said at the time, not what it would say today.
+  const [editionId, setEditionId] = useState("current");
+  const [preview, setPreview] = useState(null);
+  const [past, setPast] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      apiFetch(`/api/digests/preview?kind=${kind}`),
+      apiFetch(`/api/digests?kind=${kind}&limit=20`),
+    ])
+      .then(([p, h]) => {
+        setPreview(p);
+        setPast(h);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(String(e));
+        setLoading(false);
+      });
+  }, [kind]);
+
+  const edition =
+    editionId === "current"
+      ? preview
+      : past.find((d) => String(d.id) === String(editionId));
+
+  const items = edition?.items || [];
+  const stats = edition?.stats;
+  const windowStart = edition?.window_start || edition?.windowStart;
+  const windowEnd = edition?.window_end || edition?.windowEnd;
+
+  return (
+    <div className="app">
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: "1px solid var(--border)", background: "var(--bg-2)" }}>
+          <div className="serif" style={{ fontSize: 18 }}>Digest</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
+            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
+            <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
+            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
+            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+          </div>
+        </div>
+
+        <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24, maxWidth: 900 }}>
+          {error ? <div style={{ color: NEGATIVE, fontSize: 13 }}>Could not reach the API: {error}</div> : null}
+
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 0 }}>
+              {[["investment", "Investment team"], ["ai", "AI team"]].map(([k, label]) => (
+                <button
+                  key={k}
+                  className="btn btn-ghost"
+                  onClick={() => { setKind(k); setEditionId("current"); }}
+                  style={{ padding: "8px 16px", borderColor: kind === k ? ACCENT : undefined, color: kind === k ? ACCENT : undefined }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <select
+              className="field-input"
+              value={editionId}
+              onChange={(e) => setEditionId(e.target.value)}
+              style={{ padding: "8px 12px", fontSize: 13 }}
+            >
+              <option value="current">Current window (unpublished)</option>
+              {past.map((d) => (
+                <option key={d.id} value={d.id}>
+                  Published {day(d.windowEnd)} · {d.stats?.surfaced ?? 0} of {d.stats?.considered ?? 0}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <TheCut stats={stats} windowStart={windowStart} windowEnd={windowEnd} />
+
+          {loading ? (
+            <div style={{ fontSize: 13, color: "var(--muted-2)" }}>Loading…</div>
+          ) : items.length ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {items.map((item) =>
+                kind === "investment"
+                  ? <InvestmentItem key={item.id} item={item} />
+                  : <AiItem key={item.id} item={item} />
+              )}
+            </div>
+          ) : (
+            // An empty digest is a real answer, not a failure state. Saying so
+            // is the difference between "the labs were quiet" and "it broke".
+            <div style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "24px 20px", fontSize: 13, color: "var(--muted)", lineHeight: 1.7 }}>
+              Nothing cleared the bar in this window.
+              {stats?.considered
+                ? ` All ${stats.considered} item${stats.considered === 1 ? "" : "s"} published in it were suppressed — that is the filter working, not a fault.`
+                : " Nothing was published in it."}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Digest() {
+  return (
+    <Gate>
+      <DigestView />
+    </Gate>
+  );
+}

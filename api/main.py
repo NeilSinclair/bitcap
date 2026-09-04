@@ -21,6 +21,7 @@ Run with:
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,6 +38,8 @@ from api.auth import (
 from api.ops import health as ops_health
 from api.ops import run_history
 from api.queries import build_items
+from app import digest as digest_mod
+from app import people as people_mod
 from app import models as m
 from app.cli import PROMPT_VERSION
 from app.db import ensure_schema, get_engine, get_session, load_env
@@ -185,6 +188,88 @@ def alert_feed(kind: str | None = None, limit: int = 50) -> list[dict]:
     session = get_session(engine)
     try:
         return alerts_mod.recent(session, kind=kind, limit=min(max(limit, 1), 200))
+    finally:
+        session.close()
+
+
+@app.get("/api/digests", dependencies=[Depends(require_auth)])
+def digest_feed(kind: str | None = None, limit: int = 20) -> list[dict]:
+    """Published digests, newest first — the brief's "read past reports".
+
+    Served from the stored payload, never rebuilt on read. A digest is a dated
+    claim about what mattered; recomputing it against today's corpus would
+    restate last week's edition in this week's terms (app/digest.py).
+    """
+    if kind is not None and kind not in digest_mod.KINDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"kind must be one of {', '.join(digest_mod.KINDS)}",
+        )
+    session = get_session(engine)
+    try:
+        return digest_mod.history(session, kind=kind, limit=min(max(limit, 1), 100))
+    finally:
+        session.close()
+
+
+@app.get("/api/digests/preview", dependencies=[Depends(require_auth)])
+def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) -> dict:
+    """What a digest published right now would say, without publishing it.
+
+    Read-only and unpersisted, so opening the tab on a day with no firing still
+    shows the current window rather than an empty page. `hours` overrides the
+    configured window for a reader who wants to widen it; the published edition
+    always uses the configured value.
+    """
+    if kind not in digest_mod.KINDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"kind must be one of {', '.join(digest_mod.KINDS)}",
+        )
+    config = digest_mod.settings()
+    if hours is not None:
+        config = {**config, "window_hours": min(max(hours, 1), 24 * 90)}
+    session = get_session(engine)
+    try:
+        built = digest_mod.build(
+            session, kind, PROMPT_VERSION, datetime.now(timezone.utc), config
+        )
+        return {
+            **built,
+            "window_start": built["window_start"].isoformat(),
+            "window_end": built["window_end"].isoformat(),
+        }
+    finally:
+        session.close()
+
+
+@app.get("/api/register", dependencies=[Depends(require_auth)])
+def register_view() -> dict:
+    """The people register: totals per lab, evidence tiers, and move candidates.
+
+    One response rather than three routes — the page shows all of it at once and
+    the payload is a few kilobytes. `moveCandidates` is the reason the tab
+    exists; `moveStats` reports how many cross-lab names the evidence gate
+    dropped, because a filter whose reduction is invisible is indistinguishable
+    from no filter (app/people.py).
+    """
+    session = get_session(engine)
+    try:
+        return {
+            **people_mod.overview(session),
+            "moveCandidates": people_mod.move_candidates(session),
+            "moveStats": people_mod.move_candidate_stats(session),
+        }
+    finally:
+        session.close()
+
+
+@app.get("/api/register/search", dependencies=[Depends(require_auth)])
+def register_search(q: str, limit: int = 50) -> list[dict]:
+    """People matching `q` by canonical name or by any recorded identity."""
+    session = get_session(engine)
+    try:
+        return people_mod.search(session, q, limit=min(max(limit, 1), 200))
     finally:
         session.close()
 

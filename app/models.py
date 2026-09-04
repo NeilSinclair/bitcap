@@ -173,13 +173,55 @@ class Alert(Base):
     delivery_error: Mapped[str | None]
 
 
+
+class Digest(Base):
+    """One published digest: what the product said, for one audience, at one time.
+
+    Persisted rather than recomputed on read. Every other derived table here is
+    a pure function of committed files and may be dropped; a digest is not. It
+    is a dated claim that these items were worth attention and the rest were
+    not, and recomputing it against a later re-scored corpus would silently
+    restate last week's opinions in today's terms.
+
+    `stats` carries `considered` / `surfaced` / `suppressed`. The suppressed
+    count is the point: the cut is the product, so a digest that cannot say how
+    much it discarded is asserting taste rather than showing it.
+
+    `payload` holds the rendered items verbatim, including every quote and
+    source URL, so a digest resolves without re-reading the corpus it came from.
+    """
+
+    __tablename__ = "digests"
+
+    # One digest per audience per window. A re-run of the same firing must
+    # update the row it already wrote rather than publishing a second, subtly
+    # different edition of the same period — the same idempotence rule the
+    # rest of the pipeline follows.
+    __table_args__ = (
+        sa.UniqueConstraint("kind", "window_end", "prompt_version",
+                            name="uq_digests_kind_window"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str]  # investment | ai
+    window_start: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True))
+    window_end: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True))
+    prompt_version: Mapped[str]
+    stats: Mapped[dict] = mapped_column(JSONVariant, default=dict)
+    payload: Mapped[dict] = mapped_column(JSONVariant, default=dict)
+    created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
 # Tables that survive a rebuild. Everything else in this schema is a pure
-# function of committed files, so dropping it loses nothing; these five are not
-# — run history, per-source failure counts, raised alerts and drift snapshots
-# are only ever produced by a run that actually happened. `rebuild` dropping
-# `pipeline_runs` was a real (if quiet) loss of history before this existed.
+# function of committed files, so dropping it loses nothing; these six are not
+# — run history, per-source failure counts, raised alerts, drift snapshots and
+# published digests are only ever produced by a run that actually happened.
+# `rebuild` dropping `pipeline_runs` was a real (if quiet) loss of history
+# before this existed.
 OPS_TABLES = frozenset(
-    {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts"}
+    {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts",
+     "digests"}
 )
 
 

@@ -4,7 +4,7 @@ The silent failure this catches: a column type that Postgres accepts and
 sqlite mangles (or vice versa), or a JSON column that loses its content.
 """
 
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pytest
 from sqlalchemy import create_engine, select
@@ -61,6 +61,13 @@ def test_every_table_round_trips(session):
         m.UnresolvedItem(leg="papers", source_id="mistral", kind="paper",
                          identifier="Some announcement", reason="no arxiv match",
                          run_id=run.id),
+        m.Digest(kind="investment",
+                 window_start=datetime(2026, 9, 1, tzinfo=timezone.utc),
+                 window_end=datetime(2026, 9, 3, tzinfo=timezone.utc),
+                 prompt_version="v7",
+                 stats={"considered": 6, "surfaced": 1, "suppressed": 5},
+                 payload={"items": [{"id": 1, "title": "t"}]},
+                 run_id=run.id),
     ])
     person = m.Person(lab="openai", source_kind="paper", canonical_name="Ada Lovelace",
                       first_seen=date(2026, 3, 1), last_seen=date(2026, 8, 26))
@@ -118,6 +125,7 @@ def test_every_table_round_trips(session):
     assert session.scalars(select(m.ArticlePractice)).one().dimensions == ["coding"]
     assert session.scalars(select(m.SourceState)).one().watermark == {"max_published": "2026-08-31"}
     assert session.scalars(select(m.Alert)).one().payload == {"consecutive_failures": 3}
+    assert session.scalars(select(m.Digest)).one().payload == {"items": [{"id": 1, "title": "t"}]}
     for table in m.Base.metadata.tables.values():
         assert session.execute(select(table).limit(1)).first() is not None, table.name
 

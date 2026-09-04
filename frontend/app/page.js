@@ -50,6 +50,12 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
 function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
+  // Two axes a reader actually arrives with: "what has <lab> been doing" and
+  // "what has hit <holding>". Both are client-side — /api/items already ships
+  // the whole corpus with its connections nested, so filtering here costs a
+  // render and filtering server-side would cost a round trip per keystroke.
+  const [labFilter, setLabFilter] = useState("all");
+  const [holdingFilter, setHoldingFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score");
   const [selectedId, setSelectedId] = useState(null);
 
@@ -157,18 +163,88 @@ function Dashboard() {
     });
   }, [items, audience]);
 
+  // Options come from the corpus, not from config: an option that matches
+  // nothing is a dead end, and the count next to each one says what is behind
+  // it before the reader spends a click finding out.
+  const labOptions = useMemo(() => {
+    const counts = new Map();
+    for (const it of decorated) {
+      if (audience === "investment" ? it.score <= 0 : it.aiScore <= 0) continue;
+      const seen = counts.get(it.lab) || { lab: it.lab, label: it.labLabel, n: 0 };
+      seen.n += 1;
+      counts.set(it.lab, seen);
+    }
+    return [...counts.values()].sort((a, b) => b.n - a.n);
+  }, [decorated, audience]);
+
+  const holdingOptions = useMemo(() => {
+    const counts = new Map();
+    for (const it of decorated) {
+      if (it.score <= 0) continue;
+      // One count per article, not per connection: an article linked to a
+      // holding by three routes is still one thing that happened to it.
+      for (const holding of new Set(it.connections.map((c) => c.holding))) {
+        counts.set(holding, (counts.get(holding) || 0) + 1);
+      }
+    }
+    return [...counts.entries()]
+      .map(([holding, n]) => ({ holding, n }))
+      .sort((a, b) => b.n - a.n || a.holding.localeCompare(b.holding));
+  }, [decorated]);
+
+  // A holding filter has no meaning on the AI side — those items carry
+  // practices, not connections — so it is dropped rather than left set and
+  // silently emptying the list.
+  const holdingActive = audience === "investment" && holdingFilter !== "all";
+
+  // Lab options are recomputed per audience, so a lab with items on one side and
+  // none on the other survives the switch as a value with no matching <option>.
+  // The select then renders as "All labs", the filter chip resolves to undefined
+  // and is dropped, and the reader sees "0 items" with nothing named as the
+  // cause. Reset both filters on the switch rather than trying to render a
+  // selection that no longer exists.
+  function switchAudience(next) {
+    if (next === audience) return;
+    setAudience(next);
+    setLabFilter("all");
+    setHoldingFilter("all");
+    setSelectedId(null);
+  }
+
   const visible = useMemo(() => {
     const relevant = decorated.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
-    const filtered = bandFilter === "all"
+    const byBand = bandFilter === "all"
       ? relevant
       : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
-    return [...filtered].sort((a, b) => {
+    const byLab = labFilter === "all" ? byBand : byBand.filter((it) => it.lab === labFilter);
+    const byHolding = !holdingActive
+      ? byLab
+      : byLab.filter((it) => it.connections.some((c) => c.holding === holdingFilter));
+
+    const sorted = [...byHolding].sort((a, b) => {
       if (sortBy === "date") return b.date.localeCompare(a.date);
       const av = audience === "investment" ? a.score : a.aiScore;
       const bv = audience === "investment" ? b.score : b.aiScore;
       return bv - av;
     });
-  }, [decorated, audience, bandFilter, sortBy]);
+
+    // With a holding selected, the card's impact pills must lead with that
+    // holding. Otherwise a list filtered to NVIDIA can show two pills naming
+    // other companies, and the reader has to open every card to see why it is
+    // in the list at all.
+    if (!holdingActive) return sorted;
+    return sorted.map((it) => {
+      const mine = it.connections.filter((c) => c.holding === holdingFilter);
+      const rest = it.connections.filter((c) => c.holding !== holdingFilter);
+      return {
+        ...it,
+        impactPills: [...mine, ...rest].slice(0, 2).map((c) => ({
+          label: `${c.holding} ${c.strength.toFixed(2)}`, color: c.color,
+        })),
+        showImpactRow: true,
+      };
+    });
+  }, [decorated, audience, bandFilter, labFilter, holdingFilter, holdingActive, sortBy]);
 
   const selected = decorated.find((it) => it.id === selectedId) || null;
 
@@ -187,8 +263,8 @@ function Dashboard() {
             <LogoMark size={48} />
             <div className="toggle-track">
               <div className="toggle-thumb" style={{ transform: audience === "ai" ? "translateX(100%)" : "translateX(0%)" }} />
-              <button className="toggle-seg" onClick={() => setAudience("investment")}>Investment</button>
-              <button className="toggle-seg" onClick={() => setAudience("ai")}>AI team</button>
+              <button className="toggle-seg" onClick={() => switchAudience("investment")}>Investment</button>
+              <button className="toggle-seg" onClick={() => switchAudience("ai")}>AI team</button>
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
@@ -198,6 +274,8 @@ function Dashboard() {
             </div>
             {/* The health surface is a link rather than a tab: the dashboard
                 answers "what did we learn", /ops answers "can I trust it". */}
+            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
+            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Digest</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
               Health
@@ -234,6 +312,41 @@ function Dashboard() {
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="label-bracket">Lab</span>
+              <select
+                className="field-input"
+                value={labFilter}
+                onChange={(e) => setLabFilter(e.target.value)}
+                style={{ padding: "8px 10px", fontSize: 13 }}
+              >
+                <option value="all">All labs</option>
+                {labOptions.map((o) => (
+                  <option key={o.lab} value={o.lab}>{o.label} ({o.n})</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Investment side only: AI-team items carry practices, not
+                holdings, so the control is removed rather than left to filter
+                against a field that isn't there. */}
+            {audience === "investment" ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <span className="label-bracket">Holding</span>
+                <select
+                  className="field-input"
+                  value={holdingFilter}
+                  onChange={(e) => setHoldingFilter(e.target.value)}
+                  style={{ padding: "8px 10px", fontSize: 13 }}
+                >
+                  <option value="all">All holdings</option>
+                  {holdingOptions.map((o) => (
+                    <option key={o.holding} value={o.holding}>{o.holding} ({o.n})</option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <span className="label-bracket">Sort by</span>
               <div style={{ display: "flex", gap: 14 }}>
                 {sortOptions.map((v) => {
@@ -254,6 +367,26 @@ function Dashboard() {
             <div className="section-block" style={{ paddingTop: 20, display: "flex", flexDirection: "column", gap: 6 }}>
               <span className="label-bracket">Showing</span>
               <div style={{ fontSize: 13, color: "var(--muted)" }}>{visible.length} items</div>
+              {/* An empty list under a filter is an answer, not a failure —
+                  but only if it says which filter produced it. */}
+              {bandFilter !== "all" || labFilter !== "all" || holdingActive ? (
+                <>
+                  <div style={{ fontSize: 11, color: "var(--muted-2)", lineHeight: 1.6 }}>
+                    {[
+                      bandFilter !== "all" ? `${bandFilter} band` : null,
+                      labFilter !== "all" ? labOptions.find((o) => o.lab === labFilter)?.label : null,
+                      holdingActive ? holdingFilter : null,
+                    ].filter(Boolean).join(" · ")}
+                  </div>
+                  <button
+                    className="btn"
+                    style={{ background: "none", border: "none", padding: 0, color: ACCENT, textAlign: "left", fontSize: 11 }}
+                    onClick={() => { setBandFilter("all"); setLabFilter("all"); setHoldingFilter("all"); }}
+                  >
+                    Clear filters
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
 

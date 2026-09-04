@@ -25,6 +25,7 @@ import yaml
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
+from app import digest as digest_mod
 from app import models as m
 from app.db import create_all
 from app.pipeline import worker
@@ -352,3 +353,50 @@ class TestAnArticleIsScoredTheFiringItIsFound:
         assert saw["pending"] == [url], (
             "the classifier ran before this firing's articles reached raw_articles"
         )
+
+
+class TestPhaseSixPublishesTheDigest:
+    """The firing's own product output.
+
+    Deleting `digest_mod.publish` from `_phases` left the whole suite green
+    before these existed, and the page would not have shown it: the digest tab
+    opens on the live *preview*, which is computed on read and never depended on
+    the firing at all. The only symptom of the pipeline silently ceasing to
+    publish is an archive that stops growing.
+    """
+
+    def test_a_firing_publishes_an_edition_for_each_audience(self, session, quiet, monkeypatch):
+        run, stats = worker.run_once(
+            session, legs=(), config_path=config_file(quiet), spend=False, deliver=False)
+
+        published = session.scalars(select(m.Digest)).all()
+        assert {d.kind for d in published} == set(digest_mod.KINDS)
+        assert set(stats["digest"]) == set(digest_mod.KINDS)
+        assert all(d.run_id == run.id for d in published)
+
+    def test_every_edition_records_what_it_suppressed(self, session, quiet, monkeypatch):
+        """The cut is the product; a firing that published items without the
+        count would have dropped the only auditable part of it."""
+        worker.run_once(session, legs=(), config_path=config_file(quiet),
+                        spend=False, deliver=False)
+
+        for d in session.scalars(select(m.Digest)):
+            assert {"considered", "surfaced", "suppressed"} <= set(d.stats)
+
+    def test_two_firings_in_one_period_update_the_edition_rather_than_fork_it(
+        self, session, quiet, monkeypatch
+    ):
+        """Two runs a day apart share a 48h period. Before the window was
+        quantised, `run.started_at` made the idempotence key unique per firing
+        and the archive grew by two rows a night, forever."""
+        first, _ = worker.run_once(session, legs=(), config_path=config_file(quiet),
+                                   spend=False, deliver=False)
+        first.status = "succeeded"
+        session.commit()
+        ids = sorted(d.id for d in session.scalars(select(m.Digest)))
+
+        worker.run_once(session, legs=(), config_path=config_file(quiet),
+                        spend=False, deliver=False)
+
+        assert sorted(d.id for d in session.scalars(select(m.Digest))) == ids
+        assert len(ids) == len(digest_mod.KINDS)
