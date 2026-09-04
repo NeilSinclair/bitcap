@@ -130,6 +130,7 @@ Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yam
 | Setting | Why it exists |
 |---|---|
 | `budget.per_run_usd` / `per_month_usd` | A cron making LLM calls with no ceiling is the one thing that can hurt on a fixed budget. Exceeding it stops classification; ingested data still lands. |
+| `enabled` | The kill switch, one line per leg. `false` means not fetched, not landed, and not classified — including rows the leg ingested on earlier firings, which stay in bronze and would otherwise keep costing money. It outranks `cadence` and an explicit `--legs`. A leg absent from the map is on. |
 | `cadence` | Per leg. A rolling 12-month GitHub window barely moves in a day; re-harvesting nightly is the most expensive thing here in wall-clock. Firing 1 runs everything. |
 | `alerts.source_down_runs` | One firing down and back up is noise. N in a row is an incident. |
 | `alerts.max_deliveries_per_run` | Everything raised is recorded; only delivery is capped, so a first run over an existing corpus does not fire 135 notifications. |

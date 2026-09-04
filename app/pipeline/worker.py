@@ -51,7 +51,8 @@ from app import models as m
 from app.cli import PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
-from app.load_raw import load_articles, load_classifications, load_costs
+from app.load_raw import (load_article_records, load_articles,
+                          load_classifications, load_costs)
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import drift as drift_mod
@@ -59,7 +60,7 @@ from app.pipeline import register as register_mod
 from app.pipeline.budget import Budget
 from app.pipeline.classify import budget_breach, classify_new
 from app.pipeline.orchestrator import ingest
-from app.pipeline.registry import LEGS, load_sources
+from app.pipeline.registry import CORPUS_LABELS, LEGS, load_sources
 from app.pipeline.sink import merge_announcements
 from app.runs import tracked, watermarks
 from app.transform import transform
@@ -95,11 +96,55 @@ def firing_number(session: Session) -> int:
     return int(done or 0) + 1
 
 
+
+def live_legs(config: dict) -> tuple[str, ...]:
+    """Legs not switched off in config, ignoring cadence.
+
+    Cadence says *when* a leg runs; this says whether it exists at all. The
+    landing and classification phases need the second question: a leg that is
+    merely not due this firing still has rows in bronze that should be derived
+    and classified as usual.
+
+    Args:
+        config: Parsed pipeline config.
+
+    Returns:
+        Leg names, in registry order.
+    """
+    enabled = config.get("enabled", {})
+    return tuple(leg for leg in LEGS if enabled.get(leg, True))
+
+
+def dead_corpora(config: dict) -> tuple[str, ...]:
+    """`raw_articles.source_file` values belonging to legs switched off.
+
+    A leg's rows outlive the firing that fetched them, so stopping the fetch
+    does nothing about the corpus already in bronze. Without this the kill
+    switch stops ingestion and nothing else: the operator who switched the leg
+    off after looking at its output still pays to classify that output on the
+    next firing.
+
+    Args:
+        config: Parsed pipeline config.
+
+    Returns:
+        Source-file labels to exclude from the classification work list.
+    """
+    live = set(live_legs(config))
+    return tuple(label for leg, label in CORPUS_LABELS.items() if leg not in live)
+
+
 def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> tuple[str, ...]:
     """Which legs run on this firing.
 
     ``(firing - 1) % cadence == 0``, so firing 1 runs every leg — a fresh
     deployment does a full sweep rather than waiting six days for GitHub.
+
+    `enabled: false` outranks both cadence and an explicit `--legs`. A leg
+    switched off must stay off however the worker is invoked — including from
+    the manual trigger and including firing 1's full sweep — or the switch is
+    only a suggestion, and the reason to reach for it is usually that the leg
+    is producing something wrong.
 
     Args:
         firing: 1-based firing number.
@@ -115,11 +160,12 @@ def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> 
     Returns:
         Leg names, in registry order.
     """
+    live = live_legs(config)
     if only is not None:
-        return tuple(leg for leg in LEGS if leg in only)
+        return tuple(leg for leg in live if leg in only)
     cadence = config.get("cadence", {})
     return tuple(
-        leg for leg in LEGS if (firing - 1) % max(1, int(cadence.get(leg, 1))) == 0
+        leg for leg in live if (firing - 1) % max(1, int(cadence.get(leg, 1))) == 0
     )
 
 
@@ -281,6 +327,17 @@ def _phases(
     note("landing")
     if "announcements" in chosen:
         stats["corpus"] = merge_announcements(report.items_for("announcements"))
+    if "releases" in chosen:
+        # Straight into bronze, no corpus file. Release notes share the
+        # announcements item shape, so everything downstream — classification,
+        # transform, the API, the frontend — needs no change; but they have no
+        # committed corpus to merge into and the container has no disk to keep
+        # one on, so the database is the only store. `source_file` records the
+        # provenance a shared table would otherwise lose, and is what
+        # `dead_corpora` matches on when the leg is switched off.
+        stats["releases"] = load_article_records(
+            session, report.items_for("releases"),
+            source_file=CORPUS_LABELS["releases"], run_id=run.id)
     # Into bronze here, not in the ETL. `classify_new` picks its work list from
     # `raw_articles` (a LEFT JOIN against `raw_llm_responses`), so while this
     # ran in phase 5 the classifier in phase 3 could only ever see articles
@@ -300,7 +357,12 @@ def _phases(
     # the same money twice.
     if spend:
         note("classify")
-        stats["classify"] = classify_new(session, prompt_version, budget, config_path=config_path)
+        stats["classify"] = classify_new(
+            session, prompt_version, budget, config_path=config_path,
+            # A leg switched off must stop costing money, not just
+            # stop fetching: its rows are already in bronze from
+            # earlier firings and would otherwise be classified.
+            exclude_source_files=dead_corpora(config))
         session.commit()
 
     # 4. Is the scorer still agreeing with itself? Before the ETL so its spend

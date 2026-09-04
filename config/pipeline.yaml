@@ -47,10 +47,23 @@ budget:
 # run restates the whole picture and a skipped one loses nothing. It is also the
 # only leg that costs 14 minutes of wall-clock (2,074 repos, measured run 12).
 # Every 3rd firing keeps the history intact and the nightly run short.
+# The kill switch. A leg set false is not fetched, not landed and not spent on
+# -- including rows it ingested on earlier firings, which stay in bronze and
+# would otherwise keep being classified. Separate from `cadence` because
+# "never" and "every Nth firing" are different statements, and because this is
+# the line to flip at 2am without reading any Python. It outranks cadence and
+# an explicit --legs. A leg absent from this map defaults to on.
+enabled:
+  releases: true     # GitHub release notes as documents. Newest leg, and the
+                     # one most likely to be switched off after a look at the
+                     # output.
+
 cadence:
   announcements: 1
   papers: 1
   github: 3
+  releases: 1        # a release is news the day it ships, and the cursor makes
+                     # a firing with nothing new cost one API call per repo
   drift: 1
 
 alerts:

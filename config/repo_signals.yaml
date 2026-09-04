@@ -1,0 +1,95 @@
+# Repository ranking, and what the releases leg watches.
+#
+# THE RANKING IS STARS. There is no second sort key and no blended score.
+#
+# Commit volume was tried first and rejected on the data (docs/decisions.md).
+# The failure is not marginal: xAI's three most newsworthy repositories are its
+# three *least* committed, because they are code dumps -- published artifacts
+# pushed by CI rather than developed in the open. `x-algorithm` (the For You
+# feed algorithm, 32,559 stars) carries 19 commits, all from a CI account;
+# `grok-prompts` (Grok's system prompts, 4,429 stars) carries 2. A commit
+# ranking puts `xai-sdk-python` (562 stars) above both.
+#
+# Commits survive here only as displayed evidence -- is this repository alive
+# or is it an archive -- and must never re-enter the sort. `tests/
+# test_rank_repos.py::TestStarsAreTheOnlyRanking` pins that.
+#
+# The known weakness of a raw star ranking is that it is a hall of fame rather
+# than a signal: 40% of the top 100 have no commit in the last 90 days, and the
+# list would be identical next month. Two cuts address it, neither reintroducing
+# commits:
+#
+#   1. `new_within_days` splits new from established using the repository's
+#      real `created_at`, fetched from the API. For a repository created inside
+#      the window every star was earned inside the window, so stars are a
+#      velocity by construction. First-commit-in-window does NOT work as a
+#      proxy -- `openai/whisper` (2022) reports a first commit of 2026-03-27
+#      because it was dormant and got touched, and would read as new. It is
+#      captured from the org listing on every run by
+#      `adapters._listing_fields`, alongside the live star count.
+#   2. Star delta. Not implemented: `raw_github_repos` keeps one payload per
+#      repository, overwritten on each walk, so there is no star history to
+#      difference. Recorded as the obvious next cut, not as something this
+#      file configures.
+
+version: 1
+
+# Window for the displayed activity evidence (commits_90d, authors_90d).
+# Not a filter and not a ranking input.
+window_days: 90
+
+# A repository whose `created_at` falls inside this many days is cut as `new`.
+# Matches the commit harvest window so the two views describe the same period.
+new_within_days: 365
+
+# Floor for entering the ranking at all. Zero keeps every repository visible in
+# the full table; the shortlist cap is what bounds the LLM spend. Raising this
+# would silently hide the long tail, so it is left off by default.
+min_stars: 0
+
+# --- Release watching -------------------------------------------------------
+#
+# A release note is a dated document with a title, a body and a permanent URL,
+# which is the shape the announcements leg already consumes -- so releases are
+# a source, not a new kind of thing. The star ranking is the gate: watching all
+# 770 repositories would be absurd, watching the top few dozen is one cheap
+# call each per run.
+#
+# Volume, not coverage, is the cost driver here. `openai/codex` cut 240
+# releases in 90 days and `anthropics/claude-code` 75, so the unit has to be
+# "releases since the last run" -- a fixed 90-day window would re-extract
+# hundreds of documents on every run. `source_state.watermark["cursors"]`
+# holds that mark, one entry per repository.
+
+# How many repositories off the top of the star ranking are watched, **per
+# org**. Sources are per org so they fail independently, which means each one
+# ranks only its own repositories -- 8 orgs x this number, not this number in
+# total.
+#
+# Per org rather than globally on purpose: a single global cut is dominated by
+# OpenAI and Anthropic, and xAI (8 repositories in the window) and meta-llama
+# (8) would never appear at all. Every lab getting its own top slice is what
+# makes this a multi-lab tracker rather than a two-lab one.
+#
+# 10 x 8 orgs is ~80 repositories. The first firing at 40 ingested 380
+# documents, which is roughly $10 to classify against a $3 per-run ceiling --
+# the budget guard handles it correctly, spending $3 and reporting the rest as
+# `skipped_for_budget`, but three nights of catching up is not what this leg is
+# for.
+releases_watch: 10
+
+# First-run cap. A repository with no cursor has its whole history available
+# and codex alone would contribute 300 documents, so only the most recent few
+# are taken. Everything older is dropped and reported, never silently.
+releases_backfill: 5
+
+# Per-repository cap on a single run once a cursor exists. Guards against a
+# burst -- or a long gap between runs -- flooding the extractor. A truncated
+# repository is named in the run output.
+releases_per_run: 20
+
+# Pages of 100 to walk while looking for the cursor. Three covers codex's
+# ~2.7 releases/day for a year of downtime; beyond that the cursor is treated
+# as unreachable and the fetch reports truncation rather than pretending it
+# caught up.
+releases_max_pages: 3

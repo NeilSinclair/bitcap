@@ -385,6 +385,43 @@ def _in_window(payload: dict, since: datetime) -> dict:
     return {**payload, "commits": commits, "total": len(commits)}
 
 
+def _listing_fields(payload: dict, repo: dict) -> dict:
+    """Overlay a live REST listing entry onto a repository's stored history.
+
+    The releases leg ranks on stars, and bronze's copy is only as fresh as the
+    last time that repository's history was re-walked — which happens when its
+    `pushed_at` moves, and the github leg runs at cadence 3. A repository that
+    stops being committed to would rank for ever on a frozen star count, and
+    `deepseek-harness` gained 200,000 stars in the weeks this was built.
+
+    So the releases leg lists each org itself: one cheap REST call chain, free
+    on an authenticated token, and it leaves the github leg's incremental
+    contract completely alone.
+
+    `created_at` comes from the same place, and cannot be inferred. The obvious
+    proxy — the earliest commit in the harvest window — reports `openai/whisper`
+    (2022) as created in 2026, because it was dormant and got touched once. The
+    error lands on exactly the famous quiet repositories a star ranking floats
+    to the top (docs/decisions.md).
+
+    Args:
+        payload: The stored history from `raw_github_repos`.
+        repo: The REST listing entry for the same repository.
+
+    Returns:
+        The payload with the listing fields overlaid.
+    """
+    return {
+        **payload,
+        "stars": repo.get("stargazers_count", 0),
+        "description": repo.get("description"),
+        "created_at": repo.get("created_at"),
+        "language": repo.get("language"),
+        "topics": repo.get("topics") or [],
+        "archived": bool(repo.get("archived")),
+    }
+
+
 def fetch_github(source, state=None, session=None) -> FetchResult:
     """Harvest one org's commits and aggregate them into a people register.
 
@@ -468,10 +505,133 @@ def fetch_github(source, state=None, session=None) -> FetchResult:
     )
 
 
+
+
+def fetch_releases(source, state=None, session=None) -> FetchResult:
+    """Fetch this org's new release notes from its top-starred repositories.
+
+    **The star ranking is the gate.** Watching all 770 repositories would be
+    absurd; watching the top few dozen is one cheap call each. The ranking is
+    computed here from `raw_github_repos` -- the bronze the github leg already
+    maintains -- so this leg reads no file and needs no separate metadata
+    fetch. On a container with no disk that is the only place it could come
+    from anyway (D31).
+
+    **The cursor is the watermark.** `source_state.watermark["cursors"]` holds
+    one `published_at` per repository, and the orchestrator persists whatever
+    this returns. An earlier version kept it in a JSON file beside a lock file;
+    on the deployed shape that file resets to the image copy every firing, so
+    the cursor would never advance past the first backfill and the leg would
+    re-fetch the same few releases forever while looking healthy.
+
+    Args:
+        source: A releases source; its config is the github_sources.yaml entry
+            plus `org`.
+        state: The source's persistent state; `watermark["cursors"]` bounds
+            each repository's fetch.
+        session: Open session, for reading `raw_github_repos`. Without one
+            there is no ranking and the source fails loudly rather than
+            reporting no releases.
+
+    Returns:
+        Release notes in the announcements item shape, with the advanced
+        cursors as the watermark.
+
+    Raises:
+        RuntimeError: When bronze holds no repositories for this org, which is
+            "the github leg has not run" and not "this org ships nothing".
+    """
+    import harvest_github
+    import rank_repos
+    import yaml
+
+    import fetch_releases as fr
+
+    entry = source.config
+    org = entry["org"]
+    lab = entry["lab"]
+    cfg = yaml.safe_load(
+        (ROOT / "config" / "repo_signals.yaml").read_text(encoding="utf-8"))
+    token = harvest_github.load_token()
+
+    rows = session.scalars(
+        select(m.RawGithubRepo).where(m.RawGithubRepo.org == org)
+    ).all() if session is not None else []
+    if not rows:
+        raise RuntimeError(
+            f"{org}: no repositories in raw_github_repos -- the github leg has "
+            "not run, and reporting no releases here would be indistinguishable "
+            "from an org that ships none"
+        )
+
+    # Stars and `created_at` come from a live listing, not from bronze. Bronze
+    # is only as fresh as the last history walk, which happens when a
+    # repository's `pushed_at` moves and on a leg running at cadence 3 -- so a
+    # repository that stops being committed to would rank for ever on a frozen
+    # star count. One listing chain per org, free on an authenticated token.
+    since = datetime.now(timezone.utc) - timedelta(days=entry.get("months", 12) * 30)
+    listing = {r["name"]: r for r in harvest_github.repos(org, token, since)}
+    if not listing:
+        # Bronze holds repositories for this org, so an empty listing is the
+        # API failing to answer, not the org going quiet. Watching nothing and
+        # reporting no releases would be indistinguishable from a week in which
+        # nobody shipped.
+        raise RuntimeError(
+            f"{org}: the repository listing came back empty while bronze holds "
+            f"{len(rows)} repositories -- treating that as a failed source "
+            "rather than as an org with nothing to watch"
+        )
+
+    ranked = rank_repos.rank(
+        [(r.org, r.repo, _listing_fields(r.payload, listing.get(r.repo, {})))
+         for r in rows if r.repo in listing],
+        cfg,
+    )[: cfg["releases_watch"]]
+
+    cursors = dict((getattr(state, "watermark", None) or {}).get("cursors") or {})
+
+    items: list[dict] = []
+    truncated = 0
+    failures: list[str] = []
+
+    for row in ranked:
+        repo = row["repo"]
+        try:
+            found, stats = fr.new_releases(
+                org, repo, token, lab, cursors.get(repo),
+                cfg["releases_backfill"], cfg["releases_per_run"],
+                cfg["releases_max_pages"])
+        except Exception as exc:
+            # One repository must not take out the org. A repository renamed or
+            # made private since bronze last saw it raises a 404 that `_call`
+            # does not retry, and letting it propagate would discard every
+            # release already fetched from the repositories before it, waste
+            # their rate limit, advance no cursor, and repeat every firing.
+            failures.append(f"{repo}: {exc}")
+            continue
+        truncated += stats["truncated"]
+        if found:
+            items += found
+            cursors[repo] = fr.next_cursor(found)
+
+    newest = max((i["published_at"] for i in items), default=None)
+    watermark = {
+        "cursors": cursors,
+        "repos_watched": len(ranked),
+        "truncated": truncated,
+    }
+    if newest:
+        watermark["max_published"] = newest
+    if failures:
+        watermark["repo_failures"] = failures
+    return FetchResult(items=items, watermark=watermark)
+
+
 ADAPTERS = {
     "announcements": fetch_announcements,
     "papers": fetch_papers,
     "github": fetch_github,
+    "releases": fetch_releases,
 }
 
 

@@ -1,0 +1,102 @@
+# Entities tracked for first-mention detection.
+#
+# The question this answers is not "what does this document say" -- an LLM
+# already reads for that -- but "have we ever seen this name before". Firstness
+# is a property of the corpus, not of any one document, so no per-document read
+# can recover it however the prompt is worded. It is set arithmetic, it costs
+# nothing, and it runs over every source at once.
+#
+# Why it exists: `openai/codex` rust-v0.153.1 announced GPT-6-Astra as a
+# configuration option and was correctly scored low-impact, because that is what
+# the document says. The significance was that the string had never appeared
+# anywhere before. See docs/decisions.md.
+
+version: 1
+
+# A name whose earliest appearance across the whole corpus falls inside this
+# many days is reported as a first mention. Everything older is an established
+# name that happens to be mentioned again.
+#
+# This is what separates GPT-6-Astra from the `llama-3.1` references in
+# meta-llama cookbook releases dated 2024, which are the dominant noise class.
+new_within_days: 120
+
+# Model-identifier families. A match is a family word followed by a version
+# number, so this catches a new *version or variant of a family we know* --
+# `gpt-6-astra`, `claude-6`, `llama-5`. It does NOT catch a genuinely novel
+# product name carrying no version number; that gap is real and is recorded in
+# docs/decisions.md rather than papered over.
+#
+# Adding a family is a config change. `o` (o1, o3) is deliberately absent: a
+# single letter followed by a digit matches far too much ordinary prose.
+model_families:
+  - gpt
+  - claude
+  - sonnet
+  - opus
+  - haiku
+  - llama
+  - grok
+  - gemini
+  - gemma
+  - deepseek
+  - mistral
+  - mixtral
+  - codestral
+  - pixtral
+  - qwen
+  - phi
+
+# Version numbers with more parts than this are rejected as software semver
+# rather than model versions. This is what separates Claude `haiku` from
+# google-deepmind's `haiku` neural-network library, whose releases are tagged
+# `haiku-0.0.7` -- a real entity-resolution collision between a model name and
+# a package name, caught by the shape of the number rather than by a denylist.
+max_version_parts: 2
+
+# Exact identifiers never reported, lowercased. For collisions the version
+# shape cannot separate. Kept deliberately short: a long denylist means the
+# extraction rule is wrong and should be fixed instead.
+deny: []
+
+# How many of the star ranking the unannounced-repository pass checks. Here
+# rather than as a CLI default so the two knobs that decide what gets looked at
+# live in config together.
+unannounced_top: 40
+
+# Corpora scanned, in the shape each one is stored on disk. `date_field` and
+# `text_fields` say how to read a document; `source` labels where a first
+# mention was found, which is the point of scanning them together.
+#
+# `text_fields` MUST list only text written by the primary source. Everything
+# downstream assumes it: a quote is cited as verbatim from the document, and
+# the unannounced-repository pass asks whether a repository is named in prose
+# anyone actually wrote. Listing a field this pipeline synthesises breaks both
+# silently -- see the `releases` entry below.
+corpora:
+  - name: announcements
+    path: research/docs/announcements.json
+    source: announcement
+    date_field: date
+    url_field: url
+    # Both are the publisher's own words.
+    text_fields: [title, text]
+  - name: announcements_archive
+    path: research/docs/announcements_archive_6mo.json
+    source: announcement
+    date_field: date
+    url_field: url
+    text_fields: [title, text]
+  - name: releases
+    path: research/docs/releases.json
+    source: release
+    date_field: date
+    url_field: url
+    # `text` only, deliberately. A release item's `title` is built by
+    # fetch_releases.as_announcement as "{org}/{repo} {tag}" -- our string, not
+    # GitHub's. Including it did two invisible kinds of damage: the emitted
+    # quote began with text that appears nowhere in the release note, and every
+    # repository that cuts a release injected its own name into the prose used
+    # by unannounced_repos, so `anthropics/claude-code` -- named in zero
+    # announcements and zero release bodies -- was scored as "written about".
+    text_fields: [text]

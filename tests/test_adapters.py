@@ -651,3 +651,194 @@ class TestArticlesAreNotDownloadedTwice:
 
         assert "https://x.test/news260830" not in requested, "skipped page was downloaded"
         assert "https://x.test/news260831" in requested, "new page was not downloaded"
+
+
+class TestReleasesAdapter:
+    """The releases leg's seam.
+
+    Three things it must get right, none of which fails loudly: the ranking it
+    is gated on, the cursor it carries between firings, and the isolation
+    between repositories inside one org.
+    """
+
+    def release_source(self, org="xai-org", lab="xai"):
+        return Source(leg="releases", id=org, label=org, stage=4, enabled=True,
+                      config={"org": org, "lab": lab})
+
+    def stored(self, session, repo, stars=10, commits=None, org="xai-org"):
+        from app import models as m
+
+        session.add(m.RawGithubRepo(
+            org=org, repo=repo, pushed_at="2026-08-01T00:00:00Z",
+            payload={"total": 0, "commits": commits or [], "stars": stars},
+            content_hash="h"))
+        session.flush()
+
+    def listing(self, monkeypatch, entries):
+        """Stand in for the live REST listing the leg overlays onto bronze."""
+        import harvest_github
+
+        monkeypatch.setattr(harvest_github, "load_token", lambda: "token")
+        monkeypatch.setattr(harvest_github, "repos",
+                            lambda org, token, since: entries)
+
+    def listed_repo(self, name, stars, created_at="2020-01-01T00:00:00Z"):
+        return {"name": name, "pushed_at": "2026-08-01T00:00:00Z",
+                "stargazers_count": stars, "description": None,
+                "created_at": created_at, "language": "Python",
+                "topics": [], "archived": False}
+
+    def released(self, monkeypatch, fn):
+        import fetch_releases as fr
+
+        monkeypatch.setattr(fr, "new_releases", fn)
+
+    def item(self, repo, published="2026-09-03T00:00:00Z", lab="xai"):
+        return {"url": f"https://github.com/xai-org/{repo}/releases/tag/v1",
+                "lab": lab, "date": published[:10], "tag": "v1",
+                "published_at": published}
+
+    def test_an_empty_bronze_raises_rather_than_reporting_no_releases(
+            self, session, monkeypatch):
+        """Nothing downstream can tell "the github leg has not run" from "this
+        org ships nothing" -- both are an empty leg."""
+        self.listing(monkeypatch, [])
+        with pytest.raises(RuntimeError, match="raw_github_repos"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_the_watch_list_is_ranked_by_live_stars_not_bronze(self, session,
+                                                               monkeypatch):
+        """Bronze's star count is only as fresh as the last history walk, and
+        the github leg runs at cadence 3. A repository that stops being
+        committed to would rank for ever on a frozen number."""
+        self.stored(session, "quiet", stars=1)
+        self.stored(session, "loud", stars=999)
+        self.listing(monkeypatch, [self.listed_repo("quiet", 500_000),
+                                   self.listed_repo("loud", 2)])
+        seen = []
+        self.released(monkeypatch,
+                      lambda org, repo, *a: seen.append(repo) or ([], {"truncated": 0}))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert seen == ["quiet", "loud"]
+
+    def test_a_repo_absent_from_the_live_listing_is_not_watched(self, session,
+                                                                monkeypatch):
+        """Deleted, renamed, or pushed outside the window: bronze still holds
+        the row, and fetching releases for it would 404 every firing."""
+        self.stored(session, "gone", stars=999)
+        self.stored(session, "here", stars=1)
+        self.listing(monkeypatch, [self.listed_repo("here", 1)])
+        seen = []
+        self.released(monkeypatch,
+                      lambda org, repo, *a: seen.append(repo) or ([], {"truncated": 0}))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert seen == ["here"]
+
+    def test_an_empty_listing_against_non_empty_bronze_fails_the_source(
+            self, session, monkeypatch):
+        """The API failing to answer and an org going quiet produce the same
+        empty result. Bronze knowing about repositories is what separates
+        them, and a failed source is recorded and escalated where a quiet week
+        is not."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [])
+        with pytest.raises(RuntimeError, match="listing came back empty"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_the_cursor_comes_from_the_watermark(self, session, monkeypatch):
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        seen = {}
+
+        def fake(org, repo, token, lab, cursor, *a):
+            seen["cursor"] = cursor
+            return [], {"truncated": 0}
+
+        self.released(monkeypatch, fake)
+        state = SimpleNamespace(watermark={"cursors": {"grok": "2026-08-01T00:00:00Z"}})
+        adapters.fetch_releases(self.release_source(), state=state, session=session)
+        assert seen["cursor"] == "2026-08-01T00:00:00Z"
+
+    def test_the_advanced_cursor_comes_back_as_the_watermark(self, session,
+                                                             monkeypatch):
+        """The orchestrator persists this. On a container with no disk it is
+        the only thing that stops every firing re-fetching the same backfill
+        for ever while looking healthy."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], {"truncated": 0}))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["cursors"]["grok"] == "2026-09-03T00:00:00Z"
+
+    def test_an_untouched_repo_keeps_its_existing_cursor(self, session,
+                                                         monkeypatch):
+        """The watermark replaces the stored one wholesale, so a repository
+        with nothing new this run must still appear in it or its cursor is
+        lost and it re-backfills."""
+        self.stored(session, "a", stars=20)
+        self.stored(session, "b", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("a", 20),
+                                   self.listed_repo("b", 10)])
+        self.released(monkeypatch, lambda org, repo, token, lab, cursor, *a: (
+            ([self.item("a")], {"truncated": 0}) if repo == "a"
+            else ([], {"truncated": 0})))
+
+        state = SimpleNamespace(watermark={"cursors": {"b": "2026-01-01T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert result.watermark["cursors"]["b"] == "2026-01-01T00:00:00Z"
+
+    def test_one_dead_repo_does_not_take_out_the_org(self, session, monkeypatch):
+        """A repository renamed since bronze last saw it raises a 404 that
+        `_call` does not retry. Letting it propagate discards every release
+        already fetched, advances no cursor, and repeats every firing."""
+        self.stored(session, "dead", stars=20)
+        self.stored(session, "live", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("dead", 20),
+                                   self.listed_repo("live", 10)])
+
+        def fake(org, repo, token, lab, *a):
+            if repo == "dead":
+                raise RuntimeError("HTTP Error 404: Not Found")
+            return [self.item("live")], {"truncated": 0}
+
+        self.released(monkeypatch, fake)
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert len(result.items) == 1
+        assert any("404" in f for f in result.watermark["repo_failures"])
+
+    def test_items_carry_the_lab_id_not_the_org_login(self, session, monkeypatch):
+        self.stored(session, "grok", stars=10, org="anthropics")
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda org, repo, token, lab, *a: (
+            [self.item("grok", lab=lab)], {"truncated": 0}))
+
+        result = adapters.fetch_releases(
+            self.release_source("anthropics", "anthropic"), session=session)
+        assert result.items[0]["lab"] == "anthropic"
+
+    def test_truncation_is_surfaced_on_the_watermark(self, session, monkeypatch):
+        """A cap that drops documents quietly reads as full coverage; the
+        watermark is where the ops view can see it."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([], {"truncated": 7}))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["truncated"] == 7
+
+    def test_nothing_is_written_to_disk(self, session, monkeypatch, tmp_path):
+        """The whole reason for the port: the deployed container has no disk,
+        and state kept there resets to the image copy every firing."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], {"truncated": 0}))
+
+        before = set(adapters.DOCS.glob("release*"))
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert set(adapters.DOCS.glob("release*")) == before

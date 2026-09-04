@@ -23,12 +23,26 @@ import yaml
 CONFIG = Path(__file__).parent.parent.parent / "config"
 
 ANNOUNCEMENTS, PAPERS, GITHUB = "announcements", "papers", "github"
-LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB)
+RELEASES = "releases"
+LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB, RELEASES)
 
 # Stage order. Announcements first because Mistral's papers harvester sources
 # its candidate titles from the announcements corpus; GitHub is independent of
 # both and runs last only because it is the slowest and least urgent.
-STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3}
+# Releases run after GitHub because they are gated on the star ranking, which
+# is computed from the bronze `raw_github_repos` that leg maintains. A firing
+# where the github leg is not due still works -- bronze persists -- but on the
+# very first firing the ordering is what makes the ranking non-empty.
+STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3, RELEASES: 4}
+
+# What each article-producing leg writes into `raw_articles.source_file`.
+# Provenance for a shared table, and the key the kill switch matches on when a
+# leg is switched off and its already-ingested rows must stop being classified.
+# The papers and github legs are absent because they produce no articles.
+CORPUS_LABELS = {
+    ANNOUNCEMENTS: "research/docs/announcements.json",
+    RELEASES: "github_releases",
+}
 
 
 @dataclass(frozen=True)
@@ -127,10 +141,33 @@ def github_sources(config_dir: Path = CONFIG) -> list[Source]:
     ]
 
 
+def release_sources(config_dir: Path = CONFIG) -> list[Source]:
+    """One source per GitHub org, for release notes.
+
+    Same granularity and the same register as the github leg -- an org is what
+    fails independently -- but a separate leg, because the two answer different
+    questions on different clocks. The people register moves over months; a
+    release is news the day it ships.
+    """
+    config = _load(config_dir, "github_sources.yaml")
+    return [
+        Source(
+            leg=RELEASES,
+            id=org,
+            label=f"{entry['lab']} ({org}) releases",
+            stage=STAGES[RELEASES],
+            enabled=True,
+            config={**entry, "org": org},
+        )
+        for org, entry in config["orgs"].items()
+    ]
+
+
 LOADERS = {
     ANNOUNCEMENTS: announcement_sources,
     PAPERS: paper_sources,
     GITHUB: github_sources,
+    RELEASES: release_sources,
 }
 
 

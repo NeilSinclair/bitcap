@@ -304,6 +304,39 @@ def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     return errors
 
 
+
+def check_repo_signals(root: Path) -> list[str]:
+    """Validate repo_signals.yaml — what the releases leg reads at runtime.
+
+    `adapters.fetch_releases` indexes `releases_watch`, `releases_backfill`,
+    `releases_per_run` and `releases_max_pages` directly, so a mistyped key is
+    a KeyError that fails every releases source on every firing. Worse is a
+    value of the wrong type: `releases_watch: "25"` slices the ranked rows with
+    a string and raises something considerably less legible than this message.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "repo_signals.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    for key in ("releases_watch", "releases_backfill", "releases_per_run",
+                "releases_max_pages", "window_days", "new_within_days"):
+        value = doc.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(
+                f"repo_signals.yaml: {key} must be a positive integer, not {value!r}"
+            )
+    if not isinstance(doc.get("min_stars"), int):
+        errors.append("repo_signals.yaml: min_stars must be an integer")
+    return errors
+
+
 def check_pipeline(root: Path) -> list[str]:
     """Validate pipeline.yaml — the file that decides what the cron spends.
 
@@ -341,7 +374,12 @@ def check_pipeline(root: Path) -> list[str]:
                 "run can never complete inside the monthly ceiling"
             )
 
-    legs = {"announcements", "papers", "github"}
+    # Imported, not restated. A hardcoded copy of this set goes stale the first
+    # time a leg is added: the new leg's cadence entry is then reported as not
+    # a leg, by the very check meant to catch a mistyped one.
+    from app.pipeline.registry import LEGS
+
+    legs = set(LEGS)
     for key, value in (doc.get("cadence") or {}).items():
         if key not in legs | {"drift"}:
             errors.append(
@@ -349,6 +387,21 @@ def check_pipeline(root: Path) -> list[str]:
             )
         if not isinstance(value, int) or value < 1:
             errors.append(f"pipeline.yaml/cadence/{key}: must be an integer >= 1")
+
+    # The kill switch. A typo here is the worst silent failure in this file:
+    # `enabled: {releaces: false}` leaves the leg running and reads, to whoever
+    # typed it, as switched off. And any non-empty string is truthy.
+    for key, value in (doc.get("enabled") or {}).items():
+        if key not in legs:
+            errors.append(
+                f"pipeline.yaml/enabled: '{key}' is not a leg {sorted(legs)} -- "
+                "the leg it was meant to switch off is still running"
+            )
+        if not isinstance(value, bool):
+            errors.append(
+                f"pipeline.yaml/enabled/{key}: must be true or false, not "
+                f"{value!r} -- any non-empty string reads as on"
+            )
 
     alerts = doc.get("alerts") or {}
     bands = ("none", "low", "medium", "high")
@@ -665,9 +718,10 @@ def main() -> int:
     papers_errors = check_papers_sources(ROOT, tracked_labs)
     people_errors = check_people(ROOT, tracked_labs)
     digest_errors = check_digest()
+    signal_errors = check_repo_signals(ROOT)
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
                   + pipe_errors + papers_errors + people_errors
-                  + digest_errors)
+                  + digest_errors + signal_errors)
     for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:
