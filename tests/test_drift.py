@@ -47,6 +47,36 @@ def session():
         yield s
 
 
+@pytest.fixture()
+def gold_stub(monkeypatch):
+    """Synthetic gold articles, so a test can size the sample to what it needs.
+
+    The suite's other tests use real gold ids because they are checking the real
+    sample. These are checking concurrency, which needs a sample whose size the
+    test controls and whose classification is instant.
+    """
+    import score_announcements as sa
+
+    def install(fake_classify):
+        monkeypatch.setattr(
+            drift, "load_gold",
+            lambda sample=drift.DEFAULT_SAMPLE: [
+                {
+                    "id": gid,
+                    "url": f"https://lab.example/{gid}",
+                    "text": "body",
+                    "gold": {"event_type": "other", "mechanisms": [],
+                             "categories": [], "practices": []},
+                }
+                for gid in sample
+            ],
+        )
+        monkeypatch.setattr(sa, "classify", fake_classify)
+        monkeypatch.setattr("anthropic.Anthropic", lambda *a, **k: object())
+
+    return install
+
+
 class TestTheSample:
     def test_the_default_sample_exists_on_disk(self):
         records = drift.load_gold()
@@ -213,3 +243,194 @@ class TestSnapshots:
         drift.record(session, {}, "v7")
         session.commit()
         assert drift.history(session)[0]["mechanism_f1"] is None
+
+
+class TestDriftRunsInParallelButWarmsTheCacheFirst:
+    """The silent failure this catches: a parallel fan-out that costs *more*.
+
+    `sa.classify` marks the shared system prompt `cache_control: ephemeral`.
+    Anthropic bills a cache write at 1.25x input and a read at 0.10x, so firing
+    every article at a cold cache makes all of them writes — 12x faster and
+    ~12x the input cost, which is the opposite of the point. One call has to
+    complete serially and create the entry before the rest fan out (D42).
+
+    Nothing here asserts on wall-clock. The observable that matters is the
+    *order* of the first call against the others, and that is deterministic.
+    """
+
+    def test_no_other_call_starts_until_the_warm_up_has_finished(
+        self, monkeypatch, gold_stub
+    ):
+        """The whole point: one write, then reads. Not "roughly first".
+
+        The first call holds for a beat. Any call that begins while it is still
+        in flight would, in production, be a second cache *write* at 1.25x. The
+        violation is recorded rather than raced on, so a regression fails
+        loudly instead of flaking.
+        """
+        import threading
+        import time
+
+        import app.pipeline.drift as drift_mod
+
+        warm_finished = threading.Event()
+        violations, order, lock = [], [], threading.Lock()
+
+        def fake_classify(client, model, article):
+            with lock:
+                first = not order
+                order.append(article["id"])
+            if first:
+                time.sleep(0.15)          # the warm-up call is in flight
+                warm_finished.set()
+            elif not warm_finished.is_set():
+                with lock:
+                    violations.append(article["id"])
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [],
+                 "practices": []},
+                {"usd": 0.01, "url": article["url"],
+                 "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        drift.measure(sample=tuple(str(i) for i in range(8)), workers=6)
+
+        assert not violations, (
+            f"{len(violations)} call(s) started before the cache was warm — "
+            "each one is a 1.25x cache write instead of a 0.10x read"
+        )
+        assert len(order) == 8
+
+    def test_the_rest_really_do_overlap(self, monkeypatch, gold_stub):
+        """The other half of the bargain: after the warm-up it must be parallel.
+
+        A warm-up that accidentally serialised everything would pass the test
+        above and be no faster than the loop it replaced.
+        """
+        import threading
+
+        import app.pipeline.drift as drift_mod
+
+        live, peak, lock = [0], [0], threading.Lock()
+        barrier = threading.Barrier(4, timeout=3)
+        order = []
+
+        def fake_classify(client, model, article):
+            with lock:
+                first = not order
+                order.append(article["id"])
+            if not first:
+                with lock:
+                    live[0] += 1
+                    peak[0] = max(peak[0], live[0])
+                try:
+                    barrier.wait()
+                except threading.BrokenBarrierError:
+                    pass
+                with lock:
+                    live[0] -= 1
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [],
+                 "practices": []},
+                {"usd": 0.01, "url": article["url"],
+                 "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        drift.measure(sample=tuple(str(i) for i in range(9)), workers=4)
+
+        assert peak[0] >= 4, f"never ran more than {peak[0]} calls at once"
+
+    def test_every_article_is_classified_exactly_once(self, monkeypatch, gold_stub):
+        order = []
+
+        def fake_classify(client, model, article):
+            order.append(article["id"])
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [],
+                 "practices": []},
+                {"usd": 0.01, "url": article["url"],
+                 "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        import app.pipeline.drift as drift_mod
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        out = drift.measure(sample=tuple(str(i) for i in range(8)), workers=4)
+
+        assert sorted(order) == sorted(str(i) for i in range(8))
+        assert out["compared"] == 8
+
+    def test_progress_never_goes_backwards(self, monkeypatch, gold_stub):
+        """Calls finish out of order; `done` is incremented under the lock."""
+        ticks = []
+
+        def fake_classify(client, model, article):
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [],
+                 "practices": []},
+                {"usd": 0.01, "url": article["url"],
+                 "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        import app.pipeline.drift as drift_mod
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        drift.measure(
+            sample=tuple(str(i) for i in range(8)),
+            workers=4,
+            on_progress=lambda done, total: ticks.append(done),
+        )
+
+        assert ticks == sorted(ticks), f"progress went backwards: {ticks}"
+        assert ticks[-1] == 8
+
+    def test_a_failing_call_does_not_take_the_others_down(self, monkeypatch, gold_stub):
+        """One bad call is not a drift signal — it is recorded and stepped over."""
+        calls = []
+
+        def fake_classify(client, model, article):
+            calls.append(article["id"])
+            if article["id"] == "3":
+                raise RuntimeError("overloaded")
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [], "practices": []},
+                {"usd": 0.01, "url": article["url"], "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        import app.pipeline.drift as drift_mod
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        out = drift.measure(sample=tuple(str(i) for i in range(6)), workers=4)
+
+        assert out["compared"] == 5
+        assert [e["id"] for e in out["errors"]] == ["3"]
+
+    def test_the_budget_still_stops_it_mid_fan_out(self, monkeypatch, gold_stub):
+        """The ceiling has to hold across threads, not just down a serial loop."""
+        from app.pipeline.budget import Budget
+
+        def fake_classify(client, model, article):
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [], "practices": []},
+                {"usd": 1.0, "url": article["url"], "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        import app.pipeline.drift as drift_mod
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(fake_classify)
+
+        budget = Budget(per_run_usd=2.5, per_month_usd=100.0)
+        out = drift.measure(sample=tuple(str(i) for i in range(10)), workers=4,
+                            budget=budget)
+
+        assert out["skipped"] > 0, "the ceiling never bound"
+        assert out["compared"] < 10

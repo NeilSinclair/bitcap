@@ -88,6 +88,17 @@ class TestCadence:
         config = {"cadence": {"github": 7}}
         assert worker.due_legs(2, config, only=("github",)) == ("github",)
 
+    def test_an_empty_override_runs_no_legs_at_all(self):
+        """`()` is "none", `None` is "ask cadence" — conflating them ran everything.
+
+        Live on run 16: the pipeline tab sends an empty leg list when only the
+        drift box is ticked, `legs or None` turned that into None, and the
+        firing fetched 2,000 GitHub repos nobody asked for (D40).
+        """
+        config = {"cadence": {"announcements": 1, "papers": 1, "github": 1}}
+        assert worker.due_legs(1, config, ()) == ()
+        assert worker.due_legs(1, config, None) == ("announcements", "papers", "github")
+
     def test_a_missing_cadence_entry_means_every_firing(self):
         assert worker.due_legs(5, {"cadence": {}}) == ("announcements", "papers", "github")
 

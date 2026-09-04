@@ -57,13 +57,35 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     plan: starter
-    healthCheckPath: /api/status
+    # /api/health, not /api/status: everything else is behind the login now,
+    # and a probe that gets 401 fails the deploy before the service is ever
+    # live. /api/health is deliberately open and reports pipeline liveness and
+    # spend, nothing about the labs.
+    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: bitcap-db
           property: connectionString
       - key: FRONTEND_ORIGIN
+        sync: false
+      # The one account. Generate the hash and the secret with
+      # `uv run python -m api.auth` and paste them into the Render dashboard --
+      # never into this file, which is committed.
+      - key: AUTH_EMAIL
+        sync: false
+      - key: AUTH_PASSWORD_HASH
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      # The API starts pipeline runs in a background thread, so its instance
+      # has to still be alive 30 minutes after the request that started one.
+      # A plan that sleeps on idle would kill a run mid-flight and leave the
+      # row `running`, which blocks every later run through the concurrency
+      # guard until somebody clears it by hand.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
         sync: false
 
   # The dashboard. A static site, not a Node service: both routes are client

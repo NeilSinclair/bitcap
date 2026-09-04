@@ -152,6 +152,7 @@ Secrets, none of which are in the repo:
 | `ANTHROPIC_API_KEY` | classification and drift only — ingestion needs no key |
 | `GITHUB_TOKEN` | the GitHub leg |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
+| `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the sign-in — see below |
 
 The two non-secret URLs are a pair, and each is only knowable once the other
 service exists. Deploy the blueprint, then set them from the URLs Render
@@ -164,19 +165,45 @@ assigns and let both services redeploy:
 
 ## Running the web app
 
-A read-only FastAPI service (`api/`) queries the database `bitcap-db` built
-above; a Next.js frontend (`frontend/`) calls it. Both need the Postgres
-container from the quickstart running, and `DATABASE_URL` in `.env` (the
-clone-to-running steps above already set this up).
+A FastAPI service (`api/`) queries the database `bitcap-db` built above; a
+Next.js frontend (`frontend/`) calls it. Both need the Postgres container from
+the quickstart running, and `DATABASE_URL` in `.env` (the clone-to-running steps
+above already set this up).
 
 ```bash
 uv run uvicorn api.main:app --reload --port 8000   # http://localhost:8000
 cd frontend && npm install && npm run dev           # http://localhost:3000
 ```
 
-Sign-in on the frontend is a UI placeholder, not real auth — this is a
-prototype of the login/dashboard/detail flow wired to real data, not yet a
-deployed or access-controlled app.
+### Sign-in
+
+The site is behind a single account, supplied by the environment — there is no
+users table and no signup. Generate the credentials:
+
+```bash
+uv run python -m api.auth      # prompts for a password, prints the two values
+```
+
+Put `AUTH_EMAIL`, `AUTH_PASSWORD_HASH` and `AUTH_SECRET` in `.env` locally, and
+in the Render dashboard for `bitcap-api`. The password itself is never stored:
+`AUTH_PASSWORD_HASH` is a salted scrypt hash, and rotating `AUTH_SECRET` logs
+every session out.
+
+Every route requires a bearer token except `/api/health`, which stays open
+because it is the platform's deploy probe. The frontend's login screen is
+ergonomics — the site is a static export, so its HTML is public either way; the
+guarantee is that the API returns 401 without a token and the page has nothing
+to render.
+
+### The pipeline tab
+
+`/pipeline` runs the pipeline on demand: tick the legs, press run, watch it
+finish. The run happens in a background thread on the API and takes 9–30
+minutes, so the page polls rather than waiting on a request — closing the tab
+does not stop the run, and reopening it picks the run back up. One run at a
+time, enforced against the database so the nightly cron counts too. Manual runs
+are recorded as `kind: manual` and deliberately do not advance the cadence
+counter that decides when the GitHub leg is due.
 
 ## Layout
 
@@ -186,7 +213,8 @@ deployed or access-controlled app.
 - `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v7.md`)
 - `research/` — ingestion, classification, evaluation (gold set), analyses
 - `app/` — the database package (`bitcap-db`)
-- `api/` — read-only FastAPI service over the same database, for the frontend
+- `api/` — FastAPI service over the same database: the frontend's read model,
+  the single-account gate (`api/auth.py`), and the manual trigger (`api/pipeline.py`)
 - `frontend/` — Next.js app (investment/AI-team dashboards, insight detail view)
 - `docs/` — planning, running decision log, cost ledger
 - `tests/` — `uv run pytest`

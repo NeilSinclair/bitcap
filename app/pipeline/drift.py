@@ -7,7 +7,16 @@ writer. This is it.
 a cached result keyed on the article URL, so a drift check reading through the
 cache would report perfect agreement forever — the one failure mode that looks
 exactly like success. Drift therefore calls the uncached path, which means it
-always costs money, which is precisely why the sample is small.
+always costs money.
+
+Two different caches, and only one of them is bypassed. The *result* cache is
+the one that would make this meaningless. The provider's *prompt* cache is not —
+it discounts the shared system prompt every call re-sends and has no bearing on
+whether the model's answer is fresh. So the run fans out over the classifier's
+own worker count, after one call has completed serially to create the cache
+entry the others read: a cold parallel start would bill every request as a 1.25x
+cache write rather than a 0.10x read, costing more than the serial loop it
+replaced (docs/decisions.md D42).
 
 **Fixed, and the whole gold set.** The sample is a fixed named list rather than
 a draw, so a movement between runs is the classifier changing and never the
@@ -40,6 +49,8 @@ from __future__ import annotations
 
 import json
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from sqlalchemy import select
@@ -90,11 +101,20 @@ def measure(
     sample: tuple[str, ...] = DEFAULT_SAMPLE,
     model: str | None = None,
     budget=None,
+    on_progress=None,
+    workers: int | None = None,
 ) -> dict:
     """Re-classify the sample and compare it against the adjudicated labels.
 
     Args:
         sample: Gold article ids.
+        on_progress: Called as `(done, total)` after each article completes, so
+            a caller can report progress. Fired under the lock, so `done` never
+            goes backwards even though the calls finish out of order.
+        workers: Concurrent requests. Defaults to `classification.workers` in
+            config/pipeline.yaml — the same knob the classifier uses, because it
+            is the same provider, the same rate limit and the same shape of
+            work.
         model: Model id. Defaults to `classification.model` in
             config/pipeline.yaml — the same model production classifies with.
             Hardcoding one here would let the classifier be changed in config
@@ -112,10 +132,12 @@ def measure(
     from gold_metrics import axis
     from verbatim import enforce as enforce_quotes
 
-    if model is None:
+    if model is None or workers is None:
         from app.pipeline.classify import settings as classify_settings
 
-        model = classify_settings()["model"]
+        configured = classify_settings()
+        model = model or configured["model"]
+        workers = workers or int(configured.get("workers", 12))
 
     records = load_gold(sample)
     _, _, _, mech_ids, cat_ids, prac_ids = sa.vocabularies()
@@ -123,30 +145,60 @@ def measure(
     client = anthropic.Anthropic()
 
     runs, errors, spent, skipped = {}, [], 0.0, 0
-    for record in records:
+    lock = threading.Lock()
+    done = 0
+
+    def one(record: dict) -> None:
+        """Classify a single gold article and fold its result in, thread-safely."""
+        nonlocal spent, skipped, done
         if budget is not None and budget.exhausted:
-            skipped += 1
-            continue
-        article = {k: v for k, v in record.items() if k not in ("gold", "review", "system")}
+            with lock:
+                skipped += 1
+                done += 1
+            return
+        article = {k: v for k, v in record.items()
+                   if k not in ("gold", "review", "system")}
         try:
             # The uncached path, deliberately — see the module docstring.
             result, cost = sa.classify(client, model, article)
         except Exception as exc:  # noqa: BLE001 — one bad call is not a drift signal
-            errors.append({"id": record["id"], "error": str(exc)})
-            continue
+            with lock:
+                errors.append({"id": record["id"], "error": str(exc)})
+                done += 1
+            return
         result["dropped_tags"] = sa.drop_unknown_tags(
             result, mech_ids, cat_ids, prac_ids, dims, cap
         )
         result["dropped_tags"] += enforce_quotes(result, article["text"])
-        runs[record["id"]] = result
-        spent += cost["usd"]
-        # Cost at the call site, into the same append-only log the classifier
-        # writes, so `load_costs` carries it into `raw_costs` and the monthly
-        # ceiling can see it. Taking the number and discarding the record left
-        # ~$5/month of real spend invisible to `month_to_date`.
-        _record_cost(sa, cost)
-        if budget is not None:
-            budget.spend(cost["usd"])
+        with lock:
+            runs[record["id"]] = result
+            spent += cost["usd"]
+            done += 1
+            # Cost at the call site, into the same append-only log the
+            # classifier writes, so `load_costs` carries it into `raw_costs` and
+            # the monthly ceiling can see it. Taking the number and discarding
+            # the record left ~$5/month of real spend invisible to
+            # `month_to_date`. Inside the lock: `_record_cost` does a
+            # read-modify-write of a JSON file, and concurrent writers lose rows.
+            _record_cost(sa, cost)
+            if budget is not None:
+                budget.spend(cost["usd"])
+            if on_progress is not None:
+                on_progress(done, len(records))
+
+    # Warm the prompt cache before fanning out, exactly as `score_announcements.run`
+    # does. `sa.classify` marks the shared system prompt `cache_control:
+    # ephemeral`, and Anthropic bills a cache *write* at 1.25x input against a
+    # *read* at 0.10x. Firing all 20 at a cold cache makes every one of them a
+    # write — the run costs more in parallel than it did serially, which is the
+    # opposite of the point. One call first, serially, creates the entry the
+    # other 19 then read (docs/decisions.md D42).
+    if records:
+        one(records[0])
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for future in as_completed([pool.submit(one, r) for r in records[1:]]):
+            future.result()
 
     compared = [r for r in records if r["id"] in runs]
     if not compared:

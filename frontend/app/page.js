@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Gate, apiFetch, signOut } from "./auth";
+
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -45,8 +47,7 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
   );
 }
 
-export default function Page() {
-  const [screen, setScreen] = useState("login");
+function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score");
@@ -63,8 +64,8 @@ export default function Page() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/api/items`).then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
-      fetch(`${API}/api/status`).then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
+      apiFetch("/api/items"),
+      apiFetch("/api/status"),
     ])
       .then(([itemsData, statusData]) => {
         setItems(itemsData);
@@ -81,8 +82,7 @@ export default function Page() {
     // Reads the windowed count from /api/health rather than pulling up to 200
     // full alert bodies to render one integer — and an all-time count could
     // never fall back to zero once anything had ever broken.
-    fetch(`${API}/api/health`)
-      .then((r) => (r.ok ? r.json() : null))
+    apiFetch("/api/health")
       .then((h) => setSystemAlerts(h?.recent_system_alerts ?? 0))
       .catch(() => setSystemAlerts(0));
   }, []);
@@ -179,44 +179,6 @@ export default function Page() {
     ? `Last run ${runStatus.status} · $${runStatus.cost_usd.toFixed(2)}`
     : "No runs recorded";
 
-  if (screen === "login") {
-    return (
-      <div className="app">
-        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <div style={{ width: 380, display: "flex", flexDirection: "column", gap: 28 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
-              <LogoMark size={86} />
-              <div className="label-bracket">BIT Capital · internal</div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div className="serif" style={{ fontSize: 26, fontWeight: 500, lineHeight: 1.2 }}>Frontier Lab Intelligence</div>
-              <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-                Sourced signal on the frontier labs, scored and routed to what it means for the book and for how we&apos;d build.
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <span className="label-bracket">Email</span>
-                <input className="field-input" type="email" placeholder="you@bitcap.com" />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <span className="label-bracket">Password</span>
-                <input className="field-input" type="password" placeholder="••••••••••" />
-              </div>
-              <button
-                className="btn"
-                style={{ padding: 12, background: ACCENT, color: "#0d0d0d", borderColor: ACCENT }}
-                onClick={() => setScreen("dashboard")}
-              >
-                Sign in
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="app">
       <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
@@ -236,11 +198,12 @@ export default function Page() {
             </div>
             {/* The health surface is a link rather than a tab: the dashboard
                 answers "what did we learn", /ops answers "can I trust it". */}
-            <a className="btn btn-ghost" href="/ops" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
+            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
+            <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
               Health
               {systemAlerts ? <span style={{ fontSize: 11 }}>{systemAlerts}</span> : null}
             </a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={() => setScreen("login")}>Sign out</button>
+            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
           </div>
         </div>
 
@@ -469,5 +432,14 @@ export default function Page() {
         </>
       )}
     </div>
+  );
+}
+
+
+export default function Page() {
+  return (
+    <Gate>
+      <Dashboard />
+    </Gate>
   );
 }

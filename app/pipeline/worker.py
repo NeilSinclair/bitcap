@@ -91,12 +91,18 @@ def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> 
     Args:
         firing: 1-based firing number.
         config: Parsed pipeline config.
-        only: Explicit override; cadence is ignored when given.
+        only: Explicit override; cadence is ignored when given. `None` means no
+            override. An **empty tuple means run no ingestion legs at all**, and
+            the difference matters: the manual trigger sends an empty selection
+            when the operator ticked only the drift check, and reading that as
+            "no override" ran every cadence-due leg instead of none of them —
+            live on run 16, which fetched 2,000 GitHub repos nobody asked for
+            (docs/decisions.md D40).
 
     Returns:
         Leg names, in registry order.
     """
-    if only:
+    if only is not None:
         return tuple(leg for leg in LEGS if leg in only)
     cadence = config.get("cadence", {})
     return tuple(
@@ -150,6 +156,8 @@ def run_once(
     prompt_version: str = PROMPT_VERSION,
     spend: bool = True,
     deliver: bool = True,
+    drift: bool | None = None,
+    run: m.PipelineRun | None = None,
 ) -> tuple[m.PipelineRun, dict]:
     """Execute one firing.
 
@@ -161,6 +169,17 @@ def run_once(
         spend: False skips every LLM stage (classification and drift). Used by
             `--dry-run` to exercise the whole shape for free.
         deliver: False records alerts without pushing them to the channel.
+        drift: Force the drift check on or off; None lets cadence decide. The
+            manual trigger needs this — an operator ticking a box has said what
+            they want, and silently overriding it with the schedule's opinion
+            would make the button lie.
+        run: An already-created run row to execute against, instead of opening
+            one. The manual trigger (`api/pipeline.py`) needs this: it has to
+            claim the row *before* starting a thread, or two clicks in the same
+            instant both pass the concurrency check. Its row carries
+            `kind="manual"`, which is also what keeps a hand-started run out of
+            `firing_number` — that counts scheduled firings to decide cadence,
+            and a button press must not consume the GitHub leg's turn.
 
     Returns:
         The run row and its stats.
@@ -175,13 +194,14 @@ def run_once(
     # Counted before this firing's own row exists, or it counts itself.
     firing = firing_number(session)
 
-    run = m.PipelineRun(kind=KIND)
-    session.add(run)
-    session.commit()
+    if run is None:
+        run = m.PipelineRun(kind=KIND)
+        session.add(run)
+        session.commit()
 
     try:
         return _phases(session, run, firing, config, config_path, legs,
-                       prompt_version, spend, deliver, stats)
+                       prompt_version, spend, deliver, stats, drift)
     except (Exception, SystemExit) as exc:
         # Any failure outside the ETL — the sink, the register load, the
         # classifier, the alerter — must still close the run out. Without this
@@ -200,22 +220,42 @@ def run_once(
 def _phases(
     session: Session, run: m.PipelineRun, firing: int, config: dict, config_path: Path,
     legs: tuple[str, ...] | None, prompt_version: str, spend: bool, deliver: bool,
-    stats: dict,
+    stats: dict, drift: bool | None = None,
 ) -> tuple[m.PipelineRun, dict]:
     """The firing's phases, in order. Wrapped by :func:`run_once` for failure."""
     chosen = due_legs(firing, config, legs)
     stats["firing"] = firing
     stats["legs"] = list(chosen)
 
+    def note(phase: str, **extra) -> None:
+        """Commit where the firing has got to, so a watcher can see it.
+
+        A firing is 9 to 30 minutes and everything it records — `stats`, the
+        drift metrics, the cost — was written at the *end*, so anything watching
+        saw one long silence and then an answer. That is fine for a cron job
+        writing a log nobody reads and useless behind a button somebody is
+        standing in front of: 8 minutes of "Running…" is indistinguishable from
+        broken, and the honest response to it was to reach for the database
+        (D41).
+
+        Not called inside `_etl`: that phase is deliberately one transaction
+        spanning a wipe and a reload, and committing partway through would
+        defeat the guarantee it exists for.
+        """
+        run.stats = {**(run.stats or {}), **stats, "phase": phase, **extra}
+        session.commit()
+
     # 1. Ingest. Commits per source; a dead source is recorded, not fatal.
     #    Under the ceiling: the papers leg pays for LLM byline extraction, so
     #    ingestion is not a free phase.
     budget = Budget.from_config(session, config_path)
+    note("ingest")
     report = ingest(session, load_sources(legs=chosen), run_id=run.id,
                     budget=budget if spend else None)
     stats["ingest"] = report.stats
 
     # 2. Land what was ingested where the loaders read it.
+    note("landing")
     if "announcements" in chosen:
         stats["corpus"] = merge_announcements(report.items_for("announcements"))
     # Into bronze here, not in the ETL. `classify_new` picks its work list from
@@ -236,14 +276,25 @@ def _phases(
     # of one durable log. Adding each stage's own figure on top of that counted
     # the same money twice.
     if spend:
+        note("classify")
         stats["classify"] = classify_new(session, prompt_version, budget, config_path=config_path)
         session.commit()
 
     # 4. Is the scorer still agreeing with itself? Before the ETL so its spend
     #    is in the log by the time load_costs reads it.
     drift_metrics, snapshot_id = None, None
-    if spend and (firing - 1) % max(1, int(config.get("cadence", {}).get("drift", 1))) == 0:
-        drift_metrics = drift_mod.measure(budget=budget)
+    drift_due = (
+        drift if drift is not None
+        else (firing - 1) % max(1, int(config.get("cadence", {}).get("drift", 1))) == 0
+    )
+    if spend and drift_due:
+        note("drift")
+        drift_metrics = drift_mod.measure(
+            budget=budget,
+            on_progress=lambda done, total: note(
+                "drift", progress={"done": done, "total": total}
+            ),
+        )
         stats["drift"] = {
             "mechanism_f1": drift_metrics.get("mechanism_f1"),
             "compared": drift_metrics.get("compared"),
@@ -253,6 +304,7 @@ def _phases(
 
     # 5. Derive the clean layer and the joins, atomically. Also the point where
     #    this firing's cost is totalled.
+    note("etl")
     _etl(session, run, prompt_version, stats)
 
     if drift_metrics is not None:

@@ -3746,3 +3746,69 @@ for everything else.
 The regression test asserts the ordering directly: it spies on `pending_urls` at
 the moment `classify_new` is called and requires this firing's article to be in
 it. Verified by restoring the old phase order and confirming it fails.
+
+## D39 — A pipeline tab, and the login it forced (2026-09-04)
+
+The pipeline could only be run from a terminal or by waiting for 3am. `/pipeline`
+adds four checkboxes, a run button, and a live status — but a button that spends
+money on a public URL is a different object from a read-only dashboard, and the
+whole design follows from that.
+
+**Whole site behind a login, not just the button.** Asked for explicitly, after
+the counter-argument was put: the reviewers for this case study open a link, and
+a login wall is friction in front of the thing being judged. The mitigation is
+that credentials go in the submission. Recorded because it is a product
+trade-out, not a technical one.
+
+**One account, from the environment.** `AUTH_EMAIL`, `AUTH_PASSWORD_HASH`,
+`AUTH_SECRET`. No users table, no signup, no reset — every one of those would be
+machinery serving a single operator. Standard library only: `hashlib.scrypt` is
+a memory-hard KDF and `hmac` signs an expiring token, so hashing one password
+and signing one token costs no dependency. Adding `passlib` and `pyjwt` for two
+function calls would carry a transitive stack into a project that pins seven
+things.
+
+Rejected: a shared secret in the URL, and dry-run-only-without-a-token. Both are
+lighter and both were on the table; the explicit ask was for real credentials.
+
+**What the gate does and does not do.** The frontend is a static export, so its
+HTML and JavaScript are public files and the login screen hides only the
+interface. The guarantee lives on the API, where every route requires a bearer
+token — an unauthenticated visitor can render the shell and receive no data.
+`tests/test_api_pipeline.py` walks the app's own route table rather than a
+hand-written list, so a route added later is covered the day it lands instead of
+whenever someone remembers to extend a list. `/api/health` stays open on
+purpose: it is the platform's deploy probe, and a probe that needs a credential
+fails the deploy before the service is ever live. This also caught a
+deploy-breaker in `render.yaml`, whose `healthCheckPath` still pointed at
+`/api/status` — now gated, and would have 401'd on every deploy.
+
+**The run is a thread, and the state is the database.** A firing takes 9 to 30
+minutes; no HTTP client waits that long. `POST /api/pipeline/run` claims a row
+and returns a run id, and the browser polls. Nothing is held in process memory,
+so closing the tab does not stop the run, reopening picks it back up, and a
+restarted API reports the truth about a run it did not start.
+
+**One at a time, guarded in the database rather than the process.** The cron is
+a separate container, so a process-local lock cannot see it. The row is claimed
+*synchronously in the request*, before the thread starts — claiming it inside
+the thread lets two clicks in the same instant both pass the check. `run_once`
+gained a `run` parameter so it executes against the claimed row rather than
+opening a second one; one firing stays one row.
+
+**A crashed run must not look like a running one**, because the guard is a query
+for a `running` row and one corpse blocks every future run until somebody edits
+the database by hand. The thread catches `SystemExit` as well as `Exception` —
+code under `research/` is scripts first and calls `sys.exit()` on missing config.
+
+**Manual runs are `kind: manual`.** `firing_number` counts *scheduled* runs to
+decide cadence, so a button press must not consume the GitHub leg's turn.
+
+Also fixed while in here: `FRONTEND_ORIGIN` now accepts a comma-separated list,
+so a local dev server and the deployed site can both be allowed. It was a single
+origin, which forced a redeploy to develop against.
+
+Not addressed: the API instance must stay alive for the length of a run. A plan
+that sleeps on idle would kill a run mid-flight and leave exactly the corpse
+described above. Noted on the service in `render.yaml`; it is a plan choice, not
+something code can defend against.

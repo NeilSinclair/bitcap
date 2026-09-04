@@ -10,7 +10,8 @@
 
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { Gate, apiFetch, signOut } from "../auth";
+
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
 const MUTED = "#9a9992";
@@ -125,7 +126,7 @@ function DriftChart({ points, floor = 0.8 }) {
   );
 }
 
-export default function Ops() {
+function OpsView() {
   const [health, setHealth] = useState(null);
   const [runs, setRuns] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -137,16 +138,11 @@ export default function Ops() {
   // and `.catch` never fires: `runs` would be set to {detail: "..."} and the
   // page would crash on `runs.map`, going blank precisely when the backend is
   // broken — the one moment anyone opens it.
-  const asJson = (r) => {
-    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-    return r.json();
-  };
-
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/api/health`).then(asJson),
-      fetch(`${API}/api/runs?limit=12`).then(asJson),
-      fetch(`${API}/api/drift`).then(asJson),
+      apiFetch("/api/health"),
+      apiFetch("/api/runs?limit=12"),
+      apiFetch("/api/drift"),
     ])
       .then(([h, r, d]) => { setHealth(h); setRuns(r); setDrift(d); })
       .catch((e) => setError(String(e)));
@@ -155,8 +151,8 @@ export default function Ops() {
   useEffect(() => {
     const params = new URLSearchParams({ limit: "40" });
     if (kind !== "all") params.set("kind", kind);
-    fetch(`${API}/api/alerts?${params}`)
-      .then(asJson).then(setAlerts).catch((e) => setError(String(e)));
+    apiFetch(`/api/alerts?${params}`)
+      .then(setAlerts).catch((e) => setError(String(e)));
   }, [kind]);
 
   const spend = health?.spend;
@@ -170,7 +166,9 @@ export default function Ops() {
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: "1px solid var(--border)", background: "var(--bg-2)" }}>
           <div className="serif" style={{ fontSize: 18 }}>Pipeline health</div>
-          <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>← Dashboard</a>
+          <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
+          <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
+          <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
         </div>
 
         <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 32, maxWidth: 1100 }}>
@@ -298,5 +296,14 @@ export default function Ops() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+export default function Ops() {
+  return (
+    <Gate>
+      <OpsView />
+    </Gate>
   );
 }

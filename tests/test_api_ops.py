@@ -191,12 +191,21 @@ class TestEndpoints:
         from fastapi.testclient import TestClient
 
         import api.main as main
+        from api import auth
 
         # Each request gets its own Session over the shared connection: the
         # endpoints close what they are handed, which would otherwise close
         # the fixture's session out from under the rest of the test.
         monkeypatch.setattr(main, "get_session", lambda engine: Session(session.get_bind()))
-        return TestClient(main.app)
+
+        # The whole API is behind a session token now, so a client that does not
+        # send one gets 401 from every route and tests nothing about the route
+        # it meant to exercise. Signed in here; `tests/test_api_pipeline.py` is
+        # where the gate itself is tested.
+        monkeypatch.setenv("AUTH_SECRET", "test-secret")
+        client = TestClient(main.app)
+        client.headers["Authorization"] = f"Bearer {auth.issue_token('ops@test')}"
+        return client
 
     def test_runs_endpoint(self, client, session):
         run = a_run(session)

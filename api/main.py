@@ -1,6 +1,19 @@
 """FastAPI service for the Frontier Lab Intelligence frontend.
 
-Read-only: it queries the database `app/` builds, never writes to it. Run with:
+Mostly read-only: it queries the database `app/` builds. The one exception is
+`/api/pipeline/run`, which starts a firing — the only route here that writes,
+spends money, or takes longer than a request.
+
+**Everything except `/api/auth/login` and `/api/health` requires a session
+token** (`api/auth.py`). The frontend is a static export, so its login screen is
+a convenience, not a control; the guarantee is that this service returns 401
+without a token and the page therefore has nothing to render.
+
+`/api/health` is deliberately open: it is the platform's health check, and a
+deploy that cannot be probed without a credential fails on the first boot.
+It reports pipeline liveness and month-to-date spend, nothing about the labs.
+
+Run with:
 
     uv run uvicorn api.main:app --reload --port 8000
 """
@@ -9,10 +22,13 @@ from __future__ import annotations
 
 import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sqlalchemy import select
 
+from api import pipeline as pipeline_api
+from api.auth import AuthNotConfigured, login as do_login, require_auth
 from api.ops import health as ops_health
 from api.ops import run_history
 from api.queries import build_items
@@ -39,15 +55,59 @@ if os.environ.get("SKIP_SCHEMA_SYNC", "").lower() not in ("1", "true", "yes"):
     ensure_schema(engine)
 
 app = FastAPI(title="Frontier Lab Intelligence API")
+
+# Comma-separated, so the deployed origin and a local dev server can both be
+# allowed at once. A single value still works and is the common case.
+_origins = [
+    o.strip().rstrip("/")
+    for o in os.environ.get("FRONTEND_ORIGIN", "http://localhost:3000").split(",")
+    if o.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.environ.get("FRONTEND_ORIGIN", "http://localhost:3000")],
-    allow_methods=["GET"],
+    allow_origins=_origins,
+    # POST for login and for starting a run; the Authorization header carries
+    # the session token, so it has to survive the preflight.
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 
-@app.get("/api/items")
+class Credentials(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/login")
+def auth_login(body: Credentials) -> dict:
+    """Exchange the one account's email and password for a session token.
+
+    Raises:
+        HTTPException: 401 on bad credentials; 503 when the deployment has no
+            account configured, which is an operator error and must not be
+            reported as a wrong password.
+    """
+    try:
+        return {"token": do_login(body.email, body.password)}
+    except AuthNotConfigured as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@app.get("/api/auth/me")
+def auth_me(email: str = Depends(require_auth)) -> dict:
+    """Whether the caller's stored token is still valid, and who it belongs to.
+
+    The page calls this on load: a token in localStorage may have expired since
+    it was issued, and showing the dashboard shell before finding that out
+    means every panel fails at once instead of the login form appearing.
+    """
+    return {"email": email}
+
+
+app.include_router(pipeline_api.build_router(engine))
+
+
+@app.get("/api/items", dependencies=[Depends(require_auth)])
 def list_items() -> list[dict]:
     """Every article with a classification for PROMPT_VERSION, tags and connections inline."""
     session = get_session(engine)
@@ -57,7 +117,7 @@ def list_items() -> list[dict]:
         session.close()
 
 
-@app.get("/api/status")
+@app.get("/api/status", dependencies=[Depends(require_auth)])
 def status() -> dict | None:
     """The most recent pipeline run, for the header's run/cost chip."""
     session = get_session(engine)
@@ -78,7 +138,7 @@ def status() -> dict | None:
         session.close()
 
 
-@app.get("/api/runs")
+@app.get("/api/runs", dependencies=[Depends(require_auth)])
 def runs(limit: int = 20) -> list[dict]:
     """Run history with per-source detail, newest first.
 
@@ -93,7 +153,7 @@ def runs(limit: int = 20) -> list[dict]:
         session.close()
 
 
-@app.get("/api/alerts")
+@app.get("/api/alerts", dependencies=[Depends(require_auth)])
 def alert_feed(kind: str | None = None, limit: int = 50) -> list[dict]:
     """Raised alerts, newest first. `kind` filters to `system` or `content`.
 
@@ -120,7 +180,7 @@ def health_view() -> dict:
         session.close()
 
 
-@app.get("/api/drift")
+@app.get("/api/drift", dependencies=[Depends(require_auth)])
 def drift_view(prompt_version: str | None = None, limit: int = 30) -> list[dict]:
     """Gold-set agreement over time, oldest first, for the reliability chart.
 
