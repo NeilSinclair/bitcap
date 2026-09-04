@@ -130,12 +130,90 @@ class TestLogin:
             messages.add(exc.value.detail)
         assert len(messages) == 1
 
+    @pytest.mark.parametrize("email", ["nëil@example.com", "ü@x.com", "日本@x.com"])
+    def test_a_non_ascii_email_is_401_not_500(self, configured, email):
+        """`hmac.compare_digest` raises TypeError on a non-ASCII str.
+
+        Live: `POST /api/auth/login {"email": "nëil@example.com"}` returned 500
+        rather than the 401 the docstring promises, and an internationalised
+        `AUTH_EMAIL` made every login fail the same way (D43).
+        """
+        from fastapi import HTTPException
+
+        with pytest.raises(HTTPException) as exc:
+            auth.login(email, PASSWORD)
+        assert exc.value.status_code == 401
+
+    def test_a_non_ascii_configured_email_still_works(self, monkeypatch):
+        """The other half: an IDN account must be able to log in at all."""
+        monkeypatch.setenv("AUTH_EMAIL", "nëil@example.com")
+        monkeypatch.setenv("AUTH_PASSWORD_HASH", auth.hash_password(PASSWORD))
+        monkeypatch.setenv("AUTH_SECRET", "test-secret")
+        assert auth.read_token(auth.login("nëil@example.com", PASSWORD)) == "nëil@example.com"
+
     def test_no_account_configured_is_distinguishable_from_a_bad_password(self, monkeypatch):
         """503 not 401: 'the deployment is broken' is not 'you typed it wrong'."""
         monkeypatch.delenv("AUTH_EMAIL", raising=False)
         monkeypatch.delenv("AUTH_PASSWORD_HASH", raising=False)
         with pytest.raises(auth.AuthNotConfigured):
             auth.login(EMAIL, PASSWORD)
+
+
+class TestLoginIsRateLimited:
+    """The silent failure this catches: an unthrottled scrypt on the open route.
+
+    `login` is the one route reachable without a credential and it burns ~100ms
+    of CPU and 16 MB per attempt. Unthrottled it is both a password oracle to
+    grind and a way to exhaust a small instance with a loop (D44).
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear(self):
+        auth._attempts.clear()
+        yield
+        auth._attempts.clear()
+
+    def test_repeated_failures_from_one_source_are_cut_off(self, configured):
+        from fastapi import HTTPException
+
+        for _ in range(auth._MAX_ATTEMPTS):
+            with pytest.raises(HTTPException):
+                auth.login(EMAIL, "wrong", source="10.0.0.1")
+
+        with pytest.raises(auth.TooManyAttempts):
+            auth.login(EMAIL, "wrong", source="10.0.0.1")
+
+    def test_a_different_source_is_unaffected(self, configured):
+        from fastapi import HTTPException
+
+        for _ in range(auth._MAX_ATTEMPTS + 5):
+            with pytest.raises((HTTPException, auth.TooManyAttempts)):
+                auth.login(EMAIL, "wrong", source="10.0.0.1")
+
+        with pytest.raises(HTTPException) as exc:
+            auth.login(EMAIL, "wrong", source="10.0.0.2")
+        assert exc.value.status_code == 401, "one attacker must not lock out everyone"
+
+    def test_a_correct_password_is_never_counted(self, configured):
+        """Rate limiting is for guessing; locking the operator out is the thing to avoid."""
+        from fastapi import HTTPException
+
+        for _ in range(auth._MAX_ATTEMPTS - 1):
+            with pytest.raises(HTTPException):
+                auth.login(EMAIL, "wrong", source="10.0.0.3")
+
+        for _ in range(20):
+            assert auth.login(EMAIL, PASSWORD, source="10.0.0.3")
+
+    def test_the_window_expires(self, configured):
+        from fastapi import HTTPException
+
+        past = time.time() - auth._WINDOW_SECONDS - 1
+        auth._attempts["10.0.0.4"] = [past] * (auth._MAX_ATTEMPTS + 5)
+
+        with pytest.raises(HTTPException) as exc:
+            auth.login(EMAIL, "wrong", source="10.0.0.4")
+        assert exc.value.status_code == 401, "stale attempts must age out"
 
 
 def _gated_app() -> FastAPI:

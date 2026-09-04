@@ -151,21 +151,36 @@ def measure(
     def one(record: dict) -> None:
         """Classify a single gold article and fold its result in, thread-safely."""
         nonlocal spent, skipped, done
-        if budget is not None and budget.exhausted:
+        # `begin_call`, not `exhausted`. Reading a plain running total lets a
+        # fan-out of N workers overshoot by up to N calls, because each one sees
+        # a figure none of its peers have contributed to yet — `Budget` says so
+        # in as many words, and this module ignored it and reproduced the bug:
+        # measured at $13.00 against a $2.00 ceiling with 12 workers, 6.5x
+        # over. `begin_call` counts work in flight, so the ceiling binds on what
+        # the run is *committed* to rather than what it has settled (D43).
+        if budget is not None and not budget.begin_call():
             with lock:
                 skipped += 1
                 done += 1
             return
         article = {k: v for k, v in record.items()
                    if k not in ("gold", "review", "system")}
+        settled = 0.0
         try:
             # The uncached path, deliberately — see the module docstring.
             result, cost = sa.classify(client, model, article)
+            settled = cost["usd"]
         except Exception as exc:  # noqa: BLE001 — one bad call is not a drift signal
             with lock:
                 errors.append({"id": record["id"], "error": str(exc)})
                 done += 1
             return
+        finally:
+            # Exactly once, whatever happened: a call that failed still has to
+            # release the slot it claimed, or the budget leaks headroom until
+            # the run stops making calls it could afford.
+            if budget is not None:
+                budget.end_call(settled)
         result["dropped_tags"] = sa.drop_unknown_tags(
             result, mech_ids, cat_ids, prac_ids, dims, cap
         )
@@ -180,11 +195,19 @@ def measure(
             # the record left ~$5/month of real spend invisible to
             # `month_to_date`. Inside the lock: `_record_cost` does a
             # read-modify-write of a JSON file, and concurrent writers lose rows.
+            # `end_call` in the `finally` above is what records the spend against
+            # the budget; doing it here as well would double-count it.
             _record_cost(sa, cost)
-            if budget is not None:
-                budget.spend(cost["usd"])
-            if on_progress is not None:
-                on_progress(done, len(records))
+            progress = (done, len(records))
+
+        # Outside the lock, and outside the try: a progress callback commits to
+        # the database, and a commit that fails must not fail a drift call that
+        # has already been paid for.
+        if on_progress is not None:
+            try:
+                on_progress(*progress)
+            except Exception:  # noqa: BLE001 — telemetry never fails the work
+                pass
 
     # Warm the prompt cache before fanning out, exactly as `score_announcements.run`
     # does. `sa.classify` marks the shared system prompt `cache_control:

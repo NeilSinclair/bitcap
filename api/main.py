@@ -22,13 +22,18 @@ from __future__ import annotations
 
 import os
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import select
 
 from api import pipeline as pipeline_api
-from api.auth import AuthNotConfigured, login as do_login, require_auth
+from api.auth import (
+    AuthNotConfigured,
+    TooManyAttempts,
+    login as do_login,
+    require_auth,
+)
 from api.ops import health as ops_health
 from api.ops import run_history
 from api.queries import build_items
@@ -54,7 +59,17 @@ engine = get_engine()
 if os.environ.get("SKIP_SCHEMA_SYNC", "").lower() not in ("1", "true", "yes"):
     ensure_schema(engine)
 
-app = FastAPI(title="Frontier Lab Intelligence API")
+# `openapi_url=None` also removes /docs and /redoc, which derive from it. They
+# answered unauthenticated while the docstring above and the README both claimed
+# only /api/health and /api/auth/login were open — route shapes rather than data,
+# but the documentation was wrong, and the honest fix is to make it true (D44).
+# `app.openapi()` the method still works, which is what the route-gate test
+# enumerates.
+app = FastAPI(
+    title="Frontier Lab Intelligence API",
+    openapi_url=None if os.environ.get("HIDE_API_DOCS", "1").lower() in ("1", "true", "yes")
+    else "/openapi.json",
+)
 
 # Comma-separated, so the deployed origin and a local dev server can both be
 # allowed at once. A single value still works and is the common case.
@@ -79,16 +94,20 @@ class Credentials(BaseModel):
 
 
 @app.post("/api/auth/login")
-def auth_login(body: Credentials) -> dict:
+def auth_login(body: Credentials, request: Request) -> dict:
     """Exchange the one account's email and password for a session token.
 
     Raises:
-        HTTPException: 401 on bad credentials; 503 when the deployment has no
-            account configured, which is an operator error and must not be
-            reported as a wrong password.
+        HTTPException: 401 on bad credentials; 429 when this address has failed
+            too many attempts recently; 503 when the deployment has no account
+            configured, which is an operator error and must not be reported as
+            a wrong password.
     """
+    source = request.client.host if request.client else "-"
     try:
-        return {"token": do_login(body.email, body.password)}
+        return {"token": do_login(body.email, body.password, source=source)}
+    except TooManyAttempts as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
     except AuthNotConfigured as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 

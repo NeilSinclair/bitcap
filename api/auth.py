@@ -35,6 +35,7 @@ import hmac
 import json
 import os
 import secrets
+import threading
 import time
 
 from fastapi import Header, HTTPException
@@ -167,20 +168,74 @@ def read_token(token: str, *, now: float | None = None) -> str | None:
     return payload.get("sub")
 
 
-def login(email: str, password: str) -> str:
+# Failed attempts per source address per window, and the window. `login` is the
+# one route reachable without a credential and it runs scrypt — ~100ms of CPU
+# and 16 MB per attempt — so an unthrottled endpoint is both a password oracle
+# to grind against and a way to exhaust a small instance with a loop (D44).
+# Successful logins do not count: rate limiting is for guessing, and locking a
+# legitimate operator out of their own tool is the failure mode to avoid.
+_MAX_ATTEMPTS = 10
+_WINDOW_SECONDS = 300.0
+_attempts: dict[str, list[float]] = {}
+_attempts_lock = threading.Lock()
+
+
+class TooManyAttempts(RuntimeError):
+    """Raised when one source has failed too many logins too quickly."""
+
+
+def _check_rate(source: str, now: float | None = None) -> None:
+    """Raise if `source` has failed too many logins inside the window.
+
+    In-process and per-instance, which is the right size for this: the service
+    runs one container, and a shared store would be infrastructure serving a
+    single-operator tool. It bounds the CPU an attacker can spend and slows a
+    guessing loop to a crawl; it is not a distributed rate limiter.
+
+    Args:
+        source: Caller identity, in practice the client address.
+        now: Injectable clock for the tests.
+
+    Raises:
+        TooManyAttempts: When the window is full.
+    """
+    now = now or time.time()
+    with _attempts_lock:
+        recent = [t for t in _attempts.get(source, []) if now - t < _WINDOW_SECONDS]
+        _attempts[source] = recent
+        if len(recent) >= _MAX_ATTEMPTS:
+            raise TooManyAttempts(
+                f"too many failed sign-in attempts; try again in "
+                f"{int(_WINDOW_SECONDS - (now - recent[0]))} seconds"
+            )
+
+
+def _record_failure(source: str, now: float | None = None) -> None:
+    """Count one failed attempt against `source`."""
+    with _attempts_lock:
+        _attempts.setdefault(source, []).append(now or time.time())
+
+
+def login(email: str, password: str, source: str = "-") -> str:
     """Authenticate the one account and issue a token.
 
     Args:
         email: Submitted email.
         password: Submitted password.
+        source: Caller identity for rate limiting, in practice the client
+            address. Defaults to a shared bucket, which is the safe direction:
+            a caller the server cannot identify is throttled with everyone else
+            rather than exempted.
 
     Returns:
         A session token.
 
     Raises:
         AuthNotConfigured: No account is configured on this deployment.
+        TooManyAttempts: Too many recent failures from this source.
         HTTPException: 401 on a bad email or password.
     """
+    _check_rate(source)
     configured_email = os.environ.get("AUTH_EMAIL")
     configured_hash = os.environ.get("AUTH_PASSWORD_HASH")
     if not configured_email or not configured_hash:
@@ -189,9 +244,17 @@ def login(email: str, password: str) -> str:
     # Both checks always run. Returning early on an unknown email makes the
     # response measurably faster than a wrong password, which turns the endpoint
     # into an oracle for whether an address is the configured one.
-    email_ok = hmac.compare_digest(email.strip().lower(), configured_email.strip().lower())
+    # Compared as bytes: `hmac.compare_digest` raises TypeError on a str with
+    # any non-ASCII character, so `POST /api/auth/login` with an email like
+    # "nëil@example.com" returned 500 instead of 401 — and an internationalised
+    # `AUTH_EMAIL` made every login fail that way (D43).
+    email_ok = hmac.compare_digest(
+        email.strip().lower().encode("utf-8"),
+        configured_email.strip().lower().encode("utf-8"),
+    )
     password_ok = verify_password(password, configured_hash)
     if not (email_ok and password_ok):
+        _record_failure(source)
         raise HTTPException(status_code=401, detail="invalid email or password")
     return issue_token(configured_email)
 

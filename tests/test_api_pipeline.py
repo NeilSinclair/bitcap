@@ -38,8 +38,7 @@ PASSWORD = "hunter2-but-longer"
 # Open by design: the platform probes this before a deploy is live, and a health
 # check that needs a credential fails the deploy on first boot. Everything else
 # must be gated.
-PUBLIC_ROUTES = {"/api/health", "/api/auth/login", "/openapi.json", "/docs",
-                 "/docs/oauth2-redirect", "/redoc"}
+PUBLIC_ROUTES = {"/api/health", "/api/auth/login"}
 
 
 @pytest.fixture()
@@ -86,18 +85,30 @@ class TestEveryRouteIsGated:
         importlib.reload(api_main)
 
         client = TestClient(api_main.app)
+        # `app.openapi()["paths"]`, not `app.routes`. A router mounted with
+        # `include_router` appears in `app.routes` as a single entry whose
+        # `path` is None, so `if not path: continue` silently skipped the whole
+        # `/api/pipeline/*` subtree — this test probed six routes and zero
+        # pipeline routes while claiming to walk them all. The OpenAI schema
+        # flattens included routers, so it sees every path the app serves (D43).
+        paths = api_main.app.openapi()["paths"]
+        assert any(p.startswith("/api/pipeline/") for p in paths), (
+            "the pipeline routes are not being enumerated; this test is blind"
+        )
+
         ungated = []
-        for route in api_main.app.routes:
-            path, methods = getattr(route, "path", None), getattr(route, "methods", set())
-            if not path or path in PUBLIC_ROUTES:
+        for path, operations in paths.items():
+            if path in PUBLIC_ROUTES:
                 continue
             # Concrete value for a path parameter; the gate must reject before
             # the handler ever looks it up.
             url = path.replace("{run_id}", "1")
-            for method in methods & {"GET", "POST"}:
-                response = client.request(method, url, json={})
+            for method in operations:
+                if method.upper() not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
+                    continue
+                response = client.request(method.upper(), url, json={})
                 if response.status_code not in (401, 403):
-                    ungated.append(f"{method} {path} -> {response.status_code}")
+                    ungated.append(f"{method.upper()} {path} -> {response.status_code}")
         assert not ungated, f"routes answering without a token: {ungated}"
 
     def test_health_stays_open_for_the_platform_probe(self, monkeypatch, tmp_path):
@@ -293,6 +304,122 @@ class TestTheThreadNeverLeavesARunHanging:
         assert seen["run"].id == run_id
         with Session(engine) as s:
             assert s.scalars(select(m.PipelineRun)).all().__len__() == 1
+
+
+class TestOnlyOneRunCanExistAtATime:
+    """The silent failure this catches: two firings trampling each other.
+
+    The old guard was a SELECT-then-INSERT in this module, which is neither
+    atomic nor visible to the cron — a separate process in a separate container
+    that never consulted it. Overlapping firings interleave writes to the corpus
+    file and both do read-modify-write on the cost log, losing records that a
+    graded requirement says are captured at the call site (D44).
+    """
+
+    def test_the_database_refuses_a_second_running_row(self, engine):
+        """The guarantee, tested where it lives rather than through a route."""
+        from sqlalchemy.exc import IntegrityError
+
+        with Session(engine) as s:
+            s.add(m.PipelineRun(kind="scheduled", status="running"))
+            s.commit()
+
+        with Session(engine) as s:
+            s.add(m.PipelineRun(kind="manual", status="running"))
+            with pytest.raises(IntegrityError):
+                s.commit()
+
+    def test_finished_rows_are_not_constrained(self, engine):
+        """Only `running` is unique; history must accumulate freely."""
+        with Session(engine) as s:
+            for _ in range(5):
+                s.add(m.PipelineRun(kind="scheduled", status="succeeded"))
+                s.add(m.PipelineRun(kind="manual", status="failed"))
+            s.commit()
+            assert s.query(m.PipelineRun).count() == 10
+
+    def test_the_cron_stands_down_rather_than_overlapping(self, engine):
+        """`run_once` must refuse, not crash, and `main` must exit 0."""
+        from app.pipeline import worker
+
+        with Session(engine) as s:
+            s.add(m.PipelineRun(kind="manual", status="running"))
+            s.commit()
+
+        with Session(engine) as s:
+            with pytest.raises(worker.ConcurrentRunRefused):
+                worker.run_once(s, legs=("announcements",), spend=False, deliver=False)
+
+    def test_the_api_returns_409_rather_than_500(self, client, token, engine, monkeypatch):
+        """A losing race is a conflict, not a server error."""
+        monkeypatch.setattr(pipeline_api.threading, "Thread",
+                            lambda **kw: type("T", (), {"start": lambda self: None})())
+        # Bypass the advisory SELECT so the INSERT is what refuses.
+        monkeypatch.setattr(pipeline_api, "running_run", lambda s, now=None: None)
+        with Session(engine) as s:
+            s.add(m.PipelineRun(kind="scheduled", status="running"))
+            s.commit()
+
+        response = client.post("/api/pipeline/run", headers=bearer(token),
+                               json={"legs": ["announcements"]})
+        assert response.status_code == 409
+
+
+class TestAStaleRunDoesNotBlockForever:
+    """The silent failure this catches: one corpse blocking every future run.
+
+    The concurrency guard asks "is there a `running` row". A firing killed
+    mid-flight — redeploy, OOM, `uvicorn --reload` reacting to an edit — leaves
+    one for ever, and every later POST returns 409 with no way out but editing
+    the database. Hit twice in one afternoon locally (D43).
+    """
+
+    def _aged(self, engine, hours):
+        from datetime import datetime, timedelta, timezone
+
+        with Session(engine) as s:
+            run = m.PipelineRun(
+                kind="manual", status="running",
+                started_at=datetime.now(timezone.utc) - timedelta(hours=hours),
+            )
+            s.add(run)
+            s.commit()
+            return run.id
+
+    def test_a_run_past_the_ceiling_is_reaped(self, engine):
+        run_id = self._aged(engine, pipeline_api.STALE_RUN_HOURS + 1)
+
+        with Session(engine) as s:
+            assert pipeline_api.running_run(s) is None
+
+        with Session(engine) as s:
+            row = s.get(m.PipelineRun, run_id)
+        assert row.status == "failed"
+        assert "no longer running" in row.error
+        assert row.finished_at is not None
+
+    def test_a_recent_run_is_still_believed(self, engine):
+        """The bound must not reap a firing that is legitimately still going."""
+        self._aged(engine, 0.25)
+        with Session(engine) as s:
+            assert pipeline_api.running_run(s) is not None
+
+    def test_a_reaped_run_no_longer_blocks_a_new_one(self, client, token, monkeypatch, engine):
+        self._aged(engine, pipeline_api.STALE_RUN_HOURS + 1)
+        monkeypatch.setattr(pipeline_api.threading, "Thread",
+                            lambda **kw: type("T", (), {"start": lambda self: None})())
+
+        response = client.post("/api/pipeline/run", headers=bearer(token),
+                               json={"legs": ["announcements"]})
+        assert response.status_code == 200
+
+    def test_reaping_marks_it_failed_so_alerting_can_see_it(self, engine):
+        """`alerts.run_failed` keys on status; a silently deleted row alerts nobody."""
+        run_id = self._aged(engine, pipeline_api.STALE_RUN_HOURS + 1)
+        with Session(engine) as s:
+            pipeline_api.running_run(s)
+        with Session(engine) as s:
+            assert s.get(m.PipelineRun, run_id) is not None, "reaped rows must survive"
 
 
 class TestReportingOnARun:

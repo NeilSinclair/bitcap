@@ -49,6 +49,26 @@ class PipelineRun(Base):
 
     __tablename__ = "pipeline_runs"
 
+    # At most one firing at a time, enforced by the database rather than by a
+    # check in one of the processes. Two firings interleave writes to the same
+    # corpus file and both do read-modify-write on the cost log, silently losing
+    # records — and cost instrumentation is a graded requirement, not a nicety.
+    #
+    # A partial unique index rather than a lock or a flag: the manual trigger
+    # (api/pipeline.py) and the nightly cron are separate processes on separate
+    # containers, so nothing in-process can see both. Unique on `status` where
+    # `status = 'running'` permits any number of succeeded and failed rows and
+    # exactly one running one (docs/decisions.md D44).
+    __table_args__ = (
+        sa.Index(
+            "ix_pipeline_runs_single_running",
+            "status",
+            unique=True,
+            postgresql_where=sa.text("status = 'running'"),
+            sqlite_where=sa.text("status = 'running'"),
+        ),
+    )
+
     id: Mapped[int] = mapped_column(primary_key=True)
     kind: Mapped[str]  # load | rebuild | connect — what main() actually writes
     started_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)

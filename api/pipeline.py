@@ -12,10 +12,13 @@ worker writes `pipeline_runs` and `run_sources` as it goes — so polling reads
 the database rather than any in-process bookkeeping, and a restarted API
 process reports the truth about a run it did not start.
 
-**One at a time.** Two concurrent firings would interleave writes to the same
-corpus file and double-spend the budget. The guard is a database check for a
-`running` row rather than a process-local lock, because the cron job is a
-separate process on a separate container and a lock here cannot see it.
+**One at a time, enforced by the database.** Two concurrent firings interleave
+writes to the same corpus file and both do read-modify-write on the cost log,
+silently losing records. A process-local lock cannot help: the cron is a
+separate process in a separate container. The guarantee is a partial unique
+index on `pipeline_runs.status = 'running'` (migration 0006, D44) — the
+`running_run` query here only exists so the 409 can say *which* run is in the
+way, and the cron obeys the same constraint without knowing this module exists.
 
 **A crashed run must not look like a running one.** The thread wraps `run_once`
 so that an exception marks the row `failed`; without it a dead thread leaves a
@@ -26,12 +29,13 @@ from __future__ import annotations
 
 import threading
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, select
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import IntegrityError
 
 from api.auth import require_auth
 from app import models as m
@@ -63,14 +67,56 @@ class RunRequest(BaseModel):
     dry_run: bool = False
 
 
-def running_run(session) -> m.PipelineRun | None:
-    """The firing currently in flight, if any — manual or scheduled."""
-    return session.scalars(
+# How long a `running` row is believed before it is treated as a corpse. The
+# longest real firing measured is ~30 minutes (GitHub leg, 2,074 repos), so two
+# hours is generous. Without this bound a run killed mid-flight — a redeploy, an
+# OOM, `uvicorn --reload` picking up an edit — leaves a row `running` for ever,
+# and since the concurrency guard is "is there a running row", that one corpse
+# blocks every future run until somebody edits the database by hand. Observed
+# twice in one afternoon of local development (D43).
+STALE_RUN_HOURS = 2.0
+
+
+def running_run(session, now: datetime | None = None) -> m.PipelineRun | None:
+    """The firing currently in flight, if any — manual or scheduled.
+
+    Reaps as it reads: a `running` row older than :data:`STALE_RUN_HOURS` cannot
+    be a live firing, so it is marked failed and ignored rather than blocking
+    the caller for ever. Recording it as `failed` rather than deleting it also
+    lets `alerts.run_failed` see it, which a silently-cleared row never would.
+
+    Args:
+        session: Open session.
+        now: Injectable clock for the tests.
+
+    Returns:
+        The in-flight run, or None.
+    """
+    now = now or datetime.now(timezone.utc)
+    cutoff = now - timedelta(hours=STALE_RUN_HOURS)
+
+    live = None
+    for run in session.scalars(
         select(m.PipelineRun)
         .where(m.PipelineRun.status == "running")
         .order_by(desc(m.PipelineRun.id))
-        .limit(1)
-    ).first()
+    ):
+        started = run.started_at
+        if started is not None and started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+        if started is not None and started < cutoff:
+            run.status = "failed"
+            run.error = (
+                f"no longer running: started {started.isoformat()} and exceeded "
+                f"the {STALE_RUN_HOURS}h ceiling without finishing. The process "
+                "was almost certainly killed (redeploy, restart, or OOM)."
+            )
+            run.finished_at = now
+            continue
+        if live is None:
+            live = run
+    session.commit()
+    return live
 
 
 def _describe(run: m.PipelineRun) -> dict:
@@ -220,13 +266,21 @@ def build_router(engine: Engine) -> APIRouter:
                     409,
                     f"run {in_flight.id} ({in_flight.kind}) is already in flight",
                 )
-            # Claimed synchronously, before the thread starts, so a second
-            # request arriving in the same instant sees `running` and is
-            # refused rather than both passing the check and both starting.
-            # `run_once` is handed this row rather than opening its own.
+            # Claimed synchronously, before the thread starts. The `running_run`
+            # check above is for the *message* — it can name the run that is in
+            # the way — but the guarantee is the partial unique index on
+            # `status='running'` (D44), which is the only thing that also binds
+            # the cron in its own container. Two requests in the same instant
+            # both pass the SELECT; only one survives the INSERT.
             claimed = m.PipelineRun(kind=KIND, status="running")
             session.add(claimed)
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError as exc:
+                session.rollback()
+                raise HTTPException(
+                    409, "another pipeline run started first"
+                ) from exc
             run_id = claimed.id
         finally:
             session.close()

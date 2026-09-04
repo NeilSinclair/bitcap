@@ -434,3 +434,41 @@ class TestDriftRunsInParallelButWarmsTheCacheFirst:
 
         assert out["skipped"] > 0, "the ceiling never bound"
         assert out["compared"] < 10
+        assert budget.run_spent <= budget.per_run_usd, (
+            f"spent ${budget.run_spent:.2f} against a ${budget.per_run_usd:.2f} ceiling"
+        )
+
+    def test_the_ceiling_holds_when_the_calls_are_slow(self, monkeypatch, gold_stub):
+        """The version of this that matters, and the one the first test missed.
+
+        With an instant stub the workers serialise by accident: each finishes and
+        records its spend before the next checks. Real calls take ~25 seconds, so
+        all N workers read the total before any of them has added to it. Asserting
+        only `skipped > 0` passed against a run that spent $13.00 against a $2.00
+        ceiling — 6.5x over, measured (D43). Assert the money.
+        """
+        import time
+
+        from app.pipeline.budget import Budget
+
+        def slow_classify(client, model, article):
+            time.sleep(0.3)     # stands in for a real API call
+            return (
+                {"event_type": "other", "mechanisms": [], "categories": [],
+                 "practices": []},
+                {"usd": 1.0, "url": article["url"],
+                 "at": "2026-09-04T00:00:00+00:00"},
+            )
+
+        import app.pipeline.drift as drift_mod
+        monkeypatch.setattr(drift_mod, "_record_cost", lambda sa, cost: None)
+        gold_stub(slow_classify)
+
+        budget = Budget(per_run_usd=2.0, per_month_usd=100.0)
+        drift.measure(sample=tuple(str(i) for i in range(13)), workers=12,
+                      budget=budget)
+
+        assert budget.run_spent <= 2.0, (
+            f"12 workers spent ${budget.run_spent:.2f} against a $2.00 ceiling — "
+            "the guard must count work in flight, not just settled spend"
+        )

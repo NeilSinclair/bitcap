@@ -44,6 +44,8 @@ import yaml
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from sqlalchemy.exc import IntegrityError
+
 from app import models as m
 from app.cli import PROMPT_VERSION
 from app.connect import connect as run_connect
@@ -63,6 +65,16 @@ from app.transform import transform
 
 CONFIG = Path(__file__).parent.parent.parent / "config" / "pipeline.yaml"
 KIND = "scheduled"
+
+
+class ConcurrentRunRefused(RuntimeError):
+    """Raised when a firing will not start because another is in flight.
+
+    Not a failure of this firing — nothing broke, and the work will happen on
+    the next one. `main` therefore exits 0: a nightly red cron for a run that
+    correctly declined to trample another makes the platform's alerting the
+    noisy channel, which is the same reasoning as a dead source (D26).
+    """
 
 
 def load_config(path: Path = CONFIG) -> dict:
@@ -197,7 +209,17 @@ def run_once(
     if run is None:
         run = m.PipelineRun(kind=KIND)
         session.add(run)
-        session.commit()
+        try:
+            session.commit()
+        except IntegrityError as exc:
+            # The single-running index (D44). Another firing is in flight — the
+            # manual trigger, or a previous cron that has not finished. Refusing
+            # is the whole point: two firings interleave writes to the corpus
+            # file and lose cost records between them.
+            session.rollback()
+            raise ConcurrentRunRefused(
+                "another pipeline run is already in flight; this firing did not start"
+            ) from exc
 
     try:
         return _phases(session, run, firing, config, config_path, legs,
@@ -369,7 +391,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         run, stats = run_once(
             session,
-            legs=tuple(args.legs) if args.legs else None,
+            # `is not None`, not truthiness: `--legs` with no values means "no
+            # ingestion legs", and `or None` would hand that back to cadence —
+            # the same conflation `due_legs` was fixed for, left behind on this
+            # path (D43).
+            legs=tuple(args.legs) if args.legs is not None else None,
             prompt_version=args.prompt,
             spend=not args.dry_run,
             deliver=not args.dry_run,
@@ -377,6 +403,13 @@ def main(argv: list[str] | None = None) -> int:
         # Read off the row before the session closes; a detached instance
         # cannot refresh, and the summary is the only thing a cron log shows.
         summary = (run.status, run.cost_usd or 0.0)
+    except ConcurrentRunRefused as exc:
+        # Exit 0: nothing broke. Another firing holds the lock and this one
+        # correctly stood down; the work happens on the next tick. A non-zero
+        # exit here would page somebody every time a manual run overlapped 3am.
+        print(f"firing skipped — {exc}", file=sys.stderr)
+        session.close()
+        return 0
     except (Exception, SystemExit):
         traceback.print_exc()
         print("firing FAILED", file=sys.stderr)

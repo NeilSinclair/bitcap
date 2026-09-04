@@ -3812,3 +3812,119 @@ Not addressed: the API instance must stay alive for the length of a run. A plan
 that sleeps on idle would kill a run mid-flight and leave exactly the corpse
 described above. Noted on the service in `render.yaml`; it is a plan choice, not
 something code can defend against.
+
+## D40 — An empty leg selection meant "everything" (2026-09-04)
+
+The pipeline tab sends `legs: []` when the operator ticks only the drift box.
+That reached `run_once` as `legs or None`, and `None` is the cron's "no override
+— let cadence decide". Firing 10 was GitHub's turn, so a run meant to re-score
+20 gold articles fetched 2,074 repositories across seven orgs first. Nothing
+errored; it was just fifteen minutes slow and spent money on work nobody asked
+for.
+
+`due_legs` now tests `if only is not None` rather than `if only`. `()` means no
+ingestion legs; `None` means ask cadence. The same conflation existed on the CLI
+path (`--legs` with no values) and was fixed with it under D43.
+
+## D41 — A firing that reports nothing for nine minutes is indistinguishable from a broken one (2026-09-04)
+
+Everything a firing records — `stats`, drift metrics, cost — was written at the
+end, because the only consumer was a cron log nobody reads. Behind a button
+somebody is standing in front of, that is useless: the honest reaction to eight
+minutes of "Running…" was to suspect it was broken, and the only way to find out
+was to query the database by hand.
+
+`_phases` now commits a `phase` marker to the run row as it goes, and
+`drift.measure` takes an `on_progress` callback so the slowest phase can report
+`12 of 20` rather than nothing. Deliberately not called inside `_etl`: that phase
+is one transaction spanning a wipe and a reload, and committing partway through
+would defeat the guarantee it exists for.
+
+The progress callback is fired outside the work's `try`, and its own failure is
+swallowed (D43): telemetry must never fail a call that has already been paid for.
+
+## D42 — Parallel drift needs the cache warmed first, or it costs more than serial (2026-09-04)
+
+The drift check was a serial loop: 20 gold articles at ~27s each, nine minutes.
+The classifier next door has used 12 workers for months.
+
+The reason it is not a one-line change is prompt caching. `sa.classify` marks the
+shared system prompt `cache_control: ephemeral`, and Anthropic bills a cache
+*write* at 1.25x input against a *read* at 0.10x. Firing all 20 at a cold cache
+makes every one of them a write — twelve times faster and roughly twelve times
+the input cost, which is worse than the loop it replaced.
+
+So one call runs alone first and creates the entry the other 19 read. This is
+not a new idea: `score_announcements.run` already does exactly this and says so
+in a comment, so the pattern was copied rather than invented.
+
+Two caches, and only one is bypassed. The *result* cache would make drift
+meaningless — a check reading its own cached answers reports perfect agreement
+for ever. The provider's *prompt* cache has no bearing on whether the answer is
+fresh; it only discounts the instructions every call re-sends.
+
+The tests assert the observable order rather than wall-clock: one asserts no call
+begins before the warm-up finishes, the other asserts the rest genuinely overlap.
+Both were verified against their own bug — the first version of the warm-up test
+passed with the warm-up removed and was rewritten.
+
+## D43 — Independent review of the pipeline tab and the login: five real defects (2026-09-04)
+
+`bitcap-reviewer` was run against `2783c70..44dc5c6` *after* the commit, which is
+the wrong order and is why this entry exists. Five findings were reproduced
+before being accepted; the review was right on every one.
+
+**The budget guard was defeated by the fan-out I had just written.** `drift`
+used `budget.exhausted` and `budget.spend()` rather than
+`Budget.begin_call()`/`end_call()`. With realistic latency all twelve workers
+read the total before any of them had added to it: measured **$13.00 against a
+$2.00 ceiling, 6.5x over**. `Budget` documents this exact failure ("measured live
+at 6.6x a small ceiling before this existed") and exposes the predictive API to
+prevent it — the bug was not new, it was reintroduced next to the fix.
+
+The test I had written for it asserted only `skipped > 0`, which passes against a
+6.5x overrun. It now asserts the money, with a stub slow enough to make the
+threads actually race. My own first reproduction was wrong in the other
+direction: an instant stub serialised the workers by accident and showed the
+ceiling holding.
+
+**The route-gate test was blind to the routes it was written for.** It claimed to
+walk the app's own route table so a new route is covered the day it lands. A
+router mounted with `include_router` appears in `app.routes` as one entry whose
+`path` is `None`, and `if not path: continue` skipped the whole `/api/pipeline/*`
+subtree — it probed six routes and zero pipeline routes. Those routes are gated
+today only because a *second* test hardcodes them, which is the hand-maintained
+list this one was supposed to replace. Now enumerates `app.openapi()["paths"]`,
+which flattens included routers, and asserts the pipeline paths are present so
+the test cannot go blind again silently.
+
+**A non-ASCII email returned 500, not 401.** `hmac.compare_digest` raises
+`TypeError` on a `str` containing any non-ASCII character. `POST /api/auth/login`
+with `nëil@example.com` was a 500, and an internationalised `AUTH_EMAIL` would
+have bricked logins entirely. Both sides are now compared as UTF-8 bytes.
+
+**A killed run blocked every future run for ever.** The concurrency guard asks
+"is there a `running` row", and a firing killed mid-flight leaves one — observed
+twice in one afternoon, both times from `uvicorn --reload` restarting on an edit.
+`running_run` now reaps: a row past `STALE_RUN_HOURS` (2h, against a ~30 minute
+worst case) is marked `failed` and ignored. Marked rather than deleted, so
+`alerts.run_failed` can see it; a silently cleared row alerts nobody.
+
+**`bitcap-worker --legs` with no values still collapsed to `None`** — D40's bug,
+fixed one function up and left behind on the CLI path.
+
+Accepted and not yet actioned, recorded so they are not lost:
+
+* **The cron does not check the concurrency guard.** `api/pipeline.py` says the
+  guard is a database check *because* the cron is a separate process, and then
+  `worker.run_once` never calls `running_run()`. A manual run at 02:50 overlaps
+  the 03:00 firing: two processes writing `announcements.json` and doing
+  read-modify-write on `announcement_cost.json`, losing cost records — which is
+  non-negotiable #3. The manual guard is also a non-atomic SELECT-then-INSERT. A
+  unique partial index on `status='running'` fixes both at once and is the right
+  shape; it needs a migration and is not a thing to add at speed.
+* **`/openapi.json`, `/docs` and `/redoc` answer unauthenticated.** The module
+  docstring and README both say only `/api/health` and `/api/auth/login` are
+  open. They expose route shapes, not data.
+* **`login` runs unrate-limited scrypt.** ~100ms and 16 MB per attempt on the one
+  open route, on a `starter` instance.
