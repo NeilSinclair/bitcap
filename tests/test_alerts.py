@@ -480,3 +480,60 @@ class TestDriftAlertsOncePerEpisode:
     def test_staying_healthy_never_alerts(self, session):
         for f1 in (0.95, 0.93, 0.91):
             assert self._measure(session, f1)["raised"] == 0
+
+class TestDriftMeasuringNothingIsAnIncident:
+    """The silent failure this catches: the gold-set check quietly not running.
+
+    `below_floor` correctly declines to call a zero-comparison measurement
+    "drift" — that would fire every time the budget ran out. But nothing else
+    fired either, so a check whose every call failed produced total silence: the
+    run reported `succeeded` and `mechanism_f1` was recorded as null.
+
+    Found live on Render, where `ANTHROPIC_API_KEY` was unset on the API service:
+    all 20 calls returned "Could not resolve authentication method", `compared`
+    was 0, and no alert of any kind was raised (D45).
+    """
+
+    def _metrics(self, **over):
+        base = {
+            "sample": [str(i) for i in range(20)],
+            "compared": 0, "skipped": 0,
+            "errors": [{"id": "12", "error": "Could not resolve authentication method"}],
+            "mechanism_f1": None, "cost_usd": 0.0,
+        }
+        base.update(over)
+        return base
+
+    def test_every_call_failing_raises_a_critical_system_alert(self):
+        out = alerts.drift_unavailable(None, {}, {"drift": self._metrics(), "run_id": 1})
+        assert len(out) == 1
+        assert (out[0].kind, out[0].severity) == ("system", "critical")
+        assert "measured nothing" in out[0].subject
+        assert "authentication" in out[0].body
+
+    def test_a_measurement_that_worked_raises_nothing(self):
+        out = alerts.drift_unavailable(
+            None, {}, {"drift": self._metrics(compared=20, errors=[], mechanism_f1=0.86)}
+        )
+        assert out == []
+
+    def test_drift_not_running_this_firing_raises_nothing(self):
+        """Cadence or a dry run. Not a failure."""
+        assert alerts.drift_unavailable(None, {}, {}) == []
+        assert alerts.drift_unavailable(None, {}, {"drift": None}) == []
+
+    def test_a_budget_stop_is_left_to_budget_exceeded(self):
+        """Two alerts for one cause trains people to mute both."""
+        out = alerts.drift_unavailable(
+            None, {}, {"drift": self._metrics(skipped=20, errors=[])}
+        )
+        assert out == []
+
+    def test_one_outage_is_one_alert_not_one_a_night(self):
+        a = alerts.drift_unavailable(None, {}, {"drift": self._metrics(), "run_id": 1})
+        b = alerts.drift_unavailable(None, {}, {"drift": self._metrics(), "run_id": 2})
+        assert a[0].dedupe_key == b[0].dedupe_key
+
+    def test_the_rule_is_registered(self):
+        """A rule absent from RULES never runs, however well it is written."""
+        assert "drift_unavailable" in alerts.RULES

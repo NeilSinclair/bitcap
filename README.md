@@ -149,7 +149,7 @@ Secrets, none of which are in the repo:
 | Variable | Needed for |
 |---|---|
 | `DATABASE_URL` | everything |
-| `ANTHROPIC_API_KEY` | classification and drift only — ingestion needs no key |
+| `ANTHROPIC_API_KEY` | classification and drift. Needed on **both** `bitcap-worker` and `bitcap-api` — the pipeline tab runs firings from the API service, and without it the gold-set check measures nothing (D45) |
 | `GITHUB_TOKEN` | the GitHub leg |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
 | `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the sign-in — see below |

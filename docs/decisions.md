@@ -3928,3 +3928,40 @@ Accepted and not yet actioned, recorded so they are not lost:
   open. They expose route shapes, not data.
 * **`login` runs unrate-limited scrypt.** ~100ms and 16 MB per attempt on the one
   open route, on a `starter` instance.
+
+## D45 — The gold-set check failed on Render and nothing said so (2026-09-04)
+
+Drift worked locally and produced nothing on the deployed API. It did not
+crash: every call returned "Could not resolve authentication method", the
+per-item errors were recorded, `compared` came back 0, `mechanism_f1` was null,
+and the firing reported **succeeded**.
+
+The cause is one missing environment variable — `ANTHROPIC_API_KEY` was never
+set on `bitcap-api`, which until the pipeline tab existed had no reason to make
+LLM calls at all. That part is a deployment step, now in the README.
+
+The part worth recording is that nothing alerted. `below_floor` deliberately
+declines to treat a zero-comparison measurement as drift, and it is right to:
+reporting it as drift would fire every time the budget ran out, and a wrong
+alert is worse than a missing one. But it was the *only* rule looking at the
+metrics, so "the scorer drifted" was covered and "the scorer is not being
+checked at all" was silence.
+
+That is the same shape as D36, D38 and the cadence staggering: the run
+succeeded, every number it recorded was true, and the only symptom was a
+measurement that did not happen. Four instances now. The pattern is that this
+system reliably reports what it *did*, and had no habit of reporting what it
+*failed to do* — and the second is where the silent degradation lives.
+
+`drift_unavailable` is a new **critical** system rule: drift ran, compared zero
+items, and errors rather than the budget are why. Critical rather than warning
+because "the scorer drifted" invites a look while "the scorer is unverified"
+means every subsequent firing is unchecked until somebody acts. Deduped on the
+prompt version so one outage is one alert rather than one a night, the same
+reasoning `drift` already uses for an episode. An all-skipped run returns
+nothing — `budget_exceeded` already reports that cause, and two alerts for one
+event trains people to mute both.
+
+Verified in the container against the real failure: with `ANTHROPIC_API_KEY`
+unset, the existing `drift` rule stays silent and `drift_unavailable` fires
+CRITICAL.

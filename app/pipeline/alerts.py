@@ -214,6 +214,55 @@ def drift(session: Session, config: dict, context: dict) -> list[Candidate]:
     )]
 
 
+def drift_unavailable(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """The drift check ran and measured nothing.
+
+    `below_floor` is right that a measurement which compared zero items is not
+    drift — reporting it as drift would fire the alert every time the budget ran
+    out. But nothing else fired either, so a check whose every call failed was
+    total silence: the run reported `succeeded`, the snapshot recorded
+    `mechanism_f1: null`, and the one thing standing between a prompt regression
+    and the register had quietly stopped running.
+
+    Found on the deployed API, where `ANTHROPIC_API_KEY` was unset: all 20 calls
+    returned "Could not resolve authentication method", `compared` was 0, and no
+    alert of any kind was raised (docs/decisions.md D45).
+
+    A **system** alert and a `critical` one. "The scorer drifted" is a warning
+    that invites a look; "the scorer is not being checked at all" means every
+    later firing is unverified, and it stays true until somebody acts.
+    """
+    metrics = context.get("drift")
+    if not metrics:
+        # Drift did not run this firing — cadence, or a dry run. Not a failure.
+        return []
+    if metrics.get("compared"):
+        return []
+
+    errors = metrics.get("errors") or []
+    skipped = metrics.get("skipped") or 0
+    sample = len(metrics.get("sample") or [])
+    if skipped and not errors:
+        # Every item skipped for budget. `budget_exceeded` already reports that
+        # and says why; two alerts for one cause trains people to mute both.
+        return []
+
+    reason = errors[0].get("error", "") if errors else "no reason recorded"
+    return [Candidate(
+        kind=SYSTEM, rule="drift_unavailable", severity=CRITICAL,
+        subject=f"Gold-set check measured nothing ({len(errors)}/{sample} calls failed)",
+        body=(
+            f"The drift check compared 0 of {sample} gold articles, so the "
+            f"classifier is running unverified. First error: {reason[:300]}"
+        ),
+        # Keyed on the prompt version rather than the run, so one outage is one
+        # alert rather than one a night — the same reasoning as `drift` above.
+        dedupe_key=f"drift_unavailable:{prompt_version_of(context)}",
+        payload=metrics,
+        run_id=context.get("run_id"),
+    )]
+
+
 # --------------------------------------------------------------------------
 # Content rules — the pipeline found something
 # --------------------------------------------------------------------------
@@ -309,6 +358,7 @@ RULES = {
     "source_down": source_down,
     "budget_exceeded": budget_exceeded,
     "drift": drift,
+    "drift_unavailable": drift_unavailable,
     "high_band_item": high_band_items,
     "holding_impact": holding_impact,
 }
