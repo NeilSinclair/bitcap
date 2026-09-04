@@ -1,6 +1,42 @@
 [
   {
     "lab": "openai",
+    "url": "https://openai.com/index/daybreak-for-frontline-defenders",
+    "date": "2026-09-03",
+    "title": "Daybreak for Frontline Defenders: $1B to protect essential services",
+    "text": "Daybreak for Frontline Defenders: $1B to protect essential services. OpenAI introduces Daybreak for Frontline Defenders. A $1 billion commitment expands access to frontier cyber AI, training, and support for essential services.",
+    "text_source": "rss_summary",
+    "feed_category": "Security"
+  },
+  {
+    "lab": "openai",
+    "url": "https://openai.com/index/legora-financial-statement-review-with-astra",
+    "date": "2026-09-03",
+    "title": "Legora reviewed 41 documents in minutes with GPT-6 Astra",
+    "text": "Legora reviewed 41 documents in minutes with GPT-6 Astra. Legora used GPT-6 Astra to review 41 documents in minutes, find all four planted errors, and improve performance by nearly 40% in this financial-review workflow.",
+    "text_source": "rss_summary",
+    "feed_category": "Startup"
+  },
+  {
+    "lab": "openai",
+    "url": "https://openai.com/index/playco-game-prototyping-with-astra",
+    "date": "2026-09-03",
+    "title": "Playco cut manual fixes 50% prototyping games with GPT-6 Astra",
+    "text": "Playco cut manual fixes 50% prototyping games with GPT-6 Astra. Using GPT-6 Astra, Playco built three themed game prototypes from one grey box foundation and reported 50% fewer manual fixes than with the previous model.",
+    "text_source": "rss_summary",
+    "feed_category": "Startup"
+  },
+  {
+    "lab": "openai",
+    "url": "https://openai.com/index/safety-overview-gpt-6-astra",
+    "date": "2026-09-03",
+    "title": "Safety overview: GPT-6 Astra",
+    "text": "Safety overview: GPT-6 Astra. GPT-6 Astra is our most capable broadly deployed model and our first to reach the Critical level of cybersecurity capability under our Preparedness Framework.",
+    "text_source": "rss_summary",
+    "feed_category": "Safety"
+  },
+  {
+    "lab": "openai",
     "url": "https://openai.com/index/expanding-access-to-ai-with-chatgpt-ads",
     "date": "2026-08-31",
     "title": "A milestone in expanding access to AI",

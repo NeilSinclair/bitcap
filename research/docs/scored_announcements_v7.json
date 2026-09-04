@@ -3050,6 +3050,45 @@
       "band": "low"
     },
     {
+      "lab": "openai",
+      "url": "https://openai.com/index/safety-overview-gpt-6-astra",
+      "date": "2026-09-03",
+      "title": "Safety overview: GPT-6 Astra",
+      "text": "Safety overview: GPT-6 Astra. GPT-6 Astra is our most capable broadly deployed model and our first to reach the Critical level of cybersecurity capability under our Preparedness Framework.",
+      "text_source": "rss_summary",
+      "feed_category": "Safety",
+      "is_signal": true,
+      "event_type": "safety_policy",
+      "summary": "OpenAI published a safety overview for GPT-6 Astra stating it is the first model to reach the Critical level of cybersecurity capability under the company's Preparedness Framework.",
+      "mechanisms": [
+        {
+          "id": "capability_jump",
+          "sign": "positive",
+          "magnitude": "high",
+          "confidence": "medium",
+          "reason": "The document states GPT-6 Astra is the first model to cross a Critical cybersecurity capability threshold under OpenAI's own framework, a step-change in capability class rather than an incremental improvement.",
+          "quote": "GPT-6 Astra is our most capable broadly deployed model and our first to reach the Critical level of cybersecurity capability under our Preparedness Framework."
+        }
+      ],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "medium",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The Preparedness Framework's Critical cybersecurity threshold is a safety evaluation classification an engineering team should be aware of but is OpenAI's own internal process, not a transferable instrument from this summary alone.",
+          "quote": "our first to reach the Critical level of cybersecurity capability under our Preparedness Framework"
+        }
+      ],
+      "notable": true,
+      "notable_reason": "A frontier lab's model crossing a Critical cybersecurity capability threshold under its own safety framework is a significant marker for security and policy watchers.",
+      "dropped_tags": [],
+      "score": 10.0,
+      "band": "low"
+    },
+    {
       "lab": "xai",
       "url": "https://x.ai/news/grok-bot-more-plans",
       "date": "2026-08-26",
@@ -9153,6 +9192,86 @@
           "dimensions": [],
           "reason": "The report discloses an internal risk-scoring methodology for classifying cyberattacker sophistication that could inform how security teams think about measuring AI-enabled threats, though the scoring system itself is not handed over as a usable instrument.",
           "quote": "applying our risk-scoring methodology to this attack earns it the maximum risk score of 100"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/daybreak-for-frontline-defenders",
+      "date": "2026-09-03",
+      "title": "Daybreak for Frontline Defenders: $1B to protect essential services",
+      "text": "Daybreak for Frontline Defenders: $1B to protect essential services. OpenAI introduces Daybreak for Frontline Defenders. A $1 billion commitment expands access to frontier cyber AI, training, and support for essential services.",
+      "text_source": "rss_summary",
+      "feed_category": "Security",
+      "is_signal": false,
+      "event_type": "other",
+      "summary": "OpenAI announced a $1 billion commitment called Daybreak for Frontline Defenders to expand access to frontier cyber AI, training, and support for organizations providing essential services.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/legora-financial-statement-review-with-astra",
+      "date": "2026-09-03",
+      "title": "Legora reviewed 41 documents in minutes with GPT-6 Astra",
+      "text": "Legora reviewed 41 documents in minutes with GPT-6 Astra. Legora used GPT-6 Astra to review 41 documents in minutes, find all four planted errors, and improve performance by nearly 40% in this financial-review workflow.",
+      "text_source": "rss_summary",
+      "feed_category": "Startup",
+      "is_signal": false,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI published a case study describing how legal-tech company Legora used GPT-6 Astra to review 41 financial documents and identify planted errors with a stated performance improvement.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "low",
+          "dimensions": [],
+          "reason": "The customer's planted-error test is a measurement approach but it is described only as an internal case-study result, not a transferable benchmark.",
+          "quote": "find all four planted errors, and improve performance by nearly 40% in this financial-review workflow"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none"
+    },
+    {
+      "lab": "openai",
+      "url": "https://openai.com/index/playco-game-prototyping-with-astra",
+      "date": "2026-09-03",
+      "title": "Playco cut manual fixes 50% prototyping games with GPT-6 Astra",
+      "text": "Playco cut manual fixes 50% prototyping games with GPT-6 Astra. Using GPT-6 Astra, Playco built three themed game prototypes from one grey box foundation and reported 50% fewer manual fixes than with the previous model.",
+      "text_source": "rss_summary",
+      "feed_category": "Startup",
+      "is_signal": false,
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI published a case study describing how Playco used GPT-6 Astra to build game prototypes with 50% fewer manual fixes than with a previous model.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "low",
+          "dimensions": [],
+          "reason": "A customer-reported reduction in manual fixes is an internal, unreplicated result rather than a transferable benchmark or method.",
+          "quote": "reported 50% fewer manual fixes than with the previous model"
         }
       ],
       "notable": false,
