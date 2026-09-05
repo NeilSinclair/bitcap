@@ -28,7 +28,7 @@ Where to look first, in the order the brief asks its questions:
 | Page | Answers |
 |---|---|
 | `/digest` | Did it surface something worth knowing, and what did it suppress to get there |
-| `/` | The whole scored corpus, filterable by band, lab and holding |
+| `/` | The whole scored corpus — announcements and papers — filterable by band, lab, source and holding |
 | `/register` | Who is tracked — and the four possible researcher moves in it |
 | `/ops` | Can any of the above be trusted: run history, source health, spend, classifier drift |
 | `/pipeline` | Run it yourself |
@@ -55,8 +55,9 @@ terminal — the API, the frontend, a fresh `bitcap-db` invocation — picks it 
 the same way, instead of only the shell that ran this command.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
-announcement corpus (June–Aug 2026), 26 holdings with their mechanism and
-lab-exposure edges, and the full cost log — and derives the clean tables and
+announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
+six labs, 2023–2026), 26 holdings with their mechanism and lab-exposure edges,
+and the full cost log — and derives the clean tables and
 joins. It is always safe to re-run.
 
 It is safe because everything it drops is derived from files in the repo. The
@@ -170,7 +171,7 @@ for the same answer:
 
 | Cache | Where | A cold start... |
 |---|---|---|
-| Classifier output | `raw_classifications`, keyed on prompt version | never re-classifies |
+| Classifier output | `raw_llm_responses`, keyed on prompt version — `v9` for announcements, `p1` for papers | never re-classifies |
 | GitHub commit history | `raw_github_repos`, keyed on `pushed_at` | walks only repos that were pushed to |
 | Fetched pages, extracted bylines | `research/docs/` on disk | re-fetches and re-extracts |
 
