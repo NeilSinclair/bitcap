@@ -147,20 +147,56 @@ labs:
 
   - id: google-deepmind
     label: Google DeepMind
-    method: sitemap
-    index_url: https://deepmind.google/sitemap.xml
-    url_contains: /blog/
+    method: rss
+    index_url: https://deepmind.google/blog/rss.xml
     text_source: full_text
-    date_from: page
+    date_from: feed
     notes: >
-      Not blocked -- plain fetch of the blog index, sitemap and article pages
-      all return 200. An RSS feed also exists (blog/rss.xml) but the sitemap
-      was chosen for parity with Anthropic's proven path. The sitemap's
-      <lastmod> is present per entry but still only used as a coarse
-      prefilter, same reasoning as Anthropic: it is a modification date, not
-      a publication date, so the real date is read from the page. Some
-      article URLs 302-redirect off-domain to blog.google; urllib follows
-      redirects by default, so this needed no new fetch-layer code.
+      Was `method: sitemap` on deepmind.google/sitemap.xml until D63, chosen
+      "for parity with Anthropic's proven path". That sitemap does not
+      enumerate the blog and the register was silently missing most of it.
+
+      Measured 2026-09-05 over the 3-month window: the sitemap yielded 12
+      articles, the RSS feed 30, and the sitemap's 12 are a strict subset of
+      the RSS 30. The 18 it missed were not a random sample -- they were
+      overwhelmingly the model launches, which is the highest-signal category
+      this product has. Gemini 3.6 Flash, 3.7 Flash, 3.8 Flash and 3.8 Flash
+      Cyber, Gemma 4 12B, DiffusionGemma, Nano Banana 2 Lite, Gemini Omni 1.1
+      Flash, Gemini 3.5 Transcribe, computer use in Gemini 3.5 Flash, Gemini
+      Robotics ER 2, WeatherNext 3 and Lyria 3.5 were all absent. What the
+      sitemap did carry was the education, policy and programme posts. The
+      register therefore read as though DeepMind shipped nothing but outreach
+      for three months.
+
+      The sitemap is not stale, it is not a blog index: 731 URLs total, of
+      which 347 match /blog/, against a blog with far more history than that,
+      and 267 of the 347 carry an identical 2026-07 <lastmod> from a bulk
+      re-render. Its <lastmod> was already only trusted as a coarse
+      prefilter, and that was the right call -- but a prefilter cannot
+      recover a URL the document never listed.
+
+      RSS carries a real pubDate per item, so `date_from: feed` replaces
+      reading the date off the page. That also fixes a drift the page path
+      had: it dated "Securing the future of AI agents" to 2026-06-18 against
+      the feed's 06-16, and Gemini Robotics 2 to 07-30 against 07-28, because
+      the first "Month D, YYYY" in the stripped text is not always the
+      article's own.
+
+      Feed depth is the one thing to watch. It holds 100 items reaching back
+      to 2026-01, comfortably past a 3-month window, but it is a fixed-length
+      feed rather than a paginated archive -- if `window_months` is ever
+      raised much beyond 6, this stops being sufficient on its own.
+
+      `from_rss` fetches each item's page for the real article text because
+      `text_source: full_text` is set. Some article URLs 302-redirect
+      off-domain to blog.google; urllib follows redirects by default, so this
+      needs no fetch-layer code.
+
+      Feed <link> values carry a trailing slash where the sitemap path
+      stripped it, so every DeepMind URL changes form on this switch. URL is
+      the unique key on `raw_articles`, so this needs a `bitcap-db rebuild`
+      rather than an incremental load, or the 12 old rows persist alongside
+      their 30 replacements.
 
   - id: mistral
     label: Mistral AI
@@ -202,6 +238,56 @@ labs:
       No structured date metadata found on article pages (no OpenGraph
       tags, no JSON-LD) -- date is read from visible page text, same regex
       every page-sourced lab already uses.
+
+      This channel is not broken and was checked rather than assumed (D63).
+      Crawled to exhaustion on 2026-09-05: 231 unique articles reaching back
+      to 2019, of which exactly 5 are inside a 3-month window, and the
+      register holds all 5. ai.meta.com/blog is simply quiet -- its newest
+      post was 40 days old on the day this was measured. Two things about it
+      are worth knowing before trusting a future count. The listing is not
+      reverse-chronological: page 1 carried March, April, June and July posts
+      together, because five sticky "featured" items repeat on every page.
+      And `from_listing_pagination` stops at the first page with no in-window
+      article, which on a listing ordered like this could stop early -- it
+      does not today only because the sticky block sits on page 1.
+    also:
+      - method: rss
+        enabled: true
+        index_url: https://about.fb.com/news/tag/ai/feed/
+        feed_pages: 3
+        feed_page_param: paged
+        notes: >
+          Second channel, because ai.meta.com/blog is not where Meta's
+          investment-relevant AI news lands. Meta Newsroom's AI tag carried
+          the BlackRock data-centre joint venture, the Reliance AI data centre
+          in India, the Louisiana and Canada data-centre expansions and
+          "Infrastructure Explained: Compute Power" -- none of which appear on
+          the AI blog at all. For a fund whose exposure to Meta runs through
+          capex into the compute and energy complex, that is the highest-value
+          Meta signal there is, and the register had none of it.
+
+          Measured 2026-09-05: 15 in-window items, against 5 from the blog.
+          Two of the 15 restate blog posts (Muse Image, Muse Spark) at a
+          different URL, which is what the dedupe gates exist for -- the exact
+          pass will not catch them (different titles) but the cosine band
+          will, and this is the same shape as the openai.com/community.openai
+          pair already handled there.
+
+          It is a corporate newsroom rather than a research blog, so it also
+          carries programme and CSR posts ("Facebook Verified", "America's
+          Workforce Academy"). Those are left to the signal filter rather than
+          removed by a keyword rule here: a filter that silently drops a real
+          launch is a worse failure than a low-scoring row, and this pipeline
+          already has a scorer whose job is exactly that judgement.
+
+          `feed_pages: 3` because the feed serves ten items per page and page
+          1 reached only 2026-07-07 -- short of a 3-month window. Pages 1-2
+          cover to 2026-04-28, and the third is margin against a slower month
+          or a longer `window_months`. Confirmed live that `?paged=N` is
+          honoured and that pages carry distinct items.
+
+          Inherits `user_agent: ""` from the entry above. Confirmed live that
+          both the feed and its article pages serve 200 to a blank agent.
 
   - id: xai
     label: xAI / SpaceXAI

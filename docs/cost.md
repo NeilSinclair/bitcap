@@ -582,3 +582,44 @@ classification model changes, not on a cadence. Had it run nightly it would have
 been ~$4.60/month on top of the announcement check's ~$22.
 
 **Running total across all workflows: ~$18.20.**
+
+### DeepMind and Meta coverage fix (2026-09-05)
+
+D63 switched DeepMind to its blog RSS feed and added Meta's newsroom AI feed,
+taking the corpus from 259 to 292 articles. 45 articles needed classifying under
+`v9`, `claude-sonnet-5`.
+
+| | |
+|---|---|
+| articles classified | 45 (30 DeepMind, 15 Meta) |
+| **cost** | **$1.6545** |
+| of which the retry | $0.0853 |
+| effective rate | ~$0.0368/article |
+
+Two things about that number are worth naming rather than averaging away.
+
+**It ran 43% over the $0.0258/article estimate** this file records elsewhere.
+The estimate was not wrong, the articles are longer: DeepMind blog posts run a
+median 11.2k characters against a corpus mean well under that, and the single
+largest Meta item ("The Future is for Everyone") is 47k. Per-article cost tracks
+input length, so a lab's cost per article is a property of that lab.
+
+**30 DeepMind articles were billed where 18 were new.** The feed's `<link>`
+carries a trailing slash the sitemap path stripped, so all 12 pre-existing
+DeepMind articles changed URL form, and URL is the score cache's key.
+**$0.3638 of this run — 22% of it — was re-asking an unchanged question of
+unchanged text under a new key**, against $1.2907 for the 33 genuinely new
+articles. Worth knowing before any future change to how a source's URLs are
+normalised: it is the same class of avoidable spend the version decision above
+was careful about, and unlike a version bump it buys nothing at all.
+
+One call failed mid-run on a transient `incomplete chunked read` and was retried
+individually, at $0.0853. **The failed attempt is not in the ledger, and that is
+a gap rather than a decision.** D17's convention covers a call the API billed
+whose output failed to parse; this is the other case — the response died in
+transport, so no usage was ever returned to record. Whether it was billed is not
+knowable from here. It is one call and the amount is immaterial, but the ledger
+should not be read as complete to the cent on a run that had a transport
+failure.
+
+**Running total across all workflows: ~$19.85.**

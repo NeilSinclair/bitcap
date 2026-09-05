@@ -6478,3 +6478,118 @@ link count looks like. This repo does not choose thresholds by eye
 somebody to mute the channel. Recorded as the open gap, not queued: the honest
 prerequisite is a labelled set, which is the cost of the detector rather than a
 detail of it.
+
+## D63 — Google DeepMind and Meta AI were under-covered, for two different reasons
+
+Neil noticed the register held almost nothing from either lab. It held 12
+DeepMind announcements and 5 Meta ones across a three-month window. The two
+turned out to have nothing in common except the symptom.
+
+### DeepMind: the sitemap does not enumerate the blog
+
+`method: sitemap` on `deepmind.google/sitemap.xml`, chosen in D14 "for parity
+with Anthropic's proven path". Every observable said it was working: 200s, a
+clean parse, real dates, and every article it returned genuinely in window. It
+was reading a document that does not list most of the blog.
+
+Measured 2026-09-05 against `deepmind.google/blog/rss.xml`: **sitemap 12, RSS
+30, and the sitemap's 12 a strict subset of the RSS 30.** The 18 it missed were
+not a random sample. They were the launches — Gemini 3.6, 3.7, 3.8 Flash and 3.8
+Flash Cyber, Gemma 4 12B, DiffusionGemma, Nano Banana 2 Lite, Gemini Omni 1.1
+Flash, Gemini 3.5 Transcribe, computer use in Gemini 3.5 Flash, Gemini Robotics
+ER 2, WeatherNext 3, Lyria 3.5. What the sitemap *did* carry was the education,
+policy and programme posts. The register therefore said DeepMind shipped nothing
+but outreach for three months, which is close to the opposite of the truth.
+
+The sitemap is not stale, it is the wrong document: 731 URLs, 347 matching
+`/blog/`, against a blog with far more history than that, and 267 of the 347
+carrying an identical `2026-07` `<lastmod>` from a bulk re-render. The existing
+code was right to treat `<lastmod>` as a coarse prefilter only. A prefilter
+cannot recover a URL the document never listed.
+
+Switched to `method: rss`, `date_from: feed`. That also fixes a date drift the
+page-reading path had — 06-18 against the feed's 06-16 for "Securing the future
+of AI agents", 07-30 against 07-28 for Gemini Robotics 2 — because the first
+"Month D, YYYY" in a stripped DeepMind page is not reliably the article's own.
+
+**Alternative rejected: keep the sitemap as a second channel.** The `also:`
+mechanism exists and D47's whole lesson is that one feed fails silently. It
+buys nothing here — the sitemap's in-window set is a strict subset of the
+feed's — and costs ~276 article fetches per run to confirm that. The feed's own
+failure mode is depth, not omission: 100 items reaching back to 2026-01, noted
+in the config as the thing to watch if `window_months` is ever raised.
+
+### Meta: nothing was broken, the blog is quiet
+
+The opposite finding, and worth stating plainly because the instinct was to fix
+it. `from_listing_pagination` against `ai.meta.com/blog/` is correct. Crawled to
+exhaustion: 231 unique articles back to 2019, of which exactly 5 are in window,
+and the register held all 5. Meta's AI blog had not published in 40 days.
+
+Two properties of that listing are worth knowing before trusting a future count.
+It is **not reverse-chronological** — page 1 carried March, April, June and July
+posts together, because five sticky "featured" items repeat on every page. And
+`from_listing_pagination` stops at the first page with no in-window article,
+which on a listing ordered like this could stop early. It does not today only
+because the sticky block sits on page 1. Recorded, not fixed: changing the
+stopping rule without a listing that actually needs it is speculative.
+
+The real gap was that `ai.meta.com/blog` is not where Meta's investment-relevant
+AI news lands. Added `about.fb.com/news/tag/ai/feed/` as a second channel: **15
+in-window items against the blog's 5**, carrying the BlackRock data-centre joint
+venture, the Reliance AI data centre in India, the Louisiana and Canada
+expansions and "Infrastructure Explained: Compute Power" — none of which appear
+on the AI blog at all. For a fund whose Meta exposure runs through capex into
+the compute and energy complex, that is the highest-value Meta signal there is,
+and the register had none of it.
+
+**Alternative rejected: filter the newsroom feed to infra and product.** It also
+carries CSR and programme posts ("Facebook Verified", "America's Workforce
+Academy"). A keyword rule would raise signal-to-noise at ingestion, and a filter
+that silently drops a real launch is a worse failure than a low-scoring row.
+This pipeline already has a scorer whose entire job is that judgement, and it
+did it: the four data-centre items band `high`, the CSR posts band `none`.
+
+**Not done: impersonating `facebookexternalhit`.** `ai.meta.com`'s sitemap is
+gated to named crawler agents, which robots.txt allows by name, and sending that
+agent would open it. That is a statement about that crawler and not about us,
+and the same robots.txt opens by prohibiting automated collection outright. The
+listing is a published surface reachable as ourselves; the sitemap is not.
+
+### Two traps this switch set, both real
+
+**URL identity.** The feed's `<link>` carries a trailing slash where the sitemap
+path stripped it, so all 12 pre-existing DeepMind articles changed URL form. URL
+is the unique key on `raw_articles` and on the score cache, so every one of them
+became a cache miss — 30 articles to classify, not 18 — and the run needs a
+`bitcap-db rebuild` rather than an incremental load, or the 12 old rows persist
+beside their replacements. The scored register merges by URL and never prunes,
+so it also had to be pruned of the 12 superseded rows by hand.
+
+**Entity encoding in RSS titles.** `from_rss` never unescaped `<title>`, which
+was invisible while every configured feed served real UTF-8. `about.fb.com`
+serves numeric entities, so the channel would have stored `Meta&#8217;s AI`
+verbatim. Not cosmetic: the title is what dedupe's exact gate matches on and
+what it embeds, and `strip_html`'s docstring already records this exact class of
+bug costing 9 of 90 verbatim quote checks. Fixed in `from_rss`; a no-op on all
+292 existing rows.
+
+### Consequence
+
+Corpus 259 -> 292. DeepMind 12 -> 30, Meta 5 -> 20. Eight new `high` band items,
+four of them scoring 100.0 (see `docs/insights.md`).
+
+**The test that would have caught this does not exist and cannot be written with
+a mock.** A stubbed sitemap returns exactly the URLs the test author puts in it,
+so a unit test of `from_sitemap` passes just as happily against a document
+listing nothing. `TestDeepMindDiscoveryChannel` in `tests/test_announcements.py`
+instead pins the two things checkable offline: the configured channel, and a
+coverage floor of 20 in the committed register with an explicit assertion that
+the named launches are present — a count alone could be met while still missing
+every launch, which is precisely the shape of the original failure. Both
+assertions were verified to fail against the pre-fix register.
+
+**The general gap remains open.** Nothing detects a discovery channel that
+silently narrows on a lab this exercise did not touch. The honest prerequisite
+is a per-lab expected-cadence baseline, which is the cost of that detector
+rather than a detail of it — same reasoning as D61's link-count arm.

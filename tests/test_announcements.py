@@ -36,6 +36,17 @@ def rules():
     return yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
 
 
+@pytest.fixture(scope="module")
+def deepmind():
+    config = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
+    return next(l for l in config["labs"] if l["id"] == "google-deepmind")
+
+
+@pytest.fixture(scope="module")
+def register():
+    return json.loads((ROOT / "research" / "docs" / "announcements.json").read_text())
+
+
 def score_of(result, rules):
     """Import lazily: score_announcements imports the anthropic SDK."""
     from score_announcements import score_of as fn
@@ -2506,3 +2517,228 @@ class TestOnePromptVersionConstant:
         assert path.exists(), (
             f"PROMPT_VERSION is {PROMPT_VERSION} but {path.name} is missing -- "
             "every call would fail at read time")
+
+
+class TestDeepMindDiscoveryChannel:
+    """The channel that silently under-covered Google DeepMind (D63).
+
+    `method: sitemap` on deepmind.google/sitemap.xml looked healthy from every
+    angle the pipeline could see: the fetch returned 200, the parse succeeded,
+    the dates were real and every article it did return was genuinely in
+    window. It was simply reading a document that does not enumerate the blog,
+    and 18 of 30 in-window articles never existed as far as the register was
+    concerned -- among them Gemini 3.6, 3.7 and 3.8 Flash, Gemma 4 and
+    DiffusionGemma, which is the single highest-signal category this product
+    has.
+
+    No mock can catch that: a stubbed sitemap returns exactly the URLs the test
+    author put in it, so a unit test of `from_sitemap` passes just as happily
+    against a document listing nothing. These tests therefore pin the two
+    things that are checkable offline -- the configured channel, and the
+    coverage actually present in the committed register.
+    """
+
+    def test_discovery_is_the_blog_feed_not_the_site_sitemap(self, deepmind):
+        assert deepmind["method"] == "rss"
+        assert deepmind["index_url"] == "https://deepmind.google/blog/rss.xml"
+
+    def test_the_date_comes_from_the_feed_not_the_page(self, deepmind):
+        """Page-read dates drifted: 06-18 against the feed's 06-16 for
+        "Securing the future of AI agents", because the first "Month D, YYYY"
+        in a stripped DeepMind page is not reliably the article's own."""
+        assert deepmind["date_from"] == "feed"
+
+    def test_coverage_has_not_fallen_back_to_sitemap_depth(self, register):
+        """The floor that fails if discovery silently narrows again.
+
+        The sitemap yielded 12 articles where the feed yields 30 over the same
+        window. 20 sits below the observed feed depth -- DeepMind's cadence
+        varies and this must not fail on a quiet month -- and well above the
+        12 the broken channel produced.
+        """
+        found = [a for a in register if a["lab"] == "google-deepmind"]
+        assert len(found) >= 20, (
+            f"DeepMind coverage is {len(found)} articles; the sitemap channel "
+            "that D63 replaced produced 12. Check the feed still enumerates "
+            "the blog before lowering this floor.")
+
+    def test_the_model_launches_are_in_the_register(self, register):
+        """The 18 missed articles were not a random sample of the blog.
+
+        What the sitemap did carry was the education, policy and programme
+        posts, so a count alone could be met while still missing every launch.
+        """
+        titles = " ".join(a["title"].lower() for a in register
+                          if a["lab"] == "google-deepmind")
+        for launch in ("gemini 3.6", "gemini 3.7", "gemini 3.8", "gemma 4"):
+            assert launch in titles, f"{launch} missing from DeepMind coverage"
+
+    def test_every_deepmind_article_carries_the_text_it_claims(self, register):
+        """`text_source` must describe what was read, never what was asked
+        for: a score computed from a two-line summary must never be compared
+        against one computed from a full article."""
+        for a in (a for a in register if a["lab"] == "google-deepmind"):
+            if a["text_source"] == "full_text":
+                assert len(a["text"]) > 1000, f"thin full_text: {a['url']}"
+            else:
+                assert a["text_source"] == "rss_summary", a["text_source"]
+
+
+class TestFromRssPaging:
+    """Paged feeds, added for about.fb.com (D63), which serves ten items a page.
+
+    The silent failures these catch: a page-2 request that quietly returns
+    page 1 again and doubles every article; a feed shorter than its configured
+    page count raising instead of stopping; and the user-agent regression that
+    paging nearly introduced -- threading a UA through `fetch` turns an absent
+    `user_agent` key into "send no override", which is not what the RSS labs
+    configured before this relied on.
+    """
+
+    def _paged(self, pages):
+        """A fake fetch serving a different single-item feed per page."""
+        def fake_fetch(url, **kw):
+            if "?" in url:
+                n = int(url.split("=")[-1])
+            elif url.startswith("https://feed.example/rss"):
+                n = 1
+            else:
+                return "<html><body><p>body</p></body></html>"
+            return pages.get(n, "<rss><channel></channel></rss>")
+        return fake_fetch
+
+    def test_one_page_by_default(self, monkeypatch):
+        seen = []
+
+        def fake_fetch(url, **kw):
+            seen.append(url)
+            return _rss_xml()
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "mistral", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        from_rss(lab, datetime(2025, 1, 1))
+        assert seen == ["https://feed.example/rss"]
+
+    def test_feed_pages_reads_each_page_and_keeps_every_item(self, monkeypatch):
+        pages = {
+            1: _rss_xml(title="One", link="https://x.example/1"),
+            2: _rss_xml(title="Two", link="https://x.example/2"),
+            3: _rss_xml(title="Three", link="https://x.example/3"),
+        }
+        monkeypatch.setattr(fetch_announcements, "fetch", self._paged(pages))
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 3}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert [a["title"] for a in out] == ["One", "Two", "Three"]
+
+    def test_the_page_param_is_configurable(self, monkeypatch):
+        seen = []
+
+        def fake_fetch(url, **kw):
+            seen.append(url)
+            return _rss_xml(link=f"https://x.example/{len(seen)}")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 2,
+               "feed_page_param": "paged"}
+        from_rss(lab, datetime(2025, 1, 1))
+        assert seen[1] == "https://feed.example/rss?paged=2"
+
+    def test_an_item_repeated_across_pages_is_stored_once(self, monkeypatch):
+        """A feed repaginates as new posts land, so the same item can appear on
+        two pages of one sweep."""
+        same = _rss_xml(title="Dup", link="https://x.example/same")
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            self._paged({1: same, 2: same}))
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 2}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert len(out) == 1
+
+    def test_a_feed_shorter_than_its_page_count_stops_rather_than_failing(self, monkeypatch):
+        monkeypatch.setattr(fetch_announcements, "fetch", self._paged(
+            {1: _rss_xml(link="https://x.example/1")}))
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 5}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert len(out) == 1
+
+    def test_a_failing_page_keeps_what_earlier_pages_found(self, monkeypatch):
+        def fake_fetch(url, **kw):
+            if url.endswith("=2"):
+                raise RuntimeError("fetch failed: 503")
+            return _rss_xml(link="https://x.example/1")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 3}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert len(out) == 1
+
+    def test_an_absent_user_agent_key_keeps_the_module_default(self, monkeypatch):
+        """The regression paging nearly introduced: every RSS lab configured
+        before D63 relied on `fetch`'s own default browser agent."""
+        seen = {}
+
+        def fake_fetch(url, **kw):
+            seen[url] = kw.get("user_agent", "NOT PASSED")
+            return _rss_xml()
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "mistral", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        from_rss(lab, datetime(2025, 1, 1))
+        assert seen["https://feed.example/rss"] == fetch_announcements.UA
+
+    def test_an_explicit_empty_user_agent_sends_no_override(self, monkeypatch):
+        """ai.meta.com 400s on any browser-shaped agent; its newsroom channel
+        inherits the cleared key, and the article fetch needs it too."""
+        seen = {}
+
+        def fake_fetch(url, **kw):
+            seen[url] = kw.get("user_agent", "NOT PASSED")
+            if url == "https://feed.example/rss":
+                return _rss_xml(link="https://x.example/a")
+            return "<html><body><p>body</p></body></html>"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "full_text", "user_agent": ""}
+        from_rss(lab, datetime(2025, 1, 1))
+        assert seen["https://feed.example/rss"] is None
+        assert seen["https://x.example/a"] is None
+
+
+class TestFromRssTitleEncoding:
+    """about.fb.com serves numeric entities where every feed configured before
+    it served real UTF-8, so an unescaped title stored `Meta&#8217;s AI`
+    verbatim. The title is what dedupe's exact gate matches on and what it
+    embeds, so this is the same class of fault `strip_html` unescapes twice to
+    avoid -- there it cost 9 of 90 verbatim quote checks.
+    """
+
+    def test_numeric_entities_are_decoded(self, monkeypatch):
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            lambda url, **kw: _rss_xml(title="Meta&#8217;s AI"))
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert out[0]["title"] == "Meta’s AI"
+
+    def test_double_encoded_entities_are_decoded(self, monkeypatch):
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            lambda url, **kw: _rss_xml(title="Meta&amp;#8217;s AI"))
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert out[0]["title"] == "Meta’s AI"
+
+    def test_a_plain_utf8_title_is_unchanged(self, monkeypatch):
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            lambda url, **kw: _rss_xml(title="Gemini’s guided learning"))
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert out[0]["title"] == "Gemini’s guided learning"

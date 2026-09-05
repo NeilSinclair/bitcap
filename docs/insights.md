@@ -148,3 +148,50 @@ DeepMind's safety and social-science work, and *"A moral Turing test"* and
 score 0.0 on both axes. 33 of 47 papers score zero for investors. That is the
 result, not a shortfall: if those papers scored, they would bury the eight that
 matter.
+
+---
+
+**Meta's most investment-relevant AI news is not on its AI blog, and the four
+highest-scoring items in the whole register came from a feed we were not
+reading.** D63 added `about.fb.com/news/tag/ai/feed/`. Four items band `high` at
+a saturated 100.0, all of them compute buildout, none present on
+`ai.meta.com/blog` in any form:
+
+| date | item | what the scorer quoted |
+|---|---|---|
+| 2026-07-28 | BlackRock joint venture, El Paso | 1 GW campus, "$14 billion in total development costs", funded partly by a "$12.5 billion debt financing" |
+| 2026-07-13 | Louisiana expansion | "more than $50 billion in the Richland Parish region", to 5 GW, and an Entergy agreement funding "seven new natural gas-fueled generating plants, three grid-scale batteries, nuclear uprates" |
+| 2026-07-08 | First data centre in Canada | new-region buildout |
+| 2026-06-10 | Reliance joint venture, India | AI-enabled data centre |
+
+The El Paso item is the one to look at twice. `lab_capital_access` fired on it
+because Meta is funding the buildout through an external partner and debt rather
+than its own balance sheet — a *financing-structure* change, not a spending
+number, and the kind of thing a capex headline usually buries. That is the
+transmission mechanism BIT is actually trading (`ai_capex_investments`, per the
+Micron finding above), sourced to a primary document.
+
+Worth stating honestly: four items at exactly 100.0 is the ceiling being hit,
+not four things being equally important. The scale stops discriminating at the
+top, and a fund reading this wants El Paso and Richland Parish ranked against
+each other, not tied. That is a scoring-calibration gap, not a data one.
+
+**The register said Google DeepMind shipped nothing but outreach for three
+months.** It was reading a sitemap that does not enumerate the blog (D63), and
+what that sitemap carried was the education, policy and programme posts while
+omitting Gemini 3.6, 3.7 and 3.8 Flash, Gemma 4 12B and DiffusionGemma. The
+single most forward-looking sentence recovered by the fix is buried in the
+3.6 Flash post, in a paragraph about something else:
+
+> We have started our most ambitious pre-training run yet, for Gemini 4, and are
+> excited by the progress.
+
+A lab disclosing that its next flagship pre-training run is underway is a
+`training_compute_up` signal with a date on it. The system had no idea, and the
+failure that hid it reported success on every run.
+
+The counterweight, again: those launches mostly band `low` (Gemini 3.6 Flash at
+26.7, 3.5 Flash Cyber at 13.3) while the data-centre posts band `high`. An
+incremental Flash release genuinely is not a portfolio event and the compute
+commitments genuinely are — the scorer preferring capex to model numbering is
+the product working, not a mis-weighting.
