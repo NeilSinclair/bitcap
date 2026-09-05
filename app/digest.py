@@ -174,6 +174,7 @@ def build(
     prompt_version: str,
     end: datetime,
     config: dict | None = None,
+    quantise: bool = True,
 ) -> dict:
     """Select and render one audience's digest for the window ending at `end`.
 
@@ -186,6 +187,12 @@ def build(
         prompt_version: Which classification run to read.
         end: Right edge of the publication window.
         config: Parsed config; read from disk when omitted.
+        quantise: Snap the window to the fixed grid and take the last *complete*
+            period. True for anything that publishes — the grid is what makes
+            `publish` idempotent and consecutive editions a partition. False for
+            the unpersisted preview, which takes the rolling `[end - W, end]`
+            instead: quantised, the preview's newest day is always the one that
+            closed, so on the 5th it read "up to the 3rd" and looked stale.
 
     Returns:
         ``{"kind", "window_start", "window_end", "stats", "items"}``. `stats`
@@ -200,7 +207,13 @@ def build(
         raise ValueError(f"unknown digest kind: {kind!r}")
 
     config = config or settings()
-    start, end = window_for(end, config)   # `end` becomes the period boundary
+    if quantise:
+        start, end = window_for(end, config)   # `end` becomes the period boundary
+    else:
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
+        end = end.astimezone(timezone.utc)
+        start = end - timedelta(hours=config["window_hours"])
     rules = config[kind]
 
     labs = {r.id: r.label for r in session.scalars(select(m.RefLab))}

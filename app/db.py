@@ -134,6 +134,49 @@ def create_all(engine: Engine) -> None:
     Base.metadata.create_all(engine)
 
 
+class SchemaDrift(RuntimeError):
+    """The database does not have the columns the models declare.
+
+    Raised rather than warned. Every alternative is worse: carrying on means the
+    first query touching the missing column fails at some arbitrary later point,
+    in whichever of the API, the worker or the CLI happens to reach it first,
+    with a DBAPI error that names a column and not a cause.
+    """
+
+
+def _missing_columns(engine: Engine) -> dict[str, list[str]]:
+    """Columns the models declare that the live database does not have.
+
+    Presence only — never types or nullability. A column that is absent is
+    unambiguous in every dialect; a type that renders differently under sqlite
+    and Postgres is not, and a drift check that cries wolf gets deleted.
+    Columns the database has and the models do not are ignored: that is a
+    downgrade or a hand-added column, neither of which breaks a query we issue.
+
+    Args:
+        engine: Engine to inspect.
+
+    Returns:
+        table -> sorted missing column names, for tables that have any. Empty
+        when the database is consistent with the models.
+    """
+    from sqlalchemy import inspect
+
+    from app.models import Base
+
+    insp = inspect(engine)
+    live = set(insp.get_table_names())
+    drift: dict[str, list[str]] = {}
+    for table in Base.metadata.sorted_tables:
+        if table.name not in live:
+            continue
+        have = {c["name"] for c in insp.get_columns(table.name)}
+        gap = sorted(c.name for c in table.columns if c.name not in have)
+        if gap:
+            drift[table.name] = gap
+    return drift
+
+
 def ensure_schema(engine: Engine) -> str:
     """Bring the database up to the current schema, however it got here.
 
@@ -151,12 +194,32 @@ def ensure_schema(engine: Engine) -> str:
     Alembic sees a current stamp and would correctly do nothing, so something
     still has to put the dropped tables back.
 
+    **Every path runs a drift check, ahead of `create_all`, and the ordering is
+    load-bearing rather than incidental.**
+    `create_all` creates missing *tables*; it cannot add a missing *column* to a
+    table that already exists. So on a database that already had tables but no
+    stamp, the first branch used to no-op and then assert `head` — declaring a
+    structurally-behind database current, permanently, because no later
+    `upgrade` will ever run a revision the stamp says is already applied. The
+    column-only migration 0008 landed exactly this way: the stamp read `0008`
+    and `alerts.acknowledged_at` did not exist. Nothing failed until a query
+    touched the column, far from the cause.
+
+    The check covers the stamped path too, where the same lie can arrive
+    pre-existing, and it is what makes the stamp a claim this function verifies
+    rather than one it merely makes.
+
     Args:
         engine: Engine to bring up to date.
 
     Returns:
         What was done — ``stamped`` for a database Alembic had never seen,
         ``upgraded`` otherwise.
+
+    Raises:
+        SchemaDrift: The database is missing columns the models declare, and no
+            migration can be run to add them because the version it is stamped
+            at already claims to include them.
     """
     from pathlib import Path
 
@@ -172,7 +235,15 @@ def ensure_schema(engine: Engine) -> str:
         stamped = MigrationContext.configure(conn).get_current_revision()
 
     if stamped is None:
-        # Never migrated: build everything and record where we are.
+        # Never migrated. The check runs before `create_all`, not just before
+        # the stamp, and the ordering is the whole fix. `create_all` has no
+        # checkfirst at the migration level: on a database built at an older
+        # revision it happily creates the tables that *later* migrations own,
+        # and the recovery this function prints — stamp the revision it really
+        # matches, then upgrade — then dies on "table already exists", which is
+        # D29 all over again. Checking first leaves the database untouched, so
+        # the printed recovery actually runs.
+        _raise_on_drift(engine)
         create_all(engine)
         command.stamp(cfg, "head")
         return "stamped"
@@ -186,8 +257,43 @@ def ensure_schema(engine: Engine) -> str:
     # by definition, so `upgrade` is a no-op for it: create_all after the
     # upgrade restores the derived layer without ever racing a migration.
     command.upgrade(cfg, "head")
+    # Checked after the upgrade (which is what fixes a schema) but before
+    # `create_all`, for the same reason as above: a *wrongly* stamped database
+    # reaches here, `upgrade` correctly no-ops against it, and letting
+    # `create_all` run first would pre-create the tables its real recovery still
+    # has to migrate. `create_all` only ever adds whole missing tables, at model
+    # shape, so nothing it does could turn a passing check into a failing one.
+    _raise_on_drift(engine)
     create_all(engine)
     return "upgraded"
+
+
+def _raise_on_drift(engine: Engine) -> None:
+    """Fail with a recovery instruction, or return.
+
+    The message carries the fix because the person who hits this is not the
+    person who wrote the migration, and "column does not exist" three layers
+    down a stack trace tells them nothing about `alembic stamp`.
+
+    The revision is re-read here rather than passed in from the top of
+    `ensure_schema`. On the stamped path an `upgrade` has run in between, so the
+    value captured earlier is stale, and the message would name a revision the
+    database has already moved off while asserting `upgrade head` cannot help.
+    """
+    drift = _missing_columns(engine)
+    if not drift:
+        return
+    from alembic.runtime.migration import MigrationContext
+
+    with engine.connect() as conn:
+        stamped = MigrationContext.configure(conn).get_current_revision()
+    detail = "; ".join(f"{t}: {', '.join(cols)}" for t, cols in sorted(drift.items()))
+    raise SchemaDrift(
+        f"database is missing columns the models declare ({detail}). "
+        f"It is stamped {stamped or 'nothing'}, so `alembic upgrade head` will "
+        "not add them. Stamp the revision the database actually matches, then "
+        "upgrade: `alembic stamp <revision>` && `alembic upgrade head`."
+    )
 
 
 def drop_all(engine: Engine) -> None:

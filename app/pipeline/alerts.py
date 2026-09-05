@@ -445,7 +445,9 @@ def dispatch(
         channel: Override the configured channel.
 
     Returns:
-        ``{raised, duplicate, delivered, suppressed, failed}``.
+        ``{raised, duplicate, reopened, delivered, suppressed, failed}``.
+        `reopened` counts alerts whose acknowledgement this firing withdrew
+        because the rules produced their episode key again.
     """
     config = config if config is not None else settings()
     channel = channel or config.get("channel", "stdout")
@@ -454,7 +456,8 @@ def dispatch(
     if send is None:
         raise ValueError(f"unknown alert channel {channel!r}")
 
-    stats = {"raised": 0, "duplicate": 0, "delivered": 0, "suppressed": 0, "failed": 0}
+    stats = {"raised": 0, "duplicate": 0, "reopened": 0,
+             "delivered": 0, "suppressed": 0, "failed": 0}
     fresh: list[m.Alert] = []
 
     for candidate in candidates:
@@ -463,6 +466,18 @@ def dispatch(
         )
         if exists is not None:
             stats["duplicate"] += 1
+            # A duplicate is proof the condition is still live, and this is the
+            # only place in the system that knows it. Dedupe keys identify the
+            # *episode* and deliberately do not move while a fault continues —
+            # `source_down` keys on `last_success_at` precisely so a week-long
+            # outage is one alert. That is what makes acknowledgement dangerous
+            # on its own: an operator clears the badge, the source stays down,
+            # no new row is ever written, and the badge stays green through the
+            # entire outage. Acknowledging is a claim the fault had settled; the
+            # rules regenerating the same key withdraws that claim.
+            if exists.acknowledged_at is not None:
+                exists.acknowledged_at = None
+                stats["reopened"] += 1
             continue
         alert = m.Alert(
             kind=candidate.kind, rule=candidate.rule, severity=candidate.severity,
@@ -514,6 +529,42 @@ def recent(session: Session, kind: str | None = None, limit: int = 50) -> list[d
             "created_at": a.created_at.isoformat() if a.created_at else None,
             "sent_at": a.sent_at.isoformat() if a.sent_at else None,
             "delivery_error": a.delivery_error, "run_id": a.run_id,
+            "acknowledged_at": a.acknowledged_at.isoformat() if a.acknowledged_at else None,
         }
         for a in session.scalars(query)
     ]
+
+
+def acknowledge(session: Session, kind: str = "system") -> int:
+    """Mark every unacknowledged alert of one kind as seen. Returns how many.
+
+    Acknowledgement is the only thing this clears: the rows stay in the history
+    and the ops page still lists them, marked. What it resets is the header
+    badge, which counts unacknowledged system alerts and stays red until someone
+    says they have seen them — nothing ages out by itself.
+
+    **A live fault reopens this, and that safety property lives in `dispatch`,
+    not here.** It is tempting to argue that a still-broken source raises a new
+    alert on its next firing — it does not. Dedupe keys identify the *episode*
+    and hold still while a fault continues (`source_down` keys on
+    `last_success_at` for exactly that reason), so nothing new is ever written
+    during an outage. Acknowledging alone would therefore green the badge for
+    the whole of it. `dispatch` closes that: when the rules regenerate a key
+    whose row is acknowledged, it clears `acknowledged_at` and the badge
+    reddens on the next firing.
+
+    Args:
+        session: Open session; the caller commits.
+        kind: `system` or `content`.
+
+    Returns:
+        Number of alerts acknowledged.
+    """
+    rows = list(session.scalars(
+        select(m.Alert).where(m.Alert.kind == kind, m.Alert.acknowledged_at.is_(None))
+    ))
+    now = datetime.now(timezone.utc)
+    for row in rows:
+        row.acknowledged_at = now
+    session.flush()
+    return len(rows)

@@ -133,6 +133,11 @@ function OpsView() {
   const [drift, setDrift] = useState([]);
   const [kind, setKind] = useState("system");
   const [error, setError] = useState(null);
+  const [clearing, setClearing] = useState(false);
+  // Bumped after acknowledging, to re-run the fetches below rather than
+  // duplicating their URLs in the handler — two ways to build the same request
+  // is two places for the `kind` filter to drift out of agreement.
+  const [reload, setReload] = useState(0);
 
   // A 500 from FastAPI has a valid JSON body, so a bare `r.json()` *resolves*
   // and `.catch` never fires: `runs` would be set to {detail: "..."} and the
@@ -146,31 +151,53 @@ function OpsView() {
     ])
       .then(([h, r, d]) => { setHealth(h); setRuns(r); setDrift(d); })
       .catch((e) => setError(String(e)));
-  }, []);
+  }, [reload]);
 
   useEffect(() => {
     const params = new URLSearchParams({ limit: "40" });
     if (kind !== "all") params.set("kind", kind);
     apiFetch(`/api/alerts?${params}`)
       .then(setAlerts).catch((e) => setError(String(e)));
-  }, [kind]);
+  }, [kind, reload]);
+
+  // Acknowledge, not delete. The rows below stay exactly as they are; what this
+  // resets is the header badge, which counts *unacknowledged* system alerts —
+  // all of them, with no time window, so nothing goes quiet on its own.
+  //
+  // Safe to offer because the pipeline takes the acknowledgement back on its
+  // own: anything still broken makes the rules re-emit the same episode key,
+  // and dispatch un-acknowledges the row. The operator is not being asked to
+  // judge what has settled.
+  function clearAlerts() {
+    setClearing(true);
+    apiFetch("/api/alerts/acknowledge", { method: "POST" })
+      .then(() => setReload((n) => n + 1))
+      .catch((e) => setError(String(e)))
+      .finally(() => setClearing(false));
+  }
 
   const spend = health?.spend;
   const latest = health?.latest_run;
   const failing = health?.sources_failing || [];
   const wobbling = health?.sources_wobbling || [];
   const threshold = health?.escalation_threshold ?? 3;
+  // Pre-rename key as a fallback, for the deploy window in which this bundle is
+  // live against an API that has not shipped yet (see frontend/app/page.js).
+  const outstanding =
+    health?.unacknowledged_system_alerts ?? health?.recent_system_alerts ?? 0;
 
   return (
     <div className="app">
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: "1px solid var(--border)", background: "var(--bg-2)" }}>
           <div className="serif" style={{ fontSize: 18 }}>Pipeline health</div>
-          <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
-          <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
-          <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Digest</a>
-          <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
-          <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
+            <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
+            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
+            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
+            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+          </div>
         </div>
 
         <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 32, maxWidth: 1100 }}>
@@ -266,9 +293,9 @@ function OpsView() {
 
           <Section
             title="Alerts"
-            note="Everything raised is recorded; delivery is capped per firing, so a suppressed alert is deliberate rather than failed."
+            note="Everything raised is recorded; delivery is capped per firing, so a suppressed alert is deliberate rather than failed. The header badge counts unacknowledged system alerts. Clearing acknowledges them without removing them from this list, and anything still broken un-acknowledges itself on the next firing."
           >
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               {["system", "content", "all"].map((k) => (
                 <button key={k} className="btn btn-ghost"
                         style={{ padding: "6px 12px", fontSize: 12, borderColor: kind === k ? ACCENT : undefined, color: kind === k ? ACCENT : undefined }}
@@ -276,6 +303,16 @@ function OpsView() {
                   {k}
                 </button>
               ))}
+              <div style={{ flex: 1 }} />
+              <span style={{ fontSize: 12, color: outstanding ? NEGATIVE : "var(--muted-2)" }}>
+                {outstanding ? `${outstanding} outstanding` : "badge clear"}
+              </span>
+              <button className="btn btn-ghost"
+                      disabled={clearing || !outstanding}
+                      style={{ padding: "6px 12px", fontSize: 12, opacity: clearing || !outstanding ? 0.4 : 1 }}
+                      onClick={clearAlerts}>
+                {clearing ? "Clearing…" : "Clear health status"}
+              </button>
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               {alerts.map((a) => (
@@ -289,6 +326,7 @@ function OpsView() {
                     <span style={{ color: "var(--muted-2)" }}>
                       {a.sent_at ? "delivered" : a.delivery_error?.startsWith("suppressed") ? "suppressed" : "not sent"}
                     </span>
+                    {a.acknowledged_at ? <span style={{ color: MUTED, width: 80 }}>acknowledged</span> : null}
                   </div>
                 </div>
               ))}

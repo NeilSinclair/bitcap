@@ -18,7 +18,7 @@ from sqlalchemy import create_engine, func, inspect, select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.db import create_all, drop_all, ensure_schema
+from app.db import SchemaDrift, create_all, drop_all, ensure_schema
 
 ROOT = Path(__file__).parent.parent
 
@@ -185,6 +185,115 @@ class TestEnsureSchema:
         # migration does not require editing this test to keep it meaningful.
         from alembic.script import ScriptDirectory
         assert stamped == ScriptDirectory.from_config(_config(engine)).get_current_head()
+
+    def test_an_unstamped_database_behind_head_refuses_to_claim_head(self, tmp_path):
+        """The bug 0008 exposed, and the reason the stamp is now verified.
+
+        `create_all` creates missing *tables*; it cannot add a missing *column*
+        to a table that already exists. So a database that already had tables
+        but no stamp took the first branch, no-opped, and then asserted `head` —
+        and that assertion is unrecoverable, because no later `upgrade` will run
+        a revision the stamp says is already applied. Observed for real: the
+        stamp read 0008 while `alerts.acknowledged_at` did not exist, and
+        nothing failed until a query touched the column.
+
+        Silent is the whole problem. A drift that raises is a five-minute fix;
+        a drift that stamps is a database that lies about itself forever.
+        """
+        from alembic.runtime.migration import MigrationContext
+
+        # Deliberately far behind head, not one revision behind. At 0007 there
+        # is nothing for `create_all` to create, so a check placed *after* it
+        # still looked fine -- the first version of this test passed against an
+        # `ensure_schema` whose printed recovery did not work. From 0003 later
+        # migrations own real tables, which is what exposes the ordering.
+        engine = create_engine(f"sqlite:///{tmp_path / 'legacy.db'}")
+        command.upgrade(_config(engine), "0003")
+        with engine.begin() as conn:               # a create_all-era database
+            conn.exec_driver_sql("DELETE FROM alembic_version")
+        before = set(inspect(engine).get_table_names())
+
+        with pytest.raises(SchemaDrift, match="alerts: acknowledged_at"):
+            ensure_schema(engine)
+
+        # Nothing was created on the way to the raise. `create_all` has no
+        # migration-level checkfirst, so a table it pre-creates here is one
+        # `op.create_table` dies on during the recovery below -- D29 again,
+        # inside the guard meant to prevent it.
+        assert set(inspect(engine).get_table_names()) == before
+
+        # Left unstamped, which is what makes it recoverable: the operator can
+        # stamp the revision it actually matches and upgrade. Stamped `head` it
+        # could never be migrated again.
+        with engine.connect() as conn:
+            assert MigrationContext.configure(conn).get_current_revision() is None
+
+    def test_the_printed_recovery_actually_works(self, tmp_path):
+        """The error is only worth raising if its instruction succeeds.
+
+        Asserted by *executing* the two commands the message names, against the
+        database that produced it. Verified to fail before the check was moved
+        ahead of `create_all`: `OperationalError: table raw_github_repos already
+        exists`.
+        """
+        engine = create_engine(f"sqlite:///{tmp_path / 'legacy.db'}")
+        command.upgrade(_config(engine), "0003")
+        with engine.begin() as conn:
+            conn.exec_driver_sql("DELETE FROM alembic_version")
+        with pytest.raises(SchemaDrift):
+            ensure_schema(engine)
+
+        command.stamp(_config(engine), "0003")     # what the message says to do
+        command.upgrade(_config(engine), "head")
+
+        assert ensure_schema(engine) == "upgraded"
+        fresh = create_engine("sqlite://")
+        create_all(fresh)
+        assert _schema(engine) == _schema(fresh)
+
+    def test_the_error_names_the_recovery(self, tmp_path):
+        """The person who hits this did not write the migration."""
+        engine = create_engine(f"sqlite:///{tmp_path / 'legacy.db'}")
+        command.upgrade(_config(engine), "0007")
+        with engine.begin() as conn:
+            conn.exec_driver_sql("DELETE FROM alembic_version")
+
+        with pytest.raises(SchemaDrift, match="alembic stamp"):
+            ensure_schema(engine)
+
+    def test_a_wrongly_stamped_database_is_caught_too(self, tmp_path):
+        """The lie can also arrive pre-existing — mine did.
+
+        The stamped branch runs `upgrade`, which is a correct no-op against a
+        stamp of head, so it cannot repair a database that was stamped wrongly
+        before this function ever saw it. The check has to cover both paths or
+        it only catches the drift it creates itself.
+        """
+        engine = create_engine(f"sqlite:///{tmp_path / 'wrong.db'}")
+        command.upgrade(_config(engine), "0007")
+        command.stamp(_config(engine), "head")     # asserts a column it lacks
+
+        with pytest.raises(SchemaDrift, match="acknowledged_at"):
+            ensure_schema(engine)
+
+    def test_a_consistent_database_passes_the_check(self, tmp_path):
+        """The guard must not fire on the paths that are actually fine, or it
+        gets deleted the first time it blocks a deploy."""
+        engine = create_engine(f"sqlite:///{tmp_path / 'fine.db'}")
+        assert ensure_schema(engine) == "stamped"    # empty database
+        assert ensure_schema(engine) == "upgraded"   # already at head
+        drop_all(engine)
+        assert ensure_schema(engine) == "upgraded"   # the rebuild path
+
+    def test_a_column_the_models_do_not_declare_is_not_drift(self, tmp_path):
+        """One-directional on purpose. An extra column breaks no query we issue,
+        and failing on it would make every rollback a hard outage."""
+        engine = create_engine(f"sqlite:///{tmp_path / 'extra.db'}")
+        ensure_schema(engine)
+        with engine.begin() as conn:
+            conn.exec_driver_sql("ALTER TABLE alerts ADD COLUMN scratch TEXT")
+
+        assert ensure_schema(engine) == "upgraded"
 
     def test_restores_tables_a_rebuild_dropped(self, tmp_path):
         """drop_all + ensure_schema is the rebuild path; it must put them back."""

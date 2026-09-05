@@ -43,9 +43,33 @@ function Pill({ children, style }) {
   );
 }
 
+// Rendered in UTC, not the reader's zone. Window boundaries are UTC and
+// `published_on` is a bare date compared at date resolution (app/digest.py), so
+// formatting locally shifts the label off the days the digest actually selected
+// — west of Greenwich a 4–5 Sep edition renders "3 Sep — 4 Sep", and a digest is
+// a dated claim. The offset is invisible in CET, which is where it was written.
 function day(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+  return new Date(iso).toLocaleDateString(undefined, {
+    day: "numeric", month: "short", timeZone: "UTC",
+  });
+}
+
+// The first day the window actually covers, which is not `window_start`.
+// Selection is half-open at date resolution — `start.date() < published_on <=
+// end.date()` in app/digest.py — so `window_start` is an *exclusive* bound and
+// rendering it raw advertised a day the digest had excluded: a 48-hour window
+// read as "3 Sep — 5 Sep", three days to anyone counting, while an article
+// published on the 3rd was neither surfaced nor in `considered`. Shifting by a
+// day makes the label the range the numbers below it describe. Correct for
+// published editions too: the backend rule is the same for both.
+function firstCoveredDay(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  d.setUTCDate(d.getUTCDate() + 1);   // UTC throughout, for the reason on `day`
+  return d.toLocaleDateString(undefined, {
+    day: "numeric", month: "short", timeZone: "UTC",
+  });
 }
 
 // The cut, stated. Considered / surfaced / suppressed, with the ratio spelled
@@ -58,7 +82,7 @@ function TheCut({ stats, windowStart, windowEnd }) {
       <div>
         <span className="label-bracket">Window</span>
         <div className="serif" style={{ fontSize: 18, marginTop: 4 }}>
-          {day(windowStart)} — {day(windowEnd)}
+          {firstCoveredDay(windowStart)} — {day(windowEnd)}
         </div>
       </div>
       <div>
@@ -218,12 +242,12 @@ function DigestView() {
     <div className="app">
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: "1px solid var(--border)", background: "var(--bg-2)" }}>
-          <div className="serif" style={{ fontSize: 18 }}>Digest</div>
+          <div className="serif" style={{ fontSize: 18 }}>Alerts</div>
           <div style={{ display: "flex", gap: 8 }}>
             <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
             <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
-            <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
+            <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
             <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
           </div>
         </div>

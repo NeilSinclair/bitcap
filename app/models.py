@@ -171,6 +171,16 @@ class Alert(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
     sent_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
     delivery_error: Mapped[str | None]
+    # Acknowledgement, not deletion. The row stays in the history forever; what
+    # this clears is the header badge, which counts unacknowledged system alerts
+    # and so stays red until someone says they have seen them — there is no
+    # window, and nothing ages out on its own.
+    #
+    # Cleared again by `dispatch` when the rules regenerate this row's episode
+    # key, which is what stops an acknowledgement hiding a live fault. It has to
+    # work that way round: `dedupe_key` holds still while a fault continues, so
+    # an ongoing outage writes no new row to notice.
+    acknowledged_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
 
 
 

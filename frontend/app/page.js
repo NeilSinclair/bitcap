@@ -89,7 +89,12 @@ function Dashboard() {
     // full alert bodies to render one integer — and an all-time count could
     // never fall back to zero once anything had ever broken.
     apiFetch("/api/health")
-      .then((h) => setSystemAlerts(h?.recent_system_alerts ?? 0))
+      // Falls back to the pre-rename key: the API and this bundle deploy as
+      // separate Render services, so for a few minutes on a sync one of them is
+      // behind. Reading only the new key would paint the badge green against an
+      // older API — a false green on the health indicator.
+      .then((h) => setSystemAlerts(
+        h?.unacknowledged_system_alerts ?? h?.recent_system_alerts ?? 0))
       .catch(() => setSystemAlerts(0));
   }, []);
 
@@ -272,11 +277,11 @@ function Dashboard() {
               <span style={{ width: 6, height: 6, background: runStatus?.status === "failed" ? NEGATIVE : ACCENT, display: "inline-block" }} />
               {loading ? "Loading…" : lastRunLabel}
             </div>
+            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
+            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
+            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             {/* The health surface is a link rather than a tab: the dashboard
                 answers "what did we learn", /ops answers "can I trust it". */}
-            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
-            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Digest</a>
-            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
               Health
               {systemAlerts ? <span style={{ fontSize: 11 }}>{systemAlerts}</span> : null}

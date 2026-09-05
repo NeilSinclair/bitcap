@@ -415,6 +415,58 @@ class TestPublishing:
         assert "items" in rows[0] and "stats" in rows[0]
 
 
+class TestTheLiveWindowEndsNow:
+    """The preview's window is rolling; the published edition's is quantised.
+
+    The silent failure: the grid that makes `publish` idempotent also holds the
+    *live* view a period behind. Quantised, the newest day a preview can name is
+    the last one that closed — so a reader opening the page on the 5th read
+    "the 48 hours to the 3rd" and reasonably concluded the pipeline had stalled.
+    Nothing errored; the page just quietly described yesterday's yesterday.
+    """
+
+    def test_the_rolling_window_ends_at_the_moment_asked_for(self, session):
+        at = datetime(2026, 9, 5, 11, 30, tzinfo=timezone.utc)
+
+        out = digest.build(session, "investment", V, at, CONFIG, quantise=False)
+
+        assert out["window_end"] == at
+        assert out["window_start"] == at - timedelta(hours=48)
+
+    def test_it_includes_something_published_today(self, session):
+        """The whole point. Quantised, today's article is in no window yet."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 5), title="Today")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+        at = datetime(2026, 9, 5, 11, 30, tzinfo=timezone.utc)
+
+        rolling = digest.build(session, "investment", V, at, CONFIG, quantise=False)
+        quantised = digest.build(session, "investment", V, at, CONFIG)
+
+        assert [i["title"] for i in rolling["items"]] == ["Today"]
+        assert quantised["items"] == []
+
+    def test_publishing_still_quantises(self, session):
+        """`quantise` defaults True, so nothing that writes picks up the rolling
+        window by accident — an unquantised `window_end` is microsecond-unique
+        and would fork a new edition on every firing, forever."""
+        at = datetime(2026, 9, 5, 11, 30, tzinfo=timezone.utc)
+
+        out = digest.build(session, "investment", V, at, CONFIG)
+
+        assert (out["window_start"], out["window_end"]) == digest.window_for(at, CONFIG)
+
+    def test_a_naive_end_is_read_as_utc(self, session):
+        """The endpoint passes an aware datetime, but `window_for` accepts naive
+        ones and a rolling branch that did not would compare aware to naive and
+        raise — in the one code path the digest page always hits."""
+        out = digest.build(session, "investment", V, datetime(2026, 9, 5), CONFIG,
+                           quantise=False)
+
+        assert out["window_end"] == datetime(2026, 9, 5, tzinfo=timezone.utc)
+
+
 class TestGuards:
     def test_an_unknown_audience_raises_rather_than_returning_an_empty_digest(self, session):
         with pytest.raises(ValueError, match="unknown digest kind"):
