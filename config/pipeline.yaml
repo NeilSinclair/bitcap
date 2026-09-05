@@ -157,6 +157,13 @@ fetch:
   # five harvesters each looked polite alone and were not in aggregate.
   min_interval_seconds:
     arxiv.org: 3.0
+    # The posts leg reads this through research/posts/x_client.py rather than
+    # through fetch_cache -- see that module for why an authenticated JSON API
+    # cannot share the HTML fetcher -- but the per-host limit belongs in one
+    # file, so it is configured here with everything else. X allows 300 requests
+    # per 15 minutes and the leg makes about 28, so this is politeness rather
+    # than a constraint we are near.
+    api.x.com: 1.0
   # Everything else: labs' own sites, one request per second, which no lab has
   # ever objected to.
   default_min_interval_seconds: 1.0
