@@ -566,9 +566,24 @@ class TestThrottleConcurrency:
         assert not any(held), "_LOCK was held while sleeping"
 
     def test_slots_are_reserved_so_callers_queue_rather_than_collide(self, monkeypatch):
+        # The clock is pinned, and pinned to *this* value, on purpose. Adding
+        # 3.0 to a float in (61, 64) crosses a binade boundary, so the sum
+        # rounds and `second - first` comes back as 2.999999999999993. Written
+        # as `second - first >= 3.0` this test failed on arithmetic rather than
+        # on behaviour. It is not a rare accident: `time.monotonic()` is time
+        # since boot, a fresh CI runner reaches this test around a minute in,
+        # and the three seconds below every power of two are a failure band.
+        # 61.451892749 is the value CI actually went red on.
+        #
+        # Compare against `first + interval` instead. That is the number
+        # `_wait_turn` computes, so the comparison is exact at any clock, and
+        # it still fails if the reservation is dropped and `now` recorded
+        # instead -- which is the regression this test exists for.
+        monkeypatch.setattr(fc, "_LAST_REQUEST", {})
         monkeypatch.setattr(fc.time, "sleep", lambda s: None)
+        monkeypatch.setattr(fc.time, "monotonic", lambda: 61.451892749)
         fc._wait_turn("arxiv.org", 3.0)
         first = fc._LAST_REQUEST["arxiv.org"]
         fc._wait_turn("arxiv.org", 3.0)
         second = fc._LAST_REQUEST["arxiv.org"]
-        assert second - first >= 3.0, "second caller must be spaced from the first"
+        assert second >= first + 3.0, "second caller must be spaced from the first"
