@@ -40,7 +40,7 @@ from llm_byline import PRICES, load_env  # noqa: E402
 from app.scoring import ai_score_of, score_of  # noqa: E402,F401
 from verbatim import enforce as enforce_quotes  # noqa: E402
 
-PROMPT_VERSION = "v8"
+PROMPT_VERSION = "v9"
 PROMPT = ROOT / "prompts" / "announcement_scoring" / f"{PROMPT_VERSION}.md"
 MECHANISMS = ROOT / "config" / "mechanisms.yaml"
 PRACTICES = ROOT / "config" / "practices.yaml"

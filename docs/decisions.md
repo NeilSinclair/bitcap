@@ -5269,3 +5269,75 @@ this change.
 **Still open, unchanged:** an article settles the night it is discovered, so
 enrichment gets one attempt and archive lag becomes permanent.
 
+---
+
+## D56 — v9: the same question, asked of text that finally exists (2026-09-05)
+
+The fetch-time backfill (D55) made recovery possible; this is the run that
+collected it. Three things had to happen together, and the order matters.
+
+**The corpus was re-fetched.** 251 -> 259 articles. OpenAI's mean text went
+237 -> 7,615 characters: `rss_summary` 149 -> 22, `full_text_archived` 35 ->
+157, `forum_post` 1 -> 16. The forum channel is a quiet win — 16 posts against
+1, including the GPT-5.6 series launch and two API price drops, none of which
+the register previously held.
+
+The re-fetch was written to a scratch file and diffed before it was allowed
+near the committed corpus, because `collect()` rebuilds from scratch and can
+legitimately drop articles. Eight went: seven aged past the rolling window
+correctly, and one did not. `introducing-ai-futures` (2026-08-20) is inside the
+window and has **fallen off OpenAI's RSS feed**. It survives in Postgres, which
+upserts by URL, so the product keeps it — at 179 characters, permanently, since
+the fetch can no longer discover it and enrichment only sees what discovery
+returns. Same family as the settle-once limitation, reached by a different
+road. Not fixed.
+
+**The prompt was bumped to v9, byte-identical to v8.** A classification is keyed
+on `(url, prompt_version)`, so better text alone never reaches a scorer — the
+row already exists. Copying the prompt unchanged is what makes the comparison
+worth anything: v8 and v9 differ in exactly one variable, what the model was
+given to read.
+
+**The result, against the human gold labels.** Jalapeño is the case the whole
+investigation started from:
+
+| | custom_silicon_substitution | inference_cost_down | band |
+|---|---|---|---|
+| gold (hand-labelled) | positive/high/high | positive/high/high | — |
+| v7 (blurb, unresolvable quotes) | positive/high/high | positive/high/high | high |
+| v8 (blurb) | positive/medium/medium | *absent* | medium |
+| **v9 (13,311 chars)** | **positive/high/high** | **positive/high/high** | **high** |
+
+Both tags return exactly as labelled and the article is back in the high band,
+so it fires a content alert again. Two honest gaps remain: v9 drops
+`inference_volume_up`, the lowest-confidence gold tag; and every model version
+calls the `accelerator_custom_si` category *positive* where the human labelled
+it *mixed* — a disagreement that predates the text fix and therefore belongs to
+the prompt or the category definition, not to this change.
+
+Corpus-wide: 259 scored, 0 failed, $7.16. High band 6 -> 20. Connections
+481 -> 882, and those clearing the 0.5 alert threshold 73 -> 172. **The verbatim
+audit is 0 of 523 quotes unresolvable**, against 237 of 470 for v7 — which is
+the number that says these scores rest on text the system actually holds.
+
+**Release classifications were carried forward, not re-run.** The version bump
+made all 380 release documents pending at v9, ~$10 to reproduce output that
+cannot differ: v9 asks the same question and the release text was not
+re-fetched. Both facts are asserted in the script rather than assumed, and it
+refuses to run if the prompts diverge. Every copied row carries a
+`_carried_forward` key naming the source version and the reasoning, so the
+saving never costs provenance and the rows stay greppable.
+
+Rejected: letting them re-score (~$10 for identical output) and switching the
+releases leg off (cheap, but it removes them from the product). The marker is
+what makes the third option honest rather than merely cheap.
+
+**Working practice, learned the hard way.** This work was done on a branch cut
+from a `deployment-dev` that moved four commits while it ran, two of them
+overlapping: `927c653` fixed the duplicate alembic `0008` collision I had
+independently found and fixed, and `809f42b` rewired the pipeline suite to
+derive from `PROMPT_VERSION`, touching the same files as the bump above. Both
+were discarded in favour of what had already landed. Fetch immediately before
+branching, before running anything that writes, and before committing — not
+once at the start.
+

@@ -463,3 +463,25 @@ articles are pending. Month stands at $14.58 in `raw_costs`, and drift adds
 ~$0.75 nightly, so the re-run lands September near $41. That is inside the
 €100 project budget — which is now the only limit that matters, since the
 config ceiling no longer binds below it.
+
+## 2026-09-05 — v9 re-score after the OpenAI text recovery
+
+| | |
+|---|---|
+| articles | 259 |
+| failed | 0 |
+| cost | **$7.16** |
+| model | claude-sonnet-5 |
+| ceiling | `per_run_usd: 15.00` |
+
+Estimated $7.47 beforehand and it came in at $7.16. Worth recording why the
+estimate had to be rebuilt rather than taken from the log: the standing
+$0.025/article rate was measured when OpenAI — 59% of the corpus — was
+200-character summaries. Recovering that text made the corpus 2.3x larger in
+characters, so the old rate understated this run by about 15%.
+
+Not spent: ~$10 that a v9 re-score of the 380 release documents would have
+cost. v9 is byte-identical to v8 and the release text was unchanged, so the
+rows were carried forward with a `_carried_forward` provenance marker instead
+(D56).
+
