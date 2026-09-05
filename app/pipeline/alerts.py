@@ -378,6 +378,30 @@ def dedupe_unavailable(session: Session, config: dict, context: dict) -> list[Ca
         # The phase did not run this firing. Not a failure.
         return []
 
+    # Zero vector coverage raises nothing and looks exactly like zero
+    # duplicates: gate 3 skips every pair, the phase returns cleanly, and
+    # `collapsed` is merely lower than it should be. That happens whenever the
+    # cache is empty or holds vectors from a model the config no longer names —
+    # a config edit, not a crash, so no exception exists to catch. Reported
+    # before the error branch because it is the case with no other symptom.
+    coverage = stats.get("coverage")
+    articles = stats.get("articles") or 0
+    if coverage is not None and articles and coverage == 0 and "error" not in stats:
+        return [Candidate(
+            kind=SYSTEM, rule="dedupe_unavailable", severity=WARNING,
+            subject="Duplicate collapse ran with no embeddings — similarity matching is a no-op",
+            body=(
+                f"Grouping completed over {articles} articles with zero cached "
+                "vectors, so every similarity comparison was skipped. Exact "
+                "matches and release trains still grouped. Most likely the "
+                "embedding model in config/dedupe.yaml changed without a "
+                "re-embed, or the embedding step never ran."
+            ),
+            dedupe_key="dedupe_unavailable:no_coverage",
+            payload=stats,
+            run_id=context.get("run_id"),
+        )]
+
     errors = {k: v for k, v in stats.items() if k in ("error", "embed_error")}
     if not errors:
         return []

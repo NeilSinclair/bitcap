@@ -709,7 +709,34 @@ class TestDedupeUnavailable:
     """
 
     def test_a_healthy_phase_raises_nothing(self, session):
-        context = {"stats": {"dedupe": {"groups": 555, "collapsed": 92}}}
+        context = {"stats": {"dedupe": {"groups": 555, "collapsed": 92,
+                                        "articles": 647, "coverage": 1.0}}}
+        assert alerts.dedupe_unavailable(session, CONFIG, context) == []
+
+    def test_a_collapse_with_no_embeddings_is_reported(self, session):
+        """The failure with no other symptom, and the reason `coverage` exists.
+
+        An empty or model-mismatched vector cache makes gate 3 a no-op. Nothing
+        raises: every pair is skipped, the phase returns cleanly, and
+        `collapsed` is merely lower than it should be. Reproduced directly —
+        `assign` over two true duplicates with an empty cache returns two
+        groups, zero collapsed, and no error. Without this rule, swapping the
+        embedding model in config silently switches off half the feature and
+        every surface still looks healthy.
+        """
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.0,
+                                        "groups": 647, "collapsed": 0}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert found[0].kind == alerts.SYSTEM
+        assert "no-op" in found[0].subject
+
+    def test_partial_coverage_is_not_reported(self, session):
+        """A budget cut mid-embed leaves some vectors, which still works."""
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.4,
+                                        "groups": 600, "collapsed": 47}}}
         assert alerts.dedupe_unavailable(session, CONFIG, context) == []
 
     def test_a_phase_that_did_not_run_raises_nothing(self, session):

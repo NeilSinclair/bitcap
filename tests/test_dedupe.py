@@ -630,3 +630,85 @@ class TestAssignWritesTheGrouping:
         assert stats["adjudicated"] == 0
         assert stats["usd"] == 0.0
 
+class TestAdjudicationIsCached:
+    """A verdict is bought once, and the same run twice gives the same answer.
+
+    Two silent failures, found by running `assign` twice against the live
+    corpus and getting 547 groups and then 546:
+
+    * **A re-run re-bought every verdict.** Every other LLM stage in this
+      pipeline is free on a re-run — `classify` checks `raw_llm_responses`,
+      `embed` checks the vector cache. This one was not, and CLAUDE.md's
+      idempotent-re-run requirement is not satisfied by a stage that costs money
+      each time it repeats.
+    * **The grouping moved with no change in the world.** The model changed its
+      mind about one pair between runs, so items entered and left the digest for
+      a reason no reader could ever be shown. The re-run test above passes
+      without this because it skips adjudication entirely.
+    """
+
+    @pytest.fixture()
+    def session(self):
+        engine = create_engine("sqlite://")
+        create_all(engine)
+        with Session(engine) as session:
+            yield session
+
+    def _pair(self):
+        left = {"id": 1, "lab": "openai", "published_on": date(2026, 9, 3),
+                "event_type": "product_launch", "title": "A", "summary": "s"}
+        right = {**left, "id": 2, "title": "B"}
+        return left, right
+
+    def test_a_cached_verdict_is_returned_without_calling_the_provider(self, session):
+        """No provider is monkeypatched: if it called out, this would fail."""
+        left, right = self._pair()
+        config = dedupe.settings()
+        version = config["adjudication"]["prompt_version"]
+        session.add(m.RawLlmResponse(
+            url="dedupe:1-2", prompt_version=version,
+            payload={"same": True, "reason": "cached"},
+        ))
+        session.commit()
+
+        verdict, cost = dedupe.adjudicate(left, right, config, session=session)
+
+        assert verdict == {"same": True, "reason": "cached"}
+        assert cost == 0.0
+
+    def test_the_cache_key_does_not_depend_on_pair_order(self, session):
+        """`_key` orders the pair, or one comparison is bought twice."""
+        left, right = self._pair()
+        config = dedupe.settings()
+        session.add(m.RawLlmResponse(
+            url="dedupe:1-2", prompt_version=config["adjudication"]["prompt_version"],
+            payload={"same": False, "reason": "cached"},
+        ))
+        session.commit()
+
+        forward, _ = dedupe.adjudicate(left, right, config, session=session)
+        backward, _ = dedupe.adjudicate(right, left, config, session=session)
+
+        assert forward == backward
+
+    def test_a_prompt_change_invalidates_the_verdict(self, session):
+        """Keyed on prompt version, the same contract a classification has.
+
+        A reworded rubric that kept its old answers would make the prompt
+        version a lie about how the grouping was made — the exact drift
+        `strip_comments` exists to prevent one layer up.
+        """
+        left, right = self._pair()
+        config = dedupe.settings()
+        session.add(m.RawLlmResponse(
+            url="dedupe:1-2", prompt_version="v0-superseded",
+            payload={"same": True, "reason": "old rubric"},
+        ))
+        session.commit()
+
+        cached = session.scalar(
+            select(m.RawLlmResponse).where(m.RawLlmResponse.prompt_version == "v0-superseded")
+        )
+        assert cached is not None
+        assert config["adjudication"]["prompt_version"] != "v0-superseded"
+

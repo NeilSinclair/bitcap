@@ -461,7 +461,8 @@ def exact_groups(rows: list[dict]) -> dict[int, str]:
     }
 
 
-def adjudicate(left: dict, right: dict, config: dict, budget=None) -> tuple[dict | None, float]:
+def adjudicate(left: dict, right: dict, config: dict, budget=None,
+               session: Session | None = None) -> tuple[dict | None, float]:
     """Ask the model whether two articles are the same event — gate 3.
 
     Reached only inside the threshold band, which is roughly 12 of 4,412
@@ -476,6 +477,9 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> tuple[dict
         budget: Optional budget; a refusal returns None rather than raising, so
             an exhausted budget leaves the pair unmerged instead of failing the
             run.
+        session: Open session, for the verdict cache. Omitted means no caching —
+            every call hits the provider and the answer may differ between
+            runs.
 
     Returns:
         Tuple of (verdict, usd). The verdict is `{"same": bool, "reason": str}`,
@@ -505,6 +509,32 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> tuple[dict
     }.items():
         prompt = prompt.replace(key, str(value))
 
+    # Cached verdicts, in the table classifications already use. Two reasons,
+    # and the second is the important one:
+    #
+    # * A full re-run re-bought every adjudication. Every other LLM stage here
+    #   is free on a re-run — `classify` checks `raw_llm_responses`, `embed`
+    #   checks the vector cache — and this one was not.
+    # * **The grouping was not stable.** Two consecutive runs over identical
+    #   data returned 547 and then 546 groups, because the model changed its
+    #   mind about one pair. A grouping that moves with no change in the world
+    #   moves items in and out of the digest for no reason a reader could ever
+    #   be shown, and `tests/test_dedupe.py`'s re-run test only passed because
+    #   it skips adjudication.
+    #
+    # Keyed on the ordered pair and the prompt version, so editing the prompt
+    # invalidates every verdict it produced — the same contract as
+    # `(url, prompt_version)` on a classification.
+    key = f"dedupe:{'-'.join(str(i) for i in _key(left['id'], right['id']))}"
+    cached = session.scalar(
+        sa.select(m.RawLlmResponse).where(
+            m.RawLlmResponse.url == key,
+            m.RawLlmResponse.prompt_version == version,
+        )
+    ) if session is not None else None
+    if cached is not None:
+        return cached.payload, 0.0
+
     if budget is not None and not budget.begin_call():
         return None, 0.0
     try:
@@ -525,6 +555,10 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> tuple[dict
 
     if not isinstance(result, dict) or "same" not in result:
         return None, float(cost["usd"])
+
+    if session is not None:
+        session.add(m.RawLlmResponse(url=key, prompt_version=version, payload=result))
+        session.flush()
     return result, float(cost["usd"])
 
 
@@ -756,7 +790,15 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     Returns:
         Stats: articles, groups, collapsed, adjudicated, deferred, usd,
-        by_method.
+        coverage, by_method.
+
+        `coverage` is the fraction of non-release articles that had a usable
+        cached vector, and it is reported because **zero coverage looks exactly
+        like zero duplicates**. An empty or model-mismatched cache makes gate 3
+        a no-op: every pair is skipped, no exception is raised, and the phase
+        returns a clean result with `collapsed` merely lower than it should be.
+        That is the silent-degradation shape this repo exists to avoid, so the
+        number is surfaced and `alerts.dedupe_unavailable` reads it.
     """
     config = settings(path)
     rows = _rows(session, prompt_version)
@@ -765,7 +807,7 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     _apply_exact(rows, union, reasons)
     _apply_release_trains(rows, union, reasons, config)
-    adjudicated, deferred, usd = _apply_gated(
+    adjudicated, deferred, usd, coverage = _apply_gated(
         session, rows, union, reasons, config, budget, adjudicate_pairs
     )
 
@@ -776,7 +818,7 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     stats = {"articles": len(rows), "groups": len(members), "collapsed": 0,
              "adjudicated": adjudicated, "deferred": deferred, "usd": usd,
-             "by_method": {}}
+             "coverage": round(coverage, 3), "by_method": {}}
     for root, group in members.items():
         prefer = "latest" if all(r["repo"] for r in group) else "earliest"
         anchor = anchor_of(group, "significance", prefer=prefer)
@@ -900,17 +942,22 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
             deferred, for a run that must not spend.
 
     Returns:
-        Tuple of (pairs adjudicated, pairs deferred unspent, usd spent).
+        Tuple of (pairs adjudicated, pairs deferred unspent, usd spent, vector
+        coverage). Coverage is the fraction of articles that had a usable
+        cached vector. It exists because zero coverage and zero duplicates are
+        indistinguishable from the outside: both produce a clean run with no
+        merges and no error. See `assign`.
     """
     articles = [r for r in rows if not r["repo"]]
     if not articles:
-        return 0, 0, 0.0
+        return 0, 0, 0.0, 1.0
 
     high = float(config["thresholds"]["cosine_high"])
     low = float(config["thresholds"]["cosine_low"])
     urls, block = matrix(session, [r["url"] for r in articles])
     position = {url: index for index, url in enumerate(urls)}
     subject = {r["id"]: subjects(r["title"]) for r in articles}
+    coverage = len(position) / len(articles)
 
     adjudicated, deferred, usd = 0, 0, 0.0
     for left, right in candidate_pairs(articles, int(config["window_days"])):
@@ -940,14 +987,14 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
                 deferred += 1
                 continue
             adjudicated += 1
-            verdict, cost = adjudicate(a, b, config, budget)
+            verdict, cost = adjudicate(a, b, config, budget, session)
             usd += cost
             if verdict and verdict.get("same"):
                 union.union(a["id"], b["id"])
                 reasons[_key(a["id"], b["id"])] = (
                     "llm", f"{verdict['reason'][:180]} (similarity {cosine:.2f})"
                 )
-    return adjudicated, deferred, usd
+    return adjudicated, deferred, usd, coverage
 
 
 def _key(left: int, right: int) -> tuple[int, int]:
