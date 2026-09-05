@@ -167,6 +167,47 @@ class TestOpsTablesRoundTrip:
             session.commit()
 
 
+class TestTheRevisionChain:
+    def test_there_is_exactly_one_head(self):
+        """Two branches numbering a migration off the same parent is silent
+        until it is fatal.
+
+        `0008_alert_acknowledged` and `0008_fetch_cache` were authored on
+        separate branches, both claiming revision 0008 with `down_revision`
+        0007. Nothing complained on either branch; merging them produced two
+        heads, and `alembic upgrade head` — which `ensure_schema` calls at API
+        and worker startup — refuses outright with "Multiple head revisions are
+        present". The merged branch could not boot, and the only warning was a
+        line on stderr nobody reads.
+        """
+        from alembic.script import ScriptDirectory
+
+        heads = ScriptDirectory.from_config(_config(create_engine("sqlite://"))).get_heads()
+
+        assert len(heads) == 1, (
+            f"{len(heads)} alembic heads ({', '.join(sorted(heads))}). Two "
+            "migrations were numbered off the same parent; renumber the one "
+            "that landed second to chain after the other."
+        )
+
+    def test_no_revision_id_is_used_twice(self):
+        """The condition behind the two heads, named directly.
+
+        `get_heads()` alone would pass if two files shared an id but chained
+        differently, and a duplicate id makes `alembic stamp <id>` ambiguous —
+        which is the command `SchemaDrift` tells an operator to run.
+        """
+        from collections import Counter
+
+        from alembic.script import ScriptDirectory
+
+        script = ScriptDirectory.from_config(_config(create_engine("sqlite://")))
+        counts = Counter(r.revision for r in script.walk_revisions())
+        duplicates = {rev: n for rev, n in counts.items() if n > 1}
+
+        assert not duplicates, f"revision ids used more than once: {duplicates}"
+
+
 class TestEnsureSchema:
     def test_stamps_a_database_alembic_has_never_seen(self, tmp_path):
         """A create_all-era database must become migratable, not stay stranded."""

@@ -55,3 +55,9 @@ jobs:
       # "1,406.8 M EUR" into 1.
       - name: Smoke-test the built report
         run: node tests/smoke_report.js
+
+      # Also outside pytest. The digest window label has been wrong twice, both
+      # times silently: an exclusive bound rendered as inclusive, then a
+      # local-time format that shifted both ends a day west of Greenwich.
+      - name: Smoke-test the digest window label
+        run: node tests/smoke_digest_window.js

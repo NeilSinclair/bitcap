@@ -18,8 +18,17 @@ the acknowledgement instead.
 Nullable with no backfill: existing alerts start unacknowledged, which is the
 state the badge already assumes.
 
-Revision ID: 0008
-Revises: 0007
+Renumbered from 0008 to 0009 on 2026-09-05. `0008_fetch_cache` (D53) was already
+on `deployment-dev` and claimed the same id off the same parent, so the two
+branches produced duplicate revisions rather than a chain: `alembic heads`
+reported "0008 (head)" twice and `upgrade head` refused outright with "Multiple
+head revisions are present". `ensure_schema` calls exactly that at API and
+worker startup, so the merged branch could not boot. This one moves because the
+other landed first, and a database already stamped 0008 has the fetch cache
+applied, not this column.
+
+Revision ID: 0009
+Revises: 0008
 """
 
 from typing import Sequence, Union
@@ -27,8 +36,8 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-revision: str = "0008"
-down_revision: Union[str, Sequence[str], None] = "0007"
+revision: str = "0009"
+down_revision: Union[str, Sequence[str], None] = "0008"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
