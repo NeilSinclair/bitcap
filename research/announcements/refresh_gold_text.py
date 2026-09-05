@@ -15,6 +15,16 @@ The `gold` block is never touched. It is the human-editable slot, and the labels
 it holds refer to the article, not to a particular extraction of it -- but see
 the warning printed at the end: a label pre-filled from a 205-character summary
 is a poor starting point for reviewing a 10,000-character article.
+
+**Recovery here must be the pipeline's own.** This script used to import
+`recover` and `slug_of` from backfill_openai.py, which normalises URLs
+differently (it drops the host) and indexes `openai.com/index*` alone. Two
+recovery paths mean the gold set and production can hold different bytes for
+the same article -- which is not a hypothetical: 11 of the 20 gold files were
+2x to 98x richer than what the pipeline scored, so gold agreement stayed high
+for two days while the product degraded, and the drift check could not see it
+(decisions.md D55). It now calls `fetch_announcements` directly, so a change to
+how production reads a page is a change to how the gold set reads it.
 """
 
 from __future__ import annotations
@@ -25,12 +35,35 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from backfill_openai import recover, slug_of  # noqa: E402
+from fetch_announcements import (  # noqa: E402
+    _archive_key,
+    _exact_snapshot,
+    fetch_wayback,
+    strip_html,
+)
 
 ROOT = Path(__file__).parent.parent.parent
 GOLD = Path(__file__).parent / "test" / "articles"
 ARTICLES = ROOT / "research" / "docs" / "announcements.json"
 INDEX = ROOT / "research" / "docs" / "wayback_index_gold.json"
+
+
+def _recover(record: dict, timestamp: str) -> tuple[str, str] | None:
+    """Fetch one gold article's archived text, exactly as the pipeline would.
+
+    Args:
+        record: Gold article record.
+        timestamp: Wayback snapshot timestamp.
+
+    Returns:
+        Tuple of (text, snapshot url), or None when the snapshot is no longer
+        than what is already held -- a redirect stub or an error page.
+    """
+    snapshot = f"http://web.archive.org/web/{timestamp}id_/{record['url']}"
+    text = strip_html(fetch_wayback(snapshot))[:24000]
+    if len(text) <= len(record.get("text") or ""):
+        return None
+    return text, snapshot
 
 
 def main() -> None:
@@ -50,11 +83,13 @@ def main() -> None:
         if fresh is None and record["text_source"] == "rss_summary":
             # Out of the current window, so not in the register, but the archive
             # still has it. Recover directly rather than leave a summary behind.
-            timestamp = index.get(slug_of(record["url"]))
+            timestamp = index.get(_archive_key(record["url"]))
+            if timestamp is None:
+                timestamp = _exact_snapshot(record["url"])
             if not timestamp:
                 missing.append(record["id"])
                 continue
-            got = recover(record, timestamp)
+            got = _recover(record, timestamp)
             if got is None:
                 missing.append(record["id"])
                 continue

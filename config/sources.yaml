@@ -48,21 +48,37 @@ labs:
       all still 403. sitemap.xml and news/rss.xml return 200, so XML is served
       and HTML is not. Discovery therefore stays on RSS.
 
-      Full text is recovered afterwards from the Internet Archive by
-      backfill_openai.py, which the `backfill` key above selects. Measured on
-      the 3-month register: 141 of 152 articles are archived (93%), and the
-      recovered text runs 15x to 55x the RSS summary. Recovered items carry
-      `text_source: full_text_archived` and an `archive_snapshot` URL, so a
-      score computed from an archived page is never silently mixed with one
-      computed from a live fetch.
+      Full text is recovered from the Internet Archive during the fetch, by
+      `enrich_wayback` in fetch_announcements.py, which the `backfill` key
+      above selects. Inside the fetch is load-bearing, not incidental: the
+      fetch rewrites the register from scratch, so recovery run afterwards
+      lasts exactly until the next fetch. It was, once, and 141 recovered
+      articles reverted to summaries overnight with nothing reporting it
+      (decisions.md D55). Measured 2026-09-05: 131 of 149 articles are
+      archived (88%), and the recovered text runs 12x to 98x the RSS summary.
+      Recovered items carry `text_source: full_text_archived` and an
+      `archive_snapshot` URL, so a score computed from an archived page is
+      never silently mixed with one computed from a live fetch.
 
-      The 11 unarchived items are customer stories and help-centre pages, the
-      lowest-value part of the feed. They stay on `rss_summary`.
+      The 18 unarchived items are mostly customer stories, policy posts and
+      academy pages -- the lowest-value part of the feed. They stay on
+      `rss_summary`, and each is reported as an `unresolved` row rather than
+      passing quietly. One exception is worth knowing about:
+      safety-overview-gpt-6-astra is substantive and the archive has never
+      crawled it.
+
+      An article settles once it is classified, which happens in the firing
+      that discovers it, so enrichment gets one attempt per article. Anything
+      the archive has not crawled within that window keeps its summary
+      permanently. Closing that needs either Save Page Now or not settling a
+      summary-only article -- see decisions.md D55.
 
       Rate limit: the archive is the constraint, not us. Six concurrent probes
-      returned errors on 20 of 24; backfill_openai.py fetches serially with a
-      2s delay and exponential backoff. Snapshot discovery uses one bulk CDX
-      wildcard query rather than one lookup per URL.
+      returned errors on 20 of 24; `fetch_wayback` fetches serially with a 2s
+      delay and exponential backoff. Snapshot discovery uses one bulk CDX
+      query per path prefix rather than one lookup per URL, falling back to a
+      single exact lookup only for the URLs that bulk query misses -- the
+      wildcard index lags the exact one and silently omits recent captures.
     also:
       - method: model_index
         enabled: true
