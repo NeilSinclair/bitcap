@@ -96,7 +96,12 @@ def test_every_table_round_trips(session):
     raw_id = session.scalars(select(m.RawArticle.id)).one()
     art = m.Article(url="https://x/a", raw_article_id=raw_id, lab="openai", title="t",
                     published_on=date(2026, 8, 31), text="body", text_source="full_text")
-    session.add(art)
+    # A second article purely so `ArticleLink` has two ends. A link between an
+    # article and itself would round-trip and prove nothing about the pair.
+    release = m.Article(url="https://x/r", raw_article_id=raw_id, lab="openai",
+                        title="openai/codex rust-v0.1.0", published_on=date(2026, 8, 31),
+                        text="Added GPT-6-Astra", text_source="github_release")
+    session.add_all([art, release])
     session.flush()
     cls = m.Classification(article_id=art.id, prompt_version="v7", scoring_version=4,
                            event_type="other", summary="s", is_signal=True, notable=False,
@@ -125,6 +130,8 @@ def test_every_table_round_trips(session):
                               vector="AACAPwAAAAAAAAAA"),
         m.ArticleGroup(article_id=art.id, group_id="g1", is_anchor=True, group_size=1,
                        method="singleton", reason="no near-duplicate found in the window"),
+        m.ArticleLink(from_article_id=release.id, to_article_id=art.id,
+                      relation="names_model", evidence="gpt-6-astra"),
     ])
     session.commit()
 

@@ -55,9 +55,11 @@ CORPUS_LABELS = {
     RELEASES: "github_releases",
 }
 
-# The papers corpus by name, for readers that need to tell a paper from an
-# announcement without importing the whole registry's config machinery.
+# The papers and releases corpora by name, for readers that need to tell one
+# leg's documents from another's without importing the whole registry's config
+# machinery. The dashboard's doc-type filter is the caller that needs both.
 PAPERS_CORPUS = CORPUS_LABELS[PAPERS]
+RELEASES_CORPUS = CORPUS_LABELS[RELEASES]
 
 
 @dataclass(frozen=True)

@@ -640,5 +640,8 @@ class TestTheDashboardCanTellThemApart:
         transform(session, "v9")
         transform(session, "p1")
         session.flush()
-        items = {i["title"]: i["docType"] for i in build_items(session, ("v9", "p1"))}
+        # `since=date.min`: this asserts about doc types, not about the display
+        # window, and the fixture's dates would otherwise age out of it.
+        items = {i["title"]: i["docType"]
+                 for i in build_items(session, ("v9", "p1"), since=date.min)}
         assert items == {"Announcement": "announcement", "Paper": "paper"}
