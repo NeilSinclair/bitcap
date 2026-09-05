@@ -408,6 +408,26 @@ because a scorer that quietly degrades is the failure this system exists to
 catch. If the monthly budget ever binds, `cadence.drift` is the first dial to
 turn.
 
+---
+
+## Release notes leg, first firing (2026-09-04)
+
+The releases leg ingests for free: GitHub's API is unmetered on an
+authenticated token, and the first firing's 8 sources cost **$0.0000**.
+
+| Workflow | Calls | USD | Note |
+|---|---:|---:|---|
+| Release ingestion, 8 orgs | ~400 REST | $0.0000 | free tier, 5,000/hour |
+| Release classification | not yet run | — | 380 documents queued |
+
+**380 documents are ingested and unclassified.** At the measured $0.028 per
+release that is roughly **$10.64**, against a `per_run_usd` ceiling of $3.00 --
+so the budget guard will spend $3, report the rest as `skipped_for_budget`, and
+catch up over about four firings. That is the guard working, but it is not what
+this leg is for, so `releases_watch` is now 10 per org rather than 40.
+
+**First-mention detection costs nothing at all.** It is one query over
+`raw_articles` and a regex; no LLM call is made, on any run.
 ## 2026-09-04 — v8 prompt probe, and the per-run ceiling raised
 
 | Workflow | Calls | $ | Note |

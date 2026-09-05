@@ -79,3 +79,28 @@ lab-owned email domain) and 583 `confirmed_org_wide` (a parent-company domain
 like @google.com, which covers all of Alphabet). The lesson for the design doc:
 a raw contributor count is nearly meaningless as a measure of a lab, and any
 figure quoted has to carry its evidence tier or it is just repo popularity.
+
+
+---
+
+**Four model names have appeared in the labs' own public code before any
+announcement, across three labs.** Running the first-mention pass over 630
+documents in bronze -- 250 announcements and 380 release notes -- turns up 39
+identifiers appearing for the first time in 120 days. Thirty-five were first
+seen in the lab's own announcement, which is an ordinary launch. Four were
+first seen in shipped code with nothing written about them anywhere:
+
+- `gpt-6-astra` — *"Added support for configuring GPT-6-Astra through the API
+  without changing the default model or showing it in the model picker"*,
+  `openai/codex` rust-v0.153.1, 2026-09-03
+- `gpt-5.6-luna` — became the **default model** of the OpenAI Agents SDK,
+  2026-08-11
+- `gemma-4` — *"Add Gemma 4."*, `google-deepmind/gemma` v4.0.0, **2026-05-13**
+- `gemma-3` — in a DeepMind fine-tuning example, 2026-07-14
+
+The `gemma-4` case is the strongest of the four on timing: a version bump in a
+public repository nearly four months before anything in the announcements
+corpus names it. And the distinction between the four and the other
+thirty-five is not something the system was told to look for -- it falls out of
+recording which corpus reached a name first, which is only possible because
+every leg's documents land in one table.

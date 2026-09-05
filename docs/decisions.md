@@ -4412,6 +4412,206 @@ onto the uncommitted digests work, while that work is in flight. Held as a
 coordination call, not an oversight — until it lands, the canonical link is
 recorded but reaches no reader.
 
+---
+
+## D52 — Release notes as a fourth leg, and first mentions as a pass over bronze (2026-09-04)
+
+**Decision.** `releases` is a leg: one source per GitHub org, stage 4, ranked on
+stars, cursor in `source_state.watermark`, documents in `raw_articles` with
+`source_file: github_releases`. `research/corpus/first_mention.py` is a
+deterministic pass over the same table. Both switchable off with one line.
+
+**Why the source earns its place.** `openai/codex` `rust-v0.153.1` announced
+*"support for configuring GPT-6-Astra through the API without changing the
+default model or showing it in the model picker"*, and `openai-python` v3.8.0
+shipped `gpt-6-astra` the same day. The announcements corpus carried one bare
+"Astra" mention in an August safety post -- no model name, no catalog fact. A
+model deliberately hidden from the picker is not something a lab blogs about,
+so the announcements leg structurally cannot see it. On the first real firing
+the same pass also found `gpt-5.6-luna` (the Agents SDK's new default model)
+and, from Google DeepMind, `gemma-3` and `gemma-4` -- *"Add Gemma 4."* in
+`google-deepmind/gemma` v4.0.0, 2026-05-13, and nowhere in any announcement.
+
+**Ranking is stars and nothing else.** Commit volume was tried first and the
+data rejected it: a lab's most newsworthy repositories can be its least
+committed, because a code dump pushed by CI looks dead and is news.
+`x-algorithm` (32,610 stars) carries 19 commits, all from a CI account; a
+commit ranking puts `xai-sdk-python` (565 stars) above it. Commits survive as
+displayed evidence only.
+
+**The ranking reads bronze, and the star count comes from a live listing.**
+`raw_github_repos` already holds every repository's history, description and
+stars, so the ranking needs no file and no separate metadata fetch. But
+bronze's star count is only as fresh as the last history walk -- which happens
+when `pushed_at` moves, on a leg running at cadence 3 -- so a repository that
+stops being committed to would rank for ever on a frozen number, and
+`deepseek-harness` gained 200,000 stars in the weeks this was built. The
+releases leg therefore lists each org itself, one cheap REST chain, and
+overlays `stars` and `created_at` onto the stored payload. The github leg is
+untouched.
+
+**`created_at` cannot be inferred.** "No commit before X" means only "dormant
+until X", so first-commit-in-window reports `openai/whisper` (2022) and
+`openai/CLIP` (2020) as created in 2026. The error is not noise: it lands on
+exactly the famous quiet repositories a star ranking floats to the top. A
+repository whose payload predates the listing overlay reports `age: unknown`
+rather than a guess.
+
+**The cursor is the watermark, not a file.** `openai/codex` cut 240 releases in
+90 days, so the unit is "releases since the last run". An earlier version of
+this work kept that cursor in `release_cursors.json` beside a flock file. On
+this deployment that is not a stylistic difference -- the container has no disk
+(D31), so the file resets to the image copy every firing, the cursor never
+advances past the first backfill, and the leg re-fetches the same few releases
+for ever while reporting success. Moving it into `source_state` also removed
+the lock, the atomic-write helpers and the two-writer problem they existed to
+solve: one writer, one store.
+
+**Watched per org, not globally.** Sources are per org so they fail
+independently, which means each ranks only its own repositories. That is also
+the better cut: a single global top-N is dominated by OpenAI and Anthropic, and
+xAI (8 repositories in the window) and meta-llama (8) would never appear at
+all. The first firing ran at 40 per org and ingested 380 documents -- roughly
+$10 to classify against a $3 per-run ceiling. The budget guard handled it
+correctly, but `releases_watch` is now 10, which is ~80 repositories.
+
+**First mention is a corpus pass, not a releases feature.** The GPT-6-Astra
+release was scored `integration`, low impact, `is_signal: false` -- correct as
+a reading of the document, which announces a configuration option. Its
+significance is that the string had never appeared before, and firstness is a
+property of the corpus rather than of any document, so no per-document prompt
+can recover it however it is worded. One query over `raw_articles`, no LLM
+call, and it gets stricter as sources are added rather than noisier.
+
+**What it honestly measures.** "First" means first *in our corpus*, not in the
+world -- the archive reaches back six months, so a retrospective reference to
+an old model reads as new. `lab` is whose document mentioned it, not who owns
+it: `gemini-3.5` first appears on an Anthropic page because Anthropic
+benchmarked against it. And the regex catches a new version of a family we
+know; a wholly novel product name with no version number is invisible to it.
+That gap is where an LLM would earn its place later.
+
+**Kill switch.** `enabled:` in `pipeline.yaml` outranks cadence and an explicit
+`--legs`, including the manual trigger and firing 1's full sweep. It also
+excludes a disabled leg's already-ingested rows from the classification work
+list: a leg's rows outlive the firing that fetched them, so stopping the fetch
+alone would leave the operator who switched the leg off still paying to
+classify the output they switched it off over.
+
+---
+
+## D53 — Classification reads bronze, not a corpus file (2026-09-04)
+
+**Decision.** `classify_new` takes its article text from `raw_articles`, and
+`load_classifications` takes its URL list from there too. Both previously read
+`research/docs/announcements.json`.
+
+**Two failures, one cause.** `raw_articles` now carries more than one source
+file, and filtering a single file against a work list built from the whole
+table silently drops every row from any other file. Those rows stay pending,
+are re-listed every firing, never cost anything and never produce a
+classification -- while the leg reports a healthy ingest. Downstream,
+`load_classifications` had the same shape: releases would be scored, paid for
+and cached on disk but never loaded, `transform` would count them under
+`no_classification`, and the next firing would serve every one from cache for
+free and report `classified: N, cost_usd: 0.0`. Indistinguishable from a
+healthy incremental run, for ever.
+
+**It also closes an acknowledged hole.** `adapters._settled_urls` documents
+that `classify_new` read text from a file which "on a container with no disk
+resets to the image copy every firing", and works around it by refetching pages
+that are stored but unclassified. Reading the payload removes the hazard rather
+than routing around it.
+
+**And the work list is ordered.** `pending_urls` had no `ORDER BY`, so under a
+budget ceiling *which* articles were paid for was whatever the engine returned
+-- and differently arbitrary on the sqlite the tests use and the Postgres that
+runs.
+
+---
+
+## D54 — What the review of the port changed (2026-09-04)
+
+Ten findings on the releases leg, four major, all fixed. Three of them share a
+shape worth naming: the leg introduced the system's **first watermark that
+gates future fetches**, and every existing habit around watermarks was built for
+ones that do not.
+
+**The cursor was durable a phase before the documents it described.**
+`orchestrator._record` commits after each source, which makes the advanced
+`cursors` dict permanent as soon as the adapter returns; the release rows were
+landed in the worker's phase 2 and committed later. A failure in between -- the
+register load, a redeploy, an OOM kill during a 9-30 minute firing -- rolls the
+rows back and leaves the cursor advanced, and `new_releases` then filters those
+releases out for ever as already-seen. They would not appear in `truncated`, no
+alert would name them, and a missing release is indistinguishable from a quiet
+week.
+
+The github leg is immune because it is not cursor-gated: it re-derives from
+`pushed_at` against bronze and is self-healing. Fixed by landing the documents
+inside `fetch_releases`, in the session the orchestrator is about to commit, so
+rows and cursor become durable together. The failure direction is safe too --
+raising after landing leaves the watermark alone, and the url-keyed upsert
+absorbs the refetch.
+
+**An org whose every repository failed reported success.** Per-repository
+`try/except` is right, but the org-level result was then an empty success:
+`record_success` reset `consecutive_failures` to zero, no alert rule reads
+`repo_failures`, and `source_down` keys only on the streak. A token rotated to
+one without the right scope 404s on all of them, so the leg would sit
+permanently dead behind eight green rows. All-failed now raises, which is the
+same reasoning the `if not listing` guard already applied one level up.
+
+**The change that actually spends money had no test.** `classify_new` reading
+payloads from bronze -- the whole of D53 -- was exercised by nothing: one test
+passed `articles_path` (the legacy file branch), one returned at the `pending:
+0` short-circuit, and the worker tests monkeypatch `classify_new` away. Revert
+it and the suite stayed green while every release row sat pending for ever.
+Three tests now put `raw_articles` rows in front of it and assert the payloads
+reach the scorer.
+
+**The `ORDER BY` was on the wrong list.** `pending_urls` was ordered, but the
+articles handed to the scorer were rebuilt with an unordered
+`select(...).where(url.in_(pending))` -- and that is the list the scorer slices
+when the budget binds. The ordering claim in D53 was not delivered until the
+rebuild followed `pending` order.
+
+**A deterministic quote could splice two fields together.** `load_corpus`
+joined title and body for non-release documents, and `quote_for` took a
+±140-character window around the identifier in the joined string -- so a name
+near the end of a title produced a quote running past the join into the body, a
+string appearing in neither field. This repository already has
+`research/announcements/verbatim.py` because that splice was seen once from the
+model; the deterministic path must not reproduce it. Fields are now kept apart
+and a quote is cut from the single field the identifier is in. The test that
+claimed to check this asserted the quote was a substring of the joined string it
+had just been cut from -- true by construction, green either way.
+
+**Dead weight removed rather than kept for later.** `config/entities.yaml`
+still carried a `corpora:` block from the pre-port file design, naming a file
+this port deliberately stopped producing, and nothing read it -- while the rule
+it documented had moved into `first_mention.text_fields`. An operator following
+the file's own instruction would have changed nothing. `rank_repos.row` computed
+twelve fields for three consumers; the activity evidence is gone until there is
+a page that shows it, and the null-login rule it needed still lives in
+`aggregate_github`, which the people register uses. `config/validate.py` gained
+`check_entities`, so a typo in a key the code indexes directly is an error
+rather than a KeyError deep into a run.
+
+**Two comments were asserting things that had stopped being true.** The stage
+comment claimed the ordering makes the ranking non-empty on firing 1; it does
+not -- `raw_github_repos` is written in the landing phase, after ingest, so
+against a freshly rebuilt database every releases source fails once and
+self-heals on firing 2. And `_settled_urls` still explained itself by saying
+`classify_new` reads text from a corpus file, which D53 had just stopped being
+true. Both now say what the code does.
+
+**Also surfaced:** `reached_cursor` was computed, tested at the fetch level and
+discarded by the adapter, so a walk that never found the cursor -- more than
+`releases_max_pages x 100` releases since the last run -- was indistinguishable
+from a clean one. It reaches the watermark now, alongside the new/established
+split of what is being watched, which is the number that says whether the leg
+is looking at archives.
 ## D52 — The AI-team score was wrong because the prompt never described what it was reading (2026-09-04)
 
 **Decision.** Prompt `v8`: describe `model_spec` and `forum_post` in the
