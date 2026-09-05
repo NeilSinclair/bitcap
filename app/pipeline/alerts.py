@@ -377,8 +377,52 @@ def holding_impact(session: Session, config: dict, context: dict) -> list[Candid
     ]
 
 
+def extraction_downgraded(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """A lab's abstracts stopped coming from the element config names.
+
+    Extraction falls back through the weaker strategies so one lab changing its
+    page shape degrades rather than dropping papers out of the register. That
+    resilience is also the hazard: `_lead_section` returns the whole document
+    when it finds no `<article>`, and arXiv's `/abs/` furniture clears the
+    200-character floor comfortably. Renaming one CSS class would land every new
+    DeepSeek paper as navigation text, scoring zero on both axes, with
+    `unresolved` at zero and the ingest counts looking healthy.
+
+    A SYSTEM alert, not a content one: nothing has been learned about the world.
+    Keyed on lab and strategy pair, so one page-shape change is one alert rather
+    than one per firing.
+
+    Args:
+        session: Open session, unused -- this reads the run's own counts.
+        config: The `alerts` block.
+        context: Needs `paper_extraction`, a list of
+            ``{lab, configured, actual, n}`` rows from the landing phase.
+
+    Returns:
+        One candidate per (lab, configured, actual) that disagrees.
+    """
+    out = []
+    for row in context.get("paper_extraction") or []:
+        if row["configured"] == row["actual"]:
+            continue
+        out.append(Candidate(
+            kind=SYSTEM, rule="extraction_downgraded", severity=WARNING,
+            subject=f"{row['lab']}: abstracts now extracted by {row['actual']}"[:300],
+            body=(f"config/papers_sources.yaml names `{row['configured']}` for "
+                  f"{row['lab']}, but {row['n']} paper(s) fell back to "
+                  f"`{row['actual']}`. The page shape has probably changed; the "
+                  f"text is still being scored, so check it is not furniture."),
+            dedupe_key=f"extraction_downgraded:{row['lab']}:"
+                       f"{row['configured']}:{row['actual']}",
+            payload=row,
+            run_id=context.get("run_id"),
+        ))
+    return out
+
+
 RULES = {
     "run_failed": run_failed,
+    "extraction_downgraded": extraction_downgraded,
     "source_down": source_down,
     "budget_exceeded": budget_exceeded,
     "drift": drift,

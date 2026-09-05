@@ -5599,7 +5599,7 @@ The two ends of the register, both from abstracts:
 Anthropic's twelve papers score 0.0 investment and up to 44.4 on the AI axis,
 which is the shape the two-audience split was built to produce.
 
-### The gold set is built but not labelled
+### The gold set, and the first agreement numbers for paper scoring
 
 `research/papers/build_paper_gold_set.py` emits ten unlabelled papers stratified
 by **document type rather than by lab** — the finding this leg rests on is that a
@@ -5607,11 +5607,65 @@ paper's value tracks what kind of document it is, not who wrote it. It
 over-samples the safety/social-science stratum deliberately: "correctly scored
 zero" is the case that fails silently.
 
-`gold.labelled_by` is a required field, and the reason is a provenance one. The
-announcements gold set in `docs/gold_review.md` is human-adjudicated. If this one
-is labelled by a model it is a **cross-model proxy**, must be named as one
-wherever its numbers appear, and must not be averaged into the announcement
-figures. The brief permits a defensible proxy where honest ground truth is out of
-reach; it does not permit calling one gold. Until it is labelled, `drift` still
-grades announcements only — so paper scoring currently has unit tests but no
-agreement metric, and that gap is real.
+`gold.labelled_by` is a required field, so a file cannot reach the metrics
+without stating who produced it.
+
+**Correcting a claim made earlier in this work:** the announcements gold set is
+not human ground truth either. `gold_human/` was deleted on 2026-09-01 because
+labelling twenty ~14,000-character articles by hand was not going to happen
+(`research/announcements/test/README.md`), and what exists is cross-model
+adjudication — `claude-sonnet-5` classifier, `claude-opus-5` adjudicator — plus a
+human *read* of one run in `docs/gold_review.md`. So the paper set is
+methodologically consistent with the announcements set rather than a weaker
+substitute for it, and neither may be described as human-labelled anywhere in the
+design document.
+
+One real difference, in the paper set's favour and worth keeping: it is labelled
+**blind**. The announcements adjudicator sees the classifier's output and a
+second independent run before deciding; this labeller sees only `text`, `title`,
+`url` and `text_source`, and the builder is tested to keep it that way. Blind
+agreement means more because it cannot anchor. It also buys less: no second run
+to show where the scorer was unstable, and no recorded reason for rejecting a tag
+the scorer produced. The announcements set measured its adjudicator running high
+on ordered fields in 11 of 15 disagreements; nothing equivalent is measured here.
+
+**Labelled by `claude-fable-5`, blind, on 2026-09-05.** Ten papers, every quote
+mechanically verified as a verbatim substring before the labels were accepted.
+Measured against the `claude-sonnet-5` scorer under `p1`:
+
+| | |
+|---|---|
+| event_type agreement | **9 / 10** |
+| mechanism F1 | **0.86** (precision 1.00, recall 0.75) |
+| practice F1 | **0.76** (precision 0.67, recall 0.89) |
+
+**Mechanism precision is 1.00 — the scorer produced no mechanism tag the
+labeller rejected.** On the axis that routes to holdings, and where a
+hallucinated tag would be most expensive, there were no false positives across
+the sample. The one miss was `training_compute_up` on the GPT-4 technical report.
+
+**Every disagreement was pre-identified by the labeller as genuinely arguable**,
+which is the result worth reporting and is why the disagreement list was asked
+for alongside the labels:
+
+- The single event_type split is `09`, DeepSeek-Coder-V2 — gold
+  `frontier_model_release`, scorer `open_weights`. The labeller had already
+  flagged it as a three-way tie: "further pre-trained from an intermediate
+  checkpoint" reads incremental, the document frames it as a new top-of-range
+  coding model, and it is also an open-weights release. The rubric does not
+  break that tie, and neither answer is wrong.
+- All four practice false positives are on `08`, the gpt-oss model card, where
+  the scorer tagged `evaluation`, `integration` and `serving_efficiency`
+  alongside the agreed `model_capability`. A rich model card invites
+  over-tagging on the AI axis; nothing similar happens on the investment axis.
+- The remaining practice miss is `07`, a toy-model interpretability paper, which
+  the labeller explicitly called plausible to tag "both or neither".
+
+So the honest reading is that the scorer's errors on this sample fall inside the
+band where the rubric itself is ambiguous, not outside it. What that does **not**
+establish is corpus-level precision and recall: n = 10, stratified rather than
+proportional, exactly as on the announcements side.
+
+Still open: the set is not yet wired into `drift.measure`, so this is a one-off
+measurement rather than a metric that would catch the scorer degrading next
+month. That gap is real and is the next thing to close.

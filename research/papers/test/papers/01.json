@@ -8,11 +8,21 @@
   "document_type": "interpretability",
   "text": "Verbalizable Representations Form a Global Workspace in Language Models Transformer Circuits Thread Verbalizable Representations Form a Global Workspace in Language Models Verbalizable Representations Form a Global Workspace in Language Models Authors Wes Gurnee * , Nicholas Sofroniew * Adam Pearce, Mateusz Piotrowski, Isaac Kauvar, Runjin Chen, Anna Soligo, Paul Bogdan, Euan Ong, Rowan Wang, T. Ben Thompson, David Abrahams, Subhash Kantamneni, Emmanuel Ameisen, Joshua Batson Jack Lindsey *† Affiliations Anthropic Published July 6, 2026 * Core contributor; † Correspondence to jacklindsey@anthropic.com Introduction If the mind is an ocean, we spend our lives floating at the surface. Beneath us, an enormous amount of processing takes place without our knowledge: our visual systems parsing the contours of a face, our motor circuits maintaining our posture. At any given moment, only a small fraction of this neural activity is accessible to us. Yet it is this privileged sliver of activity that we rely on to reason deliberately: to plan what ingredients to buy for a recipe, or to puzzle out why an engine won’t start. Such thoughts can be articulated out loud, deliberately held in mind, and brought to bear on whatever task the moment demands. This distinction, between our accessible thoughts and our unconscious processing, is perhaps the most striking feature of human cognition. In this paper, we present evidence that an analogous functional distinction has emerged in modern AI models. Specifically, we observe that language models maintain a privileged set of internal representations, available for report, modulation, and flexible internal reasoning, atop a much larger volume of automatic processing. We identify these representations using a new interpretability technique, which surfaces the concepts a model is poised to verbalize at any point in its processing. Measuring and intervening on these representations provides us a window into a model’s thought processes, uncovering internal reasoning and reactions that do not appear in its output.",
   "gold": {
-    "labelled_by": null,
-    "event_type": null,
+    "labelled_by": "claude-fable-5",
+    "event_type": "research_result",
     "mechanisms": [],
     "categories": [],
-    "practices": []
+    "practices": [
+      {
+        "id": "evaluation",
+        "action": "watch",
+        "impact": "low",
+        "confidence": "medium",
+        "dimensions": [],
+        "reason": "An interpretability technique that surfaces and intervenes on what a model is poised to verbalize is a potential monitoring window, but the lead states the technique exists without describing anything transferable.",
+        "quote": "We identify these representations using a new interpretability technique, which surfaces the concepts a model is poised to verbalize at any point in its processing."
+      }
+    ]
   },
   "review": {}
 }

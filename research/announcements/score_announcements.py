@@ -97,12 +97,19 @@ def announcements() -> Variant:
     return Variant(PROMPT_VERSION, PROMPT, CACHE, OUT)
 
 
-PAPERS = Variant(
-    PAPER_PROMPT_VERSION,
-    ROOT / "prompts" / "paper_scoring" / f"{PAPER_PROMPT_VERSION}.md",
-    ROOT / "research" / "docs" / "paper_scores" / PAPER_PROMPT_VERSION,
-    ROOT / "research" / "docs" / f"scored_papers_{PAPER_PROMPT_VERSION}.json",
-)
+PAPER_PROMPT = ROOT / "prompts" / "paper_scoring" / f"{PAPER_PROMPT_VERSION}.md"
+PAPER_CACHE = ROOT / "research" / "docs" / "paper_scores" / PAPER_PROMPT_VERSION
+PAPER_OUT = ROOT / "research" / "docs" / f"scored_papers_{PAPER_PROMPT_VERSION}.json"
+
+
+def papers() -> Variant:
+    """The papers variant, read from the module globals at call time.
+
+    A function for the same reason `announcements` is: a frozen constant would
+    ignore a monkeypatched cache directory and write straight into the real
+    register, which is precisely the seam a one-off re-score needs.
+    """
+    return Variant(PAPER_PROMPT_VERSION, PAPER_PROMPT, PAPER_CACHE, PAPER_OUT)
 COST = ROOT / "research" / "docs" / "announcement_cost.json"
 
 TAG = {
@@ -388,6 +395,8 @@ def classify(
         client: Anthropic client.
         model: Model id.
         article: Article record.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         Tuple of (parsed result, cost record for this single call).
@@ -516,6 +525,8 @@ def classify_one(
             which is what the pre-v5 callers (variance, vote) want.
         dimensions: Valid dimension names per practice id.
         max_dimensions: Cap on dimensions per tag.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         Tuple of (result, cost record or None if cached, failure or None).
@@ -726,6 +737,8 @@ def run(
             `.snapshot()`. Checked before each item is started, so a fan-out
             already in flight stops taking new work rather than being killed
             mid-call — a cancelled call is billed and produces nothing.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         ``{scored, failures, cost_usd, bands, classified, skipped_for_budget}``.

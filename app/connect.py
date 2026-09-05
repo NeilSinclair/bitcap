@@ -273,7 +273,7 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
     return _drop_contradicted_category_rows(list(best.values()))
 
 
-def connect(session: Session, prompt_version: str, run_id: int | None = None) -> dict:
+def connect(session: Session, prompt_version: str | tuple[str, ...], run_id: int | None = None) -> dict:
     """Rebuild the connections table for every classified article.
 
     Wholesale delete-and-rebuild: the table is fully derived, so rebuilding is

@@ -29,6 +29,7 @@ difference is carried into the prompt as `text_source`, not hidden here.
 from __future__ import annotations
 
 import re
+from datetime import date
 
 # Elements whose text is furniture, never content.
 _DROP = re.compile(
@@ -239,14 +240,37 @@ def collect(session, labs: dict, limit: int | None = None) -> tuple[list[dict], 
 
         text, how = got
         payload = row.payload or {}
+
+        # A missing or unparseable date is a POISON PILL, not a cosmetic gap.
+        # `transform` calls `date.fromisoformat(p["date"])`, which raises
+        # TypeError on None -- inside `_etl`'s single transaction. The run fails,
+        # the bad row stays in bronze, and every subsequent firing and every
+        # `bitcap-db load` fails at the same line until someone deletes it by
+        # hand. Two of the six harvesters can legitimately return no date:
+        # `deepmind_harvest.detail_page_info` documents its date as "ISO or
+        # None", and an LLM byline extraction can return null.
+        try:
+            published = date.fromisoformat(str(payload.get("date")))
+        except (TypeError, ValueError):
+            unresolved.append({
+                "url": row.url, "lab": row.lab, "kind": "paper",
+                "reason": f"no usable publication date ({payload.get('date')!r})",
+            })
+            continue
+
         records.append({
             "lab": row.lab,
+            # Both, deliberately. `extraction` alone cannot show a downgrade,
+            # because two strategies map to the same `text_source` -- so if arXiv
+            # renamed its abstract blockquote, every DeepSeek paper would quietly
+            # arrive as furniture-filled lead text with `unresolved` still zero.
+            "extraction": how,
+            "extraction_configured": rules["strategy"],
             "url": row.url,
             "title": payload.get("title") or row.url,
-            "date": payload.get("date"),
+            "date": published.isoformat(),
             "text": text,
             "text_source": TEXT_SOURCE[how],
-            "extraction": how,
         })
 
     return records, unresolved

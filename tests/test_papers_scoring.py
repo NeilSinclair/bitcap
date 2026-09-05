@@ -380,9 +380,10 @@ class TestTheGoldSampleIsStratifiedByDocumentType:
 
     def test_every_emitted_file_demands_its_labeller(self, tmp_path):
         """A gold file that reaches the metrics without `labelled_by` is a file
-        whose provenance nobody can state. The announcements set is
-        human-adjudicated; a model-labelled set is a cross-model proxy and has
-        to be reported as one."""
+        whose provenance nobody can state. Neither this set nor the announcements
+        one is human ground truth -- both are cross-model proxies -- so which
+        model produced which labels is the only thing that makes them
+        comparable."""
         import json
         records = [{"lab": "anthropic", "title": "T", "url": "u", "date": "2026-01-01",
                     "text": "t", "text_source": "paper_lead", "document_type": "interpretability"}]
@@ -403,3 +404,241 @@ class TestTheGoldSampleIsStratifiedByDocumentType:
         written = json.loads(path.read_text())
         assert "score" not in written and "band" not in written
         assert written["gold"]["event_type"] is None
+
+
+# --------------------------------------------------------------------------
+# collect(): everything below extract() that a live firing depends on
+# --------------------------------------------------------------------------
+
+import fetch_cache  # noqa: E402
+
+LABS = {"deepseek": {"abstract": {"strategy": "blockquote_abstract", "max_chars": 6000}},
+        "mistral": {"abstract": {"strategy": "lead_section", "max_chars": 6000}}}
+
+
+def _papers_session(rows):
+    engine = create_engine("sqlite:///:memory:")
+    create_all(engine)
+    s = Session(engine)
+    for lab, url, payload, source_file in rows:
+        if source_file is not None:
+            s.add(m.RawArticle(url=url, content_hash=url, source_file=source_file,
+                               payload={"text": "the full announcement"}))
+        s.add(m.RawPaper(url=url, lab=lab, payload=payload, content_hash=url))
+    s.commit()
+    return s
+
+
+class TestCollect:
+    @pytest.fixture(autouse=True)
+    def _no_network(self, monkeypatch):
+        monkeypatch.setattr(fetch_cache, "fetch",
+                            lambda url, **kw: ARXIV if "arxiv" in url else LEAD)
+
+    def test_a_paper_becomes_an_article_shaped_record(self):
+        s = _papers_session([("deepseek", "https://arxiv.org/abs/1",
+                              {"title": "T", "date": "2026-04-26"}, None)])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert unresolved == []
+        (record,) = records
+        assert record["url"] == "https://arxiv.org/abs/1"
+        assert record["text_source"] == "paper_abstract"
+        assert record["extraction"] == "blockquote_abstract"
+        assert record["extraction_configured"] == "blockquote_abstract"
+        assert "10% of the KV cache" in record["text"]
+
+    def test_a_paper_already_held_as_an_announcement_is_recorded_not_landed(self):
+        """The incident D57 records. Mistral has no publications page, so its
+        papers leg cites `mistral.ai/news/<slug>` -- a URL the announcements leg
+        already holds at full text. `raw_articles` is keyed on URL, so landing
+        the paper replaced 13k characters of announcement with a 2k lead
+        section. Silently: the load reported `updated: 2` and nothing else."""
+        s = _papers_session([("mistral", "https://mistral.ai/news/x/",
+                              {"title": "T", "date": "2026-07-22"},
+                              "research/docs/announcements.json")])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert records == []
+        assert len(unresolved) == 1
+        assert "already in the corpus as an announcement" in unresolved[0]["reason"]
+
+    def test_a_paper_the_papers_leg_itself_landed_is_not_treated_as_a_duplicate(self):
+        """The guard must not fire on the papers corpus's own rows, or the
+        second firing would empty the register."""
+        s = _papers_session([("deepseek", "https://arxiv.org/abs/1",
+                              {"title": "T", "date": "2026-04-26"}, PAPERS_CORPUS)])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert len(records) == 1 and unresolved == []
+
+    @pytest.mark.parametrize("bad", [None, "", "n.d.", "2026-13-01", "26 April 2026"])
+    def test_a_paper_with_no_usable_date_never_reaches_bronze(self, bad):
+        """A POISON PILL, not a cosmetic gap. `transform` calls
+        `date.fromisoformat(p["date"])` inside `_etl`'s single transaction, so
+        one such row fails the run -- and, because the row stays in bronze, every
+        subsequent firing and every `bitcap-db load` fails at the same line until
+        someone deletes it by hand. Two harvesters can legitimately return None:
+        `deepmind_harvest.detail_page_info` documents its date as "ISO or None"."""
+        s = _papers_session([("deepseek", "https://arxiv.org/abs/1",
+                              {"title": "T", "date": bad}, None)])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert records == []
+        assert "no usable publication date" in unresolved[0]["reason"]
+
+    def test_the_date_that_survives_is_the_one_transform_can_parse(self):
+        from datetime import date as _date
+        s = _papers_session([("deepseek", "https://arxiv.org/abs/1",
+                              {"title": "T", "date": "2026-04-26"}, None)])
+        (record,), _ = paper_text.collect(s, LABS)
+        assert _date.fromisoformat(record["date"]) == _date(2026, 4, 26)
+
+    def test_a_lab_with_no_abstract_config_is_recorded(self):
+        s = _papers_session([("xai", "https://x.ai/p", {"title": "T", "date": "2026-01-01"}, None)])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert records == [] and "no abstract config" in unresolved[0]["reason"]
+
+    def test_a_dead_page_does_not_abort_the_leg(self, monkeypatch):
+        def boom(url, **kw):
+            raise RuntimeError("gone")
+        monkeypatch.setattr(fetch_cache, "fetch", boom)
+        s = _papers_session([("deepseek", "https://arxiv.org/abs/1",
+                              {"title": "T", "date": "2026-04-26"}, None)])
+        records, unresolved = paper_text.collect(s, LABS)
+        assert records == [] and "fetch failed" in unresolved[0]["reason"]
+
+
+# --------------------------------------------------------------------------
+# The routing that decides which prompt a paper is scored against
+# --------------------------------------------------------------------------
+
+class TestPapersAreScoredAgainstThePaperPrompt:
+    """The regression the review found nothing red for: delete `**variant` from
+    `classify_new` and every paper is scored against the v9 announcement prompt,
+    cached under `announcement_scores/v9/`, and loaded as a *v9* classification.
+    The p1 register stays empty for ever and the event-type disambiguation that
+    justifies this whole branch is silently gone."""
+
+    @pytest.fixture()
+    def bronze(self):
+        engine = create_engine("sqlite:///:memory:")
+        create_all(engine)
+        with Session(engine) as s:
+            s.add(m.RawArticle(url="https://arxiv.org/abs/1", content_hash="h",
+                               source_file=PAPERS_CORPUS,
+                               payload={"url": "https://arxiv.org/abs/1", "text": "t",
+                                        "lab": "deepseek", "date": "2026-04-26",
+                                        "title": "T", "text_source": "paper_abstract"}))
+            s.commit()
+            yield s
+
+    def _spy(self, monkeypatch):
+        seen = {}
+        import score_announcements as scorer
+
+        def fake_run(articles, model, workers, batch, budget, variant=None):
+            seen["variant"] = variant
+            return {"scored": [], "failures": [], "cost_usd": 0.0,
+                    "classified": len(articles), "skipped_for_budget": 0, "bands": {}}
+        monkeypatch.setattr(scorer, "run", fake_run)
+        return seen
+
+    def test_the_papers_corpus_is_scored_under_the_paper_prompt(self, bronze, monkeypatch):
+        from app.pipeline.budget import Budget
+        from app.pipeline.classify import classify_new
+        seen = self._spy(monkeypatch)
+        classify_new(bronze, "p1", Budget(per_run_usd=5.0, per_month_usd=20.0),
+                     include_source_files=(PAPERS_CORPUS,), corpus="papers")
+        variant = seen["variant"]
+        assert variant is not None, "papers were scored against the announcement prompt"
+        assert variant.version == "p1"
+        assert variant.prompt.name == "p1.md"
+        assert variant.prompt.parent.name == "paper_scoring"
+        assert variant.cache.parent.name == "paper_scores"
+
+    def test_announcements_still_take_the_untouched_default_path(self, bronze, monkeypatch):
+        """The announcements call must stay byte-identical, because its default
+        resolves from the module globals -- the seam tests and one-off scripts
+        monkeypatch to redirect a run at a scratch directory."""
+        from app.pipeline.budget import Budget
+        from app.pipeline.classify import classify_new
+        seen = self._spy(monkeypatch)
+        bronze.add(m.RawArticle(url="https://lab/a", content_hash="h2",
+                                source_file="research/docs/announcements.json",
+                                payload={"url": "https://lab/a", "text": "t",
+                                         "lab": "deepseek", "date": "2026-08-01",
+                                         "title": "A", "text_source": "full_text"}))
+        bronze.commit()
+        classify_new(bronze, "v9", Budget(per_run_usd=5.0, per_month_usd=20.0),
+                     exclude_source_files=(PAPERS_CORPUS,))
+        assert seen["variant"] is None
+
+    def test_the_paper_variant_is_not_frozen_at_import(self, monkeypatch):
+        """`papers()` is a function for the same reason `announcements()` is: a
+        frozen constant ignores a redirected cache and writes into the real
+        register."""
+        import score_announcements as scorer
+        monkeypatch.setattr(scorer, "PAPER_CACHE", Path("/tmp/elsewhere"))
+        assert scorer.papers().cache == Path("/tmp/elsewhere")
+
+
+class TestTheCliSpansBothVersions:
+    def test_connect_from_the_cli_does_not_wipe_paper_connections(self, session):
+        """`bitcap-db connect` is a documented command and `connect` rebuilds the
+        whole table, so passing one version here deletes every paper's holding
+        connections and rebuilds announcements only -- silently."""
+        import inspect
+
+        from app import cli
+        source = inspect.getsource(cli.cmd_connect)
+        assert "PAPER_PROMPT_VERSION" in source, (
+            "cmd_connect passes a single version; papers lose every connection")
+
+    def test_the_prompt_flag_reaches_the_join_and_the_digest(self):
+        """`--prompt v10` classified and transformed at v10 while joining and
+        publishing from the module constant, so the new version's rows got no
+        connections and never reached a digest."""
+        import inspect
+
+        from app.pipeline import worker
+        source = inspect.getsource(worker)
+        assert "run_connect(\n            session, (prompt_version, PAPER_PROMPT_VERSION)" in source
+        assert "session, (prompt_version, PAPER_PROMPT_VERSION), run.started_at" in source
+
+
+class TestAnExtractionDowngradeIsASystemAlert:
+    """Extraction falls back so a page-shape change degrades rather than dropping
+    papers. That resilience is also the hazard: `_lead_section` returns the whole
+    document when it finds no `<article>`, and arXiv's `/abs/` furniture clears
+    the 200-character floor comfortably."""
+
+    def test_a_lab_falling_back_raises_a_system_alert(self):
+        got = alerts_mod.extraction_downgraded(None, {}, {"paper_extraction": [
+            {"lab": "deepseek", "configured": "blockquote_abstract",
+             "actual": "lead_section", "n": 8}]})
+        assert len(got) == 1
+        assert got[0].kind == "system"
+        assert "deepseek" in got[0].subject
+
+    def test_a_lab_using_its_configured_strategy_is_silent(self):
+        got = alerts_mod.extraction_downgraded(None, {}, {"paper_extraction": [
+            {"lab": "deepseek", "configured": "blockquote_abstract",
+             "actual": "blockquote_abstract", "n": 8}]})
+        assert got == []
+
+    def test_it_is_registered_so_a_firing_actually_runs_it(self):
+        assert "extraction_downgraded" in alerts_mod.RULES
+
+    def test_one_page_shape_change_is_one_alert_not_one_per_firing(self):
+        rows = [{"lab": "deepseek", "configured": "blockquote_abstract",
+                 "actual": "lead_section", "n": 8}]
+        a = alerts_mod.extraction_downgraded(None, {}, {"paper_extraction": rows})
+        b = alerts_mod.extraction_downgraded(None, {}, {"paper_extraction": rows})
+        assert a[0].dedupe_key == b[0].dedupe_key
+
+
+class TestTheDashboardCanTellThemApart:
+    def test_each_item_says_which_corpus_it_came_from(self, session):
+        from api.queries import build_items
+        transform(session, "v9")
+        transform(session, "p1")
+        session.flush()
+        items = {i["title"]: i["docType"] for i in build_items(session, ("v9", "p1"))}
+        assert items == {"Announcement": "announcement", "Paper": "paper"}

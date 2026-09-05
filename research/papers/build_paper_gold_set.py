@@ -28,11 +28,16 @@ most worth pinning, because it is the one that fails silently: a scorer that
 starts finding transmission in a study of how people perceive AI consciousness
 buries the technical reports, and nothing about that shows up as an error.
 
-LABELLING PROVENANCE. `gold.labelled_by` is required and is written by whoever
-fills the file in. The announcements gold set is human-adjudicated; if this one
-is labelled by a model it is a cross-model proxy and must be named as one
-wherever its numbers are reported. The brief permits a defensible proxy where
-honest ground truth is out of reach. It does not permit calling one gold.
+LABELLING PROVENANCE. `gold.labelled_by` is required, so a file cannot reach the
+metrics without stating who produced it. Neither this set nor the announcements
+one is human ground truth -- `gold_human/` was dropped on 2026-09-01 and the
+announcements labels are cross-model adjudication (see
+`research/announcements/test/README.md`). Both are defensible proxies, which the
+brief permits; neither may be called human-labelled, which it does not.
+
+This set is labelled BLIND, which the announcements set is not: the files carry
+`text`, `title`, `url` and `text_source` and never the system's own answer, and
+`write` is tested to keep it that way.
 """
 
 from __future__ import annotations
@@ -40,6 +45,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -57,11 +63,28 @@ QUOTA = {
     "component": 2,
 }
 
-# Which type a paper is, decided from the lab and the title rather than from the
+# Which type a paper is, decided from the title and the lab rather than from the
 # system's own event_type -- that would let the sample inherit the answer it is
 # meant to check.
-_REPORT = ("technical report", "-v2", "-v3", "-v4", "deepseek llm", "deepseek-coder")
+#
+# TITLE SIGNALS FIRST, LAB PRIOR SECOND, and the order matters. An earlier
+# version consulted the lab first, which made this function a lab lookup wearing
+# a document-type name: every DeepMind paper became `safety_social`, so a
+# DeepMind *model launch* would have been filed in the noise stratum this set
+# over-samples specifically to pin "correctly scored zero". The lab is a
+# reasonable prior for what a lab mostly publishes; it is not evidence about a
+# particular document, and where the title says otherwise the title wins.
 _CARD = ("system card", "model card")
+_REPORT = ("technical report", "deepseek llm", "deepseek-coder")
+# A versioned model name in the title is a launch, whoever published it.
+_LAUNCH = re.compile(
+    r"\b(gpt|claude|gemini|gemma|llama|mistral|deepseek|grok|qwen|o)[- ]?\d", re.I)
+# Titles that are plainly about people, policy or perception rather than models.
+_SOCIAL = ("red-team", "red team", "annotation", "participatory", "politics of",
+           "moral", "consciousness", "pluralistic", "workforce", "retraining",
+           "bargaining", "charity", "human disagreement", "perception")
+_INTERP = ("circuits", "interpretab", "features", "workspace", "interference",
+           "probe", "activation", "lie detector", "sae")
 
 
 def document_type(lab: str, title: str) -> str:
@@ -77,7 +100,14 @@ def document_type(lab: str, title: str) -> str:
     low = title.lower()
     if any(k in low for k in _CARD):
         return "system_card"
-    if lab == "deepseek" or any(k in low for k in _REPORT):
+    if any(k in low for k in _REPORT) or _LAUNCH.search(title):
+        return "technical_report"
+    if any(k in low for k in _SOCIAL):
+        return "safety_social"
+    if any(k in low for k in _INTERP):
+        return "interpretability"
+    # Lab priors, reached only when the title says nothing either way.
+    if lab == "deepseek":
         return "technical_report"
     if lab == "anthropic":
         return "interpretability"

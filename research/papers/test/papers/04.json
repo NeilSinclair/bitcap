@@ -8,11 +8,21 @@
   "document_type": "component",
   "text": "S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval | Research - AI at Meta Products AI Research Resources About AI Developers Try Meta AI AR/VR RESEARCH S-EMBER: A Large-Scale Benchmark for Streaming Egocentric Memory Retrieval July 13, 2026 Zusammenfassung As wearable devices enable continuous first-person recording, AI assistants must reason across long time horizons to recall past experiences-a capability known as episodic memory. Current benchmarks often rely on offline evaluation with access to entire video files, failing to simulate the streaming reality of wearable intelligence. We introduce S-EMBER (Streaming Egocentric Memory Benchmark for Episodic Retrieval), a large-scale benchmark comprising 3,141 videos totaling 388 hours of organic activity captured via Ray-Ban Meta smart glasses. S-EMBER formalizes grounded streaming episodic retrieval, a paradigm shift from global offline search to causal, active recall triggered by visual events in a continuous stream. We provide 9,448 QA pairs requiring manual visual proof through precise temporal localization and supporting flexible response lengths to simulate natural human-AI interaction. Our extensive benchmarking of frontier models uncovers a localization paradox: while semantic reasoning improves with parameter scale, temporal grounding precision remains a stagnant architectural bottleneck that does not benefit from brute-force increases in model size, resolution, or frame density. S-EMBER establishes a hardware-authentic foundation for developing grounded, reliable episodic memory in the next generation of wearable AI agents. Download the Paper",
   "gold": {
-    "labelled_by": null,
-    "event_type": null,
+    "labelled_by": "claude-fable-5",
+    "event_type": "research_result",
     "mechanisms": [],
     "categories": [],
-    "practices": []
+    "practices": [
+      {
+        "id": "evaluation",
+        "action": "investigate",
+        "impact": "low",
+        "confidence": "high",
+        "dimensions": [],
+        "reason": "A concrete, sizeable streaming episodic-memory benchmark is runnable by a team building long-horizon video assistants, but is marginal to teams outside egocentric or wearable AI.",
+        "quote": "We introduce S-EMBER (Streaming Egocentric Memory Benchmark for Episodic Retrieval), a large-scale benchmark comprising 3,141 videos totaling 388 hours of organic activity captured via Ray-Ban Meta smart glasses."
+      }
+    ]
   },
   "review": {}
 }

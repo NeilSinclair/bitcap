@@ -132,7 +132,7 @@ def classify_new(
     # so the default keeps resolving from the scorer's module globals -- which is
     # the seam tests and one-off scripts use to redirect a run at a scratch
     # directory (see `score_announcements.announcements`).
-    variant = {"variant": scorer.PAPERS} if corpus == "papers" else {}
+    variant = {"variant": scorer.papers()} if corpus == "papers" else {}
 
     if articles_path is not None:
         corpus = json.loads(articles_path.read_text(encoding="utf-8"))

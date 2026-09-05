@@ -171,7 +171,7 @@ def _holdings_line(conns: list[m.Connection], names: dict, shown: int) -> dict:
 def build(
     session: Session,
     kind: str,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     config: dict | None = None,
     quantise: bool = True,
@@ -393,7 +393,7 @@ def _ai_item(art, cls, prac_tags, labs, prac_labels, rules):
 
 def publish(
     session: Session,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     run_id: int | None = None,
     config: dict | None = None,

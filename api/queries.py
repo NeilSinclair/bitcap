@@ -57,7 +57,7 @@ def _connection_label(route: str, via: str, mech_labels: dict, cat_labels: dict)
     return via
 
 
-def build_items(session: Session, prompt_version: str) -> list[dict]:
+def build_items(session: Session, prompt_version: str | tuple[str, ...]) -> list[dict]:
     """Assemble the full item list for one classification version.
 
     Args:
@@ -86,9 +86,13 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
     # Which leg a row came from. `source_file` is the provenance the shared
     # bronze table already carries, so the reader does not need a second column
     # on `articles` that could disagree with it.
+    # Columns, not entities: `RawArticle.payload` is an eagerly-mapped JSON
+    # column holding full article text, so hydrating ~700 rows to read two
+    # strings parsed and threw away several MB of JSON on every dashboard load.
     doc_types = {
-        r.id: ("paper" if r.source_file == PAPERS_CORPUS else "announcement")
-        for r in session.scalars(select(m.RawArticle))
+        row_id: ("paper" if source_file == PAPERS_CORPUS else "announcement")
+        for row_id, source_file in session.execute(
+            select(m.RawArticle.id, m.RawArticle.source_file))
     }
     cls_ids = [c.id for c in classifications.values()]
 

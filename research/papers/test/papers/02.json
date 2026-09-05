@@ -8,8 +8,8 @@
   "document_type": "safety_social",
   "text": "This paper evaluates whether the U.S. Workforce Innovation and Opportunity Act (WIOA) supported American worker resilience to technological automation. Analyzing over 23 million WIOA participation records (2017-2023), we introduce the “Retrainability Index,” which measures program outcomes through post-intervention wage recovery and shifts in Routine Task Intensity (RTI). We show WIOA rarely shifts workers into less automation-exposed work, with a significant portion of participants simply returning to their prior field. Successful outcomes driven mostly by wage gains, possibly due to “catch-up” mean reversion, rather than changes in occupation. Outcomes are moderated by a person’s prior occupational skill set and area of work, as well as their local economy. We find evidence that employer led programs—notably apprenticeships—are associated with the highest incidence of success. This suggests the United States’ existing public active labor market programming can support baseline wage recovery for vulnerable populations, but is not well-equipped to support the large-scale, cross-industry labor transitions.",
   "gold": {
-    "labelled_by": null,
-    "event_type": null,
+    "labelled_by": "claude-fable-5",
+    "event_type": "research_result",
     "mechanisms": [],
     "categories": [],
     "practices": []

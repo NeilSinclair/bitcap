@@ -48,7 +48,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app import digest as digest_mod
 from app import models as m
-from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION, PROMPT_VERSIONS
+from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
@@ -195,9 +195,12 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         stats["refs"] = load_refs(session)
         # `load_articles` is deliberately absent: phase 2 already put this
         # firing's articles into bronze so the classifier could see them.
-        stats["classifications"] = load_classifications(session, prompt_version, run_id=run.id)
+        stats["classifications"] = load_classifications(
+            session, prompt_version, run_id=run.id,
+            source_files=tuple(c for c in CORPUS_LABELS.values() if c != PAPERS_CORPUS))
         stats["paper_classifications"] = load_classifications(
-            session, PAPER_PROMPT_VERSION, scores_dir=PAPER_SCORES_DIR, run_id=run.id)
+            session, PAPER_PROMPT_VERSION, scores_dir=PAPER_SCORES_DIR, run_id=run.id,
+            source_files=(PAPERS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
         # Once per version: `transform` scopes its delete by prompt_version, so
         # the derivations are additive. `connect` rebuilds the whole table, so
@@ -205,7 +208,8 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         # the last one's rows.
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
         stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
-        stats["connections"] = run_connect(session, PROMPT_VERSIONS, run_id=run.id)
+        stats["connections"] = run_connect(
+            session, (prompt_version, PAPER_PROMPT_VERSION), run_id=run.id)
         # Assign, never accumulate: `new_usd` is this run's whole delta on the
         # shared cost log, covering classification and drift alike. Adding it to
         # a figure those stages had already contributed double-counted them.
@@ -361,6 +365,15 @@ def _phases(
         stats["paper_corpus"] = load_article_records(
             session, records, PAPERS_CORPUS, run_id=run.id)
         stats["paper_corpus"]["unresolved"] = len(unresolved)
+        # Per (lab, configured, actual): the shape `extraction_downgraded` reads,
+        # and the shape a human reads in the run stats without it.
+        seen: dict[tuple[str, str, str], int] = {}
+        for record in records:
+            key = (record["lab"], record["extraction_configured"], record["extraction"])
+            seen[key] = seen.get(key, 0) + 1
+        extraction = [{"lab": lab, "configured": cfg, "actual": act, "n": n}
+                      for (lab, cfg, act), n in sorted(seen.items())]
+        stats["paper_corpus"]["extraction"] = extraction
         # Per lab, because `unresolved_items` is keyed on (leg, source_id,
         # identifier): one lab's page shape breaking must be visible as that
         # lab's problem, not as an undifferentiated papers failure.
@@ -441,7 +454,7 @@ def _phases(
     #    second one for the same period.
     note("digest")
     published = digest_mod.publish(
-        session, PROMPT_VERSIONS, run.started_at, run_id=run.id)
+        session, (prompt_version, PAPER_PROMPT_VERSION), run.started_at, run_id=run.id)
     stats["digest"] = {d.kind: d.stats for d in published}
     session.commit()
 
@@ -459,6 +472,7 @@ def _phases(
         "drift": drift_metrics,
         "snapshot_id": snapshot_id,
         "skipped_for_budget": stats.get("classify", {}).get("skipped_for_budget"),
+        "paper_extraction": stats.get("paper_corpus", {}).get("extraction"),
     }
     stats["alerts"] = alerts_mod.dispatch(
         session,
