@@ -12,6 +12,25 @@
 
 - Ensure regression tests run before any merge with main
 
+- **`bitcap-db rebuild` fails against a database with a pending migration.**
+  `cmd_load`'s rebuild path is `drop_all` → `ensure_schema` → load. `drop_all`
+  removes the model tables but `alembic_version` is not one, so the stamp
+  survives, `ensure_schema` takes the "stamped and behind" branch, and the
+  upgrade runs a migration whose foreign keys point at tables dropped moments
+  earlier — `relation "articles" does not exist`. Re-running repeats it exactly,
+  because the stamp never advanced.
+
+  Fix is ordering: upgrade *before* dropping, or drop the stamp alongside the
+  tables it stamps for. Small, but it is on the path everything else loads
+  through, so it wants the test suite run against a Postgres that is
+  deliberately left one revision behind — which is the case no current test
+  covers. Manual recovery meanwhile is `DROP TABLE alembic_version` then
+  rebuild, and it is in the README.
+
+  Hit on production 2026-09-05 bringing `deployment` forward 42 commits. Full
+  write-up in [`decisions.md`](decisions.md) §D62, **not actioned** — deferred
+  deliberately with ~24h left rather than patched under time pressure.
+
 ### Design
 
 - Incorporate alerts: recent news / data events with high scores
