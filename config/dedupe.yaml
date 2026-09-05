@@ -68,12 +68,12 @@ embedding:
 # chosen by eye. Re-run it after any change to the labels or the embedded text.
 #
 # THE REASON THIS IS A BAND AND NOT A THRESHOLD: cosine does not separate the
-# classes. Labelled positives run 0.763 to 0.966 and negatives reach 0.834, so
-# every single cut is a bad trade — full recall lands at precision 0.54, full
-# precision at recall 0.43. The band is drawn where the number stops deciding.
+# classes. Labelled positives run 0.70 to 0.966 and negatives reach 0.79, so
+# every single cut is a bad trade. The band is drawn where the number stops
+# deciding, and the model is asked only there.
 #
-#   >= 0.84   no false merge in the labelled set — merge unasked
-#   <  0.76   no true duplicate lost — separate unasked
+#   >= 0.80   no false merge in the labelled set — merge unasked
+#   <  0.70   no true duplicate lost — separate unasked
 #   between   the number genuinely does not know; ask the model
 #
 # The edges are asymmetric on purpose. A false merge deletes a claim from the
@@ -81,19 +81,33 @@ embedding:
 # chosen on precision and the low edge on recall, rather than both on some
 # blended score that would trade the two as if they cost the same.
 #
-# These numbers moved once already, and for a reason worth remembering: the
-# first labelling pass read a file sorted by cosine. Rank is that number one
-# transform away, so the labeller could see where it sat in the ordering. Two of
-# 82 labels changed when the file was shuffled — and they were the top two
-# negatives, which is exactly where the high edge is set. `cosine_high` was 0.87
-# on the leaked labels and is 0.84 on the clean ones. See docs/decisions.md D57.
+# THESE NUMBERS HAVE MOVED TWICE, AND BOTH TIMES FOR A REASON WORTH KEEPING:
 #
-# Sample caveat: 7 positives after the exact pass. One wrong label moves recall
-# by 0.14. Indicative, not precise — the corpus genuinely contains few
-# near-duplicates.
+# 1. The first labelling pass read a file sorted by cosine. The number was
+#    withheld and its rank was not, which is the same information one transform
+#    away. Two of 82 labels changed when the file was shuffled — and they were
+#    the top two negatives, which is exactly where the high edge sits.
+#    (0.87 -> 0.84, D57a.)
+# 2. The labeller was then measured against a human on 20 blind pairs: 0.75,
+#    with all five misses in one direction. It was splitting companion pieces —
+#    an umbrella post and its named strand, a launch and its deep-dive, one
+#    rollout staggered across apps. Prompt v2 names that shape; re-labelled,
+#    agreement went to 0.90 and the band widened. (D57b.)
+#
+# Cost of the wider band: 19 adjudications on a full backfill against 10 before,
+# so about six cents. Near zero incrementally, since only new pairs are asked.
+#
+# CAVEAT ON THE LOW EDGE. `cosine_low` now sits at 0.70, which is exactly the
+# census floor in research/dedupe/candidates.py — every pair at or above it was
+# labelled, and below it only 30 were sampled. So the low edge is bounded by
+# where the evidence stops, not by where the data does. Lowering it further
+# would need a wider census first.
+#
+# Sample caveat: 16 positives after the exact pass, up from 7 under the old
+# rubric. Still small. Indicative, not precise.
 thresholds:
-  cosine_high: 0.84
-  cosine_low: 0.76
+  cosine_high: 0.80
+  cosine_low: 0.70
 
 adjudication:
   provider: anthropic
@@ -102,7 +116,7 @@ adjudication:
   # both sides would be marking its own homework and the regression floor in
   # tests/test_dedupe.py would mean nothing.
   model: claude-sonnet-5
-  prompt_version: v1
+  prompt_version: v2
 
 # GitHub releases are 380 of 647 articles and never need a similarity check —
 # a release train is identified by its repo. All releases from one repo inside

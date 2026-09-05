@@ -14,7 +14,7 @@
       "event_type": "compute_commitment",
       "summary": "OpenAI published first performance results for Jalape\u00f1o, its custom inference chip, showing higher throughput-per-watt and lower latency than comparison NVIDIA GB200/GB300 systems across GPT-OSS, DeepSeek R1 and Kimi K2.5 models, with deployment into OpenAI's own infrastructure planned by year end."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7098-7565",
@@ -31,7 +31,7 @@
       "event_type": "enterprise_partnership",
       "summary": "OpenAI expanded its Daybreak Cyber Partner Program, giving named security consultancies and technology vendors controlled access to its cyber models for use in their own security products and services."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7610-7655",
@@ -48,7 +48,7 @@
       "event_type": "frontier_model_release",
       "summary": "OpenAI published the model spec for GPT-6 Astra, a new top-of-line model with a 1.05M-token context window, reasoning-effort settings up to 'max', and support for coding, computer use, research and document-creation tools."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7655-7656",
@@ -65,7 +65,7 @@
       "event_type": "frontier_model_release",
       "summary": "OpenAI announced GPT-6 Astra, a new flagship model available across ChatGPT tiers and the API, claiming state-of-the-art results on computer-use, coding, reasoning, and science benchmarks with a 1.05M-token context window."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7565-7616",
@@ -82,7 +82,7 @@
       "event_type": "product_launch",
       "summary": "OpenAI is expanding its Daybreak cybersecurity initiative with new access tiers (Daybreak Blue and Daybreak Red) and introduces GPT-5.6-Cyber, a purpose-trained model for authorized vulnerability research and security testing, alongside GPT-5.6 Sol for broader defensive work."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7405-7406",
@@ -99,7 +99,7 @@
       "event_type": "research_result",
       "summary": "OpenAI published detailed case studies illustrating the question design, prompts, and supporting datasets underlying its GeneBench-Pro genomics benchmark."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7562-7638",
@@ -116,7 +116,7 @@
       "event_type": "product_launch",
       "summary": "OpenAI announced Patch the Planet, a Daybreak initiative with Trail of Bits, HackerOne and Calif that pairs frontier cyber-capable models (Codex Security, GPT-5.5-Cyber) with human security engineers to find and help patch vulnerabilities in widely used open-source projects such as cURL, the Go project, Python and OpenSSL-adjacent libraries."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7310-7634",
@@ -133,7 +133,7 @@
       "event_type": "product_launch",
       "summary": "OpenAI announced ChatGPT Work, a product powered by GPT-5.6 that integrates team tools to help complete tasks, rolling out across ChatGPT plans on web and mobile."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7572-7575",
@@ -150,7 +150,7 @@
       "event_type": "product_launch",
       "summary": "xAI released a free Grok add-in for Microsoft PowerPoint that lets users generate and edit slide decks using Grok, including research, styling, and connector-based content pulled from email, SharePoint or Google Drive."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7270-7632",
@@ -167,7 +167,7 @@
       "event_type": "other",
       "summary": "OpenAI published an academy guide describing how data science teams can use ChatGPT Work and Codex for tasks like root-cause briefs, KPI memos, scoped analyses, and dashboard specifications."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7606-7608",
@@ -184,7 +184,7 @@
       "event_type": "safety_policy",
       "summary": "OpenAI announces that its upcoming model Astra has crossed the Critical cybersecurity capability threshold under its Preparedness Framework and describes the safeguards, alignment testing and limited-access rollout being put in place before release."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7198-7617",
@@ -201,7 +201,7 @@
       "event_type": "pricing_change",
       "summary": "OpenAI announced price reductions for GPT-5.6 Luna and Terra driven by GPU kernel and speculative-decoding efficiency improvements, introduced a higher-priced Fast mode for GPT-5.6 Sol, and upgraded ChatGPT/Codex Auto-review to use Luna."
     },
-    "neil": ""
+    "neil": "same"
   },
   {
     "pair": "7165-7578",
@@ -218,7 +218,7 @@
       "event_type": "incremental_model_release",
       "summary": "xAI released Grok 4.6, an incremental update to Grok 4.5 focused on long-running agentic tasks and visual/interactive work, with new pricing and availability via API and partners."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7563-7567",
@@ -235,7 +235,7 @@
       "event_type": "product_launch",
       "summary": "OpenAI introduced three education-focused ChatGPT plugins (for K-12 educators, college educators, and college students) available through ChatGPT Edu and ChatGPT for Teachers district deployments."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7606-7610",
@@ -252,7 +252,7 @@
       "event_type": "frontier_model_release",
       "summary": "OpenAI announced GPT-6 Astra, a new flagship model family claiming state-of-the-art results in computer use, coding, science, and cybersecurity, rolling out to ChatGPT tiers, the OpenAI API, and AWS with new API pricing."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7606-7656",
@@ -269,7 +269,7 @@
       "event_type": "frontier_model_release",
       "summary": "OpenAI announced GPT-6 Astra, a new flagship model available across ChatGPT tiers and the API, claiming state-of-the-art results on computer-use, coding, reasoning, and science benchmarks with a 1.05M-token context window."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7158-7228",
@@ -286,7 +286,7 @@
       "event_type": "safety_policy",
       "summary": "OpenAI describes a temporary slowdown of frontier RL training and new security, monitoring and alignment measures after preliminary evidence that its upcoming Astra model may cross the Critical cybersecurity capability threshold under its Preparedness Framework."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7028-7615",
@@ -303,7 +303,7 @@
       "event_type": "other",
       "summary": "OpenAI announced a global series of DevDay Exchange developer meetup events across multiple cities starting October 2026, with an application deadline of September 17, 2026."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7212-7603",
@@ -320,7 +320,7 @@
       "event_type": "enterprise_partnership",
       "summary": "OpenAI announced that Samsung Electronics will deploy ChatGPT Enterprise and Codex to all its employees in Korea and to all Device eXperience division employees worldwide."
     },
-    "neil": ""
+    "neil": "different"
   },
   {
     "pair": "7570-7583",
@@ -337,6 +337,6 @@
       "event_type": "product_launch",
       "summary": "OpenAI launched three new courses (AI Foundations, Applied AI Foundations, and Agents and Workflows) on its OpenAI Academy learning platform, developed with partners including BCG, Accenture, and BBVA."
     },
-    "neil": ""
+    "neil": "different"
   }
 ]

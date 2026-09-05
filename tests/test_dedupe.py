@@ -433,8 +433,8 @@ class TestThresholdsAgainstTheLabelledSet:
         features, labels = labelled
         positives = [f for f in self._pool(features, labels)
                      if labels[f["pair"]]["label"] == "same"]
-        assert len(positives) == 7, (
-            f"{len(positives)} positives now, not 7 — re-run "
+        assert len(positives) == 16, (
+            f"{len(positives)} positives now, not 16 — re-run "
             "research/dedupe/calibrate.py and update the caveat"
         )
 

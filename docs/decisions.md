@@ -5526,7 +5526,7 @@ the difference between the two files is the evidence for the paragraph above.
 sample of 20 and the agreement rate is recorded here; until that lands, the
 eval is unvalidated and this paragraph says so rather than implying otherwise.
 
-**Human-checked agreement: pending.**
+**Human-checked agreement: 15/20 = 0.75**, on a blind stratified sample of 20. All five disagreements ran one way, which is the finding rather than the rate — see D57b.
 
 ### Anchoring, and the two tie-breaks
 
@@ -5607,3 +5607,120 @@ Not changed: the reviewer suggested using the adjudicator's `more_complete`
 field as an anchor hint. Per-surface anchoring removed the need, so the field
 was dropped from the schema and the prompt instead. An output that is bought and
 discarded is a cost with no reader.
+
+## D57b — The spot-check found a bias, and it pointed the right way (2026-09-05)
+
+D57 shipped with "Human-checked agreement: pending". This is that number, and it
+did more than validate a proxy.
+
+**15/20 = 0.75.** Twenty pairs, stratified across the cosine range and weighted
+towards the ones the labeller itself flagged low-confidence, marked blind — the
+sheet did not show the machine's label, so agreement measures judgement rather
+than anchoring.
+
+**Every one of the five disagreements ran the same way**: the model said
+`different`, the human said `same`. A one-directional error on every miss is a
+calibration fault, not sampling noise, and 0.75 alone would have hidden it — the
+rate reads like ordinary disagreement until you look at the signs.
+
+**The bias is narrower than "too conservative".** The model and the human agree
+that a safety disclosure is distinct from the launch it accompanies — the case
+the event-type gate exists for. They diverge on **companion pieces**: an
+umbrella announcement and its named sub-initiative (Daybreak / Patch the
+Planet), an introduction and its deep-dive (GeneBench-Pro), one rollout
+staggered across apps (Grok for Word / for PowerPoint), two safety documents
+about one model (Path to Astra / Safety overview). v1 carried no worked example
+of that shape; every example in it was about telling things apart, so that is
+what it kept doing.
+
+Fixed in `prompts/duplicate_adjudication/v2.md`, which names the shape as a
+category and uses all five failures as examples, then re-labelled and
+re-derived. The asymmetry warning is unchanged: v2 widens what counts as one
+event, it does not licence merging a distinct claim away.
+
+### Two things the spot-check confirmed rather than found
+
+**Gate 2 is right, and a human said so independently.** Neil marked `7606-7610`
+— the Astra launch against the safety overview carrying the Critical
+cybersecurity claim — as `different`, and split `7606-7656` the same way. The
+gate's justification in D57 was my argument from one example. It is now a
+human's judgement on a blind sample.
+
+**The ordering-leak fix was right.** The two labels that flipped when the blind
+file was shuffled were `7610-7655` and `7655-7656`. Neil marked both `same`,
+agreeing with the corrected pass rather than the leaked one. `cosine_high`
+belongs at 0.84.
+
+### What it says about the method
+
+The spot-check cost about ten minutes and changed a prompt, a threshold, and a
+recommendation about a $7.50 spending decision elsewhere
+(docs/next_steps_0309.md). Reported as a rate alone — "0.75, acceptable" — none
+of that would have surfaced. **The direction of the errors carried more than the
+count did**, which is the argument for examining disagreements rather than
+averaging them, made in CLAUDE.md and here demonstrated on a set of five.
+
+Honest limit: 20 pairs, 9 of them positives by the human's reading. The
+agreement rate has a wide interval. It is a sanity check on the labelling, not a
+measurement of the product.
+
+## D57c — Fixing the labeller's bias, and the error that replaced it (2026-09-05)
+
+D57b measured the labeller at 0.75 against a human and found every miss running
+one way. `prompts/duplicate_adjudication/v2.md` is the fix: it names **companion
+pieces** as a category — an umbrella announcement and its named strand, an
+introduction and its deep-dive, one rollout staggered across surfaces, a
+restatement on a second channel, a precursor carrying no claim of its own — and
+uses all five of the human's corrections as worked examples. Everything else in
+v1 is unchanged, including the asymmetry warning, which is the part that stops a
+widening becoming a licence.
+
+Re-labelled the same 82 pairs. `same` went from 9 to 26.
+
+**Against the human's 20 marks: 0.75 → 0.90.** More useful than the rate is what
+happened to the direction:
+
+| | agreement | too conservative | too eager |
+|---|---:|---:|---:|
+| v1 rubric | 15/20 | 5 | 0 |
+| v2 rubric | 18/20 | 0 | **2** |
+
+The bias did not shrink so much as **flip**. v1 never merged anything the human
+would keep apart; v2 does it twice — the Jalapeño CFO strategy piece against the
+Jalapeño results post, and two of the Daybreak posts. That is the *unsafe*
+direction by this system's own asymmetry: a false merge deletes a claim, a
+missed merge leaves a visible row.
+
+Accepted anyway, for two reasons. The overall error is lower, and the threshold
+band is a second filter the labels are not — a pair the labeller calls `same`
+still has to clear `cosine_high` or convince the adjudicator before anything
+merges. But it is recorded as a real cost rather than a clean win, and if a
+third pass is ever run, the two over-merges are where to start.
+
+**A transitivity wrinkle, noted not fixed.** The human marked `7565-7616` as
+`same` and `7098-7565` as `different`, while `7098-7616` is an exact-pass merge
+(one article at two URLs). Union-find makes grouping transitive; human judgement
+of "is this the same story" evidently is not. The system will group all three.
+That is defensible — they are all the same Daybreak announcement — but it is a
+case where the data model is more certain than the person it is modelling.
+
+### Consequence
+
+Band moves from [0.76, 0.84) to **[0.70, 0.80)**. 19 adjudications on a full
+backfill against 10, so about six cents, and near zero incrementally.
+
+647 classified articles become **547 groups**; 100 rows collapse, up from 93.
+The GPT-6 Astra cluster is now four rows rather than five: the launch, its forum
+restatement and the API docs page as one; the two safety documents about the
+same Preparedness assessment as another; and the two customer stories on their
+own. The safety row still does not fold into the launch — which both the gate
+and the human independently insist on.
+
+**The low edge is now at the edge of the evidence.** `cosine_low` is 0.70 and
+the census floor in `research/dedupe/candidates.py` is also 0.70: every pair at
+or above it was labelled, and below it only 30 of 4,360 were sampled. Lowering
+it further would need a wider census first, and the config says so.
+
+**Not grouped: the 47 paper rows** another branch landed in the shared database
+mid-build. They carry no `v9` classification yet, so `_rows` does not see them —
+correct behaviour, and they group on the first run after they are classified.

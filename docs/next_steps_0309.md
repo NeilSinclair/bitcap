@@ -48,6 +48,37 @@
   row into the launch card — merging it would have hidden the mis-score instead
   of surfacing it.
 
+  **Three instances now, and they argue for the full re-score over the cheap
+  one.** The duplicate collapse surfaced two more cases of one initiative
+  getting two `event_type` labels, both found by Neil's spot-check (D57b):
+
+  | one thing | labelled |
+  |---|---|
+  | "Introducing Intelligence Age", same day, two URLs | `other` / `safety_policy` |
+  | GeneBench-Pro launch and its deep-dive | `capability_result` / `research_result` |
+  | Daybreak access expansion, two posts one day | `enterprise_partnership` / `product_launch` |
+
+  These are not the same bug as the `capability_result` boundary above — that
+  one is a *wrong* label, these are *inconsistent* ones. But they share a cause
+  worth naming: the event vocabulary has no way to say "this post is part of a
+  larger announcement", so the model picks whichever label fits the fragment in
+  front of it.
+
+  Cost consequence, so it is decided on evidence rather than budget: a targeted
+  re-score of `safety_policy` + `capability_result` is ~$1.20 and catches only
+  articles moving *out* of those classes. A full non-release re-score is ~$8.70
+  (314 articles at the measured $0.0276) and catches movement in both
+  directions. Inconsistency across `research_result`, `product_launch` and
+  `enterprise_partnership` is movement *into* the affected classes, which the
+  cheap option cannot see. **Recommend the full re-score.**
+
+  Deliberately not worked around in the collapse. Two of those pairs are
+  refused by the event-type gate, which is the one rule stopping the system
+  folding the Astra safety disclosure into the launch card — and Neil's
+  spot-check independently confirmed that split is right. Weakening a correct
+  gate to compensate for a noisy input would trade a real guarantee for two
+  edge cases.
+
 - **Declined: the cross-event-type "story" link.** After the collapse, GPT-6
   Astra is three rows — release, safety, customer stories — because gate 2
   refuses to merge across event types. A "story" link would group them in the
