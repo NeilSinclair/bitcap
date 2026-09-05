@@ -582,3 +582,102 @@ classification model changes, not on a cadence. Had it run nightly it would have
 been ~$4.60/month on top of the announcement check's ~$22.
 
 **Running total across all workflows: ~$18.20.**
+
+---
+
+## Repository relevance filter (D65) — 2026-09-05
+
+Two distinct spends, and only the second one recurs.
+
+### The labelled set — a build cost, paid twice
+
+| Workflow | Model | Calls | In (tok) | Out (tok) | USD |
+|---|---|---:|---:|---:|---:|
+| Repo labelling, run 1 (**discarded**) | `claude-fable-5` | 183 | ~281,700 | ~24,100 | ~$4.05 |
+| Repo labelling, run 2 | `claude-fable-5` | 183 | ~281,700 | ~24,100 | ~$3.99 |
+| **Total** | | **366** | **563,392** | **48,152** | **$8.0415** |
+
+Run 1 is discarded and recorded anyway, per the convention at the top of this
+file. It was thrown away for a self-inflicted reason: `label_v1.md` was edited
+while the run was in flight, so those 183 labels span two prompt texts while
+every record claims one `prompt_version`. A label set is the foundation every
+number downstream rests on, and one with an unrecorded split in it is not worth
+$4.
+
+Re-running bought something the mistake did not deserve — **a measured stability
+figure**, from comparing the two runs over the same 183 repositories:
+
+| | agreement |
+|---|---|
+| `relevant` / `off_topic` | **182/183 = 0.995** |
+| category | **175/183 = 0.956** |
+
+The binary verdict is very stable. The **category is not**, and that matters more
+than it looks: 5 of the 7 category changes are `agent_or_tooling ↔ vendor_sdk`,
+and the eval's vendor-SDK slice is defined on exactly that field. So the SDK
+figure carries roughly 4% labelling noise under it, which is stated in D65 rather
+than presented as precision it does not have. The one verdict flip was
+`facebookresearch/flow_matching` — a generative-modelling library spanning image
+and text, genuinely on the line.
+
+Fable 5 is the labeller and is **not** one of the two candidates being graded,
+for the reason `config/dedupe.yaml` records about its adjudicator: an eval whose
+labels come from a model under test is marking its own homework.
+
+### The bake-off — also a build cost
+
+Both candidates over all 183 repositories, using the production prompt and
+schema so what was measured is what ships.
+
+| Model | Calls | USD | median latency | recall(relevant) |
+|---|---:|---:|---:|---:|
+| `claude-haiku-4-5-20251001` | 183 | $0.2078 | 2.0s | 0.692 |
+| `gpt-5-mini` | 183 | $0.1197 | 3.4s | **0.875** |
+| **Total** | **366** | **$0.3275** | | |
+
+The winner being the cheaper one is a coincidence, not the reason — recall
+decided it (D65), and `gpt-5-mini` prices input at a quarter of Haiku's while
+this prompt is ~900 input tokens against ~40 out. Recorded so nobody later reads
+this table backwards.
+
+### The filter itself — the part that runs nightly
+
+`gpt-5-mini`, one call per repository, **cached in `raw_llm_responses` for
+ever** on `repo:{org}/{name}` + `{version}:{model}`.
+
+| | |
+|---|---|
+| measured cost per repository | **~$0.00065** |
+| the whole 87-repo watched set | **~$0.06** |
+| a warm re-run | **$0.00** — verified live: three repositories judged, then re-judged for nothing |
+
+Spend is recorded **with tokens, at the call site**, into this ledger's JSON log
+— the same `_record_cost` path dedupe and the drift check use — and `load_costs`
+carries it into `raw_costs` in the same firing. `FetchResult.cost_usd` is
+deliberately left at zero: `budget.month_to_date` sums `raw_costs` *plus*
+`run_sources.cost_usd` on the stated assumption that the two never overlap, so
+reporting it both ways would double-count the filter against the €100 ceiling —
+silently, and in the direction that stops the pipeline early.
+
+Recording at the call site rather than on the return value also survives a
+failure later in the adapter. `run_source` discards the `FetchResult` on an
+exception, so a token rotated to one without the right scope — every repository
+404ing after the gate has already bought its verdicts — would have left the
+money spent, the verdicts in the database, and nothing recorded anywhere.
+
+**Total for D65: $8.37** — $8.04 labelling (half of it discarded), $0.33
+bake-off, and the filter's own first live pass on top.
+
+**The filter reduces noise, not cost, and in the short run it raises spend.**
+Every repository promoted into a freed slot has no cursor and takes
+`releases_backfill: 5` on first sight. `releases_per_run: 20` is per-repository
+and does not bound that. `config/repo_signals.yaml` already records the same
+event happening once: *"The first firing at 40 ingested 380 documents, which is
+roughly $10 to classify against a $3 per-run ceiling."* The budget guard handles
+it correctly by spending the ceiling and reporting the rest as
+`skipped_for_budget`; the rollout is staged rather than done in one firing.
+
+EUR: *pending* — with the rest, at the card statement.
+
+**Running total across all workflows: ~$26.60**, of which the recurring nightly
+share is unchanged — this feature adds ~$0.06 once and $0.00 thereafter.

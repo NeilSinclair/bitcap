@@ -90,3 +90,75 @@ releases_per_run: 20
 # as unreachable and the fetch reports truncation rather than pretending it
 # caught up.
 releases_max_pages: 3
+
+
+# --- Relevance --------------------------------------------------------------
+#
+# The star ranking is a popularity order, not a topic filter, so it surfaces a
+# lab's best work in every field: a physics simulator, a protein structure
+# pipeline, a fusion solver, a weather model, vision libraries. Those are not
+# mis-scored -- `alphafold3` averages 35.6 on the AI axis, third of all 87
+# repositories watched -- which is precisely why no threshold on `score` or
+# `ai_score` removes them. Relevance is a different axis and needs its own
+# question, asked once per repository and cached in `raw_llm_responses`.
+#
+# The gate runs **inside** the ranking walk, not after the `releases_watch`
+# slice. A rejected repository frees its slot to the next one down, so dropping
+# a physics simulator promotes a real one rather than shrinking the list. That
+# is worth having: xAI's `grok-prompts` (Grok's system prompts) and `grok-build`
+# (its coding agent) both rank above watched repositories and neither is
+# currently reached.
+#
+# **Vendor SDKs are kept deliberately.** A client-library bump is thin and
+# frequent and looks exactly like the noise this filter exists to remove -- and
+# it is also where a new model identifier first appears in public. The
+# release-to-launch pairing added in D61 runs on those releases. Cleaning them
+# up would read as an improvement and would delete the feature's best evidence.
+relevance:
+  # Kill switch. Off restores the previous behaviour exactly -- the top
+  # `releases_watch` of the ranking, ungated. It exists because the first firing
+  # after this lands backfills every newly promoted repository at
+  # `releases_backfill` apiece, and an operator needs to be able to stop that
+  # without a deploy.
+  enabled: true
+
+  # Chosen by measurement, not by price -- see D65. Both candidates were run
+  # over all 183 labelled repositories:
+  #
+  #                      recall(relevant)   precision   watched   $      median
+  #   claude-haiku-4-5        0.692           0.988      0.750   $0.208   2.0s
+  #   gpt-5-mini              0.875           0.981      0.942   $0.120   3.4s
+  #
+  # Recall is the deciding metric because the two errors are not symmetric: a
+  # wrongly excluded repository stops producing articles and nothing downstream
+  # can tell that apart from a repository that shipped nothing, while a wrongly
+  # kept one costs one classification and is visible in the feed.
+  #
+  # The concrete version of that gap: Haiku drops `openai/codex` -- the
+  # repository D61's release-to-launch pairing actually runs on -- along with
+  # `openai/harmony`, `openai/skills` and `deepseek-ai/deepseek-harness`. It is
+  # not a marginal difference in a summary statistic.
+  #
+  # It being cheaper too is a coincidence, not the reason. gpt-5-mini prices
+  # input at a quarter of Haiku's, and this prompt is ~900 input tokens against
+  # ~40 out.
+  #
+  # The model string is the exact key in `providers.PRICES`. An unpriced name
+  # works through the whole API call and then raises KeyError while building the
+  # cost record -- after the provider has billed it. `config/validate.py` checks
+  # membership so that fails at validation rather than at 03:00 with money spent.
+  provider: openai
+  model: gpt-5-mini
+
+  # Reads prompts/repo_relevance/<version>.md. Verdicts are cached under
+  # "<version>:<model>", so editing the prompt *or* changing the model
+  # invalidates them rather than silently serving answers from the other one.
+  prompt_version: r1
+
+  # Ceiling on judgements per org per firing. Laziness bounds the typical case
+  # -- the walk stops as soon as `releases_watch` repositories pass -- but an
+  # org whose ranking is mostly off-topic has no natural stopping point, and
+  # facebookresearch lists 395 repositories in the window. The money is small;
+  # 395 sequential calls bolted onto a firing already running 9-30 minutes is
+  # not. Must be >= releases_watch, or the list can never fill.
+  max_judged: 30

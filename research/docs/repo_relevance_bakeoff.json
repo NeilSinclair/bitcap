@@ -1,0 +1,2202 @@
+{
+  "haiku-4.5": {
+    "anthropics/skills": {
+      "relevant": false,
+      "reason": "This repository appears to be about agent skills in a general sense rather than language model development, evaluation, or inference infrastructure; without more specific documentation, 'Agent Skills' in the Anthropic context could refer to capabilities or frameworks for AI agents broadly, but the sparse description and generic naming do not clearly establish language model relevance.",
+      "usd": 0.001266,
+      "seconds": 2.67
+    },
+    "anthropics/claude-code": {
+      "relevant": true,
+      "reason": "This is Claude's official agentic tool repository from Anthropic, a frontier lab, serving as a reference implementation and client for interacting with Claude models through natural language for coding tasks.",
+      "usd": 0.00117,
+      "seconds": 2.27
+    },
+    "anthropics/claude-cookbooks": {
+      "relevant": true,
+      "reason": "This is an official Anthropic collection of worked examples for using their Claude language model API, which directly falls under the category of official client library and API documentation for a frontier lab's model.",
+      "usd": 0.001144,
+      "seconds": 2.18
+    },
+    "anthropics/prompt-eng-interactive-tutorial": {
+      "relevant": true,
+      "reason": "This is an official tutorial and developer resource from Anthropic (a frontier LLM lab) specifically about prompt engineering for their models, which constitutes worked-example collection for a lab's own model API.",
+      "usd": 0.001159,
+      "seconds": 2.04
+    },
+    "anthropics/claude-plugins-official": {
+      "relevant": true,
+      "reason": "This is an official Anthropic repository for Claude plugins and tools, which are extensions for their language model API, making it a repository for connecting to and tooling for a frontier lab's language model.",
+      "usd": 0.001156,
+      "seconds": 2.14
+    },
+    "anthropics/financial-services": {
+      "relevant": false,
+      "reason": "The repository name 'financial-services' and organization context indicate this is domain-specific work for financial applications rather than language model research, development, or evaluation.",
+      "usd": 0.001096,
+      "seconds": 1.5
+    },
+    "anthropics/knowledge-work-plugins": {
+      "relevant": false,
+      "reason": "This is a collection of plugins for knowledge workers using Claude, which is application-layer tooling rather than language model infrastructure, development, or evaluation work.",
+      "usd": 0.001102,
+      "seconds": 1.97
+    },
+    "anthropics/courses": {
+      "relevant": false,
+      "reason": "This is an educational courses repository from Anthropic's organisation, but the description 'Anthropic's educational courses' indicates a general educational collection rather than a repository about language models, model weights, model implementations, or the systems that build or run them.",
+      "usd": 0.0012,
+      "seconds": 1.71
+    },
+    "anthropics/claude-quickstarts": {
+      "relevant": true,
+      "reason": "This is an official client library and worked-example collection for Anthropic's Claude model API, which matches the criterion for model-specific developer tooling from a frontier lab.",
+      "usd": 0.001131,
+      "seconds": 2.7
+    },
+    "anthropics/claude-for-legal": {
+      "relevant": false,
+      "reason": "This is a domain-specific application built on top of Claude for legal workflows, not a language model, model implementation, training infrastructure, or official client library for Anthropic's Claude API.",
+      "usd": 0.001132,
+      "seconds": 1.55
+    },
+    "anthropics/claude-code-action": {
+      "relevant": true,
+      "reason": "Official client library and worked-example collection from Anthropic (a frontier LLM lab) for their Claude model API, which is a primary use case that always qualifies as relevant regardless of other factors.",
+      "usd": 0.001149,
+      "seconds": 2.06
+    },
+    "anthropics/claude-agent-sdk-python": {
+      "relevant": true,
+      "reason": "This is an official SDK from Anthropic (a frontier language model lab) for their Claude model API, which is an official client library for a lab's own model API and therefore always on-topic.",
+      "usd": 0.001145,
+      "seconds": 1.93
+    },
+    "anthropics/defending-code-reference-harness": {
+      "relevant": false,
+      "reason": "This repository is about code security and threat modeling rather than language models or LLM infrastructure; it is a general security testing harness not specific to LLM development or evaluation.",
+      "usd": 0.001139,
+      "seconds": 2.13
+    },
+    "anthropics/claude-code-security-review": {
+      "relevant": false,
+      "reason": "This is a GitHub Action tool for security code review that uses Claude as an underlying component, but the repository's primary subject is application security tooling rather than language models themselves.",
+      "usd": 0.001126,
+      "seconds": 2.2
+    },
+    "anthropics/sandbox-runtime": {
+      "relevant": false,
+      "reason": "This is a general-purpose OS-level sandboxing and security tool not specifically designed for or tied to language model work, despite being hosted at Anthropic.",
+      "usd": 0.001125,
+      "seconds": 1.99
+    },
+    "anthropics/original_performance_takehome": {
+      "relevant": true,
+      "reason": "This is an official repository from Anthropic (a frontier AI lab) containing a public take-home exercise related to their performance work, making it directly relevant to tracking frontier labs' outputs.",
+      "usd": 0.001144,
+      "seconds": 2.21
+    },
+    "anthropics/anthropic-sdk-python": {
+      "relevant": true,
+      "reason": "This is the official Python SDK for Anthropic's Claude model API, which is a first-party client library for accessing a frontier lab's language model service.",
+      "usd": 0.001099,
+      "seconds": 1.93
+    },
+    "anthropics/claude-plugins-community": {
+      "relevant": false,
+      "reason": "This repository is a community plugin marketplace and directory for Claude's ecosystem, not about language models, their training, inference, evaluation, or the core technical infrastructure that builds them.",
+      "usd": 0.001136,
+      "seconds": 1.92
+    },
+    "anthropics/claudes-c-compiler": {
+      "relevant": false,
+      "reason": "This is a C compiler implementation written by a language model, but the repository's subject is compiler infrastructure for a different domain (systems programming), not language models or their development/evaluation.",
+      "usd": 0.00117,
+      "seconds": 2.19
+    },
+    "anthropics/claude-agent-sdk-demos": {
+      "relevant": true,
+      "reason": "This is an official worked-example collection and developer tool for Anthropic's Claude model API, which is explicitly listed as always relevant.",
+      "usd": 0.001078,
+      "seconds": 1.38
+    },
+    "anthropics/claude-desktop-buddy": {
+      "relevant": false,
+      "reason": "This is a Bluetooth API reference and maker example for Claude Desktop, which is developer tooling infrastructure rather than directly about language models, their training, evaluation, or serving.",
+      "usd": 0.001126,
+      "seconds": 2.16
+    },
+    "anthropics/anthropic-sdk-typescript": {
+      "relevant": true,
+      "reason": "This is an official client library for Anthropic's language model APIs, which is explicitly on-topic as a thin routine repository where model identifiers and API access first appear.",
+      "usd": 0.001127,
+      "seconds": 2.47
+    },
+    "anthropics/cwc-workshops": {
+      "relevant": false,
+      "reason": "Repository name and organisation context suggest this is a workshops or educational content collection rather than a language model, infrastructure, or tooling repository; empty description and lack of topics prevent confirmation of LLM relevance.",
+      "usd": 0.001143,
+      "seconds": 2.11
+    },
+    "anthropics/commerce-agents": {
+      "relevant": false,
+      "reason": "While built with Claude, this repository is primarily about building domain-specific agents for retail/commerce/telecom/entertainment applications rather than about the language model itself, its training, inference, evaluation, or core capabilities.",
+      "usd": 0.001172,
+      "seconds": 2.25
+    },
+    "anthropics/jacobian-lens": {
+      "relevant": true,
+      "reason": "This is interpretability tooling from Anthropic (a frontier LLM lab) accompanying a published research paper on understanding language model behavior, which falls within LLM evaluation and interpretability work.",
+      "usd": 0.001145,
+      "seconds": 2.13
+    },
+    "anthropics/claude-agent-sdk-typescript": {
+      "relevant": true,
+      "reason": "This is an official client library/SDK from Anthropic for their Claude model API, which matches the criterion that official client libraries and SDKs from frontier labs are always relevant as they are where new model identifiers first appear.",
+      "usd": 0.00117,
+      "seconds": 2.01
+    },
+    "anthropics/anthropic-sdk-go": {
+      "relevant": true,
+      "reason": "This is an official client library for Anthropic's language model APIs, which is always on-topic as it is where new model identifiers first appear in public.",
+      "usd": 0.001115,
+      "seconds": 1.97
+    },
+    "anthropics/launch-your-agent": {
+      "relevant": true,
+      "reason": "This is an official worked-example collection and developer-facing tool from Anthropic for their Claude model API, specifically demonstrating how to build and launch agents with Claude, which falls under the explicit category of official client libraries, CLI, API definitions and worked-example collections for a lab's own model API.",
+      "usd": 0.001282,
+      "seconds": 2.7
+    },
+    "anthropics/buffa": {
+      "relevant": false,
+      "reason": "This is a protobuf serialization library, general infrastructure not specifically built for language models.",
+      "usd": 0.001062,
+      "seconds": 2.01
+    },
+    "anthropics/cwc-long-running-agents": {
+      "relevant": false,
+      "reason": "Repository from Anthropic is named for long-running agents but has no description, is primarily Shell scripts, and lacks LLM-specific topics; without documented content it appears to be infrastructure or operational tooling rather than LLM-related work.",
+      "usd": 0.001195,
+      "seconds": 2.23
+    },
+    "anthropics/anthropic-cli": {
+      "relevant": true,
+      "reason": "This is an official client library and CLI for Anthropic's Claude model API, which is explicitly listed as always relevant as a thin, routine tool where model identifiers first appear in public.",
+      "usd": 0.001134,
+      "seconds": 1.97
+    },
+    "anthropics/life-sciences": {
+      "relevant": false,
+      "reason": "This repository is a marketplace for Claude integrations in the life sciences domain, not about language models, model development, or LLM infrastructure itself.",
+      "usd": 0.001116,
+      "seconds": 1.81
+    },
+    "anthropics/healthcare": {
+      "relevant": false,
+      "reason": "Despite the Anthropic organisation, the repository name 'healthcare' with JavaScript as primary language and no description or topics suggests this is domain-specific work in healthcare rather than language model infrastructure, and the low star count and absence of LLM-related topics provide no evidence of LLM relevance.",
+      "usd": 0.001243,
+      "seconds": 2.43
+    },
+    "anthropics/anthropic-sdk-ruby": {
+      "relevant": true,
+      "reason": "This is an official Anthropic client library for Ruby, which is a thin wrapper around Anthropic's model API and thus falls under the category of official client libraries where new model identifiers first appear in public.",
+      "usd": 0.001153,
+      "seconds": 2.05
+    },
+    "anthropics/anthropic-sdk-java": {
+      "relevant": true,
+      "reason": "This is an official SDK repository from Anthropic for their API, which matches the criterion that official client libraries and API definitions from frontier labs are always on-topic for tracking language models.",
+      "usd": 0.001124,
+      "seconds": 2.1
+    },
+    "anthropics/anthropic-sdk-csharp": {
+      "relevant": true,
+      "reason": "This is an official client library for Anthropic's language model API, which is explicitly listed as always on-topic.",
+      "usd": 0.001073,
+      "seconds": 2.11
+    },
+    "openai/codex": {
+      "relevant": false,
+      "reason": "While 'Codex' is a reference to OpenAI's model, this repository is described as a 'lightweight coding agent that runs in your terminal' written in Rust\u2014a tool for using models rather than the model infrastructure, weights, or training systems themselves, and lacks evidence of being an official OpenAI client library or API reference implementation.",
+      "usd": 0.001307,
+      "seconds": 2.51
+    },
+    "openai/whisper": {
+      "relevant": false,
+      "reason": "Whisper is a speech recognition model, not a language model; it addresses the audio/speech domain rather than natural language processing.",
+      "usd": 0.001074,
+      "seconds": 1.94
+    },
+    "openai/openai-cookbook": {
+      "relevant": true,
+      "reason": "This is an official OpenAI collection of worked examples and guides for using OpenAI's API and models (ChatGPT, GPT-4), which is explicitly listed as always relevant in the guidelines for official client libraries and documentation.",
+      "usd": 0.001205,
+      "seconds": 2.42
+    },
+    "openai/CLIP": {
+      "relevant": false,
+      "reason": "CLIP is a multimodal model whose primary subject is vision\u2014specifically aligning images with text descriptions\u2014as evidenced by the task description of predicting text given images, which places its center of gravity outside language models despite the text component.",
+      "usd": 0.00121,
+      "seconds": 2.28
+    },
+    "openai/codex-plugin-cc": {
+      "relevant": false,
+      "reason": "This is a plugin for Claude Code (Anthropic's product) rather than official OpenAI tooling for their own models, and the description indicates it's about code review and task delegation rather than language model development, deployment, or evaluation infrastructure.",
+      "usd": 0.0012,
+      "seconds": 2.2
+    },
+    "openai/openai-python": {
+      "relevant": true,
+      "reason": "This is an official client library for OpenAI's API, which is a thin, routine release vehicle for language model identifiers and access patterns from a frontier lab.",
+      "usd": 0.00111,
+      "seconds": 1.98
+    },
+    "openai/openai-agents-python": {
+      "relevant": true,
+      "reason": "This is an official OpenAI framework for building multi-agent workflows with language models, explicitly tagged with llm and openai topics, and represents the type of developer tooling built around frontier lab models.",
+      "usd": 0.001164,
+      "seconds": 2.25
+    },
+    "openai/symphony": {
+      "relevant": false,
+      "reason": "The repository is about project management and workflow orchestration for implementation runs, not about language models themselves or their infrastructure.",
+      "usd": 0.001067,
+      "seconds": 1.94
+    },
+    "openai/skills": {
+      "relevant": false,
+      "reason": "The repository is a skills catalog for Codex, which appears to be a collection of prompts or examples for a code generation model, but is not itself a model, training infrastructure, evaluation framework, or official API client\u2014it's a user-facing catalog of use cases rather than core LLM system work.",
+      "usd": 0.001258,
+      "seconds": 2.37
+    },
+    "openai/swarm": {
+      "relevant": true,
+      "reason": "This is an official OpenAI repository for a multi-agent orchestration framework that extends language model capabilities, making it directly relevant as a system built around LLMs.",
+      "usd": 0.001125,
+      "seconds": 2.1
+    },
+    "openai/gpt-oss": {
+      "relevant": true,
+      "reason": "The repository contains open-weight language models directly from OpenAI, making it an official release of model weights and implementations from a frontier lab.",
+      "usd": 0.001103,
+      "seconds": 1.91
+    },
+    "openai/evals": {
+      "relevant": true,
+      "reason": "This is OpenAI's official evaluation framework for language models, squarely on-topic as a benchmark and evaluation harness for LLMs.",
+      "usd": 0.00111,
+      "seconds": 2.11
+    },
+    "openai/tiktoken": {
+      "relevant": true,
+      "reason": "tiktoken is a tokeniser library explicitly built for OpenAI's language models, making it part of the language-model infrastructure stack.",
+      "usd": 0.001086,
+      "seconds": 1.93
+    },
+    "openai/openai-node": {
+      "relevant": true,
+      "reason": "This is an official client library for OpenAI's model API, which is explicitly on-topic as a thin, routine repository where new model identifiers first appear in public.",
+      "usd": 0.001125,
+      "seconds": 2.16
+    },
+    "openai/codex-security": {
+      "relevant": false,
+      "reason": "This is a security scanning and vulnerability-detection tool for application code, not a language model, model implementation, inference system, or LLM-specific developer tool.",
+      "usd": 0.001189,
+      "seconds": 2.11
+    },
+    "openai/openai-realtime-agents": {
+      "relevant": true,
+      "reason": "The repository is an official OpenAI demonstration of agent patterns built on their Realtime API, which is a frontier lab's own model API tooling where new model identifiers and capabilities first appear.",
+      "usd": 0.001161,
+      "seconds": 2.06
+    },
+    "openai/tart": {
+      "relevant": false,
+      "reason": "This is a virtualization and CI infrastructure tool for macOS and Linux VMs, not related to language models or the systems that build, run, or evaluate them.",
+      "usd": 0.001136,
+      "seconds": 2.01
+    },
+    "openai/openai-cs-agents-demo": {
+      "relevant": true,
+      "reason": "This is an official demo repository from OpenAI for their Agents SDK, showcasing how to build agents with their tooling for working with language models.",
+      "usd": 0.001109,
+      "seconds": 2.02
+    },
+    "openai/plugins": {
+      "relevant": false,
+      "reason": "This repository is about OpenAI's plugin system for extending ChatGPT and other applications, which is infrastructure for connecting models to external tools rather than about language models themselves; while plugin development may support LLM applications, the repository's subject is the plugin framework itself, not language models or their core systems.",
+      "usd": 0.001251,
+      "seconds": 2.41
+    },
+    "openai/parameter-golf": {
+      "relevant": true,
+      "reason": "Repository is about training language models under specific size constraints, which is directly related to language model development and optimization.",
+      "usd": 0.001056,
+      "seconds": 1.33
+    },
+    "openai/simple-evals": {
+      "relevant": true,
+      "reason": "OpenAI's official repository for evaluation frameworks and benchmarks, consistent with their public-facing tooling for assessing language models; the name and organizational provenance indicate this is evaluation infrastructure for LLM work.",
+      "usd": 0.001152,
+      "seconds": 2.34
+    },
+    "openai/harmony": {
+      "relevant": false,
+      "reason": "This is a renderer for a response format associated with GPT-OSS, which appears to be infrastructure for rendering or displaying outputs rather than core language model work, training, inference, or evaluation tooling.",
+      "usd": 0.001153,
+      "seconds": 1.59
+    },
+    "openai/transformer-debugger": {
+      "relevant": true,
+      "reason": "OpenAI's transformer-debugger repository is interpretability and analysis tooling for transformer models, which is explicitly on-topic as it relates to understanding and developing language models.",
+      "usd": 0.001112,
+      "seconds": 2.04
+    },
+    "openai/openai-agents-js": {
+      "relevant": true,
+      "reason": "This is an official OpenAI client library and developer framework for their models and APIs, specifically for agent workflows and their realtime API, which falls under the category of official client libraries and agent frameworks built around language models.",
+      "usd": 0.001183,
+      "seconds": 2.31
+    },
+    "openai/openai-go": {
+      "relevant": true,
+      "reason": "This is an official client library for OpenAI's API, which is where new model identifiers first appear in public and directly connects to their language models.",
+      "usd": 0.001099,
+      "seconds": 1.87
+    },
+    "openai/openai-fm": {
+      "relevant": false,
+      "reason": "This repository is a demo application for the OpenAI Speech API, focused on speech synthesis and audio generation rather than language models themselves.",
+      "usd": 0.001081,
+      "seconds": 2.01
+    },
+    "openai/openai-dotnet": {
+      "relevant": true,
+      "reason": "This is an official client library for OpenAI's API, which is explicitly listed as always on-topic regardless of size or complexity.",
+      "usd": 0.001088,
+      "seconds": 1.88
+    },
+    "openai/privacy-filter": {
+      "relevant": false,
+      "reason": "This is a privacy and filtering utility tool rather than a language model, model implementation, training infrastructure, or LLM developer tool\u2014it appears to be infrastructure for content moderation or data privacy that is not specific to language model development.",
+      "usd": 0.001173,
+      "seconds": 3.41
+    },
+    "openai/openai-quickstart-node": {
+      "relevant": true,
+      "reason": "This is an official quickstart example collection for OpenAI's API, which is where new model identifiers and API patterns first appear in public code.",
+      "usd": 0.001105,
+      "seconds": 2.05
+    },
+    "openai/openai-openapi": {
+      "relevant": true,
+      "reason": "This is an OpenAPI specification for OpenAI's API, which is an official API definition for a frontier lab's language model services and is explicitly in scope as a thin, routine repository where model identifiers and capabilities are documented.",
+      "usd": 0.00118,
+      "seconds": 2.22
+    },
+    "openai/chatkit-js": {
+      "relevant": true,
+      "reason": "This is an official OpenAI client library for their API, which is where new model identifiers and capabilities first appear in public, and the organisation is OpenAI (a frontier lab).",
+      "usd": 0.001128,
+      "seconds": 1.98
+    },
+    "openai/openai-java": {
+      "relevant": true,
+      "reason": "This is an official client library for OpenAI's API, which directly exposes access to their language models and is where new model identifiers first appear in public.",
+      "usd": 0.00111,
+      "seconds": 1.95
+    },
+    "openai/procgen": {
+      "relevant": false,
+      "reason": "Procgen is a reinforcement learning benchmark for game-playing agents, not a language model or language model infrastructure.",
+      "usd": 0.001068,
+      "seconds": 1.89
+    },
+    "google-deepmind/deepmind-research": {
+      "relevant": false,
+      "reason": "This is a general repository of diverse DeepMind research implementations across multiple domains, not specifically focused on large language models or their infrastructure.",
+      "usd": 0.001092,
+      "seconds": 1.69
+    },
+    "google-deepmind/mujoco": {
+      "relevant": false,
+      "reason": "MuJoCo is a physics simulator for robotics and dynamics simulation, which is infrastructure for reinforcement learning and robotics agents rather than language models.",
+      "usd": 0.00111,
+      "seconds": 2.11
+    },
+    "google-deepmind/alphafold": {
+      "relevant": false,
+      "reason": "AlphaFold is a protein structure prediction system, which falls under the domain of genomics and protein biology rather than large language models or frontier LLM labs.",
+      "usd": 0.001118,
+      "seconds": 1.98
+    },
+    "google-deepmind/sonnet": {
+      "relevant": true,
+      "reason": "Sonnet is a general deep-learning neural network framework built on TensorFlow, which is core infrastructure that language-model work is built on, including transformer implementations and training systems.",
+      "usd": 0.001142,
+      "seconds": 2.2
+    },
+    "google-deepmind/alphafold3": {
+      "relevant": false,
+      "reason": "AlphaFold 3 is a protein structure prediction system; while it uses deep learning, it is fundamentally about structural biology rather than language models.",
+      "usd": 0.001108,
+      "seconds": 1.9
+    },
+    "google-deepmind/weathernext": {
+      "relevant": false,
+      "reason": "The repository is about weather forecasting, which is a domain application of machine learning but not about language models or the systems built specifically for them.",
+      "usd": 0.001081,
+      "seconds": 2.06
+    },
+    "google-deepmind/gemma": {
+      "relevant": true,
+      "reason": "This is an official Google DeepMind repository for Gemma, their open-weight large language model library, which constitutes model weights, implementation, and reference code for a frontier lab's own model.",
+      "usd": 0.001162,
+      "seconds": 2.05
+    },
+    "google-deepmind/open_spiel": {
+      "relevant": false,
+      "reason": "OpenSpiel is a reinforcement-learning and game-playing framework focused on multi-agent game environments, which is outside the language-model domain despite being from a frontier lab.",
+      "usd": 0.001153,
+      "seconds": 2.02
+    },
+    "google-deepmind/alphageometry": {
+      "relevant": false,
+      "reason": "AlphaGeometry is DeepMind's system for automated theorem proving in Euclidean geometry, which is a mathematics and reasoning domain rather than large language models or their infrastructure.",
+      "usd": 0.001129,
+      "seconds": 2.36
+    },
+    "google-deepmind/dm_control": {
+      "relevant": false,
+      "reason": "The repository is about physics simulation and reinforcement-learning environments for control tasks, not about language models or the infrastructure specifically built for them.",
+      "usd": 0.001123,
+      "seconds": 1.74
+    },
+    "google-deepmind/acme": {
+      "relevant": false,
+      "reason": "The repository is a reinforcement learning library for agents in general, not focused on language models or the systems that build them.",
+      "usd": 0.001069,
+      "seconds": 1.86
+    },
+    "google-deepmind/mujoco_menagerie": {
+      "relevant": false,
+      "reason": "The repository is focused on robotics simulation and physics modeling, not language models or their supporting infrastructure.",
+      "usd": 0.001064,
+      "seconds": 1.85
+    },
+    "google-deepmind/dm-haiku": {
+      "relevant": true,
+      "reason": "JAX-based neural network library from DeepMind is general deep-learning infrastructure that language-model work is built on, particularly relevant given DeepMind's extensive work on large language models.",
+      "usd": 0.001166,
+      "seconds": 1.45
+    },
+    "google-deepmind/science-skills": {
+      "relevant": false,
+      "reason": "This repository is about scientific research workflows and domain-specific databases (genomics, protein structure) rather than language models themselves; while it may use LLMs as agents, its subject is scientific computation, not LLM building or deployment.",
+      "usd": 0.001224,
+      "seconds": 2.28
+    },
+    "google-deepmind/mctx": {
+      "relevant": false,
+      "reason": "Monte Carlo tree search is a reinforcement-learning technique for game-playing and sequential decision-making, not a language model system or infrastructure built for language models.",
+      "usd": 0.001115,
+      "seconds": 1.9
+    },
+    "google-deepmind/optax": {
+      "relevant": true,
+      "reason": "Optax is a general numerical and deep-learning infrastructure library (optimizer and gradient processing for JAX) that is foundational to the language-model training stack.",
+      "usd": 0.001116,
+      "seconds": 2.12
+    },
+    "google-deepmind/mujoco_playground": {
+      "relevant": false,
+      "reason": "The repository is about robotics and robot learning with GPU acceleration, which is a different AI domain from language models, not infrastructure built specifically for LLM work.",
+      "usd": 0.001118,
+      "seconds": 1.94
+    },
+    "google-deepmind/open_x_embodiment": {
+      "relevant": false,
+      "reason": "The repository name and organisation indicate this is about embodied AI and robotics rather than language models, which is a different AI domain outside the scope of frontier LLM tracking.",
+      "usd": 0.00112,
+      "seconds": 2.12
+    },
+    "google-deepmind/alphagenome": {
+      "relevant": false,
+      "reason": "AlphaGenome is a protein structure prediction model for genomics, not a language model, despite being from a frontier lab.",
+      "usd": 0.001089,
+      "seconds": 2.04
+    },
+    "google-deepmind/tapnet": {
+      "relevant": false,
+      "reason": "TAP is a point-tracking system for computer vision and robotics, which are outside the scope of language model and frontier lab tracking despite being deep-learning work.",
+      "usd": 0.001124,
+      "seconds": 2.04
+    },
+    "google-deepmind/mujoco_mpc": {
+      "relevant": false,
+      "reason": "This repository is about model predictive control for motor control and robotics simulation using MuJoCo, which is a physics simulation domain rather than language models.",
+      "usd": 0.001141,
+      "seconds": 2.02
+    },
+    "google-deepmind/concordia": {
+      "relevant": false,
+      "reason": "Concordia is a social simulation library using generative agents, but its subject is agent-based and social simulation rather than language models themselves\u2014it's an application domain for LLMs rather than infrastructure for building, training, or evaluating them.",
+      "usd": 0.001207,
+      "seconds": 2.22
+    },
+    "google-deepmind/bsuite": {
+      "relevant": false,
+      "reason": "The repository is explicitly focused on reinforcement learning and agent capabilities, not language models or the systems that build them.",
+      "usd": 0.001071,
+      "seconds": 1.75
+    },
+    "google-deepmind/rlax": {
+      "relevant": false,
+      "reason": "Repository name 'rlax' indicates reinforcement learning library, and the organisation is DeepMind, but the absence of description and topics means this cannot be confirmed as language-model related; given RL is a distinct field from LLM work, this is off-topic without clear evidence otherwise.",
+      "usd": 0.001254,
+      "seconds": 2.34
+    },
+    "google-deepmind/mujoco_warp": {
+      "relevant": false,
+      "reason": "The repository is about physics simulation (MuJoCo) optimized for GPU compute, which is a robotics and simulation domain rather than language models or the infrastructure specifically built to train them.",
+      "usd": 0.001163,
+      "seconds": 2.21
+    },
+    "google-deepmind/android_env": {
+      "relevant": false,
+      "reason": "This repository is about reinforcement learning for robotics/device control on Android, not about language models or the infrastructure that language models are built on.",
+      "usd": 0.001091,
+      "seconds": 1.85
+    },
+    "google-deepmind/materials_discovery": {
+      "relevant": false,
+      "reason": "The repository name 'materials_discovery' indicates a focus on materials science rather than language models, which is outside the scope of frontier LLM research and development.",
+      "usd": 0.001107,
+      "seconds": 2.11
+    },
+    "google-deepmind/formal-conjectures": {
+      "relevant": false,
+      "reason": "The repository is about formal mathematics and theorem proving in Lean, not about language models or the systems that build and run them.",
+      "usd": 0.001081,
+      "seconds": 1.72
+    },
+    "google-deepmind/synthid-text": {
+      "relevant": false,
+      "reason": "Repository name and DeepMind affiliation suggest this is about synthetic identity detection or text generation watermarking, but without description or topics, and given the specific focus on 'synthid' (synthetic identification) rather than language models themselves, this appears to be about authentication/security rather than LLM development or inference.",
+      "usd": 0.00127,
+      "seconds": 2.38
+    },
+    "google-deepmind/tree": {
+      "relevant": false,
+      "reason": "tree is a general-purpose library for nested data structures, not specifically about language models or their supporting infrastructure.",
+      "usd": 0.001049,
+      "seconds": 2.52
+    },
+    "google-deepmind/chex": {
+      "relevant": false,
+      "reason": "Chex is a general-purpose Python testing and debugging library for numerical code and JAX, not specifically about language models or their infrastructure.",
+      "usd": 0.001077,
+      "seconds": 2.04
+    },
+    "google-deepmind/meltingpot": {
+      "relevant": false,
+      "reason": "This is a multi-agent reinforcement learning benchmark for general RL agents, not focused on language models or their supporting infrastructure.",
+      "usd": 0.00108,
+      "seconds": 1.96
+    },
+    "google-deepmind/alphagenome_research": {
+      "relevant": false,
+      "reason": "AlphaGenome is a protein structure prediction system for genomics, which is in the biological/life sciences domain rather than language models or frontier LLM systems.",
+      "usd": 0.001117,
+      "seconds": 1.94
+    },
+    "google-deepmind/torax": {
+      "relevant": false,
+      "reason": "TORAX is a physics simulation library for tokamak transport modeling, which is in the domain of nuclear fusion and plasma physics rather than language models or LLM infrastructure.",
+      "usd": 0.001122,
+      "seconds": 1.99
+    },
+    "mistralai/mistral-vibe": {
+      "relevant": true,
+      "reason": "This is an official Mistral Labs repository for a coding agent, which is a developer tool whose subject is language models and their application.",
+      "usd": 0.00108,
+      "seconds": 1.87
+    },
+    "mistralai/cookbook": {
+      "relevant": true,
+      "reason": "Repository is from mistralai, a frontier language model lab, and the 'cookbook' name and Jupyter Notebook language indicate it contains worked examples for their model APIs, which are always relevant as official client resources.",
+      "usd": 0.001158,
+      "seconds": 2.36
+    },
+    "mistralai/mistral-common": {
+      "relevant": true,
+      "reason": "This is an official library from Mistral AI for preprocessing their language models, which is on-topic as an official tool for a frontier lab's model.",
+      "usd": 0.001101,
+      "seconds": 2.06
+    },
+    "mistralai/client-python": {
+      "relevant": true,
+      "reason": "Official client library for Mistral AI's model API, which matches the criterion that official client libraries, CLI, and API definitions for a lab's own model API are always relevant.",
+      "usd": 0.001122,
+      "seconds": 1.92
+    },
+    "mistralai/client-ts": {
+      "relevant": true,
+      "reason": "This is an official client library for Mistral AI's model API, which is explicitly listed as always relevant for tracking frontier language model labs.",
+      "usd": 0.001086,
+      "seconds": 2.07
+    },
+    "mistralai/mistral-evals": {
+      "relevant": true,
+      "reason": "Repository from Mistral AI (a frontier LLM lab) with 'evals' in the name indicating evaluation tooling for language models, which is on-topic infrastructure for LLM work.",
+      "usd": 0.001148,
+      "seconds": 1.62
+    },
+    "mistralai/platform-docs-public": {
+      "relevant": true,
+      "reason": "This is an official documentation repository from Mistral AI, a frontier lab, and platform documentation typically covers API definitions and usage for their language model services.",
+      "usd": 0.001089,
+      "seconds": 2.29
+    },
+    "mistralai/LeanstralSafeVerify": {
+      "relevant": true,
+      "reason": "Repository is explicitly used by Mistral AI (a frontier lab) for code agent training and evaluation, making it part of their language model development and evaluation stack.",
+      "usd": 0.001128,
+      "seconds": 2.07
+    },
+    "mistralai/search-starter-app": {
+      "relevant": false,
+      "reason": "This is a search engine template repository, not about language models or LLM infrastructure, despite being from Mistral AI.",
+      "usd": 0.001072,
+      "seconds": 1.88
+    },
+    "mistralai/workflows-starter-app": {
+      "relevant": false,
+      "reason": "This is a template repository for workflow registration and invocation, which is general-purpose application infrastructure rather than language-model-specific tooling; the MDX language and lack of LLM-related topics further indicate it is a generic development template.",
+      "usd": 0.001193,
+      "seconds": 2.31
+    },
+    "mistralai/FLTEval": {
+      "relevant": true,
+      "reason": "This is an evaluation harness from Mistral AI, a frontier lab, for FLT (Formal Language Theory) Lean tasks, which relates to evaluating language model capabilities on formal reasoning and code generation.",
+      "usd": 0.001168,
+      "seconds": 2.14
+    },
+    "mistralai/cli": {
+      "relevant": true,
+      "reason": "Official CLI for Mistral AI's models and API, from the Mistral AI organisation, which is a frontier language model lab.",
+      "usd": 0.001069,
+      "seconds": 2.07
+    },
+    "xai-org/x-algorithm": {
+      "relevant": false,
+      "reason": "This repository is about the recommendation algorithm for X's (formerly Twitter's) social media feed, which is not about language models or their infrastructure.",
+      "usd": 0.001085,
+      "seconds": 1.55
+    },
+    "xai-org/grok-build": {
+      "relevant": true,
+      "reason": "This is an agent framework and developer tool whose subject is language models, built by xai-org (Elon Musk's AI lab), designed as a harness for their coding agent work.",
+      "usd": 0.001166,
+      "seconds": 2.18
+    },
+    "xai-org/grok-prompts": {
+      "relevant": true,
+      "reason": "Official prompt repository for xAI's Grok chat assistant, a large language model product, making it an official resource directly related to a frontier lab's model.",
+      "usd": 0.001125,
+      "seconds": 2.02
+    },
+    "xai-org/xai-cookbook": {
+      "relevant": true,
+      "reason": "This is an official client library and worked-example collection for xAI's Grok language model API, which matches the criterion for official lab API documentation and examples.",
+      "usd": 0.001134,
+      "seconds": 2.1
+    },
+    "xai-org/xai-sdk-python": {
+      "relevant": true,
+      "reason": "This is an official client library for xAI's API, which is a frontier lab's model API, matching the explicit inclusion criterion for official SDKs from labs.",
+      "usd": 0.001117,
+      "seconds": 2.09
+    },
+    "xai-org/grok-build-plugin-cc": {
+      "relevant": false,
+      "reason": "This is a plugin for Claude Code that integrates with the Grok Build CLI, focusing on code review and development workflow features rather than language model development, training, evaluation, or inference infrastructure.",
+      "usd": 0.001154,
+      "seconds": 1.57
+    },
+    "xai-org/plugin-marketplace": {
+      "relevant": false,
+      "reason": "This is a marketplace platform for plugins rather than a repository about language models, their training, inference, or evaluation; the description indicates it is infrastructure for distributing third-party extensions rather than LLM-focused work itself.",
+      "usd": 0.001165,
+      "seconds": 2.12
+    },
+    "xai-org/xai-proto": {
+      "relevant": true,
+      "reason": "This is an official API definition repository for xAI's gRPC services, which fits the criterion of official client libraries and API definitions for a frontier lab's model APIs.",
+      "usd": 0.001126,
+      "seconds": 2.2
+    },
+    "facebookresearch/faiss": {
+      "relevant": true,
+      "reason": "FAISS is a foundational vector search and retrieval library that is core infrastructure for language model applications including retrieval-augmented generation and semantic search systems.",
+      "usd": 0.001107,
+      "seconds": 2.21
+    },
+    "facebookresearch/detectron2": {
+      "relevant": false,
+      "reason": "Detectron2 is focused on computer vision tasks (object detection, segmentation, visual recognition) rather than language models or LLM infrastructure.",
+      "usd": 0.001105,
+      "seconds": 1.92
+    },
+    "facebookresearch/audiocraft": {
+      "relevant": false,
+      "reason": "The repository's primary focus is audio generation and processing; while it includes a language model (MusicGen) for music generation, the centre of gravity is audio/music, not language models.",
+      "usd": 0.001185,
+      "seconds": 2.07
+    },
+    "facebookresearch/sam2": {
+      "relevant": false,
+      "reason": "SAM 2 is a computer vision model for image and video segmentation, which is outside the scope of large language models and frontier LLM research.",
+      "usd": 0.001141,
+      "seconds": 1.88
+    },
+    "facebookresearch/vggt": {
+      "relevant": false,
+      "reason": "This repository is about visual geometry and computer vision (indicated by 'Visual Geometry' in the title and the CVPR venue), not about language models or their training and evaluation infrastructure.",
+      "usd": 0.00115,
+      "seconds": 1.91
+    },
+    "facebookresearch/dinov2": {
+      "relevant": false,
+      "reason": "DINOv2 is a self-supervised learning method for computer vision (image representation learning), not language models or LLM infrastructure.",
+      "usd": 0.001103,
+      "seconds": 1.94
+    },
+    "facebookresearch/seamless_communication": {
+      "relevant": false,
+      "reason": "The repository's stated purpose is speech and text translation, which is a machine translation and speech processing domain distinct from large language models and their frontier development.",
+      "usd": 0.0011,
+      "seconds": 1.92
+    },
+    "facebookresearch/sam3": {
+      "relevant": false,
+      "reason": "SAM 3 is a segmentation model for computer vision, not a language model or language-model infrastructure.",
+      "usd": 0.001098,
+      "seconds": 1.86
+    },
+    "facebookresearch/dinov3": {
+      "relevant": false,
+      "reason": "DINOv3 is a computer vision model for self-supervised learning on images, not a language model or language model infrastructure.",
+      "usd": 0.001086,
+      "seconds": 2.16
+    },
+    "facebookresearch/xformers": {
+      "relevant": true,
+      "reason": "xformers is a library for transformer building blocks and kernels, which is core infrastructure for language model development.",
+      "usd": 0.001063,
+      "seconds": 1.73
+    },
+    "facebookresearch/pytorch3d": {
+      "relevant": false,
+      "reason": "PyTorch3D is a library for 3D computer vision and geometry processing, not for language models or their infrastructure.",
+      "usd": 0.001083,
+      "seconds": 1.76
+    },
+    "facebookresearch/ImageBind": {
+      "relevant": false,
+      "reason": "ImageBind is a multimodal model whose primary subject is vision, binding images, audio, video, depth, and thermal data into a common embedding space rather than language modeling.",
+      "usd": 0.001128,
+      "seconds": 1.46
+    },
+    "facebookresearch/SlowFast": {
+      "relevant": false,
+      "reason": "SlowFast is a video understanding codebase focused on computer vision and video analysis, which is a different AI domain from language models.",
+      "usd": 0.001103,
+      "seconds": 2.03
+    },
+    "facebookresearch/sam-3d-objects": {
+      "relevant": false,
+      "reason": "SAM 3D Objects is about 3D object segmentation and computer vision, not language models or the systems that build them.",
+      "usd": 0.001079,
+      "seconds": 1.78
+    },
+    "facebookresearch/Kats": {
+      "relevant": false,
+      "reason": "Kats is a time series analysis and forecasting library for general statistical modeling, not specifically for language models or LLM infrastructure.",
+      "usd": 0.001128,
+      "seconds": 2.06
+    },
+    "facebookresearch/mmf": {
+      "relevant": false,
+      "reason": "The repository is a multimodal framework centered on vision tasks (VQA, image captioning, hateful memes detection) with language as a secondary component, making it primarily a computer vision repository rather than language-model focused.",
+      "usd": 0.001223,
+      "seconds": 2.22
+    },
+    "facebookresearch/sapiens": {
+      "relevant": false,
+      "reason": "The repository is about computer vision models for human perception and segmentation tasks, not language models or LLM infrastructure.",
+      "usd": 0.001057,
+      "seconds": 1.84
+    },
+    "facebookresearch/moco": {
+      "relevant": false,
+      "reason": "MoCo (Momentum Contrast) is a self-supervised learning method for computer vision and image representation learning, not language models.",
+      "usd": 0.001094,
+      "seconds": 2.0
+    },
+    "facebookresearch/AugLy": {
+      "relevant": false,
+      "reason": "AugLy is a general-purpose data augmentation library across multiple modalities (audio, image, text, video) not specifically built for language models; while text augmentation could support LLM work, the repository's purpose is domain-agnostic augmentation infrastructure.",
+      "usd": 0.001237,
+      "seconds": 2.64
+    },
+    "facebookresearch/co-tracker": {
+      "relevant": false,
+      "reason": "CoTracker is a computer vision model for point tracking in video, which is a domain outside language models and frontier LLM labs, despite being published by facebookresearch.",
+      "usd": 0.001143,
+      "seconds": 2.31
+    },
+    "facebookresearch/flow_matching": {
+      "relevant": false,
+      "reason": "Flow matching is a general diffusion-based generative modeling technique not specific to language models; while it has examples for text, the repository's subject is the flow matching algorithm itself rather than language modeling, and its primary focus appears to be on mathematical and computational infrastructure for generative modeling across modalities.",
+      "usd": 0.001266,
+      "seconds": 2.27
+    },
+    "facebookresearch/vjepa2": {
+      "relevant": false,
+      "reason": "VJEPA2 is a self-supervised learning framework for video understanding, which is in the computer vision domain rather than language models.",
+      "usd": 0.001096,
+      "seconds": 1.93
+    },
+    "facebookresearch/vggt-omega": {
+      "relevant": false,
+      "reason": "Repository is about vision and graphics (indicated by 'VGGT' referring to video/graphics transformers), not language models, despite being from facebookresearch.",
+      "usd": 0.001129,
+      "seconds": 1.97
+    },
+    "facebookresearch/nevergrad": {
+      "relevant": false,
+      "reason": "Nevergrad is a general-purpose gradient-free optimization library without specific focus on language models; while optimization infrastructure can be used in LLM work, this repository is a generic numerical tool not built for or centered on language model development.",
+      "usd": 0.00119,
+      "seconds": 2.34
+    },
+    "facebookresearch/dlrm": {
+      "relevant": false,
+      "reason": "DLRM is a recommendation system model, which is a different AI domain from language models and frontier LLM research.",
+      "usd": 0.001074,
+      "seconds": 1.95
+    },
+    "facebookresearch/habitat-sim": {
+      "relevant": false,
+      "reason": "This is a robotics and embodied AI simulator focused on computer vision and sim2real transfer, not on large language models or their supporting infrastructure.",
+      "usd": 0.001113,
+      "seconds": 1.95
+    },
+    "facebookresearch/ReAgent": {
+      "relevant": false,
+      "reason": "ReAgent is a platform for reinforcement learning and contextual bandits rather than language models or the systems that build them.",
+      "usd": 0.001075,
+      "seconds": 1.86
+    },
+    "facebookresearch/map-anything": {
+      "relevant": false,
+      "reason": "This repository is about 3D reconstruction, depth estimation, and structure-from-motion, which are computer vision tasks rather than language models or the systems that build them.",
+      "usd": 0.001155,
+      "seconds": 1.96
+    },
+    "facebookresearch/sam-audio": {
+      "relevant": false,
+      "reason": "The Segment Anything Audio Model is designed for audio segmentation, an audio processing task rather than language model development, training, or deployment.",
+      "usd": 0.001117,
+      "seconds": 2.09
+    },
+    "facebookresearch/pytorchvideo": {
+      "relevant": false,
+      "reason": "This is a deep learning library for video understanding and computer vision, not for language models or their infrastructure.",
+      "usd": 0.001046,
+      "seconds": 1.75
+    },
+    "facebookresearch/habitat-lab": {
+      "relevant": false,
+      "reason": "The repository is focused on embodied AI agents, robotics, and reinforcement learning environments rather than language models, as indicated by the topics (robotics, sim2real, simulator, deep-reinforcement-learning) and description mentioning task and environment training without any connection to LLMs.",
+      "usd": 0.001287,
+      "seconds": 2.23
+    },
+    "facebookresearch/omnilingual-asr": {
+      "relevant": false,
+      "reason": "This repository is about automatic speech recognition (ASR) across multiple languages, which is a speech/audio processing domain rather than language models.",
+      "usd": 0.001097,
+      "seconds": 1.87
+    },
+    "facebookresearch/fairchem": {
+      "relevant": false,
+      "reason": "This is a chemistry-focused machine learning library from FAIR, addressing molecular simulation and chemical property prediction rather than language models or the systems that build them.",
+      "usd": 0.001097,
+      "seconds": 2.29
+    },
+    "meta-llama/llama-cookbook": {
+      "relevant": true,
+      "reason": "This is an official Meta Llama cookbook containing worked examples and guides for inference, fine-tuning, and RAG with Llama models, which falls squarely within the category of reference code and developer tooling for a frontier lab's own model.",
+      "usd": 0.001294,
+      "seconds": 2.16
+    },
+    "meta-llama/llama-models": {
+      "relevant": true,
+      "reason": "Official utilities repository from Meta's Llama organization for working with their Llama language models, which is directly related to frontier language model infrastructure.",
+      "usd": 0.001092,
+      "seconds": 1.85
+    },
+    "meta-llama/PurpleLlama": {
+      "relevant": true,
+      "reason": "Meta's official LLM security assessment and improvement tooling is on-topic infrastructure for language model evaluation and alignment.",
+      "usd": 0.001065,
+      "seconds": 1.85
+    },
+    "meta-llama/synthetic-data-kit": {
+      "relevant": true,
+      "reason": "Repository from Meta's llama organisation with explicit topics including 'llm' and 'synthetic', focused on generating synthetic datasets which are commonly used for training and evaluating language models.",
+      "usd": 0.001137,
+      "seconds": 2.24
+    },
+    "meta-llama/prompt-ops": {
+      "relevant": true,
+      "reason": "This is a prompt tooling repository from Meta's Llama organization, explicitly for LLM prompt optimization, which falls within the category of developer tools whose subject is language models.",
+      "usd": 0.001127,
+      "seconds": 1.56
+    },
+    "meta-llama/llama-api-python": {
+      "relevant": true,
+      "reason": "This is an official client library for Meta's Llama model API, which matches the criteria for always being on-topic as a frontier lab's own model API client.",
+      "usd": 0.001117,
+      "seconds": 1.97
+    },
+    "meta-llama/llama-api-typescript": {
+      "relevant": true,
+      "reason": "This is an official client library for Meta's Llama model API, which matches the criterion that official client libraries and API definitions from frontier labs are always on-topic as the source where new model identifiers first appear.",
+      "usd": 0.001169,
+      "seconds": 2.39
+    },
+    "meta-llama/llama-verifications": {
+      "relevant": true,
+      "reason": "This is an official Meta repository for verifying Llama model providers, making it part of the infrastructure supporting Meta's language model API and service ecosystem.",
+      "usd": 0.001101,
+      "seconds": 2.03
+    },
+    "deepseek-ai/deepseek-harness": {
+      "relevant": false,
+      "reason": "This is a general plugin/orchestration framework (TypeScript-based) without explicit language model subject matter; despite DeepSeek's LLM focus, 'harness' with generic topics like 'ai-agents' and 'cordis' suggests it is a toolkit for building various AI systems rather than specifically about language models, their training, inference, or evaluation.",
+      "usd": 0.001354,
+      "seconds": 2.79
+    },
+    "deepseek-ai/awesome-deepseek-integration": {
+      "relevant": true,
+      "reason": "This is an integration and client library repository for DeepSeek's language model API, which falls under the category of official client libraries and tooling for a frontier lab's model API.",
+      "usd": 0.00116,
+      "seconds": 2.07
+    },
+    "deepseek-ai/DeepSeek-Coder": {
+      "relevant": true,
+      "reason": "DeepSeek-Coder is an official model repository from deepseek-ai, a frontier lab, containing code generation language model weights and reference implementations.",
+      "usd": 0.00112,
+      "seconds": 2.06
+    },
+    "deepseek-ai/DeepSeek-OCR": {
+      "relevant": false,
+      "reason": "The repository is an OCR (Optical Character Recognition) tool focused on document image processing and compression, which falls within computer vision rather than language model development, training, or evaluation.",
+      "usd": 0.001126,
+      "seconds": 2.0
+    },
+    "deepseek-ai/FlashMLA": {
+      "relevant": true,
+      "reason": "FlashMLA implements efficient attention kernels, which are core infrastructure for language model inference and training, from a major frontier AI lab (DeepSeek).",
+      "usd": 0.001116,
+      "seconds": 2.05
+    },
+    "deepseek-ai/3FS": {
+      "relevant": true,
+      "reason": "Repository is designed specifically to support AI training and inference workloads, which in the context of deepseek-ai's organization is directly relevant to language model infrastructure.",
+      "usd": 0.001128,
+      "seconds": 2.26
+    },
+    "deepseek-ai/DeepEP": {
+      "relevant": true,
+      "reason": "DeepEP is a distributed training communication library from deepseek-ai, a frontier language model lab, and expert-parallelism is a key technique for training large language models efficiently.",
+      "usd": 0.001145,
+      "seconds": 1.49
+    },
+    "deepseek-ai/DeepGEMM": {
+      "relevant": true,
+      "reason": "DeepGEMM is a GPU BLAS kernel library from deepseek-ai, which is core numerical infrastructure built out in language-model stacks for efficient compute and training.",
+      "usd": 0.001152,
+      "seconds": 2.18
+    },
+    "deepseek-ai/DeepSpec": {
+      "relevant": true,
+      "reason": "Speculative decoding is an inference acceleration technique directly applicable to language model serving and deployment.",
+      "usd": 0.001047,
+      "seconds": 1.94
+    },
+    "deepseek-ai/DeepSeek-Coder-V2": {
+      "relevant": true,
+      "reason": "DeepSeek-Coder-V2 is an official model release from DeepSeek, a frontier lab, representing model weights and implementation for a code-specialized large language model.",
+      "usd": 0.001171,
+      "seconds": 1.56
+    },
+    "deepseek-ai/awesome-deepseek-agent": {
+      "relevant": true,
+      "reason": "Repository is from deepseek-ai organization with 'awesome-deepseek-agent' name, indicating it collects resources and examples for their language model agents and systems.",
+      "usd": 0.001125,
+      "seconds": 2.03
+    },
+    "deepseek-ai/Engram": {
+      "relevant": true,
+      "reason": "The repository is from deepseek-ai and explicitly concerns sparsity optimisation techniques for large language models, which is infrastructure work for training and inference of LLMs.",
+      "usd": 0.001134,
+      "seconds": 1.93
+    },
+    "deepseek-ai/DeepSeek-OCR-2": {
+      "relevant": false,
+      "reason": "DeepSeek-OCR-2 is an optical character recognition system focused on document and image text extraction, which is a computer vision domain task distinct from language models despite DeepSeek's association with LLM development.",
+      "usd": 0.001182,
+      "seconds": 2.08
+    },
+    "deepseek-ai/DualPipe": {
+      "relevant": true,
+      "reason": "The repository describes a pipeline parallelism algorithm for training DeepSeek's frontier models (V3/R1), which is directly relevant as training infrastructure for language models built by a frontier lab.",
+      "usd": 0.001164,
+      "seconds": 2.04
+    },
+    "deepseek-ai/TileKernels": {
+      "relevant": true,
+      "reason": "DeepSeek AI is a frontier LLM lab, and a kernel library in tilelang is infrastructure for optimizing model computation, which is directly relevant to language model serving and inference optimization.",
+      "usd": 0.001146,
+      "seconds": 2.01
+    },
+    "deepseek-ai/DeepSeek-V3.2-Exp": {
+      "relevant": true,
+      "reason": "Repository from deepseek-ai organization with model name in title (DeepSeek-V3.2-Exp) indicates this is official model weights or reference implementation from a frontier lab.",
+      "usd": 0.001148,
+      "seconds": 2.09
+    },
+    "deepseek-ai/DeepSeek-Math-V2": {
+      "relevant": true,
+      "reason": "DeepSeek is a frontier AI lab, and this repository's name indicates it contains a language model (DeepSeek-Math-V2), making it an official model release from the lab.",
+      "usd": 0.00115,
+      "seconds": 1.6
+    },
+    "deepseek-ai/awesome-deepseek-coder": {
+      "relevant": true,
+      "reason": "This is an official curated collection of projects related to DeepSeek Coder, a language model from the frontier lab DeepSeek AI, making it a reference collection for a lab's own model and its ecosystem.",
+      "usd": 0.00119,
+      "seconds": 2.15
+    },
+    "deepseek-ai/LPLB": {
+      "relevant": true,
+      "reason": "This is a load balancer specifically designed for mixture-of-experts (MoE) language models, which is part of the infrastructure for training and serving language models.",
+      "usd": 0.001126,
+      "seconds": 1.88
+    }
+  },
+  "gpt-5-mini": {
+    "anthropics/skills": {
+      "relevant": true,
+      "reason": "Organisation 'anthropics' and repository name/topics ('skills', 'agent-skills') plus description 'Public repository for Agent Skills' indicate this is an agent/skill framework for language-model-based agents.",
+      "usd": 0.000554,
+      "seconds": 7.27
+    },
+    "anthropics/claude-code": {
+      "relevant": true,
+      "reason": "Organisation 'anthropics' and repository name 'claude-code' plus the description stating it is an agentic coding tool using natural-language commands (Claude) indicate this is a tool built around a lab's language model/API.",
+      "usd": 0.000702,
+      "seconds": 4.29
+    },
+    "anthropics/claude-cookbooks": {
+      "relevant": true,
+      "reason": "The repository is a collection of notebooks/recipes for using Claude \u2014 Anthropic's large language model \u2014 so it is worked-example client material for a lab's model API.",
+      "usd": 0.000544,
+      "seconds": 3.38
+    },
+    "anthropics/prompt-eng-interactive-tutorial": {
+      "relevant": true,
+      "reason": "Repository description and name state it's Anthropic's interactive prompt engineering tutorial (Jupyter Notebook), which is directly about using and shaping large language models.",
+      "usd": 0.000404,
+      "seconds": 2.02
+    },
+    "anthropics/claude-plugins-official": {
+      "relevant": true,
+      "reason": "Repository is an official Anthropic-managed directory of Claude Code plugins for the Claude model (description mentions 'Official, Anthropic-managed directory of high quality Claude Code Plugins' and topics include 'claude-code').",
+      "usd": 0.00043,
+      "seconds": 3.03
+    },
+    "anthropics/financial-services": {
+      "relevant": false,
+      "reason": "Repository name 'financial-services' with no description or topics and org 'anthropics' (not clearly the LLM lab 'anthropic') gives no indication this is about language models, model APIs, or related tooling.",
+      "usd": 0.001841,
+      "seconds": 9.89
+    },
+    "anthropics/knowledge-work-plugins": {
+      "relevant": true,
+      "reason": "Anthropic's open-source \"knowledge-work-plugins\" repo provides plugins for Claude Cowork (an official plugin ecosystem for their language model), per the repository description.",
+      "usd": 0.000541,
+      "seconds": 3.6
+    },
+    "anthropics/courses": {
+      "relevant": true,
+      "reason": "Organisation 'anthropics' with description 'Anthropic's educational courses' and Jupyter Notebook content indicates official worked-example/educational materials from an LLM lab about language models and related tooling/align\u00adment.",
+      "usd": 0.000942,
+      "seconds": 6.06
+    },
+    "anthropics/claude-quickstarts": {
+      "relevant": true,
+      "reason": "The repository is an official Anthropic collection of Claude API quickstarts (description states it helps developers build applications using the Claude API), so it directly concerns a lab's language model API.",
+      "usd": 0.00055,
+      "seconds": 3.01
+    },
+    "anthropics/claude-for-legal": {
+      "relevant": true,
+      "reason": "Repo is from Anthropic (organisation), named 'claude-for-legal' and described as 'A suite of plugins for legal workflows' \u2014 indicating official plugins/worked examples for the Claude model API (language-model tooling).",
+      "usd": 0.000563,
+      "seconds": 3.71
+    },
+    "anthropics/claude-code-action": {
+      "relevant": true,
+      "reason": "Repository name 'claude-code-action' under the anthropics organisation (TypeScript) indicates it is tooling for Anthropic's Claude model \u2014 an official client/action for their LLM.",
+      "usd": 0.000802,
+      "seconds": 3.83
+    },
+    "anthropics/claude-agent-sdk-python": {
+      "relevant": true,
+      "reason": "Repository name 'claude-agent-sdk-python' in the 'anthropics' organization indicates an official Python SDK / client library for Anthropic's Claude agent API (a language-model client).",
+      "usd": 0.000548,
+      "seconds": 3.33
+    },
+    "anthropics/defending-code-reference-harness": {
+      "relevant": false,
+      "reason": "Repository description and topics indicate a security/threat-modeling and autonomous scanning harness for code (threat modeling, scanning, triage, patching), not language models or tooling for building/running/evaluating LLMs.",
+      "usd": 0.000697,
+      "seconds": 3.72
+    },
+    "anthropics/claude-code-security-review": {
+      "relevant": true,
+      "reason": "Repository is an AI-powered GitHub Action that uses Claude (Anthropic's language model) to analyze code changes, per the description and the organisation name 'anthropics'.",
+      "usd": 0.000804,
+      "seconds": 4.45
+    },
+    "anthropics/sandbox-runtime": {
+      "relevant": false,
+      "reason": "The repository description states it is a lightweight OS-level sandboxing tool for enforcing filesystem and network restrictions on arbitrary processes, which is general system tooling not specific to language models or their tooling.",
+      "usd": 0.000679,
+      "seconds": 5.46
+    },
+    "anthropics/original_performance_takehome": {
+      "relevant": false,
+      "reason": "The repository is described as \"Anthropic's original performance take-home\" (a hiring/assignment repo) rather than model weights, implementations, APIs, or tooling for building/serving language models.",
+      "usd": 0.000939,
+      "seconds": 5.5
+    },
+    "anthropics/anthropic-sdk-python": {
+      "relevant": true,
+      "reason": "Repository name 'anthropic-sdk-python' in the 'anthropics' organization indicates it is the official Python SDK/client for Anthropic's language model API.",
+      "usd": 0.000536,
+      "seconds": 2.89
+    },
+    "anthropics/claude-plugins-community": {
+      "relevant": true,
+      "reason": "Description states it is a community plugin marketplace for Anthropic's Claude Cowork and Claude Code (plugin tooling for a language-model platform).",
+      "usd": 0.000532,
+      "seconds": 3.38
+    },
+    "anthropics/claudes-c-compiler": {
+      "relevant": false,
+      "reason": "Repository is a C compiler (claudes-c-compiler) written in Rust targeting x86/ARM/RISC-V and able to build a Linux kernel \u2014 it\u2019s a systems/compiler project, not about language models or LM tooling.",
+      "usd": 0.000703,
+      "seconds": 3.38
+    },
+    "anthropics/claude-agent-sdk-demos": {
+      "relevant": true,
+      "reason": "Repository is by Anthropic and named/descried as \"Claude Code SDK Demos\", indicating official SDK demos for the Claude model API (TypeScript demo code).",
+      "usd": 0.000411,
+      "seconds": 2.08
+    },
+    "anthropics/claude-desktop-buddy": {
+      "relevant": false,
+      "reason": "The description says it is a Bluetooth API example for Claude Cowork & Claude Code Desktop (hardware/desktop integration), not model code, weights, client SDK or evaluation tooling for language models.",
+      "usd": 0.001064,
+      "seconds": 5.99
+    },
+    "anthropics/anthropic-sdk-typescript": {
+      "relevant": true,
+      "reason": "Repository is Anthropic's official TypeScript SDK (repository name and description: 'Access to Anthropic's safety-first language model APIs in TypeScript'), i.e., a client library for a language-model API.",
+      "usd": 0.000559,
+      "seconds": 2.87
+    },
+    "anthropics/cwc-workshops": {
+      "relevant": false,
+      "reason": "No description or topics provided and the repo name 'cwc-workshops' (primary language TypeScript) suggests workshop/web code rather than model implementations, weights, training/inference tooling or an official model API client.",
+      "usd": 0.001198,
+      "seconds": 7.5
+    },
+    "anthropics/commerce-agents": {
+      "relevant": true,
+      "reason": "Repository is an Anthropic (Claude) reference blueprint for building shopping/merchant agents using Claude, i.e., worked examples for a lab's model API.",
+      "usd": 0.000539,
+      "seconds": 2.94
+    },
+    "anthropics/jacobian-lens": {
+      "relevant": true,
+      "reason": "Description says this is companion code for a 'global workspace interpretability' paper (an interpretability tool) and the repository is by Anthropics, a lab focused on language models, indicating it's LLM interpretability code.",
+      "usd": 0.000945,
+      "seconds": 4.88
+    },
+    "anthropics/claude-agent-sdk-typescript": {
+      "relevant": true,
+      "reason": "Repository name 'claude-agent-sdk-typescript' under organisation 'anthropics' indicates an official TypeScript SDK for Anthropic's Claude agent API (a client library for a frontier language model).",
+      "usd": 0.00068,
+      "seconds": 3.95
+    },
+    "anthropics/anthropic-sdk-go": {
+      "relevant": true,
+      "reason": "The repository description states it is a Go SDK providing access to Anthropic's language model APIs (an official client library for a lab's models).",
+      "usd": 0.000532,
+      "seconds": 2.92
+    },
+    "anthropics/launch-your-agent": {
+      "relevant": true,
+      "reason": "Repository description references Claude Code skills and launching a Claude Managed Agent (Anthropic), indicating official worked examples/tooling for building and deploying language-model agents.",
+      "usd": 0.000668,
+      "seconds": 3.03
+    },
+    "anthropics/buffa": {
+      "relevant": false,
+      "reason": "Description and repo purpose: a Rust implementation of Protocol Buffers (serialization library) \u2014 a general-purpose protobuf crate, not specifically about language models, model code, training, inference, or LM tooling.",
+      "usd": 0.000426,
+      "seconds": 2.66
+    },
+    "anthropics/cwc-long-running-agents": {
+      "relevant": true,
+      "reason": "Repository name 'cwc-long-running-agents' together with the Anthropics organisation indicates this is about agent frameworks/long-running agents for language models (agent tooling is on-topic).",
+      "usd": 0.000928,
+      "seconds": 6.37
+    },
+    "anthropics/anthropic-cli": {
+      "relevant": true,
+      "reason": "Description states it is \"The CLI for the Claude API\" and topics include anthropic, claude, api, cli, indicating it's an official client tool for a language-model API.",
+      "usd": 0.000548,
+      "seconds": 4.68
+    },
+    "anthropics/life-sciences": {
+      "relevant": true,
+      "reason": "Organisation 'anthropics' and the description states this is the Claude Code Marketplace for the Claude for Life Sciences launch (hosting marketplace.json for Anthropic's Claude model ecosystem).",
+      "usd": 0.000805,
+      "seconds": 3.94
+    },
+    "anthropics/healthcare": {
+      "relevant": false,
+      "reason": "Repository has no description or topics and the name 'healthcare' (with JavaScript language) indicates a domain-specific application rather than model implementations, tooling, or an official API client from the Anthropics organisation.",
+      "usd": 0.001067,
+      "seconds": 6.18
+    },
+    "anthropics/anthropic-sdk-ruby": {
+      "relevant": true,
+      "reason": "Repository name 'anthropic-sdk-ruby' under the 'anthropics' organisation indicates this is an official Ruby SDK/client for Anthropic's model API, and official client libraries for model APIs are on-topic.",
+      "usd": 0.000558,
+      "seconds": 4.47
+    },
+    "anthropics/anthropic-sdk-java": {
+      "relevant": true,
+      "reason": "Organization 'anthropics' and the repository name 'anthropic-sdk-java' indicate this is an official Java/Kotlin SDK for Anthropic's model API (client library for their LLMs).",
+      "usd": 0.000552,
+      "seconds": 3.33
+    },
+    "anthropics/anthropic-sdk-csharp": {
+      "relevant": true,
+      "reason": "Official C# SDK for Anthropic\u2019s language model APIs (repository description: 'Access to Anthropic's safety-first language model APIs in C#'), indicating it is a client library for a lab's models.",
+      "usd": 0.000558,
+      "seconds": 3.75
+    },
+    "openai/codex": {
+      "relevant": true,
+      "reason": "Repository is by openai, named 'codex', and described as a 'Lightweight coding agent that runs in your terminal', indicating it's an agent built around a language model/API.",
+      "usd": 0.000674,
+      "seconds": 3.65
+    },
+    "openai/whisper": {
+      "relevant": false,
+      "reason": "The repo is OpenAI's Whisper automatic speech recognition project (description: \"Robust Speech Recognition via Large-Scale Weak Supervision\"), so it focuses on speech/audio rather than language-model tooling or LM infrastructure.",
+      "usd": 0.000559,
+      "seconds": 3.4
+    },
+    "openai/openai-cookbook": {
+      "relevant": true,
+      "reason": "Official OpenAI 'openai-cookbook' repository providing examples and guides for using the OpenAI API (topics include gpt-4, chatgpt, openai-api; description: 'Examples and guides for using the OpenAI API').",
+      "usd": 0.000577,
+      "seconds": 3.19
+    },
+    "openai/CLIP": {
+      "relevant": false,
+      "reason": "Repository is CLIP, a contrastive language\u2013image pretraining model whose description says \u2018Predict the most relevant text snippet given an image\u2019 indicating the project is image-centered multimodal vision work rather than a language-model or LLM infrastructure project.",
+      "usd": 0.000831,
+      "seconds": 4.52
+    },
+    "openai/codex-plugin-cc": {
+      "relevant": true,
+      "reason": "Repository openai/codex-plugin-cc (description: \"Use Codex from Claude Code to review code or delegate tasks\") is an OpenAI plugin directly about using the Codex language model.",
+      "usd": 0.000811,
+      "seconds": 4.36
+    },
+    "openai/openai-python": {
+      "relevant": true,
+      "reason": "Description states it is \u201cThe official Python library for the OpenAI API\u201d (organization: openai, repo name: openai-python, topics: openai, python).",
+      "usd": 0.000416,
+      "seconds": 2.76
+    },
+    "openai/openai-agents-python": {
+      "relevant": true,
+      "reason": "Repository is an OpenAI Python framework for multi-agent workflows with topics including \"agents\" and \"llm\" and description indicating agent/LLM tooling.",
+      "usd": 0.000411,
+      "seconds": 2.85
+    },
+    "openai/symphony": {
+      "relevant": true,
+      "reason": "Repository description mentions \"autonomous implementation runs\" and \"coding agents,\" indicating it's an agent/orchestration framework for language-model-driven coding agents (developer tooling for LLMs).",
+      "usd": 0.000676,
+      "seconds": 3.6
+    },
+    "openai/skills": {
+      "relevant": true,
+      "reason": "Repository title and description ('Skills Catalog for Codex') under the openai organisation indicate this is an official worked-example/skills collection for Codex, a language model.",
+      "usd": 0.00054,
+      "seconds": 3.38
+    },
+    "openai/swarm": {
+      "relevant": true,
+      "reason": "Repo is an OpenAI-maintained Python educational framework for multi-agent orchestration (an agent framework, which is on-topic as tooling for language-model-based agents).",
+      "usd": 0.000795,
+      "seconds": 4.52
+    },
+    "openai/gpt-oss": {
+      "relevant": true,
+      "reason": "The repository description explicitly states it contains open-weight language models (gpt-oss-120b and gpt-oss-20b) by OpenAI, indicating model implementations/weights.",
+      "usd": 0.000553,
+      "seconds": 2.37
+    },
+    "openai/evals": {
+      "relevant": true,
+      "reason": "The repo description states it is \"a framework for evaluating LLMs and LLM systems, and an open-source registry of benchmarks\" (openai/evals, Python), which directly targets LLM evaluation tooling.",
+      "usd": 0.00069,
+      "seconds": 3.41
+    },
+    "openai/tiktoken": {
+      "relevant": true,
+      "reason": "The repository is a fast BPE tokenizer for use with OpenAI's language models (description: \"tiktoken is a fast BPE tokeniser for use with OpenAI's models\"), indicating it's directly part of the language-model tooling stack.",
+      "usd": 0.000447,
+      "seconds": 2.29
+    },
+    "openai/openai-node": {
+      "relevant": true,
+      "reason": "Official OpenAI organization repository described as the \"Official JavaScript / TypeScript library for the OpenAI API\" (topics: openai, nodejs, typescript), i.e. the lab's client library for its models.",
+      "usd": 0.00044,
+      "seconds": 3.13
+    },
+    "openai/codex-security": {
+      "relevant": true,
+      "reason": "Repository is OpenAI's official Codex Security CLI and TypeScript SDK (description and topics show it is an official OpenAI SDK/CLI for a Codex-based security service), which is tooling connecting to an LLM product.",
+      "usd": 0.001095,
+      "seconds": 5.6
+    },
+    "openai/openai-realtime-agents": {
+      "relevant": true,
+      "reason": "Official OpenAI TypeScript demo implementing agentic patterns on the Realtime API (description states it's built on the Realtime API), i.e., developer tooling/agent framework for language models.",
+      "usd": 0.000553,
+      "seconds": 3.04
+    },
+    "openai/tart": {
+      "relevant": false,
+      "reason": "Repository description and topics show it's a Swift tool for running macOS/Linux VMs on Apple Silicon for CI/automation (virtualization, macos, ci), not a language-model or LLM infrastructure project.",
+      "usd": 0.000563,
+      "seconds": 2.9
+    },
+    "openai/openai-cs-agents-demo": {
+      "relevant": true,
+      "reason": "Repository is an official OpenAI demo implementing a customer-service use case with the OpenAI Agents SDK, an agent framework for language models.",
+      "usd": 0.000657,
+      "seconds": 3.47
+    },
+    "openai/plugins": {
+      "relevant": true,
+      "reason": "Repository is OpenAI's official 'plugins' project (name 'plugins', description 'OpenAI Plugins', org 'openai'), which provides official plugin/connectivity code for their language models.",
+      "usd": 0.000675,
+      "seconds": 3.5
+    },
+    "openai/parameter-golf": {
+      "relevant": true,
+      "reason": "Repository description states it's about training language models (\u201cTrain the smallest LM you can that fits in 16MB\u201d), indicating model development and training code relevant to LMs.",
+      "usd": 0.000541,
+      "seconds": 3.11
+    },
+    "openai/simple-evals": {
+      "relevant": true,
+      "reason": "Organisation 'openai' and the repository name 'simple-evals' (Python) indicate this is an evaluation/benchmarking harness for language models, which matches the product's scope (benchmarks/evaluation of LLMs).",
+      "usd": 0.000692,
+      "seconds": 3.64
+    },
+    "openai/harmony": {
+      "relevant": true,
+      "reason": "Description states it is a Rust renderer for the 'harmony' response format to be used with gpt-oss, i.e. tooling for language-model responses/formatting.",
+      "usd": 0.000674,
+      "seconds": 4.23
+    },
+    "openai/transformer-debugger": {
+      "relevant": true,
+      "reason": "Repository name 'transformer-debugger' in the openai organization (plus Python language and high stars) indicates a tool for inspecting/debugging transformer models, i.e. model interpretability/analysis relevant to language models.",
+      "usd": 0.000559,
+      "seconds": 2.51
+    },
+    "openai/openai-agents-js": {
+      "relevant": true,
+      "reason": "The repo is an official OpenAI TypeScript framework for multi-agent and voice agents (description) with topics including agents, openai, openai-api and realtime-api, indicating agent tooling built around language models.",
+      "usd": 0.000562,
+      "seconds": 2.45
+    },
+    "openai/openai-go": {
+      "relevant": true,
+      "reason": "Description states it is \"The official Go library for the OpenAI API\" (official client library for a lab's model API).",
+      "usd": 0.000397,
+      "seconds": 2.11
+    },
+    "openai/openai-fm": {
+      "relevant": false,
+      "reason": "Description and repo name indicate this is a TypeScript demo for the OpenAI Speech API (audio/speech domain), not code for language models, model weights, training or LM-serving tools.",
+      "usd": 0.000679,
+      "seconds": 4.58
+    },
+    "openai/openai-dotnet": {
+      "relevant": true,
+      "reason": "Repository is the official .NET (C#) client library for the OpenAI API (description: 'The official .NET library for the OpenAI API' and topics include openai, csharp, dotnet), so it's an official client for a lab's model API.",
+      "usd": 0.000459,
+      "seconds": 2.36
+    },
+    "openai/privacy-filter": {
+      "relevant": true,
+      "reason": "The repository is from OpenAI and its description is 'OpenAI Privacy Filter', indicating it is privacy/alignment tooling for filtering model outputs (relevant to LLM safety and deployment).",
+      "usd": 0.000801,
+      "seconds": 4.55
+    },
+    "openai/openai-quickstart-node": {
+      "relevant": true,
+      "reason": "Official OpenAI repository (organisation: openai) that is a Node.js example app / quickstart tutorial for the OpenAI API (description and topics: openai, openai-api), which is an official worked-example client for a lab's model API.",
+      "usd": 0.00058,
+      "seconds": 3.55
+    },
+    "openai/openai-openapi": {
+      "relevant": true,
+      "reason": "Repository is the official OpenAI OpenAPI specification for the OpenAI API (description: \"OpenAPI specification for the OpenAI API\", organisation: openai, topics: openai-api), which is an API definition for a lab's models.",
+      "usd": 0.000444,
+      "seconds": 2.99
+    },
+    "openai/chatkit-js": {
+      "relevant": true,
+      "reason": "Repository is in the openai organization and named chatkit-js (TypeScript), indicating it is OpenAI's official JavaScript/TypeScript client for the ChatKit chat API for their language models.",
+      "usd": 0.00068,
+      "seconds": 3.77
+    },
+    "openai/openai-java": {
+      "relevant": true,
+      "reason": "Repository is the official Java library for the OpenAI API (repository description and organization 'openai'), i.e. an official client for a model API.",
+      "usd": 0.000535,
+      "seconds": 2.99
+    },
+    "openai/procgen": {
+      "relevant": false,
+      "reason": "The repository is the Procgen Benchmark for procedurally-generated game-like Gym environments (description and name), which targets reinforcement-learning game environments rather than language-model tooling.",
+      "usd": 0.000412,
+      "seconds": 2.97
+    },
+    "google-deepmind/deepmind-research": {
+      "relevant": false,
+      "reason": "Repository description says it contains implementations and illustrative code to accompany DeepMind publications (a broad grab-bag), not specifically about language models or LM tooling.",
+      "usd": 0.000663,
+      "seconds": 4.16
+    },
+    "google-deepmind/mujoco": {
+      "relevant": false,
+      "reason": "Repository is a physics simulator (description: \"A general purpose physics simulator\") focused on mujoco/physics/robotics (topics include mujoco, physics, robotics), not language models or their tooling.",
+      "usd": 0.000429,
+      "seconds": 2.61
+    },
+    "google-deepmind/alphafold": {
+      "relevant": false,
+      "reason": "The repo is AlphaFold (repo name 'alphafold' and description 'Open source code for AlphaFold 2'), which is protein structure prediction/bioinformatics rather than language-model or LM-infrastructure work.",
+      "usd": 0.000559,
+      "seconds": 3.22
+    },
+    "google-deepmind/sonnet": {
+      "relevant": true,
+      "reason": "Description and topics indicate this is a TensorFlow-based neural network library (deep-learning, neural-networks, tensorflow) \u2014 general DL infrastructure often used to build and run language models.",
+      "usd": 0.00042,
+      "seconds": 2.36
+    },
+    "google-deepmind/alphafold3": {
+      "relevant": false,
+      "reason": "The repository is AlphaFold 3 (description: \"AlphaFold 3 inference pipeline\" and repo name alphafold3 under google-deepmind), which is a protein structure prediction system rather than a language-model or LM infrastructure project.",
+      "usd": 0.000441,
+      "seconds": 2.65
+    },
+    "google-deepmind/weathernext": {
+      "relevant": false,
+      "reason": "Repository focuses on weather forecasting (repo name \u201cweathernext\u201d and topics: weather, weather-forecast) under google-deepmind, not on language models or LM infrastructure.",
+      "usd": 0.000545,
+      "seconds": 3.23
+    },
+    "google-deepmind/gemma": {
+      "relevant": true,
+      "reason": "The repository description states 'Gemma open-weight LLM library' from Google DeepMind, indicating it provides model implementations/weights and tooling for large language models.",
+      "usd": 0.000538,
+      "seconds": 2.88
+    },
+    "google-deepmind/open_spiel": {
+      "relevant": false,
+      "reason": "Repository is a collection of environments and algorithms for general reinforcement learning and search/planning in games (description and topics: reinforcement-learning, games, multiagent), not language-model or LLM infrastructure.",
+      "usd": 0.000557,
+      "seconds": 2.83
+    },
+    "google-deepmind/alphageometry": {
+      "relevant": false,
+      "reason": "Repository name 'alphageometry' (under google-deepmind) and lack of description/topics indicate a geometry-focused project rather than language models or their tooling.",
+      "usd": 0.000664,
+      "seconds": 3.62
+    },
+    "google-deepmind/dm_control": {
+      "relevant": false,
+      "reason": "The repository is DeepMind's dm_control physics-based simulation and reinforcement-learning environments (MuJoCo) as shown by the description and topics: 'physics-simulation', 'reinforcement-learning', 'mujoco'.",
+      "usd": 0.00057,
+      "seconds": 3.02
+    },
+    "google-deepmind/acme": {
+      "relevant": false,
+      "reason": "Repository description and topics show it is a reinforcement-learning library (\"A library of reinforcement learning components and agents\", topics: agents, reinforcement-learning), not about language models or their tooling.",
+      "usd": 0.00042,
+      "seconds": 3.18
+    },
+    "google-deepmind/mujoco_menagerie": {
+      "relevant": false,
+      "reason": "The repo is a collection of MuJoCo physics/robotics models (description and topics 'mujoco, robotics'), not about language models, training/serving, or LM tooling.",
+      "usd": 0.000427,
+      "seconds": 2.31
+    },
+    "google-deepmind/dm-haiku": {
+      "relevant": true,
+      "reason": "Description and topics show it is a JAX-based neural network library (description: \"JAX-based neural network library\" and topics: jax, deep-learning, neural-networks), i.e. general deep-learning infrastructure used to implement and train language models.",
+      "usd": 0.000837,
+      "seconds": 4.94
+    },
+    "google-deepmind/science-skills": {
+      "relevant": true,
+      "reason": "The repository description explicitly targets agentic scientific workflows, grounding and token efficiency and provides 'skills' that integrate LLM-facing tools/databases (AlphaGenome, UniProt, etc.), indicating agent/tooling for language models.",
+      "usd": 0.000825,
+      "seconds": 5.14
+    },
+    "google-deepmind/mctx": {
+      "relevant": false,
+      "reason": "Repository description and topics (Monte Carlo tree search in JAX; jax, monte-carlo-tree-search, reinforcement-learning) indicate an RL algorithm library rather than language-model code, weights, APIs, or tooling.",
+      "usd": 0.000433,
+      "seconds": 2.6
+    },
+    "google-deepmind/optax": {
+      "relevant": true,
+      "reason": "Repository description states 'Optax is a gradient processing and optimization library for JAX' and topics include 'machine-learning, optimization', indicating it's general optimizer infrastructure commonly used to train large language models.",
+      "usd": 0.000813,
+      "seconds": 6.11
+    },
+    "google-deepmind/mujoco_playground": {
+      "relevant": false,
+      "reason": "Description states it's a library for GPU-accelerated robot learning and sim-to-real transfer (robotics/control), not language models or tooling for them.",
+      "usd": 0.000536,
+      "seconds": 2.65
+    },
+    "google-deepmind/open_x_embodiment": {
+      "relevant": false,
+      "reason": "The repository name 'open_x_embodiment' (suggesting embodied/robotics work) and its Jupyter Notebook content indicate an embodiment/robotics project rather than language-model code, APIs, or tooling.",
+      "usd": 0.000815,
+      "seconds": 6.07
+    },
+    "google-deepmind/alphagenome": {
+      "relevant": true,
+      "reason": "The repository description explicitly says it provides programmatic access to DeepMind's AlphaGenome model, making it an official client/API for a lab model.",
+      "usd": 0.00079,
+      "seconds": 4.43
+    },
+    "google-deepmind/tapnet": {
+      "relevant": false,
+      "reason": "The repository is about visual point tracking and computer vision (description: \u201cTracking Any Point (TAP)\u201d; topics: computer-vision, point-tracking, robotics, benchmark), not language models or LLM infrastructure.",
+      "usd": 0.000436,
+      "seconds": 2.7
+    },
+    "google-deepmind/mujoco_mpc": {
+      "relevant": false,
+      "reason": "The repo is focused on MuJoCo-based model-predictive/control and motor-control (topics: model-predictive-control, mpc, mujoco; description: real-time behaviour synthesis with MuJoCo), i.e. robotics/control rather than language models or LM infrastructure.",
+      "usd": 0.000592,
+      "seconds": 3.42
+    },
+    "google-deepmind/concordia": {
+      "relevant": true,
+      "reason": "The repository description and topics indicate it's a Python library for generative social simulation / generative agents (description: \"A library for generative social simulation\"; topics: \"generative-agents\", \"agent-based-simulation\").",
+      "usd": 0.001082,
+      "seconds": 5.81
+    },
+    "google-deepmind/bsuite": {
+      "relevant": false,
+      "reason": "The repository description states it is a collection of experiments for evaluating reinforcement learning (RL) agents (bsuite), so its focus is RL rather than language models or their tooling.",
+      "usd": 0.000418,
+      "seconds": 2.87
+    },
+    "google-deepmind/rlax": {
+      "relevant": false,
+      "reason": "The repository name 'rlax' under google-deepmind (with no description) indicates a reinforcement-learning library (RLax) in Python, not a language-model or LLM tooling project.",
+      "usd": 0.000678,
+      "seconds": 3.63
+    },
+    "google-deepmind/mujoco_warp": {
+      "relevant": false,
+      "reason": "Repository description and topics indicate it is a GPU-optimized MuJoCo physics simulator for NVIDIA hardware (mujoco-warp, nvidia-warp), a robotics/physics tool rather than language-model tooling.",
+      "usd": 0.000433,
+      "seconds": 4.62
+    },
+    "google-deepmind/android_env": {
+      "relevant": false,
+      "reason": "Description and topics show this is for reinforcement-learning research on Android devices (android, reinforcement-learning), not language models or LM tooling.",
+      "usd": 0.000397,
+      "seconds": 2.7
+    },
+    "google-deepmind/materials_discovery": {
+      "relevant": false,
+      "reason": "Repository name 'materials_discovery' (with Jupyter Notebook language and no topics/description) indicates a materials-science/materials-discovery project, not language-models or LM infrastructure.",
+      "usd": 0.000805,
+      "seconds": 4.16
+    },
+    "google-deepmind/formal-conjectures": {
+      "relevant": false,
+      "reason": "The description and topics say it is a collection of formalized conjectures in Lean (formal-mathematics, lean4) \u2014 a formal mathematics repository, not about language models, their training, serving, or tooling.",
+      "usd": 0.000694,
+      "seconds": 4.01
+    },
+    "google-deepmind/synthid-text": {
+      "relevant": true,
+      "reason": "Repository name 'synthid-text' under google-deepmind (Python) indicates a DeepMind project for synthetic-text identification/watermarking, which is directly related to language-model outputs and watermarking tooling.",
+      "usd": 0.000942,
+      "seconds": 6.29
+    },
+    "google-deepmind/tree": {
+      "relevant": false,
+      "reason": "Description says it is a library for working with nested data structures (a general-purpose utility), not a language-model, model implementation, training/inference tooling, or evaluation related to LLMs.",
+      "usd": 0.000679,
+      "seconds": 4.45
+    },
+    "google-deepmind/chex": {
+      "relevant": false,
+      "reason": "Repository 'chex' (google-deepmind) is a general-purpose JAX utility/testing library for neural-network development (Python) and has no LLM-related topics or description, so it's not specific to language models.",
+      "usd": 0.001074,
+      "seconds": 6.14
+    },
+    "google-deepmind/meltingpot": {
+      "relevant": false,
+      "reason": "Repository is a suite of multi-agent reinforcement-learning test scenarios (description and topic 'multiagent-reinforcement-learning'), not about language models or tooling for them.",
+      "usd": 0.000411,
+      "seconds": 2.02
+    },
+    "google-deepmind/alphagenome_research": {
+      "relevant": false,
+      "reason": "The repository description is 'Research code accompanying AlphaGenome' (AlphaGenome is a genomics project, not about language models or LM infrastructure).",
+      "usd": 0.000529,
+      "seconds": 2.74
+    },
+    "google-deepmind/torax": {
+      "relevant": false,
+      "reason": "Description states \"Tokamak transport simulation in JAX\", indicating a plasma/physics simulation project rather than anything to do with language models, model weights, or LLM tooling.",
+      "usd": 0.000543,
+      "seconds": 3.07
+    },
+    "mistralai/mistral-vibe": {
+      "relevant": true,
+      "reason": "Repository is from the Mistral AI org and is described as a \u201cMinimal CLI coding agent by Mistral\u201d (Python CLI agent for interacting with models), indicating it\u2019s an official agent/CLI tool for language models.",
+      "usd": 0.000565,
+      "seconds": 3.48
+    },
+    "mistralai/cookbook": {
+      "relevant": true,
+      "reason": "Repository is under the Mistral AI organization and named 'cookbook' in Jupyter Notebook format, indicating an official worked-example collection for using Mistral's language models/APIs.",
+      "usd": 0.000675,
+      "seconds": 4.4
+    },
+    "mistralai/mistral-common": {
+      "relevant": true,
+      "reason": "Description states it is the official inference library for pre-processing of Mistral models (repo name mistral-common under organisation mistralai), indicating model/tokenisation and inference tooling.",
+      "usd": 0.000671,
+      "seconds": 4.45
+    },
+    "mistralai/client-python": {
+      "relevant": true,
+      "reason": "Repository is the official Python client library for Mistral AI platform (org=mistralai and description), i.e. an API client for a language-model lab.",
+      "usd": 0.000539,
+      "seconds": 3.05
+    },
+    "mistralai/client-ts": {
+      "relevant": true,
+      "reason": "Description and repository name indicate this is the official TypeScript client library for Mistral AI's platform (mistralai/client-ts), which is an official client for a model API.",
+      "usd": 0.000419,
+      "seconds": 2.44
+    },
+    "mistralai/mistral-evals": {
+      "relevant": true,
+      "reason": "Repository is from the MistralAI organisation and named 'mistral-evals' (Python), indicating an official evaluation harness/tooling for Mistral language models.",
+      "usd": 0.000669,
+      "seconds": 3.21
+    },
+    "mistralai/platform-docs-public": {
+      "relevant": true,
+      "reason": "Repository is in the MistralAI organisation and named 'platform-docs-public' with MDX content, indicating it is official public platform/API documentation for Mistral's model platform.",
+      "usd": 0.000676,
+      "seconds": 5.04
+    },
+    "mistralai/LeanstralSafeVerify": {
+      "relevant": true,
+      "reason": "Repository description states it is Leanstral's fork of SafeVerify used for code agent training and as part of our evaluation stack (evidence: repo description; language: Lean).",
+      "usd": 0.001061,
+      "seconds": 9.62
+    },
+    "mistralai/search-starter-app": {
+      "relevant": false,
+      "reason": "The repository description says it\u2019s a generic \u201cBase template to build, manage and improve search engines\u201d with no mention of language models, retrieval/embeddings, or model APIs (and topics are empty), so it\u2019s not clearly about LLMs or their tooling.",
+      "usd": 0.001222,
+      "seconds": 7.09
+    },
+    "mistralai/workflows-starter-app": {
+      "relevant": true,
+      "reason": "Repository under mistralai named 'workflows-starter-app' with description 'Base template to register and invoke workflows' indicates an official starter app for registering/invoking model workflows for Mistral's API.",
+      "usd": 0.000685,
+      "seconds": 4.97
+    },
+    "mistralai/FLTEval": {
+      "relevant": true,
+      "reason": "Repository description states it is a Docker-only evaluation harness for FLT Lean tasks (an evaluation harness), hosted under the Mistral AI org which builds language models.",
+      "usd": 0.000539,
+      "seconds": 3.45
+    },
+    "mistralai/cli": {
+      "relevant": true,
+      "reason": "Repository is in the official 'mistralai' organization and named 'cli', indicating it is likely the official command-line client for Mistral AI's model API (client CLIs are in-scope).",
+      "usd": 0.000811,
+      "seconds": 4.23
+    },
+    "xai-org/x-algorithm": {
+      "relevant": false,
+      "reason": "The repository description says it is the \"Algorithm powering the For You feed on X\" (a recommendation/ranking system), which is about social feed ranking rather than language models, model code, or LLM tooling.",
+      "usd": 0.000559,
+      "seconds": 3.52
+    },
+    "xai-org/grok-build": {
+      "relevant": true,
+      "reason": "Repository is SpaceXAI's coding agent harness and TUI (description) under the xai-org organisation, i.e. an agent/framework tool for a lab's language-model product.",
+      "usd": 0.00081,
+      "seconds": 4.28
+    },
+    "xai-org/grok-prompts": {
+      "relevant": true,
+      "reason": "Description states it contains prompts for the Grok chat assistant and the @grok bot (xai-org), i.e. prompt tooling for a language model.",
+      "usd": 0.000668,
+      "seconds": 3.83
+    },
+    "xai-org/xai-cookbook": {
+      "relevant": true,
+      "reason": "The repository description states it is a collection of examples for xAI's Grok APIs, which are the lab's language-model APIs (official worked examples for a model).",
+      "usd": 0.000545,
+      "seconds": 2.9
+    },
+    "xai-org/xai-sdk-python": {
+      "relevant": true,
+      "reason": "Repository description states this is the official Python SDK for the xAI API (an official client library for a lab's model API).",
+      "usd": 0.000525,
+      "seconds": 3.26
+    },
+    "xai-org/grok-build-plugin-cc": {
+      "relevant": true,
+      "reason": "Description states it is a Claude Code plugin that integrates/delegates tasks to the Grok Build CLI, i.e. tooling that connects to and extends a language-model-based assistant.",
+      "usd": 0.000805,
+      "seconds": 4.09
+    },
+    "xai-org/plugin-marketplace": {
+      "relevant": true,
+      "reason": "Organization 'xai-org' and the repository description 'Official xAI plugin marketplace' indicate this is an official plugin marketplace tied to a frontier LLM lab's model ecosystem.",
+      "usd": 0.000798,
+      "seconds": 4.4
+    },
+    "xai-org/xai-proto": {
+      "relevant": true,
+      "reason": "The repository contains public protobuf definitions for xAI's gRPC APIs, i.e. an official API definition for a lab's models (per the description).",
+      "usd": 0.000536,
+      "seconds": 3.79
+    },
+    "facebookresearch/faiss": {
+      "relevant": true,
+      "reason": "Description states it is a library for efficient similarity search and clustering of dense vectors (vector search/retrieval), which is core infrastructure for embedding-based retrieval used with language models.",
+      "usd": 0.000544,
+      "seconds": 3.33
+    },
+    "facebookresearch/detectron2": {
+      "relevant": false,
+      "reason": "Repository description states it is a platform for object detection, segmentation and other visual recognition tasks (computer vision), not language models or tooling for them.",
+      "usd": 0.000405,
+      "seconds": 2.11
+    },
+    "facebookresearch/audiocraft": {
+      "relevant": false,
+      "reason": "The repository is focused on audio/music generation and processing (EnCodec compressor/tokenizer and MusicGen music-generation LM), not on language models or LM infrastructure for text.",
+      "usd": 0.000677,
+      "seconds": 3.73
+    },
+    "facebookresearch/sam2": {
+      "relevant": false,
+      "reason": "The description says it provides code, checkpoints and example notebooks for Meta's Segment Anything Model 2, which is an image segmentation (computer vision) model rather than a language model.",
+      "usd": 0.000553,
+      "seconds": 2.97
+    },
+    "facebookresearch/vggt": {
+      "relevant": false,
+      "reason": "Repository title and description ('Visual Geometry Grounded Transformer', CVPR 2025 Best Paper) indicate this is computer-vision research (visual geometry/transformer) rather than language-model tooling, weights, or APIs.",
+      "usd": 0.000691,
+      "seconds": 3.42
+    },
+    "facebookresearch/dinov2": {
+      "relevant": false,
+      "reason": "Repository description: 'PyTorch code and models for the DINOv2 self-supervised learning method' \u2014 DINOv2 is a computer-vision representation model, so this is CV-focused and not about language models.",
+      "usd": 0.001205,
+      "seconds": 6.65
+    },
+    "facebookresearch/seamless_communication": {
+      "relevant": false,
+      "reason": "The repository description states it provides foundational models for speech and text translation (speech/audio and translation), which is an audio/translation domain rather than language-model infrastructure or LLM tooling.",
+      "usd": 0.000802,
+      "seconds": 4.05
+    },
+    "facebookresearch/sam3": {
+      "relevant": false,
+      "reason": "The description and repo name indicate it\u2019s Meta\u2019s Segment Anything Model 3 (an image segmentation / computer-vision model) with code, checkpoints and notebooks for inference and finetuning, not a language-model or LM infrastructure.",
+      "usd": 0.000573,
+      "seconds": 3.39
+    },
+    "facebookresearch/dinov3": {
+      "relevant": false,
+      "reason": "Description: 'Reference PyTorch implementation and models for DINOv3' \u2014 DINO is a self-supervised computer-vision model family, so this repo is about vision models not language models.",
+      "usd": 0.00081,
+      "seconds": 3.95
+    },
+    "facebookresearch/xformers": {
+      "relevant": true,
+      "reason": "Description states it provides hackable and optimized Transformers building blocks (attention/transformer kernels) for composable model construction, indicating it's a transformer/LLM infrastructure library from facebookresearch.",
+      "usd": 0.00042,
+      "seconds": 2.73
+    },
+    "facebookresearch/pytorch3d": {
+      "relevant": false,
+      "reason": "The repository description states it is \"FAIR's library of reusable components for deep learning with 3D data\" (PyTorch3D), indicating a 3D computer-vision/graphics focus rather than language models.",
+      "usd": 0.000566,
+      "seconds": 2.82
+    },
+    "facebookresearch/ImageBind": {
+      "relevant": false,
+      "reason": "Repository name \u2018ImageBind\u2019 and description \u2018One Embedding Space to Bind Them All\u2019 indicate a multimodal/image-centric embedding project (computer vision/audio multimodal research) rather than language-models or tooling for LLMs.",
+      "usd": 0.000693,
+      "seconds": 3.6
+    },
+    "facebookresearch/SlowFast": {
+      "relevant": false,
+      "reason": "Repository description states it is a PySlowFast video understanding codebase for reproducing state-of-the-art video models (computer-vision/video domain), not language models or related tooling.",
+      "usd": 0.000548,
+      "seconds": 3.11
+    },
+    "facebookresearch/sam-3d-objects": {
+      "relevant": false,
+      "reason": "Repository name and description 'SAM 3D Objects' (by facebookresearch) indicate a Segment Anything / 3D computer-vision project rather than language-model code, tooling, or APIs.",
+      "usd": 0.000551,
+      "seconds": 3.27
+    },
+    "facebookresearch/Kats": {
+      "relevant": false,
+      "reason": "The repository description states it is a toolkit for time series analysis (change point detection, anomalies, forecasting), which is about temporal data analysis rather than language models or tooling for building/serving/evaluating LLMs.",
+      "usd": 0.000573,
+      "seconds": 3.01
+    },
+    "facebookresearch/mmf": {
+      "relevant": true,
+      "reason": "Repository description and topics show it's a FAIR modular framework for vision-and-language multimodal research (captioning, dialog, pretrained-models, vqa/textvqa), so it concerns language-capable models and their tooling.",
+      "usd": 0.00083,
+      "seconds": 4.27
+    },
+    "facebookresearch/sapiens": {
+      "relevant": false,
+      "reason": "The repo description says \u201cHigh-resolution models for human tasks,\u201d indicating 3D/vision/graphics human models (facebookresearch/sapiens) rather than language-model code or tooling.",
+      "usd": 0.000802,
+      "seconds": 3.92
+    },
+    "facebookresearch/moco": {
+      "relevant": false,
+      "reason": "Description identifies this as a PyTorch implementation of MoCo (momentum contrast) from the linked paper, which is a self-supervised computer-vision representation learning method, not a language-model or LM tooling repository.",
+      "usd": 0.000562,
+      "seconds": 3.06
+    },
+    "facebookresearch/AugLy": {
+      "relevant": false,
+      "reason": "The repo is a general multimodal data augmentation library (description: 'A data augmentations library for audio, image, text, and video') and is not specifically about language models, model implementations, training/inference tooling, or LM APIs.",
+      "usd": 0.000956,
+      "seconds": 5.47
+    },
+    "facebookresearch/co-tracker": {
+      "relevant": false,
+      "reason": "Description and topics indicate this is a computer-vision point-tracking/optical-flow model for videos (CoTracker: 'tracking any point (pixel) on a video'), not about language models or their tooling.",
+      "usd": 0.000435,
+      "seconds": 2.41
+    },
+    "facebookresearch/flow_matching": {
+      "relevant": false,
+      "reason": "Description shows this is a PyTorch library for flow-matching generative-model algorithms with examples for both text and image modalities\u2014a general generative modeling toolkit rather than a repository focused on language-model implementations, APIs or LM-specific tooling.",
+      "usd": 0.001724,
+      "seconds": 9.11
+    },
+    "facebookresearch/vjepa2": {
+      "relevant": false,
+      "reason": "Repository description states \u201cVJEPA2 self-supervised learning from video\u201d (video representation learning / computer vision), not language models or tooling for them.",
+      "usd": 0.000537,
+      "seconds": 2.21
+    },
+    "facebookresearch/vggt-omega": {
+      "relevant": false,
+      "reason": "The repo title/description labels it as a CVPR 2026 oral paper ('VGGT Omega'), indicating a computer-vision model (VGG/VGGT) rather than language-model tooling or weights.",
+      "usd": 0.000688,
+      "seconds": 2.92
+    },
+    "facebookresearch/nevergrad": {
+      "relevant": false,
+      "reason": "Description says it is a general Python toolbox for gradient-free optimization (generic optimizer library), not specific to language models or model training/inference tools.",
+      "usd": 0.000659,
+      "seconds": 3.78
+    },
+    "facebookresearch/dlrm": {
+      "relevant": false,
+      "reason": "Description states this is \"An implementation of a deep learning recommendation model (DLRM)\", indicating the repo is about recommender systems rather than language models or related tooling.",
+      "usd": 0.000541,
+      "seconds": 2.33
+    },
+    "facebookresearch/habitat-sim": {
+      "relevant": false,
+      "reason": "Description and topics indicate a 3D simulator for Embodied AI / robotics and computer vision (habitat-sim), not language models, model code, or LLM tooling.",
+      "usd": 0.000422,
+      "seconds": 2.6
+    },
+    "facebookresearch/ReAgent": {
+      "relevant": false,
+      "reason": "The repository is a reinforcement-learning/decision-making platform (ReAgent) for contextual bandits and RL, per its description, not a language-model or LLM infrastructure project.",
+      "usd": 0.000673,
+      "seconds": 3.2
+    },
+    "facebookresearch/map-anything": {
+      "relevant": false,
+      "reason": "The project is about 3D reconstruction/computer vision (description: 'Universal Feed-Forward Metric 3D Reconstruction' and topics like 3d-reconstruction, depth-estimation, multi-view-stereo).",
+      "usd": 0.000567,
+      "seconds": 2.71
+    },
+    "facebookresearch/sam-audio": {
+      "relevant": false,
+      "reason": "The repo hosts code and checkpoints for Meta's Segment Anything Audio model and inference/example notebooks focused on audio segmentation (speech/audio), not language models or LM tooling.",
+      "usd": 0.000544,
+      "seconds": 2.7
+    },
+    "facebookresearch/pytorchvideo": {
+      "relevant": false,
+      "reason": "The repository is described as \"A deep learning library for video understanding research,\" indicating a video/vision focus rather than language models, tokenizers, model weights, or LM tooling.",
+      "usd": 0.000545,
+      "seconds": 2.93
+    },
+    "facebookresearch/habitat-lab": {
+      "relevant": false,
+      "reason": "Description and topics indicate this is an embodied AI / simulator and reinforcement-learning library for robotics and vision (habitat-lab), not language models or LLM tooling.",
+      "usd": 0.00042,
+      "seconds": 1.92
+    },
+    "facebookresearch/omnilingual-asr": {
+      "relevant": false,
+      "reason": "Repository name and description state it is an open-source multilingual ASR (speech recognition) project for 1600+ languages, i.e., speech/audio domain not language-model infrastructure.",
+      "usd": 0.00042,
+      "seconds": 2.64
+    },
+    "facebookresearch/fairchem": {
+      "relevant": false,
+      "reason": "Description states it is FAIR Chemistry's library of machine learning methods for chemistry, indicating a chemistry-focused ML project rather than language models or LM infrastructure.",
+      "usd": 0.000403,
+      "seconds": 2.25
+    },
+    "meta-llama/llama-cookbook": {
+      "relevant": true,
+      "reason": "Repository is an official Llama cookbook for building with Llama models (description mentions Inference, Fine-Tuning, RAG) and topics include llama, llama2, llm, finetuning, vllm and langchain indicating language-model tooling and examples.",
+      "usd": 0.000601,
+      "seconds": 3.25
+    },
+    "meta-llama/llama-models": {
+      "relevant": true,
+      "reason": "Repository name and description explicitly reference utilities for Llama language models (organisation meta-llama and description: \"Utilities intended for use with Llama models\").",
+      "usd": 0.00041,
+      "seconds": 2.33
+    },
+    "meta-llama/PurpleLlama": {
+      "relevant": true,
+      "reason": "The repository description states it is a set of tools to assess and improve LLM security (red\u2011teaming/evaluation tooling for language models), indicating it directly targets language models and their evaluation.",
+      "usd": 0.000552,
+      "seconds": 3.28
+    },
+    "meta-llama/synthetic-data-kit": {
+      "relevant": true,
+      "reason": "Meta-llama repository described as a \u201cTool for generating high quality Synthetic datasets\u201d with topics including \u201cllm\u201d and \u201cgeneration\u201d, indicating it supports dataset generation for language-model work.",
+      "usd": 0.000807,
+      "seconds": 4.28
+    },
+    "meta-llama/prompt-ops": {
+      "relevant": true,
+      "reason": "Repository description states it is \"An open-source tool for LLM prompt optimization,\" indicating prompt tooling for language models (Python repo under meta-llama).",
+      "usd": 0.000536,
+      "seconds": 3.37
+    },
+    "meta-llama/llama-api-python": {
+      "relevant": true,
+      "reason": "Description states it is \"The official Python library for the Llama API\" under the meta-llama organization, i.e. an official client for a model API.",
+      "usd": 0.000669,
+      "seconds": 4.06
+    },
+    "meta-llama/llama-api-typescript": {
+      "relevant": true,
+      "reason": "The repository description states it is \"The official Typescript library for the Llama API\" under the meta-llama organization, indicating it is an official client library for a lab's model API.",
+      "usd": 0.000554,
+      "seconds": 3.17
+    },
+    "meta-llama/llama-verifications": {
+      "relevant": true,
+      "reason": "Repository description states it contains functional tests and benchmarks for verifying Llama model providers (Llama language models), indicating it's directly about language-model validation.",
+      "usd": 0.000532,
+      "seconds": 2.44
+    },
+    "deepseek-ai/deepseek-harness": {
+      "relevant": true,
+      "reason": "Topics include \"ai-agents\" and \"dsh-plugin\" and the description \"DeepSeek Harness: Everything is a Plugin\" indicates this is an agent/plugin framework for connecting to or orchestrating language-model based agents.",
+      "usd": 0.000692,
+      "seconds": 3.44
+    },
+    "deepseek-ai/awesome-deepseek-integration": {
+      "relevant": true,
+      "reason": "Repository description states 'Integrate the DeepSeek API into popular software', indicating it provides integrations/clients for a model API (official API integrations for a lab).",
+      "usd": 0.000667,
+      "seconds": 2.94
+    },
+    "deepseek-ai/DeepSeek-Coder": {
+      "relevant": true,
+      "reason": "Repository name 'DeepSeek-Coder', organisation 'deepseek-ai', and the description 'Let the Code Write Itself' indicate this is an AI code-generation/coding-assistant project (a language-model-related tool).",
+      "usd": 0.000946,
+      "seconds": 5.05
+    },
+    "deepseek-ai/DeepSeek-OCR": {
+      "relevant": false,
+      "reason": "The repository name DeepSeek-OCR and description referencing 'Optical' indicate it's an OCR/computer-vision project (text extraction from images), not a language-model or LM-infrastructure project.",
+      "usd": 0.000678,
+      "seconds": 3.52
+    },
+    "deepseek-ai/FlashMLA": {
+      "relevant": true,
+      "reason": "Repository description 'Efficient Multi-head Latent Attention Kernels' indicates it implements attention/transformer kernels (multi-head attention), which are core components of language models.",
+      "usd": 0.000542,
+      "seconds": 2.97
+    },
+    "deepseek-ai/3FS": {
+      "relevant": true,
+      "reason": "Description states it is a high-performance distributed file system designed to address challenges of AI training and inference workloads (topic: distributed-file-system), which is core infrastructure used to build and run large language models.",
+      "usd": 0.000428,
+      "seconds": 2.27
+    },
+    "deepseek-ai/DeepEP": {
+      "relevant": true,
+      "reason": "The repo description calls it an \u201cefficient expert-parallel communication library\u201d (Cuda language and high stars), indicating infrastructure for Mixture-of-Experts expert-parallelism used in large language model training.",
+      "usd": 0.000554,
+      "seconds": 2.94
+    },
+    "deepseek-ai/DeepGEMM": {
+      "relevant": true,
+      "reason": "The repo description says \u201cDeepGEMM: clean and efficient BLAS kernel library on GPU\u201d and the code is in CUDA \u2014 GPU GEMM/BLAS kernels are fundamental high-performance building blocks used to train and run large language models.",
+      "usd": 0.000829,
+      "seconds": 4.1
+    },
+    "deepseek-ai/DeepSpec": {
+      "relevant": true,
+      "reason": "The repository description states it is a \"full-stack codebase for training and evaluating speculative decoding algorithms,\" which is directly about model inference/decoding for language models (Python codebase).",
+      "usd": 0.000548,
+      "seconds": 2.92
+    },
+    "deepseek-ai/DeepSeek-Coder-V2": {
+      "relevant": true,
+      "reason": "Repository name 'DeepSeek-Coder-V2' and description 'Breaking the Barrier of Closed-Source Models in Code Intelligence' indicate this is a code-focused language model/LLM implementation.",
+      "usd": 0.000553,
+      "seconds": 3.18
+    },
+    "deepseek-ai/awesome-deepseek-agent": {
+      "relevant": true,
+      "reason": "Repository name \u201cawesome-deepseek-agent\u201d under organisation deepseek-ai indicates a curated list about an agent framework for AI/LLMs, and agent frameworks for language models are on-topic.",
+      "usd": 0.000677,
+      "seconds": 3.24
+    },
+    "deepseek-ai/Engram": {
+      "relevant": true,
+      "reason": "Repository title and description explicitly state it introduces a conditional memory / scalable lookup method for large language models, indicating it is about LLM architectures and tooling.",
+      "usd": 0.000407,
+      "seconds": 2.7
+    },
+    "deepseek-ai/DeepSeek-OCR-2": {
+      "relevant": false,
+      "reason": "Repository name 'DeepSeek-OCR-2' and description 'Visual Causal Flow' indicate an OCR/visual computer-vision project rather than language models, model APIs, or LM infrastructure.",
+      "usd": 0.000551,
+      "seconds": 2.82
+    },
+    "deepseek-ai/DualPipe": {
+      "relevant": true,
+      "reason": "The repo implements a bidirectional pipeline parallelism algorithm for computation\u2013communication overlap in DeepSeek V3/R1 training, i.e. distributed training infrastructure for large model training (pipeline parallelism).",
+      "usd": 0.000554,
+      "seconds": 3.03
+    },
+    "deepseek-ai/TileKernels": {
+      "relevant": false,
+      "reason": "The description labels it as \u201cA kernel library written in tilelang,\u201d indicating low-level compute/kernel code rather than language-model implementations, APIs, or evaluation/tooling.",
+      "usd": 0.001051,
+      "seconds": 5.23
+    },
+    "deepseek-ai/DeepSeek-V3.2-Exp": {
+      "relevant": true,
+      "reason": "Repository name 'DeepSeek-V3.2-Exp' under the AI-focused org 'deepseek-ai' and the Python language indicate this is an AI model/experiment (likely a model or retrieval system) even though the description is missing.",
+      "usd": 0.001211,
+      "seconds": 6.6
+    },
+    "deepseek-ai/DeepSeek-Math-V2": {
+      "relevant": true,
+      "reason": "Repository name 'DeepSeek-Math-V2' under the deepseek-ai org, Python language and high star count indicate an AI/math-focused project (likely a dataset or model for math reasoning used with language models).",
+      "usd": 0.000815,
+      "seconds": 6.62
+    },
+    "deepseek-ai/awesome-deepseek-coder": {
+      "relevant": false,
+      "reason": "The repository is an \u201cawesome\u201d curated list (description: \u201cA curated list of open-source projects related to DeepSeek Coder\u201d) with no evidence in the name, org, or description that it contains model weights, implementations, APIs, or other LLM-specific tooling.",
+      "usd": 0.001353,
+      "seconds": 6.6
+    },
+    "deepseek-ai/LPLB": {
+      "relevant": true,
+      "reason": "Repository description states it is an expert-parallel load balancer for MoE (Mixture-of-Experts) models, which is infrastructure directly for training/serving large language models.",
+      "usd": 0.000549,
+      "seconds": 3.07
+    }
+  }
+}

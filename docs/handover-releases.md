@@ -142,14 +142,14 @@ unambiguous and needs no calibration.
 
 ## 7. What was NOT done
 
-- **The repo-relevance filter.** 39 of 87 watched repos are off-topic for an LLM
-  tracker — mujoco, alphafold3, habitat, detectron2, torax, weathernext — and
-  they score *as high as* the on-topic ones (`alphafold3` averages 35.6 on the AI
-  axis, third of all 87). Relevance is orthogonal to the practice score, so no
-  threshold fixes it. Agreed as the next branch. The promising shape: judge the
-  **repo**, not the release (87 calls once, not 380 forever), and label the whole
-  population rather than sample it — 87 is small enough for exact precision and
-  recall instead of an estimate.
+- ~~**The repo-relevance filter.**~~ **Done — D65.** The eyeball estimate of 39
+  off-topic repos measured out at **35 of 87**. The shape held: the repo is
+  judged, not the release, and the verdict is cached for ever. Two things this
+  handover did not anticipate, both in D65: the gate had to go *inside* the star
+  ranking rather than after the slice (so a dropped repo frees its slot), and a
+  second gate was needed in `transform`, because that function re-derives silver
+  from the whole of bronze on every firing and a forward-only filter would have
+  left the 33 off-topic releases already on the dashboard exactly where they were.
 - **The detector** in §5.
 - **Re-running the digest.** Digest 96 predates all of this. The AI digest was
   6/8 releases before pairing and grouping; it has not been regenerated since.

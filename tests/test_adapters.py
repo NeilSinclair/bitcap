@@ -668,6 +668,27 @@ class TestReleasesAdapter:
     between repositories inside one org.
     """
 
+    @pytest.fixture(autouse=True)
+    def no_live_relevance_calls(self, monkeypatch):
+        """Answer the relevance gate locally for every test in this class.
+
+        `fetch_releases` loads the real `config/repo_signals.yaml`, where the
+        gate is enabled, so without this the suite reaches
+        `providers.classify` — measured at 20 attempted calls. They failed for
+        want of a key and the gate failed open, so every test still passed
+        green while making network calls, and would have spent real money on a
+        machine with `ANTHROPIC_API_KEY` set.
+
+        Keeping everything is what the tests below assume, so this preserves
+        their meaning; the gate's own behaviour is tested in `TestRepoRelevanceGate`
+        with an explicit stub.
+        """
+        from app.pipeline import repo_relevance
+
+        monkeypatch.setattr(
+            repo_relevance, "judge",
+            lambda session, row, config: ({"relevant": True, "reason": "stub"}, 0.0, None))
+
     def release_source(self, org="xai-org", lab="xai"):
         return Source(leg="releases", id=org, label=org, stage=4, enabled=True,
                       config={"org": org, "lab": lab})
@@ -837,6 +858,52 @@ class TestReleasesAdapter:
 
         result = adapters.fetch_releases(self.release_source(), session=session)
         assert result.watermark["truncated"] == 7
+
+    def test_the_relevance_report_reaches_the_watermark(self, session, monkeypatch):
+        """The seam nothing else crosses.
+
+        `TestRepoRelevanceGate` calls `_relevant_slice` directly and asserts on
+        what it returns; `TestRepoFilterUnavailable` builds the watermark by
+        hand. Between them, deleting the `watermark["relevance"] = relevance`
+        assignment left the whole suite green — and in production that means the
+        filter runs, spends money, and `repo_filter_unavailable` can never fire,
+        because its only input is the key that no longer exists. Both silent.
+        """
+        from app.pipeline import repo_relevance
+
+        monkeypatch.setattr(repo_relevance, "judge", lambda session, row, config: (
+            {"relevant": row["repo"] != "mujoco", "reason": "a physics simulator"},
+            0.0007, None))
+        self.stored(session, "grok", stars=20)
+        self.stored(session, "mujoco", stars=30)
+        self.listing(monkeypatch, [self.listed_repo("grok", 20),
+                                   self.listed_repo("mujoco", 30)])
+        self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        report = result.watermark["relevance"]
+
+        assert [e["repo"] for e in report["excluded"]] == ["mujoco"]
+        assert report["judged"] == 2
+        assert report["errors"] == 0
+
+    def test_the_filter_spend_is_not_reported_twice(self, session, monkeypatch):
+        """`repo_relevance` records its own cost, with tokens, into the shared
+        log — which `load_costs` puts in `raw_costs`. `budget.month_to_date`
+        sums `raw_costs` *plus* `run_sources.cost_usd` on the stated assumption
+        that they never overlap, so returning it here as well would
+        double-count the filter against the monthly ceiling."""
+        from app.pipeline import repo_relevance
+
+        monkeypatch.setattr(repo_relevance, "judge", lambda session, row, config: (
+            {"relevant": True, "reason": "r"}, 0.0007, None))
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+
+        assert result.cost_usd == 0.0
 
     def test_nothing_is_written_to_disk(self, session, monkeypatch, tmp_path):
         """The whole reason for the port: the deployed container has no disk,
@@ -1040,3 +1107,186 @@ class TestTheBackfillRunsInThePipeline:
         adapters.fetch_announcements(self._source())
 
         assert called == []
+
+
+class TestRepoRelevanceGate:
+    """`_relevant_slice` — the gate between the ranking and the releases fetch.
+
+    Its failures are all quiet. A gate that shrinks the watch list instead of
+    refilling it watches fewer repositories and reports nothing. A gate that
+    fails closed empties the watch list during a provider outage and looks
+    exactly like a week in which eight labs shipped nothing. And spend counted
+    twice moves the monthly ceiling in the direction that stops the pipeline
+    early, which surfaces as an unrelated budget alert weeks later.
+    """
+
+    def ranked(self, *names):
+        return [{"org": "google-deepmind", "repo": n, "stars": 100 - i,
+                 "description": None, "age": "established", "created_at": None}
+                for i, n in enumerate(names)]
+
+    def cfg(self, **relevance):
+        block = {"enabled": True, "provider": "anthropic", "model": "m",
+                 "prompt_version": "r1", "max_judged": 30}
+        block.update(relevance)
+        return {"releases_watch": 2, "relevance": block}
+
+    def stub(self, monkeypatch, answer):
+        """Install a local `judge`; `answer(repo)` returns (verdict, usd)."""
+        from app.pipeline import repo_relevance
+
+        monkeypatch.setattr(repo_relevance, "judge",
+                            lambda session, row, config: answer(row["repo"]))
+
+    def test_a_rejected_repo_frees_its_slot_rather_than_shrinking_the_list(
+            self, monkeypatch):
+        self.stub(monkeypatch, lambda repo: (
+            {"relevant": repo != "mujoco", "reason": "physics"}, 0.001, None))
+        picked, report = adapters._relevant_slice(
+            self.ranked("mujoco", "gemma", "gpt-oss"), {}, self.cfg(), None)
+
+        assert [r["repo"] for r in picked] == ["gemma", "gpt-oss"]
+        assert report["excluded"] == [{"repo": "mujoco", "why": "physics"}]
+
+    def test_the_kill_switch_restores_the_plain_top_slice(self, monkeypatch):
+        """`enabled: false` has to mean *exactly* what the leg did before, and
+        it has to judge nothing — the switch exists so an operator can stop the
+        spend without a deploy."""
+        self.stub(monkeypatch, lambda repo: pytest.fail("judged while disabled"))
+        rows = self.ranked("mujoco", "gemma", "gpt-oss")
+        picked, report = adapters._relevant_slice(
+            rows, {}, self.cfg(enabled=False), None)
+
+        assert [r["repo"] for r in picked] == ["mujoco", "gemma"]
+        assert report == {}
+
+    def test_a_failed_judgement_keeps_the_repo_and_is_counted(self, monkeypatch):
+        """Fail open. A dropped repository is invisible downstream; a kept one
+        costs a classification and can be seen. The count is what
+        `alerts.repo_filter_unavailable` reads, so a provider outage cannot make
+        the gate a silent no-op."""
+        self.stub(monkeypatch, lambda repo: (None, 0.0, "RuntimeError: rate limited"))
+        picked, report = adapters._relevant_slice(
+            self.ranked("mujoco", "gemma"), {}, self.cfg(), None)
+
+        assert [r["repo"] for r in picked] == ["mujoco", "gemma"]
+        assert report["errors"] == 2
+        assert report["excluded"] == []
+
+    def test_the_spend_is_summed_for_the_caller_to_bill_once(self, monkeypatch):
+        self.stub(monkeypatch, lambda repo: ({"relevant": True, "reason": "r"}, 0.002, None))
+        _, report = adapters._relevant_slice(
+            self.ranked("a", "b"), {}, self.cfg(), None)
+
+        assert report["usd"] == 0.004
+        assert report["judged"] == 2
+
+    def test_topics_and_language_reach_the_judge(self, monkeypatch):
+        """They are the strongest free discriminator the filter gets, and they
+        live on the listing rather than on the ranked row. Dropping them on the
+        floor would still produce a verdict, just a worse one."""
+        seen = {}
+
+        from app.pipeline import repo_relevance
+
+        def capture(session, row, config):
+            seen.update(row)
+            return {"relevant": True, "reason": "r"}, 0.0, None
+
+        monkeypatch.setattr(repo_relevance, "judge", capture)
+        listing = {"mujoco": {"language": "C", "topics": ["physics", "robotics"]}}
+        adapters._relevant_slice(self.ranked("mujoco"), listing, self.cfg(), None)
+
+        assert seen["language"] == "C"
+        assert seen["topics"] == ["physics", "robotics"]
+
+    def test_repos_already_in_the_corpus_are_judged_even_below_the_walk(
+            self, monkeypatch, session):
+        """The walk and the derivation gate need different populations, and
+        conflating them was the feature's worst bug.
+
+        `shortlist` stops at the tenth passing repository, so anything below
+        that is never judged — and `transform`'s gate only *reads* verdicts, so
+        an unjudged repository's releases are re-derived on every firing for
+        ever. Measured against the live ranking, relying on the walk alone left
+        31 of the 87 corpus repositories unjudged, `torax` and `habitat-lab`
+        among them — both named in D65 as removed."""
+        from app import models as m
+
+        # `deep` sits far below the watch cut but has releases in the corpus.
+        session.add(m.RawArticle(
+            url="https://github.com/google-deepmind/deep/releases/tag/v1",
+            content_hash="h", source_file="github_releases",
+            payload={"lab": "google-deepmind", "title": "t", "date": "2026-09-01",
+                     "text": "b", "text_source": "github_release",
+                     "org": "google-deepmind", "repo": "deep"}))
+        session.flush()
+
+        self.stub(monkeypatch, lambda repo: (
+            {"relevant": repo != "deep", "reason": "a physics simulator"}, 0.0007, None))
+        rows = self.ranked("a", "b", "c", "deep", "e")
+        picked, report = adapters._relevant_slice(rows, {}, self.cfg(), session)
+
+        assert [r["repo"] for r in picked] == ["a", "b"], "the walk still stops early"
+        assert report["swept"] == 1
+        assert [e["repo"] for e in report["excluded"]] == ["deep"], (
+            "a repository in the corpus was never judged, so its releases would "
+            "be re-derived for ever")
+
+    def test_the_sweep_does_not_re_judge_what_the_walk_already_saw(
+            self, monkeypatch, session):
+        from app import models as m
+
+        session.add(m.RawArticle(
+            url="https://github.com/google-deepmind/a/releases/tag/v1",
+            content_hash="h", source_file="github_releases",
+            payload={"lab": "google-deepmind", "title": "t", "date": "2026-09-01",
+                     "text": "b", "text_source": "github_release",
+                     "org": "google-deepmind", "repo": "a"}))
+        session.flush()
+
+        self.stub(monkeypatch, lambda repo: ({"relevant": True, "reason": "r"}, 0.0007, None))
+        _, report = adapters._relevant_slice(
+            self.ranked("a", "b", "c"), {}, self.cfg(), session)
+
+        assert report["judged"] == 2, "judged a repository twice in one firing"
+
+    def test_running_out_of_ranking_is_recorded_not_raised(self, monkeypatch):
+        """An org may genuinely not have `releases_watch` relevant repositories.
+        That is a finding about the org, not a failure, so it is reported for a
+        reader rather than alerted on."""
+        self.stub(monkeypatch, lambda repo: ({"relevant": False, "reason": "no"}, 0.0, None))
+        picked, report = adapters._relevant_slice(
+            self.ranked("a", "b", "c"), {}, self.cfg(max_judged=10), None)
+
+        assert picked == []
+        assert report["capped"] is False, "ran out of repos, not out of budget"
+
+    def test_hitting_the_cap_is_reported_as_capped(self, monkeypatch):
+        """The cap counts *paid* judgements, so the stub has to charge for
+        them."""
+        self.stub(monkeypatch,
+                  lambda repo: ({"relevant": False, "reason": "no"}, 0.0007, None))
+        rows = self.ranked(*[f"r{i}" for i in range(20)])
+        picked, report = adapters._relevant_slice(rows, {}, self.cfg(max_judged=5), None)
+
+        assert picked == []
+        assert report["paid"] == 5
+        assert report["capped"] is True
+
+    def test_a_cached_walk_goes_deeper_than_the_cap_for_free(self, monkeypatch):
+        """The cap exists to bound spend and wall-clock, and a cache hit costs
+        neither. Counting cache hits against it froze the walk at a fixed depth
+        for ever — measured, that left `facebookresearch` watching three
+        repositories instead of ten on every firing, with no way to recover even
+        though going deeper was free."""
+        # Every answer is free, as a warm cache is: usd 0.0 and no error.
+        self.stub(monkeypatch, lambda repo: (
+            {"relevant": repo in {"r18", "r19"}, "reason": "cached"}, 0.0, None))
+        rows = self.ranked(*[f"r{i}" for i in range(20)])
+        picked, report = adapters._relevant_slice(rows, {}, self.cfg(max_judged=5), None)
+
+        assert [r["repo"] for r in picked] == ["r18", "r19"]
+        assert report["paid"] == 0
+        assert report["capped"] is False
+        assert report["judged"] == 20, "stopped early on judgements that cost nothing"

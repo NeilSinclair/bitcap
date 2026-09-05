@@ -165,3 +165,76 @@ class TestTheBackfillKeyIsValidated:
         declared dead -- which is the direction that costs nothing to get
         wrong and everything to leave wrong."""
         assert check_sources(ROOT / "config") == []
+
+
+class TestTheRelevanceBlockIsValidated:
+    """`repo_signals.yaml`'s `relevance` block.
+
+    The silent failure these exist for is that every one of these mistakes is
+    caught *after* something irreversible: an unpriced model name works all the
+    way through the provider call and raises in `providers._cost` only once the
+    call has been billed, and a `max_judged` below `releases_watch` silently
+    watches fewer repositories than configured for ever. `validate.py` is not
+    run by CI (`.github/workflows/tests.yml` runs pytest only), so these tests
+    are the only thing standing behind the checks.
+    """
+
+    def _check(self, tmp_path, relevance):
+        from validate import check_repo_signals
+
+        doc = yaml.safe_load((ROOT / "config" / "repo_signals.yaml").read_text())
+        if relevance is None:
+            doc.pop("relevance", None)
+        else:
+            doc["relevance"] = {**doc["relevance"], **relevance}
+        _write(tmp_path / "repo_signals.yaml", doc)
+        return check_repo_signals(tmp_path)
+
+    def test_the_committed_file_passes(self):
+        from validate import check_repo_signals
+
+        assert check_repo_signals(ROOT / "config") == []
+
+    def test_an_unpriced_model_is_rejected(self, tmp_path):
+        """The exact trap: `claude-haiku-4-5` is not a key in `providers.PRICES`
+        — the dated `claude-haiku-4-5-20251001` is. The undated string survives
+        the whole API call and raises while building the cost record, after the
+        provider has billed it."""
+        errors = self._check(tmp_path, {"model": "claude-haiku-4-5"})
+        assert any("PRICES" in e for e in errors)
+
+    def test_an_unknown_provider_is_rejected(self, tmp_path):
+        errors = self._check(tmp_path, {"provider": "anthropik"})
+        assert any("relevance.provider" in e for e in errors)
+
+    def test_a_missing_prompt_file_is_rejected(self, tmp_path):
+        errors = self._check(tmp_path, {"prompt_version": "r99"})
+        assert any("r99.md is missing" in e for e in errors)
+
+    def test_max_judged_below_releases_watch_is_rejected(self, tmp_path):
+        """A cap under the watch count can never fill the list, so the leg
+        quietly watches fewer repositories than it is configured to."""
+        errors = self._check(tmp_path, {"max_judged": 3})
+        assert any("can never fill" in e for e in errors)
+
+    def test_a_missing_block_is_an_error_not_a_default(self, tmp_path):
+        """Defaulting it to off would leave the releases leg watching what it
+        watched before, with nothing saying why."""
+        errors = self._check(tmp_path, None)
+        assert any("relevance must be a mapping" in e for e in errors)
+
+    def test_a_non_boolean_kill_switch_is_rejected(self, tmp_path):
+        errors = self._check(tmp_path, {"enabled": "yes"})
+        assert any("relevance.enabled" in e for e in errors)
+
+    def test_validating_twice_does_not_grow_sys_path(self):
+        """The insert is guarded. Unguarded, repeated validation in one process
+        prepends the shim again each time and permanently shadows any
+        same-named installed module — the trap already documented for the
+        identical insert in `check_dedupe`."""
+        from validate import check_repo_signals
+
+        check_repo_signals(ROOT / "config")
+        before = list(sys.path)
+        check_repo_signals(ROOT / "config")
+        assert sys.path == before

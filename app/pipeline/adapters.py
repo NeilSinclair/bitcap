@@ -471,6 +471,142 @@ def _listing_fields(payload: dict, repo: dict) -> dict:
     }
 
 
+def _relevant_slice(ranked: list[dict], listing: dict, cfg: dict,
+                    session) -> tuple[list[dict], dict]:
+    """Take the watched slice of the ranking, gated on repository relevance.
+
+    Gating here rather than after a plain `[:releases_watch]` slice is the point
+    of the feature: a rejected repository frees its slot to the next one down,
+    so dropping a physics simulator promotes a real repository instead of
+    shrinking the watch list.
+
+    `topics` and `language` are merged in from the live listing rather than
+    added to `rank_repos.row`, whose docstring is explicit that it stays thin
+    and does not grow fields for one consumer. They are the strongest free
+    discriminator the filter gets — `mujoco` carries `physics, robotics,
+    simulation` — and they cost nothing, the listing is already in hand.
+
+    **Two populations, not one.** The walk decides what to watch going forward
+    and is correctly lazy. The *derivation* gate in `app.transform` needs
+    something different: a verdict for every repository already in the corpus,
+    which is a set the walk never reaches. Measured, the walk judges as far as
+    the tenth passing repository — 11 rows for `anthropics` — while the corpus
+    holds releases from 87 repositories accumulated over many firings, 16 of them
+    ranked beyond 30. Relying on the walk alone left 31 of those 87 unjudged, so
+    their releases were re-derived on every firing for ever and nothing said why.
+    `_sweep_corpus` closes that; it is bounded by the corpus and cached, so it is
+    ~$0.06 once and free afterwards.
+
+    Args:
+        ranked: Rows from `rank_repos.rank`, in ranking order.
+        listing: The live REST listing keyed by repository name.
+        cfg: Parsed config/repo_signals.yaml.
+        session: Open session, for the verdict cache.
+
+    Returns:
+        Tuple of (watched rows, a report for the watermark).
+    """
+    watch = cfg["releases_watch"]
+    config = cfg.get("relevance") or {}
+    if not config.get("enabled"):
+        return ranked[:watch], {}
+
+    import rank_repos
+
+    from app.pipeline import repo_relevance
+
+    report = {"judged": 0, "paid": 0, "errors": 0, "excluded": [], "usd": 0.0}
+    judged_repos: set[str] = set()
+
+    def verdict_for(row: dict):
+        judged_repos.add(row["repo"])
+        entry = listing.get(row["repo"], {})
+        verdict, usd, error = repo_relevance.judge(
+            session,
+            {**row, "language": entry.get("language"), "topics": entry.get("topics") or []},
+            config,
+        )
+        report["judged"] += 1
+        report["usd"] += usd
+        # Only a call that reached the provider counts against the ceiling. A
+        # cache hit is free in money and in time, and counting it stopped the
+        # walk at a fixed depth for ever.
+        if usd or error:
+            report["paid"] += 1
+        return verdict, error
+
+    def keep(row: dict) -> bool:
+        verdict, error = verdict_for(row)
+        if verdict is None:
+            # Fail open. A wrongly dropped repository is invisible downstream --
+            # nothing can tell it from a repository that shipped nothing --
+            # while a wrongly kept one costs a classification and is visible.
+            #
+            # The reason is kept, not just the count. Failing open is silent by
+            # construction, and an alert that can only say "twelve judgements
+            # failed" leaves the operator to guess between a dead key, a rate
+            # limit and a broken import -- all three of which look identical
+            # from here.
+            report["errors"] += 1
+            report["last_error"] = error
+            return True
+        if not verdict["relevant"]:
+            report["excluded"].append({"repo": row["repo"], "why": verdict["reason"]})
+            return False
+        return True
+
+    cap = config["max_judged"]
+    picked = rank_repos.shortlist(
+        ranked, keep, watch, stop=lambda: report["paid"] >= cap)
+    # Not an alert: an org may genuinely not have this many relevant
+    # repositories. Recorded so a reader can see the walk stopped because it ran
+    # out of budget rather than out of candidates.
+    report["capped"] = len(picked) < watch and report["paid"] >= cap
+
+    # The corpus sweep. Separate from the walk and deliberately NOT capped by
+    # `max_judged`: it is bounded by the corpus itself, every repository in it
+    # was watched at some point, and leaving one unjudged means its releases are
+    # re-derived on every firing for ever with nothing reporting it.
+    in_corpus = _corpus_repos(session, ranked[0]["org"]) if ranked else set()
+    for row in ranked:
+        if row["repo"] not in in_corpus or row["repo"] in judged_repos:
+            continue
+        verdict, _ = verdict_for(row)
+        if verdict is not None and not verdict["relevant"]:
+            report["excluded"].append({"repo": row["repo"], "why": verdict["reason"]})
+    report["swept"] = len(in_corpus)
+
+    report["usd"] = round(report["usd"], 6)
+    return picked, report
+
+
+def _corpus_repos(session, org: str) -> set[str]:
+    """Repository names for one org that already have releases in bronze.
+
+    The population the derivation gate has to cover. Selected as two JSON
+    fields rather than whole payloads because a release payload carries the
+    release body, and loading 380 of those per org per firing to read two
+    strings would be megabytes for nothing.
+
+    Args:
+        session: Open session, or None.
+        org: GitHub organisation login.
+
+    Returns:
+        Repository names.
+    """
+    if session is None:
+        return set()
+    from app.pipeline.registry import CORPUS_LABELS, RELEASES
+
+    rows = session.execute(
+        select(m.RawArticle.payload["org"].as_string(),
+               m.RawArticle.payload["repo"].as_string())
+        .where(m.RawArticle.source_file == CORPUS_LABELS[RELEASES])
+    ).all()
+    return {repo for owner, repo in rows if owner == org and repo}
+
+
 def fetch_github(source, state=None, session=None) -> FetchResult:
     """Harvest one org's commits and aggregate them into a people register.
 
@@ -639,7 +775,8 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
         [(r.org, r.repo, _listing_fields(r.payload, listing.get(r.repo, {})))
          for r in rows if r.repo in listing],
         cfg,
-    )[: cfg["releases_watch"]]
+    )
+    ranked, relevance = _relevant_slice(ranked, listing, cfg, session)
 
     cursors = dict((getattr(state, "watermark", None) or {}).get("cursors") or {})
 
@@ -713,6 +850,11 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
         watermark["max_published"] = newest
     if failures:
         watermark["repo_failures"] = failures
+    if relevance:
+        # Named, not counted. An exclusion nobody can read is indistinguishable
+        # from a repository that shipped nothing, and this is the only place
+        # that says which repositories the filter removed and why.
+        watermark["relevance"] = relevance
 
     # Every watched repository failing is a broken source, not a quiet week --
     # a token rotated to one without the right scope 404s on all of them. Left
@@ -724,6 +866,15 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
             f"{org}: all {len(ranked)} watched repositories failed -- "
             f"first was {failures[0]}"
         )
+    # `cost_usd` is deliberately left at zero. The relevance filter records its
+    # spend with tokens at the call site (`repo_relevance._record_cost`), which
+    # lands in `raw_costs` via `load_raw.load_costs` in the same firing.
+    # Returning it here as well would double-count it: `budget.month_to_date`
+    # sums `raw_costs` *plus* `run_sources.cost_usd` on the stated assumption
+    # that the two never overlap. Recording at the call site also survives a
+    # failure later in this function, which the return value does not —
+    # `run_source` discards `result` on an exception, and the verdicts have
+    # already been bought and flushed by then.
     return FetchResult(items=items, watermark=watermark)
 
 

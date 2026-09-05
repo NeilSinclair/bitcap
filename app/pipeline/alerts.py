@@ -496,6 +496,58 @@ def extraction_downgraded(session: Session, config: dict, context: dict) -> list
     return out
 
 
+def repo_filter_unavailable(session: Session, config: dict,
+                            context: dict) -> list[Candidate]:
+    """Every repository relevance judgement failed on a source.
+
+    The gate fails **open**: a repository it could not judge is kept, because a
+    wrongly dropped one stops producing articles and nothing downstream can tell
+    that apart from a repository that shipped nothing.
+
+    Failing open has one nasty property, and this rule exists for it alone. When
+    the provider is down, every judgement fails, every repository is kept, and
+    the leg watches exactly what it watched before the filter existed. The run
+    succeeds, the watch list looks plausible, and the dashboard quietly refills
+    with physics simulators. That is D45's swallowed-and-unreported, in a shape
+    with no exception to catch.
+
+    Unlike the link-count detector declined in `docs/handover-releases.md` §5,
+    this needs no calibration: "every judgement on this source failed" is
+    unambiguous at any corpus size, and a partial failure is normal enough that
+    only the total one is worth waking somebody for.
+
+    `warning`, not `critical`, on the same blast-radius reasoning as
+    `dedupe_unavailable`: off-topic items reach the feed where a reader can see
+    them. Nothing is running unverified.
+    """
+    out = []
+    for st in session.scalars(
+        select(m.SourceState).where(m.SourceState.leg == "releases")
+    ).all():
+        report = (st.watermark or {}).get("relevance") or {}
+        judged, errors = report.get("judged", 0), report.get("errors", 0)
+        if not judged or errors < judged:
+            continue
+        out.append(Candidate(
+            kind=SYSTEM, rule="repo_filter_unavailable", severity=WARNING,
+            subject=f"Repository relevance filter answered nothing for {st.source_id}",
+            body=(
+                f"All {judged} judgements failed, so every repository was kept "
+                "and the watch list is the ungated star ranking. Off-topic "
+                "releases will reach the feed until this clears. "
+                f"Last error: {report.get('last_error') or 'none recorded'}. "
+                "config/repo_signals.yaml `relevance.enabled: false` stops the "
+                "attempts if it persists."
+            ),
+            # Keyed on the source and the size of the failure rather than on a
+            # timestamp, so one ongoing outage is one alert instead of one a
+            # night -- the same correction `drift` needed.
+            dedupe_key=f"repo_filter_unavailable:{st.source_id}:{judged}",
+            payload={"source_id": st.source_id, "judged": judged, "errors": errors},
+        ))
+    return out
+
+
 RULES = {
     "run_failed": run_failed,
     "extraction_downgraded": extraction_downgraded,
@@ -504,6 +556,7 @@ RULES = {
     "drift": drift,
     "drift_unavailable": drift_unavailable,
     "dedupe_unavailable": dedupe_unavailable,
+    "repo_filter_unavailable": repo_filter_unavailable,
     "high_band_item": high_band_items,
     "holding_impact": holding_impact,
 }

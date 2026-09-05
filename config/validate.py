@@ -412,6 +412,94 @@ def check_repo_signals(root: Path) -> list[str]:
             )
     if not isinstance(doc.get("min_stars"), int):
         errors.append("repo_signals.yaml: min_stars must be an integer")
+    errors.extend(_check_relevance(root, doc))
+    return errors
+
+
+def _check_relevance(root: Path, doc: dict) -> list[str]:
+    """Validate the `relevance` block inside repo_signals.yaml.
+
+    Three of these five checks exist because the failure they catch happens
+    *after* money is spent or *after* the watch list has already changed:
+
+    * An unpriced `model` works all the way through the provider call and then
+      raises KeyError in `providers._cost`, so the call is billed and no verdict
+      comes back. That is the whole reason this imports the price table rather
+      than pattern-matching the name.
+    * A missing prompt file raises on the first repository of the first org.
+    * `max_judged` below `releases_watch` can never fill the watch list, so the
+      leg quietly watches fewer repositories than it is configured to.
+
+    Args:
+        root: Directory holding the config files.
+        doc: The parsed repo_signals.yaml.
+
+    Returns:
+        Error message list.
+    """
+    block = doc.get("relevance")
+    if not isinstance(block, dict):
+        # Absent is an error rather than a default: the releases leg would keep
+        # watching what it watches today and nothing would say why.
+        return ["repo_signals.yaml: relevance must be a mapping"]
+
+    errors = []
+    if not isinstance(block.get("enabled"), bool):
+        errors.append(
+            "repo_signals.yaml: relevance.enabled must be true or false, not "
+            f"{block.get('enabled')!r} — a missing kill switch reads as on"
+        )
+
+    # Guarded, like the identical insert further down this file: unguarded,
+    # repeated validation in one process prepends the path again each time and
+    # permanently shadows any same-named installed module.
+    shim = str(root.parent / "research" / "announcements")
+    if shim not in sys.path:
+        sys.path.insert(0, shim)
+    try:
+        import providers
+    except ImportError:
+        # Reported, not raised. `check_dedupe` does the same: a moved shim must
+        # not take down the whole validator with a traceback when its other
+        # thirty checks would still have run.
+        errors.append("repo_signals.yaml: cannot import providers to check "
+                      "relevance.provider and relevance.model")
+        return errors
+
+    provider = block.get("provider")
+    if provider not in providers.PROVIDERS:
+        errors.append(
+            f"repo_signals.yaml: relevance.provider {provider!r} is not one of "
+            f"{sorted(providers.PROVIDERS)}"
+        )
+    model = block.get("model")
+    if model not in providers.PRICES:
+        errors.append(
+            f"repo_signals.yaml: relevance.model {model!r} has no entry in "
+            "providers.PRICES — the call would be billed and then raise while "
+            "building the cost record"
+        )
+
+    version = block.get("prompt_version")
+    if not isinstance(version, str) or not version:
+        errors.append("repo_signals.yaml: relevance.prompt_version must be a name")
+    elif not (root.parent / "prompts" / "repo_relevance" / f"{version}.md").exists():
+        errors.append(
+            f"repo_signals.yaml: prompts/repo_relevance/{version}.md is missing"
+        )
+
+    judged = block.get("max_judged")
+    watch = doc.get("releases_watch")
+    if not isinstance(judged, int) or isinstance(judged, bool) or judged < 1:
+        errors.append(
+            f"repo_signals.yaml: relevance.max_judged must be a positive integer, "
+            f"not {judged!r}"
+        )
+    elif isinstance(watch, int) and not isinstance(watch, bool) and judged < watch:
+        errors.append(
+            f"repo_signals.yaml: relevance.max_judged ({judged}) is below "
+            f"releases_watch ({watch}), so the watch list can never fill"
+        )
     return errors
 
 
