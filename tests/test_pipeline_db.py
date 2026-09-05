@@ -14,12 +14,31 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.cli import cmd_connect, cmd_load
+from app.cli import PROMPT_VERSION, cmd_connect, cmd_load
 from app.db import create_all
 
 ROOT = Path(__file__).parent.parent
-REGISTER = ROOT / "research" / "docs" / "scored_announcements_v7.json"
+REGISTER = ROOT / "research" / "docs" / f"scored_announcements_{PROMPT_VERSION}.json"
 CORPUS = ROOT / "research" / "docs" / "announcements.json"
+
+
+def register_rows() -> list[dict]:
+    """The scored register for the version the pipeline currently runs.
+
+    Fails with the reason rather than a FileNotFoundError. Bumping
+    `PROMPT_VERSION` without re-scoring is a real and expected state — a full
+    re-score costs money and is run deliberately (D47) — so the gap between the
+    bump and the artifact wants a sentence, not a traceback three frames deep in
+    a fixture.
+    """
+    if not REGISTER.exists():
+        raise AssertionError(
+            f"no scored register for {PROMPT_VERSION} at {REGISTER.name}. "
+            f"`app/cli.PROMPT_VERSION` is {PROMPT_VERSION}, so either the corpus "
+            "has not been re-scored at that version yet, or the bump was not "
+            "meant to land without it."
+        )
+    return json.loads(REGISTER.read_text())["scored"]
 
 
 def corpus_size() -> int:
@@ -39,8 +58,8 @@ def session():
     engine = create_engine("sqlite:///:memory:")
     create_all(engine)
     s = Session(engine)
-    cmd_load(s, "v7")
-    cmd_connect(s, "v7")
+    cmd_load(s, PROMPT_VERSION)
+    cmd_connect(s, PROMPT_VERSION)
     yield s
     s.close()
 
@@ -114,7 +133,7 @@ def test_scores_reconcile_with_register(session):
     # URLs exist here already, independent of and predating this session's
     # register additions. That drift is expected; a *value* mismatch on a
     # URL present in both is the real bug this test exists to catch.
-    register = {r["url"]: r for r in json.loads(REGISTER.read_text())["scored"]}
+    register = {r["url"]: r for r in register_rows()}
     rows = session.execute(
         select(m.Article.url, m.Classification.score, m.Classification.band)
         .join(m.Classification, m.Classification.article_id == m.Article.id)
@@ -130,7 +149,7 @@ def test_tag_rows_match_register_totals(session):
     # Same window-drift reasoning as test_scores_reconcile_with_register:
     # sum only over register rows whose article is actually loaded now.
     loaded_urls = set(session.scalars(select(m.Article.url)))
-    register = [r for r in json.loads(REGISTER.read_text())["scored"] if r["url"] in loaded_urls]
+    register = [r for r in register_rows() if r["url"] in loaded_urls]
     for table, key in ((m.ArticleMechanism, "mechanisms"),
                        (m.ArticleCategory, "categories"),
                        (m.ArticlePractice, "practices")):
@@ -146,12 +165,21 @@ def test_connections_spot_checks(session):
             q = q.where(getattr(m.Connection, k) == v)
         return session.scalars(q).all()
 
-    # Jalapeño x NVDA: positive article tag x negative holding edge.
+    # Jalapeño x NVDA: positive article tag x negative holding edge composes to a
+    # negative connection. The *direction* is the claim; the strength is not
+    # asserted as a literal here. It was `0.3333` until 2026-09-05, which was a
+    # snapshot of v7 classifier output rather than a property of the join — v8
+    # rates the same mechanism medium/medium instead of high/high and it becomes
+    # 0.1111, so the literal turned this into a change-detector for the
+    # classifier, which is the gold/drift suite's job. The arithmetic itself is
+    # covered directly by `weight("medium", "medium") == 1/3` in
+    # tests/test_connect.py, so nothing is lost by dropping it.
     nvda = [c for c in conns("jalapeno-first-results", via="custom_silicon_substitution")
             if c.isin == "US67066G1040"]
     assert len(nvda) == 1
-    assert (nvda[0].direction, nvda[0].strength) == ("negative", 0.3333)
-    assert nvda[0].holding_why and nvda[0].article_quote  # both sides explain themselves
+    assert nvda[0].direction == "negative"
+    assert nvda[0].strength > 0                            # a zero-strength row is never written
+    assert nvda[0].holding_why and nvda[0].article_quote   # both sides explain themselves
 
     # Export directive reaches TeraWulf through the anthropic lab edge.
     wulf = [c for c in conns("fable-mythos-access", route="lab_exposure")
@@ -180,8 +208,8 @@ def test_no_zero_strength_and_no_dormant_labs(session):
 def test_rerun_converges(session):
     before = {t.name: session.scalar(select(func.count()).select_from(t))
               for t in m.Base.metadata.tables.values()}
-    cmd_load(session, "v7")
-    cmd_connect(session, "v7")
+    cmd_load(session, PROMPT_VERSION)
+    cmd_connect(session, PROMPT_VERSION)
     after = {t.name: session.scalar(select(func.count()).select_from(t))
              for t in m.Base.metadata.tables.values()}
     before.pop("pipeline_runs"), after.pop("pipeline_runs")  # runs do accumulate
@@ -210,7 +238,7 @@ class TestFailureLeavesTheDatabaseUsable:
         engine = create_engine("sqlite:///:memory:")
         create_all(engine)
         s = Session(engine)
-        cmd_load(s, "v7")
+        cmd_load(s, PROMPT_VERSION)
         return s
 
     def test_a_failed_reload_keeps_the_previous_good_state(self, monkeypatch):
@@ -225,7 +253,7 @@ class TestFailureLeavesTheDatabaseUsable:
 
         monkeypatch.setattr(cli, "transform", boom)
         with pytest.raises(RuntimeError):
-            cmd_load(s, "v7")
+            cmd_load(s, PROMPT_VERSION)
 
         assert session_counts(s) == before
         s.close()
@@ -236,7 +264,7 @@ class TestFailureLeavesTheDatabaseUsable:
 
         monkeypatch.setattr(cli, "transform", lambda *a, **kw: (_ for _ in ()).throw(ValueError("nope")))
         with pytest.raises(ValueError):
-            cmd_load(s, "v7")
+            cmd_load(s, PROMPT_VERSION)
 
         run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
         assert run.status == "failed" and "nope" in run.error
@@ -247,7 +275,7 @@ class TestFailureLeavesTheDatabaseUsable:
 
     def test_rebuild_and_load_are_distinguishable_in_the_history(self):
         s = self._loaded()
-        cmd_load(s, "v7", kind="rebuild")
+        cmd_load(s, PROMPT_VERSION, kind="rebuild")
         kinds = [r.kind for r in s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id))]
         assert kinds == ["load", "rebuild"]
         s.close()
