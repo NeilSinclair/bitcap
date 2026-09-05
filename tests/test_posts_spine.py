@@ -193,7 +193,7 @@ class TestTheLegIsRegisteredEverywhereItMustBe:
 
 
 class TestNoPostIsAttributedOnTheWeakTier:
-    """D63. The register tells you not to ship on `search_index`; it was.
+    """D64. The register tells you not to ship on `search_index`; it was.
 
     Before this, 73 of 238 posts -- 31% of the corpus, including @sama's 38 and
     @gdb's 27 -- were rendered in the dashboard carrying the tier

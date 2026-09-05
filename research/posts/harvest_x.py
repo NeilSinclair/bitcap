@@ -452,7 +452,7 @@ def main(argv: list[str] | None = None) -> int:
         # Re-derive attribution from the register rather than trusting what was
         # stamped at pull time. `x_evidence` and `role_contested` are facts
         # about the person, not about the fetch, and they change when the
-        # register is corrected -- D63 promoted six handles off `search_index`
+        # register is corrected -- D64 promoted six handles off `search_index`
         # after reading their profiles. Without this, fixing the register would
         # need a repaid pull to reach the dashboard.
         people = {p["handle"].lower(): p for p in register()[0]}

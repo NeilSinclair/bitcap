@@ -669,7 +669,7 @@ def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
     doc = yaml.safe_load(path.read_text()) or {}
     errors = []
     # Kept in step with the header of config/people.yaml, which documents what
-    # each tier means. `api_profile` was added in D63.
+    # each tier means. `api_profile` was added in D64.
     tiers = {"own_site", "self_post", "api_profile", "lab_post", "search_index"}
 
     for lab, entry in (doc.get("labs") or {}).items():

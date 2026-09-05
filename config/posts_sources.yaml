@@ -17,7 +17,7 @@
 # happens.
 #
 # PROVIDER IS NAMED, NOT ASSUMED. Cheaper unofficial mirrors of this data exist
-# and were rejected (docs/decisions.md D62). Naming the provider here means
+# and were rejected (docs/decisions.md D63). Naming the provider here means
 # revisiting that is a config change plus one client module, not surgery.
 
 version: 1
@@ -49,7 +49,7 @@ window_days: 90
 # posts 2..N of a self-thread ARE replies, so a threaded announcement is
 # truncated to its opening post. Reconstructing threads means paying for every
 # conversational reply first to find the few that are self-replies. Recorded as
-# a known limitation in docs/decisions.md D62, not silently accepted.
+# a known limitation in docs/decisions.md D63, not silently accepted.
 #
 # QUOTE-POSTS ARE NOT EXCLUDED BY EITHER and are deliberately kept: X returns
 # them as ordinary posts carrying the author's own commentary. A lab leader

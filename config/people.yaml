@@ -16,7 +16,7 @@
 #
 # X HANDLES: MOSTLY NOT FETCH-VERIFIED. x.com returns HTTP 402 to the plain
 # fetcher, so no profile page was read from the web. Six were read through the
-# X API on 2026-09-05 once the posts leg had a credential (D63) and carry
+# X API on 2026-09-05 once the posts leg had a credential (D64) and carry
 # `api_profile`; the rest are still indirect. Each handle carries `x_evidence`
 # recording how it was established, strongest first:
 #
@@ -24,7 +24,7 @@
 #   self_post     a post from the handle itself, quoted with its status URL,
 #                 in which the person states their own role
 #   api_profile   the account was read directly through the X API and its own
-#                 profile asserts the affiliation. Added 2026-09-05 (D63), when
+#                 profile asserts the affiliation. Added 2026-09-05 (D64), when
 #                 the posts leg made a direct read possible for the first time.
 #                 `supports:` on its source says how far it reaches: a bio
 #                 reading "President & Co-Founder @OpenAI" carries the role, one
@@ -44,7 +44,7 @@
 version: 1
 researched: 2026-09-03
 # The date this file was last ADDED TO, as distinct from the bulk research pass
-# above. 2026-09-05 is the D63 pass that read six profiles through the X API.
+# above. 2026-09-05 is the D64 pass that read six profiles through the X API.
 # Kept separate because bumping `researched` would claim the whole register was
 # re-checked that day, which it was not.
 revised: 2026-09-05
@@ -88,7 +88,7 @@ labs:
             fetched: 2026-09-05
             supports: [role, x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Dario Amodei", verified=true,
               bio: "Anthropic CEO. https://t.co/qXHIf42jTl"
@@ -110,7 +110,7 @@ labs:
             fetched: 2026-09-05
             supports: [role, x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Daniela Amodei", verified=false,
               bio: "President @AnthropicAI. Formerly @OpenAI, @Stripe, congressional staffer, global development"
@@ -343,7 +343,7 @@ labs:
             fetched: 2026-09-05
             supports: [x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Sam Altman", verified=true,
               bio: "The mission of OpenAI to ensure that AGI benefits all of humanity"
@@ -367,7 +367,7 @@ labs:
             fetched: 2026-09-05
             supports: [role, x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Greg Brockman", verified=true,
               bio: "President & Co-Founder @OpenAI"
@@ -398,7 +398,7 @@ labs:
             fetched: 2026-09-05
             supports: [x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Jakub Pachocki", verified=true,
               bio: "OpenAI"
@@ -656,7 +656,7 @@ labs:
             fetched: 2026-09-05
             supports: [role, x_handle]
             note: >
-              Profile read directly through the X API (D63), which the
+              Profile read directly through the X API (D64), which the
               earlier pass could not do -- x.com returned 402. Account
               resolves to "Zhenda Xie", verified=false,
               bio: "Researcher @ DeepSeek AI // Pre-training and Scaling of Foundation Models"
@@ -680,7 +680,7 @@ labs:
             fetched: 2026-09-05
             supports: [x_handle]
             note: >
-              Profile read directly through the X API (D63). Account resolves to
+              Profile read directly through the X API (D64). Account resolves to
               "Daya Guo", verified=false, bio: "AI researcher. Interested in
               reasoning ability of LLMs. The long-term research goal is to
               develop artificial general intelligence. Previously @deepseek_ai"

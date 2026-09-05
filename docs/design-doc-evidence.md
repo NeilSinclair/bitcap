@@ -55,7 +55,7 @@ Structurally new since then, in the order it landed:
   isn't any more.
 
 Not landed, in flight in this working tree as of writing: an **X/posts leg**
-(`research/posts/`, `config/posts_sources.yaml`, D62). Planning §7's open question
+(`research/posts/`, `config/posts_sources.yaml`, D63). Planning §7's open question
 about whether X earns its cost is being answered right now — check its state before
 you write §7 rather than repeating "spike never run".
 

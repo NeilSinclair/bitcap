@@ -116,7 +116,7 @@ class TestEveryClaimIsCited:
         """A citation dated after the file was last touched is a fabrication.
 
         Compared against `revised` where present, not `researched`: the file is
-        added to after the bulk pass (D63 read six profiles through the X API on
+        added to after the bulk pass (D64 read six profiles through the X API on
         2026-09-05), and those sources are legitimately newer. `revised` must
         still be a real date, so the guard cannot be escaped by omitting it.
         """

@@ -598,7 +598,7 @@ read, [pricing](https://docs.x.com/x-api/getting-started/pricing)):
 | | | | **$2.74** |
 
 The probe billed 74 posts rather than the 135 requested, because X bills what
-*returns* — the asymmetry the allocator exploits (D62): asking a silent handle
+*returns* — the asymmetry the allocator exploits (D63): asking a silent handle
 for a full page costs nothing, so the expensive mistake is asking too little of
 a prolific one, never too much of a quiet one.
 

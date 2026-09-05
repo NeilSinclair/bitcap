@@ -24,7 +24,7 @@ body would be stored under a bare URL key. Extending it to carry credentials
 means changing the cache key of every existing entry. The pattern followed
 instead is `research/github/harvest_github.py`, which is already this repo's
 accepted shape for a token-authenticated JSON API. The duplication is real and
-is recorded in docs/decisions.md D62 rather than left to be discovered.
+is recorded in docs/decisions.md D63 rather than left to be discovered.
 
 The polite interval between calls is read from the same `fetch` block of
 config/pipeline.yaml that the HTML fetcher uses, so there is one place where

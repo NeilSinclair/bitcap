@@ -8,12 +8,12 @@ after excluding @elonmusk on volume) into a fourth scored corpus: 90 days of
 original posts, pulled from the official X API, deterministically prefiltered,
 scored under prompt version `t1`, and shown in the dashboard behind the existing
 "Source" filter. It is deliberately **not** in the digest and raises **no**
-content alerts. Full reasoning in `docs/decisions.md` D62.
+content alerts. Full reasoning in `docs/decisions.md` D63.
 
 ## State when this was written (2026-09-05, branch `feature/lab-leadership`)
 
 - 1,481 tests pass, `config/validate.py` reports 0 errors.
-- Evidence tiers in the corpus after D63: 139 `self_post`, 73 `api_profile`,
+- Evidence tiers in the corpus after D64: 139 `self_post`, 73 `api_profile`,
   26 `own_site`, **0 `search_index`**.
 - Corpus: 473 posts pulled, **238 kept**, 235 prefiltered out. Bands under `t1`:
   1 high, 4 medium, 23 low, **210 none**.
@@ -105,7 +105,7 @@ while another agent is running one.
   @deepseek_ai"; the register lists him active. Flagged `role_contested`, not
   moved to `departed` — an unverified profile is a lead, not the dated source a
   departure needs. He posted nothing in the window, so nothing rests on it yet.
-  **Settling this needs a dated report** (D63).
+  **Settling this needs a dated report** (D64).
 - **`@janleike`'s role stays contested.** His bio reads "AI research
   @AnthropicAI", not the alignment-leadership title his own site states, which
   corroborates the CONTESTED note rather than resolving it. Not decided.
@@ -116,6 +116,6 @@ while another agent is running one.
 
 ## Where the evidence lives
 
-`docs/decisions.md` D62 · `docs/cost.md` "X posts leg" · `docs/planning.md` §7
+`docs/decisions.md` D63 · `docs/cost.md` "X posts leg" · `docs/planning.md` §7
 (resolved) · `tests/test_posts_harvest.py` (budget, rate maths, prefilter) ·
 `tests/test_posts_spine.py` (prompt dispatch, digest/alert muting, registry).
