@@ -27,6 +27,7 @@ from sqlalchemy.pool import StaticPool
 from api import ops
 from app import models as m
 from app.db import create_all
+from app.cli import PROMPT_VERSION
 from app.pipeline import drift as drift_mod
 
 NOW = datetime(2026, 9, 3, tzinfo=timezone.utc)
@@ -240,7 +241,10 @@ class TestEndpoints:
         assert "spend" in body and "counts" in body
 
     def test_drift_endpoint(self, client, session):
-        drift_mod.record(session, {"mechanism_f1": 0.94, "compared": 6}, "v7")
+        # The endpoint defaults to the current prompt version, so the snapshot
+        # has to be written at that version rather than a literal that goes
+        # stale on the next bump.
+        drift_mod.record(session, {"mechanism_f1": 0.94, "compared": 6}, PROMPT_VERSION)
         session.commit()
         body = client.get("/api/drift").json()
         assert body[0]["mechanism_f1"] == 0.94

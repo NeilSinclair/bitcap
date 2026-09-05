@@ -11,24 +11,44 @@ version: 1
 # is exactly where it bites, because nobody is watching when it fires.
 #
 # Calibration, from the real cost log (docs/cost.md, raw_costs): the classifier
-# averages ~$0.029 per article, and the full 191-article corpus cost $5.44.
-# A normal incremental run classifies a handful of new articles and costs cents,
-# so `per_run_usd` sits two orders of magnitude above ordinary operation and
-# still stops a loop or a prompt regression within one firing rather than one
-# month. At 5.00 it now also admits a full re-classification of the corpus,
-# which is deliberate: that is a real operation (a prompt version bump) and
-# having it die halfway costs the money without producing the corpus.
+# averages $0.025 per article measured over 583 calls. A normal incremental run
+# classifies a handful of new articles and costs cents, so `per_run_usd` sits
+# orders of magnitude above ordinary operation and still stops a loop or a
+# prompt regression within one firing rather than one month.
+#
+# RAISED 5.00 -> 15.00 (2026-09-04). The old value claimed to admit a full
+# re-classification of the corpus. That stopped being true as the corpus grew:
+# at 250 articles a version bump costs ~$6.25, so the v8 bump (D52) would have
+# aborted mid-stage under 5.00 and left a corpus split across two prompt
+# versions -- the worst outcome, since it spends the money without producing
+# the thing. 15.00 clears a full re-classification with room for the corpus to
+# keep growing, and is still ~200x an ordinary nightly run, so it goes on
+# catching a runaway within one firing.
+#
+# `per_month_usd` governs the slow leak, `per_run_usd` the blast radius of any
+# one firing. See the note on the monthly value below for what it does and does
+# not protect.
 #
 # The ceiling is denominated in USD because the provider bills in USD and the
-# cost log records what was charged (docs/cost.md). 5.00 is the conservative
-# reading of a EUR 5 ceiling -- it can only ever stop a run sooner.
+# cost log records what was charged (docs/cost.md).
 budget:
-  per_run_usd: 5.00
+  per_run_usd: 15.00
   # Raised from 20.00 when drift went to the full 20-item gold set (D35): that
   # check is uncached by design and fires every run, so it is ~$0.75 nightly
   # (~$22/mo) on its own and would have crowded out classification -- the stage
   # that actually produces the product -- under the old ceiling.
-  per_month_usd: 75.00
+  #
+  # RAISED 75.00 -> 250.00 (2026-09-04), and this one is a deliberate change of
+  # KIND, not degree. Be honest about what it now is: 250 USD is more than
+  # double the EUR 100 project budget it was originally sized against, so it no
+  # longer protects that budget. It is a runaway guard only -- it stops a loop
+  # or a retry storm, it does not stop deliberate spending from exceeding what
+  # can be reimbursed.
+  #
+  # The budget control that remains is a person reading docs/cost.md. That is a
+  # weaker control than a number in a config file and is written down here so
+  # nobody later reads 250.00 and assumes it was calibrated to something.
+  per_month_usd: 250.00
   # abort_llm_stage: stop making calls, but keep everything already ingested and
   # let the ETL finish. The alternative (fail the whole run) would throw away
   # fetches that already happened and, worse, cost money to redo.

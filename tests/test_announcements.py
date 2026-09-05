@@ -7,6 +7,7 @@ that places an old release inside the window.
 """
 
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -882,6 +883,31 @@ class TestConfigIntegrity:
         cats = yaml.safe_load((ROOT / "config" / "categories.yaml").read_text())
         crypto = next(c for c in cats["categories"] if c["id"] == "crypto")
         assert crypto["lab_signal_routable"] is False
+
+    def test_prompt_describes_every_text_source_we_emit(self):
+        """A text_source the fetcher emits but the prompt never names.
+
+        This is the bug that scored GPT-6 Astra 50 for the AI team: the
+        model_index channel introduced `model_spec` and nobody told the prompt
+        what it was, so the classifier had no calibration and hedged its
+        confidence to medium. Silent -- the run succeeded, the score was just
+        quietly wrong. Any new channel that invents a text_source now fails
+        here instead.
+        """
+        from score_announcements import PROMPT
+
+        emitted = set()
+        for path in ("fetch_announcements.py", "backfill_openai.py"):
+            src = (ROOT / "research" / "announcements" / path).read_text()
+            emitted |= set(re.findall(r'"text_source"\]?\s*[:=]\s*"([a-z_]+)"', src))
+        cfg = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
+        emitted |= {lab["text_source"] for lab in cfg["labs"] if "text_source" in lab}
+        assert emitted, "found no text_source values to check"
+
+        block = PROMPT.read_text().split("## What you are reading", 1)[1]
+        block = block.split("## Mechanisms", 1)[0]
+        described = set(re.findall(r"^- `([a-z_]+)`", block, re.M))
+        assert emitted <= described, f"undescribed in prompt: {emitted - described}"
 
     def test_sources_declare_a_known_method(self):
         cfg = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
