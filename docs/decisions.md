@@ -5669,3 +5669,112 @@ proportional, exactly as on the announcements side.
 Still open: the set is not yet wired into `drift.measure`, so this is a one-off
 measurement rather than a metric that would catch the scorer degrading next
 month. That gap is real and is the next thing to close.
+
+**Closed in D58, by decision rather than by code**: the set was measured once,
+the classifier shipped, and the recurring check rejected because four mechanism
+tags cannot separate drift from jitter.
+
+## D58 — The papers classifier ships without a nightly drift check (2026-09-05)
+
+**Closes the gap D57 left open**, and not by filling it. D57 ended saying the
+paper gold set was not wired into `drift.measure` and that "that gap is real and
+is the next thing to close". It is closed here by measuring once and deciding
+the recurring check is not worth building, rather than by building it.
+
+### The measurement
+
+Ten gold papers, classified fresh under `p1` against `claude-sonnet-5`,
+**bypassing the result cache** — a check read through the cache reports perfect
+agreement forever, which is the failure mode that looks exactly like success.
+$0.1538. Run and metrics committed at
+`research/test_results/paper_gold_20260905T000000Z_p1.json`; re-derivable
+without paying via `grade_paper_gold.py --report`.
+
+```
+EVENT TYPE     9/10 = 90%       Cohen's kappa +0.787
+
+axis          ref  run  hit  microF1  macroF1  identical
+mechanisms      4    3    3     0.86     0.97      9/10
+categories      0    0    0        –     1.00     10/10
+practices       9   13    8     0.73     0.77      5/10
+
+investment    MAE  3.3    zero-vs-nonzero 10/10    both zero 7   identical 9/10
+AI-team       MAE 12.8    zero-vs-nonzero  9/10                  identical 3/10
+
+CITATION GATE  16 tags survived, 1 dropped for an unverifiable quote
+```
+
+**The noise filter holds, which is the result that mattered.** All seven papers
+whose correct investment score is zero scored zero — every DeepMind
+safety/social paper, both interpretability papers, both component papers.
+Investment MAE is 3.3 points on a 0–100 scale. The failure this leg was built to
+avoid — a study of how people perceive AI consciousness finding transmission and
+burying the technical reports — is not happening.
+
+### Decision: ship `p1` as it stands; no recurring drift check for papers
+
+**Rejected: a nightly paper drift check.** The gold set carries **4 mechanism
+tags**. D35 already rejected a six-item sample carrying **10** on exactly this
+ground — *"a single tag missed or gained moves micro-F1 by ~0.05 and a floor set
+at 0.80 sits well inside the noise"*. Four tags moves it by ~0.15 per tag, three
+times worse than the sample that was thrown out. The alert would fire on jitter,
+and a false alarm a week is how a system-alert channel gets muted — which costs
+more than the check is worth, because the announcements drift check shares it.
+
+**And labelling more would not rescue it.** The whole 47-paper corpus carries 27
+mechanism tags across 33 papers with none. Extending the gold set to 20 buys
+~8 mechanism tags, still below D35's bar. Papers are mechanism-sparse; that is a
+true fact about research papers, not a sampling defect, and no labelling budget
+changes it.
+
+**Rejected: a blended announcements + papers agreement score.** Announcements
+are `v9` and papers are `p1`. `drift.history()` already refuses to mix versions
+— *"comparing across versions is comparing two different questions"* — and
+`alerts._drift_scope` already keys the alert on `prompt_version` with the same
+reasoning. A blended figure also moves when the *mix* changes rather than when
+the classifier does, which breaks the fixed-sample guarantee that is drift's
+whole design premise.
+
+**Rejected: mechanism micro-F1 as the paper headline.** `gold_metrics.axis`
+computes micro-F1 from summed hits and tag counts, so an empty-vs-empty pair
+contributes to neither numerator nor denominator. Seven of ten gold papers are
+exactly that pair. The metric would grade the three papers we are least worried
+about and be blind to the seven the corpus exists to pin. `metrics()` reports
+`investment.zero_agreement` as the headline instead, and
+`tests/test_paper_gold_grading.py` pins the reason so the headline is not
+"fixed" back to mechanisms without meeting it.
+
+### The disagreements, named rather than averaged away
+
+**DeepSeek-Coder-V2 (09): gold `frontier_model_release`, run `open_weights`.**
+The sole event-type miss, and the classifier is arguably right — the paper is
+*"Breaking the Barrier of Closed-Source Models in Code Intelligence"*, an
+open-weights release. Both types carry **weight 5** in `config/scoring.yaml`, so
+this costs nothing in score. The 33.3 → 66.7 gap on that paper comes from one
+magnitude step on `memory_intensity_up` (low → medium), not from the event type.
+Recorded as a probable gold-label defect, not classifier error.
+
+**Practices over-tag: 13 run against 9 reference, precision 0.62, recall 0.89.**
+The real looseness in this run, and it errs toward `watch` — the least damaging
+direction, since `watch` carries the lowest action weight. The one AI-team sign
+disagreement is paper 07, 0.0 → 5.6, a single low-impact `watch` tag on an
+interpretability paper.
+
+### Provenance, stated because it changes what the numbers mean
+
+The labels are Fable 5's, produced blind from the same abstracts. Every figure
+here is **cross-model agreement, not accuracy**: 90% event-type agreement means
+two models reading the same text mostly concur. The announcements set is no
+better on this axis — it is Sonnet-5-classifier against Opus-5-adjudicator, and
+`gold_human/` was deleted on 2026-09-01. Both are the defensible proxies the
+brief permits; neither is ground truth, and `load_gold` raises on a file missing
+`gold.labelled_by` so a set whose provenance nobody recorded cannot reach a
+metric.
+
+### Consequence
+
+Paper scoring has 53 unit tests, this baseline, and **no ongoing degradation
+signal**. That is a real hole and it is accepted knowingly: if `p1` or
+`classification.model` changes, re-run `research/papers/grade_paper_gold.py` and
+compare against the table above. The trigger is a code change, not a calendar —
+which is honest about what the check can actually detect at this sample size.

@@ -62,3 +62,17 @@ error analysis — which documents the scorer and the labeller disagree on, and
 why. It does **not** support corpus-level precision and recall, for the same
 reason the announcements sample does not: the strata are not drawn in
 proportion to the corpus.
+
+## What it has been used for
+
+Graded once, 2026-09-05, against `p1`/`claude-sonnet-5`:
+`research/papers/grade_paper_gold.py`. 90% event-type agreement, kappa +0.787,
+investment MAE 3.3, and all seven correct zeros held. Full numbers and the two
+disagreements worth reading are in [docs/decisions.md](../../../docs/decisions.md)
+D58; the run is committed at
+`research/test_results/paper_gold_20260905T000000Z_p1.json`.
+
+**Not a nightly check, deliberately.** D58 rejected wiring this into
+`drift.measure`: the set carries four mechanism tags, and D35 already rejected a
+sample carrying ten as unable to separate drift from its own sampling error.
+Re-run the grader when `p1` or the classification model changes.

@@ -530,3 +530,24 @@ spend. They are counted in the project total.
 **Running total across all workflows: ~$18.05.** Month-to-date in `raw_costs`
 stands at $29.29 against the `per_month_usd: 250.00` runaway guard, which as
 recorded on 2026-09-04 no longer binds below the €100 project budget.
+
+### Paper gold baseline (2026-09-05)
+
+`research/papers/grade_paper_gold.py`, 10 gold papers under `p1`,
+`claude-sonnet-5`, **uncached by design** — a grading run read through the
+result cache reports perfect agreement forever.
+
+| | |
+|---|---|
+| papers graded | 10 of 10, 0 errors |
+| **cost** | **$0.1538** (~$0.015/paper) |
+| result | `research/test_results/paper_gold_20260905T000000Z_p1.json` |
+
+Not pipeline spend and not in `raw_costs`: this is an eval call against a
+standalone script, the same convention as the v8 and `p1` probes above, and it
+is counted in the project total. **A one-off, not a nightly charge** — D58
+rejected the recurring drift check, so this is billed when `p1` or the
+classification model changes, not on a cadence. Had it run nightly it would have
+been ~$4.60/month on top of the announcement check's ~$22.
+
+**Running total across all workflows: ~$18.20.**

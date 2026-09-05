@@ -125,11 +125,15 @@ the existing vocabulary rather than adding to it.
 
 ## 5. Known-open
 
-- **The gold set is not wired into `drift.measure`.** `drift` grades
-  announcements only, so paper scoring has 53 unit tests but **no ongoing
-  agreement metric**. This is the one gap named in D57 and in the PR body, and
-  it is the largest remaining risk on this leg, because silent degradation is
-  the stated main risk of the whole pipeline.
+- **No ongoing agreement metric, by decision (D58).** `drift` grades
+  announcements only. Papers were measured once instead — 90% event-type
+  agreement, kappa +0.787, and all 7 correct zeros held — and the recurring
+  check was rejected: 4 mechanism tags cannot separate drift from jitter, and
+  D35 already threw out a sample carrying 10 on that ground. Re-run
+  `research/papers/grade_paper_gold.py` when `p1` or `classification.model`
+  changes and compare against the D58 table. The trigger is a code change, not
+  a calendar. **This is still a real hole** — it is accepted knowingly rather
+  than closed.
 - **Neither gold set is human ground truth.** The papers set was labelled by
   Fable 5, blind, in a subagent; the announcements set is cross-model
   adjudication (Sonnet 5 classifier, Opus 5 adjudicator) — `gold_human/` was
@@ -153,3 +157,4 @@ the existing vocabulary rather than adding to it.
 | what it surfaced | [`insights.md`](insights.md) |
 | gold-set provenance | [`research/papers/test/README.md`](../research/papers/test/README.md) |
 | the committed corpus | `research/docs/papers_corpus.json`, `research/docs/scored_papers_p1.json` |
+| the graded baseline | `research/test_results/paper_gold_20260905T000000Z_p1.json` (D58) |
