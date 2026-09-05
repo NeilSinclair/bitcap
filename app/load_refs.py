@@ -63,6 +63,12 @@ def load_refs(session: Session, config_dir: Path = CONFIG, check: bool = True) -
     # it and the caller rebuilds it (cli.cmd_load chains transform + connect).
     # Raw tables are untouched: they are the history.
     for table in (m.Connection, m.ArticleMechanism, m.ArticleCategory,
+                  # ArticleGroup and ArticleLink are derived silver like the
+                  # rest of this list, and both carry a plain foreign key to
+                  # `articles` with no cascade -- so omitting them here does not
+                  # leave stale rows, it makes `DELETE FROM articles` raise and
+                  # takes `bitcap-db load` down entirely.
+                  m.ArticleGroup, m.ArticleLink,
                   m.ArticlePractice, m.Classification, m.Article,
                   m.HoldingCategory, m.HoldingMechanism, m.HoldingLabExposure,
                   m.Holding, m.RefLab, m.RefMechanism, m.RefCategory,

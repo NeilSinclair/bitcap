@@ -479,6 +479,7 @@ function Dashboard() {
                 <option value="announcement">Announcements</option>
                 <option value="paper">Papers</option>
                 <option value="release">Releases</option>
+                <option value="post">Posts</option>
               </select>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -580,6 +581,23 @@ function Dashboard() {
                         feed to distinguish the majority case from itself. */}
                     {item.docType !== "announcement" && (
                       <span className="tag-pill" style={{ color: "var(--muted-2)" }}>{item.docType}</span>
+                    )}
+                    {/* Posts are one person speaking, not the lab, so the card
+                        names the author and how firmly the handle is tied to
+                        them. config/people.yaml grades that as own_site /
+                        self_post / lab_post / search_index and calls the last
+                        "a lead, not a fact"; a contested role is flagged
+                        outright rather than rendered as settled. */}
+                    {item.author?.authorHandle && (
+                      <span className="tag-pill" style={{ color: "var(--muted-2)" }}>
+                        @{item.author.authorHandle}
+                        {item.author.evidence ? ` · ${item.author.evidence}` : ""}
+                      </span>
+                    )}
+                    {item.author?.roleContested && (
+                      <span className="tag-pill" style={{ color: "var(--accent)" }} title="config/people.yaml records this person's role as disputed between sources">
+                        role contested
+                      </span>
                     )}
                     <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
                   </div>

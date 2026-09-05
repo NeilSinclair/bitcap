@@ -14,14 +14,17 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION, cmd_connect, cmd_load
+from app.cli import (PAPER_PROMPT_VERSION, POST_PROMPT_VERSION, PROMPT_VERSION,
+                     cmd_connect, cmd_load)
 from app.db import create_all
 
 ROOT = Path(__file__).parent.parent
 REGISTER = ROOT / "research" / "docs" / f"scored_announcements_{PROMPT_VERSION}.json"
 PAPER_REGISTER = ROOT / "research" / "docs" / f"scored_papers_{PAPER_PROMPT_VERSION}.json"
+POST_REGISTER = ROOT / "research" / "docs" / f"scored_posts_{POST_PROMPT_VERSION}.json"
 CORPUS = ROOT / "research" / "docs" / "announcements.json"
 PAPERS_CORPUS_FILE = ROOT / "research" / "docs" / "papers_corpus.json"
+POSTS_CORPUS_FILE = ROOT / "research" / "docs" / "posts_corpus.json"
 
 
 def paper_register_rows() -> list[dict]:
@@ -29,6 +32,13 @@ def paper_register_rows() -> list[dict]:
     if not PAPER_REGISTER.exists():
         return []
     return json.loads(PAPER_REGISTER.read_text()).get("scored", [])
+
+
+def post_register_rows() -> list[dict]:
+    """The scored posts register. Empty if the leg has not been run here."""
+    if not POST_REGISTER.exists():
+        return []
+    return json.loads(POST_REGISTER.read_text()).get("scored", [])
 
 
 def register_rows() -> list[dict]:
@@ -59,11 +69,13 @@ def corpus_size() -> int:
     asserting is that everything in the corpus loads and everything loaded is
     classified, not what the corpus happens to contain this week.
 
-    Both corpora, since `rebuild` loads both: announcements and the committed
-    papers corpus land in the same `articles` table under different
-    `source_file` values.
+    All three committed corpora, since `rebuild` loads all three: announcements,
+    the papers corpus and the posts corpus land in the same `articles` table
+    under different `source_file` values.
     """
-    return len(json.loads(CORPUS.read_text())) + len(json.loads(PAPERS_CORPUS_FILE.read_text()))
+    return (len(json.loads(CORPUS.read_text()))
+            + len(json.loads(PAPERS_CORPUS_FILE.read_text()))
+            + len(json.loads(POSTS_CORPUS_FILE.read_text())))
 
 
 @pytest.fixture(scope="module")
@@ -164,7 +176,7 @@ def test_tag_rows_match_register_totals(session):
     loaded_urls = set(session.scalars(select(m.Article.url)))
     # Both registers: the tag tables are shared, so summing only the
     # announcement register would report every paper's tags as unexpected.
-    register = [r for r in register_rows() + paper_register_rows()
+    register = [r for r in register_rows() + paper_register_rows() + post_register_rows()
                 if r["url"] in loaded_urls]
     for table, key in ((m.ArticleMechanism, "mechanisms"),
                        (m.ArticleCategory, "categories"),
@@ -285,8 +297,9 @@ class TestFailureLeavesTheDatabaseUsable:
         run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
         assert run.status == "failed" and "nope" in run.error
         # Not `{}`: an operator must be able to see which stage died.
-        assert set(run.stats) == {"refs", "articles", "paper_corpus", "classifications",
-                              "paper_classifications", "costs", "repo_verdicts"}
+        assert set(run.stats) == {"refs", "articles", "paper_corpus", "posts_corpus",
+                              "classifications", "paper_classifications",
+                              "post_classifications", "costs", "repo_verdicts"}
         assert "transform" not in run.stats
         s.close()
 

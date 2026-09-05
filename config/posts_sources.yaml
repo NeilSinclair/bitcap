@@ -1,0 +1,113 @@
+# X posts from the senior people already listed in config/people.yaml.
+#
+# The register tracks labs; config/people.yaml records who speaks for them. This
+# file is what turns that list into a corpus: which handles to read, over what
+# window, and -- the part that matters most here -- how much may be spent doing
+# it.
+#
+# Adding or dropping a handle is a config change. The handles themselves are NOT
+# repeated here: they come from config/people.yaml, so there is one list of who
+# works where and it cannot drift against a second copy.
+#
+# WHY THE SPEND KNOBS ARE THIS EXPLICIT. X bills per post returned, so the cost
+# of this leg is set by how many posts we ask for and nothing else. Every ceiling
+# below is enforced in code (research/posts/x_client.py) rather than being
+# advisory, because "cost runaway" is a named failure mode in .claude/CLAUDE.md
+# and an unbounded pagination loop over a prolific account is exactly how it
+# happens.
+#
+# PROVIDER IS NAMED, NOT ASSUMED. Cheaper unofficial mirrors of this data exist
+# and were rejected (docs/decisions.md D63). Naming the provider here means
+# revisiting that is a config change plus one client module, not surgery.
+
+version: 1
+
+provider:
+  name: x_api
+  base_url: https://api.x.com/2
+  # Read by name from the environment or repo-root .env; never stored here.
+  token_env: X_BEARER_TOKEN
+  # Published rates, https://docs.x.com/x-api/getting-started/pricing,
+  # fetched 2026-09-05. Used to project spend BEFORE calling, so a run that
+  # would breach the ceiling refuses rather than discovering it afterwards.
+  price_per_post_usd: 0.005
+  price_per_user_usd: 0.010
+
+# How far back to read. Ninety days is the whole point of the leg's cost
+# profile: `start_time` is applied server-side, so a shorter window is a smaller
+# bill rather than a post-hoc filter.
+window_days: 90
+
+# Applied server-side by GET /2/users/:id/tweets.
+#
+# `retweets` -- a bare repost carries no text of its own. There is nothing to
+# quote and nothing to attribute, and the citation would resolve to someone
+# else's post.
+#
+# `replies` -- conversational chaff, and for the prolific handles it is several
+# times the volume of originals. The honest cost of excluding it server-side:
+# posts 2..N of a self-thread ARE replies, so a threaded announcement is
+# truncated to its opening post. Reconstructing threads means paying for every
+# conversational reply first to find the few that are self-replies. Recorded as
+# a known limitation in docs/decisions.md D63, not silently accepted.
+#
+# QUOTE-POSTS ARE NOT EXCLUDED BY EITHER and are deliberately kept: X returns
+# them as ordinary posts carrying the author's own commentary. A lab leader
+# amplifying an employee's result with a sentence of their own is signal.
+exclude:
+  - replies
+  - retweets
+
+# Handles in config/people.yaml that this leg does not read, and why. A handle
+# is listed here rather than deleted from the register, because "we chose not to
+# read this" and "we do not know this person exists" must not look the same.
+exclude_handles:
+  elonmusk: >
+    Volume, not judgement. At roughly 50-100 posts a day this one account would
+    return more posts than the other 27 combined and consume the entire credit
+    balance at the worst signal-to-noise ratio in the set. docs/decisions.md D30
+    also records that xAI's people leg mostly reports an absence: the founding
+    research bench is gone, so the lab is thin here regardless. Revisit if the
+    balance grows or if xAI rebuilds a public research presence.
+
+budget:
+  # HARD CEILING on posts billed in one run, enforced in x_client.Spend. At
+  # $0.005 each this is the credit balance, and it binds no matter what the
+  # allocator below computes.
+  max_posts_total: 900
+  # Ceiling on user-lookup resources in one run. 28 handles plus headroom.
+  max_user_lookups: 40
+
+probe:
+  # The cheapest possible rate measurement: `max_results` has a floor of 5, so
+  # five posts per handle is the smallest question X will answer. The timestamp
+  # of the OLDEST of those five gives the posting rate, which is what sets the
+  # caps below. Measuring costs ~$0.68 and replaces a guess that was wrong three
+  # times in four when made by hand.
+  size: 5
+
+allocation:
+  # Computed from the probe, deterministically, so the same probe file always
+  # yields the same caps and the run is reproducible from committed artifacts.
+  #
+  # A handle projected to post at or below `take_whole_below` in the window is
+  # read in full: quiet accounts are nearly free, and full coverage of them is
+  # signal we would otherwise pay to discover twice. What remains of the budget
+  # is split evenly across the prolific handles, bounded by the floor and
+  # ceiling so no single account can starve the rest.
+  take_whole_below: 25
+  per_handle_floor: 20
+  per_handle_ceiling: 100
+
+prefilter:
+  # Deterministic drops applied BEFORE any LLM call. Per-item classification
+  # costs about the same whether the item is 280 characters or 4,000 -- a ~3k
+  # token prompt dwarfs a post -- so classifying everything would cost more than
+  # retrieving it. These rules are the cheap half of the noise filter; the
+  # prompt is the expensive half and only sees what survives here.
+  #
+  # Measured against the post text with URLs, @mentions and emoji stripped, so
+  # "congrats @someone 🎉 https://t.co/x" is 8 characters, not 48.
+  min_chars: 100
+  # A post whose entire content is a link is a pointer, not a statement.
+  drop_link_only: true

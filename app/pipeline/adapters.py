@@ -34,7 +34,7 @@ DOCS = RESEARCH / "docs"
 # The harvesters import each other by bare module name (`from llm_byline import
 # ...`), which is how they are run — as scripts, from their own directory. The
 # tests already do this; see any tests/test_*_harvest.py.
-for _leg in ("announcements", "papers", "github"):
+for _leg in ("announcements", "papers", "github", "posts"):
     _path = str(RESEARCH / _leg)
     if _path not in sys.path:
         sys.path.insert(0, _path)
@@ -878,11 +878,82 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
     return FetchResult(items=items, watermark=watermark)
 
 
+def fetch_posts(source, state=None, session=None) -> FetchResult:
+    """Read the window's posts from the handles in config/people.yaml.
+
+    Reuses the committed handle resolution rather than re-verifying every
+    firing: `research/docs/x_handles.json` maps handle -> numeric id, and those
+    ids do not change when a display name does. Re-running stage 0 on a cadence
+    would bill a user lookup per handle to learn nothing, so it stays a manual
+    step (`harvest_x.py verify`) taken when the register changes. The per-handle
+    caps come from the committed rate probe for the same reason: both files are
+    artifacts of a measurement that cost money.
+
+    Args:
+        source: The posts Source, carrying the parsed posts_sources.yaml.
+        state: Unused; the window is a fixed lookback, not a cursor.
+        session: Open session, read-only, used to mark a post whose links point
+            at coverage the register already holds.
+
+    Returns:
+        FetchResult whose `items` are article-shaped post records and whose
+        `unresolved` names every handle that could not be read.
+
+    Raises:
+        RuntimeError: If the handle resolution or the rate probe has never been
+            run. An empty corpus and an unconfigured leg must not look alike.
+    """
+    import json
+
+    import harvest_x
+    import prefilter
+    import x_client
+
+    config = source.config
+    if not harvest_x.HANDLES_OUT.exists():
+        raise RuntimeError(
+            f"{harvest_x.HANDLES_OUT} is missing: run `harvest_x.py verify` once "
+            "to resolve handles before this leg can run")
+    if not harvest_x.PROBE_OUT.exists():
+        raise RuntimeError(
+            f"{harvest_x.PROBE_OUT} is missing: run `harvest_x.py probe` once, so "
+            "per-handle page sizes come from a measurement rather than a guess")
+
+    resolved = json.loads(harvest_x.HANDLES_OUT.read_text())["resolved"]
+    caps = json.loads(harvest_x.PROBE_OUT.read_text())["caps"]
+
+    budget = config["budget"]
+    spend = x_client.Spend(budget["max_posts_total"], budget["max_user_lookups"],
+                           config["provider"]["price_per_post_usd"],
+                           config["provider"]["price_per_user_usd"])
+    records, unresolved = harvest_x.pull(
+        resolved, caps, x_client.load_token(config["provider"]["token_env"]),
+        spend, config, base_url=config["provider"]["base_url"])
+
+    known = set()
+    if session is not None:
+        known = {u.rstrip("/") for (u,) in session.execute(select(m.RawArticle.url))}
+    kept, dropped = prefilter.apply(records, config["prefilter"], known)
+    # Prefiltered posts are recorded, not discarded: "we filtered this" and "we
+    # never saw this" must not look the same to whoever reads the leg later.
+    unresolved.extend({"url": d["url"], "lab": d["lab"], "kind": "post",
+                       "reason": f"prefiltered: {d['dropped']}"} for d in dropped)
+
+    newest = max((r["date"] for r in kept), default=None)
+    return FetchResult(
+        items=kept,
+        watermark={"max_published": newest} if newest else {},
+        unresolved=unresolved,
+        cost_usd=spend.usd,
+    )
+
+
 ADAPTERS = {
     "announcements": fetch_announcements,
     "papers": fetch_papers,
     "github": fetch_github,
     "releases": fetch_releases,
+    "posts": fetch_posts,
 }
 
 

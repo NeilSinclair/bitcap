@@ -14,13 +14,21 @@
 # the seven labs have churned hard through 2025-2026, and a name remembered in
 # the right seat is the single easiest way to publish a wrong attribution.
 #
-# X HANDLES ARE NOT FETCH-VERIFIED. x.com returns HTTP 402 Payment Required to
-# the fetcher, so no profile page here was read directly. Each handle instead
-# carries `x_evidence` recording how it was established, strongest first:
+# X HANDLES: MOSTLY NOT FETCH-VERIFIED. x.com returns HTTP 402 to the plain
+# fetcher, so no profile page was read from the web. Six were read through the
+# X API on 2026-09-05 once the posts leg had a credential (D64) and carry
+# `api_profile`; the rest are still indirect. Each handle carries `x_evidence`
+# recording how it was established, strongest first:
 #
 #   own_site      the person's own website or newsletter links the handle
 #   self_post     a post from the handle itself, quoted with its status URL,
 #                 in which the person states their own role
+#   api_profile   the account was read directly through the X API and its own
+#                 profile asserts the affiliation. Added 2026-09-05 (D64), when
+#                 the posts leg made a direct read possible for the first time.
+#                 `supports:` on its source says how far it reaches: a bio
+#                 reading "President & Co-Founder @OpenAI" carries the role, one
+#                 reading "OpenAI" carries only the handle.
 #   lab_post      the lab's official account names the person and the handle
 #   search_index  the profile URL appears in search results and nowhere better
 #
@@ -35,6 +43,11 @@
 
 version: 1
 researched: 2026-09-03
+# The date this file was last ADDED TO, as distinct from the bulk research pass
+# above. 2026-09-05 is the D64 pass that read six profiles through the X API.
+# Kept separate because bumping `researched` would claim the whole register was
+# re-checked that day, which it was not.
+revised: 2026-09-05
 fetcher_notes: >
   Unreachable to this fetcher on the research date: x.com (402), cnbc.com (403),
   axios.com (403), bloomberg.com and reuters.com. Where a story was only
@@ -51,7 +64,7 @@ labs:
         role: Co-founder and CEO
         x_handle: DarioAmodei
         x_url: https://x.com/DarioAmodei
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: https://darioamodei.com/
         sources:
           - url: https://darioamodei.com/
@@ -70,12 +83,21 @@ labs:
               Anthropic's own account calling him "our CEO Dario Amodei" and
               pointing at his latest essay. Confirms the person and the essay
               channel; does not itself name the handle.
+          - url: https://x.com/DarioAmodei
+            published: null
+            fetched: 2026-09-05
+            supports: [role, x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Dario Amodei", verified=true,
+              bio: "Anthropic CEO. https://t.co/qXHIf42jTl"
 
       - name: Daniela Amodei
         role: Co-founder and President
         x_handle: DanielaAmodei
         x_url: https://x.com/DanielaAmodei
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: null
         sources:
           - url: https://www.anthropic.com/news/rahul-patil-joins-anthropic
@@ -83,6 +105,15 @@ labs:
             fetched: 2026-09-03
             supports: [role]
             note: Quoted on the lab's own site in her capacity as President.
+          - url: https://x.com/DanielaAmodei
+            published: null
+            fetched: 2026-09-05
+            supports: [role, x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Daniela Amodei", verified=false,
+              bio: "President @AnthropicAI. Formerly @OpenAI, @Stripe, congressional staffer, global development"
 
       - name: Jared Kaplan
         role: Co-founder and Chief Science Officer
@@ -289,7 +320,7 @@ labs:
         role: Chief Executive Officer
         x_handle: sama
         x_url: https://x.com/sama
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: https://blog.samaltman.com/
         sources:
           - url: https://blog.samaltman.com/
@@ -307,12 +338,21 @@ labs:
             note: >
               Post from the handle: "i'll remain ceo of openai" -- announcing
               Fidji Simo's hire as CEO of Applications.
+          - url: https://x.com/sama
+            published: null
+            fetched: 2026-09-05
+            supports: [x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Sam Altman", verified=true,
+              bio: "The mission of OpenAI to ensure that AGI benefits all of humanity"
 
       - name: Greg Brockman
         role: Co-founder and President
         x_handle: gdb
         x_url: https://x.com/gdb
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: null
         sources:
           - url: https://x.com/WSJTech/status/2060512811311087719
@@ -322,12 +362,21 @@ labs:
             note: >
               WSJ Tech's account: "OpenAI co-founder and president Greg
               Brockman". Secondary; the WSJ article itself is not fetchable.
+          - url: https://x.com/gdb
+            published: null
+            fetched: 2026-09-05
+            supports: [role, x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Greg Brockman", verified=true,
+              bio: "President & Co-Founder @OpenAI"
 
       - name: Jakub Pachocki
         role: Chief Scientist
         x_handle: merettm
         x_url: https://x.com/merettm
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: null
         sources:
           - url: https://www.technologyreview.com/2025/07/31/1120885/the-two-people-shaping-the-future-of-openais-research/
@@ -344,6 +393,15 @@ labs:
             note: >
               Mark Chen: "honored to lead research at @OpenAI alongside
               @merettm" -- a colleague naming the handle.
+          - url: https://x.com/merettm
+            published: null
+            fetched: 2026-09-05
+            supports: [x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Jakub Pachocki", verified=true,
+              bio: "OpenAI"
 
       - name: Mark Chen
         role: Chief Research Officer
@@ -398,6 +456,7 @@ labs:
         note: >
           Stepped down from the number-two role citing a chronic illness after
           three months' medical leave. Do not render as a current OpenAI voice.
+
       - name: Jerry Tworek
         was: Vice President of Research
         left: 2026-01-05
@@ -533,16 +592,19 @@ labs:
         left: 2026-08-05
         now: CEO, Discovery Loop
         source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+
       - name: Oriol Vinyals
         was: Senior Research Scientist, Google DeepMind
         left: 2026-08-05
         now: Co-founder, Discovery Loop
         source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+
       - name: Quoc Le
         was: AI researcher, founding member of Google Brain
         left: 2026-08-05
         now: Co-founder, Discovery Loop
         source: https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/
+
       - name: Sanjay Ghemawat
         was: Senior Fellow, Google
         left: 2026-08-05
@@ -579,7 +641,7 @@ labs:
         role: Researcher; pretraining and scaling. Co-led the 2026 mHC paper
         x_handle: zdaxie
         x_url: https://x.com/zdaxie
-        x_evidence: search_index
+        x_evidence: api_profile
         blog: null
         sources:
           - url: https://www.scmp.com/tech/big-tech/article/3338427/deepseek-kicks-2026-paper-signalling-push-train-bigger-models-less
@@ -589,6 +651,15 @@ labs:
             note: >
               Named as one of three researchers leading the mHC
               (Manifold-Constrained Hyper-Connections) paper.
+          - url: https://x.com/zdaxie
+            published: null
+            fetched: 2026-09-05
+            supports: [role, x_handle]
+            note: >
+              Profile read directly through the X API (D64), which the
+              earlier pass could not do -- x.com returned 402. Account
+              resolves to "Zhenda Xie", verified=false,
+              bio: "Researcher @ DeepSeek AI // Pre-training and Scaling of Foundation Models"
 
       - name: Daya Guo
         role: Researcher; reasoning. First author of DeepSeek-R1
@@ -604,6 +675,24 @@ labs:
             note: >
               DeepSeek-R1 paper; he is its first author. The arXiv record is
               the resolvable primary citation.
+          - url: https://x.com/Guodaya
+            published: null
+            fetched: 2026-09-05
+            supports: [x_handle]
+            note: >
+              Profile read directly through the X API (D64). Account resolves to
+              "Daya Guo", verified=false, bio: "AI researcher. Interested in
+              reasoning ability of LLMs. The long-term research goal is to
+              develop artificial general intelligence. Previously @deepseek_ai"
+        role_contested: true
+        notes: >
+          CONTESTED, AND IN THE DIRECTION THIS FILE EXISTS TO CATCH. His own X
+          bio says "Previously @deepseek_ai" while he is listed here as active.
+          Not moved to `departed`: an unverified profile is a lead, not the
+          dated source a departure needs, and the DeepSeek-R1 authorship is
+          solid. But he must not be rendered as a current voice of DeepSeek
+          until this is settled. He posted nothing in the 90-day window, so no
+          attribution currently depends on it.
     departed: []
     notes: >
       DeepSeek is the weakest lab in this file and the gap is real, not

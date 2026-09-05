@@ -583,6 +583,40 @@ been ~$4.60/month on top of the announcement check's ~$22.
 
 **Running total across all workflows: ~$18.20.**
 
+
+---
+
+### X posts leg — first full run (2026-09-05)
+
+Two separate bills: X charges for the data, Anthropic for classifying it.
+
+**X API**, pay-per-use at the published rates ($0.005/post read, $0.010/user
+read, [pricing](https://docs.x.com/x-api/getting-started/pricing)):
+
+| stage | requests | resources billed | cost |
+|---|---:|---:|---:|
+| resolve + verify 27 handles | 1 | 27 users | $0.27 |
+| rate probe (`max_results=5`) | 27 | 74 posts | $0.10 |
+| the pull (caps from the probe) | 19 | 473 posts | $2.37 |
+| | | | **$2.74** |
+
+The probe billed 74 posts rather than the 135 requested, because X bills what
+*returns* — the asymmetry the allocator exploits (D63): asking a silent handle
+for a full page costs nothing, so the expensive mistake is asking too little of
+a prolific one, never too much of a quiet one.
+
+**Classification**, 238 posts under `t1`, `claude-sonnet-5`: **$2.6053**
+(~$0.011/post). Cheaper per item than the papers' $0.015 because a post is
+short, but not proportionally so — a ~3k-token prompt dwarfs a 280-character
+document, which is exactly why the deterministic prefilter runs first. Without
+it the 235 dropped posts would have added ~$2.60 to confirm that "check our
+model out!" is not an investment signal.
+
+**Leg total: $5.35.** Recurring cost at the configured weekly cadence is the
+pull plus classification only — the handle resolution and the rate probe are
+manual steps re-run when the register changes, not per firing.
+
+**Running total across all workflows: ~$23.55.**
 ---
 
 ## Repository relevance filter (D65) — 2026-09-05
@@ -679,5 +713,6 @@ it correctly by spending the ceiling and reporting the rest as
 
 EUR: *pending* — with the rest, at the card statement.
 
-**Running total across all workflows: ~$26.60**, of which the recurring nightly
-share is unchanged — this feature adds ~$0.06 once and $0.00 thereafter.
+**Running total across all workflows: ~$31.90** ($23.55 before this, plus
+$8.37). The recurring nightly share is unchanged: this feature costs ~$0.06 once
+and $0.00 on every firing after it.

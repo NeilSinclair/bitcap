@@ -6479,6 +6479,354 @@ somebody to mute the channel. Recorded as the open gap, not queued: the honest
 prerequisite is a labelled set, which is the cost of the detector rather than a
 detail of it.
 
+## D62 — Three traps found by deploying, not by testing (2026-09-05)
+
+`deployment` was 42 commits behind `deployment-dev` and was brought forward in
+one merge. Every step of that failed in a different way, and none of the
+failures were reachable from a test suite that runs against a database the tests
+themselves create. Recorded because the recovery is not obvious from the error
+in any of the three cases, and because one of them is a false claim in the
+README rather than a bug.
+
+### 1. A prompt-version bump empties the UI without emptying the database
+
+Prod held 251 articles classified under `v8`. The deployed code asks for `v9`
+and `p1` (D57), and `api/queries.py:83` filters
+`Classification.prompt_version.in_(versions)`. Zero rows matched. The site
+rendered an empty feed against a full database, the API returned 200, and
+`/api/health` reported the last run as `succeeded`.
+
+**Nothing in the system notices this.** A version bump is a config change to the
+readers and a data migration to everything already stored, and only the first
+half ships in the diff. The recovery is a reload under the new version, which is
+free from committed artifacts — but knowing that requires knowing the cause, and
+the cause presents as "the frontend is broken".
+
+Worth considering, not built: `/api/health` reporting the classification
+versions actually present in the database beside the ones the code asks for.
+That single line would have named this in seconds.
+
+### 2. `rebuild` cannot survive a pending migration
+
+`cmd_load`'s rebuild path is `drop_all` → `ensure_schema` → load. `drop_all`
+drops the model tables; `alembic_version` is not a model table, so the stamp
+survives. `ensure_schema` then sees a stamp, takes the "stamped and behind"
+branch, and runs `upgrade head` — into `0012_article_links`, which creates a
+table with foreign keys to `articles`, dropped moments earlier.
+
+```
+psycopg.errors.UndefinedTable: relation "articles" does not exist
+```
+
+Re-running does not help: the stamp never advanced, so the next attempt repeats
+it exactly. Recovery is to drop `alembic_version` and let the "never migrated"
+branch rebuild at model shape and stamp head.
+
+**`ensure_schema`'s docstring asserts the thing that broke:** *"A rebuild is the
+one caller that needs tables put back, and it is at head by definition, so
+`upgrade` is a no-op for it."* At head by definition is true of a developer's
+own database and false of every other one — including production immediately
+after a deploy that adds a migration, which is precisely when a rebuild is most
+likely to be run. The assumption was correct when written and stopped being
+correct when `0012` landed from another branch.
+
+The fix is ordering, and it is not written here because this entry is a record
+rather than a change: `rebuild` should upgrade before it drops, or drop the
+stamp along with the tables it stamps for. Either makes the two halves agree
+about which schema exists.
+
+### 3. `rebuild` does not reproduce the whole database
+
+README:57 said `rebuild` loads the committed artifacts and derives the clean
+tables — offered as the clone-to-running path, and it is the first instruction
+a reviewer follows. Measured against the live rebuild on production:
+
+| | local | after `rebuild` on prod |
+|---|---:|---:|
+| announcements | 267 | 259 |
+| papers | 47 | 47 |
+| **GitHub releases** | **380** | **0** |
+| **article groups** | **647** | **0** |
+| total articles | 694 | 306 |
+
+Two independent gaps.
+
+**Releases are not a committed artifact.** `registry.py:55` labels them
+`github_releases` — a marker, not a path, unlike the two corpora beside it which
+are real files. They arrive from a live GitHub fetch in the worker's ingest
+phase, so a rebuild has nothing to load them from.
+
+**And `rebuild` never groups.** `cmd_load` runs refs, articles, papers,
+classifications, costs, `transform` twice and `connect` once. Near-duplicate
+collapse (D59) exists only as a phase in `worker.py`, so `article_groups` is
+empty after a rebuild and nothing folds in the UI.
+
+The two compound: 380 of the 647 grouped rows are releases, and release trains
+are where most of the visible folding happens. So a rebuilt database is missing
+both the corpus that folds most and the step that folds it — and looks, from the
+dashboard, like the collapse was never built.
+
+README is corrected to say what `rebuild` actually restores and what a worker
+run is still needed for. The claim was written when announcements were the only
+corpus and was true then.
+
+### And a fourth, already fixed
+
+`OPENAI_API_KEY` was declared on neither Render service, so the embedding gate
+would have failed on prod while the deploy went green — the dedupe phase catches
+the error, falls back to its free passes, and reports `coverage: 0`. Fixed in
+PR #21; the alert that would have said so (`dedupe_unavailable`) was already
+there and only needed the phase to be reachable.
+
+### The shape all four share
+
+Every one is a claim that was true when written and quietly stopped being true:
+a version filter that outran its data, a docstring's "by definition", a README
+sentence from a single-corpus era, a blueprint that predates the provider it
+needs. This is the same class D59d named — *a failure that reports success* —
+arriving through configuration rather than code, where there is no test to fail.
+
+**Consequence:** the recoveries above are recorded, README:57 is corrected, and
+the `rebuild`-versus-migration ordering is left as a known defect rather than
+patched under time pressure.
+
+## D63 — The people register becomes a corpus: X posts as a fourth leg (2026-09-05)
+
+`config/people.yaml` has held 36 senior people across seven labs since D30, 28
+of them with X handles, and **nothing read it**. Only `config/validate.py` and
+its tests. The register knew who speaks for each lab and had never listened to
+them.
+
+`docs/planning.md:183` deferred this on cost: *"Gated and expensive; the Basic
+tier is roughly the entire budget."* That was true and is no longer. X moved to
+pay-per-use in February 2026 and closed Basic to new signups: **$0.005 per post
+read, $0.010 per user read**, no subscription, no minimum
+([pricing](https://docs.x.com/x-api/getting-started/pricing), fetched
+2026-09-05). The question stopped being whether we can afford access and became
+how to spend a fixed number of post-reads well.
+
+### Two server-side levers decide the whole cost profile
+
+On `GET /2/users/:id/tweets`, both `start_time` and `exclude=[replies,retweets]`
+are applied by X before billing. A 90-day window and originals-only are
+therefore not filters we apply afterwards — they are a smaller invoice. And
+`max_results` caps a page at 100, so **refusing to paginate makes every call a
+charge known before it is made**. `research/posts/x_client.py` never follows
+`next_token`, and `Spend` re-checks the ceiling predictively on top.
+
+### Measuring first, because the estimates were wrong
+
+Rates were estimated by hand and then measured. The estimates were wrong in
+three of four cases: Karpathy was assumed prolific (he posts ~5 a quarter),
+@alexandr_wang was assumed low-value (he is the second-largest contributor), and
+the DeepSeek pair were assumed quiet (they are silent). One request to resolve
+handles ($0.27) plus five posts per handle ($0.10) replaced all of it.
+
+**The probe also caught a live measurement error.** Reading "returned fewer
+posts than we asked for" as "that is all there is" measured @sama at *4 posts in
+90 days*. X applies `exclude` after assembling a page, so a prolific replier
+returns few originals from a page of five; the true figure is ~223. The signal
+is the age of the oldest post, never the count. Pinned by
+`tests/test_posts_harvest.py::TestAPartialPageIsNotACompleteAnswer`.
+
+A second consequence: an empty probe is **unknown, not zero**. Eight handles
+returned nothing from a page of five, which is indistinguishable from a page
+that was all replies. Because X bills what returns, asking a silent account for
+a full page of 100 costs nothing — so they were asked generously rather than
+skipped. All eight returned nothing, which settles it.
+
+| stage | requests | posts billed | cost |
+|---|---:|---:|---:|
+| resolve + verify 27 handles | 1 | — | $0.27 |
+| rate probe | 27 | 74 | $0.10 |
+| the pull | 19 | 473 | $2.37 |
+| **X total** | | | **$2.74** |
+| classification under `t1` | 238 | — | $2.61 |
+
+### What the corpus is
+
+473 posts pulled, **238 surviving a deterministic prefilter** that drops
+anything under 100 characters of substance once links, @mentions and emoji are
+stripped. Classified: **1 high, 4 medium, 23 low, 210 none** — 88% correctly
+scoring zero, which is the filter working rather than failing.
+
+**Eight of twenty-seven lab leaders posted no original in 90 days**: Olah,
+Leike, Nick Joseph, Ben Mann, Daniela Amodei, McCandlish, and both DeepSeek
+researchers. Anthropic's leadership is nearly silent on X; OpenAI and Meta carry
+70% of the corpus. That corroborates D30's finding that "for DeepSeek the papers
+*are* the channel", from a second direction.
+
+### The finding that justifies the leg
+
+The top-scoring post is @markchen90 stating OpenAI has contracted **more than 4
+gigawatts of NVIDIA compute** — `compute_commitment`, score 100, and directly on
+the NVIDIA transmission the brief names as its calibration case.
+
+More usefully, the corpus **found a hole in the announcements leg**. Of 17 links
+to lab domains, OpenAI's 10 were all already in the register; these were not:
+
+```
+research.meta.ai/blog/introducing-muse-spark-1-3
+research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model
+research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2
+research.meta.ai/blog/introducing-muse-voice-transcribe
+blog.google/.../introducing-gemini-3-7-flash
+```
+
+`config/sources.yaml` watches `ai.meta.com/blog/` and `deepmind.google/blog/`.
+The register holds **0 rows from `research.meta.ai` and 0 from `blog.google`**,
+so Meta's entire Muse model line is invisible to it. Listening to the people
+found what watching the labs missed. **Not fixed here** — widening those two
+channels is an announcements-leg change with its own cost, and doing it inside
+this one would hide it.
+
+### What was rejected
+
+**twitterapi.io and the other unofficial mirrors.** 33x cheaper per post
+($0.00015 against $0.005), no OAuth, and richer data — it returns
+`conversationId`, which would have allowed self-threads to be reconstructed. It
+was rejected anyway. It is not an X product: it scrapes using proxies and login
+sessions, against X's terms, and its failure mode is the one this project is
+built to catch — a rate-limited or shape-changed scraper can return nine of a
+handle's twelve posts with a 200 OK, and that silent partial data would enter at
+the source layer where none of our guards can see it. The saving was $19.40
+against a budget with $80 free. Price was not the deciding factor; the
+deciding factor was that official access turned out to be self-serve, so the
+only thing the mirror bought — setup speed — was worth nothing.
+
+**Extending `research/papers/fetch_cache.py` to carry a bearer token.** It has
+no `headers=` parameter, is GET-only, and keys its Postgres cache on the URL
+alone (`app/models.py` `FetchCache.url` is unique), so two authenticated
+requests differing only by credential would collide and an authenticated body
+would be stored under a bare URL key. Adding credentials means changing the
+cache key of every existing entry. `research/posts/x_client.py` follows
+`research/github/harvest_github.py` instead, which is already this repo's shape
+for a token-authenticated JSON API. The duplication is real; it is recorded here
+rather than left to be discovered.
+
+**New event types for posts.** `config/scoring.yaml` pins `max_event_weight: 5`,
+so a type above that silently rescales every existing score, and
+`app/scoring.py` does `.get(event_type, 0)`, so a type in the prompt and absent
+from config scores zero with no error. `t1`'s event-type section is byte-identical
+to `p1`'s, pinned by a test.
+
+**Posts in the digest and the content alerts.** They are scored, joined to
+holdings and browsable in the dashboard, but `DIGEST_VERSIONS` excludes `t1` and
+`config/pipeline.yaml` mutes it under `alerts.content_mute_prompt_versions`. The
+corpus is new and the noisiest in the system, and the cost of being wrong on a
+surface a reader is *pushed* is higher than on one they browse. Turning both on
+is removing `t1` from two lists.
+
+**Reconstructing self-threads.** `exclude=replies` is server-side and truncates
+a threaded announcement to its opening post, which is usually the hook rather
+than the content. Keeping threads means paying for every conversational reply
+first to find the few that are self-replies — for a handle like @sama, several
+times the volume. Accepted as a known limitation and recorded here rather than
+discovered later from a corpus of decapitated threads.
+
+### A pre-existing break found on the way
+
+`bitcap-db load` was failing for everyone on `deployment-dev` before this work
+started, and had nothing to do with it. `app/load_refs.py` deletes the derived
+silver layer before reloading, and the D59/D61 dedupe work added `article_groups`
+and `article_links` — both carrying a plain foreign key to `articles` with no
+cascade — without adding them to that list. `DELETE FROM articles` therefore
+raised. Confirmed by stashing this branch's changes and reproducing. Fixed here
+because it blocked the load; the fix is two names in one tuple.
+
+### Consequence
+
+A fourth corpus, scored under `t1`, for $5.35 all in. The register is no longer
+inert config. The honest limits: threads are truncated to their opening post;
+the leg reads 27 people at one point in time rather than continuously; and the
+`duplicates_announcement` signal is weaker than it looks, because 352 of 409
+links in the corpus are quote-links to other posts rather than to lab documents
+— so "3% overlap" measures link behaviour, not novelty, and the defensible claim
+is the narrower one about the 17 lab-document links.
+
+Reversing this is deleting one config file and one leg name; the corpus and its
+scores are committed artifacts and would survive as evidence either way.
+
+## D64 — Six X handles promoted off the weak tier, and one flagged (2026-09-05)
+
+D30 established `x_evidence` because x.com returned HTTP 402 to the fetcher: no
+profile in `config/people.yaml` had ever been read, so each handle carried a
+tier recording how it was *inferred* instead. Nine sat on `search_index`, which
+that file calls "a lead, not a fact... do not ship an insight that depends on
+one without promoting it first."
+
+D63 gave the project an X credential, and stage 0 of the posts leg reads every
+handle's profile in one request. That is a direct read of the thing D30 could
+only infer. It also made the gap concrete rather than theoretical: **73 of the
+238 posts in the scored corpus — 31% — came from `search_index` handles**, and
+the dashboard was rendering that tier on every one of those cards. The register
+was shipping on the tier it tells you not to ship on.
+
+### A fifth tier, because a profile is neither a post nor a search hit
+
+`api_profile` — the account was read directly through the X API and its own
+profile asserts the affiliation. It is not `self_post` (that tier means a post,
+quoted with its status URL) and it is plainly stronger than `search_index`.
+
+**How far it reaches is per-handle, and `supports:` already expresses that.** A
+bio reading "President & Co-Founder @OpenAI" carries the role; one reading
+"OpenAI" carries only the handle. So the promotions are not uniform:
+
+| handle | bio | verified | supports |
+|---|---|---|---|
+| @gdb | "President & Co-Founder @OpenAI" | yes | role, x_handle |
+| @DarioAmodei | "Anthropic CEO" | yes | role, x_handle |
+| @DanielaAmodei | "President @AnthropicAI" | no | role, x_handle |
+| @zdaxie | "Researcher @ DeepSeek AI // Pre-training…" | no | role, x_handle |
+| @sama | "The mission of OpenAI to ensure that AGI…" | yes | x_handle |
+| @merettm | "OpenAI" | yes | x_handle |
+
+**Three were not promoted.** @samsamoa resolves to an account named "sam",
+unverified, with an empty bio — nothing corroborates Sam McCandlish, and it
+stays on `search_index`. @8enmann's bio is "Make AI safe again", which asserts
+no affiliation. And @Guodaya is the interesting one.
+
+### The register was wrong about someone, and his own profile said so
+
+@Guodaya's bio ends **"Previously @deepseek_ai"**. `config/people.yaml` lists
+Daya Guo as an *active* DeepSeek researcher. That is precisely the error D30
+named as this file's most likely failure — rendering someone as a voice of a lab
+they left.
+
+He is **not** moved to `departed`: an unverified profile is a lead, not the
+dated source a departure needs, and the DeepSeek-R1 first authorship is solid.
+He is flagged `role_contested: true` with the contradiction quoted, which the
+dashboard surfaces as a badge. He posted nothing in the 90-day window, so no
+attribution currently rests on it. Settling it needs a dated report, not a bio.
+
+### What was rejected
+
+**Bumping `researched` from 2026-09-03 to 2026-09-05.** It would claim the whole
+register was re-checked that day; six profiles were. A `revised:` field records
+the later pass instead, and `tests/test_people.py` now compares source dates
+against `revised` while still requiring it to be a real date and not earlier
+than `researched` — so the fabricated-citation guard cannot be escaped by
+omitting the field.
+
+**Stretching `self_post` to cover a bio.** Cheaper, no new vocabulary, and
+wrong: that tier's definition names a post and its status URL. Widening a
+definition to avoid adding one is how a vocabulary stops meaning anything.
+
+**Leaving the corpus's stamped tiers alone.** `posts_corpus.json` snapshots
+`x_evidence` per record at collection time, so a register correction would not
+have reached the dashboard without repaying for a pull. The `filter` stage now
+re-derives attribution from the register, which is the right split: the pull
+records what X returned, the register records what we know about the person.
+
+### Consequence
+
+No post in the corpus is now attributed on `search_index`: 139 `self_post`, 73
+`api_profile`, 26 `own_site`. The claim the register can make about its own
+handles is stronger and, where it is not, says so. The cost is a fifth tier to
+keep in step across `config/people.yaml`, `config/validate.py` and
+`tests/test_people.py`, and one person whose employment is now openly marked
+unsettled rather than quietly asserted.
+
 ---
 
 ## D65 — Repositories are filtered on topic, inside the ranking, by the model that keeps `openai/codex` (2026-09-05)

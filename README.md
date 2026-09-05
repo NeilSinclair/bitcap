@@ -56,9 +56,40 @@ the same way, instead of only the shell that ran this command.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
 announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
-six labs, 2023–2026), 26 holdings with their mechanism and lab-exposure edges,
-and the full cost log — and derives the clean tables and
-joins. It is always safe to re-run.
+six labs, 2023–2026), the scored posts corpus (238 X posts from 19 lab leaders,
+90 days), 26 holdings with their mechanism and lab-exposure edges, and the full
+cost log — and derives the clean tables and joins. It is always safe to re-run.
+
+**Two things it does not restore, both of which need a worker run.** GitHub
+releases are a live fetch, not a file — `registry.py` labels them
+`github_releases` rather than a path — so a rebuilt database holds the ~306
+announcements and papers but none of the ~380 releases. And near-duplicate
+collapse (D59) runs only as a phase in the worker, so `article_groups` is empty
+and nothing folds in the feed. Since most releases arrive in trains, the two
+compound: a rebuilt database looks as though the collapse was never built.
+
+```bash
+uv run bitcap-worker           # fetches releases, classifies, groups, digests
+```
+
+Run it **twice** on a freshly rebuilt database. The releases leg reads its repo
+list from `raw_github_repos`, which a later phase of the same firing fills, so
+every releases source fails on firing 1 and succeeds on firing 2. Documented at
+`app/pipeline/registry.py:35`; it self-heals and needs no intervention.
+
+Two failure modes worth knowing before they bite, both written up in
+[`decisions.md`](docs/decisions.md) §D62:
+
+- **A rebuild against a database with a pending migration fails** with
+  `relation "articles" does not exist`. `drop_all` removes the tables but leaves
+  `alembic_version` stamped, so the upgrade that follows runs a migration whose
+  foreign keys point at what was just dropped. Recovery: drop `alembic_version`,
+  then rebuild.
+- **A prompt-version bump empties the UI without emptying the database.**
+  Readers filter on `prompt_version`, so a database classified under the
+  previous version returns zero rows to a current API — a blank feed, a 200
+  response, and a healthy-looking last run. Recovery is a reload under the new
+  version, which is free.
 
 It is safe because everything it drops is derived from files in the repo. The
 **operational** tables are the exception and are never dropped: `pipeline_runs`,

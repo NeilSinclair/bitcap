@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 from app import models as m
 from app.connect import match_name
-from app.pipeline.registry import PAPERS_CORPUS, RELEASES_CORPUS
+from app.pipeline.registry import PAPERS_CORPUS, POSTS_CORPUS, RELEASES_CORPUS
 
 PIPELINE_CONFIG = Path(__file__).parent.parent / "config" / "pipeline.yaml"
 
@@ -29,6 +29,7 @@ PIPELINE_CONFIG = Path(__file__).parent.parent / "config" / "pipeline.yaml"
 _DOC_TYPES = {
     PAPERS_CORPUS: "paper",
     RELEASES_CORPUS: "release",
+    POSTS_CORPUS: "post",
 }
 
 
@@ -141,6 +142,24 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
         for row_id, source_file in session.execute(
             select(m.RawArticle.id, m.RawArticle.source_file))
     }
+    # Attribution metadata, posts only. Carried to the UI because a post is one
+    # person speaking, not the lab: config/people.yaml grades how firmly each
+    # handle is tied to its owner (`x_evidence`) and flags a role its own
+    # sources disagree about, and rendering either as settled fact is the
+    # failure that file exists to prevent.
+    post_meta = {
+        row_id: {
+            "authorHandle": (payload or {}).get("author_handle"),
+            "authorName": (payload or {}).get("author_name"),
+            "authorRole": (payload or {}).get("author_role"),
+            "evidence": (payload or {}).get("x_evidence"),
+            "roleContested": bool((payload or {}).get("role_contested")),
+        }
+        for row_id, payload in session.execute(
+            select(m.RawArticle.id, m.RawArticle.payload)
+            .where(m.RawArticle.source_file == POSTS_CORPUS))
+    }
+
     cls_ids = [c.id for c in classifications.values()]
 
     mechs_by_cls: dict[int, list] = defaultdict(list)
@@ -199,6 +218,7 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
         items.append({
             "id": art.id,
             "docType": doc_types.get(art.raw_article_id, "announcement"),
+            "author": post_meta.get(art.raw_article_id),
             "lab": art.lab,
             "labLabel": labs.get(art.lab, art.lab),
             "date": str(art.published_on),
