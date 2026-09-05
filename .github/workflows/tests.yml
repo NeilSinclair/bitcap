@@ -30,14 +30,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pinned to the version the Dockerfile ships (`FROM python:3.12-slim`),
+      # not to whatever the runner happens to offer. `requires-python = ">=3.12"`
+      # is a floor, so an unpinned `uv sync` resolves to the newest interpreter
+      # present — a clean clone of this repo picks 3.14 — and CI would then be
+      # green on an interpreter production does not run. `python-version` here
+      # sets UV_PYTHON, so `uv sync` and `uv run` both honour it.
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          python-version: "3.12"
 
-      # Matches `requires-python = ">=3.12"` in pyproject.toml.
-      - name: Set up Python
-        run: uv python install 3.12
+      # Fail loudly if the pin ever stops taking effect, rather than testing the
+      # wrong interpreter quietly for months.
+      - name: Confirm the interpreter matches the Dockerfile
+        run: |
+          uv run python -c "import sys; assert sys.version_info[:2] == (3, 12), sys.version"
+          grep -q "FROM python:3.12-slim" Dockerfile
 
       # `--frozen` fails if uv.lock disagrees with pyproject.toml, so a
       # dependency added without relocking is caught here rather than by the
@@ -53,6 +63,14 @@ jobs:
       # inlined script is invisible until someone opens it. It has already
       # caught a temporal-dead-zone crash and a parseFloat that turned
       # "1,406.8 M EUR" into 1.
+      # Pinned for the same reason as Python: these two scripts are the only
+      # thing standing behind the report and the digest window label, and
+      # `runs-on: ubuntu-latest` changes its default node without warning.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Smoke-test the built report
         run: node tests/smoke_report.js
 

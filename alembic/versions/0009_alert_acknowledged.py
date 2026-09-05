@@ -27,6 +27,25 @@ worker startup, so the merged branch could not boot. This one moves because the
 other landed first, and a database already stamped 0008 has the fetch cache
 applied, not this column.
 
+**If you applied this while it was still numbered 0008**, your database has
+`alerts.acknowledged_at` and a stamp of `0008`, which now means the fetch cache
+instead. `ensure_schema` will then try to add the column a second time and die
+on `duplicate column name: acknowledged_at`. Two cases, both reproduced:
+
+* You also have the `fetch_cache` table (both migrations ran) — the schema is
+  already correct and only the stamp is wrong::
+
+      alembic stamp 0009
+
+* You do not have `fetch_cache` (only the old 0008 ran) — drop the column and
+  let the chain rebuild it in order::
+
+      ALTER TABLE alerts DROP COLUMN acknowledged_at;   -- psql / sqlite3
+      alembic stamp 0007 && alembic upgrade head
+
+`origin/deployment` was still at 0007 when this was renumbered, so no deployed
+database is affected; this is for developer clones only.
+
 Revision ID: 0009
 Revises: 0008
 """

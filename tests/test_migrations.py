@@ -193,19 +193,37 @@ class TestTheRevisionChain:
     def test_no_revision_id_is_used_twice(self):
         """The condition behind the two heads, named directly.
 
-        `get_heads()` alone would pass if two files shared an id but chained
-        differently, and a duplicate id makes `alembic stamp <id>` ambiguous —
-        which is the command `SchemaDrift` tells an operator to run.
+        Read off the files rather than through Alembic. This test was written
+        against `ScriptDirectory.walk_revisions()` and **passed when the exact
+        duplicate it exists to catch was recreated** — Alembic keys its revision
+        map by id, so the second file silently replaces the first and the
+        duplicate is gone before the assertion sees it. It emits a
+        `UserWarning`, and nothing was reading that. A test that cannot fail is
+        worse than no test: `test_there_is_exactly_one_head` was doing all the
+        work while this one supplied false reassurance beside it.
+
+        Worth keeping as a separate check because heads and ids fail
+        differently: two files sharing an id but chaining onward from different
+        parents leaves one head, and `alembic stamp <id>` — the command
+        `SchemaDrift` tells an operator to run — is ambiguous either way.
         """
-        from collections import Counter
+        import re
+        from collections import defaultdict
 
-        from alembic.script import ScriptDirectory
+        versions = ROOT / "alembic" / "versions"
+        by_id: dict[str, list[str]] = defaultdict(list)
+        for path in sorted(versions.glob("*.py")):
+            found = re.search(r"^revision(?::\s*str)?\s*=\s*[\"'](.+?)[\"']",
+                              path.read_text(), re.MULTILINE)
+            assert found, f"{path.name} declares no revision id"
+            by_id[found.group(1)].append(path.name)
 
-        script = ScriptDirectory.from_config(_config(create_engine("sqlite://")))
-        counts = Counter(r.revision for r in script.walk_revisions())
-        duplicates = {rev: n for rev, n in counts.items() if n > 1}
+        duplicates = {rev: files for rev, files in by_id.items() if len(files) > 1}
 
-        assert not duplicates, f"revision ids used more than once: {duplicates}"
+        assert not duplicates, (
+            "revision ids used by more than one file: "
+            + "; ".join(f"{rev} -> {', '.join(files)}" for rev, files in sorted(duplicates.items()))
+        )
 
 
 class TestEnsureSchema:
