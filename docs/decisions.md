@@ -6635,3 +6635,83 @@ is the narrower one about the 17 lab-document links.
 
 Reversing this is deleting one config file and one leg name; the corpus and its
 scores are committed artifacts and would survive as evidence either way.
+
+## D63 — Six X handles promoted off the weak tier, and one flagged (2026-09-05)
+
+D30 established `x_evidence` because x.com returned HTTP 402 to the fetcher: no
+profile in `config/people.yaml` had ever been read, so each handle carried a
+tier recording how it was *inferred* instead. Nine sat on `search_index`, which
+that file calls "a lead, not a fact... do not ship an insight that depends on
+one without promoting it first."
+
+D62 gave the project an X credential, and stage 0 of the posts leg reads every
+handle's profile in one request. That is a direct read of the thing D30 could
+only infer. It also made the gap concrete rather than theoretical: **73 of the
+238 posts in the scored corpus — 31% — came from `search_index` handles**, and
+the dashboard was rendering that tier on every one of those cards. The register
+was shipping on the tier it tells you not to ship on.
+
+### A fifth tier, because a profile is neither a post nor a search hit
+
+`api_profile` — the account was read directly through the X API and its own
+profile asserts the affiliation. It is not `self_post` (that tier means a post,
+quoted with its status URL) and it is plainly stronger than `search_index`.
+
+**How far it reaches is per-handle, and `supports:` already expresses that.** A
+bio reading "President & Co-Founder @OpenAI" carries the role; one reading
+"OpenAI" carries only the handle. So the promotions are not uniform:
+
+| handle | bio | verified | supports |
+|---|---|---|---|
+| @gdb | "President & Co-Founder @OpenAI" | yes | role, x_handle |
+| @DarioAmodei | "Anthropic CEO" | yes | role, x_handle |
+| @DanielaAmodei | "President @AnthropicAI" | no | role, x_handle |
+| @zdaxie | "Researcher @ DeepSeek AI // Pre-training…" | no | role, x_handle |
+| @sama | "The mission of OpenAI to ensure that AGI…" | yes | x_handle |
+| @merettm | "OpenAI" | yes | x_handle |
+
+**Three were not promoted.** @samsamoa resolves to an account named "sam",
+unverified, with an empty bio — nothing corroborates Sam McCandlish, and it
+stays on `search_index`. @8enmann's bio is "Make AI safe again", which asserts
+no affiliation. And @Guodaya is the interesting one.
+
+### The register was wrong about someone, and his own profile said so
+
+@Guodaya's bio ends **"Previously @deepseek_ai"**. `config/people.yaml` lists
+Daya Guo as an *active* DeepSeek researcher. That is precisely the error D30
+named as this file's most likely failure — rendering someone as a voice of a lab
+they left.
+
+He is **not** moved to `departed`: an unverified profile is a lead, not the
+dated source a departure needs, and the DeepSeek-R1 first authorship is solid.
+He is flagged `role_contested: true` with the contradiction quoted, which the
+dashboard surfaces as a badge. He posted nothing in the 90-day window, so no
+attribution currently rests on it. Settling it needs a dated report, not a bio.
+
+### What was rejected
+
+**Bumping `researched` from 2026-09-03 to 2026-09-05.** It would claim the whole
+register was re-checked that day; six profiles were. A `revised:` field records
+the later pass instead, and `tests/test_people.py` now compares source dates
+against `revised` while still requiring it to be a real date and not earlier
+than `researched` — so the fabricated-citation guard cannot be escaped by
+omitting the field.
+
+**Stretching `self_post` to cover a bio.** Cheaper, no new vocabulary, and
+wrong: that tier's definition names a post and its status URL. Widening a
+definition to avoid adding one is how a vocabulary stops meaning anything.
+
+**Leaving the corpus's stamped tiers alone.** `posts_corpus.json` snapshots
+`x_evidence` per record at collection time, so a register correction would not
+have reached the dashboard without repaying for a pull. The `filter` stage now
+re-derives attribution from the register, which is the right split: the pull
+records what X returned, the register records what we know about the person.
+
+### Consequence
+
+No post in the corpus is now attributed on `search_index`: 139 `self_post`, 73
+`api_profile`, 26 `own_site`. The claim the register can make about its own
+handles is stronger and, where it is not, says so. The cost is a fifth tier to
+keep in step across `config/people.yaml`, `config/validate.py` and
+`tests/test_people.py`, and one person whose employment is now openly marked
+unsettled rather than quietly asserted.

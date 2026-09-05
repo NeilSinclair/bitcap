@@ -12,7 +12,9 @@ content alerts. Full reasoning in `docs/decisions.md` D62.
 
 ## State when this was written (2026-09-05, branch `feature/lab-leadership`)
 
-- 1,475 tests pass, `config/validate.py` reports 0 errors.
+- 1,481 tests pass, `config/validate.py` reports 0 errors.
+- Evidence tiers in the corpus after D63: 139 `self_post`, 73 `api_profile`,
+  26 `own_site`, **0 `search_index`**.
 - Corpus: 473 posts pulled, **238 kept**, 235 prefiltered out. Bands under `t1`:
   1 high, 4 medium, 23 low, **210 none**.
 - Spend: **$2.74** X + **$2.61** Anthropic = $5.35. Receipts in `docs/cost.md`.
@@ -72,7 +74,14 @@ in `config/pipeline.yaml` keeps them out of content alerts. `high_band_items`
 has no version filter of its own, so removing only the config line turns alerts
 on. Both are pinned by tests in `tests/test_posts_spine.py`.
 
-**g. Cost is written to `research/docs/announcement_cost.json`**, shared with
+**g. The corpus does not own its attribution.** `x_evidence`, `author_role` and
+`role_contested` are re-derived from `config/people.yaml` by the `filter` stage,
+not trusted from what the pull stamped. Fixing the register therefore reaches
+the dashboard by re-running `filter` (free) rather than repaying for a pull. If
+you change how attribution is stored, keep that split: the pull records what X
+returned, the register records what we know about the person.
+
+**h. Cost is written to `research/docs/announcement_cost.json`**, shared with
 every other corpus, by unlocked read-modify-write. This has already corrupted
 that file once (see `docs/agentic-log.md`). Do not run a classification pass
 while another agent is running one.
@@ -91,16 +100,15 @@ while another agent is running one.
 - **`@samsamoa` did not verify.** The account resolves but is named "sam",
   unverified, with an empty bio — nothing corroborates Sam McCandlish. It stays
   on `x_evidence: search_index`, which `config/people.yaml` calls "a lead, not a
-  fact".
-- **The evidence tiers were not promoted.** Stage 0 fetch-verified 26 of 27
-  handles — bios like "President & Co-Founder @OpenAI" directly corroborate
-  entries that have only ever carried `search_index`. `research/docs/x_handles.json`
-  holds the evidence; `config/people.yaml` has not been updated from it. That is
-  a register change and wants its own decision entry.
+  fact". `@8enmann` likewise ("Make AI safe again" asserts no affiliation).
+- **`@Guodaya` may have left DeepSeek.** His bio ends "Previously
+  @deepseek_ai"; the register lists him active. Flagged `role_contested`, not
+  moved to `departed` — an unverified profile is a lead, not the dated source a
+  departure needs. He posted nothing in the window, so nothing rests on it yet.
+  **Settling this needs a dated report** (D63).
 - **`@janleike`'s role stays contested.** His bio reads "AI research
   @AnthropicAI", not the alignment-leadership title his own site states, which
-  corroborates the CONTESTED note rather than resolving it. Surfaced in the UI
-  as a badge; not decided.
+  corroborates the CONTESTED note rather than resolving it. Not decided.
 - The `duplicates_announcement` figure is weaker than it looks: 352 of 409 links
   are quote-links to other posts, so it measures link behaviour more than
   novelty. The narrower claim about the 17 lab-document links is the defensible

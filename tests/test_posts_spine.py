@@ -190,3 +190,68 @@ class TestTheLegIsRegisteredEverywhereItMustBe:
         # The filter must offer exactly the values the API can emit.
         for value in set(_DOC_TYPES.values()) | {"announcement"}:
             assert f'value="{value}"' in page, f"dashboard cannot filter {value}"
+
+
+class TestNoPostIsAttributedOnTheWeakTier:
+    """D63. The register tells you not to ship on `search_index`; it was.
+
+    Before this, 73 of 238 posts -- 31% of the corpus, including @sama's 38 and
+    @gdb's 27 -- were rendered in the dashboard carrying the tier
+    config/people.yaml calls "a lead, not a fact".
+    """
+
+    def _corpus(self):
+        return json.loads((ROOT / "research" / "docs" / "posts_corpus.json").read_text())
+
+    def _people(self):
+        return yaml.safe_load((ROOT / "config" / "people.yaml").read_text())
+
+    def test_no_scored_post_rests_on_search_index(self):
+        weak = {r["author_handle"] for r in self._corpus()
+                if r["x_evidence"] == "search_index"}
+        assert not weak, f"posts attributed on the weak tier: {sorted(weak)}"
+
+    def test_every_post_carries_an_evidence_tier_at_all(self):
+        # A missing tier renders as an empty badge, which reads as "no claim"
+        # rather than "we did not check".
+        assert all(r["x_evidence"] for r in self._corpus())
+
+    def test_an_api_profile_promotion_cites_the_profile_it_was_read_from(self):
+        """A tier promoted with no citation is the failure this file guards."""
+        for lab, block in self._people()["labs"].items():
+            for person in block["people"]:
+                if person.get("x_evidence") != "api_profile":
+                    continue
+                urls = [s["url"] for s in person["sources"]]
+                assert f"https://x.com/{person['x_handle']}" in urls, \
+                    f"{person['name']} promoted with no profile citation"
+
+    def test_the_promotion_says_how_far_it_reaches(self):
+        # A bio reading "OpenAI" carries the handle, not the role. `supports:`
+        # is what stops the weaker ones being read as the stronger ones.
+        for lab, block in self._people()["labs"].items():
+            for person in block["people"]:
+                if person.get("x_evidence") != "api_profile":
+                    continue
+                source = next(s for s in person["sources"]
+                              if s["url"] == f"https://x.com/{person['x_handle']}")
+                assert "x_handle" in source["supports"]
+
+    def test_a_contested_role_is_flagged_rather_than_asserted(self):
+        """@Guodaya's own bio says "Previously @deepseek_ai"; we list him active."""
+        people = self._people()
+        contested = [p for block in people["labs"].values()
+                     for p in block["people"] if p.get("role_contested")]
+        assert contested, "the known contested entry lost its flag"
+        for person in contested:
+            assert person.get("notes"), \
+                f"{person['name']} flagged contested with no explanation"
+
+    def test_the_revised_date_covers_the_newest_citation(self):
+        # The fabricated-citation guard: nothing may be dated after the last
+        # time this file was actually touched.
+        people = self._people()
+        newest = max(d for block in people["labs"].values()
+                     for p in block["people"] for s in p["sources"]
+                     for d in (s.get("fetched"),) if d)
+        assert people["revised"] >= newest

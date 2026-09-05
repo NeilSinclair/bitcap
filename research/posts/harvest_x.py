@@ -449,7 +449,23 @@ def main(argv: list[str] | None = None) -> int:
         raw = json.loads(RAW_OUT.read_text())
         with Session(get_engine()) as session:
             known = {u.rstrip("/") for (u,) in session.execute(select(m.RawArticle.url))}
-        kept, dropped = prefilter.apply(raw["records"], cfg["prefilter"], known)
+        # Re-derive attribution from the register rather than trusting what was
+        # stamped at pull time. `x_evidence` and `role_contested` are facts
+        # about the person, not about the fetch, and they change when the
+        # register is corrected -- D63 promoted six handles off `search_index`
+        # after reading their profiles. Without this, fixing the register would
+        # need a repaid pull to reach the dashboard.
+        people = {p["handle"].lower(): p for p in register()[0]}
+        records = []
+        for record in raw["records"]:
+            person = people.get(record["author_handle"].lower())
+            records.append({**record,
+                            "author_role": person["role"] if person else record["author_role"],
+                            "x_evidence": person["x_evidence"] if person else None,
+                            "role_contested": bool(person and person["role_contested"])}
+                           if person else record)
+
+        kept, dropped = prefilter.apply(records, cfg["prefilter"], known)
         # A BARE LIST, matching research/docs/papers_corpus.json, because
         # `load_articles` reads the file straight into `load_article_records`.
         # The provenance that would otherwise wrap it goes in its own file, so
