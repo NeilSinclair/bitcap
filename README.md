@@ -72,7 +72,16 @@ uv run alembic current         # what revision is it on
 
 `bitcap-db rebuild`/`load` call this for you. A database created before
 migrations existed is stamped automatically on first use, so no manual step is
-needed on an existing clone.
+needed on an existing clone — *provided its columns already match the models*.
+`create_all` can add a missing table but not a missing column, so a database
+that predates a column-only migration would otherwise be stamped `head` while
+structurally behind, and no later `upgrade` would ever fix it. That case now
+fails loudly with `SchemaDrift` instead, naming the recovery:
+
+```bash
+uv run alembic stamp <revision it actually matches>
+uv run alembic upgrade head
+```
 
 ## What the database holds
 
@@ -300,4 +309,7 @@ counter that decides when the GitHub leg is due.
   the single-account gate (`api/auth.py`), and the manual trigger (`api/pipeline.py`)
 - `frontend/` — Next.js app (investment/AI-team dashboards, insight detail view)
 - `docs/` — planning, running decision log, cost ledger
-- `tests/` — `uv run pytest`
+- `tests/` — `uv run pytest`. Two display smoke tests sit outside it and run
+  under plain node, because there is no browser in CI and a rendering bug in
+  either is invisible until someone opens the page:
+  `node tests/smoke_report.js` and `node tests/smoke_digest_window.js`

@@ -13,7 +13,7 @@ different reader.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -21,13 +21,27 @@ from sqlalchemy.orm import Session
 from app import models as m
 from app.pipeline.budget import Budget, month_to_date
 
-# How far back the header badge counts. `alerts` has no resolved/acknowledged
-# column and nothing ever deletes a row, so an all-time count can only ever
-# rise — one transient outage in week one would leave the badge red forever,
-# which is exactly the "trains everyone to mute it" failure the alerting design
-# works to avoid. A window is the cheapest honest answer: the badge asks "has
-# anything broken lately", not "has anything ever broken".
-BADGE_WINDOW_DAYS = 7
+# The header badge counts unacknowledged system alerts, all of them, with no
+# time window.
+#
+# There used to be a seven-day window here, and its own justification was that
+# `alerts` had no acknowledged column and nothing ever deleted a row, so an
+# all-time count could only rise and one transient outage would leave the badge
+# red forever — the "trains everyone to mute it" failure. `acknowledged_at` and
+# the clear button retired that premise, and the window then did active harm in
+# two ways, one of them new:
+#
+# * An alert nobody acknowledged fell out of the badge after a week on its own.
+#   A real, unhandled failure went quiet by the passage of time.
+# * `dispatch` withdrawing an acknowledgement changed nothing a reader saw once
+#   the row was older than the window, because reopening does not move
+#   `created_at`. Probed: day 10 of an unresolved outage reported
+#   `reopened: 1` nightly with the badge sitting at 0 — the safety property
+#   working perfectly and being invisible, at exactly the "week-long outage"
+#   length the alerting design uses as its case.
+#
+# Age is not evidence a fault was handled. Acknowledgement is, and it is now a
+# thing an operator can actually express.
 
 
 def _iso(value: datetime | None) -> str | None:
@@ -127,17 +141,24 @@ def source_states(session: Session) -> list[dict]:
     )
 
 
-def recent_system_alerts(session: Session, days: int = BADGE_WINDOW_DAYS) -> int:
-    """System alerts raised in the last `days` — the header badge's number.
+def unacknowledged_system_alerts(session: Session) -> int:
+    """Unacknowledged system alerts — the header badge's number.
 
-    Windowed, not all-time. Nothing resolves or deletes an alert, so an all-time
-    count only ever rises and the badge would stay red forever after a single
-    transient outage.
+    Not time-windowed; see the note on that above. A badge that is red on a
+    healthy pipeline is a badge nobody reads, so it has to be clearable — and
+    `alerts.acknowledge` clears it without deleting anything, the rows staying
+    in the history below, still listed and marked.
+
+    Acknowledging cannot silence a live fault, but not for the reason it is
+    tempting to give: a still-failing source does *not* raise a fresh alert,
+    because `dedupe_key` identifies the episode and holds still for as long as
+    the fault lasts. `alerts.dispatch` is what closes it — regenerating an
+    acknowledged row's key clears `acknowledged_at`, so this count rises again
+    on the next firing, however old the row is.
     """
-    since = datetime.now(timezone.utc) - timedelta(days=days)
     return int(session.scalar(
         select(func.count()).select_from(m.Alert)
-        .where(m.Alert.kind == "system", m.Alert.created_at >= since)
+        .where(m.Alert.kind == "system", m.Alert.acknowledged_at.is_(None))
     ) or 0)
 
 
@@ -197,7 +218,17 @@ def health(session: Session, escalation_threshold: int | None = None) -> dict:
             "month_limit": budget.per_month_usd,
             "run_limit": budget.per_run_usd,
         },
-        "recent_system_alerts": recent_system_alerts(session),
-        "badge_window_days": BADGE_WINDOW_DAYS,
+        "unacknowledged_system_alerts": unacknowledged_system_alerts(session),
+        # Transitional duplicate of the line above, under the key this field had
+        # before it was renamed. `render.yaml` deploys the API and the static
+        # frontend as two independent services, so on a blueprint sync there is
+        # a window where one is live and the other is not. A browser holding the
+        # old bundle reads `recent_system_alerts`, and without this it would get
+        # `undefined`, fall through the `?? 0`, and paint the Health badge green
+        # while system alerts were outstanding — a false green on the one
+        # indicator this whole feature exists to keep honest. Drop it on the
+        # next release that touches this file; the frontend already prefers the
+        # new key and only falls back.
+        "recent_system_alerts": unacknowledged_system_alerts(session),
         "counts": counts,
     }

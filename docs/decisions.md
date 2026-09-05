@@ -4693,6 +4693,215 @@ and `sources.yaml` and asserts each is described in the current prompt.
 Verified to fail against v7 naming `model_spec`. Any future channel that
 invents a text_source now fails at test time rather than scoring quietly wrong.
 
+---
+
+### D48 — `ensure_schema` verifies its stamp instead of asserting it (2026-09-05)
+
+**The failure, observed rather than reasoned about.** Migration 0008 adds one
+column (`alerts.acknowledged_at`). After running the test suite against the
+local Postgres, `alembic current` reported `0008` and the column did not exist.
+Nothing raised. Nothing would have raised until a query touched the column, in
+whichever of the API, the worker or the CLI reached it first, as a DBAPI error
+naming a column and not a cause.
+
+**Why.** `ensure_schema`'s never-migrated branch does `create_all` then
+`stamp head`. `create_all` creates missing *tables*; it cannot add a missing
+*column* to a table that already exists. On a database that already had tables
+but no stamp — the create_all-era case the branch exists for — it therefore
+no-ops and then asserts head. That assertion is **unrecoverable**: no later
+`upgrade` will run a revision the stamp says is already applied, so the database
+lies about itself permanently.
+
+This is the second time this function has failed on precisely the case its
+docstring claimed to handle (D29 was the first, `create_all` colliding with a
+pending `op.create_table`). The pattern in both: the function *asserted* a
+schema state rather than checking one.
+
+**The fix.** Every path now runs `_raise_on_drift`, which compares the models'
+declared columns against the live database and raises `SchemaDrift` with the
+recovery command. Three properties, all deliberate:
+
+- It runs **before `create_all`**, not merely before the stamp. Review caught
+  this: `create_all` has no migration-level checkfirst, so on a database built
+  at an older revision it creates the tables *later* migrations own, and the
+  recovery the message prints then dies on `table raw_github_repos already
+  exists` — D29 again, inside the guard meant to prevent it. Reproduced, then
+  fixed by moving the check ahead of `create_all` on both paths.
+
+- The check runs **before** the stamp in the never-migrated branch. An unstamped
+  database is recoverable — stamp the revision it actually matches, then
+  upgrade. One stamped `head` is not.
+- It covers the **stamped** branch too. The lie can arrive pre-existing, as mine
+  did, and `upgrade` against a stamp of head is a correct no-op that cannot
+  repair it. A check on only the path that creates the drift catches half of it.
+
+**Presence only, one direction.** Not types, not nullability: a column that is
+absent is unambiguous in every dialect, while a type that renders differently
+under sqlite and Postgres is not, and a drift check that cries wolf gets
+deleted. Columns the database has and the models do not are ignored — an extra
+column breaks no query we issue, and failing on it would make every rollback a
+hard outage.
+
+**Rejected: raising a warning.** The whole failure mode is that nothing looks
+wrong. A warning in a Render deploy log is the same silence with extra steps.
+
+**Consequence.** A column-only migration that has not been applied now stops the
+process at startup with an actionable message, rather than deploying and failing
+later at a random query. `bitcap-db rebuild`, a fresh clone, and a database
+already at head are all unaffected — asserted directly in
+`test_a_consistent_database_passes_the_check`, because a guard that blocks a
+legitimate deploy gets deleted the first time it does.
+
+**Regression tests.** Six in `TestEnsureSchema`, each verified to fail against
+the previous `ensure_schema` and pass against this one. The one that matters
+most is `test_the_printed_recovery_actually_works`, which *executes* the two
+commands the error message names and diffs the result against a fresh
+`create_all` — an instruction nobody has run is not a recovery. It starts from
+revision 0003 rather than 0007 deliberately: at 0007 `create_all` has nothing to
+create, so the first version of this test passed against the broken ordering
+above.
+
+---
+
+### D49 — acknowledgement is withdrawn by the pipeline, not trusted to the operator (2026-09-05)
+
+**The near-miss, recorded because the reasoning was wrong in a way that read
+well.** The clear-the-badge button shipped with this argument, in six comments
+and one test: *acknowledging cannot hide a live fault, because every rule keys
+`dedupe_key` off the episode, so a source that is still down raises a fresh
+alert on the next firing.*
+
+It is exactly backwards, and the codebase says so two lines from the rule:
+
+> Keyed on `last_success_at`, which is when the outage started **and does not
+> move while it continues. That is what makes a week-long outage one alert.**
+
+The key holds still *because* an ongoing outage must not re-alert. So nothing
+new is ever written during the fault, `dispatch` counts a duplicate and moves
+on, and one click greens the badge for the entire incident. Confirmed by
+execution before fixing: three consecutive firings against a source down for a
+week produced the identical key each time and left the badge at 0.
+
+That is the worst available failure for this system — the system-failure
+alerting going quiet precisely when the system is failing, which CLAUDE.md names
+as a graded requirement distinct from content alerts.
+
+**The test made it worse, and this is the transferable lesson.** It hand-wrote
+`source_down:mistral:1` and `source_down:mistral:2` and asserted the badge
+reddened. Two different keys only ever occur when an outage *ended and
+restarted*, so it exercised a recovery and never the dangerous case, while
+reading like proof of the opposite. **A test that constructs its own inputs to a
+rule instead of driving the rule cannot falsify a belief about that rule** — it
+restates it. The replacements drive `evaluate` + `dispatch` and take whatever
+key the real rule emits.
+
+**The fix, and why it lives in `dispatch`.** Acknowledgement is a claim the
+fault has settled; the rules regenerating the same episode key withdraws that
+claim. `dispatch` clears `acknowledged_at` on a duplicate and reports
+`reopened` in its stats. That location is forced:
+
+- **Not at read time.** Inferring liveness in `unacknowledged_system_alerts` means
+  re-running the rules on every `/api/health` poll, and `drift` and
+  `budget_exceeded` derive from run *context* that does not exist outside a
+  firing — so the two conditions most likely to persist are the two it could not
+  see. A safety check with a hole in it is worse than none, because it is
+  believed.
+- **Not in `acknowledge`.** Refusing to acknowledge a currently-live fault was
+  the other candidate. Same context hole, plus it asks the operator to be right.
+
+`dispatch` is the only place that observes "this condition produced a candidate
+again", which is the actual definition of still-live.
+
+**The limit, since review found it overstated the first time.** Reopening needs
+the rule to be *evaluated* that firing. `source_down` reads persisted
+`SourceState` and runs every time; `drift` needs `context["drift"]`, which
+`worker` supplies only on `cadence.drift`. At the shipped value of 1 there is no
+gap, and `test_the_drift_rule_is_evaluated_every_firing` pins that — the
+coupling is invisible from both sides, since nothing in `alerts.py` mentions the
+cadence and nothing in `pipeline.yaml` mentions the badge.
+
+**Consequence.** The badge reddens on the next firing rather than instantly.
+That is correct: the pipeline is what detects liveness, and the operator's
+complaint was about *stale* alerts. A settled fault stops generating its
+candidate and stays cleared — asserted directly, because if recovery did not
+stick the button would do nothing and the badge would be permanently red again.
+
+**Rejected: deleting the rows.** The user explicitly did not ask for history to
+be cleared, and an alert history that an operator can empty is not a record.
+
+**Amendment (same day, second review pass) — the badge's time window had to go.**
+`recent_system_alerts` (since renamed `unacknowledged_system_alerts`) counted
+`created_at >= now - 7 days`, and reopening does
+not move `created_at`; it cannot, that column records when the fault was first
+raised. So the fix above worked and was invisible: probed at day 10 of an
+unresolved outage, every nightly firing reported `reopened: 1` while the badge
+sat at 0 — at exactly the "week-long outage" length the alerting module uses as
+its design case.
+
+The window is now removed rather than patched around with a `reopened_at`
+column, because its own justification had expired. It read: *"`alerts` has no
+resolved/acknowledged column and nothing ever deletes a row, so an all-time
+count can only ever rise."* `acknowledged_at` is that column. Retiring the
+window also fixes a pre-existing bug on the same line that predates this branch:
+an alert nobody acknowledged fell off the badge after seven days by itself, so a
+real unhandled failure went quiet through the passage of time. **Age is not
+evidence a fault was handled**; acknowledgement is, and it is now something an
+operator can express.
+
+---
+
+### D50 — the digest preview rolls, the published edition stays quantised (2026-09-05)
+
+**The asymmetry, recorded because it will be probed.** `/api/digests/preview`
+covers `[now - 48h, now]`. `publish` covers the last complete slot of a fixed
+grid anchored at the epoch. The tab and the archive therefore disagree about
+what "the last 48 hours" means, on purpose.
+
+**Why publish must quantise.** Both reasons are scars (`app/digest.py`). Taking
+the window as `[run.started_at - 48h, run.started_at]` makes `window_end` a
+microsecond-unique wall clock, so the idempotence key
+`(kind, window_end, prompt_version)` could never collide — every firing
+published a *new* edition instead of updating one, and a `--dry-run` rehearsal
+entered the permanent record. And under a daily cron with a 48-hour lookback,
+consecutive editions overlapped by a day: the article published on the 3rd
+appeared in both the 3rd's and the 4th's editions, in two reports that each
+looked complete. The grid fixes both — periods partition the timeline, so every
+article belongs to exactly one edition.
+
+**Why the preview must not.** The grid's cost is freshness: the newest window a
+quantised view can name is the last one that *closed*. Opening the tab on the
+5th showed "the 48 hours to the 3rd", and a reader reasonably concluded the
+pipeline had stalled. Nothing errored; the page quietly described yesterday's
+yesterday.
+
+**The preview is allowed to roll because it writes nothing.** Every reason the
+grid exists is about persistence — idempotence of a stored row, and two stored
+editions not double-counting an article. A view that persists nothing has
+neither constraint. `build(quantise=...)` defaults to `True` so nothing that
+writes can pick up the rolling window by accident; `publish` takes the default
+and `test_publishing_still_quantises` pins it.
+
+**Rejected: making publish roll too.** It would resurrect both scars above for
+the sake of one consistent sentence in the UI.
+
+**Rejected: leaving the preview quantised and explaining the lag in the UI.**
+The brief's test is whether the system surfaces something worth knowing. A live
+tab that is up to two days stale fails that on its face, and a caption
+explaining why is not a fix.
+
+**Consequence, and it is visible.** "Current window (unpublished)" can overlap
+the newest published edition. That is correct — one is what the product would
+say now, the other is what it said at the time — but the digest page has to keep
+labelling them distinctly, which is why the dropdown says "unpublished" rather
+than showing a date.
+
+**Related display fix.** Selection is half-open at date resolution
+(`start.date() < published_on <= end.date()`), so `window_start` is an
+*exclusive* bound. Rendering it raw advertised a day the digest had excluded — a
+48-hour window read as three days — so the page labels the first *covered* day
+instead. Formatted in UTC: boundaries are UTC and `published_on` is a bare date,
+so local formatting shifted the label a day west of Greenwich, which is
+invisible from CET.
 ## D53 — The papers cache never existed where it mattered (2026-09-05)
 
 **What happened.** The cron firing of 2026-09-04 lost four of six papers
