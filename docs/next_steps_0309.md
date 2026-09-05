@@ -95,6 +95,31 @@
   matters for holding routing: [docs/gold_review.md](gold_review.md), last
   section. Raised 2026-09-05, **not actioned**.
 
+### Cost log
+
+- **`research/docs/announcement_cost.json` corrupted under concurrent writers,
+  live, on 2026-09-05.** Every cost recorder — `score_announcements`,
+  `drift._record_cost`, `dedupe._record_cost` — does read-modify-write on one
+  JSON file with no lock. The duplicate-collapse phase and the papers
+  classifier ran at the same moment against the same working tree and spliced
+  two records into one: a `dedupe:7216-7241` record lost its closing brace and
+  a Meta paper's fields were grafted onto it. The file stopped parsing, which
+  took out eleven tests in `test_pipeline_db.py` and `test_worker.py`.
+
+  Repaired by hand; both records recovered, 1,540 rows, $32.42 total. **No
+  spend was lost** — but only because the collision happened to land mid-record
+  rather than truncating the array.
+
+  `pipeline_runs`' single-running index (D44) does not prevent this: it stops
+  two *pipeline runs*, and this was a run alongside a manual `dedupe.assign`.
+  Two agents on one machine is now a normal working pattern here, so the guard
+  is in the wrong place.
+
+  The fix is a lock around the read-modify-write, or an append-only format that
+  does not require reading first — JSON Lines would make a concurrent append
+  atomic at the line level and remove the failure mode rather than narrowing it.
+  Not actioned; raised 2026-09-05 (D59d).
+
 # Data collection / Pipeline
 
 - Collect the names of the leaders of the frontier labs; this has to be inserted as part of the pipeline
