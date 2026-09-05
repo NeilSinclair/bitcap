@@ -120,6 +120,11 @@ def test_every_table_round_trips(session):
         # "never expires" and "expired" are one typo apart (D53).
         m.FetchCache(url="https://arxiv.org/html/2501.00001v1", body="<html/>",
                      expires_at=None),
+        m.RawArticleEmbedding(url="https://example.test/a", content_hash="h",
+                              model="text-embedding-3-small", dim=3,
+                              vector="AACAPwAAAAAAAAAA"),
+        m.ArticleGroup(article_id=art.id, group_id="g1", is_anchor=True, group_size=1,
+                       method="singleton", reason="no near-duplicate found in the window"),
     ])
     session.commit()
 

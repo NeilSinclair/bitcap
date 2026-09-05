@@ -248,10 +248,23 @@ def build(
     ):
         pracs[t.classification_id].append(t)
 
-    considered, selected = 0, []
+    # Folded near-duplicates never reach the cut. An edition carries at most
+    # eight items, so publishing a launch post and its forum restatement as two
+    # of them spends a quarter of the space saying one thing twice. The anchor
+    # carries the group; `folded` reports the rest so the suppression is stated
+    # rather than silent.
+    folded = {
+        g.article_id: g.group_size
+        for g in session.scalars(select(m.ArticleGroup)) if not g.is_anchor
+    }
+
+    considered, selected, collapsed = 0, [], 0
     for art in session.scalars(select(m.Article)):
         cls = classifications.get(art.id)
         if cls is None or not _in_window(art, start, end):
+            continue
+        if art.id in folded:
+            collapsed += 1
             continue
         considered += 1
         item = (
@@ -280,6 +293,11 @@ def build(
             # a reader asking "what did you not tell me" does not care which.
             "suppressed": considered - len(items),
             "matched_rule": len(selected),
+            # Kept separate from `suppressed`: those items lost on merit or to
+            # the cap, these were never candidates because another row in the
+            # edition already says the same thing. Conflating them would make a
+            # collapse read as a rejection.
+            "collapsed": collapsed,
         },
         "items": items,
     }

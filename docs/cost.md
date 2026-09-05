@@ -490,3 +490,27 @@ whose Postgres has not had it run — and any `bitcap-db rebuild`, which drops t
 carried rows — pays the ~$10 on its first firing. The saving is real and it is
 not yet portable.
 
+## Duplicate collapse (D57) — 2026-09-05
+
+| Workflow | Model | Calls | Tokens | USD |
+|---|---|---:|---:|---:|
+| Embedding the corpus | `text-embedding-3-small` | 7 batches | 34,115 | $0.000682 |
+| Duplicate adjudication | `claude-sonnet-5` | 12 | 19,867 | $0.057142 |
+| **Total** | | | | **$0.0578** |
+
+647 articles embedded for **under a tenth of a cent**, because what is embedded
+is title + classifier summary rather than the article body — 37k tokens against
+roughly 700k for the full text, and the bodies are mostly site chrome that
+inflates similarity between any two pages from one lab.
+
+**A re-run costs nothing.** Vectors are cached on a hash of the embedded text,
+so an unchanged corpus embeds zero rows; verified live (647 embedded, then 0).
+The adjudication band is the only per-pair spend and only 12 of 4,412 candidate
+pairs fall inside it. Incremental runs adjudicate near zero.
+
+The one recurring cost to watch is a **prompt-version bump**: that rewrites
+every summary, which invalidates every cached vector. A v10 re-classification
+therefore carries this $0.0007 with it — negligible, but it is the reason the
+cache keys on the embedded text rather than on the article payload.
+
+EUR: *pending* — with the rest, at the card statement.

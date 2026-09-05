@@ -20,13 +20,18 @@ from datetime import datetime, timezone
 # USD per million tokens (input, output).
 #
 # Anthropic figures are from the model table used elsewhere in this repo.
-# The OpenAI figure was verified against OpenAI's published pricing page
-# (developers.openai.com/api/docs/pricing) on 2026-09-02.
+# The OpenAI figures were verified against OpenAI's published pricing page
+# (developers.openai.com/api/docs/pricing): `gpt-5-mini` on 2026-09-02,
+# `text-embedding-3-small` on 2026-09-05.
 PRICES = {
     "claude-opus-5": (5.00, 25.00),
     "claude-sonnet-5": (2.00, 10.00),
     "claude-haiku-4-5-20251001": (1.00, 5.00),
     "gpt-5-mini": (0.25, 2.00),
+    # Embeddings bill input only; the output is the vector, not tokens. The
+    # zero output rate is what makes `_cost` come out right without a second
+    # cost builder.
+    "text-embedding-3-small": (0.02, 0.00),
 }
 
 
@@ -155,6 +160,46 @@ def classify_openai(model: str, system: str, user: str, schema: dict, url: str):
     return json.loads(choice.message.content), _cost(
         model, url, usage.prompt_tokens, usage.completion_tokens, started
     )
+
+
+def embed_openai(model: str, texts: list[str], url: str):
+    """Embed a batch of texts with the OpenAI embeddings API.
+
+    Batched because the per-call overhead dominates otherwise: 647 articles as
+    647 requests is minutes of round trips for a few cents of tokens. The
+    caller chunks; this embeds exactly what it is given, in order.
+
+    Anthropic has no embeddings API, which is the whole reason this lives on
+    the OpenAI side of the shim rather than alongside the Anthropic classifier.
+
+    Args:
+        model: Embedding model id.
+        texts: Texts to embed. Order is preserved in the result.
+        url: Attribution key for the cost record — a batch label, not one
+            article, since a batch is one billable call.
+
+    Returns:
+        Tuple of (list of vectors as lists of floats, cost record).
+
+    Raises:
+        RuntimeError: If the provider returns a different number of vectors
+            than texts sent, which would silently misalign every vector with
+            the wrong article.
+    """
+    from openai import OpenAI
+
+    client = OpenAI()
+    started = time.time()
+    response = client.embeddings.create(model=model, input=texts)
+
+    if len(response.data) != len(texts):
+        raise RuntimeError(
+            f"embedded {len(response.data)} of {len(texts)} texts; refusing to "
+            "align vectors to articles by position"
+        )
+
+    vectors = [item.embedding for item in sorted(response.data, key=lambda d: d.index)]
+    return vectors, _cost(model, url, response.usage.prompt_tokens, 0, started)
 
 
 PROVIDERS = {"anthropic": classify_anthropic, "openai": classify_openai}

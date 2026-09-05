@@ -5423,3 +5423,112 @@ one check that would make a carried-forward row verifiable after the fact —
 pointed at directly by this whole exercise having begun with text changing
 underneath a stored classification.
 
+## D57 — The duplicate collapse, and what the labels said about it (2026-09-05)
+
+D48 rejected cross-article deduplication and deferred the embedding approach to
+`docs/next_steps_0309.md`. This reverses it. The case that forced it: GPT-6
+Astra reached the feed as seven rows over five days, and 380 of 647 articles are
+GitHub releases where one repo ships four in five days.
+
+**Mechanism overlap was the first idea and it is wrong.** It reads as the
+natural signal — the extraction already says what each article claims — so it
+was measured rather than assumed. Over the 267 non-release articles, 52 pairs
+share a lab, a fortnight and an event type with tags on both sides; 23 clear
+Jaccard 0.5, and most of those are false. "TCS and Anthropic bring Claude to
+regulated industries" against "DXC integrates Claude into systems" scores a
+perfect 1.0 and they are two different partnerships; so do "Grok on Amazon
+Bedrock" and "Grok Becomes the Voice of Vapi". The vocabulary encodes what
+*kind* of event an item is, not *which* event. It is an input to gate 3 now,
+never a gate.
+
+**What separates the true pairs is the subject, and the separator is the event
+type.** Three gates, and only the last costs money: subject (identifier match,
+free), event type (must agree, free), redundancy (cosine, then an LLM only
+inside the band).
+
+**Gate 2 is what protects the product.** "Safety overview: GPT-6 Astra" reports
+the model reached the Critical cybersecurity level under the Preparedness
+Framework — a claim no other item in the cluster carries. It scores 10.0 and
+sits far down a score-sorted feed, so the tempting move is to fold it into the
+100-scoring launch card. That would delete the claim. It stays its own row.
+
+### What the labelled set changed
+
+82 pairs were labelled blind by a Fable 5 subagent — lab, dates, titles,
+summaries, event types, and deliberately **not** the cosine it was calibrating.
+The labeller is not the adjudicator (gate 3 runs on `claude-sonnet-5`), or the
+eval would be marking its own homework. 7 same, 75 different.
+
+**Cosine does not separate the classes.** Positives run 0.763 to 0.966 and
+negatives reach 0.869. Full recall lands at precision 0.38; full precision lands
+at recall 0.20. There is no single cut. That is the argument for a band —
+`>= 0.87` merge unasked, `< 0.76` separate unasked, and ask a model in between —
+rather than a threshold, and it is a finding about the corpus, not a defect in
+the embedding.
+
+**Two `same` pairs disagreed on event type**, which gate 2 would have refused.
+Both turned out to be one article at two URLs: "Expanding Daybreak as the Cyber
+Defense Window Narrows" on openai.com and community.openai.com the same day,
+classified `incremental_model_release` and `product_launch`; "Introducing
+Intelligence Age" at two openai.com URLs, classified `other` and
+`safety_policy`. **The classifier assigns different event types to identical
+text.** So the exact pass runs first, before gate 2, and merges on lab + date +
+title whatever else disagrees. Without the labelling this would have shipped as
+a silent refusal to merge byte-identical rows.
+
+**Gate 1 fires on 12% of the corpus and adds no merge cosine does not.** Only 38
+of 314 non-release articles carry a model identifier in the title, and no
+labelled duplicate sits below `cosine_low`, so a subject-only route would need a
+threshold the labels give no evidence for. The identifier is computed and shown
+in the reason; it is not a separate route. Recorded rather than shipped as a
+gate that never fires.
+
+**Reading the body over-generates.** Subject extraction is title-only because
+the Astra launch post is 24,000 characters and its body yields `gemini-3.8`,
+`opus-5` and `gpt-5.6-sol` from a comparison table — pairing on those joins the
+Astra launch to the GPT-5.6 launch.
+
+**One model was two keys.** "GPT-6 Astra" extracts as `gpt-6` and
+"GPT-6-Astra" as `gpt-6-astra`, because the identifier pattern only absorbs a
+suffix across a hyphen. Those two rows are the clearest true duplicate in the
+corpus and they did not match. `stem()` emits the family-and-version alongside
+the full identifier.
+
+### Honest limits
+
+**Five positives.** After the exact pass the curve rests on five labelled
+duplicates. One wrong label moves recall by 0.2. The thresholds are the best
+available estimate, not a measurement, and the sample is small because the
+corpus genuinely contains few near-duplicates — 10 of 4,412 candidate pairs
+reach cosine 0.80. `tests/test_dedupe.py` pins the count so the caveat cannot
+quietly stop being true.
+
+**The labels are a proxy.** They are machine-generated. Neil marks a stratified
+sample of 20 and the agreement rate is recorded here; until that lands, the
+eval is unvalidated and this paragraph says so rather than implying otherwise.
+
+**Human-checked agreement: pending.**
+
+### Anchoring, and the two tie-breaks
+
+Highest score, and the tie-break differs by path because within a release train
+every member usually scores the same, so the tie-break decides every group.
+Articles break towards the earliest — the Astra launch and the API docs page
+both score 100, two days apart, and "most recent" would put a reference page at
+the top of the feed with the launch folded under it. Releases break towards the
+latest: a `claude-code` card should name the version the repo is on. Score still
+comes first, so v2.1.259 (66.7) anchors over v2.1.260 (22.2).
+
+### Consequence
+
+647 articles become 555 groups; 92 rows collapse. 12 pairs reach the
+adjudicator on a full backfill and 4 of them merge. `app/pipeline/dedupe.py`,
+`config/dedupe.yaml`, `prompts/duplicate_adjudication/v1.md`, migrations 0010
+and 0011, a phase between the ETL and the digest, `research/dedupe/`, and 41
+tests. Spend: $0.000682 to embed 647 articles, $0.057 on adjudication.
+
+Not built: the cross-event-type "story" link that would group the Astra release,
+safety and customer-story rows as one thing. Its value in that case was
+rescuing the safety row from a scoring bug being fixed separately, so it is
+recorded in `next_steps_0309.md` and revisited only if that row still fails to
+surface once scored right.

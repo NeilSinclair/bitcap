@@ -54,6 +54,7 @@ from app.db import ensure_schema, get_engine, get_session, load_env
 from app.load_raw import load_articles, load_classifications, load_costs
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
+from app.pipeline import dedupe as dedupe_mod
 from app.pipeline import drift as drift_mod
 from app.pipeline import register as register_mod
 from app.pipeline.budget import Budget
@@ -389,6 +390,29 @@ def _phases(
     if drift_metrics is not None:
         snapshot_id = drift_mod.record(session, drift_metrics, prompt_version, run.id).id
         session.commit()
+
+    # 5b. Collapse near-duplicates into one row per event.
+    #
+    #     Between the ETL and the digest because it needs `event_type` and
+    #     `summary` (so after `transform`) and the digest selects what surfaces
+    #     (so before it). Deliberately NOT inside `_etl`: that is one
+    #     transaction and this phase calls two external APIs, so an OpenAI
+    #     timeout there would roll back the whole rebuild.
+    #
+    #     Degrades rather than fails. If embedding is unavailable the exact pass
+    #     and the release trains still run, which is most of the collapse by
+    #     volume; the run records the failure and carries on, because a feed
+    #     with duplicate rows is a worse product, not a broken one.
+    note("dedupe")
+    try:
+        embedded = dedupe_mod.embed(session, prompt_version, budget=budget)
+        grouped = dedupe_mod.assign(session, prompt_version, run_id=run.id, budget=budget)
+        stats["dedupe"] = {**grouped, "embedded": embedded["embedded"],
+                           "embedding_usd": embedded["usd"]}
+    except Exception as error:  # noqa: BLE001 - a duplicate row must not fail a run
+        session.rollback()
+        stats["dedupe"] = {"error": str(error)[:500]}
+    session.commit()
 
     # 6. Publish both audiences' digests for the window this firing closes.
     #    After the ETL because the investment cut reads `connections`, which the

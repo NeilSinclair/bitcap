@@ -47,6 +47,41 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
   );
 }
 
+function FoldedGroup({ members, reason, onOpen }) {
+  const [open, setOpen] = useState(false);
+  const span = members.length === 1 ? "1 more" : `${members.length} more`;
+  return (
+    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        style={{
+          background: "none", border: "none", padding: 0, cursor: "pointer",
+          font: "inherit", fontSize: 12, color: "var(--muted-2)",
+        }}
+      >
+        {open ? "▾" : "▸"} {span} on this — same event
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+          {/* Why they were merged, in the model's or the rule's own words. A
+              collapse the reader cannot interrogate is a collapse they have to
+              take on trust. */}
+          <div style={{ fontSize: 11, color: "var(--muted-2)", fontStyle: "italic" }}>{reason}</div>
+          {members.map((f) => (
+            <div
+              key={f.id}
+              onClick={(e) => { e.stopPropagation(); onOpen(f.id); }}
+              style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
+            >
+              <span style={{ color: "var(--muted-2)" }}>{f.date}</span> · {f.title}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
@@ -216,8 +251,22 @@ function Dashboard() {
     setSelectedId(null);
   }
 
+  // Folded members of a near-duplicate group, by their anchor's group id. They
+  // stay in `decorated` so a reader can expand a card and check the merge —
+  // dropping them here would make a collapse look like an article we never had.
+  const foldedByGroup = useMemo(() => {
+    const out = {};
+    for (const it of decorated) {
+      if (it.isAnchor) continue;
+      (out[it.groupId] = out[it.groupId] || []).push(it);
+    }
+    for (const list of Object.values(out)) list.sort((a, b) => b.date.localeCompare(a.date));
+    return out;
+  }, [decorated]);
+
   const visible = useMemo(() => {
-    const relevant = decorated.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
+    const anchors = decorated.filter((it) => it.isAnchor !== false);
+    const relevant = anchors.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
     const byBand = bandFilter === "all"
       ? relevant
       : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
@@ -428,6 +477,13 @@ function Dashboard() {
                       <span key={i} className="conn-pill" style={{ color: p.color, borderColor: p.color }}>→ {p.label}</span>
                     ))}
                   </div>
+                )}
+                {(foldedByGroup[item.groupId] || []).length > 0 && (
+                  <FoldedGroup
+                    members={foldedByGroup[item.groupId]}
+                    reason={item.groupReason}
+                    onOpen={setSelectedId}
+                  />
                 )}
               </div>
             ))}

@@ -25,6 +25,38 @@
 
 ### Scoring / gold set
 
+- **`capability_result` vs `safety_policy`: a safety document that reports a
+  *crossed* threshold is being scored as a voluntary policy.** "Safety overview:
+  GPT-6 Astra" states the model is "our first to reach the Critical level of
+  cybersecurity capability under our Preparedness Framework" — a crossed
+  capability threshold, which `prompts/announcement_scoring/v9.md:205` defines as
+  `capability_result` (event weight 4). It is classified `safety_policy` (weight
+  1, `config/scoring.yaml`), so it scores **10.0** where the boundary would put
+  it near 40, and it sits far down a score-sorted feed while the launch post it
+  accompanies scores 100.
+
+  `config/scoring.yaml`'s own header documents the identical v1 failure: "the
+  first US export control on a frontier model scored 20 because it was
+  classified `safety_policy` (weight 1) rather than as an action taken ON the
+  lab." Same shape, new instance — the boundary does not distinguish a lab
+  *announcing a policy* from a lab *reporting it crossed a line*.
+
+  Fix is a v10 prompt boundary change plus a full re-classification and a gold
+  re-run, so it wants its own branch and its own cost line. Raised 2026-09-05
+  while building the duplicate collapse (docs/decisions.md D57), **not
+  actioned**. Noted there because the collapse deliberately does *not* fold this
+  row into the launch card — merging it would have hidden the mis-score instead
+  of surfacing it.
+
+- **Declined: the cross-event-type "story" link.** After the collapse, GPT-6
+  Astra is three rows — release, safety, customer stories — because gate 2
+  refuses to merge across event types. A "story" link would group them in the
+  feed as one thing. Not built: its value in the Astra case is almost entirely
+  rescuing the safety row from the mis-scoring above, and building it now would
+  paper over the bug rather than fix it. Revisit only once the
+  `capability_result` boundary is corrected, and only if that row still fails to
+  surface on its own merits. Recorded 2026-09-05 (D57).
+
 - **`accelerator_custom_si` sign disagrees with the gold label** on article `15`
   (Jalapeño). Human says `mixed`, every model version v7/v8/v9 says `positive`.
   Stable across a 53x change in input text, so it is the prompt or

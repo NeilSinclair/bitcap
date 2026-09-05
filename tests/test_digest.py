@@ -110,8 +110,11 @@ class TestTheCutIsTheProduct:
 
         out = digest.build(session, "investment", V, END, CONFIG)
 
-        assert out["stats"] == {"considered": 1, "surfaced": 0,
-                                "suppressed": 1, "matched_rule": 0}
+        # `collapsed` is separate from `suppressed` on purpose: these lost on
+        # merit, a collapsed item was never a candidate because another row in
+        # the edition already says the same thing.
+        assert out["stats"] == {"considered": 1, "surfaced": 0, "suppressed": 1,
+                                "matched_rule": 0, "collapsed": 0}
         assert out["items"] == []
 
     def test_suppressed_counts_items_lost_to_the_cap_not_just_to_the_rule(self, session):
