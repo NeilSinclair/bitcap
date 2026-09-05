@@ -46,6 +46,34 @@ ROW = {"org": "google-deepmind", "repo": "mujoco", "stars": 14920,
        "language": "C++", "topics": ["physics", "robotics"]}
 
 
+@pytest.fixture(autouse=True)
+def recorded(monkeypatch):
+    """Intercept the cost recorder for every test in this module.
+
+    `judge` records cost at the call site into `score_announcements.COST`, which
+    is a **committed artifact**. Without this the suite appends its stub records
+    — `"at": "now"`, a made-up model, invented token counts — to the real
+    ledger, which it did, and they reached a commit before this fixture existed.
+    That is the trap `tests/test_drift.py::isolated_cost_log` documents, walked
+    into a second time.
+
+    `_record_cost` is patched rather than `score_announcements.COST`, which is
+    what `test_drift` does. Reaching `COST` means importing `score_announcements`
+    here, which means putting `research/announcements` on `sys.path` from the
+    test module — and that is exactly the crutch removed above, the one that
+    made `test_the_prompt_actually_loads` unable to fail.
+
+    Autouse, because any test that reaches `judge` past the cache writes a
+    record and remembering which those are is what goes wrong.
+
+    Returns:
+        The list of cost records the code under test tried to write.
+    """
+    written: list[dict] = []
+    monkeypatch.setattr(repo_relevance, "_record_cost", written.append)
+    return written
+
+
 @pytest.fixture()
 def session():
     engine = create_engine("sqlite:///:memory:")
@@ -83,6 +111,24 @@ class TestTheCache:
         stored = session.scalars(select(m.RawLlmResponse)).one()
         assert stored.url == "repo:google-deepmind/mujoco"
         assert stored.prompt_version == "r1:claude-haiku-4-5-20251001"
+
+    def test_the_cost_record_carries_tokens_not_just_usd(self, session, calls, recorded):
+        """CLAUDE.md's third non-negotiable is "tokens and € per workflow,
+        recorded as we go... cannot be reconstructed later". An earlier version
+        returned only a rolled-up float on `FetchResult.cost_usd`, which makes
+        "how much of this is input?" unanswerable six months on."""
+        repo_relevance.judge(session, ROW, CONFIG)
+
+        assert len(recorded) == 1
+        assert recorded[0]["input_tokens"] == 900
+        assert recorded[0]["output_tokens"] == 40
+        assert recorded[0]["url"] == "repo:google-deepmind/mujoco"
+
+    def test_a_cached_verdict_records_no_cost(self, session, calls, recorded):
+        repo_relevance.judge(session, ROW, CONFIG)
+        repo_relevance.judge(session, ROW, CONFIG)
+
+        assert len(recorded) == 1, "billed a second time for a cache hit"
 
     def test_a_cached_verdict_makes_no_call_and_costs_nothing(self, session, calls):
         repo_relevance.judge(session, ROW, CONFIG)

@@ -1233,6 +1233,32 @@ class TestRepoRelevanceGate:
             "a repository in the corpus was never judged, so its releases would "
             "be re-derived for ever")
 
+    def test_a_corpus_repo_the_ranking_dropped_is_reported_as_unjudged(
+            self, monkeypatch, session):
+        """`ranked` excludes anything absent from the live 12-month listing,
+        below `min_stars`, or matching `is_mirror`. Such a repository is still
+        in the corpus, so its releases are still being derived — and the sweep
+        cannot judge it. Unreachable today, reachable the first time a watched
+        repository goes a year without a push. The point is that it is *named*
+        rather than silently skipped, because `swept` alone reads as coverage."""
+        from app import models as m
+
+        session.add(m.RawArticle(
+            url="https://github.com/google-deepmind/gone/releases/tag/v1",
+            content_hash="h", source_file="github_releases",
+            payload={"lab": "google-deepmind", "title": "t", "date": "2026-09-01",
+                     "text": "b", "text_source": "github_release",
+                     "org": "google-deepmind", "repo": "gone"}))
+        session.flush()
+
+        self.stub(monkeypatch, lambda repo: ({"relevant": True, "reason": "r"}, 0.0007, None))
+        # "gone" is in the corpus but not in the ranking.
+        _, report = adapters._relevant_slice(
+            self.ranked("a", "b"), {}, self.cfg(), session)
+
+        assert report["unjudged"] == ["gone"]
+        assert report["swept"] == 0, "swept must count what was judged, not the target"
+
     def test_the_sweep_does_not_re_judge_what_the_walk_already_saw(
             self, monkeypatch, session):
         from app import models as m

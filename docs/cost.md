@@ -670,9 +670,11 @@ schema so what was measured is what ships.
 | **Total** | **366** | **$0.3275** | | |
 
 The winner being the cheaper one is a coincidence, not the reason — recall
-decided it (D65), and `gpt-5-mini` prices input at a quarter of Haiku's while
-this prompt is ~900 input tokens against ~40 out. Recorded so nobody later reads
-this table backwards.
+decided it (D65). Measured medians per call: Haiku **882 in / 48 out**,
+`gpt-5-mini` **705 in / 193 out**. It is cheaper *despite* emitting four times
+the output, because it prices input at a quarter of Haiku's and this prompt is
+input-heavy. Recorded so nobody later reads this table backwards, or sizes a
+prompt change against Haiku's output profile.
 
 ### The filter itself — the part that runs nightly
 
@@ -685,13 +687,31 @@ ever** on `repo:{org}/{name}` + `{version}:{model}`.
 | the whole 87-repo watched set | **~$0.06** |
 | a warm re-run | **$0.00** — verified live: three repositories judged, then re-judged for nothing |
 
+Those three live calls cost **$0.0033** and are *not* in this ledger: they ran
+during the n=1 proof, before `_record_cost` existed on this path. Noted rather
+than quietly omitted, and the reason the recorder now exists.
+
+A separate correction: 14 fabricated records reached this log and 3 of them
+reached a commit. `tests/test_repo_relevance.py` stubbed `providers.classify`,
+which sits *below* `_record_cost`, so the real recorder ran and wrote stub
+values (`"at": "now"`, invented token counts, $0.0139 of spend that never
+happened). They are removed, and the fixture now intercepts `_record_cost`
+itself. This is the trap `tests/test_drift.py::isolated_cost_log` documents,
+walked into a second time.
+
 Spend is recorded **with tokens, at the call site**, into this ledger's JSON log
 — the same `_record_cost` path dedupe and the drift check use — and `load_costs`
-carries it into `raw_costs` in the same firing. `FetchResult.cost_usd` is
-deliberately left at zero: `budget.month_to_date` sums `raw_costs` *plus*
-`run_sources.cost_usd` on the stated assumption that the two never overlap, so
-reporting it both ways would double-count the filter against the €100 ceiling —
-silently, and in the direction that stops the pipeline early.
+carries it into `raw_costs` in the same firing.
+
+It is returned on `FetchResult.**metered_usd**`, not `cost_usd`, and the two are
+charged the same way and stored differently. Both are added to the run's
+`Budget`, so the per-run ceiling sees the spend on the firing that incurs it —
+`month_spent_before` is snapshotted at construction, so anything that only
+reaches `raw_costs` would otherwise be invisible until the *next* run. Only
+`cost_usd` is written to `run_sources`, because `budget.month_to_date` sums
+`raw_costs` *plus* `run_sources.cost_usd` on the stated assumption that the two
+never overlap. Charging the budget duplicates nothing: `Budget.run_spent` feeds
+the ceiling check and never reaches `run.cost_usd`.
 
 Recording at the call site rather than on the return value also survives a
 failure later in the adapter. `run_source` discards the `FetchResult` on an

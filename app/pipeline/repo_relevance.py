@@ -75,18 +75,34 @@ def _record_cost(cost: dict) -> None:
     the monthly ceiling — silently, and in the direction that stops the pipeline
     early.
 
+    Failure to write is swallowed. `judge` could not raise before this existed,
+    and a corrupt or read-only log must not become "this org's releases failed"
+    — `run_source` would mark the whole source down *after* the verdicts had
+    been bought and flushed, turning a bookkeeping problem into a data one. The
+    spend is still returned to the caller either way.
+
     Args:
         cost: Record from `providers._cost`.
     """
     import json
 
+    # Guarded like `prompt()`. Without it this works only because `prompt()` is
+    # evaluated as an argument on the same line and inserts the path first —
+    # a dependency on argument-evaluation order, in the module whose docstring
+    # already records this import being got wrong twice.
+    announcements = str(ROOT / "research" / "announcements")
+    if announcements not in sys.path:
+        sys.path.insert(0, announcements)
     import score_announcements as sa_module
 
     if not (cost.get("url") and cost.get("at")):
         return
-    log = json.loads(sa_module.COST.read_text()) if sa_module.COST.exists() else []
-    log.append({**cost, "workflow": "repo_relevance"})
-    sa_module.COST.write_text(json.dumps(log, indent=2))
+    try:
+        log = json.loads(sa_module.COST.read_text()) if sa_module.COST.exists() else []
+        log.append({**cost, "workflow": "repo_relevance"})
+        sa_module.COST.write_text(json.dumps(log, indent=2))
+    except (OSError, ValueError):
+        pass
 
 
 def cache_key(config: dict) -> str:

@@ -139,9 +139,12 @@ relevance:
   # `openai/harmony`, `openai/skills` and `deepseek-ai/deepseek-harness`. It is
   # not a marginal difference in a summary statistic.
   #
-  # It being cheaper too is a coincidence, not the reason. gpt-5-mini prices
-  # input at a quarter of Haiku's, and this prompt is ~900 input tokens against
-  # ~40 out.
+  # It being cheaper too is a coincidence, not the reason. Measured medians per
+  # call over the 183: Haiku 882 in / 48 out, gpt-5-mini 705 in / 193 out.
+  # gpt-5-mini is cheaper *despite* emitting four times the output, because it
+  # prices input at a quarter of Haiku's and this prompt is input-heavy. Sizing
+  # a change to r1.md against "~40 out" would under-budget it by about five
+  # times, on the side priced at 8x its input.
   #
   # The model string is the exact key in `providers.PRICES`. An unpriced name
   # works through the whole API call and then raises KeyError while building the
@@ -155,10 +158,19 @@ relevance:
   # invalidates them rather than silently serving answers from the other one.
   prompt_version: r1
 
-  # Ceiling on judgements per org per firing. Laziness bounds the typical case
-  # -- the walk stops as soon as `releases_watch` repositories pass -- but an
-  # org whose ranking is mostly off-topic has no natural stopping point, and
-  # facebookresearch lists 395 repositories in the window. The money is small;
-  # 395 sequential calls bolted onto a firing already running 9-30 minutes is
-  # not. Must be >= releases_watch, or the list can never fill.
+  # Ceiling on **paid** judgements per org per firing. Laziness bounds the
+  # typical case -- the walk stops as soon as `releases_watch` repositories pass
+  # -- but an org whose ranking is mostly off-topic has no natural stopping
+  # point, and facebookresearch lists 395 repositories in the window. The money
+  # is small; 395 sequential calls bolted onto a firing already running 9-30
+  # minutes is not.
+  #
+  # Cache hits do not count, and that is deliberate. This ceiling exists to
+  # bound spend and wall-clock, and a cached verdict costs neither -- counting
+  # them froze the walk at a fixed depth for ever, which left facebookresearch
+  # watching three repositories instead of ten with no way to recover. So on a
+  # cold walk this is the ceiling and the list may come up short; once the
+  # verdicts are bought the walk runs as deep as it needs to, for free.
+  #
+  # Keep it >= releases_watch: below that, a cold walk can never fill the list.
   max_judged: 30

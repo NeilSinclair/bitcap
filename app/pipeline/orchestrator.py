@@ -160,8 +160,15 @@ def run_source(
         )
     else:
         state_mod.record_success(st, result.watermark)
-        if budget is not None and result.cost_usd:
-            budget.spend(result.cost_usd)
+        # Both, and the difference matters. `cost_usd` is spend recorded nowhere
+        # else and goes on to `run_sources`; `metered_usd` is spend the source
+        # already wrote to the cost log, which must still be charged to *this*
+        # run's ceiling or the firing that spends the money sees none of it —
+        # `month_spent_before` is snapshotted at construction, so it would only
+        # surface on the next run.
+        spent = result.cost_usd + result.metered_usd
+        if budget is not None and spent:
+            budget.spend(spent)
         outcome = SourceOutcome(
             source=source,
             status=SUCCEEDED,

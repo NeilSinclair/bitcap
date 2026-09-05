@@ -76,7 +76,17 @@ class FetchResult:
         unresolved: Things this source found but could not resolve, each with a
             `reason`. Never dropped: an unresolvable paper is a recorded gap,
             not an absence (docs/handover.md §5).
-        cost_usd: LLM spend attributable to this source, if any.
+        cost_usd: LLM spend attributable to this source that is recorded
+            *nowhere else*. Written to `run_sources.cost_usd`, which
+            `budget.month_to_date` sums alongside `raw_costs` on the stated
+            assumption that the two never overlap. Only the papers leg uses it.
+        metered_usd: LLM spend this source already wrote to the shared cost log,
+            and which therefore reaches `raw_costs` on its own. Charged to the
+            run's `Budget` so the per-run ceiling sees it, but deliberately kept
+            out of `run_sources.cost_usd` — writing it in both places would
+            double-count it against the monthly ceiling. The two ceilings read
+            different things: `Budget.run_spent` never reaches `run.cost_usd`,
+            so charging the budget here duplicates nothing.
         raw_repos: GitHub only — repository histories fetched on this run, for
             `raw_github_repos`. `items` for that leg is the *aggregate* (one
             record per person), which cannot be re-derived from itself; this
@@ -88,6 +98,7 @@ class FetchResult:
     watermark: dict = field(default_factory=dict)
     unresolved: list[dict] = field(default_factory=list)
     cost_usd: float = 0.0
+    metered_usd: float = 0.0
     raw_repos: list[dict] = field(default_factory=list)
 
 
@@ -568,13 +579,26 @@ def _relevant_slice(ranked: list[dict], listing: dict, cfg: dict,
     # was watched at some point, and leaving one unjudged means its releases are
     # re-derived on every firing for ever with nothing reporting it.
     in_corpus = _corpus_repos(session, ranked[0]["org"]) if ranked else set()
-    for row in ranked:
-        if row["repo"] not in in_corpus or row["repo"] in judged_repos:
+    # Iterate the population that needs covering, not the ranking. `ranked`
+    # drops anything absent from the live 12-month listing, below `min_stars`,
+    # or matching `is_mirror` — so a watched repository that goes a year without
+    # a push is in the corpus, absent from the ranking, and would be silently
+    # skipped: the original bug in a smaller shape.
+    by_repo = {row["repo"]: row for row in ranked}
+    for name in sorted(in_corpus - judged_repos):
+        row = by_repo.get(name)
+        if row is None:
             continue
         verdict, _ = verdict_for(row)
         if verdict is not None and not verdict["relevant"]:
-            report["excluded"].append({"repo": row["repo"], "why": verdict["reason"]})
-    report["swept"] = len(in_corpus)
+            report["excluded"].append({"repo": name, "why": verdict["reason"]})
+    # What was actually covered, and what was not. Reporting `len(in_corpus)`
+    # here described the *target* population, so the one field an operator would
+    # read to check coverage could not detect the gap above.
+    report["swept"] = len(in_corpus & judged_repos)
+    unjudged = sorted(in_corpus - judged_repos)
+    if unjudged:
+        report["unjudged"] = unjudged
 
     report["usd"] = round(report["usd"], 6)
     return picked, report
@@ -866,16 +890,15 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
             f"{org}: all {len(ranked)} watched repositories failed -- "
             f"first was {failures[0]}"
         )
-    # `cost_usd` is deliberately left at zero. The relevance filter records its
-    # spend with tokens at the call site (`repo_relevance._record_cost`), which
-    # lands in `raw_costs` via `load_raw.load_costs` in the same firing.
-    # Returning it here as well would double-count it: `budget.month_to_date`
-    # sums `raw_costs` *plus* `run_sources.cost_usd` on the stated assumption
-    # that the two never overlap. Recording at the call site also survives a
-    # failure later in this function, which the return value does not —
-    # `run_source` discards `result` on an exception, and the verdicts have
-    # already been bought and flushed by then.
-    return FetchResult(items=items, watermark=watermark)
+    # `metered_usd`, not `cost_usd`. The relevance filter records its own spend
+    # with tokens at the call site (`repo_relevance._record_cost`), which reaches
+    # `raw_costs` via `load_costs` in this same firing — so putting it on
+    # `cost_usd` as well would write it to `run_sources` too and double-count it
+    # against the monthly ceiling. It still has to be charged to the run's
+    # `Budget`, or the firing that spends the money is the one firing that
+    # cannot see it.
+    return FetchResult(items=items, watermark=watermark,
+                       metered_usd=relevance.get("usd", 0.0))
 
 
 def fetch_posts(source, state=None, session=None) -> FetchResult:

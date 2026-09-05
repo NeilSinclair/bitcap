@@ -7008,12 +7008,18 @@ The rule lives in the prompt, where it is measured, rather than in a denylist.
 ### The verdicts are committed, because a rebuild cannot re-derive them
 
 `raw_llm_responses` is not an ops table, so `bitcap-db rebuild` drops it — and
-the derivation gate only ever *reads* the cache. A fresh clone therefore started
-with no verdicts, rendered every off-topic release again, and did it while
-`source_state` (which does survive a rebuild) still reported them excluded. The
-database and its own watermark disagreed, and nothing raised. That is the path a
-reviewer actually runs, and the README's promise that a rebuild needs no API key
-stopped being true the moment verdicts existed.
+the derivation gate only ever *reads* the cache, never re-buys. A rebuilt
+database therefore came back with no verdicts at all, and the README's promise
+that a rebuild "needs no API key" and drops only what is "derived from files in
+the repo" stopped being true the moment verdicts existed: they are the one
+derived thing here that can only be re-bought.
+
+**Stated precisely, because the first draft of this paragraph overclaimed.**
+`drop_all` also drops `raw_articles`, and there is no committed releases corpus
+— `load_article_records` says so — so a rebuilt database holds *no release rows*
+and nothing off-topic can come back to the dashboard. What was actually broken is
+narrower: the rebuild silently re-bought 87 verdicts, and any firing against a
+rebuilt database ran the gate against an empty cache.
 
 Every other derived thing here is reproducible from a committed file. Verdicts
 now are too: `research/docs/repo_relevance_verdicts.json`, frozen from the
@@ -7021,9 +7027,17 @@ bake-off run of the configured model (`bakeoff_repos.py --freeze`, not a second
 purchase) and replayed by `load_raw.load_repo_verdicts` before `transform`. It
 never overwrites a fresher verdict — the live cache wins — and it is keyed on the
 same `{version}:{model}`, with a test that fails if config moves to a model the
-artifact was not frozen for. Verified: a rebuild with no API key loads 183
-verdicts and the gate correctly drops `torax`, `habitat-lab` and `mujoco` while
-keeping `openai/codex`, `faiss` and `deepseek-harness`.
+artifact was not frozen for.
+
+**Reproduce it like this**, because the check is worth being able to repeat:
+`DATABASE_URL=sqlite:////tmp/probe.db uv run bitcap-db rebuild` with no API key
+set, then read the cache back — 183 rows under `r1:gpt-5-mini`, and
+`transform.off_topic_repos(session)` returns 76 repositories including `torax`,
+`habitat-lab` and `mujoco`, and excluding `openai/codex`, `faiss` and
+`deepseek-harness`. That is a statement about the *verdict set the gate would
+apply*; it is not a claim that releases disappeared from a rebuilt dashboard,
+which as noted above cannot happen because a rebuild leaves no release rows at
+all.
 
 ### The gate fails open, and that is why it needs an alert
 
@@ -7070,8 +7084,16 @@ CLAUDE.md's third non-negotiable: `run_sources.cost_usd` is a rolled-up float, s
 tokens were thrown away and "how much of this is input?" became unanswerable six
 months later. It also only ever ran on the adapter's success path, so a failure
 after the gate had already bought its verdicts lost the record of money that had
-left the card. Spend is now recorded with tokens at the call site, the way dedupe
-and drift record theirs, and `cost_usd` is left at zero.
+left the card.
+
+Spend is now recorded with tokens at the call site, the way dedupe and drift
+record theirs. The second attempt then over-corrected — leaving `cost_usd` at
+zero also stopped `budget.spend` firing, so the one firing that could not see
+the money was the firing that spent it, and that is the firing which also
+backfills every newly promoted repository. Hence `metered_usd`: charged to the
+run's ceiling like any other spend, kept out of `run_sources` because its
+records are already in `raw_costs`. The two ceilings read different things, so
+this duplicates nothing.
 
 ### Honest limits
 

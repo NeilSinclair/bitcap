@@ -26898,35 +26898,5 @@
     "seconds": 3.06,
     "at": "2026-09-05T20:16:50.115945+00:00",
     "workflow": "repo_relevance_bakeoff"
-  },
-  {
-    "url": "repo:google-deepmind/mujoco",
-    "model": "claude-haiku-4-5-20251001",
-    "input_tokens": 900,
-    "output_tokens": 40,
-    "usd": 0.0011,
-    "seconds": 1.0,
-    "at": "now",
-    "workflow": "repo_relevance"
-  },
-  {
-    "url": "repo:openai/mujoco",
-    "model": "claude-haiku-4-5-20251001",
-    "input_tokens": 900,
-    "output_tokens": 40,
-    "usd": 0.0011,
-    "seconds": 1.0,
-    "at": "now",
-    "workflow": "repo_relevance"
-  },
-  {
-    "url": "u",
-    "model": "m",
-    "input_tokens": 1,
-    "output_tokens": 1,
-    "usd": 0.0009,
-    "seconds": 1.0,
-    "at": "now",
-    "workflow": "repo_relevance"
   }
 ]

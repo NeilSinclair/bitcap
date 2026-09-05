@@ -498,7 +498,9 @@ def _check_relevance(root: Path, doc: dict) -> list[str]:
     elif isinstance(watch, int) and not isinstance(watch, bool) and judged < watch:
         errors.append(
             f"repo_signals.yaml: relevance.max_judged ({judged}) is below "
-            f"releases_watch ({watch}), so the watch list can never fill"
+            f"releases_watch ({watch}), so a cold walk can never fill the watch "
+            "list (cache hits do not count against the ceiling, so a warm one "
+            "still can)"
         )
     return errors
 
