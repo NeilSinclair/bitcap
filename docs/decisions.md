@@ -4921,3 +4921,64 @@ would move the expected count down in lockstep and report success on a corpus a
 quarter unscored. Now bounded at 5 (measured: 1). The per-lab assertion added in
 D53a is kept but is the cheap half — it needs only one classified article per
 lab, so the largest lab could lose 149 of 151 and pass. Both halves are needed.
+
+---
+
+## D55 — Enrichment that runs after the fetch does not survive the next one (2026-09-05)
+
+`backfill_openai.py` recovered 141 OpenAI articles from the Internet Archive on
+2026-09-02, mean 9,105 characters against a 201-character RSS summary. The next
+corpus commit, one day later (`4c67d32`, the seven-lab expansion), put every one
+of them back to a blurb. `collect()` builds the register from scratch and
+`OUT.write_text`s it; the backfill was a separate script editing that same file
+afterwards. Nothing failed, the register still held its full article count, every
+citation still resolved, and the suite stayed green.
+
+The cost was not cosmetic. OpenAI is 59% of the corpus and the lab whose
+announcements move the most tickers, and for two days it was scored on its own
+meta descriptions. The Jalapeño inference-chip results -- OpenAI displacing
+merchant accelerators, the single most NVDA-relevant article in the register --
+reached the classifier as two sentences and scored `medium`. The gold set labels
+it `high` by hand, and v7 scored it `high` off the archived text before the
+regression.
+
+**Recovery moved inside the fetch.** `enrich_wayback` upgrades summary-only
+articles in place before they leave the lab's loop, so the file `collect()`
+writes already contains the full text. It reuses `fetch_wayback` and
+`strip_html`, already in the module for xAI's discovery, rather than adding a
+second copy of the archive machinery.
+
+**Wired into both paths, because they deliberately do not share a loop.** The
+adapter is the one that mattered: the deployed cron runs no scripts and has no
+file, so recovery had never run in production at all. That asymmetry is the
+whole bug -- xAI's archived text comes from `wayback_cdx`, a discovery method
+*inside* the fetcher, and survives every rebuild; OpenAI's came from a script
+bolted on outside it.
+
+**`backfill: wayback` was config read by nothing.** Twenty lines documenting a
+step no code path executed, which reads as wired up. Now read in both paths and
+validated, including a misspelt key -- the only thing that can see `backfil:`
+is this validator.
+
+**The wildcard CDX index lags the exact one.** Trusting the bulk query alone
+reported `path-to-astra` -- the substantive half of the GPT-6 Astra launch -- as
+unarchived, when an exact lookup finds a 2026-09-03 snapshot immediately
+(221 -> 15,366 characters). Not truncation: 5,290 rows against a 6,000 limit.
+An exact fallback now runs per genuine miss.
+
+**Rejected: gating tag confidence on text length.** Measured on the v8 register
+first: articles under 500 characters produced 15 mechanism tags, **zero** of
+them high-confidence, and **zero** high bands. The prompt already rates how
+plainly the text states a thing, so a length gate would be machinery that
+changes no output. The check was worth running -- v7 read three high/high tags
+off the same two sentences, and the difference is the v8 prompt, not a rule
+anyone added.
+
+**Still open.** 17 articles the archive has genuinely never crawled -- 11
+customer stories, 4 policy posts, 2 academy pages, plus
+`safety-overview-gpt-6-astra`, the only substantive one. They are settled after
+their first run and never retried, so archive lag becomes permanent. Closing it
+means either Save Page Now (an API call, in the pipeline) or not settling a
+summary-only article -- and the second implies a re-score, since a
+classification already exists at this prompt version.
+
