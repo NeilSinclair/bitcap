@@ -5269,3 +5269,157 @@ this change.
 **Still open, unchanged:** an article settles the night it is discovered, so
 enrichment gets one attempt and archive lag becomes permanent.
 
+---
+
+## D56 — v9: the same question, asked of text that finally exists (2026-09-05)
+
+The fetch-time backfill (D55) made recovery possible; this is the run that
+collected it. Three things had to happen together, and the order matters.
+
+**The corpus was re-fetched.** 251 -> 259 articles. OpenAI's mean text went
+237 -> 7,615 characters: `rss_summary` 149 -> 22, `full_text_archived` 35 ->
+157, `forum_post` 1 -> 16. The forum channel is a quiet win — 16 posts against
+1, including the GPT-5.6 series launch and two API price drops, none of which
+the register previously held.
+
+The re-fetch was written to a scratch file and diffed before it was allowed
+near the committed corpus, because `collect()` rebuilds from scratch and can
+legitimately drop articles. Eight went: seven aged past the rolling window
+correctly, and one did not. `introducing-ai-futures` (2026-08-20) is inside the
+window and has **fallen off OpenAI's RSS feed**. It survives in Postgres, which
+upserts by URL, so the product keeps it — at 179 characters, permanently, since
+the fetch can no longer discover it and enrichment only sees what discovery
+returns. Same family as the settle-once limitation, reached by a different
+road. Not fixed.
+
+**The prompt was bumped to v9.** A classification is keyed on
+`(url, prompt_version)`, so better text alone never reaches a scorer — the row
+already exists.
+
+**CORRECTION (see D56a): v9 was not byte-identical to v8 when the register was
+scored, and the "exactly one variable" claim below is false for it.** v9 was
+written as a copy of v8 plus a fifteen-line HTML comment explaining why the
+version existed, and `build_prompt` sent the file verbatim — so all 259 calls
+received ~170 tokens stating that OpenAI's articles "are now archived full
+text". That is a leading claim about the input, pointing in the same direction
+the scores moved. `strip_comments` now removes comments before sending, and
+`prompts/announcement_scoring/v9.md` keeps the comment plus a provenance
+warning rather than deleting it, because it is what was actually sent.
+
+**The result, against the human gold labels.** Jalapeño is the case the whole
+investigation started from:
+
+| | custom_silicon_substitution | inference_cost_down | band |
+|---|---|---|---|
+| gold (hand-labelled) | positive/high/high | positive/high/high | — |
+| v7 (blurb, unresolvable quotes) | positive/high/high | positive/high/high | high |
+| v8 (blurb) | positive/medium/medium | *absent* | medium |
+| **v9 (13,311 chars)** | **positive/high/high** | **positive/high/high** | **high** |
+
+Both tags return exactly as labelled and the article is back in the high band,
+so it fires a content alert again. Two honest gaps remain: v9 drops
+`inference_volume_up`, the lowest-confidence gold tag; and every model version
+calls the `accelerator_custom_si` category *positive* where the human labelled
+it *mixed* — a disagreement that predates the text fix and therefore belongs to
+the prompt or the category definition, not to this change.
+
+Corpus-wide: 259 scored, 0 failed, $7.16. High band 6 -> 20. Connections
+481 -> 882, and those clearing the 0.5 alert threshold 73 -> 172. **The verbatim
+audit is 0 of 523 quotes unresolvable**, against 237 of 470 for v7 — which is
+the number that says these scores rest on text the system actually holds.
+
+**Release classifications were carried forward, not re-run.** The version bump
+made all 380 release documents pending at v9. They were copied from v8 rather
+than re-scored, saving ~$10.
+
+The first justification for this was **"the output cannot differ"**, and it is
+wrong — refuted by artefacts in this same commit. On the 78 corpus articles
+whose text is byte-identical between the pre- and post-D56 corpus and which are
+scored under both versions, v9 disagreed with v8 on the mechanism id set for
+**17 (22%)** and on the band for **8 (10%)**. `research/docs/variance_v3.json`
+found the same independently: 6 of 12 articles mechanism-stable across repeat
+calls at fixed prompt and fixed text. `temperature` is deprecated for this
+model, so the spread is inherent.
+
+The argument that survives is narrower: **re-running buys a different sample
+from the same noisy distribution, not a better one.** The v8 rows are already a
+draw from it, taken against the same prompt body and the same bytes; ~$10 would
+purchase a re-roll in which roughly one row in five lands differently, with no
+basis for calling the new draw more correct. So about 1 in 5 of the 380 copied
+rows is not what a v9 call would have returned, and they are the majority of v9
+classifications in the database. That is a real cost of the decision and it is
+recorded here rather than in a footnote.
+
+Rejected: re-scoring (~$10 for a re-roll) and switching the releases leg off
+(cheap, but it removes them from the product). Every copied row carries
+`_carried_forward` naming the source version and the reasoning, which is what
+keeps the saving from costing provenance.
+
+**Working practice, learned the hard way.** This work was done on a branch cut
+from a `deployment-dev` that moved four commits while it ran, two of them
+overlapping: `927c653` fixed the duplicate alembic `0008` collision I had
+independently found and fixed, and `809f42b` rewired the pipeline suite to
+derive from `PROMPT_VERSION`, touching the same files as the bump above. Both
+were discarded in favour of what had already landed. Fetch immediately before
+branching, before running anything that writes, and before committing — not
+once at the start.
+
+---
+
+## D56a — What the review of the v9 run found (2026-09-05)
+
+Ten findings. The two majors both attack claims D56 made, and both were
+confirmed against artefacts already in the repository.
+
+**The prompt was not byte-identical, and the check verified the wrong bytes.**
+`build_prompt` sends `PROMPT.read_text()` verbatim; markdown comments are not
+stripped. v9 carried 686 characters v8 did not, including a sentence telling the
+model that OpenAI's articles "are now archived full text" — a leading statement
+about the input, in the direction the scores moved. The guard in
+`carry_forward_releases.py` split v8 at the first newline and v9 at `-->`,
+removing precisely the delta, so the one precondition it claimed to check was
+checked vacuously.
+
+`strip_comments` now runs inside `build_prompt`, and the guard compares the
+assembled prompt body rather than the files. `v9.md` keeps its comment and gains
+a provenance warning: deleting it would make the repository misrepresent how
+`scored_announcements_v9.json` was produced.
+
+The consequence for D56's headline: **the v8-to-v9 comparison is two-variable,
+not one.** Some part of Jalapeño's return to high/high may be the leading
+comment rather than the recovered text. What does not depend on the prompt at
+all is the verbatim audit — 0 of 523 quotes unresolvable against 237 of 470 for
+v7 — because that is mechanical.
+
+**"Same prompt plus same text implies same output" is false**, at 22% on
+mechanism ids over 78 articles. Rewritten above.
+
+**Two `PROMPT_VERSION` constants had to agree by hand.** `score_announcements`
+now reads the app's, and a test forbids a literal reappearing. The drift is
+worth naming because it is silent and self-repeating: with the app ahead, every
+article lists pending at the app's version, the scorer writes into its own cache
+directory, `load_classifications` finds the app's directory empty, `transform`
+writes nothing, `connect` deletes every connection row and rebuilds none, the
+dashboard empties — and the next firing pays for the identical set again.
+
+**Tests were added for the property that failed, not for the helper.** The first
+version of the prompt test called `strip_comments` directly and passed while
+`build_prompt` ignored it — the same defect shape as the original. The test now
+calls `build_prompt` and asserts the comment is absent from what it returns. All
+four new tests were verified by breaking their fix and confirming red.
+
+**Minors fixed:** the carry-forward's marker date was hardcoded to 2026-09-05,
+so a second database would receive a false provenance date; the corpus label was
+a string literal rather than `registry.CORPUS_LABELS[RELEASES]`; and a zero-row
+join printed "carried forward: 0" and exited 0, which reads as success. It now
+refuses.
+
+**Named, not fixed.** The carry-forward wrote outside any tracked run — no
+`pipeline_runs` row, no `load_run_id` — and only against the local database, so
+`docs/cost.md`'s "~$10 not spent" holds locally and nowhere else. A deploy to a
+database that has not had the script run, or any `bitcap-db rebuild`, spends it.
+`raw_llm_responses` also stores no hash of the text a call read, which is the
+one check that would make a carried-forward row verifiable after the fact —
+pointed at directly by this whole exercise having begun with text changing
+underneath a stored classification.
+

@@ -40,7 +40,18 @@ from llm_byline import PRICES, load_env  # noqa: E402
 from app.scoring import ai_score_of, score_of  # noqa: E402,F401
 from verbatim import enforce as enforce_quotes  # noqa: E402
 
-PROMPT_VERSION = "v8"
+# Imported, never redeclared. These were two constants that had to agree by
+# hand, and the drift is silent and expensive: with the app ahead of the
+# scorer, every article lists as pending at the app's version, the scorer pays
+# for calls that write into the *scorer's* cache directory, `load_classifications`
+# finds the app's directory empty and counts them all missing, `transform`
+# writes nothing, `connect` deletes every connection row and rebuilds none, the
+# dashboard serves an empty list -- and the next firing re-lists the identical
+# pending set and pays again, nightly, until per_run_usd binds.
+_APP = ROOT / "app" / "cli.py"
+PROMPT_VERSION = re.search(
+    r'^PROMPT_VERSION = "([^"]+)"', _APP.read_text(encoding="utf-8"), re.M
+).group(1)
 PROMPT = ROOT / "prompts" / "announcement_scoring" / f"{PROMPT_VERSION}.md"
 MECHANISMS = ROOT / "config" / "mechanisms.yaml"
 PRACTICES = ROOT / "config" / "practices.yaml"
@@ -198,6 +209,32 @@ def vocabularies() -> tuple[str, str, str, set[str], set[str], set[str]]:
     )
 
 
+COMMENT = re.compile(r"\n?<!--.*?-->\n?", re.S)
+
+
+def strip_comments(prompt: str) -> str:
+    """Remove `<!-- -->` blocks so a note to a reader is not a note to the model.
+
+    A prompt file is read by two audiences and only one of them should see all
+    of it. v9 was written as a copy of v8 with a fifteen-line comment explaining
+    why the version existed; `build_prompt` sent the file verbatim, so all 259
+    v9 calls were told "OpenAI's articles were ~200-character RSS summaries and
+    are now archived full text". That is not a neutral difference -- it is a
+    leading statement about the input, pointing in exactly the direction the
+    scores moved, and it silently made the v8-to-v9 comparison two-variable.
+
+    Stripping here rather than forbidding comments in the file keeps the
+    rationale next to the prompt it explains, which is where a reader wants it.
+
+    Args:
+        prompt: Raw prompt file text.
+
+    Returns:
+        The text with HTML comment blocks removed.
+    """
+    return COMMENT.sub("", prompt)
+
+
 def build_prompt(article: dict) -> tuple[str, str]:
     """Assemble the system and user prompts for one announcement.
 
@@ -209,7 +246,7 @@ def build_prompt(article: dict) -> tuple[str, str]:
     """
     mech_block, cat_block, prac_block, _, _, _ = vocabularies()
     system = (
-        PROMPT.read_text(encoding="utf-8")
+        strip_comments(PROMPT.read_text(encoding="utf-8"))
         .replace("{mechanisms}", mech_block)
         .replace("{categories}", cat_block)
         .replace("{practices}", prac_block)

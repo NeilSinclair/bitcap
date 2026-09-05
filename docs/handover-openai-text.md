@@ -22,9 +22,9 @@ costs money.
 |---|---|
 | branch | `fix/openai-fulltext`, 5 commits, pushed |
 | tests | 1,225 pass, 1 skipped, config clean |
-| corpus | **not yet re-fetched** — still 149 articles on `rss_summary` |
+| corpus | re-fetched 2026-09-05: 259 articles, 22 still on `rss_summary` (D56) |
 | register | `scored_announcements_v8.json`, scored against the *degraded* text |
-| `PROMPT_VERSION` | `v8` |
+| `PROMPT_VERSION` | `v9` (D56) |
 
 ## 3. What to do next, in order
 

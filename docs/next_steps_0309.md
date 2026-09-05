@@ -22,6 +22,16 @@
 
 - Incorporate a model reliability tab. This should have a timeline of results with the LLM classifier run compared to the gold set so we can see model reliability over time. This test should be run every time the pipeline is run (this, specifically would sit outside of design and in the Data collect / Pipeline section below), however there should also be a button to run it manually. Let's discuss which comparison metrics to show.
 
+
+### Scoring / gold set
+
+- **`accelerator_custom_si` sign disagrees with the gold label** on article `15`
+  (Jalapeño). Human says `mixed`, every model version v7/v8/v9 says `positive`.
+  Stable across a 53x change in input text, so it is the prompt or
+  `config/categories.yaml`, not the article. Full write-up and the reason it
+  matters for holding routing: [docs/gold_review.md](gold_review.md), last
+  section. Raised 2026-09-05, **not actioned**.
+
 # Data collection / Pipeline
 
 - Collect the names of the leaders of the frontier labs; this has to be inserted as part of the pipeline
