@@ -598,3 +598,93 @@ class TestNearDuplicatesDoNotFillTheEdition:
         assert [i["title"] for i in investment["items"]] == ["Investment side"]
         assert [i["title"] for i in ai["items"]] == ["AI side"]
 
+class TestTheGroupIsRepresentedByAMemberThatPasses:
+    """Two losses the first anchoring rewrite introduced, both reproduced in review.
+
+    The rewrite fixed "one anchor cannot serve two audiences" by choosing the
+    speaker on the audience's score. That is not the same as choosing the member
+    the audience's *rule* accepts, and the gap swallowed real items.
+    """
+
+    def _group(self, session, group_id, articles, method="embedding"):
+        for art in articles:
+            session.add(m.ArticleGroup(
+                article_id=art.id, group_id=group_id, is_anchor=False,
+                group_size=len(articles), method=method, reason="grouped",
+            ))
+        session.flush()
+
+    def test_a_holding_link_is_not_lost_behind_a_higher_scoring_member(self, session):
+        """The reproduction: a 0.9 NVIDIA connection vanishing from the digest.
+
+        `_investment_item` gates on connection strength or band; the speaker was
+        chosen on `score`. So a group whose top scorer carried no holding link
+        emitted nothing, while the member holding the link was already folded —
+        and `collapsed` reported it as "another row says this", when no row did.
+        """
+        _holding(session, "US1", "NVIDIA")
+        top, _ = _article(session, published=date(2026, 9, 3), title="Launch",
+                          score=60.0, band="medium")
+        linked, _ = _article(session, published=date(2026, 9, 3), title="Deep dive",
+                             score=50.0, band="medium")
+        _connect(session, linked, "US1", 0.9)
+        self._group(session, "g1", [top, linked])
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert [i["title"] for i in out["items"]] == ["Deep dive"]
+
+    def test_a_release_train_is_represented_by_its_newest_release(self, session):
+        """`prefer="latest"` was dead code once no surface read `is_anchor`.
+
+        Within a train every member usually scores the same, so the date
+        tie-break decides all 380 release rows. Anchoring earliest names the
+        version the repo has left rather than the one it is on.
+
+        This asserts on what the digest publishes, not on `ArticleGroup`. The
+        test it replaces checked the `is_anchor` column, which no consumer reads
+        any more — it passed while the product did the wrong thing.
+        """
+        old, _ = _article(session, published=date(2026, 9, 2), title="claude-code v2.1.258",
+                          score=0.0, band="none", ai_score=70.0, ai_band="high")
+        new, _ = _article(session, published=date(2026, 9, 3), title="claude-code v2.1.260",
+                          score=0.0, band="none", ai_score=70.0, ai_band="high")
+        for art in (old, new):
+            cls = session.scalars(
+                select(m.Classification).where(m.Classification.article_id == art.id)
+            ).one()
+            session.add(m.ArticlePractice(
+                classification_id=cls.id, practice_id="evals", action="adopt",
+                impact="high", confidence="high", dimensions=[], reason="r",
+                quote="q", ordinal=0))
+        self._group(session, "g1", [old, new], method="release_train")
+
+        out = digest.build(session, "ai", V, END, CONFIG)
+
+        assert [i["title"] for i in out["items"]] == ["claude-code v2.1.260"]
+
+    def test_a_non_release_group_still_prefers_the_earliest_on_a_tie(self, session):
+        """Being early is the product's claim everywhere else."""
+        first, _ = _article(session, published=date(2026, 9, 3), title="Launch",
+                            score=80.0, band="high")
+        later, _ = _article(session, published=date(2026, 9, 4), title="Docs page",
+                            score=80.0, band="high")
+        self._group(session, "g1", [first, later])
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert [i["title"] for i in out["items"]] == ["Launch"]
+
+    def test_a_group_nobody_accepts_is_suppressed_not_collapsed(self, session):
+        """"Collapsed" is a claim that another row said it. It has to be true."""
+        a, _ = _article(session, published=date(2026, 9, 3), title="Weak one",
+                        score=10.0, band="low")
+        b, _ = _article(session, published=date(2026, 9, 3), title="Weak two",
+                        score=10.0, band="low")
+        self._group(session, "g1", [a, b])
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert out["items"] == []
+        assert out["stats"]["suppressed"] == 1
+

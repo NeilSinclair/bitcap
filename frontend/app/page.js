@@ -203,6 +203,46 @@ function Dashboard() {
     });
   }, [items, audience]);
 
+  // Which member of a near-duplicate group speaks for it, decided per audience
+  // rather than read from `isAnchor`. That flag is picked once over the whole
+  // corpus on a single score; event_type is a multiplicative term in the
+  // investment score and absent from the AI score, so the member ranking
+  // highest overall can score zero on the axis being displayed — and the member
+  // carrying the signal for this audience is the one that got folded.
+  //
+  // Folded members stay in `decorated` so a reader can expand a card and check
+  // the merge. Dropping them would make a collapse look like an article we
+  // never had.
+  const [anchorFor, foldedByGroup] = useMemo(() => {
+    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
+    // Score first, then by date — and the date direction flips for release
+    // trains, where every member usually scores the same so this decides every
+    // one of them. A repo's card must name the version it is on, not the one it
+    // has left. Everywhere else earliest wins, because being early is the
+    // claim. Same rule as app/digest.py `rank`; the two must agree or the feed
+    // and the digest name different articles as the same event.
+    const better = (a, b) => {
+      if (value(a) !== value(b)) return value(a) > value(b);
+      const latest = a.groupMethod === "release_train";
+      if (a.date !== b.date) return latest ? a.date > b.date : a.date < b.date;
+      // Ids break a full tie, or the winner depends on the order the API
+      // happened to return rows in — which has no secondary sort within a day.
+      return latest ? a.id > b.id : a.id < b.id;
+    };
+    const best = {};
+    for (const it of decorated) {
+      const cur = best[it.groupId];
+      if (!cur || better(it, cur)) best[it.groupId] = it;
+    }
+    const folded = {};
+    for (const it of decorated) {
+      if (best[it.groupId] === it) continue;
+      (folded[it.groupId] = folded[it.groupId] || []).push(it);
+    }
+    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
+    return [best, folded];
+  }, [decorated, audience]);
+
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
   // it before the reader spends a click finding out.
@@ -255,34 +295,6 @@ function Dashboard() {
     setHoldingFilter("all");
     setSelectedId(null);
   }
-
-  // Which member of a near-duplicate group speaks for it, decided per audience
-  // rather than read from `isAnchor`. That flag is picked once over the whole
-  // corpus on a single score; event_type is a multiplicative term in the
-  // investment score and absent from the AI score, so the member ranking
-  // highest overall can score zero on the axis being displayed — and the member
-  // carrying the signal for this audience is the one that got folded.
-  //
-  // Folded members stay in `decorated` so a reader can expand a card and check
-  // the merge. Dropping them would make a collapse look like an article we
-  // never had.
-  const [anchorFor, foldedByGroup] = useMemo(() => {
-    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
-    const best = {};
-    for (const it of decorated) {
-      const cur = best[it.groupId];
-      if (!cur || value(it) > value(cur) || (value(it) === value(cur) && it.date < cur.date)) {
-        best[it.groupId] = it;
-      }
-    }
-    const folded = {};
-    for (const it of decorated) {
-      if (best[it.groupId] === it) continue;
-      (folded[it.groupId] = folded[it.groupId] || []).push(it);
-    }
-    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
-    return [best, folded];
-  }, [decorated, audience]);
 
   const visible = useMemo(() => {
     const anchors = decorated.filter((it) => anchorFor[it.groupId] === it);

@@ -374,11 +374,20 @@ class TestThresholdsAgainstTheLabelledSet:
         return features, labels
 
     def _pool(self, features, labels):
-        """Pairs that actually reach a threshold: post exact pass, post gate 2."""
-        exact = {
-            f["pair"] for f in features
-            if not f["same_event_type"] and labels[f["pair"]]["label"] == "same"
-        }
+        """Pairs that actually reach a threshold: post exact pass, post gate 2.
+
+        The exact set comes from `calibrate.exact_pairs`, not from a copy of its
+        rule. This test guards the thresholds in CI and `calibrate.py` derives
+        them; restating the definition let the two compute different pools. It
+        was harmless on the data at the time — both exact-mergeable pairs
+        happened to have differing event types — and would stop being harmless
+        the first time the classifier gives two copies of one article the *same*
+        event type: calibrate drops it from the curve, this counts it as a
+        positive, and `positives == 16` quietly stops meaning what it says.
+        """
+        from research.dedupe import calibrate
+
+        exact = calibrate.exact_pairs(features, calibrate.articles())
         return [f for f in features if f["pair"] not in exact and f["same_event_type"]]
 
     def test_every_labelled_pair_has_features(self, labelled):

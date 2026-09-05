@@ -719,7 +719,11 @@ def check_dedupe(path: Path | None = None) -> list[str]:
     # Failing here is the difference between a typo caught in CI and a typo
     # found in the ledger.
     import sys as _sys
-    _sys.path.insert(0, str(ROOT.parent / "research" / "announcements"))
+    # Guarded: unguarded, repeated validation in one process prepends this path
+    # again each time and permanently shadows any same-named installed module.
+    _shim = str(ROOT.parent / "research" / "announcements")
+    if _shim not in _sys.path:
+        _sys.path.insert(0, _shim)
     try:
         from providers import PRICES, PROVIDERS
     except ImportError:  # pragma: no cover - only if the shim moves

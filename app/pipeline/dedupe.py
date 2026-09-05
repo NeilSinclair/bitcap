@@ -230,7 +230,7 @@ def embed(session: Session, prompt_version: str, budget=None, path: Path = CONFI
     config = settings(path)["embedding"]
     model, size = config["model"], int(config["batch_size"])
 
-    work = pending(session, prompt_version)
+    work = pending(session, prompt_version, path)
     total = session.scalar(sa.select(sa.func.count()).select_from(m.RawArticleEmbedding)) or 0
     stats = {
         "embedded": 0, "cached": total, "batches": 0, "usd": 0.0,
@@ -675,7 +675,7 @@ def anchor_of(members: list[dict], score_key: str, prefer: str = "earliest") -> 
     )
 
 
-def matrix(session: Session, urls: list[str]):
+def matrix(session: Session, urls: list[str], path: Path = CONFIG):
     """Load cached vectors for `urls` as an L2-normalised matrix.
 
     Normalising here means the cosine of every pair is a single matmul rather
@@ -684,6 +684,11 @@ def matrix(session: Session, urls: list[str]):
     Args:
         session: Open session.
         urls: Article URLs, in the order the rows should appear.
+        path: Config file. Must be the same one `pending` was given, or the two
+            disagree about which model counts: `pending` reports every article
+            still outstanding while `matrix` filters the freshly-written rows
+            out, and the corpus is re-embedded on every firing with coverage
+            stuck at zero.
 
     Returns:
         Tuple of (urls that had a vector, matrix with one row each).
@@ -699,7 +704,7 @@ def matrix(session: Session, urls: list[str]):
     # embedded" rather than to a matrix mixing two vector spaces. `pending`
     # re-embeds them on the same run; this is the belt to its braces, and it is
     # what makes a half-migrated cache safe rather than silently wrong.
-    model = settings()["embedding"]["model"]
+    model = settings(path)["embedding"]["model"]
     cached = {
         url: blob
         for url, blob in session.execute(
@@ -808,7 +813,7 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
     _apply_exact(rows, union, reasons)
     _apply_release_trains(rows, union, reasons, config)
     adjudicated, deferred, usd, coverage = _apply_gated(
-        session, rows, union, reasons, config, budget, adjudicate_pairs
+        session, rows, union, reasons, config, budget, adjudicate_pairs, path
     )
 
     session.execute(sa.delete(m.ArticleGroup))
@@ -922,7 +927,8 @@ def _apply_release_trains(rows: list[dict], union: _Union, reasons: dict,
 
 
 def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dict,
-                 config: dict, budget, adjudicate_pairs: bool = True) -> tuple[int, int, float]:
+                 config: dict, budget, adjudicate_pairs: bool = True,
+                 path: Path = CONFIG) -> tuple[int, int, float, float]:
     """Run the event-type gate and the cosine band over the non-release articles.
 
     Gate 1's identifier match is computed and carried into the reason, but it is
@@ -954,7 +960,7 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
 
     high = float(config["thresholds"]["cosine_high"])
     low = float(config["thresholds"]["cosine_low"])
-    urls, block = matrix(session, [r["url"] for r in articles])
+    urls, block = matrix(session, [r["url"] for r in articles], path)
     position = {url: index for index, url in enumerate(urls)}
     subject = {r["id"]: subjects(r["title"]) for r in articles}
     coverage = len(position) / len(articles)

@@ -188,7 +188,11 @@ def _sweep_dedupe_cost(session: Session, run_id: int) -> float:
         run_id: Run to attribute the newly-loaded records to.
 
     Returns:
-        USD newly loaded, to add to the run total.
+        USD newly loaded. **The caller discards this and adds the phase's own
+        measured figure instead**, and must keep doing so: the sweep also picks
+        up any record an earlier firing left unloaded, which charged a dry run
+        $31 of unrelated history the first time this was written. The return is
+        here for logging, not for arithmetic.
     """
     return float(load_costs(session, run_id=run_id).get("new_usd") or 0.0)
 
@@ -430,10 +434,12 @@ def _phases(
     #     degrades the feature rather than switching it off. Running them under
     #     one `try` made that claim false — `assign` was never reached.
     #
-    #     Spend is recorded against `run_sources`, not `raw_costs`. `_etl`'s
-    #     `load_costs` has already run by this point, so a record appended to
-    #     the shared log now would be picked up by the *next* firing and
-    #     attributed to it. Same problem the papers leg has, same fix.
+    #     `_etl`'s `load_costs` has already run by this point, so a record this
+    #     phase appends to the shared log would otherwise be picked up by the
+    #     *next* firing and charged to a run that did not spend it. The log is
+    #     therefore swept a second time here, into `raw_costs` under this run.
+    #     Nothing is written to `run_sources` — `budget.month_to_date` sums both
+    #     and relies on them being disjoint.
     note("dedupe")
     dedupe_stats: dict = {}
     if spend:
@@ -461,15 +467,20 @@ def _phases(
         dedupe_stats["error"] = str(error)[:500]
 
     stats["dedupe"] = dedupe_stats
-    spent = float(dedupe_stats.get("usd") or 0.0)
-    if spent:
-        # The sweep carries the records into `raw_costs`; the run total takes
-        # the phase's own measured figure rather than the sweep's return. They
-        # differ whenever the log holds records an earlier firing never loaded,
-        # and attributing those here charged a dry run $31 of somebody else's
-        # history.
+    if spend:
+        # Swept whenever the phase was *allowed* to spend, not only when it
+        # reported spending. `embed` and `assign` return their usd figure on the
+        # success path only, so a batch that was billed and then timed out
+        # leaves money in the log with no figure attached — and gating the sweep
+        # on that figure sent exactly those records to the next firing, which is
+        # the misattribution this function exists to prevent.
+        #
+        # The run total still takes the phase's own measured figure rather than
+        # the sweep's return, because the sweep also picks up anything an
+        # earlier firing left unloaded. Charging that here cost a dry run $31 of
+        # somebody else's history.
         _sweep_dedupe_cost(session, run.id)
-        run.cost_usd = (run.cost_usd or 0.0) + spent
+        run.cost_usd = (run.cost_usd or 0.0) + float(dedupe_stats.get("usd") or 0.0)
     session.commit()
 
     # 6. Publish both audiences' digests for the window this firing closes.

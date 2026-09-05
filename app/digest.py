@@ -269,7 +269,9 @@ def build(
     # Membership is the durable fact and lives in the table; which member speaks
     # for the group is a property of the view, so each view decides it.
     axis = "score" if kind == INVESTMENT else "ai_score"
-    groups = {g.article_id: g.group_id for g in session.scalars(select(m.ArticleGroup))}
+    grouping = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
+    groups = {article_id: g.group_id for article_id, g in grouping.items()}
+    methods = {g.group_id: g.method for g in grouping.values()}
 
     in_window = [
         art for art in session.scalars(select(m.Article))
@@ -277,32 +279,60 @@ def build(
     ]
 
     def rank(art) -> tuple:
-        """Highest score on this edition's axis, earliest on a tie."""
+        """Highest score on this edition's axis, then by date.
+
+        The date tie-break flips for release trains, and it decides every one of
+        them: within a train each release usually carries the same score, so the
+        secondary key is the whole decision. A repo's card must name the version
+        it is on — anchoring earliest published `claude-code v2.1.258` while
+        v2.1.260 sat folded inside it, which states the opposite of what the
+        group means. Elsewhere earliest wins, because being early is the
+        product's claim.
+        """
+        latest = methods.get(groups.get(art.id, f"g{art.id}")) == "release_train"
+        direction = 1 if latest else -1
         return (getattr(classifications[art.id], axis) or 0.0,
-                -art.published_on.toordinal(), -art.id)
+                direction * art.published_on.toordinal(), direction * art.id)
 
-    speaks_for: dict[str, object] = {}
-    for art in in_window:
-        group_id = groups.get(art.id, f"g{art.id}")
-        best = speaks_for.get(group_id)
-        if best is None or rank(art) > rank(best):
-            speaks_for[group_id] = art
-
-    considered, selected, collapsed = 0, [], 0
-    for art in in_window:
+    def item_for(art):
+        """Render `art` under this edition's rule, or None if it does not pass."""
         cls = classifications[art.id]
-        if speaks_for.get(groups.get(art.id, f"g{art.id}")) is not art:
-            collapsed += 1
-            continue
-        considered += 1
-        item = (
+        return (
             _investment_item(art, cls, conns_by_article[art.id], mechs[cls.id],
                              labs, names, mech_labels, rules, config)
             if kind == INVESTMENT
             else _ai_item(art, cls, pracs[cls.id], labs, prac_labels, rules)
         )
-        if item is not None:
-            selected.append(item)
+
+    # Ranked candidates per group, best first. The whole list is kept rather
+    # than just the winner because the top-ranked member is not necessarily the
+    # one that *passes*: `_investment_item` gates on connection strength and
+    # band, and `rank` orders on score. A group whose highest scorer carries no
+    # holding link would emit nothing at all while a folded member with a 0.9
+    # NVIDIA connection sat behind it — the link never reaching a reader, and
+    # `collapsed` claiming another row already said it when no row did.
+    #
+    # So the group is represented by its best member that the audience's own
+    # rule accepts, and only genuinely says nothing when none of them do.
+    candidates: dict[str, list] = {}
+    for art in in_window:
+        candidates.setdefault(groups.get(art.id, f"g{art.id}"), []).append(art)
+
+    considered, selected, collapsed = 0, [], 0
+    for members in candidates.values():
+        members.sort(key=rank, reverse=True)
+        considered += 1
+        for index, art in enumerate(members):
+            item = item_for(art)
+            if item is not None:
+                selected.append(item)
+                collapsed += len(members) - 1
+                break
+        else:
+            # Nobody passed. The group is suppressed on merit, not collapsed —
+            # counting it as collapsed would report a merge as the reason a
+            # reader saw nothing.
+            collapsed += len(members) - 1
 
     selected.sort(key=lambda i: i["rank"], reverse=True)
     items = selected[: rules["max_items"]]

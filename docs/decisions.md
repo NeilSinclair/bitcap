@@ -5677,25 +5677,44 @@ widening becoming a licence.
 
 Re-labelled the same 82 pairs. `same` went from 9 to 26.
 
-**Against the human's 20 marks: 0.75 → 0.90.** More useful than the rate is what
-happened to the direction:
+**The headline was 0.75 → 0.90, and that number is a training score.** Caught in
+review (D57d), and it is the most important correction in this branch.
 
-| | agreement | too conservative | too eager |
-|---|---:|---:|---:|
-| v1 rubric | 15/20 | 5 | 0 |
-| v2 rubric | 18/20 | 0 | **2** |
+Seven of the human's 20 marked pairs are worked examples *in v2's own prompt*,
+with the answer supplied. Splitting the sheet on that:
 
-The bias did not shrink so much as **flip**. v1 never merged anything the human
-would keep apart; v2 does it twice — the Jalapeño CFO strategy piece against the
-Jalapeño results post, and two of the Daybreak posts. That is the *unsafe*
-direction by this system's own asymmetry: a false merge deletes a claim, a
-missed merge leaves a visible row.
+| | in-prompt (7) | **out-of-sample (13)** |
+|---|---:|---:|
+| v1 rubric | 3/7 | **12/13** |
+| v2 rubric | 6/7 | **12/13** |
 
-Accepted anyway, for two reasons. The overall error is lower, and the threshold
-band is a second filter the labels are not — a pair the labeller calls `same`
-still has to clear `cosine_high` or convince the adjudicator before anything
-merges. But it is recorded as a real cost rather than a clean win, and if a
-third pass is ever run, the two over-merges are where to start.
+**Out of sample, v2 is not better than v1.** Every point of the apparent gain
+sits on pairs the prompt was shown the answers to. The only out-of-sample
+movement is a *regression*: `7235-7236`, the Jalapeño CFO strategy piece against
+the Jalapeño results post, which v2 merges and the human keeps apart — a false
+merge, the expensive direction by this system's own asymmetry.
+
+The direction of the error did genuinely flip: v1 was too conservative 5 times
+and never over-merged, v2 over-merges twice and never under-merges. That is a
+real change in behaviour. What is *not* established is that it is an
+improvement on anything the prompt was not shown.
+
+**Kept anyway, and the reasoning matters more than the verdict.** The five
+corrections v2 encodes are real fixes to real misclassifications — those pairs
+were wrong, and now they are right, which is worth having even if it
+demonstrates nothing about the sixth case. The threshold band is also a second
+filter the labels are not: a pair the labeller calls `same` still has to clear
+`cosine_high` or convince the adjudicator before anything merges.
+
+But no claim of generalisation is supported, and the honest next step is a
+fresh 20-pair blind check on pairs the prompt has never seen. Until that runs,
+**the defensible statement is "v2 corrects the errors it was shown, and its
+behaviour on unseen pairs is unmeasured"** — not 0.90.
+
+**And the thresholds rest on these labels.** `cosine_high` moved 0.84 → 0.80 on
+a set produced by a rubric fitted to five human answers. That is a weaker
+foundation than D57b's, and it is why the caveat in `config/dedupe.yaml` now
+says so.
 
 **A transitivity wrinkle, noted not fixed.** The human marked `7565-7616` as
 `same` and `7098-7565` as `different`, while `7098-7616` is an exact-pass merge
@@ -5724,3 +5743,89 @@ it further would need a wider census first, and the config says so.
 **Not grouped: the 47 paper rows** another branch landed in the shared database
 mid-build. They carry no `v9` classification yet, so `_rows` does not see them —
 correct behaviour, and they group on the first run after they are classified.
+
+## D57d — Reviewing the fixes, which is where the real bugs were (2026-09-05)
+
+The first review (D57a) covered the original commit. Its *fixes* went unreviewed
+until Neil asked whether they had been. They had not, and they contained the
+worst defect in the branch.
+
+**The dashboard did not render at all.** The per-audience anchoring fix added
+`anchorFor` to two `useMemo` dependency arrays about fifty lines above the
+`const` that declares it. A dependency array is evaluated during render, so
+`Dashboard()` threw `ReferenceError: Cannot access 'anchorFor' before
+initialization` on first paint. Every authenticated user would have got a blank
+page. It was committed and pushed.
+
+**`next build` passed the whole time**, and I offered that as evidence the page
+worked. It is not evidence of that: building bundles the component, it never
+calls it. CI runs `pytest` and two node smoke scripts and had no frontend step
+at all. `tests/smoke_dashboard_render.js` now evaluates the hook section with
+stubbed hooks — verified to fail on the bug and pass on the fix — and CI runs
+both it and `next build`, because neither catches the other's class.
+
+### Two losses the anchoring rewrite introduced
+
+Both reproduced by the reviewer, neither caught by the tests written alongside
+the rewrite.
+
+**A holding link could vanish from the investment digest.** The rewrite chose a
+group's speaker by the audience's *score*. But `_investment_item` gates on
+connection strength or band and ranks on `(peak_strength, score)` — so the
+speaker was picked on the secondary criterion. A group whose top scorer carried
+no holding link emitted nothing at all while a member with a 0.9 NVIDIA
+connection sat folded behind it, and `collapsed` reported it as "another row
+already says this" when no row said it. The group is now represented by its best
+member *that the audience's rule accepts*, and only counts as collapsed when
+something actually surfaced.
+
+**Every release train anchored on its earliest release.** `rank()` broke ties
+towards the earliest unconditionally, and since neither the digest nor the feed
+reads `is_anchor` any more, `anchor_of(prefer="latest")` had quietly become dead
+code — the exact bug it was written in D57 to prevent, reintroduced one layer
+up. 380 of 647 articles are releases and within a train they usually score
+identically, so the tie-break decided all of them: the AI digest published
+`claude-code v2.1.258` with v2.1.260 folded inside it.
+
+**And the test could not see it**, because it asserted on `ArticleGroup.is_anchor`
+— a column no consumer reads any more. It tested the table, not the product. The
+replacement asserts on what the digest publishes.
+
+### The recalibration number was a training score
+
+D57c reported v2 at 0.90 against Neil's 20 marks. Seven of those 20 are worked
+examples *inside v2's prompt*, with the answers supplied. Split:
+
+| | in-prompt (7) | out-of-sample (13) |
+|---|---:|---:|
+| v1 | 3/7 | **12/13** |
+| v2 | 6/7 | **12/13** |
+
+**Out of sample v2 is exactly as good as v1**, and it adds one false merge v1
+did not make. Every point of the headline gain was in-sample. D57c and
+`config/dedupe.yaml` are corrected; the defensible claim is "v2 corrects the
+errors it was shown, and its behaviour on unseen pairs is unmeasured".
+
+That matters beyond the number, because the thresholds moved 0.84 → 0.80 on
+labels this rubric produced. Outstanding work, recorded rather than done: a
+fresh 20-pair blind check on pairs the prompt has never seen.
+
+### And a prompt was edited in place
+
+`more_complete` was deleted from `v1.md` when the schema dropped it — but
+`dedupe_labels_v1rubric.json` was produced by the original text, so the file
+named `v1` no longer described what made those labels. Restored verbatim, and
+all three label sets now carry a `prompt_version` stamp instead of being
+identified by filename.
+
+### Why this entry exists
+
+Four of this branch's defects have now been the same shape: **a failure that
+reports success.** A comment describing degradation the code did not do; a
+`--dry-run` that spent money; a grouping that changed between identical runs; a
+similarity check that never ran and looked like a corpus with no duplicates. The
+grouping algorithm itself has survived two reviews without a correctness finding.
+
+The lesson is not "review the code" — it is that the fixes deserved the same
+suspicion as the original, and got less of it because they were written against
+a checklist under time pressure.

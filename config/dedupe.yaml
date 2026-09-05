@@ -91,8 +91,17 @@ embedding:
 # 2. The labeller was then measured against a human on 20 blind pairs: 0.75,
 #    with all five misses in one direction. It was splitting companion pieces —
 #    an umbrella post and its named strand, a launch and its deep-dive, one
-#    rollout staggered across apps. Prompt v2 names that shape; re-labelled,
-#    agreement went to 0.90 and the band widened. (D57b.)
+#    rollout staggered across apps. Prompt v2 names that shape, and the band
+#    widened on the re-labelled set. (D57b, D57c.)
+#
+#    READ THAT SECOND ONE CAREFULLY BEFORE TRUSTING THESE NUMBERS. v2's prompt
+#    contains seven of those 20 pairs as worked examples with the answers
+#    supplied, so the "0.90" that first appeared here was a training score. Out
+#    of sample v2 scores 12/13, exactly what v1 scored, and it introduces one
+#    false merge v1 did not make. The five corrections v2 encodes are real, but
+#    nothing here demonstrates it generalises — and these thresholds are derived
+#    from labels that rubric produced. A fresh 20-pair blind check on unseen
+#    pairs is the outstanding work.
 #
 # Cost of the wider band: 19 adjudications on a full backfill against 10 before,
 # so about six cents. Near zero incrementally, since only new pairs are asked.
