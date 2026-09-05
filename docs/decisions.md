@@ -6478,3 +6478,114 @@ link count looks like. This repo does not choose thresholds by eye
 somebody to mute the channel. Recorded as the open gap, not queued: the honest
 prerequisite is a labelled set, which is the cost of the detector rather than a
 detail of it.
+
+## D62 — Three traps found by deploying, not by testing (2026-09-05)
+
+`deployment` was 42 commits behind `deployment-dev` and was brought forward in
+one merge. Every step of that failed in a different way, and none of the
+failures were reachable from a test suite that runs against a database the tests
+themselves create. Recorded because the recovery is not obvious from the error
+in any of the three cases, and because one of them is a false claim in the
+README rather than a bug.
+
+### 1. A prompt-version bump empties the UI without emptying the database
+
+Prod held 251 articles classified under `v8`. The deployed code asks for `v9`
+and `p1` (D57), and `api/queries.py:83` filters
+`Classification.prompt_version.in_(versions)`. Zero rows matched. The site
+rendered an empty feed against a full database, the API returned 200, and
+`/api/health` reported the last run as `succeeded`.
+
+**Nothing in the system notices this.** A version bump is a config change to the
+readers and a data migration to everything already stored, and only the first
+half ships in the diff. The recovery is a reload under the new version, which is
+free from committed artifacts — but knowing that requires knowing the cause, and
+the cause presents as "the frontend is broken".
+
+Worth considering, not built: `/api/health` reporting the classification
+versions actually present in the database beside the ones the code asks for.
+That single line would have named this in seconds.
+
+### 2. `rebuild` cannot survive a pending migration
+
+`cmd_load`'s rebuild path is `drop_all` → `ensure_schema` → load. `drop_all`
+drops the model tables; `alembic_version` is not a model table, so the stamp
+survives. `ensure_schema` then sees a stamp, takes the "stamped and behind"
+branch, and runs `upgrade head` — into `0012_article_links`, which creates a
+table with foreign keys to `articles`, dropped moments earlier.
+
+```
+psycopg.errors.UndefinedTable: relation "articles" does not exist
+```
+
+Re-running does not help: the stamp never advanced, so the next attempt repeats
+it exactly. Recovery is to drop `alembic_version` and let the "never migrated"
+branch rebuild at model shape and stamp head.
+
+**`ensure_schema`'s docstring asserts the thing that broke:** *"A rebuild is the
+one caller that needs tables put back, and it is at head by definition, so
+`upgrade` is a no-op for it."* At head by definition is true of a developer's
+own database and false of every other one — including production immediately
+after a deploy that adds a migration, which is precisely when a rebuild is most
+likely to be run. The assumption was correct when written and stopped being
+correct when `0012` landed from another branch.
+
+The fix is ordering, and it is not written here because this entry is a record
+rather than a change: `rebuild` should upgrade before it drops, or drop the
+stamp along with the tables it stamps for. Either makes the two halves agree
+about which schema exists.
+
+### 3. `rebuild` does not reproduce the whole database
+
+README:57 said `rebuild` loads the committed artifacts and derives the clean
+tables — offered as the clone-to-running path, and it is the first instruction
+a reviewer follows. Measured against the live rebuild on production:
+
+| | local | after `rebuild` on prod |
+|---|---:|---:|
+| announcements | 267 | 259 |
+| papers | 47 | 47 |
+| **GitHub releases** | **380** | **0** |
+| **article groups** | **647** | **0** |
+| total articles | 694 | 306 |
+
+Two independent gaps.
+
+**Releases are not a committed artifact.** `registry.py:55` labels them
+`github_releases` — a marker, not a path, unlike the two corpora beside it which
+are real files. They arrive from a live GitHub fetch in the worker's ingest
+phase, so a rebuild has nothing to load them from.
+
+**And `rebuild` never groups.** `cmd_load` runs refs, articles, papers,
+classifications, costs, `transform` twice and `connect` once. Near-duplicate
+collapse (D59) exists only as a phase in `worker.py`, so `article_groups` is
+empty after a rebuild and nothing folds in the UI.
+
+The two compound: 380 of the 647 grouped rows are releases, and release trains
+are where most of the visible folding happens. So a rebuilt database is missing
+both the corpus that folds most and the step that folds it — and looks, from the
+dashboard, like the collapse was never built.
+
+README is corrected to say what `rebuild` actually restores and what a worker
+run is still needed for. The claim was written when announcements were the only
+corpus and was true then.
+
+### And a fourth, already fixed
+
+`OPENAI_API_KEY` was declared on neither Render service, so the embedding gate
+would have failed on prod while the deploy went green — the dedupe phase catches
+the error, falls back to its free passes, and reports `coverage: 0`. Fixed in
+PR #21; the alert that would have said so (`dedupe_unavailable`) was already
+there and only needed the phase to be reachable.
+
+### The shape all four share
+
+Every one is a claim that was true when written and quietly stopped being true:
+a version filter that outran its data, a docstring's "by definition", a README
+sentence from a single-corpus era, a blueprint that predates the provider it
+needs. This is the same class D59d named — *a failure that reports success* —
+arriving through configuration rather than code, where there is no test to fail.
+
+**Consequence:** the recoveries above are recorded, README:57 is corrected, and
+the `rebuild`-versus-migration ordering is left as a known defect rather than
+patched under time pressure.
