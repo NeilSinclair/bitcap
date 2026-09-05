@@ -84,6 +84,11 @@ cadence:
   github: 3
   releases: 1        # a release is news the day it ships, and the cursor makes
                      # a firing with nothing new cost one API call per repo
+  posts: 7           # weekly. Every firing costs real money at X's per-post
+                     # rate whether or not anyone posted, and the measured
+                     # corpus is ~2.6 original posts a day across 27 handles --
+                     # so a daily firing would multiply the bill sevenfold to
+                     # shorten the lag on a slow-moving feed.
   drift: 1
 
 alerts:
@@ -114,6 +119,14 @@ alerts:
   # still joined to holdings -- and the digest window (48h) would have excluded
   # it anyway. An alert is for what is new, and it is not.
   content_max_age_days: 120
+
+  # Corpora that are scored and shown in the dashboard but may not raise a
+  # content alert. `t1` is the X posts leg: it is new, it is the noisiest corpus
+  # in the system, and the cost of being wrong here is paging a reader about a
+  # CEO's enthusiasm. Remove `t1` from this list to turn posts alerts on -- that
+  # is the whole change.
+  content_mute_prompt_versions:
+    - t1
 
   # Gold-set agreement below this raises a *system* alert, not a content one:
   # a scorer quietly becoming less consistent is silent degradation, which is

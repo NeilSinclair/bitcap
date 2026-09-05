@@ -6,7 +6,10 @@
 #
 # Secrets are `sync: false`: Render prompts for them once and never stores them
 # here. ANTHROPIC_API_KEY is the only one the worker cannot run without, and
-# only for the classification and drift stages — ingestion needs no key at all.
+# only for the classification and drift stages — most ingestion needs no key at
+# all. The exceptions are per-leg rather than fatal: GITHUB_TOKEN for the github
+# and releases legs, X_BEARER_TOKEN for posts. Each of those legs fails on its
+# own and is recorded as a failed source; the firing still succeeds.
 
 databases:
   - name: bitcap-db
@@ -56,6 +59,13 @@ services:
         sync: false
       - key: GITHUB_TOKEN
         sync: false
+      # The posts leg reads X on a weekly cadence. Unset, `fetch_posts` exits
+      # via `x_client.load_token`'s SystemExit and the leg is recorded as a
+      # failed source rather than an empty one -- deliberately, because an
+      # unconfigured credential and a lab that stopped posting must not look
+      # the same. Every other leg still runs.
+      - key: X_BEARER_TOKEN
+        sync: false
       - key: ALERT_WEBHOOK_URL
         sync: false
 
@@ -98,6 +108,10 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: GITHUB_TOKEN
+        sync: false
+      # On both services for the same reason: a firing started from the
+      # pipeline tab runs the posts leg too.
+      - key: X_BEARER_TOKEN
         sync: false
 
   # The dashboard. A static site, not a Node service: both routes are client

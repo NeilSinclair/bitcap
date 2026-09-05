@@ -51,6 +51,10 @@ PROBE_OUT = DOCS / "x_rate_probe.json"
 RAW_OUT = DOCS / "x_posts_raw.json"
 # The corpus the spine loads, after the deterministic prefilter.
 CORPUS_OUT = DOCS / "posts_corpus.json"
+# Everything the prefilter removed, with its reason. Kept separate so the corpus
+# file stays a bare list, and kept at all because "we filtered this" and "we
+# never saw this" must not look the same to anyone reading it later.
+FILTERED_OUT = DOCS / "x_posts_filtered.json"
 
 # An hour, in days. Floor on the elapsed time used to compute a posting rate:
 # five posts inside one minute would otherwise project to a rate no account has.
@@ -413,7 +417,7 @@ def pull(resolved: list[dict], caps: dict[str, int], token: str, spend: xc.Spend
     return records, unresolved
 
 
-def _write(path: Path, payload: dict) -> None:
+def _write(path: Path, payload) -> None:
     """Write a committed artifact as pretty JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
@@ -446,13 +450,18 @@ def main(argv: list[str] | None = None) -> int:
         with Session(get_engine()) as session:
             known = {u.rstrip("/") for (u,) in session.execute(select(m.RawArticle.url))}
         kept, dropped = prefilter.apply(raw["records"], cfg["prefilter"], known)
-        _write(CORPUS_OUT, {
+        # A BARE LIST, matching research/docs/papers_corpus.json, because
+        # `load_articles` reads the file straight into `load_article_records`.
+        # The provenance that would otherwise wrap it goes in its own file, so
+        # the corpus stays loadable and nothing is lost.
+        _write(CORPUS_OUT, kept)
+        _write(FILTERED_OUT, {
             "built_at": datetime.now(timezone.utc).isoformat(),
             "window_days": raw["window_days"],
+            "pulled": len(raw["records"]),
             "kept": len(kept), "dropped": len(dropped),
             "duplicates_announcement": sum(1 for k in kept
                                            if k["duplicates_announcement"]),
-            "records": kept,
             "filtered_out": dropped,
         })
         print(f"{len(raw['records'])} pulled → {len(kept)} kept, {len(dropped)} dropped")

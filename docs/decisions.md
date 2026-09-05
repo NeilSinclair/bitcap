@@ -6478,3 +6478,160 @@ link count looks like. This repo does not choose thresholds by eye
 somebody to mute the channel. Recorded as the open gap, not queued: the honest
 prerequisite is a labelled set, which is the cost of the detector rather than a
 detail of it.
+
+## D62 — The people register becomes a corpus: X posts as a fourth leg (2026-09-05)
+
+`config/people.yaml` has held 36 senior people across seven labs since D30, 28
+of them with X handles, and **nothing read it**. Only `config/validate.py` and
+its tests. The register knew who speaks for each lab and had never listened to
+them.
+
+`docs/planning.md:183` deferred this on cost: *"Gated and expensive; the Basic
+tier is roughly the entire budget."* That was true and is no longer. X moved to
+pay-per-use in February 2026 and closed Basic to new signups: **$0.005 per post
+read, $0.010 per user read**, no subscription, no minimum
+([pricing](https://docs.x.com/x-api/getting-started/pricing), fetched
+2026-09-05). The question stopped being whether we can afford access and became
+how to spend a fixed number of post-reads well.
+
+### Two server-side levers decide the whole cost profile
+
+On `GET /2/users/:id/tweets`, both `start_time` and `exclude=[replies,retweets]`
+are applied by X before billing. A 90-day window and originals-only are
+therefore not filters we apply afterwards — they are a smaller invoice. And
+`max_results` caps a page at 100, so **refusing to paginate makes every call a
+charge known before it is made**. `research/posts/x_client.py` never follows
+`next_token`, and `Spend` re-checks the ceiling predictively on top.
+
+### Measuring first, because the estimates were wrong
+
+Rates were estimated by hand and then measured. The estimates were wrong in
+three of four cases: Karpathy was assumed prolific (he posts ~5 a quarter),
+@alexandr_wang was assumed low-value (he is the second-largest contributor), and
+the DeepSeek pair were assumed quiet (they are silent). One request to resolve
+handles ($0.27) plus five posts per handle ($0.10) replaced all of it.
+
+**The probe also caught a live measurement error.** Reading "returned fewer
+posts than we asked for" as "that is all there is" measured @sama at *4 posts in
+90 days*. X applies `exclude` after assembling a page, so a prolific replier
+returns few originals from a page of five; the true figure is ~223. The signal
+is the age of the oldest post, never the count. Pinned by
+`tests/test_posts_harvest.py::TestAPartialPageIsNotACompleteAnswer`.
+
+A second consequence: an empty probe is **unknown, not zero**. Eight handles
+returned nothing from a page of five, which is indistinguishable from a page
+that was all replies. Because X bills what returns, asking a silent account for
+a full page of 100 costs nothing — so they were asked generously rather than
+skipped. All eight returned nothing, which settles it.
+
+| stage | requests | posts billed | cost |
+|---|---:|---:|---:|
+| resolve + verify 27 handles | 1 | — | $0.27 |
+| rate probe | 27 | 74 | $0.10 |
+| the pull | 19 | 473 | $2.37 |
+| **X total** | | | **$2.74** |
+| classification under `t1` | 238 | — | $2.61 |
+
+### What the corpus is
+
+473 posts pulled, **238 surviving a deterministic prefilter** that drops
+anything under 100 characters of substance once links, @mentions and emoji are
+stripped. Classified: **1 high, 4 medium, 23 low, 210 none** — 88% correctly
+scoring zero, which is the filter working rather than failing.
+
+**Eight of twenty-seven lab leaders posted no original in 90 days**: Olah,
+Leike, Nick Joseph, Ben Mann, Daniela Amodei, McCandlish, and both DeepSeek
+researchers. Anthropic's leadership is nearly silent on X; OpenAI and Meta carry
+70% of the corpus. That corroborates D30's finding that "for DeepSeek the papers
+*are* the channel", from a second direction.
+
+### The finding that justifies the leg
+
+The top-scoring post is @markchen90 stating OpenAI has contracted **more than 4
+gigawatts of NVIDIA compute** — `compute_commitment`, score 100, and directly on
+the NVIDIA transmission the brief names as its calibration case.
+
+More usefully, the corpus **found a hole in the announcements leg**. Of 17 links
+to lab domains, OpenAI's 10 were all already in the register; these were not:
+
+```
+research.meta.ai/blog/introducing-muse-spark-1-3
+research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model
+research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2
+research.meta.ai/blog/introducing-muse-voice-transcribe
+blog.google/.../introducing-gemini-3-7-flash
+```
+
+`config/sources.yaml` watches `ai.meta.com/blog/` and `deepmind.google/blog/`.
+The register holds **0 rows from `research.meta.ai` and 0 from `blog.google`**,
+so Meta's entire Muse model line is invisible to it. Listening to the people
+found what watching the labs missed. **Not fixed here** — widening those two
+channels is an announcements-leg change with its own cost, and doing it inside
+this one would hide it.
+
+### What was rejected
+
+**twitterapi.io and the other unofficial mirrors.** 33x cheaper per post
+($0.00015 against $0.005), no OAuth, and richer data — it returns
+`conversationId`, which would have allowed self-threads to be reconstructed. It
+was rejected anyway. It is not an X product: it scrapes using proxies and login
+sessions, against X's terms, and its failure mode is the one this project is
+built to catch — a rate-limited or shape-changed scraper can return nine of a
+handle's twelve posts with a 200 OK, and that silent partial data would enter at
+the source layer where none of our guards can see it. The saving was $19.40
+against a budget with $80 free. Price was not the deciding factor; the
+deciding factor was that official access turned out to be self-serve, so the
+only thing the mirror bought — setup speed — was worth nothing.
+
+**Extending `research/papers/fetch_cache.py` to carry a bearer token.** It has
+no `headers=` parameter, is GET-only, and keys its Postgres cache on the URL
+alone (`app/models.py` `FetchCache.url` is unique), so two authenticated
+requests differing only by credential would collide and an authenticated body
+would be stored under a bare URL key. Adding credentials means changing the
+cache key of every existing entry. `research/posts/x_client.py` follows
+`research/github/harvest_github.py` instead, which is already this repo's shape
+for a token-authenticated JSON API. The duplication is real; it is recorded here
+rather than left to be discovered.
+
+**New event types for posts.** `config/scoring.yaml` pins `max_event_weight: 5`,
+so a type above that silently rescales every existing score, and
+`app/scoring.py` does `.get(event_type, 0)`, so a type in the prompt and absent
+from config scores zero with no error. `t1`'s event-type section is byte-identical
+to `p1`'s, pinned by a test.
+
+**Posts in the digest and the content alerts.** They are scored, joined to
+holdings and browsable in the dashboard, but `DIGEST_VERSIONS` excludes `t1` and
+`config/pipeline.yaml` mutes it under `alerts.content_mute_prompt_versions`. The
+corpus is new and the noisiest in the system, and the cost of being wrong on a
+surface a reader is *pushed* is higher than on one they browse. Turning both on
+is removing `t1` from two lists.
+
+**Reconstructing self-threads.** `exclude=replies` is server-side and truncates
+a threaded announcement to its opening post, which is usually the hook rather
+than the content. Keeping threads means paying for every conversational reply
+first to find the few that are self-replies — for a handle like @sama, several
+times the volume. Accepted as a known limitation and recorded here rather than
+discovered later from a corpus of decapitated threads.
+
+### A pre-existing break found on the way
+
+`bitcap-db load` was failing for everyone on `deployment-dev` before this work
+started, and had nothing to do with it. `app/load_refs.py` deletes the derived
+silver layer before reloading, and the D59/D61 dedupe work added `article_groups`
+and `article_links` — both carrying a plain foreign key to `articles` with no
+cascade — without adding them to that list. `DELETE FROM articles` therefore
+raised. Confirmed by stashing this branch's changes and reproducing. Fixed here
+because it blocked the load; the fix is two names in one tuple.
+
+### Consequence
+
+A fourth corpus, scored under `t1`, for $5.35 all in. The register is no longer
+inert config. The honest limits: threads are truncated to their opening post;
+the leg reads 27 people at one point in time rather than continuously; and the
+`duplicates_announcement` signal is weaker than it looks, because 352 of 409
+links in the corpus are quote-links to other posts rather than to lab documents
+— so "3% overlap" measures link behaviour, not novelty, and the defensible claim
+is the narrower one about the 17 lab-document links.
+
+Reversing this is deleting one config file and one leg name; the corpus and its
+scores are committed artifacts and would survive as evidence either way.

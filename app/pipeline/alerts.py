@@ -302,13 +302,24 @@ def high_band_items(session: Session, config: dict, context: dict) -> list[Candi
     floor = config.get("content_band", "high")
     wanted = set(BANDS[BANDS.index(floor):]) if floor in BANDS else {floor}
 
-    rows = session.execute(
+    # This rule reads `classifications` with no version filter of its own, so
+    # every corpus that lands in that table starts raising content alerts the
+    # moment it is classified. That is the right default -- a new leg's findings
+    # should reach a reader -- but it makes "which corpora may page someone" an
+    # implicit consequence of loading data. Naming the exclusions in config
+    # makes it a decision, and lets an unproven corpus be scored and shown in
+    # the dashboard without also being pushed at anyone.
+    muted = tuple(config.get("content_mute_prompt_versions", ()) or ())
+
+    query = (
         select(m.Article, m.Classification)
         .join(m.Classification, m.Classification.article_id == m.Article.id)
         .where(m.Classification.band.in_(wanted))
         .where(_recent_enough(config))
-        .order_by(m.Classification.score.desc())
-    ).all()
+    )
+    if muted:
+        query = query.where(m.Classification.prompt_version.not_in(muted))
+    rows = session.execute(query.order_by(m.Classification.score.desc())).all()
 
     return [
         Candidate(

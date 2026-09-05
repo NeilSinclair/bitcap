@@ -1,0 +1,4421 @@
+{
+  "built_at": "2026-09-05T19:37:56.811913+00:00",
+  "window_days": 90,
+  "pulled": 473,
+  "kept": 238,
+  "dropped": 235,
+  "duplicates_announcement": 8,
+  "filtered_out": [
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2096015544843714711",
+      "title": "This is awesome https://t.co/6TyRJUcURN",
+      "date": "2026-09-04",
+      "text": "This is awesome https://t.co/6TyRJUcURN",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2096011677871571288",
+      "links": [
+        "https://twitter.com/Shivolink/status/2096011677871571288"
+      ],
+      "dropped": "under 100 characters of substance (15)"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2093321242183184679",
+      "title": "https://t.co/kNdNHTZzle",
+      "date": "2026-08-28",
+      "text": "https://t.co/kNdNHTZzle",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/i/article/2093320443805450240"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2091889170579079227",
+      "title": "one of my colleagues put this in our 1-1 doc for today https://t.co/WeiPfWy99w",
+      "date": "2026-08-24",
+      "text": "one of my colleagues put this in our 1-1 doc for today https://t.co/WeiPfWy99w",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/jackclarkSF/status/2091889170579079227/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (54)"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2091712563360977242",
+      "title": "Consider: baked potato.",
+      "date": "2026-08-24",
+      "text": "Consider: baked potato.",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (23)"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2088372440628097309",
+      "title": "the future of the world is available to anyone who takes the time to read arxiv …",
+      "date": "2026-08-14",
+      "text": "the future of the world is available to anyone who takes the time to read arxiv papers every week",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (97)"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2079576914906517682",
+      "title": "writing this up for next issue of Import AI",
+      "date": "2026-07-21",
+      "text": "writing this up for next issue of Import AI",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (43)"
+    },
+    {
+      "lab": "anthropic",
+      "url": "https://x.com/jackclarkSF/status/2078620204125610225",
+      "title": "Legendary game.",
+      "date": "2026-07-18",
+      "text": "Legendary game.",
+      "text_source": "x_post",
+      "author_handle": "jackclarkSF",
+      "author_name": "Jack Clark",
+      "author_role": "Co-founder; policy",
+      "x_evidence": "own_site",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (15)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2096008528834244741",
+      "title": "Now out to all Plus and Business users.\n\nHappy building! https://t.co/66tabg3Yid",
+      "date": "2026-09-04",
+      "text": "Now out to all Plus and Business users.\n\nHappy building! https://t.co/66tabg3Yid",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095973658867171733",
+      "links": [
+        "https://twitter.com/sama/status/2095973658867171733"
+      ],
+      "dropped": "under 100 characters of substance (55)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2095731348996821200",
+      "title": "We are also excited! https://t.co/XpOH5RjCha",
+      "date": "2026-09-04",
+      "text": "We are also excited! https://t.co/XpOH5RjCha",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095713765446840591",
+      "links": [
+        "https://twitter.com/satyanadella/status/2095713765446840591"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2095601442220638547",
+      "title": "Also, this is my favorite OpenAI video so far. It makes me excited for the futur…",
+      "date": "2026-09-03",
+      "text": "Also, this is my favorite OpenAI video so far. It makes me excited for the future! https://t.co/P6X49JKrG6",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095595741528125780",
+      "links": [
+        "https://twitter.com/OpenAI/status/2095595741528125780"
+      ],
+      "dropped": "under 100 characters of substance (82)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2095600429363302720",
+      "title": "We hit a little snag getting the blog post deployed, but it is really great:\n\nht…",
+      "date": "2026-09-03",
+      "text": "We hit a little snag getting the blog post deployed, but it is really great:\n\nhttps://t.co/jjqXUWfrNW",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/index/gpt-6-astra/"
+      ],
+      "dropped": "under 100 characters of substance (76)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2092712656096358527",
+      "title": "this is a good report about a bad thing: https://t.co/j21E754kP3",
+      "date": "2026-08-26",
+      "text": "this is a good report about a bad thing: https://t.co/j21E754kP3",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092691861773160673",
+      "links": [
+        "https://twitter.com/OpenAI/status/2092691861773160673"
+      ],
+      "dropped": "under 100 characters of substance (40)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2092519459135095147",
+      "title": "big https://t.co/vUwv1Jdh5r",
+      "date": "2026-08-26",
+      "text": "big https://t.co/vUwv1Jdh5r",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092366554965107164",
+      "links": [
+        "https://twitter.com/ChatGPT/status/2092366554965107164"
+      ],
+      "dropped": "under 100 characters of substance (3)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2092339694210040187",
+      "title": "we made a chip and it is fast",
+      "date": "2026-08-25",
+      "text": "we made a chip and it is fast",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (29)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2090163991234453611",
+      "title": "we support business privacy!\n\nhttps://t.co/SJ6w5DeYTY",
+      "date": "2026-08-19",
+      "text": "we support business privacy!\n\nhttps://t.co/SJ6w5DeYTY",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/index/offering-zero-data-retention-for-frontier-models/"
+      ],
+      "dropped": "under 100 characters of substance (28)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2089805495783813196",
+      "title": "(We still expect to ship great new models soon; this impacts further-out release…",
+      "date": "2026-08-18",
+      "text": "(We still expect to ship great new models soon; this impacts further-out releases.)",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (83)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2089758522678657212",
+      "title": "excited to work together on this. thank you jensen! https://t.co/sxWXpQelYj",
+      "date": "2026-08-18",
+      "text": "excited to work together on this. thank you jensen! https://t.co/sxWXpQelYj",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2089331487342829862",
+      "links": [
+        "https://twitter.com/JensenHuang/status/2089331487342829862"
+      ],
+      "dropped": "under 100 characters of substance (51)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2088101491802243121",
+      "title": "/ultrafast https://t.co/UxnKkABuKQ",
+      "date": "2026-08-14",
+      "text": "/ultrafast https://t.co/UxnKkABuKQ",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2087947721936359705",
+      "links": [
+        "https://twitter.com/OpenAI/status/2087947721936359705"
+      ],
+      "dropped": "under 100 characters of substance (10)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2086881528282587524",
+      "title": "please consider using our models to help defend your systems https://t.co/oqs3qf…",
+      "date": "2026-08-10",
+      "text": "please consider using our models to help defend your systems https://t.co/oqs3qfWmtN",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2086866306167656901",
+      "links": [
+        "https://twitter.com/Eric_Wallace_/status/2086866306167656901"
+      ],
+      "dropped": "under 100 characters of substance (60)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2086470022772457950",
+      "title": "lol another one of the things i like most about openai is tibo https://t.co/50ep…",
+      "date": "2026-08-09",
+      "text": "lol another one of the things i like most about openai is tibo https://t.co/50eptLx1u5",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2086469085270004106",
+      "links": [
+        "https://twitter.com/StatsWire/status/2086469085270004106"
+      ],
+      "dropped": "under 100 characters of substance (62)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2085765236876046500",
+      "title": "congrats to oklo for achieving criticality!\n\n(less than a year after groundbreak…",
+      "date": "2026-08-07",
+      "text": "congrats to oklo for achieving criticality!\n\n(less than a year after groundbreaking)\n\nhttps://t.co/tdbU6UfOAb",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://oklo.com/newsroom/news-details/2026/Oklos-Groves-Reactor-Achieves-First-Criticality-in-Under-a-Year/default.aspx"
+      ],
+      "dropped": "under 100 characters of substance (83)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2085454964814753990",
+      "title": "5.6 Sol much better in chat now\n\nand unlimited text chat for free users! https:/…",
+      "date": "2026-08-06",
+      "text": "5.6 Sol much better in chat now\n\nand unlimited text chat for free users! https://t.co/zgqGqI9qfR",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085434712429052386",
+      "links": [
+        "https://twitter.com/OpenAI/status/2085434712429052386"
+      ],
+      "dropped": "under 100 characters of substance (71)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2083560847889023219",
+      "title": "team humanity https://t.co/Z75TuFp56E",
+      "date": "2026-08-01",
+      "text": "team humanity https://t.co/Z75TuFp56E",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082855170296205719",
+      "links": [
+        "https://twitter.com/jxnlco/status/2082855170296205719"
+      ],
+      "dropped": "under 100 characters of substance (13)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2083203642975502640",
+      "title": "i see your moore's law and i raise you 20x https://t.co/fIgoPxhMbW",
+      "date": "2026-07-31",
+      "text": "i see your moore's law and i raise you 20x https://t.co/fIgoPxhMbW",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082884002201878824",
+      "links": [
+        "https://twitter.com/nicdunz/status/2082884002201878824"
+      ],
+      "dropped": "under 100 characters of substance (42)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2083198135812383197",
+      "title": "it could be faster https://t.co/aodVOp6X6f",
+      "date": "2026-07-31",
+      "text": "it could be faster https://t.co/aodVOp6X6f",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083053369351090254",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2083053369351090254"
+      ],
+      "dropped": "under 100 characters of substance (18)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2082881262679642281",
+      "title": "good job little bro https://t.co/wZnUUUxqbW",
+      "date": "2026-07-30",
+      "text": "good job little bro https://t.co/wZnUUUxqbW",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082577277246972300",
+      "links": [
+        "https://twitter.com/OpenAI/status/2082577277246972300"
+      ],
+      "dropped": "under 100 characters of substance (19)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2082880884525482061",
+      "title": "we want to offer the best price/intelligence tradeoff at every level",
+      "date": "2026-07-30",
+      "text": "we want to offer the best price/intelligence tradeoff at every level",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (68)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2082627724040884667",
+      "title": "goblin-level blog post https://t.co/pmcqmDjE4f",
+      "date": "2026-07-30",
+      "text": "goblin-level blog post https://t.co/pmcqmDjE4f",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082609662231502932",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2082609662231502932"
+      ],
+      "dropped": "under 100 characters of substance (22)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2081832600591892712",
+      "title": "wrong https://t.co/RdhTY34gQW",
+      "date": "2026-07-27",
+      "text": "wrong https://t.co/RdhTY34gQW",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081707498919112925",
+      "links": [
+        "https://twitter.com/icanvardar/status/2081707498919112925"
+      ],
+      "dropped": "under 100 characters of substance (5)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2081513071135346814",
+      "title": "agreed feels big, i want a new kind of computer https://t.co/c7VFXFf4uv",
+      "date": "2026-07-26",
+      "text": "agreed feels big, i want a new kind of computer https://t.co/c7VFXFf4uv",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081408374315602338",
+      "links": [
+        "https://twitter.com/AlexFinn/status/2081408374315602338"
+      ],
+      "dropped": "under 100 characters of substance (47)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2080683363174945065",
+      "title": "i want the US to win in AI both in open source and proprietary models, and i am …",
+      "date": "2026-07-24",
+      "text": "i want the US to win in AI both in open source and proprietary models, and i am glad to see this https://t.co/fkYFw30437",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080643682408321103",
+      "links": [
+        "https://twitter.com/JensenHuang/status/2080643682408321103"
+      ],
+      "dropped": "under 100 characters of substance (96)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2080683119959757243",
+      "title": "let us know what you think of pro-ultra-superhard https://t.co/df2WxqXsIx",
+      "date": "2026-07-24",
+      "text": "let us know what you think of pro-ultra-superhard https://t.co/df2WxqXsIx",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080515937803886872",
+      "links": [
+        "https://twitter.com/emollick/status/2080515937803886872"
+      ],
+      "dropped": "under 100 characters of substance (49)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2079258683884917013",
+      "title": "it is good now! https://t.co/eiG0VDwrTe",
+      "date": "2026-07-20",
+      "text": "it is good now! https://t.co/eiG0VDwrTe",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2079199143868960823",
+      "links": [
+        "https://twitter.com/_samirism/status/2079199143868960823"
+      ],
+      "dropped": "under 100 characters of substance (15)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2078244242993164716",
+      "title": "this is cool:\n\nhttps://t.co/X4HEmFym68",
+      "date": "2026-07-17",
+      "text": "this is cool:\n\nhttps://t.co/X4HEmFym68",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://welcome-to-codex.openai.chatgpt.site/"
+      ],
+      "dropped": "under 100 characters of substance (13)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077842579232895286",
+      "title": "i talk to chatgpt more than i type to it at this point\n\nnew voice model really c…",
+      "date": "2026-07-16",
+      "text": "i talk to chatgpt more than i type to it at this point\n\nnew voice model really crossed a threshold",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (97)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077489177374208000",
+      "title": "amazing to me that some people want the silent version\n\nhttps://t.co/jbdznnBx9Z",
+      "date": "2026-07-15",
+      "text": "amazing to me that some people want the silent version\n\nhttps://t.co/jbdznnBx9Z",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/supply/co-lab/work-louder/"
+      ],
+      "dropped": "under 100 characters of substance (54)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077118672150388816",
+      "title": "hello! https://t.co/riq8bTHR5V",
+      "date": "2026-07-14",
+      "text": "hello! https://t.co/riq8bTHR5V",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2077114635308986427",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2077114635308986427"
+      ],
+      "dropped": "under 100 characters of substance (6)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077053226080436235",
+      "title": "also, a reason to favor open-source harnesses.",
+      "date": "2026-07-14",
+      "text": "also, a reason to favor open-source harnesses.",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (46)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077053140508266710",
+      "title": "Concerning. https://t.co/fLWXNGOshv",
+      "date": "2026-07-14",
+      "text": "Concerning. https://t.co/fLWXNGOshv",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076716354754015368",
+      "links": [
+        "https://twitter.com/hrkrshnn/status/2076716354754015368"
+      ],
+      "dropped": "under 100 characters of substance (11)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077042528906527225",
+      "title": "this is a thoughtful proposal from demis: https://t.co/WwzfcLJXT5",
+      "date": "2026-07-14",
+      "text": "this is a thoughtful proposal from demis: https://t.co/WwzfcLJXT5",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076957440109625718",
+      "links": [
+        "https://twitter.com/demishassabis/status/2076957440109625718"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077037818824843719",
+      "title": "this would have been a whole startup not too long ago https://t.co/ICLLZAf1UL",
+      "date": "2026-07-14",
+      "text": "this would have been a whole startup not too long ago https://t.co/ICLLZAf1UL",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076812846793650485",
+      "links": [
+        "https://twitter.com/cdngdev/status/2076812846793650485"
+      ],
+      "dropped": "under 100 characters of substance (53)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2077033807736459713",
+      "title": "2.5x increase in usage of our agentic products (codex and chatgpt work) in the l…",
+      "date": "2026-07-14",
+      "text": "2.5x increase in usage of our agentic products (codex and chatgpt work) in the last week!\n\nwelcome.",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (98)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076824686307271125",
+      "title": "i thought this was satire, kept looking for the handle to be spelled c1audeai or…",
+      "date": "2026-07-14",
+      "text": "i thought this was satire, kept looking for the handle to be spelled c1audeai or something https://t.co/4AVBA93Z27",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075271759289303522",
+      "links": [
+        "https://twitter.com/claudeai/status/2075271759289303522"
+      ],
+      "dropped": "under 100 characters of substance (90)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076823209589313910",
+      "title": "still sorta breaks my brain to see our models be good at design finally",
+      "date": "2026-07-14",
+      "text": "still sorta breaks my brain to see our models be good at design finally",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (71)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076780425280954658",
+      "title": "come for the best model, stay because we don’t treat you with contempt",
+      "date": "2026-07-13",
+      "text": "come for the best model, stay because we don’t treat you with contempt",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (70)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076759971967230419",
+      "title": "that goes hard https://t.co/Gh2MADOR8p",
+      "date": "2026-07-13",
+      "text": "that goes hard https://t.co/Gh2MADOR8p",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076667554798752248",
+      "links": [
+        "https://twitter.com/chuckmckinnon/status/2076667554798752248"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076736417498267652",
+      "title": "we love our users https://t.co/gvR3ZWK1K9",
+      "date": "2026-07-13",
+      "text": "we love our users https://t.co/gvR3ZWK1K9",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076735790567338203",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2076735790567338203"
+      ],
+      "dropped": "under 100 characters of substance (17)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076696938918084809",
+      "title": "clarity is nice https://t.co/0XjeFb4DD9",
+      "date": "2026-07-13",
+      "text": "clarity is nice https://t.co/0XjeFb4DD9",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076459871021736245",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2076459871021736245"
+      ],
+      "dropped": "under 100 characters of substance (15)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2076034163418014199",
+      "title": "whoa https://t.co/JogchHWDm2",
+      "date": "2026-07-11",
+      "text": "whoa https://t.co/JogchHWDm2",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2076021263945039876",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2076021263945039876"
+      ],
+      "dropped": "under 100 characters of substance (4)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075985056846451123",
+      "title": "\"physicians found fewer flaws in GPT-5.6 responses than physician-written respon…",
+      "date": "2026-07-11",
+      "text": "\"physicians found fewer flaws in GPT-5.6 responses than physician-written responses.\" https://t.co/n4J37XVqNM",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075689779937833302",
+      "links": [
+        "https://twitter.com/thekaransinghal/status/2075689779937833302"
+      ],
+      "dropped": "under 100 characters of substance (85)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075982820322025788",
+      "title": "30% of the cost was on fable at these levels of usage? https://t.co/KzFoHj7cB4",
+      "date": "2026-07-11",
+      "text": "30% of the cost was on fable at these levels of usage? https://t.co/KzFoHj7cB4",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075963734745342361",
+      "links": [
+        "https://twitter.com/thdxr/status/2075963734745342361"
+      ],
+      "dropped": "under 100 characters of substance (54)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075982617976230043",
+      "title": "homeboy you're the one sellling public market investors on short-term space data…",
+      "date": "2026-07-11",
+      "text": "homeboy you're the one sellling public market investors on short-term space datacenters https://t.co/wTYSA4q3Qx",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075892136604573903",
+      "links": [
+        "https://twitter.com/elonmusk/status/2075892136604573903"
+      ],
+      "dropped": "under 100 characters of substance (87)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075585386441789605",
+      "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot\n\nhttps://t.co/r2B3EJ…",
+      "date": "2026-07-10",
+      "text": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot\n\nhttps://t.co/r2B3EJuV1A",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot/"
+      ],
+      "dropped": "under 100 characters of substance (59)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075579646373216282",
+      "title": "makes us happy to see people love 5.6 sol so much!",
+      "date": "2026-07-10",
+      "text": "makes us happy to see people love 5.6 sol so much!",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (50)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075579012223787402",
+      "title": "the sun is out today https://t.co/SDgpeYXeXi",
+      "date": "2026-07-10",
+      "text": "the sun is out today https://t.co/SDgpeYXeXi",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075452680760443190",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2075452680760443190"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075068286107316317",
+      "title": "what a good video https://t.co/QXVRAqWeAq",
+      "date": "2026-07-09",
+      "text": "what a good video https://t.co/QXVRAqWeAq",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074907025537224840",
+      "links": [
+        "https://twitter.com/OpenAI/status/2074907025537224840"
+      ],
+      "dropped": "under 100 characters of substance (17)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075063511290662996",
+      "title": "tbh i dont think sol gets that many dates either https://t.co/s0EESA6c3D",
+      "date": "2026-07-09",
+      "text": "tbh i dont think sol gets that many dates either https://t.co/s0EESA6c3D",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074862990214787301",
+      "links": [
+        "https://twitter.com/mitchellh/status/2074862990214787301"
+      ],
+      "dropped": "under 100 characters of substance (48)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075048072837734448",
+      "title": "it surely doesnt https://t.co/SVQZYR1pyg",
+      "date": "2026-07-09",
+      "text": "it surely doesnt https://t.co/SVQZYR1pyg",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074952287097967036",
+      "links": [
+        "https://twitter.com/ericlim/status/2074952287097967036"
+      ],
+      "dropped": "under 100 characters of substance (16)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075047983314571764",
+      "title": "🫶 https://t.co/Y19TWI4HMf",
+      "date": "2026-07-09",
+      "text": "🫶 https://t.co/Y19TWI4HMf",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074856006576713973",
+      "links": [
+        "https://twitter.com/thdxr/status/2074856006576713973"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2075047747250684352",
+      "title": "i do love rottweilers https://t.co/bReU2FJne4",
+      "date": "2026-07-09",
+      "text": "i do love rottweilers https://t.co/bReU2FJne4",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074918176354115886",
+      "links": [
+        "https://twitter.com/petergostev/status/2074918176354115886"
+      ],
+      "dropped": "under 100 characters of substance (21)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2074709023807664454",
+      "title": "GPT-5.6 sol launches thursday!\n\nhappy building",
+      "date": "2026-07-08",
+      "text": "GPT-5.6 sol launches thursday!\n\nhappy building",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (45)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2073636003215249515",
+      "title": "they really nailed it with \"life, liberty, and the pursuit of happiness\"",
+      "date": "2026-07-05",
+      "text": "they really nailed it with \"life, liberty, and the pursuit of happiness\"",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (72)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2070614769678393846",
+      "title": "not quite all-you-can-eat tokens, but we are working on it",
+      "date": "2026-06-26",
+      "text": "not quite all-you-can-eat tokens, but we are working on it",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2070614666288795703",
+      "title": "team cooked, spicily https://t.co/yLb6nqrus6",
+      "date": "2026-06-26",
+      "text": "team cooked, spicily https://t.co/yLb6nqrus6",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2069770172802773292",
+      "links": [
+        "https://twitter.com/OpenAI/status/2069770172802773292"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2070612055225483692",
+      "title": "in other news, we updated the 5.5 instant model used in chatgpt this week.\n\ni li…",
+      "date": "2026-06-26",
+      "text": "in other news, we updated the 5.5 instant model used in chatgpt this week.\n\ni like its vibes.",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (92)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2070609922631537024",
+      "title": "oh and also...750 token/sec coming to 5.6 sol in july!",
+      "date": "2026-06-26",
+      "text": "oh and also...750 token/sec coming to 5.6 sol in july!",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (54)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/sama/status/2070608004500857256",
+      "title": "Also, I am happy to answer questions if people have some.",
+      "date": "2026-06-26",
+      "text": "Also, I am happy to answer questions if people have some.",
+      "text_source": "x_post",
+      "author_handle": "sama",
+      "author_name": "Sam Altman",
+      "author_role": "Chief Executive Officer",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (57)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2096159589771485299",
+      "title": "Astra for helping in your personal and work life https://t.co/MOTsinURh1",
+      "date": "2026-09-05",
+      "text": "Astra for helping in your personal and work life https://t.co/MOTsinURh1",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095854071580156338",
+      "links": [
+        "https://twitter.com/gregisenberg/status/2095854071580156338"
+      ],
+      "dropped": "under 100 characters of substance (48)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2095982009550082387",
+      "title": "Astra rollout in progress, excited to see what you do and build https://t.co/WBT…",
+      "date": "2026-09-04",
+      "text": "Astra rollout in progress, excited to see what you do and build https://t.co/WBTGF5WPJP",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095973658867171733",
+      "links": [
+        "https://twitter.com/sama/status/2095973658867171733"
+      ],
+      "dropped": "under 100 characters of substance (63)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2095730639094079594",
+      "title": "excited for Astra on Azure! https://t.co/pcGxIgdmrS",
+      "date": "2026-09-04",
+      "text": "excited for Astra on Azure! https://t.co/pcGxIgdmrS",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095713765446840591",
+      "links": [
+        "https://twitter.com/satyanadella/status/2095713765446840591"
+      ],
+      "dropped": "under 100 characters of substance (27)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2095629409017614390",
+      "title": "arc-agi-3 is now saturated https://t.co/sD4ePv5cws",
+      "date": "2026-09-03",
+      "text": "arc-agi-3 is now saturated https://t.co/sD4ePv5cws",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095597602545025138",
+      "links": [
+        "https://twitter.com/arcprize/status/2095597602545025138"
+      ],
+      "dropped": "under 100 characters of substance (26)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2095598855073255644",
+      "title": "Introducing GPT-6 Astra: https://t.co/0eb3Ek6Gl8",
+      "date": "2026-09-03",
+      "text": "Introducing GPT-6 Astra: https://t.co/0eb3Ek6Gl8",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/index/gpt-6-astra/"
+      ],
+      "dropped": "under 100 characters of substance (24)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2093065379145019902",
+      "title": "chatgpt work for booking a haircut. chatgpt is increasingly becoming your person…",
+      "date": "2026-08-27",
+      "text": "chatgpt work for booking a haircut. chatgpt is increasingly becoming your personal AGI. https://t.co/pUXa9ZnwcE",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2093037163872915923",
+      "links": [
+        "https://twitter.com/mweinbach/status/2093037163872915923"
+      ],
+      "dropped": "under 100 characters of substance (87)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2092487630218985867",
+      "title": "ai for chip design is underrated https://t.co/pmCgaGsdNe",
+      "date": "2026-08-26",
+      "text": "ai for chip design is underrated https://t.co/pmCgaGsdNe",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092418951586390137",
+      "links": [
+        "https://twitter.com/beffjezos/status/2092418951586390137"
+      ],
+      "dropped": "under 100 characters of substance (32)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2092430694253572216",
+      "title": "triggered tasks in chatgpt: https://t.co/FuSuqpK0bG",
+      "date": "2026-08-26",
+      "text": "triggered tasks in chatgpt: https://t.co/FuSuqpK0bG",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092335329110004140",
+      "links": [
+        "https://twitter.com/ChatGPT/status/2092335329110004140"
+      ],
+      "dropped": "under 100 characters of substance (27)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2092376258030211281",
+      "title": "you can now have chatgpt work securely sign into accounts: https://t.co/OWoVrNqW…",
+      "date": "2026-08-25",
+      "text": "you can now have chatgpt work securely sign into accounts: https://t.co/OWoVrNqWKK",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092366554965107164",
+      "links": [
+        "https://twitter.com/ChatGPT/status/2092366554965107164"
+      ],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2092353210635915695",
+      "title": "by popular demand, $100 business seat now available in chatgpt! no 5-hour limit,…",
+      "date": "2026-08-25",
+      "text": "by popular demand, $100 business seat now available in chatgpt! no 5-hour limit, more usage, etc.. https://t.co/1JA9tv1vBW",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092335305366069305",
+      "links": [
+        "https://twitter.com/OpenAI/status/2092335305366069305"
+      ],
+      "dropped": "under 100 characters of substance (98)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2092273740239552780",
+      "title": "inference numbers published for jalapeno, team did an amazing job https://t.co/W…",
+      "date": "2026-08-25",
+      "text": "inference numbers published for jalapeno, team did an amazing job https://t.co/WNJIA2dESm https://t.co/IXhwagVtkL",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092266927377039838",
+      "links": [
+        "https://openai.com/index/jalapeno-first-results/",
+        "https://twitter.com/firstadopter/status/2092266927377039838"
+      ],
+      "dropped": "under 100 characters of substance (65)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2091861755253371243",
+      "title": "a new way to get knowledge work done https://t.co/3jugdRwxjM",
+      "date": "2026-08-24",
+      "text": "a new way to get knowledge work done https://t.co/3jugdRwxjM",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2091623289869508979",
+      "links": [
+        "https://twitter.com/a16z/status/2091623289869508979"
+      ],
+      "dropped": "under 100 characters of substance (36)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2091745169221787681",
+      "title": "OpenAI has built the muscle of making long-term research bets: https://t.co/sziJ…",
+      "date": "2026-08-24",
+      "text": "OpenAI has built the muscle of making long-term research bets: https://t.co/sziJibiXRn",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2091713860528984451",
+      "links": [
+        "https://twitter.com/kundan2510/status/2091713860528984451"
+      ],
+      "dropped": "under 100 characters of substance (62)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2091233235355496810",
+      "title": "agentic adoption has been super fast, easy to forget how far the field has come …",
+      "date": "2026-08-22",
+      "text": "agentic adoption has been super fast, easy to forget how far the field has come https://t.co/XtUxELHo8P",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2091113405033689404",
+      "links": [
+        "https://twitter.com/xeophon/status/2091113405033689404"
+      ],
+      "dropped": "under 100 characters of substance (79)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2090515992506147198",
+      "title": "huge milestone in our partnership with NVIDIA https://t.co/qaV1devSRZ",
+      "date": "2026-08-20",
+      "text": "huge milestone in our partnership with NVIDIA https://t.co/qaV1devSRZ",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2090343188393246973",
+      "links": [
+        "https://twitter.com/udayruddarraju/status/2090343188393246973"
+      ],
+      "dropped": "under 100 characters of substance (45)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2090449916456009972",
+      "title": "OpenAI for anything you can do in your browser: https://t.co/q9lX6k07qW",
+      "date": "2026-08-20",
+      "text": "OpenAI for anything you can do in your browser: https://t.co/q9lX6k07qW",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2090147110201291006",
+      "links": [
+        "https://twitter.com/clairevo/status/2090147110201291006"
+      ],
+      "dropped": "under 100 characters of substance (47)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2090327069985268049",
+      "title": "Codex for code migrations — from literal years to weeks: https://t.co/Hkde3yehDY",
+      "date": "2026-08-20",
+      "text": "Codex for code migrations — from literal years to weeks: https://t.co/Hkde3yehDY",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2090122836103102482",
+      "links": [
+        "https://twitter.com/OpenAIDevs/status/2090122836103102482"
+      ],
+      "dropped": "under 100 characters of substance (56)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2089181834580250870",
+      "title": "chatgpt for browser use: https://t.co/hTN1ZZbZ8B",
+      "date": "2026-08-17",
+      "text": "chatgpt for browser use: https://t.co/hTN1ZZbZ8B",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2089157303320871022",
+      "links": [
+        "https://twitter.com/athyuttamre/status/2089157303320871022"
+      ],
+      "dropped": "under 100 characters of substance (24)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088755962131747085",
+      "title": "sounds accurate https://t.co/HJGJLDigGu",
+      "date": "2026-08-15",
+      "text": "sounds accurate https://t.co/HJGJLDigGu",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2088658228959953052",
+      "links": [
+        "https://twitter.com/a16z/status/2088658228959953052"
+      ],
+      "dropped": "under 100 characters of substance (15)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088658133971509640",
+      "title": "towards never having to manually select a model again https://t.co/Tm7HWEGcye",
+      "date": "2026-08-15",
+      "text": "towards never having to manually select a model again https://t.co/Tm7HWEGcye",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2088641056237580632",
+      "links": [
+        "https://twitter.com/pvncher/status/2088641056237580632"
+      ],
+      "dropped": "under 100 characters of substance (53)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088489438297133066",
+      "title": "try reservation search in chatgpt! https://t.co/RcBIeoht5V",
+      "date": "2026-08-15",
+      "text": "try reservation search in chatgpt! https://t.co/RcBIeoht5V",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2088349344248537250",
+      "links": [
+        "https://twitter.com/adamhfry/status/2088349344248537250"
+      ],
+      "dropped": "under 100 characters of substance (34)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088439955026825520",
+      "title": "hedonic treadmill of model expectations",
+      "date": "2026-08-15",
+      "text": "hedonic treadmill of model expectations",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (39)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088111733973934346",
+      "title": "wild to see Sol at 14x speed: https://t.co/9laJ2Xcvgw",
+      "date": "2026-08-14",
+      "text": "wild to see Sol at 14x speed: https://t.co/9laJ2Xcvgw",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2087947721936359705",
+      "links": [
+        "https://twitter.com/OpenAI/status/2087947721936359705"
+      ],
+      "dropped": "under 100 characters of substance (29)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2088111005297471894",
+      "title": "chatgpt for saving you money https://t.co/rM7wGICiCi",
+      "date": "2026-08-14",
+      "text": "chatgpt for saving you money https://t.co/rM7wGICiCi",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2087956442175418736",
+      "links": [
+        "https://twitter.com/jxnlco/status/2087956442175418736"
+      ],
+      "dropped": "under 100 characters of substance (28)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086868041451901009",
+      "title": "How we're responsibly building AI infrastructure in Texas: https://t.co/leyVALtm…",
+      "date": "2026-08-10",
+      "text": "How we're responsibly building AI infrastructure in Texas: https://t.co/leyVALtmJB",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://openai.com/index/responsible-ai-infrastructure-texas/"
+      ],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086530739609407502",
+      "title": "the bottleneck is increasingly knowing what you want",
+      "date": "2026-08-09",
+      "text": "the bottleneck is increasingly knowing what you want",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (52)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086516262491046364",
+      "title": "Codex for saving money by reading the fine print: https://t.co/xUINsVFaOs",
+      "date": "2026-08-09",
+      "text": "Codex for saving money by reading the fine print: https://t.co/xUINsVFaOs",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2086272992019882338",
+      "links": [
+        "https://twitter.com/SIGKITTEN/status/2086272992019882338"
+      ],
+      "dropped": "under 100 characters of substance (49)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086482546389631111",
+      "title": "learn how to use ChatGPT Work: https://t.co/6mUGyRHqV8",
+      "date": "2026-08-09",
+      "text": "learn how to use ChatGPT Work: https://t.co/6mUGyRHqV8",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085761931403575356",
+      "links": [
+        "https://twitter.com/rileybrown/status/2085761931403575356"
+      ],
+      "dropped": "under 100 characters of substance (30)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086364812326670454",
+      "title": "ChatGPT Finance for helping you save money: https://t.co/lfGsvCSy1r",
+      "date": "2026-08-09",
+      "text": "ChatGPT Finance for helping you save money: https://t.co/lfGsvCSy1r",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2086241939637317896",
+      "links": [
+        "https://twitter.com/trevin/status/2086241939637317896"
+      ],
+      "dropped": "under 100 characters of substance (43)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2086092396023120286",
+      "title": "GPT-4 finished training four years ago today.",
+      "date": "2026-08-08",
+      "text": "GPT-4 finished training four years ago today.",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (45)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085927739559911627",
+      "title": "luna is such a special model, incredible price performance https://t.co/fNMZgFCv…",
+      "date": "2026-08-08",
+      "text": "luna is such a special model, incredible price performance https://t.co/fNMZgFCvR5",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085457823115133059",
+      "links": [
+        "https://twitter.com/arcprize/status/2085457823115133059"
+      ],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085926213294727447",
+      "title": "chatgpt work for removing the toil https://t.co/oT9B6edQ8Y",
+      "date": "2026-08-08",
+      "text": "chatgpt work for removing the toil https://t.co/oT9B6edQ8Y",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085877607825125881",
+      "links": [
+        "https://twitter.com/jxnlco/status/2085877607825125881"
+      ],
+      "dropped": "under 100 characters of substance (34)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085901941838844369",
+      "title": "ChatGPT team is shipping: https://t.co/JfJpwRFLhq",
+      "date": "2026-08-08",
+      "text": "ChatGPT team is shipping: https://t.co/JfJpwRFLhq",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085878037216940344",
+      "links": [
+        "https://twitter.com/adamhfry/status/2085878037216940344"
+      ],
+      "dropped": "under 100 characters of substance (25)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085819760953192790",
+      "title": "GPT-5.6 Sol for cybersafety: https://t.co/e5y779UN1J",
+      "date": "2026-08-07",
+      "text": "GPT-5.6 Sol for cybersafety: https://t.co/e5y779UN1J",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085748755064647698",
+      "links": [
+        "https://twitter.com/GregKara6/status/2085748755064647698"
+      ],
+      "dropped": "under 100 characters of substance (28)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085500884239413600",
+      "title": "great results in personal finance AI: https://t.co/RdgY5mnrbZ",
+      "date": "2026-08-06",
+      "text": "great results in personal finance AI: https://t.co/RdgY5mnrbZ",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085490788876849636",
+      "links": [
+        "https://twitter.com/ebloch/status/2085490788876849636"
+      ],
+      "dropped": "under 100 characters of substance (37)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2085095110921097243",
+      "title": "full house for the team’s talk at Black Hat on the OpenAI-Hugging Face Incident …",
+      "date": "2026-08-05",
+      "text": "full house for the team’s talk at Black Hat on the OpenAI-Hugging Face Incident https://t.co/vf52ssLZZc",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/gdb/status/2085095110921097243/photo/1",
+        "https://x.com/gdb/status/2085095110921097243/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (79)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2084770040281211043",
+      "title": "Luna’s price-performance is incredible https://t.co/z1aZyXd9Gd",
+      "date": "2026-08-04",
+      "text": "Luna’s price-performance is incredible https://t.co/z1aZyXd9Gd",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2084748639470272972",
+      "links": [
+        "https://twitter.com/theo/status/2084748639470272972"
+      ],
+      "dropped": "under 100 characters of substance (38)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2084405421041963356",
+      "title": "GPT-Live is a new architecture and stack for realtime audio: https://t.co/VMnq2b…",
+      "date": "2026-08-03",
+      "text": "GPT-Live is a new architecture and stack for realtime audio: https://t.co/VMnq2bkHWc",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2084378415818579975",
+      "links": [
+        "https://twitter.com/OpenAI/status/2084378415818579975"
+      ],
+      "dropped": "under 100 characters of substance (60)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2084104354911707518",
+      "title": "Codex for helping operate your business https://t.co/n0jbNlsIpo",
+      "date": "2026-08-03",
+      "text": "Codex for helping operate your business https://t.co/n0jbNlsIpo",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2084054616946176324",
+      "links": [
+        "https://twitter.com/DevAdventur3s/status/2084054616946176324"
+      ],
+      "dropped": "under 100 characters of substance (39)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2084074129930772953",
+      "title": "codex for customer feedback -&gt; roadmap https://t.co/CEffEeGzKA",
+      "date": "2026-08-03",
+      "text": "codex for customer feedback -&gt; roadmap https://t.co/CEffEeGzKA",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083957246674042890",
+      "links": [
+        "https://twitter.com/Kappaemme1926/status/2083957246674042890"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083934330146197989",
+      "title": "chatgpt for building interactive educational tools https://t.co/vg3M2bqrDs",
+      "date": "2026-08-02",
+      "text": "chatgpt for building interactive educational tools https://t.co/vg3M2bqrDs",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083884856531177942",
+      "links": [
+        "https://twitter.com/thebuggeddev/status/2083884856531177942"
+      ],
+      "dropped": "under 100 characters of substance (50)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083773552793465087",
+      "title": "chatgpt for empowering your dad to build: https://t.co/ONfgyjDMx8",
+      "date": "2026-08-02",
+      "text": "chatgpt for empowering your dad to build: https://t.co/ONfgyjDMx8",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083707803265286193",
+      "links": [
+        "https://twitter.com/khloyakafe/status/2083707803265286193"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083750556062093745",
+      "title": "ask chatgpt work to do any recurring task https://t.co/5ue4E7cD9l",
+      "date": "2026-08-02",
+      "text": "ask chatgpt work to do any recurring task https://t.co/5ue4E7cD9l",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083641132534083915",
+      "links": [
+        "https://twitter.com/brttbmn/status/2083641132534083915"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083730016400195845",
+      "title": "chatgpt work is such a good thought amplifier",
+      "date": "2026-08-02",
+      "text": "chatgpt work is such a good thought amplifier",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (45)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083424030099656806",
+      "title": "openai team making git better for everyone https://t.co/Vb3BbmuM8b",
+      "date": "2026-08-01",
+      "text": "openai team making git better for everyone https://t.co/Vb3BbmuM8b",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083328099975119044",
+      "links": [
+        "https://twitter.com/tnm/status/2083328099975119044"
+      ],
+      "dropped": "under 100 characters of substance (42)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083419294378209724",
+      "title": "having a great experience with using chatgpt work for extremely thorough researc…",
+      "date": "2026-08-01",
+      "text": "having a great experience with using chatgpt work for extremely thorough research and fact checking",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (99)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083368795507474844",
+      "title": "put ChatGPT to work every day https://t.co/HpRKMu4xXZ",
+      "date": "2026-08-01",
+      "text": "put ChatGPT to work every day https://t.co/HpRKMu4xXZ",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083281488745734195",
+      "links": [
+        "https://twitter.com/mweinbach/status/2083281488745734195"
+      ],
+      "dropped": "under 100 characters of substance (29)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083294351883743442",
+      "title": "pets and voice make chatgpt desktop so much more fun to use https://t.co/FHnsrmw…",
+      "date": "2026-07-31",
+      "text": "pets and voice make chatgpt desktop so much more fun to use https://t.co/FHnsrmwHr3",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083287694852112400",
+      "links": [
+        "https://twitter.com/ChatGPT/status/2083287694852112400"
+      ],
+      "dropped": "under 100 characters of substance (59)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083279662650941705",
+      "title": "luna is a great and low-cost model https://t.co/lgL6Ln60wm",
+      "date": "2026-07-31",
+      "text": "luna is a great and low-cost model https://t.co/lgL6Ln60wm",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082996044175213050",
+      "links": [
+        "https://twitter.com/simonw/status/2082996044175213050"
+      ],
+      "dropped": "under 100 characters of substance (34)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083259782891475431",
+      "title": "jevon's paradox at work https://t.co/Oo8PigFUaZ",
+      "date": "2026-07-31",
+      "text": "jevon's paradox at work https://t.co/Oo8PigFUaZ",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2083228765594018157",
+      "links": [
+        "https://twitter.com/GregKamradt/status/2083228765594018157"
+      ],
+      "dropped": "under 100 characters of substance (23)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083221810024481046",
+      "title": "chatgpt is becoming an agentic browser https://t.co/8QNPSSn5lp",
+      "date": "2026-07-31",
+      "text": "chatgpt is becoming an agentic browser https://t.co/8QNPSSn5lp",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082970812584432115",
+      "links": [
+        "https://twitter.com/ChatGPT/status/2082970812584432115"
+      ],
+      "dropped": "under 100 characters of substance (38)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2083061510180688298",
+      "title": "supporting an ecosystem with Sign in with ChatGPT: https://t.co/USxiNp7Rwu",
+      "date": "2026-07-31",
+      "text": "supporting an ecosystem with Sign in with ChatGPT: https://t.co/USxiNp7Rwu",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082911102904435078",
+      "links": [
+        "https://twitter.com/reach_vb/status/2082911102904435078"
+      ],
+      "dropped": "under 100 characters of substance (50)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082919656403435638",
+      "title": "GPT-5.6 series has best price/performance https://t.co/vI36l4CXRF",
+      "date": "2026-07-30",
+      "text": "GPT-5.6 series has best price/performance https://t.co/vI36l4CXRF",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082913381678194927",
+      "links": [
+        "https://twitter.com/cognition/status/2082913381678194927"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082902415855202686",
+      "title": "luna is a thing of beauty, incredibly capable and low-cost https://t.co/jlAujG2i…",
+      "date": "2026-07-30",
+      "text": "luna is a thing of beauty, incredibly capable and low-cost https://t.co/jlAujG2isA",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082891485922423285",
+      "links": [
+        "https://twitter.com/shashankgoyal95/status/2082891485922423285"
+      ],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082864105883586798",
+      "title": "try asking codex to go beyond what you think possible https://t.co/VCWOFcg7qa",
+      "date": "2026-07-30",
+      "text": "try asking codex to go beyond what you think possible https://t.co/VCWOFcg7qa",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082824949195022403",
+      "links": [
+        "https://twitter.com/billyjhowell/status/2082824949195022403"
+      ],
+      "dropped": "under 100 characters of substance (53)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082694260969902087",
+      "title": "connect your airtable and chatgpt: https://t.co/gtoe5ONJJL",
+      "date": "2026-07-30",
+      "text": "connect your airtable and chatgpt: https://t.co/gtoe5ONJJL",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082545512943587346",
+      "links": [
+        "https://twitter.com/airtable/status/2082545512943587346"
+      ],
+      "dropped": "under 100 characters of substance (34)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082670099723628916",
+      "title": "the tokens must flow https://t.co/eJhujCGXfy",
+      "date": "2026-07-30",
+      "text": "the tokens must flow https://t.co/eJhujCGXfy",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082655731204096275",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2082655731204096275"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082583297809699300",
+      "title": "ChatGPT Voice for spending more time working from where you want: https://t.co/w…",
+      "date": "2026-07-29",
+      "text": "ChatGPT Voice for spending more time working from where you want: https://t.co/wN5ul2vHx7",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082559175461318823",
+      "links": [
+        "https://twitter.com/AlexFinn/status/2082559175461318823"
+      ],
+      "dropped": "under 100 characters of substance (65)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082350322337673601",
+      "title": "yep https://t.co/0WR6HzQt8x",
+      "date": "2026-07-29",
+      "text": "yep https://t.co/0WR6HzQt8x",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081961007480750124",
+      "links": [
+        "https://twitter.com/npew/status/2081961007480750124"
+      ],
+      "dropped": "under 100 characters of substance (3)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082309375696478372",
+      "title": "5.6 for solving another longstanding open problem, this time in probability: htt…",
+      "date": "2026-07-29",
+      "text": "5.6 for solving another longstanding open problem, this time in probability: https://t.co/6XCPtMDBmC",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081928348322988095",
+      "links": [
+        "https://twitter.com/GuanyangW/status/2081928348322988095"
+      ],
+      "dropped": "under 100 characters of substance (76)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2082235089539526690",
+      "title": "we've just open-sourced the Codex Security CLI: https://t.co/gIm9X2wDdh",
+      "date": "2026-07-28",
+      "text": "we've just open-sourced the Codex Security CLI: https://t.co/gIm9X2wDdh",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://news.ycombinator.com/item?id=49089755"
+      ],
+      "dropped": "under 100 characters of substance (47)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2081955446404112493",
+      "title": "congrats on the amazing result! https://t.co/mnVTmVfgYj",
+      "date": "2026-07-28",
+      "text": "congrats on the amazing result! https://t.co/mnVTmVfgYj",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081780318881677693",
+      "links": [
+        "https://twitter.com/DavidTurturean/status/2081780318881677693"
+      ],
+      "dropped": "under 100 characters of substance (31)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2081458174662726009",
+      "title": "ChatGPT is increasingly becoming your personal AGI https://t.co/DA1TA6N2aU",
+      "date": "2026-07-26",
+      "text": "ChatGPT is increasingly becoming your personal AGI https://t.co/DA1TA6N2aU",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081444811647963244",
+      "links": [
+        "https://twitter.com/thsottiaux/status/2081444811647963244"
+      ],
+      "dropped": "under 100 characters of substance (50)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2081409255916359771",
+      "title": "put chatgpt to work https://t.co/LqcgJF2DAG",
+      "date": "2026-07-26",
+      "text": "put chatgpt to work https://t.co/LqcgJF2DAG",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081396796174282900",
+      "links": [
+        "https://twitter.com/sama/status/2081396796174282900"
+      ],
+      "dropped": "under 100 characters of substance (19)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2081285058485534856",
+      "title": "GPT-Live for a different reading experience: https://t.co/hQKTWNA19B",
+      "date": "2026-07-26",
+      "text": "GPT-Live for a different reading experience: https://t.co/hQKTWNA19B",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2081031402854699173",
+      "links": [
+        "https://twitter.com/kurorosage/status/2081031402854699173"
+      ],
+      "dropped": "under 100 characters of substance (44)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2081233872168390661",
+      "title": "true fact https://t.co/DXxwYQOcJU",
+      "date": "2026-07-26",
+      "text": "true fact https://t.co/DXxwYQOcJU",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080919023273882067",
+      "links": [
+        "https://twitter.com/akinkunmi/status/2080919023273882067"
+      ],
+      "dropped": "under 100 characters of substance (9)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2080939030062178512",
+      "title": "ChatGPT Work for using websites which require login: https://t.co/VOfbqQJcpE",
+      "date": "2026-07-25",
+      "text": "ChatGPT Work for using websites which require login: https://t.co/VOfbqQJcpE",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080707685448847418",
+      "links": [
+        "https://twitter.com/OpenAIDevs/status/2080707685448847418"
+      ],
+      "dropped": "under 100 characters of substance (52)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2080874519091151227",
+      "title": "Pets make building fun https://t.co/Fw4B3JRGP7",
+      "date": "2026-07-25",
+      "text": "Pets make building fun https://t.co/Fw4B3JRGP7",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080747505474736162",
+      "links": [
+        "https://twitter.com/OpenAIDevs/status/2080747505474736162"
+      ],
+      "dropped": "under 100 characters of substance (22)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/gdb/status/2080861203010568232",
+      "title": "stories like this should be told more https://t.co/Ukx7MUa7Wx",
+      "date": "2026-07-25",
+      "text": "stories like this should be told more https://t.co/Ukx7MUa7Wx",
+      "text_source": "x_post",
+      "author_handle": "gdb",
+      "author_name": "Greg Brockman",
+      "author_role": "Co-founder and President",
+      "x_evidence": "search_index",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080759839513280770",
+      "links": [
+        "https://twitter.com/Polymarket/status/2080759839513280770"
+      ],
+      "dropped": "under 100 characters of substance (37)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2096251528764076116",
+      "title": "Give it a go! https://t.co/BiyZViqHIc",
+      "date": "2026-09-05",
+      "text": "Give it a go! https://t.co/BiyZViqHIc",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095952408450826386",
+      "links": [
+        "https://twitter.com/spac89/status/2095952408450826386"
+      ],
+      "dropped": "under 100 characters of substance (13)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095968016886546922",
+      "title": "try out max! https://t.co/DBOIM9VHtj",
+      "date": "2026-09-04",
+      "text": "try out max! https://t.co/DBOIM9VHtj",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095945817802887253",
+      "links": [
+        "https://twitter.com/fanofaliens/status/2095945817802887253"
+      ],
+      "dropped": "under 100 characters of substance (12)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095941936922435596",
+      "title": "4/ or try it out directly in muse code. copy paste this into your terminal:\n\ncur…",
+      "date": "2026-09-04",
+      "text": "4/ or try it out directly in muse code. copy paste this into your terminal:\n\ncurl -fsSL https://t.co/TFXsXfJKW8 | bash",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://dev.meta.ai/install.sh"
+      ],
+      "dropped": "under 100 characters of substance (93)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095941013609320904",
+      "title": "keep the beats going https://t.co/oqE7mtEmB2",
+      "date": "2026-09-04",
+      "text": "keep the beats going https://t.co/oqE7mtEmB2",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095867007350784427",
+      "links": [
+        "https://twitter.com/1kartikkabadi1/status/2095867007350784427"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095939452002836524",
+      "title": "3/ to try it, simply use muse spark 1.3 and set reasoning level to max :)",
+      "date": "2026-09-04",
+      "text": "3/ to try it, simply use muse spark 1.3 and set reasoning level to max :)",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (73)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095720113123274999",
+      "title": "pretty cool motorbike! https://t.co/KUPANEDGn9",
+      "date": "2026-09-04",
+      "text": "pretty cool motorbike! https://t.co/KUPANEDGn9",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095703409697726756",
+      "links": [
+        "https://twitter.com/srikanthvaluri/status/2095703409697726756"
+      ],
+      "dropped": "under 100 characters of substance (22)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095713478749409301",
+      "title": "woah this is pretty cool https://t.co/Brb6Ea4ERi",
+      "date": "2026-09-04",
+      "text": "woah this is pretty cool https://t.co/Brb6Ea4ERi",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095577855073616125",
+      "links": [
+        "https://twitter.com/filicroval/status/2095577855073616125"
+      ],
+      "dropped": "under 100 characters of substance (24)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095713324155732140",
+      "title": "make your own counterstrike for $1.75 https://t.co/OlQTtaD4d2",
+      "date": "2026-09-04",
+      "text": "make your own counterstrike for $1.75 https://t.co/OlQTtaD4d2",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095572254570553446",
+      "links": [
+        "https://twitter.com/archilinho/status/2095572254570553446"
+      ],
+      "dropped": "under 100 characters of substance (37)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095594855716307349",
+      "title": "A M E R I C A 🇺🇸🦅 https://t.co/42H8sXaMiS",
+      "date": "2026-09-03",
+      "text": "A M E R I C A 🇺🇸🦅 https://t.co/42H8sXaMiS",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095568817275441409",
+      "links": [
+        "https://twitter.com/thdxr/status/2095568817275441409"
+      ],
+      "dropped": "under 100 characters of substance (13)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095573214768590939",
+      "title": "this is a good graph https://t.co/Yp5iw1g45o",
+      "date": "2026-09-03",
+      "text": "this is a good graph https://t.co/Yp5iw1g45o",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095530505521488339",
+      "links": [
+        "https://twitter.com/pigeon__s/status/2095530505521488339"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095513587578253693",
+      "title": "it’s like the little prince! https://t.co/hF7Rv5U8gb",
+      "date": "2026-09-03",
+      "text": "it’s like the little prince! https://t.co/hF7Rv5U8gb",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095390000384999748",
+      "links": [
+        "https://twitter.com/neoaiforecast/status/2095390000384999748"
+      ],
+      "dropped": "under 100 characters of substance (28)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095513234241716380",
+      "title": "hey compute daddy good call here @dylan522p https://t.co/EzKB1F7Svg",
+      "date": "2026-09-03",
+      "text": "hey compute daddy good call here @dylan522p https://t.co/EzKB1F7Svg",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075364232623956227",
+      "links": [
+        "https://twitter.com/alexandr_wang/status/2075364232623956227"
+      ],
+      "dropped": "under 100 characters of substance (32)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095512800470966374",
+      "title": "try out muse spark 1.3 in muse code! https://t.co/TR8H5DGtm9",
+      "date": "2026-09-03",
+      "text": "try out muse spark 1.3 in muse code! https://t.co/TR8H5DGtm9",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095287591151325594",
+      "links": [
+        "https://twitter.com/answeror/status/2095287591151325594"
+      ],
+      "dropped": "under 100 characters of substance (36)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095512024482811972",
+      "title": "long live muse https://t.co/29wM7pHSIB",
+      "date": "2026-09-03",
+      "text": "long live muse https://t.co/29wM7pHSIB",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095496114921144712",
+      "links": [
+        "https://twitter.com/gavinsbaker/status/2095496114921144712"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095388793151074625",
+      "title": "this is pretty cool https://t.co/NWHWAMfOym",
+      "date": "2026-09-03",
+      "text": "this is pretty cool https://t.co/NWHWAMfOym",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095340487825661975",
+      "links": [
+        "https://twitter.com/loktar00/status/2095340487825661975"
+      ],
+      "dropped": "under 100 characters of substance (19)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095329812923797581",
+      "title": "pretty good here https://t.co/cO2zXWK12D",
+      "date": "2026-09-03",
+      "text": "pretty good here https://t.co/cO2zXWK12D",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095253545360474459",
+      "links": [
+        "https://twitter.com/joelc_eth/status/2095253545360474459"
+      ],
+      "dropped": "under 100 characters of substance (16)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095329345745367393",
+      "title": "so peaceful https://t.co/0hhnAfVio9",
+      "date": "2026-09-03",
+      "text": "so peaceful https://t.co/0hhnAfVio9",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095282392915226932",
+      "links": [
+        "https://twitter.com/mooncastonline/status/2095282392915226932"
+      ],
+      "dropped": "under 100 characters of substance (11)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095328820958208265",
+      "title": "very cool example! https://t.co/AseHxx7YmD",
+      "date": "2026-09-03",
+      "text": "very cool example! https://t.co/AseHxx7YmD",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095255587701539050",
+      "links": [
+        "https://twitter.com/suzzzylin/status/2095255587701539050"
+      ],
+      "dropped": "under 100 characters of substance (18)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095328657241956576",
+      "title": "for a single dime look at what muse spark can give you https://t.co/c4ilLbCpFr",
+      "date": "2026-09-03",
+      "text": "for a single dime look at what muse spark can give you https://t.co/c4ilLbCpFr",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095265144792100960",
+      "links": [
+        "https://twitter.com/mihawkxxxxx/status/2095265144792100960"
+      ],
+      "dropped": "under 100 characters of substance (54)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095328505206870417",
+      "title": "this dude knows what’s up https://t.co/hWtosQ6V5q",
+      "date": "2026-09-03",
+      "text": "this dude knows what’s up https://t.co/hWtosQ6V5q",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095305940211847445",
+      "links": [
+        "https://twitter.com/da7_tech/status/2095305940211847445"
+      ],
+      "dropped": "under 100 characters of substance (25)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095326343433277853",
+      "title": "hide yo subs https://t.co/sfI2p4lP9j",
+      "date": "2026-09-03",
+      "text": "hide yo subs https://t.co/sfI2p4lP9j",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095325054133211254",
+      "links": [
+        "https://twitter.com/nikships/status/2095325054133211254"
+      ],
+      "dropped": "under 100 characters of substance (12)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095318449602138577",
+      "title": "muse spark 1.3 + muse code evals competitively with Claude code + opus 5 and Cla…",
+      "date": "2026-09-03",
+      "text": "muse spark 1.3 + muse code evals competitively with Claude code + opus 5 and Claude code + fable 5 https://t.co/rfYfjfQLJO",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095317750839476393",
+      "links": [
+        "https://twitter.com/artificialanlys/status/2095317750839476393"
+      ],
+      "dropped": "under 100 characters of substance (98)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095318133036958045",
+      "title": "woah this is quite cool https://t.co/ik3UlW4eIC",
+      "date": "2026-09-03",
+      "text": "woah this is quite cool https://t.co/ik3UlW4eIC",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095305970968604688",
+      "links": [
+        "https://twitter.com/jaystar524/status/2095305970968604688"
+      ],
+      "dropped": "under 100 characters of substance (23)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095318003432992988",
+      "title": "take it for a whirl have some fun! https://t.co/H7onLSqSp8",
+      "date": "2026-09-03",
+      "text": "take it for a whirl have some fun! https://t.co/H7onLSqSp8",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095314348042285107",
+      "links": [
+        "https://twitter.com/thepaulbalaji/status/2095314348042285107"
+      ],
+      "dropped": "under 100 characters of substance (34)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095317811384217850",
+      "title": "try out muse spark 1.3! https://t.co/6jwJyuGB3U",
+      "date": "2026-09-03",
+      "text": "try out muse spark 1.3! https://t.co/6jwJyuGB3U",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095298180380303516",
+      "links": [
+        "https://twitter.com/deryatr_/status/2095298180380303516"
+      ],
+      "dropped": "under 100 characters of substance (23)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095317643582669194",
+      "title": "check out muse spark 1.3! https://t.co/UWRXwOehEt",
+      "date": "2026-09-03",
+      "text": "check out muse spark 1.3! https://t.co/UWRXwOehEt",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095302976571142164",
+      "links": [
+        "https://twitter.com/brandonjcarl/status/2095302976571142164"
+      ],
+      "dropped": "under 100 characters of substance (25)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095317502540787876",
+      "title": "try on vercel ai gateway! https://t.co/4zDA6KFeEG",
+      "date": "2026-09-03",
+      "text": "try on vercel ai gateway! https://t.co/4zDA6KFeEG",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095277962144931895",
+      "links": [
+        "https://twitter.com/vercel_dev/status/2095277962144931895"
+      ],
+      "dropped": "under 100 characters of substance (25)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095310635458609489",
+      "title": "cool eval results! https://t.co/5IDdD6zWzA",
+      "date": "2026-09-03",
+      "text": "cool eval results! https://t.co/5IDdD6zWzA",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095301066028134431",
+      "links": [
+        "https://twitter.com/bindureddy/status/2095301066028134431"
+      ],
+      "dropped": "under 100 characters of substance (18)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095308526575100127",
+      "title": "very cool! https://t.co/rXZltEk3BG",
+      "date": "2026-09-03",
+      "text": "very cool! https://t.co/rXZltEk3BG",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095284969614475744",
+      "links": [
+        "https://twitter.com/spac89/status/2095284969614475744"
+      ],
+      "dropped": "under 100 characters of substance (10)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095299414235676948",
+      "title": "this is a cool way to show progress https://t.co/cvrmdE7HPD",
+      "date": "2026-09-02",
+      "text": "this is a cool way to show progress https://t.co/cvrmdE7HPD",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095298780556038564",
+      "links": [
+        "https://twitter.com/EnactraAI/status/2095298780556038564"
+      ],
+      "dropped": "under 100 characters of substance (35)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095269953608032361",
+      "title": "pretty good from muse spark 1.3 https://t.co/WeeL16x9u1",
+      "date": "2026-09-02",
+      "text": "pretty good from muse spark 1.3 https://t.co/WeeL16x9u1",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095258849829908667",
+      "links": [
+        "https://twitter.com/notjazii/status/2095258849829908667"
+      ],
+      "dropped": "under 100 characters of substance (31)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095268735821255023",
+      "title": "that's us dawg https://t.co/zsjUAmxlYG",
+      "date": "2026-09-02",
+      "text": "that's us dawg https://t.co/zsjUAmxlYG",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095265721412452579",
+      "links": [
+        "https://twitter.com/EMostaque/status/2095265721412452579"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095266112212754659",
+      "title": "try muse spark 1.3 -- frontier performance at a fraction of the cost! https://t.…",
+      "date": "2026-09-02",
+      "text": "try muse spark 1.3 -- frontier performance at a fraction of the cost! https://t.co/7AAM9rtJLZ",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095264013470834780",
+      "links": [
+        "https://twitter.com/DanDr1s/status/2095264013470834780"
+      ],
+      "dropped": "under 100 characters of substance (69)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095259709603455435",
+      "title": "underrated result of muse spark 1.3\n\ntry it out with muse code:\n\ncurl -fsSL http…",
+      "date": "2026-09-02",
+      "text": "underrated result of muse spark 1.3\n\ntry it out with muse code:\n\ncurl -fsSL https://t.co/TFXsXfJKW8 | bash https://t.co/cSeL2gE4Nq",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://dev.meta.ai/install.sh",
+        "https://x.com/alexandr_wang/status/2095259709603455435/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (80)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095255644819575227",
+      "title": "check our model out! https://t.co/0zyM2Yw63G",
+      "date": "2026-09-02",
+      "text": "check our model out! https://t.co/0zyM2Yw63G",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095235859003904397",
+      "links": [
+        "https://twitter.com/JustinGorya/status/2095235859003904397"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095255296809804070",
+      "title": "you can try our model on opencode too! https://t.co/tM5GWav9wh",
+      "date": "2026-09-02",
+      "text": "you can try our model on opencode too! https://t.co/tM5GWav9wh",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095233417050796248",
+      "links": [
+        "https://twitter.com/thegenioo/status/2095233417050796248"
+      ],
+      "dropped": "under 100 characters of substance (38)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095252118450155530",
+      "title": "y'all are gonna love muse spark 1.3! https://t.co/V1LbkYI50L",
+      "date": "2026-09-02",
+      "text": "y'all are gonna love muse spark 1.3! https://t.co/V1LbkYI50L",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095251637464154165",
+      "links": [
+        "https://twitter.com/TimJayas/status/2095251637464154165"
+      ],
+      "dropped": "under 100 characters of substance (36)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095249704888197175",
+      "title": "i really hate to say it, but…\n\ngemini who? 🏎️💨 https://t.co/Umv4CVqgre",
+      "date": "2026-09-02",
+      "text": "i really hate to say it, but…\n\ngemini who? 🏎️💨 https://t.co/Umv4CVqgre",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095247787277553929",
+      "links": [
+        "https://twitter.com/artificialanlys/status/2095247787277553929"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095248586686812513",
+      "title": "big improvements https://t.co/CnZFSsCIPJ",
+      "date": "2026-09-02",
+      "text": "big improvements https://t.co/CnZFSsCIPJ",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095248072154701847",
+      "links": [
+        "https://twitter.com/aimlapi/status/2095248072154701847"
+      ],
+      "dropped": "under 100 characters of substance (16)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095235917242130635",
+      "title": "some early eval results from Stata benchmark :) https://t.co/OjXXUJJmnm",
+      "date": "2026-09-02",
+      "text": "some early eval results from Stata benchmark :) https://t.co/OjXXUJJmnm",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095235688597713220",
+      "links": [
+        "https://twitter.com/eltokh7/status/2095235688597713220"
+      ],
+      "dropped": "under 100 characters of substance (47)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2095233951556342138",
+      "title": "check out our new muse spark 1.3 model! https://t.co/KMVE8W9jho",
+      "date": "2026-09-02",
+      "text": "check out our new muse spark 1.3 model! https://t.co/KMVE8W9jho",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095232032896946311",
+      "links": [
+        "https://twitter.com/finkd/status/2095232032896946311"
+      ],
+      "dropped": "under 100 characters of substance (39)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094869215669035274",
+      "title": "try the model out! https://t.co/ToArrXO51D",
+      "date": "2026-09-01",
+      "text": "try the model out! https://t.co/ToArrXO51D",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2094849283120128135",
+      "links": [
+        "https://twitter.com/ArtificialAnlys/status/2094849283120128135"
+      ],
+      "dropped": "under 100 characters of substance (18)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094840652932730949",
+      "title": "4/ read more here → https://t.co/JHS8W4YXth",
+      "date": "2026-09-01",
+      "text": "4/ read more here → https://t.co/JHS8W4YXth",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://research.meta.ai/blog/introducing-muse-voice-transcribe"
+      ],
+      "dropped": "under 100 characters of substance (17)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094840651540205886",
+      "title": "3/ already powering dictation in the meta desktop app and muse code. live now vi…",
+      "date": "2026-09-01",
+      "text": "3/ already powering dictation in the meta desktop app and muse code. live now via meta model api\nhttps://t.co/MFosERCV0E https://t.co/UESTQhKJrH",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://dev.meta.ai/",
+        "https://x.com/alexandr_wang/status/2094840651540205886/video/1"
+      ],
+      "dropped": "under 100 characters of substance (96)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094502561336414236",
+      "title": "4/ more in the blog: https://t.co/q0AVJJrkeH",
+      "date": "2026-08-31",
+      "text": "4/ more in the blog: https://t.co/q0AVJJrkeH",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://developer.meta.com/ai/resources/blog/muse-code-new-plans-and-features"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094502560149483803",
+      "title": "3/ download muse code here\nhttps://t.co/zxiffJkAWh",
+      "date": "2026-08-31",
+      "text": "3/ download muse code here\nhttps://t.co/zxiffJkAWh",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://dev.meta.ai"
+      ],
+      "dropped": "under 100 characters of substance (26)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2094466803296796844",
+      "title": "top 3 model on opencode! future models will be even better 💪 https://t.co/hWcXpM…",
+      "date": "2026-08-31",
+      "text": "top 3 model on opencode! future models will be even better 💪 https://t.co/hWcXpMvKqE",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2094233181624967630",
+      "links": [
+        "https://twitter.com/opencode/status/2094233181624967630"
+      ],
+      "dropped": "under 100 characters of substance (58)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2093390373616070815",
+      "title": "2/ try it out: https://t.co/nGwwSN9zC7",
+      "date": "2026-08-28",
+      "text": "2/ try it out: https://t.co/nGwwSN9zC7",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://developer.meta.com/ai/resources/blog/build-with-muse-Image"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2090505793993060428",
+      "title": "cool! https://t.co/MirMHOiik0",
+      "date": "2026-08-20",
+      "text": "cool! https://t.co/MirMHOiik0",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2090498670685020639",
+      "links": [
+        "https://twitter.com/DesignArena/status/2090498670685020639"
+      ],
+      "dropped": "under 100 characters of substance (5)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2090485262413664436",
+      "title": "3/ you can get a deeper look at all this in the research blog published today. h…",
+      "date": "2026-08-20",
+      "text": "3/ you can get a deeper look at all this in the research blog published today. https://t.co/QtkPJIiwFu",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://research.meta.ai/blog/multimodal-intelligence-of-muse-spark-1-2"
+      ],
+      "dropped": "under 100 characters of substance (78)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2090289743129194523",
+      "title": "check out the Meta AI desktop app!\n\nthe dictation has been a game changer for me…",
+      "date": "2026-08-20",
+      "text": "check out the Meta AI desktop app!\n\nthe dictation has been a game changer for me personally https://t.co/pNawb2Jb9W",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2090164939105476969",
+      "links": [
+        "https://twitter.com/spencerbarnett/status/2090164939105476969"
+      ],
+      "dropped": "under 100 characters of substance (90)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2089759883914822033",
+      "title": "great initiative (RSI benchmark) from @ScaleAILabs and @mhrezaeics https://t.co/…",
+      "date": "2026-08-18",
+      "text": "great initiative (RSI benchmark) from @ScaleAILabs and @mhrezaeics https://t.co/GqEInGWvda",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2089433830092341497",
+      "links": [
+        "https://twitter.com/mhrezaeics/status/2089433830092341497"
+      ],
+      "dropped": "under 100 characters of substance (41)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2086756161517470102",
+      "title": "6/ that's the short version. the full write-up, including evals and the training…",
+      "date": "2026-08-10",
+      "text": "6/ that's the short version. the full write-up, including evals and the training details, is here:\nhttps://t.co/euZ4a231Wl",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model"
+      ],
+      "dropped": "under 100 characters of substance (98)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085756692025987188",
+      "title": "nice https://t.co/EjArInGHi8",
+      "date": "2026-08-07",
+      "text": "nice https://t.co/EjArInGHi8",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085747583767527528",
+      "links": [
+        "https://twitter.com/arena/status/2085747583767527528"
+      ],
+      "dropped": "under 100 characters of substance (4)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085532208937463854",
+      "title": "muse spark 1.2 on the Pareto frontier https://t.co/NxPDyni0Ag",
+      "date": "2026-08-07",
+      "text": "muse spark 1.2 on the Pareto frontier https://t.co/NxPDyni0Ag",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085509023852572804",
+      "links": [
+        "https://twitter.com/ArtificialAnlys/status/2085509023852572804"
+      ],
+      "dropped": "under 100 characters of substance (37)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085531796708659213",
+      "title": "muse spark 1.2 is SOTA on finance agent v2! https://t.co/jRSaeAR8Xf",
+      "date": "2026-08-07",
+      "text": "muse spark 1.2 is SOTA on finance agent v2! https://t.co/jRSaeAR8Xf",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085479447453651214",
+      "links": [
+        "https://twitter.com/ValsAI/status/2085479447453651214"
+      ],
+      "dropped": "under 100 characters of substance (43)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085432274947080216",
+      "title": "great progress https://t.co/SFlGyC7HVD",
+      "date": "2026-08-06",
+      "text": "great progress https://t.co/SFlGyC7HVD",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085386404805374100",
+      "links": [
+        "https://twitter.com/shuchaobi/status/2085386404805374100"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085432054091829533",
+      "title": "🏎️💨 https://t.co/bLnwLcRWK5",
+      "date": "2026-08-06",
+      "text": "🏎️💨 https://t.co/bLnwLcRWK5",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085194622335431100",
+      "links": [
+        "https://twitter.com/langstonnashold/status/2085194622335431100"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085423157822071199",
+      "title": "apparently must spark 1.2 is very good at sidequests https://t.co/rzXBtGpWJY",
+      "date": "2026-08-06",
+      "text": "apparently must spark 1.2 is very good at sidequests https://t.co/rzXBtGpWJY",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085416480481452294",
+      "links": [
+        "https://twitter.com/iam_zachi/status/2085416480481452294"
+      ],
+      "dropped": "under 100 characters of substance (52)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085376307538620498",
+      "title": "🙏 plurality of great AI labs is good for the world! https://t.co/Xhcq52B53T",
+      "date": "2026-08-06",
+      "text": "🙏 plurality of great AI labs is good for the world! https://t.co/Xhcq52B53T",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085301225180844341",
+      "links": [
+        "https://twitter.com/MillionInt/status/2085301225180844341"
+      ],
+      "dropped": "under 100 characters of substance (49)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085269966493024462",
+      "title": "magic 🪄 https://t.co/MwVxkr71Db",
+      "date": "2026-08-06",
+      "text": "magic 🪄 https://t.co/MwVxkr71Db",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085266705845243992",
+      "links": [
+        "https://twitter.com/goodhunt/status/2085266705845243992"
+      ],
+      "dropped": "under 100 characters of substance (5)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085267792803344552",
+      "title": "the pelican improves https://t.co/sA9sfKiUFu",
+      "date": "2026-08-06",
+      "text": "the pelican improves https://t.co/sA9sfKiUFu",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085156425303830595",
+      "links": [
+        "https://twitter.com/simonw/status/2085156425303830595"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085267689728323995",
+      "title": "check out muse code! https://t.co/K7vZG1Wp9g",
+      "date": "2026-08-06",
+      "text": "check out muse code! https://t.co/K7vZG1Wp9g",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085201355715838200",
+      "links": [
+        "https://twitter.com/charlieholtz/status/2085201355715838200"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085266487150010818",
+      "title": "update from vals on muse spark 1.2! https://t.co/Se67SoiGdc",
+      "date": "2026-08-06",
+      "text": "update from vals on muse spark 1.2! https://t.co/Se67SoiGdc",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085191736683647055",
+      "links": [
+        "https://twitter.com/ValsAI/status/2085191736683647055"
+      ],
+      "dropped": "under 100 characters of substance (35)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085120866510401953",
+      "title": "good iteration for muse spark 1.2\n\nonto bigger and better things 🍉 https://t.co/…",
+      "date": "2026-08-05",
+      "text": "good iteration for muse spark 1.2\n\nonto bigger and better things 🍉 https://t.co/DJfsx8QHEY",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085116732231028882",
+      "links": [
+        "https://twitter.com/ArtificialAnlys/status/2085116732231028882"
+      ],
+      "dropped": "under 100 characters of substance (63)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085107047570477221",
+      "title": "in case you missed it—check out our research blog on muse code and muse spark 1.…",
+      "date": "2026-08-05",
+      "text": "in case you missed it—check out our research blog on muse code and muse spark 1.2\n\nhttps://t.co/5v28PTzndF",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2"
+      ],
+      "dropped": "under 100 characters of substance (81)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085104750060797955",
+      "title": "hell yea https://t.co/izoDMLPAMj",
+      "date": "2026-08-05",
+      "text": "hell yea https://t.co/izoDMLPAMj",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085092282622189613",
+      "links": [
+        "https://twitter.com/haider1/status/2085092282622189613"
+      ],
+      "dropped": "under 100 characters of substance (8)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085090859251601860",
+      "title": "check out muse code! https://t.co/49TIsr7h19",
+      "date": "2026-08-05",
+      "text": "check out muse code! https://t.co/49TIsr7h19",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085089423474249941",
+      "links": [
+        "https://twitter.com/craigweiss/status/2085089423474249941"
+      ],
+      "dropped": "under 100 characters of substance (20)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085088318556127260",
+      "title": "check out muse spark 1.2 in muse code! https://t.co/eKItlX3sU4",
+      "date": "2026-08-05",
+      "text": "check out muse spark 1.2 in muse code! https://t.co/eKItlX3sU4",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085086807050289433",
+      "links": [
+        "https://twitter.com/mweinbach/status/2085086807050289433"
+      ],
+      "dropped": "under 100 characters of substance (38)"
+    },
+    {
+      "lab": "meta-ai",
+      "url": "https://x.com/alexandr_wang/status/2085082131341197536",
+      "title": "check out more on our research blog:\n\nhttps://t.co/5v28PTzndF",
+      "date": "2026-08-05",
+      "text": "check out more on our research blog:\n\nhttps://t.co/5v28PTzndF",
+      "text_source": "x_post",
+      "author_handle": "alexandr_wang",
+      "author_name": "Alexandr Wang",
+      "author_role": "Chief AI Officer; leads Meta Superintelligence Labs, and heads TBD Lab within it",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2"
+      ],
+      "dropped": "under 100 characters of substance (36)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2095178970912461279",
+      "title": "3.8 Flash = great quality @ great price https://t.co/teErwoGZon",
+      "date": "2026-09-02",
+      "text": "3.8 Flash = great quality @ great price https://t.co/teErwoGZon",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/joshwoodward/status/2095178970912461279/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (39)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2095177483129917849",
+      "title": "3.8 Flash rolling out to @GeminiApp https://t.co/FItHefpEdv",
+      "date": "2026-09-02",
+      "text": "3.8 Flash rolling out to @GeminiApp https://t.co/FItHefpEdv",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/joshwoodward/status/2095177483129917849/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (24)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2093070719093727265",
+      "title": "Try it out\n\nhttps://t.co/hV4tY0BHxv",
+      "date": "2026-08-27",
+      "text": "Try it out\n\nhttps://t.co/hV4tY0BHxv",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://notebook.google/expert-intelligence"
+      ],
+      "dropped": "under 100 characters of substance (10)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2092614266818064389",
+      "title": "Experimenting with multiplayer AI https://t.co/USWItAK4Xw",
+      "date": "2026-08-26",
+      "text": "Experimenting with multiplayer AI https://t.co/USWItAK4Xw",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092293667688173593",
+      "links": [
+        "https://twitter.com/GoogleLabs/status/2092293667688173593"
+      ],
+      "dropped": "under 100 characters of substance (33)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2090166808213082234",
+      "title": "https://t.co/LSa5Oay6IK",
+      "date": "2026-08-19",
+      "text": "https://t.co/LSa5Oay6IK",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://goo.gle/student"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2088344782821326980",
+      "title": "3.7 Flash is in the @GeminiApp https://t.co/txm3fI0wZo",
+      "date": "2026-08-14",
+      "text": "3.7 Flash is in the @GeminiApp https://t.co/txm3fI0wZo",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/joshwoodward/status/2088344782821326980/photo/1"
+      ],
+      "dropped": "under 100 characters of substance (19)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2088259247184507170",
+      "title": "This fix addresses #6 in https://t.co/5PFi8qXzjF",
+      "date": "2026-08-14",
+      "text": "This fix addresses #6 in https://t.co/5PFi8qXzjF",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075241749048401936",
+      "links": [
+        "https://x.com/joshwoodward/status/2075241749048401936"
+      ],
+      "dropped": "under 100 characters of substance (23)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2088016871710957587",
+      "title": "3.7 Flash: Fast, 50% cheaper, happened in ~3 weeks https://t.co/LUq90z935F",
+      "date": "2026-08-13",
+      "text": "3.7 Flash: Fast, 50% cheaper, happened in ~3 weeks https://t.co/LUq90z935F",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2087948481721962669",
+      "links": [
+        "https://twitter.com/OfficialLoganK/status/2087948481721962669"
+      ],
+      "dropped": "under 100 characters of substance (50)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2085708977296335125",
+      "title": "Go get those free videos! https://t.co/wr5IEbMw2j",
+      "date": "2026-08-07",
+      "text": "Go get those free videos! https://t.co/wr5IEbMw2j",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2085444245058736363",
+      "links": [
+        "https://twitter.com/GeminiApp/status/2085444245058736363"
+      ],
+      "dropped": "under 100 characters of substance (25)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2084698846609682675",
+      "title": "Nice use case! https://t.co/EZlX8axJt0",
+      "date": "2026-08-04",
+      "text": "Nice use case! https://t.co/EZlX8axJt0",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2084624887055044790",
+      "links": [
+        "https://twitter.com/eyishazyer/status/2084624887055044790"
+      ],
+      "dropped": "under 100 characters of substance (14)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2077411109326221322",
+      "title": "Full report https://t.co/Of02m7NqKY",
+      "date": "2026-07-15",
+      "text": "Full report https://t.co/Of02m7NqKY",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://services.google.com/fh/files/misc/gemini-report-sea-2026-en.pdf"
+      ],
+      "dropped": "under 100 characters of substance (11)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2075547784107757851",
+      "title": "KBC x Gemini in India! https://t.co/1EBnnVa6AU",
+      "date": "2026-07-10",
+      "text": "KBC x Gemini in India! https://t.co/1EBnnVa6AU",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075440159320166727",
+      "links": [
+        "https://twitter.com/googleindia/status/2075440159320166727"
+      ],
+      "dropped": "under 100 characters of substance (22)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2074847444823674883",
+      "title": "What's something that you're surprised @GeminiApp can't do well, and we should h…",
+      "date": "2026-07-08",
+      "text": "What's something that you're surprised @GeminiApp can't do well, and we should have fixed a long time ago?",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (95)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2067337173699850487",
+      "title": "Co-create: one of the key @GoogleLabs values.\n\nIt looks like this, thanks Voltag…",
+      "date": "2026-06-17",
+      "text": "Co-create: one of the key @GoogleLabs values.\n\nIt looks like this, thanks Voltage team! https://t.co/L90dHl9VQh",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2067336761190363137",
+      "links": [
+        "https://twitter.com/stitchbygoogle/status/2067336761190363137"
+      ],
+      "dropped": "under 100 characters of substance (74)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/joshwoodward/status/2066673191783665722",
+      "title": "And coming to the Web in another week or so!",
+      "date": "2026-06-16",
+      "text": "And coming to the Web in another week or so!",
+      "text_source": "x_post",
+      "author_handle": "joshwoodward",
+      "author_name": "Josh Woodward",
+      "author_role": "VP, Google Labs and the Gemini app",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (44)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/demishassabis/status/2087995995694960670",
+      "title": "Oh yes, and Flash 3.7 is also lightning fast! ⚡️ https://t.co/cQ7VzTy5dp",
+      "date": "2026-08-13",
+      "text": "Oh yes, and Flash 3.7 is also lightning fast! ⚡️ https://t.co/cQ7VzTy5dp",
+      "text_source": "x_post",
+      "author_handle": "demishassabis",
+      "author_name": "Demis Hassabis",
+      "author_role": "Chair of Google DeepMind and Chief Scientist of Alphabet (from CEO of Google DeepMind)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2087976757731409998",
+      "links": [
+        "https://twitter.com/OfficialLoganK/status/2087976757731409998"
+      ],
+      "dropped": "under 100 characters of substance (45)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/demishassabis/status/2076957440109625718",
+      "title": "https://t.co/PTeDiv1b6L",
+      "date": "2026-07-14",
+      "text": "https://t.co/PTeDiv1b6L",
+      "text_source": "x_post",
+      "author_handle": "demishassabis",
+      "author_name": "Demis Hassabis",
+      "author_role": "Chair of Google DeepMind and Chief Scientist of Alphabet (from CEO of Google DeepMind)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "http://x.com/i/article/2076946210397552640"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/polynoamial/status/2095027255236087903",
+      "title": "Jakub is chief scientist at @OpenAI https://t.co/SAo1k01DFC",
+      "date": "2026-09-02",
+      "text": "Jakub is chief scientist at @OpenAI https://t.co/SAo1k01DFC",
+      "text_source": "x_post",
+      "author_handle": "polynoamial",
+      "author_name": "Noam Brown",
+      "author_role": "Research scientist; reasoning (o-series)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2095023204993490967",
+      "links": [
+        "https://twitter.com/merettm/status/2095023204993490967"
+      ],
+      "dropped": "under 100 characters of substance (27)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/polynoamial/status/2089237793822359748",
+      "title": "@OpenAI To be clear, I don't recommend increasing the default context size in Co…",
+      "date": "2026-08-17",
+      "text": "@OpenAI To be clear, I don't recommend increasing the default context size in Codex.",
+      "text_source": "x_post",
+      "author_handle": "polynoamial",
+      "author_name": "Noam Brown",
+      "author_role": "Research scientist; reasoning (o-series)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (76)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/polynoamial/status/2080859568343597179",
+      "title": "This was one of the bigger open questions in quantum cryptography https://t.co/4…",
+      "date": "2026-07-25",
+      "text": "This was one of the bigger open questions in quantum cryptography https://t.co/4LBkIa2GVE",
+      "text_source": "x_post",
+      "author_handle": "polynoamial",
+      "author_name": "Noam Brown",
+      "author_role": "Research scientist; reasoning (o-series)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2080507627952562189",
+      "links": [
+        "https://twitter.com/42_gravity/status/2080507627952562189"
+      ],
+      "dropped": "under 100 characters of substance (65)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/polynoamial/status/2075732858967130530",
+      "title": "There is also a Lean formalization of the proof: https://t.co/z9jeoz9X6j",
+      "date": "2026-07-11",
+      "text": "There is also a Lean formalization of the proof: https://t.co/z9jeoz9X6j",
+      "text_source": "x_post",
+      "author_handle": "polynoamial",
+      "author_name": "Noam Brown",
+      "author_role": "Research scientist; reasoning (o-series)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2075711137283502467",
+      "links": [
+        "https://twitter.com/__eknight__/status/2075711137283502467"
+      ],
+      "dropped": "under 100 characters of substance (48)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/polynoamial/status/2070562080286240878",
+      "title": "GPT-5.6 is incredibly strong and fast for coding. I hope we can make it availabl…",
+      "date": "2026-06-26",
+      "text": "GPT-5.6 is incredibly strong and fast for coding. I hope we can make it available to everyone soon. https://t.co/XI7KHJTeZx",
+      "text_source": "x_post",
+      "author_handle": "polynoamial",
+      "author_name": "Noam Brown",
+      "author_role": "Research scientist; reasoning (o-series)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2070555278576439306",
+      "links": [
+        "https://twitter.com/OpenAI/status/2070555278576439306"
+      ],
+      "dropped": "under 100 characters of substance (99)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/pushmeet/status/2095572516643447102",
+      "title": "https://t.co/jlp9rRu3It",
+      "date": "2026-09-03",
+      "text": "https://t.co/jlp9rRu3It",
+      "text_source": "x_post",
+      "author_handle": "pushmeet",
+      "author_name": "Pushmeet Kohli",
+      "author_role": "VP of Research (AI for Science and Strategic Initiatives); Chief Scientist, Google Cloud",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/i/article/2095572127873208320"
+      ],
+      "dropped": "link only: no text of its own"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/koraykv/status/2092791698149810457",
+      "title": "Welcome back, Barret, very excited to work with you! https://t.co/oAxXK1nUxr",
+      "date": "2026-08-27",
+      "text": "Welcome back, Barret, very excited to work with you! https://t.co/oAxXK1nUxr",
+      "text_source": "x_post",
+      "author_handle": "koraykv",
+      "author_name": "Koray Kavukcuoglu",
+      "author_role": "SVP of Google DeepMind; runs day-to-day (from CTO)",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2092790775524516206",
+      "links": [
+        "https://twitter.com/barret_zoph/status/2092790775524516206"
+      ],
+      "dropped": "under 100 characters of substance (52)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/markchen90/status/2082919095373353068",
+      "title": "Another step towards intelligence too cheap to meter! https://t.co/4dETnTC0X4",
+      "date": "2026-07-30",
+      "text": "Another step towards intelligence too cheap to meter! https://t.co/4dETnTC0X4",
+      "text_source": "x_post",
+      "author_handle": "markchen90",
+      "author_name": "Mark Chen",
+      "author_role": "Chief Research Officer",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2082880720989532597",
+      "links": [
+        "https://twitter.com/sama/status/2082880720989532597"
+      ],
+      "dropped": "under 100 characters of substance (53)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/markchen90/status/2074724183347732499",
+      "title": "I’ll be doing a Q+A at ICML today (Wednesday) at 3-4pm as well. See you soon! ht…",
+      "date": "2026-07-08",
+      "text": "I’ll be doing a Q+A at ICML today (Wednesday) at 3-4pm as well. See you soon! https://t.co/BCrjtGiCh6",
+      "text_source": "x_post",
+      "author_handle": "markchen90",
+      "author_name": "Mark Chen",
+      "author_role": "Chief Research Officer",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2074259788188541207",
+      "links": [
+        "https://twitter.com/polynoamial/status/2074259788188541207"
+      ],
+      "dropped": "under 100 characters of substance (77)"
+    },
+    {
+      "lab": "openai",
+      "url": "https://x.com/markchen90/status/2068088507432874312",
+      "title": "Game changer! No more physical claws needed to keep my laptop open 😂 https://t.c…",
+      "date": "2026-06-19",
+      "text": "Game changer! No more physical claws needed to keep my laptop open 😂 https://t.co/xlOWiWsBHX",
+      "text_source": "x_post",
+      "author_handle": "markchen90",
+      "author_name": "Mark Chen",
+      "author_role": "Chief Research Officer",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": true,
+      "quoted_id": "2068062280345162047",
+      "links": [
+        "https://twitter.com/guinnesschen/status/2068062280345162047"
+      ],
+      "dropped": "under 100 characters of substance (66)"
+    },
+    {
+      "lab": "google-deepmind",
+      "url": "https://x.com/ShaneLegg/status/2066787035264721039",
+      "title": "Life is just a meditation with more distractions.",
+      "date": "2026-06-16",
+      "text": "Life is just a meditation with more distractions.",
+      "text_source": "x_post",
+      "author_handle": "ShaneLegg",
+      "author_name": "Shane Legg",
+      "author_role": "Co-founder and Chief AGI Scientist",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [],
+      "dropped": "under 100 characters of substance (49)"
+    },
+    {
+      "lab": "mistral",
+      "url": "https://x.com/GuillaumeLample/status/2066499273299005929",
+      "title": "https://t.co/wuCqfmQrvg",
+      "date": "2026-06-15",
+      "text": "https://t.co/wuCqfmQrvg",
+      "text_source": "x_post",
+      "author_handle": "GuillaumeLample",
+      "author_name": "Guillaume Lample",
+      "author_role": "Co-founder and Chief Science Officer",
+      "x_evidence": "self_post",
+      "role_contested": false,
+      "is_quote": false,
+      "quoted_id": null,
+      "links": [
+        "https://x.com/GuillaumeLample/status/2066499273299005929/photo/1"
+      ],
+      "dropped": "link only: no text of its own"
+    }
+  ]
+}

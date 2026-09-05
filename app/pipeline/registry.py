@@ -24,7 +24,11 @@ CONFIG = Path(__file__).parent.parent.parent / "config"
 
 ANNOUNCEMENTS, PAPERS, GITHUB = "announcements", "papers", "github"
 RELEASES = "releases"
-LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB, RELEASES)
+# Named for what it collects, not for the platform it collects from: the
+# provider is config (config/posts_sources.yaml) so it can be swapped. Also not
+# "twitter", which tests/test_registry.py uses as its unknown-leg fixture.
+POSTS = "posts"
+LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB, RELEASES, POSTS)
 
 # Stage order. Announcements first because Mistral's papers harvester sources
 # its candidate titles from the announcements corpus; GitHub is independent of
@@ -41,7 +45,7 @@ LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB, RELEASES)
 # `source_down_runs` threshold, and it self-heals -- but it is a real cost of
 # gating on a table another leg fills, and not something the stage order
 # fixes.
-STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3, RELEASES: 4}
+STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3, RELEASES: 4, POSTS: 5}
 
 # What each article-producing leg writes into `raw_articles.source_file`.
 # Provenance for a shared table, and the key the kill switch matches on when a
@@ -53,6 +57,7 @@ CORPUS_LABELS = {
     ANNOUNCEMENTS: "research/docs/announcements.json",
     PAPERS: "research/docs/papers_corpus.json",
     RELEASES: "github_releases",
+    POSTS: "research/docs/posts_corpus.json",
 }
 
 # The papers and releases corpora by name, for readers that need to tell one
@@ -60,6 +65,7 @@ CORPUS_LABELS = {
 # machinery. The dashboard's doc-type filter is the caller that needs both.
 PAPERS_CORPUS = CORPUS_LABELS[PAPERS]
 RELEASES_CORPUS = CORPUS_LABELS[RELEASES]
+POSTS_CORPUS = CORPUS_LABELS[POSTS]
 
 
 @dataclass(frozen=True)
@@ -180,11 +186,35 @@ def release_sources(config_dir: Path = CONFIG) -> list[Source]:
     ]
 
 
+def post_sources(config_dir: Path = CONFIG) -> list[Source]:
+    """One source: the posts provider named in posts_sources.yaml.
+
+    Deliberately ONE source, not one per lab or per handle. The whole leg is a
+    handful of calls to a single API behind a single credential; when it fails
+    it fails as a unit, and twenty-seven identical "X returned 401" rows would
+    be noise rather than diagnosis. Per-handle outcomes are recorded in
+    `unresolved_items`, which is where a single dead handle belongs.
+    """
+    config = _load(config_dir, "posts_sources.yaml")
+    provider = config["provider"]
+    return [
+        Source(
+            leg=POSTS,
+            id=provider["name"],
+            label=provider["name"],
+            stage=STAGES[POSTS],
+            enabled=bool(config.get("enabled", True)),
+            config=config,
+        )
+    ]
+
+
 LOADERS = {
     ANNOUNCEMENTS: announcement_sources,
     PAPERS: paper_sources,
     GITHUB: github_sources,
     RELEASES: release_sources,
+    POSTS: post_sources,
 }
 
 
