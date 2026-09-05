@@ -4412,6 +4412,206 @@ onto the uncommitted digests work, while that work is in flight. Held as a
 coordination call, not an oversight — until it lands, the canonical link is
 recorded but reaches no reader.
 
+---
+
+## D52 — Release notes as a fourth leg, and first mentions as a pass over bronze (2026-09-04)
+
+**Decision.** `releases` is a leg: one source per GitHub org, stage 4, ranked on
+stars, cursor in `source_state.watermark`, documents in `raw_articles` with
+`source_file: github_releases`. `research/corpus/first_mention.py` is a
+deterministic pass over the same table. Both switchable off with one line.
+
+**Why the source earns its place.** `openai/codex` `rust-v0.153.1` announced
+*"support for configuring GPT-6-Astra through the API without changing the
+default model or showing it in the model picker"*, and `openai-python` v3.8.0
+shipped `gpt-6-astra` the same day. The announcements corpus carried one bare
+"Astra" mention in an August safety post -- no model name, no catalog fact. A
+model deliberately hidden from the picker is not something a lab blogs about,
+so the announcements leg structurally cannot see it. On the first real firing
+the same pass also found `gpt-5.6-luna` (the Agents SDK's new default model)
+and, from Google DeepMind, `gemma-3` and `gemma-4` -- *"Add Gemma 4."* in
+`google-deepmind/gemma` v4.0.0, 2026-05-13, and nowhere in any announcement.
+
+**Ranking is stars and nothing else.** Commit volume was tried first and the
+data rejected it: a lab's most newsworthy repositories can be its least
+committed, because a code dump pushed by CI looks dead and is news.
+`x-algorithm` (32,610 stars) carries 19 commits, all from a CI account; a
+commit ranking puts `xai-sdk-python` (565 stars) above it. Commits survive as
+displayed evidence only.
+
+**The ranking reads bronze, and the star count comes from a live listing.**
+`raw_github_repos` already holds every repository's history, description and
+stars, so the ranking needs no file and no separate metadata fetch. But
+bronze's star count is only as fresh as the last history walk -- which happens
+when `pushed_at` moves, on a leg running at cadence 3 -- so a repository that
+stops being committed to would rank for ever on a frozen number, and
+`deepseek-harness` gained 200,000 stars in the weeks this was built. The
+releases leg therefore lists each org itself, one cheap REST chain, and
+overlays `stars` and `created_at` onto the stored payload. The github leg is
+untouched.
+
+**`created_at` cannot be inferred.** "No commit before X" means only "dormant
+until X", so first-commit-in-window reports `openai/whisper` (2022) and
+`openai/CLIP` (2020) as created in 2026. The error is not noise: it lands on
+exactly the famous quiet repositories a star ranking floats to the top. A
+repository whose payload predates the listing overlay reports `age: unknown`
+rather than a guess.
+
+**The cursor is the watermark, not a file.** `openai/codex` cut 240 releases in
+90 days, so the unit is "releases since the last run". An earlier version of
+this work kept that cursor in `release_cursors.json` beside a flock file. On
+this deployment that is not a stylistic difference -- the container has no disk
+(D31), so the file resets to the image copy every firing, the cursor never
+advances past the first backfill, and the leg re-fetches the same few releases
+for ever while reporting success. Moving it into `source_state` also removed
+the lock, the atomic-write helpers and the two-writer problem they existed to
+solve: one writer, one store.
+
+**Watched per org, not globally.** Sources are per org so they fail
+independently, which means each ranks only its own repositories. That is also
+the better cut: a single global top-N is dominated by OpenAI and Anthropic, and
+xAI (8 repositories in the window) and meta-llama (8) would never appear at
+all. The first firing ran at 40 per org and ingested 380 documents -- roughly
+$10 to classify against a $3 per-run ceiling. The budget guard handled it
+correctly, but `releases_watch` is now 10, which is ~80 repositories.
+
+**First mention is a corpus pass, not a releases feature.** The GPT-6-Astra
+release was scored `integration`, low impact, `is_signal: false` -- correct as
+a reading of the document, which announces a configuration option. Its
+significance is that the string had never appeared before, and firstness is a
+property of the corpus rather than of any document, so no per-document prompt
+can recover it however it is worded. One query over `raw_articles`, no LLM
+call, and it gets stricter as sources are added rather than noisier.
+
+**What it honestly measures.** "First" means first *in our corpus*, not in the
+world -- the archive reaches back six months, so a retrospective reference to
+an old model reads as new. `lab` is whose document mentioned it, not who owns
+it: `gemini-3.5` first appears on an Anthropic page because Anthropic
+benchmarked against it. And the regex catches a new version of a family we
+know; a wholly novel product name with no version number is invisible to it.
+That gap is where an LLM would earn its place later.
+
+**Kill switch.** `enabled:` in `pipeline.yaml` outranks cadence and an explicit
+`--legs`, including the manual trigger and firing 1's full sweep. It also
+excludes a disabled leg's already-ingested rows from the classification work
+list: a leg's rows outlive the firing that fetched them, so stopping the fetch
+alone would leave the operator who switched the leg off still paying to
+classify the output they switched it off over.
+
+---
+
+## D53 — Classification reads bronze, not a corpus file (2026-09-04)
+
+**Decision.** `classify_new` takes its article text from `raw_articles`, and
+`load_classifications` takes its URL list from there too. Both previously read
+`research/docs/announcements.json`.
+
+**Two failures, one cause.** `raw_articles` now carries more than one source
+file, and filtering a single file against a work list built from the whole
+table silently drops every row from any other file. Those rows stay pending,
+are re-listed every firing, never cost anything and never produce a
+classification -- while the leg reports a healthy ingest. Downstream,
+`load_classifications` had the same shape: releases would be scored, paid for
+and cached on disk but never loaded, `transform` would count them under
+`no_classification`, and the next firing would serve every one from cache for
+free and report `classified: N, cost_usd: 0.0`. Indistinguishable from a
+healthy incremental run, for ever.
+
+**It also closes an acknowledged hole.** `adapters._settled_urls` documents
+that `classify_new` read text from a file which "on a container with no disk
+resets to the image copy every firing", and works around it by refetching pages
+that are stored but unclassified. Reading the payload removes the hazard rather
+than routing around it.
+
+**And the work list is ordered.** `pending_urls` had no `ORDER BY`, so under a
+budget ceiling *which* articles were paid for was whatever the engine returned
+-- and differently arbitrary on the sqlite the tests use and the Postgres that
+runs.
+
+---
+
+## D54 — What the review of the port changed (2026-09-04)
+
+Ten findings on the releases leg, four major, all fixed. Three of them share a
+shape worth naming: the leg introduced the system's **first watermark that
+gates future fetches**, and every existing habit around watermarks was built for
+ones that do not.
+
+**The cursor was durable a phase before the documents it described.**
+`orchestrator._record` commits after each source, which makes the advanced
+`cursors` dict permanent as soon as the adapter returns; the release rows were
+landed in the worker's phase 2 and committed later. A failure in between -- the
+register load, a redeploy, an OOM kill during a 9-30 minute firing -- rolls the
+rows back and leaves the cursor advanced, and `new_releases` then filters those
+releases out for ever as already-seen. They would not appear in `truncated`, no
+alert would name them, and a missing release is indistinguishable from a quiet
+week.
+
+The github leg is immune because it is not cursor-gated: it re-derives from
+`pushed_at` against bronze and is self-healing. Fixed by landing the documents
+inside `fetch_releases`, in the session the orchestrator is about to commit, so
+rows and cursor become durable together. The failure direction is safe too --
+raising after landing leaves the watermark alone, and the url-keyed upsert
+absorbs the refetch.
+
+**An org whose every repository failed reported success.** Per-repository
+`try/except` is right, but the org-level result was then an empty success:
+`record_success` reset `consecutive_failures` to zero, no alert rule reads
+`repo_failures`, and `source_down` keys only on the streak. A token rotated to
+one without the right scope 404s on all of them, so the leg would sit
+permanently dead behind eight green rows. All-failed now raises, which is the
+same reasoning the `if not listing` guard already applied one level up.
+
+**The change that actually spends money had no test.** `classify_new` reading
+payloads from bronze -- the whole of D53 -- was exercised by nothing: one test
+passed `articles_path` (the legacy file branch), one returned at the `pending:
+0` short-circuit, and the worker tests monkeypatch `classify_new` away. Revert
+it and the suite stayed green while every release row sat pending for ever.
+Three tests now put `raw_articles` rows in front of it and assert the payloads
+reach the scorer.
+
+**The `ORDER BY` was on the wrong list.** `pending_urls` was ordered, but the
+articles handed to the scorer were rebuilt with an unordered
+`select(...).where(url.in_(pending))` -- and that is the list the scorer slices
+when the budget binds. The ordering claim in D53 was not delivered until the
+rebuild followed `pending` order.
+
+**A deterministic quote could splice two fields together.** `load_corpus`
+joined title and body for non-release documents, and `quote_for` took a
+±140-character window around the identifier in the joined string -- so a name
+near the end of a title produced a quote running past the join into the body, a
+string appearing in neither field. This repository already has
+`research/announcements/verbatim.py` because that splice was seen once from the
+model; the deterministic path must not reproduce it. Fields are now kept apart
+and a quote is cut from the single field the identifier is in. The test that
+claimed to check this asserted the quote was a substring of the joined string it
+had just been cut from -- true by construction, green either way.
+
+**Dead weight removed rather than kept for later.** `config/entities.yaml`
+still carried a `corpora:` block from the pre-port file design, naming a file
+this port deliberately stopped producing, and nothing read it -- while the rule
+it documented had moved into `first_mention.text_fields`. An operator following
+the file's own instruction would have changed nothing. `rank_repos.row` computed
+twelve fields for three consumers; the activity evidence is gone until there is
+a page that shows it, and the null-login rule it needed still lives in
+`aggregate_github`, which the people register uses. `config/validate.py` gained
+`check_entities`, so a typo in a key the code indexes directly is an error
+rather than a KeyError deep into a run.
+
+**Two comments were asserting things that had stopped being true.** The stage
+comment claimed the ordering makes the ranking non-empty on firing 1; it does
+not -- `raw_github_repos` is written in the landing phase, after ingest, so
+against a freshly rebuilt database every releases source fails once and
+self-heals on firing 2. And `_settled_urls` still explained itself by saying
+`classify_new` reads text from a corpus file, which D53 had just stopped being
+true. Both now say what the code does.
+
+**Also surfaced:** `reached_cursor` was computed, tested at the fetch level and
+discarded by the adapter, so a walk that never found the cursor -- more than
+`releases_max_pages x 100` releases since the last run -- was indistinguishable
+from a clean one. It reaches the watermark now, alongside the new/established
+split of what is being watched, which is the number that says whether the leg
+is looking at archives.
 ## D52 — The AI-team score was wrong because the prompt never described what it was reading (2026-09-04)
 
 **Decision.** Prompt `v8`: describe `model_spec` and `forum_post` in the
@@ -4492,3 +4692,1610 @@ the text_source literals out of `fetch_announcements.py`, `backfill_openai.py`
 and `sources.yaml` and asserts each is described in the current prompt.
 Verified to fail against v7 naming `model_spec`. Any future channel that
 invents a text_source now fails at test time rather than scoring quietly wrong.
+
+---
+
+### D48 — `ensure_schema` verifies its stamp instead of asserting it (2026-09-05)
+
+**The failure, observed rather than reasoned about.** Migration 0008 adds one
+column (`alerts.acknowledged_at`). After running the test suite against the
+local Postgres, `alembic current` reported `0008` and the column did not exist.
+Nothing raised. Nothing would have raised until a query touched the column, in
+whichever of the API, the worker or the CLI reached it first, as a DBAPI error
+naming a column and not a cause.
+
+**Why.** `ensure_schema`'s never-migrated branch does `create_all` then
+`stamp head`. `create_all` creates missing *tables*; it cannot add a missing
+*column* to a table that already exists. On a database that already had tables
+but no stamp — the create_all-era case the branch exists for — it therefore
+no-ops and then asserts head. That assertion is **unrecoverable**: no later
+`upgrade` will run a revision the stamp says is already applied, so the database
+lies about itself permanently.
+
+This is the second time this function has failed on precisely the case its
+docstring claimed to handle (D29 was the first, `create_all` colliding with a
+pending `op.create_table`). The pattern in both: the function *asserted* a
+schema state rather than checking one.
+
+**The fix.** Every path now runs `_raise_on_drift`, which compares the models'
+declared columns against the live database and raises `SchemaDrift` with the
+recovery command. Three properties, all deliberate:
+
+- It runs **before `create_all`**, not merely before the stamp. Review caught
+  this: `create_all` has no migration-level checkfirst, so on a database built
+  at an older revision it creates the tables *later* migrations own, and the
+  recovery the message prints then dies on `table raw_github_repos already
+  exists` — D29 again, inside the guard meant to prevent it. Reproduced, then
+  fixed by moving the check ahead of `create_all` on both paths.
+
+- The check runs **before** the stamp in the never-migrated branch. An unstamped
+  database is recoverable — stamp the revision it actually matches, then
+  upgrade. One stamped `head` is not.
+- It covers the **stamped** branch too. The lie can arrive pre-existing, as mine
+  did, and `upgrade` against a stamp of head is a correct no-op that cannot
+  repair it. A check on only the path that creates the drift catches half of it.
+
+**Presence only, one direction.** Not types, not nullability: a column that is
+absent is unambiguous in every dialect, while a type that renders differently
+under sqlite and Postgres is not, and a drift check that cries wolf gets
+deleted. Columns the database has and the models do not are ignored — an extra
+column breaks no query we issue, and failing on it would make every rollback a
+hard outage.
+
+**Rejected: raising a warning.** The whole failure mode is that nothing looks
+wrong. A warning in a Render deploy log is the same silence with extra steps.
+
+**Consequence.** A column-only migration that has not been applied now stops the
+process at startup with an actionable message, rather than deploying and failing
+later at a random query. `bitcap-db rebuild`, a fresh clone, and a database
+already at head are all unaffected — asserted directly in
+`test_a_consistent_database_passes_the_check`, because a guard that blocks a
+legitimate deploy gets deleted the first time it does.
+
+**Regression tests.** Six in `TestEnsureSchema`, each verified to fail against
+the previous `ensure_schema` and pass against this one. The one that matters
+most is `test_the_printed_recovery_actually_works`, which *executes* the two
+commands the error message names and diffs the result against a fresh
+`create_all` — an instruction nobody has run is not a recovery. It starts from
+revision 0003 rather than 0007 deliberately: at 0007 `create_all` has nothing to
+create, so the first version of this test passed against the broken ordering
+above.
+
+---
+
+### D49 — acknowledgement is withdrawn by the pipeline, not trusted to the operator (2026-09-05)
+
+**The near-miss, recorded because the reasoning was wrong in a way that read
+well.** The clear-the-badge button shipped with this argument, in six comments
+and one test: *acknowledging cannot hide a live fault, because every rule keys
+`dedupe_key` off the episode, so a source that is still down raises a fresh
+alert on the next firing.*
+
+It is exactly backwards, and the codebase says so two lines from the rule:
+
+> Keyed on `last_success_at`, which is when the outage started **and does not
+> move while it continues. That is what makes a week-long outage one alert.**
+
+The key holds still *because* an ongoing outage must not re-alert. So nothing
+new is ever written during the fault, `dispatch` counts a duplicate and moves
+on, and one click greens the badge for the entire incident. Confirmed by
+execution before fixing: three consecutive firings against a source down for a
+week produced the identical key each time and left the badge at 0.
+
+That is the worst available failure for this system — the system-failure
+alerting going quiet precisely when the system is failing, which CLAUDE.md names
+as a graded requirement distinct from content alerts.
+
+**The test made it worse, and this is the transferable lesson.** It hand-wrote
+`source_down:mistral:1` and `source_down:mistral:2` and asserted the badge
+reddened. Two different keys only ever occur when an outage *ended and
+restarted*, so it exercised a recovery and never the dangerous case, while
+reading like proof of the opposite. **A test that constructs its own inputs to a
+rule instead of driving the rule cannot falsify a belief about that rule** — it
+restates it. The replacements drive `evaluate` + `dispatch` and take whatever
+key the real rule emits.
+
+**The fix, and why it lives in `dispatch`.** Acknowledgement is a claim the
+fault has settled; the rules regenerating the same episode key withdraws that
+claim. `dispatch` clears `acknowledged_at` on a duplicate and reports
+`reopened` in its stats. That location is forced:
+
+- **Not at read time.** Inferring liveness in `unacknowledged_system_alerts` means
+  re-running the rules on every `/api/health` poll, and `drift` and
+  `budget_exceeded` derive from run *context* that does not exist outside a
+  firing — so the two conditions most likely to persist are the two it could not
+  see. A safety check with a hole in it is worse than none, because it is
+  believed.
+- **Not in `acknowledge`.** Refusing to acknowledge a currently-live fault was
+  the other candidate. Same context hole, plus it asks the operator to be right.
+
+`dispatch` is the only place that observes "this condition produced a candidate
+again", which is the actual definition of still-live.
+
+**The limit, since review found it overstated the first time.** Reopening needs
+the rule to be *evaluated* that firing. `source_down` reads persisted
+`SourceState` and runs every time; `drift` needs `context["drift"]`, which
+`worker` supplies only on `cadence.drift`. At the shipped value of 1 there is no
+gap, and `test_the_drift_rule_is_evaluated_every_firing` pins that — the
+coupling is invisible from both sides, since nothing in `alerts.py` mentions the
+cadence and nothing in `pipeline.yaml` mentions the badge.
+
+**Consequence.** The badge reddens on the next firing rather than instantly.
+That is correct: the pipeline is what detects liveness, and the operator's
+complaint was about *stale* alerts. A settled fault stops generating its
+candidate and stays cleared — asserted directly, because if recovery did not
+stick the button would do nothing and the badge would be permanently red again.
+
+**Rejected: deleting the rows.** The user explicitly did not ask for history to
+be cleared, and an alert history that an operator can empty is not a record.
+
+**Amendment (same day, second review pass) — the badge's time window had to go.**
+`recent_system_alerts` (since renamed `unacknowledged_system_alerts`) counted
+`created_at >= now - 7 days`, and reopening does
+not move `created_at`; it cannot, that column records when the fault was first
+raised. So the fix above worked and was invisible: probed at day 10 of an
+unresolved outage, every nightly firing reported `reopened: 1` while the badge
+sat at 0 — at exactly the "week-long outage" length the alerting module uses as
+its design case.
+
+The window is now removed rather than patched around with a `reopened_at`
+column, because its own justification had expired. It read: *"`alerts` has no
+resolved/acknowledged column and nothing ever deletes a row, so an all-time
+count can only ever rise."* `acknowledged_at` is that column. Retiring the
+window also fixes a pre-existing bug on the same line that predates this branch:
+an alert nobody acknowledged fell off the badge after seven days by itself, so a
+real unhandled failure went quiet through the passage of time. **Age is not
+evidence a fault was handled**; acknowledgement is, and it is now something an
+operator can express.
+
+---
+
+### D50 — the digest preview rolls, the published edition stays quantised (2026-09-05)
+
+**The asymmetry, recorded because it will be probed.** `/api/digests/preview`
+covers `[now - 48h, now]`. `publish` covers the last complete slot of a fixed
+grid anchored at the epoch. The tab and the archive therefore disagree about
+what "the last 48 hours" means, on purpose.
+
+**Why publish must quantise.** Both reasons are scars (`app/digest.py`). Taking
+the window as `[run.started_at - 48h, run.started_at]` makes `window_end` a
+microsecond-unique wall clock, so the idempotence key
+`(kind, window_end, prompt_version)` could never collide — every firing
+published a *new* edition instead of updating one, and a `--dry-run` rehearsal
+entered the permanent record. And under a daily cron with a 48-hour lookback,
+consecutive editions overlapped by a day: the article published on the 3rd
+appeared in both the 3rd's and the 4th's editions, in two reports that each
+looked complete. The grid fixes both — periods partition the timeline, so every
+article belongs to exactly one edition.
+
+**Why the preview must not.** The grid's cost is freshness: the newest window a
+quantised view can name is the last one that *closed*. Opening the tab on the
+5th showed "the 48 hours to the 3rd", and a reader reasonably concluded the
+pipeline had stalled. Nothing errored; the page quietly described yesterday's
+yesterday.
+
+**The preview is allowed to roll because it writes nothing.** Every reason the
+grid exists is about persistence — idempotence of a stored row, and two stored
+editions not double-counting an article. A view that persists nothing has
+neither constraint. `build(quantise=...)` defaults to `True` so nothing that
+writes can pick up the rolling window by accident; `publish` takes the default
+and `test_publishing_still_quantises` pins it.
+
+**Rejected: making publish roll too.** It would resurrect both scars above for
+the sake of one consistent sentence in the UI.
+
+**Rejected: leaving the preview quantised and explaining the lag in the UI.**
+The brief's test is whether the system surfaces something worth knowing. A live
+tab that is up to two days stale fails that on its face, and a caption
+explaining why is not a fix.
+
+**Consequence, and it is visible.** "Current window (unpublished)" can overlap
+the newest published edition. That is correct — one is what the product would
+say now, the other is what it said at the time — but the digest page has to keep
+labelling them distinctly, which is why the dropdown says "unpublished" rather
+than showing a date.
+
+**Related display fix.** Selection is half-open at date resolution
+(`start.date() < published_on <= end.date()`), so `window_start` is an
+*exclusive* bound. Rendering it raw advertised a day the digest had excluded — a
+48-hour window read as three days — so the page labels the first *covered* day
+instead. Formatted in UTC: boundaries are UTC and `published_on` is a bare date,
+so local formatting shifted the label a day west of Greenwich, which is
+invisible from CET.
+## D53 — The papers cache never existed where it mattered (2026-09-05)
+
+**What happened.** The cron firing of 2026-09-04 lost four of six papers
+sources at once, all to arXiv `429`s:
+
+| Source | Error shape |
+|---|---|
+| papers/openai | `HTTP Error 429: Unknown Error` |
+| papers/deepseek | `HTTP Error 429: Unknown Error` |
+| papers/meta-ai | `fetch failed: <arXiv API url>: HTTP Error 429` |
+| papers/mistral | `fetch failed: <arXiv API url>: HTTP Error 429` |
+
+The two error shapes are the two fetch implementations. `deepseek_harvest.fetch`
+(which `openai_harvest` imports) raised the bare `HTTPError` because **it had no
+retry at all**; `arxiv_resolve.fetch` wrapped it in a `RuntimeError` after three
+attempts. Probed from a laptop the same day, the exact failing Mistral query
+returned `200` in 0.27s — arXiv was healthy and rate-limiting our address.
+
+**Root cause, and it is a deployment-shape bug, not a code bug.**
+`research/docs/*_cache/` is in `.gitignore` (line 156) *and* `.dockerignore`
+(line 7), and the Render cron has no disk. The disk cache every harvester was
+built around **has never existed on the deployment**. Locally there are 46 files
+in `arxiv_cache` and 24 in `deepseek_cache`, so a laptop run makes almost no
+live requests; the deployment started cold every night and replayed the lot.
+
+Volume on a cold run, roughly 70 serialised arXiv requests:
+
+| Lab | Requests | Window |
+|---|---|---|
+| openai | 7 `ti:` queries + 7 paper pages | none — re-harvests all history nightly |
+| deepseek | 2 queries + ~15 paper pages | none — same |
+| meta-ai | 1–2 queries per candidate title | 1 month |
+| mistral | 1–2 queries per candidate title | 1 month |
+
+Five of the six harvesters fetch `arxiv.org/html/` as well as their own lab's
+site, and each held a private opinion about the rate limit (1.5s in three of
+them, 3.0s in two). Each looked polite alone; none of them was in aggregate.
+`0e8ca97` ("Deployment branch: the tree, without 242 MB of cache history") is
+where the caches left the image — a reasonable call for image size that
+silently moved these sources from *mostly cached* to *fully cold*, and nothing
+registered the change.
+
+**Three defects in the retry layer**, all real, all small:
+
+1. `deepseek_harvest.fetch`: no retry, no backoff. One 429 killed the source.
+2. `arxiv_resolve.fetch`: backoff `2**attempt` = 1s, 2s against its own 3.0s
+   polite pause. **It retried a 429 faster than the rate it had already decided
+   was courteous** — turning one 429 into three.
+3. Nothing read `Retry-After`, which arXiv sends.
+
+Every harvester also slept *after* a successful fetch, so the first request of
+a process fired with no spacing at all — precisely the request that fails when
+the previous firing left the address hot.
+
+**Decision.** One shared fetch layer (`research/papers/fetch_cache.py`) behind
+all five arXiv-touching harvesters, whose own `fetch()` becomes a delegation
+that keeps its signature. The cache moves to Postgres (`fetch_cache`, migration
+`0008`), which is the only store that survives a firing on Render. One token
+bucket covers every `arxiv.org` host, backoff is never shorter than the polite
+interval, and `Retry-After` is honoured up to a cap. The numbers live under
+`fetch:` in `config/pipeline.yaml`.
+
+**The trap this nearly walked into, which is the interesting part.** A
+permanent URL-keyed cache would have *frozen discovery*. `meta_harvest` caches
+its paginated listing pages and `deepseek_harvest` caches the
+`au:"DeepSeek-AI"` query — the two URLs whose entire purpose is to return
+something different the day a new paper appears. Caching those forever would
+have stopped the register finding papers while every run went on reporting
+success: a worse failure than the 429s, and one nothing would have surfaced.
+So the cache has two classes. A versioned arXiv id (`arxiv.org/html/2501.12948v2`)
+is immutable and stored with `expires_at = NULL`, never re-fetched — and that
+is where nearly all the volume was. Everything else carries a TTL,
+`discovery_ttl_hours: 336`.
+
+**Rejected: baking the caches into the Docker image.** They are small enough
+(1.4 MB + 11 MB) and it was the first thing considered. It fixes the ~70
+requests already known about and does nothing for new papers, which is the case
+that matters; it goes stale silently; and it is the same shape as the bug that
+stranded eight articles the day before — state on ephemeral disk that quietly
+resets. A frozen snapshot with an expiry date, in place of a store that
+self-heals.
+
+**Rejected: a seed command to pre-load the deployment's cache.** Drafted, then
+cut. The disk cache's filenames are lossy (punctuation collapsed, truncated to
+150 chars), so a URL cannot be recovered from a filename, and reconstructing
+the URL list meant re-implementing discovery. It was fragile machinery to save
+exactly one cold run. Seeding is instead an operational step needing no code:
+point `DATABASE_URL` at the deployment and run the papers leg locally — every
+disk hit is promoted into Postgres having made no request at all, which is a
+path `fetch()` takes anyway rather than a special case. Verified with the
+network hard-blocked: 6/6 URLs served from disk and written to Postgres.
+
+**Consequence.** Steady state drops from ~70 live arXiv requests a night to
+roughly 8: discovery queries re-run on staggered expiry, paper pages never
+again. Night one is still cold, and that is now survivable — 70 requests spaced
+3s apart is inside arXiv's own guidance, which the previous uncoordinated
+1.5s-and-bursts pacing was not. If night one does fail, the run is partial
+rather than dead (D27) and whatever succeeded is permanent, so it converges
+across firings instead of repeating the same cold start forever.
+
+Measured: 4.2 MB of paper HTML stores as 912 kB (Postgres TOAST compresses it),
+so the full papers cache is ~6 MB. `fetch_cache` is in `OPS_TABLES` — `rebuild`
+dropping it would send the next run back to arXiv for everything it already has.
+
+**Not fixed, deliberately.** OpenAI's and DeepSeek's harvesters still take no
+window argument and re-harvest their entire history every firing. With the cache
+permanent that is now free, so it stops being a cost problem; it stays a wart.
+Meta's and Mistral's own lab sites, and DeepMind's sitemap, go through the same
+layer and get the same benefit — that was not the goal, but they share the
+function.
+
+**Regression tests.** `tests/test_fetch_cache.py`, 32 cases, written against
+this incident: a single 429 no longer kills a source; backoff never dips below
+the polite interval (asserts the exact `[3.0, 6.0]` sequence); `Retry-After` is
+read in both header forms and capped; `export.arxiv.org` and `arxiv.org` share
+one bucket; the first request does not sleep. The load-bearing ones are the
+`_expiry` cases — a discovery query *must* expire, an immutable paper id *must
+not* — and `test_no_harvester_keeps_a_private_fetch_loop`, which greps the five
+harvesters for a reintroduced `urllib.request.urlopen` so a future edit cannot
+quietly stop sharing the throttle.
+
+## D53a — A frozen artifact cannot track a moving one (2026-09-05)
+
+`test_corpus_fully_loaded` had been red since the discourse channel landed, and
+it was the test that was wrong, not the pipeline.
+
+It asserted `Article count == corpus_size()` **and** `Classification count ==
+corpus_size()`. The first is fine. The second made
+`research/docs/announcement_scores/v7/` — a committed snapshot — responsible for
+tracking `announcements.json`, which rolls forward on every fetch. The GPT-6
+Astra forum post arrived via the discourse channel (D47) after v7 was written,
+so no v7 cache file for it can exist. The suite went red for a pipeline that had
+just worked, which is the exact failure `corpus_size()` was introduced to kill
+one layer up when these assertions carried a literal `236`.
+
+**Rejected: classifying the article at v7 to close the gap.** ~$0.03, and it
+would have worked. But v7's prompt has no description of `forum_post` — that was
+added in v8 (D52) — so it means paying to generate a score we already know is
+under-informed, purely to make a count match. Filling a gap with a bad number is
+worse than reporting the gap.
+
+**Decision.** Assert against what the cache actually covers, using the loader's
+own recorded stat: `load_classifications` already counts the corpus URLs it
+found no cache file for, and `cmd_load` records it on the run row. So the test
+now asserts `Classification count == corpus_size() - missing`. Every article the
+cache covers must still reach a Classification row, so a silent drop between
+load and transform is still a hard failure. `test_scores_reconcile_with_register`
+already reasons this way about register/corpus drift; this test now matches it.
+
+**The bite that equality was carrying is now explicit.** D10 was a whole lab
+silently unscored, and a tolerated gap would hide exactly that, so the test also
+asserts every lab present in `articles` has at least one classification.
+Verified by deliberate breakage rather than assumed: dropping all nine Mistral
+classifications fails the test, and so does dropping a single classification for
+an article that does have a cache file. Both cases were red before the change
+and are red after it — the tolerance admits only articles the frozen cache
+cannot cover, and nothing else.
+
+## D53b — What an independent review found in the fix (2026-09-05)
+
+`bitcap-reviewer` was run against the D53 work before it was committed. It
+returned twelve findings. Nine were acted on; the reasoning for the rest is
+below, because "we saw it and declined" and "we missed it" must not look the
+same later.
+
+**Two were serious, and both were in the part of the fix that was supposed to
+be the careful part.**
+
+*The disk-cache path never consulted the TTL.* `fetch()` checked expiry on the
+database row and then, three lines later, returned a disk file without checking
+anything — and promoted it into Postgres stamped `now + 336h`. A year-old
+`au:"DeepSeek-AI"` answer was therefore served as a hit *and laundered into a
+fresh one*. That is precisely the frozen-discovery failure D53 says the module
+exists to prevent, reached by the one path that skipped the check. The TTL is
+now measured from the file's mtime, and promotion carries the file's real age.
+
+*`_IMMUTABLE` matched unversioned arXiv ids.* `arxiv.org/abs/2501.12948` with no
+`v` suffix resolves to the *latest* version, so it is mutable by definition, and
+it was being stored permanently. Not theoretical: `deepmind_harvest.py:66`
+strips the version deliberately and line 189 builds `arxiv.org/html/<bare id>`
+from it, so a DeepMind paper going v1→v2 with a changed author list — routine
+between preprint and camera-ready — would have kept the v1 byline forever, on
+the harvester whose entire output is bylines. **And the test suite asserted the
+defect**, which is the part worth remembering: a test written from the same
+misunderstanding as the code confirms it rather than catching it. The version
+suffix is now required.
+
+**Three more that would have bitten.** `email.utils.parsedate_to_datetime`
+*raises* on unparseable input rather than returning None, so the `is None` guard
+was dead code and a `Retry-After: soon` would have escaped `fetch()` as a
+`ValueError` — which the harvesters do not catch, killing a whole harvest
+instead of one paper. `_engine()` created the `fetch_cache` table out of band;
+`app/db.py:181-186` documents exactly why that is fatal (`op.create_table` has
+no `checkfirst`, so pre-creating a table a pending migration will add kills that
+migration every firing until a human intervenes). It now probes and never
+creates. And `_DB_CHECKED` was set *before* the engine resolved, so a second
+thread arriving mid-init concluded there was no cache and fetched live in
+silence.
+
+**One review finding was itself wrong, and the test suite caught it.** Gating
+retries on status code — correct in general, since retrying a 404 spent four
+arXiv requests per missing paper — initially dropped 403. That re-broke
+`test_deepmind_harvest.py::TestFetchRetry`, which exists because a live run
+observed arXiv returning **403 as a rate-limit response**, not a real refusal.
+403 is retryable here on evidence, and the constant says so.
+
+**Not taken: pruning expired rows to bound table growth.** The finding assumed
+nightly re-harvesting accumulates rows. It does not — `db_put` updates the row
+for an existing URL, so growth is bounded by *distinct URLs ever seen*, not by
+time. `DELETE WHERE expires_at < now()` would also delete precisely the rows
+about to be re-fetched, and would not touch the real growth vector, which is
+permanent paper rows. Measured: 4.2 MB of paper HTML stores as 912 kB. At a few
+hundred papers over the project's life this is tens of megabytes. Revisit if
+`pg_total_relation_size('fetch_cache')` passes ~500 MB; not before.
+
+**Also fixed: the config was unvalidated.** `check_pipeline` covered budget,
+cadence, alerts and classification but not the new `fetch:` block. Writing
+`arxiv` instead of `arxiv.org` matches no host (matching is exact-or-subdomain),
+falls through to `default_min_interval_seconds: 1.0`, hits arXiv three times
+faster than its guidance, and validates clean — reproducing D53 exactly.
+Verified by mutation: six malformed variants, six caught, control clean.
+
+**And the D53a bound.** `test_corpus_fully_loaded` tolerated an *unbounded*
+`missing`, so a `budget.per_run_usd` breach that stopped classification partway
+would move the expected count down in lockstep and report success on a corpus a
+quarter unscored. Now bounded at 5 (measured: 1). The per-lab assertion added in
+D53a is kept but is the cheap half — it needs only one classified article per
+lab, so the largest lab could lose 149 of 151 and pass. Both halves are needed.
+
+---
+
+## D55 — Enrichment that runs after the fetch does not survive the next one (2026-09-05)
+
+`backfill_openai.py` recovered 141 OpenAI articles from the Internet Archive on
+2026-09-02, mean 9,105 characters against a 201-character RSS summary. The next
+corpus commit, one day later (`4c67d32`, the seven-lab expansion), put every one
+of them back to a blurb. `collect()` builds the register from scratch and
+`OUT.write_text`s it; the backfill was a separate script editing that same file
+afterwards. Nothing failed, the register still held its full article count, every
+citation still resolved, and the suite stayed green.
+
+The cost was not cosmetic. OpenAI is 59% of the corpus and the lab whose
+announcements move the most tickers, and for two days it was scored on its own
+meta descriptions. The Jalapeño inference-chip results -- OpenAI displacing
+merchant accelerators, the single most NVDA-relevant article in the register --
+reached the classifier as two sentences and scored `medium`. The gold set labels
+it `high` by hand, and v7 scored it `high` off the archived text before the
+regression.
+
+**Recovery moved inside the fetch.** `enrich_wayback` upgrades summary-only
+articles in place before they leave the lab's loop, so the file `collect()`
+writes already contains the full text. It reuses `fetch_wayback` and
+`strip_html`, already in the module for xAI's discovery, rather than adding a
+second copy of the archive machinery.
+
+**Wired into both paths, because they deliberately do not share a loop.** The
+adapter is the one that mattered: the deployed cron runs no scripts and has no
+file, so recovery had never run in production at all. That asymmetry is the
+whole bug -- xAI's archived text comes from `wayback_cdx`, a discovery method
+*inside* the fetcher, and survives every rebuild; OpenAI's came from a script
+bolted on outside it.
+
+**`backfill: wayback` was config read by nothing.** Twenty lines documenting a
+step no code path executed, which reads as wired up. Now read in both paths and
+validated, including a misspelt key -- the only thing that can see `backfil:`
+is this validator.
+
+**The wildcard CDX index lags the exact one.** Trusting the bulk query alone
+reported `path-to-astra` -- the substantive half of the GPT-6 Astra launch -- as
+unarchived, when an exact lookup finds a 2026-09-03 snapshot immediately
+(221 -> 15,366 characters). Not truncation: 5,290 rows against a 6,000 limit.
+An exact fallback now runs per genuine miss.
+
+**Rejected: gating tag confidence on text length.** Measured on the v8 register
+first: articles under 500 characters produced 15 mechanism tags, **zero** of
+them high-confidence, and **zero** high bands. The prompt already rates how
+plainly the text states a thing, so a length gate would be machinery that
+changes no output. The check was worth running -- v7 read three high/high tags
+off the same two sentences, and the difference is the v8 prompt, not a rule
+anyone added.
+
+**Still open.** 17 articles the archive has genuinely never crawled -- 11
+customer stories, 4 policy posts, 2 academy pages, plus
+`safety-overview-gpt-6-astra`, the only substantive one. They are settled after
+their first run and never retried, so archive lag becomes permanent. Closing it
+means either Save Page Now (an API call, in the pipeline) or not settling a
+summary-only article -- and the second implies a re-score, since a
+classification already exists at this prompt version.
+
+---
+
+## D55a — What the review of the fetch-time backfill found (2026-09-05)
+
+Eight findings, one major. All actioned except the deployed-cache one, which is
+a decision rather than a fix.
+
+**The exact-lookup fallback returned the OLDEST snapshot.** CDX returns rows
+oldest-first, so `limit=5` asks for the first five snapshots ever taken, not
+the last. Measured on `openai.com/index/introducing-gpt-5` (309 snapshots):
+`limit=5` returns August 2025 crawls, `limit=-5` returns August 2026. This is
+not merely staleness -- an article's earliest crawls are the ones most likely
+to have caught a consent wall or a pre-render shell, and such a page clears the
+"longer than the summary" guard easily, so chrome would be stored as
+`full_text_archived` and quoted from. Now `limit=-5`.
+
+**And the obvious fix for the row count would have reintroduced it.** The
+review proposed `collapse=urlkey`, which cuts ~5,100 rows to ~870 and removes
+any truncation worry. It also keeps the *first* row of each group -- the oldest
+snapshot of every article, applied to all of them rather than to the handful
+the bulk query misses. Confirmed live: with collapse, `jalapeno-first-results`
+resolved to a 2026-08-25 snapshot instead of the 2026-08-29 one. Rejected;
+`CDX_ROW_LIMIT` went 6,000 -> 20,000 with a warning when a response comes back
+at exactly the ceiling, since truncation is indistinguishable from absence at
+the API.
+
+**The disk cache could serve one query's response to another.** The cache key
+collapses punctuation and truncates, so `...&limit=5` and `...&limit=-5` both
+render as `_limit_5`. Not hypothetical: it silently served the stale response
+while the ordering fix above was being verified, and the fix appeared to do
+nothing. A SHA-1 suffix now makes the key faithful. No collision exists among
+the real query shapes -- checked -- but the failure is invisible when it does.
+
+**The archive returns partial bodies.** Observed live on `openai.com/index*`:
+a 114,899-byte response ending `...","20260625092811"],` with no closing
+bracket, where the same query a minute later returned 141,565 bytes and parsed.
+`json.loads` raises, which in `collect()` would abort a seven-lab fetch over one
+flaky read on one lab. Worse, `fetch_wayback` caches before anything validates,
+so the partial body would be replayed for the whole discovery TTL -- one bad
+second becoming six bad hours. `_cdx_json` now tolerates it, drops the poisoned
+cache entry, and lets every article fall through to its own exact lookup:
+slower and correct rather than fast and absent.
+
+**The near-miss key check did not catch the example its own comment cited.**
+`backfil` is not recoverable by collapsing case and underscores -- a dropped
+letter is not a near miss by that measure -- so `backfil: wayback` validated
+clean, exactly the scenario the comment claimed was now impossible. Replaced
+with an allowlist of permitted lab keys, which has no such gap and which
+immediately found two keys nobody had enumerated (`page_param`, `user_agent`,
+both genuinely read by `from_listing_pagination`). The validator branches had
+also shipped with no test at all: deleting the whole block left the suite green.
+
+**The gold set was still recovering text through the old implementation.**
+`refresh_gold_text.py` imported `recover` and `slug_of` from
+`backfill_openai.py`, which normalises URLs differently and indexes
+`openai.com/index*` alone. Two recovery paths mean gold and production can hold
+different bytes for the same article -- which is not hypothetical, it is the
+exact blind spot that hid this bug for two days. It now calls the pipeline's
+own functions.
+
+**`config/sources.yaml` still documented the design this change deleted**,
+sending an operator to the redundant script and calling recovery something that
+happens "afterwards" -- the bug, stated as the design. Rewritten, including the
+settle-once limitation.
+
+**Not fixed: the disk cache the deployed container does not have.**
+`fetch_wayback` caches to `research/docs/announcement_cache/`, which is in both
+`.gitignore` and `.dockerignore`, on a Render cron with no disk. This is
+verbatim what D53 found for arXiv and solved by moving to Postgres
+`fetch_cache`. Steady state here is a handful of articles a night, so it is a
+first-firing and re-backfill cost rather than a nightly one -- but the module
+docstring's claim that re-runs cost no requests is false in the deployed shape.
+Migrating this leg onto `fetch_cache` is the obvious follow-on and is not in
+this change.
+
+**Still open, unchanged:** an article settles the night it is discovered, so
+enrichment gets one attempt and archive lag becomes permanent.
+
+---
+
+## D56 — v9: the same question, asked of text that finally exists (2026-09-05)
+
+The fetch-time backfill (D55) made recovery possible; this is the run that
+collected it. Three things had to happen together, and the order matters.
+
+**The corpus was re-fetched.** 251 -> 259 articles. OpenAI's mean text went
+237 -> 7,615 characters: `rss_summary` 149 -> 22, `full_text_archived` 35 ->
+157, `forum_post` 1 -> 16. The forum channel is a quiet win — 16 posts against
+1, including the GPT-5.6 series launch and two API price drops, none of which
+the register previously held.
+
+The re-fetch was written to a scratch file and diffed before it was allowed
+near the committed corpus, because `collect()` rebuilds from scratch and can
+legitimately drop articles. Eight went: seven aged past the rolling window
+correctly, and one did not. `introducing-ai-futures` (2026-08-20) is inside the
+window and has **fallen off OpenAI's RSS feed**. It survives in Postgres, which
+upserts by URL, so the product keeps it — at 179 characters, permanently, since
+the fetch can no longer discover it and enrichment only sees what discovery
+returns. Same family as the settle-once limitation, reached by a different
+road. Not fixed.
+
+**The prompt was bumped to v9.** A classification is keyed on
+`(url, prompt_version)`, so better text alone never reaches a scorer — the row
+already exists.
+
+**CORRECTION (see D56a): v9 was not byte-identical to v8 when the register was
+scored, and the "exactly one variable" claim below is false for it.** v9 was
+written as a copy of v8 plus a fifteen-line HTML comment explaining why the
+version existed, and `build_prompt` sent the file verbatim — so all 259 calls
+received ~170 tokens stating that OpenAI's articles "are now archived full
+text". That is a leading claim about the input, pointing in the same direction
+the scores moved. `strip_comments` now removes comments before sending, and
+`prompts/announcement_scoring/v9.md` keeps the comment plus a provenance
+warning rather than deleting it, because it is what was actually sent.
+
+**The result, against the human gold labels.** Jalapeño is the case the whole
+investigation started from:
+
+| | custom_silicon_substitution | inference_cost_down | band |
+|---|---|---|---|
+| gold (hand-labelled) | positive/high/high | positive/high/high | — |
+| v7 (blurb, unresolvable quotes) | positive/high/high | positive/high/high | high |
+| v8 (blurb) | positive/medium/medium | *absent* | medium |
+| **v9 (13,311 chars)** | **positive/high/high** | **positive/high/high** | **high** |
+
+Both tags return exactly as labelled and the article is back in the high band,
+so it fires a content alert again. Two honest gaps remain: v9 drops
+`inference_volume_up`, the lowest-confidence gold tag; and every model version
+calls the `accelerator_custom_si` category *positive* where the human labelled
+it *mixed* — a disagreement that predates the text fix and therefore belongs to
+the prompt or the category definition, not to this change.
+
+Corpus-wide: 259 scored, 0 failed, $7.16. High band 6 -> 20. Connections
+481 -> 882, and those clearing the 0.5 alert threshold 73 -> 172. **The verbatim
+audit is 0 of 523 quotes unresolvable**, against 237 of 470 for v7 — which is
+the number that says these scores rest on text the system actually holds.
+
+**Release classifications were carried forward, not re-run.** The version bump
+made all 380 release documents pending at v9. They were copied from v8 rather
+than re-scored, saving ~$10.
+
+The first justification for this was **"the output cannot differ"**, and it is
+wrong — refuted by artefacts in this same commit. On the 78 corpus articles
+whose text is byte-identical between the pre- and post-D56 corpus and which are
+scored under both versions, v9 disagreed with v8 on the mechanism id set for
+**17 (22%)** and on the band for **8 (10%)**. `research/docs/variance_v3.json`
+found the same independently: 6 of 12 articles mechanism-stable across repeat
+calls at fixed prompt and fixed text. `temperature` is deprecated for this
+model, so the spread is inherent.
+
+The argument that survives is narrower: **re-running buys a different sample
+from the same noisy distribution, not a better one.** The v8 rows are already a
+draw from it, taken against the same prompt body and the same bytes; ~$10 would
+purchase a re-roll in which roughly one row in five lands differently, with no
+basis for calling the new draw more correct. So about 1 in 5 of the 380 copied
+rows is not what a v9 call would have returned, and they are the majority of v9
+classifications in the database. That is a real cost of the decision and it is
+recorded here rather than in a footnote.
+
+Rejected: re-scoring (~$10 for a re-roll) and switching the releases leg off
+(cheap, but it removes them from the product). Every copied row carries
+`_carried_forward` naming the source version and the reasoning, which is what
+keeps the saving from costing provenance.
+
+**Working practice, learned the hard way.** This work was done on a branch cut
+from a `deployment-dev` that moved four commits while it ran, two of them
+overlapping: `927c653` fixed the duplicate alembic `0008` collision I had
+independently found and fixed, and `809f42b` rewired the pipeline suite to
+derive from `PROMPT_VERSION`, touching the same files as the bump above. Both
+were discarded in favour of what had already landed. Fetch immediately before
+branching, before running anything that writes, and before committing — not
+once at the start.
+
+---
+
+## D56a — What the review of the v9 run found (2026-09-05)
+
+Ten findings. The two majors both attack claims D56 made, and both were
+confirmed against artefacts already in the repository.
+
+**The prompt was not byte-identical, and the check verified the wrong bytes.**
+`build_prompt` sends `PROMPT.read_text()` verbatim; markdown comments are not
+stripped. v9 carried 686 characters v8 did not, including a sentence telling the
+model that OpenAI's articles "are now archived full text" — a leading statement
+about the input, in the direction the scores moved. The guard in
+`carry_forward_releases.py` split v8 at the first newline and v9 at `-->`,
+removing precisely the delta, so the one precondition it claimed to check was
+checked vacuously.
+
+`strip_comments` now runs inside `build_prompt`, and the guard compares the
+assembled prompt body rather than the files. `v9.md` keeps its comment and gains
+a provenance warning: deleting it would make the repository misrepresent how
+`scored_announcements_v9.json` was produced.
+
+The consequence for D56's headline: **the v8-to-v9 comparison is two-variable,
+not one.** Some part of Jalapeño's return to high/high may be the leading
+comment rather than the recovered text. What does not depend on the prompt at
+all is the verbatim audit — 0 of 523 quotes unresolvable against 237 of 470 for
+v7 — because that is mechanical.
+
+**"Same prompt plus same text implies same output" is false**, at 22% on
+mechanism ids over 78 articles. Rewritten above.
+
+**Two `PROMPT_VERSION` constants had to agree by hand.** `score_announcements`
+now reads the app's, and a test forbids a literal reappearing. The drift is
+worth naming because it is silent and self-repeating: with the app ahead, every
+article lists pending at the app's version, the scorer writes into its own cache
+directory, `load_classifications` finds the app's directory empty, `transform`
+writes nothing, `connect` deletes every connection row and rebuilds none, the
+dashboard empties — and the next firing pays for the identical set again.
+
+**Tests were added for the property that failed, not for the helper.** The first
+version of the prompt test called `strip_comments` directly and passed while
+`build_prompt` ignored it — the same defect shape as the original. The test now
+calls `build_prompt` and asserts the comment is absent from what it returns. All
+four new tests were verified by breaking their fix and confirming red.
+
+**Minors fixed:** the carry-forward's marker date was hardcoded to 2026-09-05,
+so a second database would receive a false provenance date; the corpus label was
+a string literal rather than `registry.CORPUS_LABELS[RELEASES]`; and a zero-row
+join printed "carried forward: 0" and exited 0, which reads as success. It now
+refuses.
+
+**Named, not fixed.** The carry-forward wrote outside any tracked run — no
+`pipeline_runs` row, no `load_run_id` — and only against the local database, so
+`docs/cost.md`'s "~$10 not spent" holds locally and nowhere else. A deploy to a
+database that has not had the script run, or any `bitcap-db rebuild`, spends it.
+`raw_llm_responses` also stores no hash of the text a call read, which is the
+one check that would make a carried-forward row verifiable after the fact —
+pointed at directly by this whole exercise having begun with text changing
+underneath a stored classification.
+
+## D57 — Papers become a scored corpus, not a second pipeline (2026-09-05)
+
+**This supersedes D25.** That entry rejected scoring papers, and its reasoning
+was sound about the thing it described:
+
+> "The tempting move is to treat a paper like an announcement — classify it,
+> score it, join it to holdings. That is a second full pipeline (its own
+> prompts, its own scoring rule, its own gold set) and it answers a question
+> announcements already answer better."
+
+What is built here is not that. Papers land in `raw_articles` under
+`source_file = research/docs/papers_corpus.json` and share the JSON schema,
+`vocabularies()`, `drop_unknown_tags`, `enforce_quotes`, `call_cost`,
+`config/scoring.yaml`, `app/scoring.py`, `classifications` and its three tag
+tables, `connect`, `digest`, `/api/items` and the dashboard. One prompt file
+differs, and one work-list filter. That is one more corpus, not a second system.
+
+**And the second half of D25's claim turned out to be wrong.** Announcements do
+not answer this question better, because for the class that matters they cannot
+answer it at all. DeepSeek-V4's abstract states *"requires only 27% of
+single-token inference FLOPs and 10% of KV cache compared with DeepSeek-V3.2"*
+at one million tokens. KV cache is HBM-resident, so a tenfold cut is a
+first-order claim about memory demand per served token — the DeepSeek→NVIDIA
+transmission the brief names as its calibration case. Those numbers exist in the
+technical report and nowhere else.
+
+### Why the abstract, and not the paper
+
+Measured before deciding, not estimated. Five arXiv `/html/` full texts:
+DeepSeek-V4 170,913 visible characters, DeepSeek-V3 135,384, the GPT-5 system
+card 134,271, Meta's RL-code paper 401,194, Shieldstral 73,107 — mean **182,974
+characters, ~59,200 tokens, about 43x the mean article in this register**
+(4,290). Calibrated against 1,787 rows of `raw_costs`: 3.09 characters per input
+token, and output plateaus near 3,300 tokens because the schema bounds it
+(3,105 at 24k chars, 3,228 at 28k, 2,483 at 32k). Every measured `usd` predates
+Sonnet 5's list price, so forward cost is 1.5x the recorded column.
+
+| scope | input tokens | 49 papers | `text_source` honest? |
+|---|---|---|---|
+| full text | 59,200 | $11.30 | yes — `full_text` is true |
+| truncated to 60k chars | 19,400 | $5.30 | no — 4 of 5 sampled papers cut |
+| **abstract** | **~650** | **$0.75 actual** | needs a new value; see below |
+
+**Cost is not what decided it.** What decided it is that every number which made
+these papers worth scoring was stated in the abstract: DeepSeek-V4's 10% KV
+cache and 27% FLOPs, DeepSeek-V3.2's DSA and its IMO/IOI results, Meta's
+18.0%→31.3% strict top-50% pass@1, Anthropic's GRAM reconfiguring one model to
+match five filtered ones. Paying nine times as much to send ablations,
+appendices and bibliographies in order to reach a figure in the first paragraph
+is the same trade `llm_byline.HTML_BUDGET` already refuses for bylines —
+*"~100x for content that cannot contain the answer"*.
+
+**The honest cost of this choice:** a figure stated only in a results table or
+an ablation is invisible to us. That is a real ceiling on recall, and it is why
+`paper_abstract` is its own `text_source` rather than being passed off as
+`full_text`.
+
+Rejected: truncating the full text to the existing 60,000-character budget. It
+is cheaper than full text and it would let us keep the `full_text` label, which
+is exactly the problem — the label would be false for most of the corpus.
+
+### Why papers carry their own prompt version
+
+An abstract of a 180,000-character paper is authoritative but partial, and no
+existing `text_source` describes it. `full_text` means "the complete article";
+`rss_summary` caps confidence at medium, which would wrongly discount a
+first-party abstract. So a new value, which means a new prompt version.
+
+Sharing `PROMPT_VERSION` would have forced a `v10` for the whole register:
+647 rows at $0.0258 each is **~$16.70** to re-ask an unchanged question of
+unchanged text. The alternative was a carry-forward, and D56a is precisely the
+record of why that argument has to be airtight — v9's guard checked its
+precondition vacuously. A v10 carry-forward could not have made D56's
+byte-identical claim, only the weaker "the added block concerns a document type
+not present", which is not the same thing.
+
+`classifications.prompt_version` is a plain string, so papers are classified
+under `p1` against `prompts/paper_scoring/p1.md` and v9 is untouched at $0. The
+cost is that every reader of `classifications` must now span a set of versions.
+`connect` is the sharp edge: it deletes the whole table before rebuilding, so
+calling it once per version leaves only the last one's rows. Pinned by
+`tests/test_papers_scoring.py::TestOneSpineTwoVersions`, which asserts both the
+correct behaviour and the failure mode.
+
+`digests.prompt_version` stays single-valued — it is a uniqueness key — and
+records the announcement version, with the full set in `stats["versions"]`.
+
+### `research_result` no longer captures a technical report
+
+v9 defines `research_result` (weight 3) as *"a research finding: a paper or a
+novel method"*. A DeepSeek-V4-style technical report is literally a paper, so it
+classifies there by default — capping the strongest evidence in the register at
+`100 x (3/5) x (3/3) = 60.0`, against the 100.0 the same launch scores when
+announced as a blog post. `p1` rewords the type: a technical report, model card
+or system card that introduces a model *is how that model was launched*.
+
+This is a wording fix. **No new event types, and no edit to
+`config/scoring.yaml`.** New paper-specific types were considered and rejected:
+adding keys is mechanically free and costs no LLM spend, but the dashboard ranks
+papers and announcements in one column, so a separate event vocabulary makes
+"60" mean two different things in one list — and with no paper gold set yet, any
+new weight would be a guess against a config whose whole premise is that every
+number can be argued line by line. Two traps recorded for whoever revisits this:
+`max_event_weight` is pinned to `max(event_weight.values())`, so a new type
+above weight 5 silently rescales every existing announcement score downward; and
+`score_of` looks the type up with `.get(event_type, 0)`, so a type the prompt
+offers and `scoring.yaml` does not weight scores zero, silently.
+
+The asymmetry that remains is deliberate: a genuine research finding still
+ceilings at 60.0, so it reaches the digest's `always_band: high` route only on a
+high-magnitude, high-confidence, quote-backed tag, where a model release at the
+same evidence would not need one.
+
+Measured on the live corpus: 34 of 47 papers classify `research_result`, 9
+`frontier_model_release`, 2 `open_weights`, 1 `incremental_model_release`, 1
+`product_launch`. The disambiguation fires where it should and does not spread.
+
+### Two papers were already announcements
+
+Landing the corpus updated two existing rows rather than inserting them, which
+was not anticipated. Mistral has no publications page at all, so its papers
+harvester sources candidate titles from Mistral's own announcements corpus (D17)
+and its citation is `mistral.ai/news/<slug>` — a URL the announcements leg
+already holds, at full text, already scored under v9. `raw_articles` is keyed on
+URL, so the paper landed on top and replaced 13,000 characters of announcement
+with a 2,000-character lead section. Caught by reading the insert/update counts,
+repaired by re-running `load_articles`, and now prevented: `paper_text.collect`
+skips any paper whose URL is already in the corpus under another `source_file`,
+and records it in `unresolved_items` with a reason. The announcement wins — it
+is the complete document — and "deliberately not added" and "missing" must not
+look the same in the register. 47 of 49 papers are scored; the 2 are Mistral's.
+
+### Content alerts are now bounded by publication age
+
+`high_band_items` and `holding_impact` filtered on band and strength and nothing
+else. That was harmless while every corpus was a rolling window, and stopped
+being harmless the moment a backfill landed: the papers leg reaches back to 2023
+and eight of its documents score in the high band, so the first firing would
+have paged someone about GPT-4's technical report.
+
+`alerts.content_max_age_days: 120`, measured rather than chosen — the oldest
+high-band announcement in the register is 89 days old (the announcements window
+is ~3 months) and the newest backfilled paper is 132, so the bound changes
+nothing about announcement alerting today and excludes every backfill item.
+Verified live: 20 candidates with the bound, 28 without.
+
+The cost, stated: a genuinely important paper published four months ago and
+discovered tonight does not alert. It is still scored, still in the UI, still
+joined to holdings — and the 48-hour digest window would have excluded it
+anyway. Bounding discovery instead was rejected: it fires on the whole backfill
+at once, which is the same problem wearing a different hat.
+
+### What it produced
+
+47 papers classified, 0 failures, **$0.75** — against a $1.20 projection.
+Investment bands: 8 high, 1 medium, 5 low, 33 none. That distribution is the
+result, not a disappointment: the largest group in this corpus is safety and
+social-science papers, and *"A moral Turing test"* and *"Artificial Minds, Human
+Disagreement: The Politics of AI Consciousness"* both score 0.0 on both axes,
+which is what stops them burying the technical reports.
+
+The two ends of the register, both from abstracts:
+
+- **DeepSeek-R1 (2025-01-22) scores 100.0 / 100.0.** The calibration case the
+  brief names, recovered by the system rather than asserted by us.
+- **DeepSeek-V4 routes to NVIDIA, Micron, TSMC, Amazon, TeraWulf and IREN at
+  strength 1.00** — memory and the energy complex, which is what a 10x KV-cache
+  reduction argues about. DeepSeek-V3's technical report routes *negative* to
+  the same names.
+
+Anthropic's twelve papers score 0.0 investment and up to 44.4 on the AI axis,
+which is the shape the two-audience split was built to produce.
+
+### The gold set, and the first agreement numbers for paper scoring
+
+`research/papers/build_paper_gold_set.py` emits ten unlabelled papers stratified
+by **document type rather than by lab** — the finding this leg rests on is that a
+paper's value tracks what kind of document it is, not who wrote it. It
+over-samples the safety/social-science stratum deliberately: "correctly scored
+zero" is the case that fails silently.
+
+`gold.labelled_by` is a required field, so a file cannot reach the metrics
+without stating who produced it.
+
+**Correcting a claim made earlier in this work:** the announcements gold set is
+not human ground truth either. `gold_human/` was deleted on 2026-09-01 because
+labelling twenty ~14,000-character articles by hand was not going to happen
+(`research/announcements/test/README.md`), and what exists is cross-model
+adjudication — `claude-sonnet-5` classifier, `claude-opus-5` adjudicator — plus a
+human *read* of one run in `docs/gold_review.md`. So the paper set is
+methodologically consistent with the announcements set rather than a weaker
+substitute for it, and neither may be described as human-labelled anywhere in the
+design document.
+
+One real difference, in the paper set's favour and worth keeping: it is labelled
+**blind**. The announcements adjudicator sees the classifier's output and a
+second independent run before deciding; this labeller sees only `text`, `title`,
+`url` and `text_source`, and the builder is tested to keep it that way. Blind
+agreement means more because it cannot anchor. It also buys less: no second run
+to show where the scorer was unstable, and no recorded reason for rejecting a tag
+the scorer produced. The announcements set measured its adjudicator running high
+on ordered fields in 11 of 15 disagreements; nothing equivalent is measured here.
+
+**Labelled by `claude-fable-5`, blind, on 2026-09-05.** Ten papers, every quote
+mechanically verified as a verbatim substring before the labels were accepted.
+Measured against the `claude-sonnet-5` scorer under `p1`:
+
+| | |
+|---|---|
+| event_type agreement | **9 / 10** |
+| mechanism F1 | **0.86** (precision 1.00, recall 0.75) |
+| practice F1 | **0.76** (precision 0.67, recall 0.89) |
+
+**Mechanism precision is 1.00 — the scorer produced no mechanism tag the
+labeller rejected.** On the axis that routes to holdings, and where a
+hallucinated tag would be most expensive, there were no false positives across
+the sample. The one miss was `training_compute_up` on the GPT-4 technical report.
+
+**Every disagreement was pre-identified by the labeller as genuinely arguable**,
+which is the result worth reporting and is why the disagreement list was asked
+for alongside the labels:
+
+- The single event_type split is `09`, DeepSeek-Coder-V2 — gold
+  `frontier_model_release`, scorer `open_weights`. The labeller had already
+  flagged it as a three-way tie: "further pre-trained from an intermediate
+  checkpoint" reads incremental, the document frames it as a new top-of-range
+  coding model, and it is also an open-weights release. The rubric does not
+  break that tie, and neither answer is wrong.
+- All four practice false positives are on `08`, the gpt-oss model card, where
+  the scorer tagged `evaluation`, `integration` and `serving_efficiency`
+  alongside the agreed `model_capability`. A rich model card invites
+  over-tagging on the AI axis; nothing similar happens on the investment axis.
+- The remaining practice miss is `07`, a toy-model interpretability paper, which
+  the labeller explicitly called plausible to tag "both or neither".
+
+So the honest reading is that the scorer's errors on this sample fall inside the
+band where the rubric itself is ambiguous, not outside it. What that does **not**
+establish is corpus-level precision and recall: n = 10, stratified rather than
+proportional, exactly as on the announcements side.
+
+Still open: the set is not yet wired into `drift.measure`, so this is a one-off
+measurement rather than a metric that would catch the scorer degrading next
+month. That gap is real and is the next thing to close.
+
+**Closed in D58, by decision rather than by code**: the set was measured once,
+the classifier shipped, and the recurring check rejected because four mechanism
+tags cannot separate drift from jitter.
+
+## D58 — The papers classifier ships without a nightly drift check (2026-09-05)
+
+**Closes the gap D57 left open**, and not by filling it. D57 ended saying the
+paper gold set was not wired into `drift.measure` and that "that gap is real and
+is the next thing to close". It is closed here by measuring once and deciding
+the recurring check is not worth building, rather than by building it.
+
+### The measurement
+
+Ten gold papers, classified fresh under `p1` against `claude-sonnet-5`,
+**bypassing the result cache** — a check read through the cache reports perfect
+agreement forever, which is the failure mode that looks exactly like success.
+$0.1538. Run and metrics committed at
+`research/test_results/paper_gold_20260905T000000Z_p1.json`; re-derivable
+without paying via `grade_paper_gold.py --report`.
+
+```
+EVENT TYPE     9/10 = 90%       Cohen's kappa +0.787
+
+axis          ref  run  hit  microF1  macroF1  identical
+mechanisms      4    3    3     0.86     0.97      9/10
+categories      0    0    0        –     1.00     10/10
+practices       9   13    8     0.73     0.77      5/10
+
+investment    MAE  3.3    zero-vs-nonzero 10/10    both zero 7   identical 9/10
+AI-team       MAE 12.8    zero-vs-nonzero  9/10                  identical 3/10
+
+CITATION GATE  16 tags survived, 1 dropped for an unverifiable quote
+```
+
+**The noise filter holds, which is the result that mattered.** All seven papers
+whose correct investment score is zero scored zero — every DeepMind
+safety/social paper, both interpretability papers, both component papers.
+Investment MAE is 3.3 points on a 0–100 scale. The failure this leg was built to
+avoid — a study of how people perceive AI consciousness finding transmission and
+burying the technical reports — is not happening.
+
+### Decision: ship `p1` as it stands; no recurring drift check for papers
+
+**Rejected: a nightly paper drift check.** The gold set carries **4 mechanism
+tags**. D35 already rejected a six-item sample carrying **10** on exactly this
+ground — *"a single tag missed or gained moves micro-F1 by ~0.05 and a floor set
+at 0.80 sits well inside the noise"*. Four tags moves it by ~0.15 per tag, three
+times worse than the sample that was thrown out. The alert would fire on jitter,
+and a false alarm a week is how a system-alert channel gets muted — which costs
+more than the check is worth, because the announcements drift check shares it.
+
+**And labelling more would not rescue it.** The whole 47-paper corpus carries 27
+mechanism tags across 33 papers with none. Extending the gold set to 20 buys
+~8 mechanism tags, still below D35's bar. Papers are mechanism-sparse; that is a
+true fact about research papers, not a sampling defect, and no labelling budget
+changes it.
+
+**Rejected: a blended announcements + papers agreement score.** Announcements
+are `v9` and papers are `p1`. `drift.history()` already refuses to mix versions
+— *"comparing across versions is comparing two different questions"* — and
+`alerts._drift_scope` already keys the alert on `prompt_version` with the same
+reasoning. A blended figure also moves when the *mix* changes rather than when
+the classifier does, which breaks the fixed-sample guarantee that is drift's
+whole design premise.
+
+**Rejected: mechanism micro-F1 as the paper headline.** `gold_metrics.axis`
+computes micro-F1 from summed hits and tag counts, so an empty-vs-empty pair
+contributes to neither numerator nor denominator. Seven of ten gold papers are
+exactly that pair. The metric would grade the three papers we are least worried
+about and be blind to the seven the corpus exists to pin. `metrics()` reports
+`investment.zero_agreement` as the headline instead, and
+`tests/test_paper_gold_grading.py` pins the reason so the headline is not
+"fixed" back to mechanisms without meeting it.
+
+### The disagreements, named rather than averaged away
+
+**DeepSeek-Coder-V2 (09): gold `frontier_model_release`, run `open_weights`.**
+The sole event-type miss, and the classifier is arguably right — the paper is
+*"Breaking the Barrier of Closed-Source Models in Code Intelligence"*, an
+open-weights release. Both types carry **weight 5** in `config/scoring.yaml`, so
+this costs nothing in score. The 33.3 → 66.7 gap on that paper comes from one
+magnitude step on `memory_intensity_up` (low → medium), not from the event type.
+Recorded as a probable gold-label defect, not classifier error.
+
+**Practices over-tag: 13 run against 9 reference, precision 0.62, recall 0.89.**
+The real looseness in this run, and it errs toward `watch` — the least damaging
+direction, since `watch` carries the lowest action weight. The one AI-team sign
+disagreement is paper 07, 0.0 → 5.6, a single low-impact `watch` tag on an
+interpretability paper.
+
+### Provenance, stated because it changes what the numbers mean
+
+The labels are Fable 5's, produced blind from the same abstracts. Every figure
+here is **cross-model agreement, not accuracy**: 90% event-type agreement means
+two models reading the same text mostly concur. The announcements set is no
+better on this axis — it is Sonnet-5-classifier against Opus-5-adjudicator, and
+`gold_human/` was deleted on 2026-09-01. Both are the defensible proxies the
+brief permits; neither is ground truth, and `load_gold` raises on a file missing
+`gold.labelled_by` so a set whose provenance nobody recorded cannot reach a
+metric.
+
+### Consequence
+
+Paper scoring has 53 unit tests, this baseline, and **no ongoing degradation
+signal**. That is a real hole and it is accepted knowingly: if `p1` or
+`classification.model` changes, re-run `research/papers/grade_paper_gold.py` and
+compare against the table above. The trigger is a code change, not a calendar —
+which is honest about what the check can actually detect at this sample size.
+
+## D59 — The duplicate collapse, and what the labels said about it (2026-09-05)
+
+D48 rejected cross-article deduplication and deferred the embedding approach to
+`docs/next_steps_0309.md`. This reverses it. The case that forced it: GPT-6
+Astra reached the feed as seven rows over five days, and 380 of 647 articles are
+GitHub releases where one repo ships four in five days.
+
+**Mechanism overlap was the first idea and it is wrong.** It reads as the
+natural signal — the extraction already says what each article claims — so it
+was measured rather than assumed. Over the 267 non-release articles, 52 pairs
+share a lab, a fortnight and an event type with tags on both sides; 23 clear
+Jaccard 0.5, and most of those are false. "TCS and Anthropic bring Claude to
+regulated industries" against "DXC integrates Claude into systems" scores a
+perfect 1.0 and they are two different partnerships; so do "Grok on Amazon
+Bedrock" and "Grok Becomes the Voice of Vapi". The vocabulary encodes what
+*kind* of event an item is, not *which* event. It is an input to gate 3 now,
+never a gate.
+
+**What separates the true pairs is the subject, and the separator is the event
+type.** Three gates, and only the last costs money: subject (identifier match,
+free), event type (must agree, free), redundancy (cosine, then an LLM only
+inside the band).
+
+**Gate 2 is what protects the product.** "Safety overview: GPT-6 Astra" reports
+the model reached the Critical cybersecurity level under the Preparedness
+Framework — a claim no other item in the cluster carries. It scores 10.0 and
+sits far down a score-sorted feed, so the tempting move is to fold it into the
+100-scoring launch card. That would delete the claim. It stays its own row.
+
+### What the labelled set changed
+
+82 pairs were labelled blind by a Fable 5 subagent — lab, dates, titles,
+summaries, event types, and deliberately **not** the cosine it was calibrating.
+The labeller is not the adjudicator (gate 3 runs on `claude-sonnet-5`), or the
+eval would be marking its own homework. 7 same, 75 different.
+
+**Cosine does not separate the classes.** Positives run 0.763 to 0.966 and
+negatives reach 0.834. Full recall lands at precision 0.54; full precision lands
+at recall 0.43. There is no single cut. That is the argument for a band —
+`>= 0.84` merge unasked, `< 0.76` separate unasked, and ask a model in between —
+rather than a threshold, and it is a finding about the corpus, not a defect in
+the embedding.
+
+**Two `same` pairs disagreed on event type**, which gate 2 would have refused.
+Both turned out to be one article at two URLs: "Expanding Daybreak as the Cyber
+Defense Window Narrows" on openai.com and community.openai.com the same day,
+classified `incremental_model_release` and `product_launch`; "Introducing
+Intelligence Age" at two openai.com URLs, classified `other` and
+`safety_policy`. **The classifier assigns different event types to identical
+text.** So the exact pass runs first, before gate 2, and merges on lab + date +
+title whatever else disagrees. Without the labelling this would have shipped as
+a silent refusal to merge byte-identical rows.
+
+**Gate 1 fires on 12% of the corpus and adds no merge cosine does not.** Only 38
+of 314 non-release articles carry a model identifier in the title, and no
+labelled duplicate sits below `cosine_low`, so a subject-only route would need a
+threshold the labels give no evidence for. The identifier is computed and shown
+in the reason; it is not a separate route. Recorded rather than shipped as a
+gate that never fires.
+
+**Reading the body over-generates.** Subject extraction is title-only because
+the Astra launch post is 24,000 characters and its body yields `gemini-3.8`,
+`opus-5` and `gpt-5.6-sol` from a comparison table — pairing on those joins the
+Astra launch to the GPT-5.6 launch.
+
+**One model was two keys.** "GPT-6 Astra" extracts as `gpt-6` and
+"GPT-6-Astra" as `gpt-6-astra`, because the identifier pattern only absorbs a
+suffix across a hyphen. Those two rows are the clearest true duplicate in the
+corpus and they did not match. `stem()` emits the family-and-version alongside
+the full identifier.
+
+### Honest limits
+
+**Seven positives.** After the exact pass the curve rests on seven labelled
+duplicates. One wrong label moves recall by 0.14. The thresholds are the best
+available estimate, not a measurement, and the sample is small because the
+corpus genuinely contains few near-duplicates — 10 of 4,412 candidate pairs
+reach cosine 0.80. `tests/test_dedupe.py` pins the count so the caveat cannot
+quietly stop being true.
+
+**The blind file was not blind, and it moved the threshold.** The first pass
+wrote the labelling file sorted by cosine descending. The number was withheld
+and its rank was not, which is the same information one transform away: a
+labeller reading top to bottom is being told that the last rows are the
+negatives. Caught in review.
+
+Re-labelled from a shuffled file — same 82 pairs, same labeller, same prompt.
+**Two labels changed, and they were the top two negatives**: the GPT-6 Astra
+model-spec page against the launch post (0.831) and against the forum
+restatement (0.869), both `different` under the leak and `same` without it.
+Agreement between the two passes was 80/82, which sounds like a rounding error
+and was not — the high edge is set by exactly those pairs. `cosine_high` was
+0.87 on the leaked labels and is 0.84 on the clean ones, and precision-1.0
+recall went from 0.20 to 0.43. The leaked labelling had been suppressing the
+auto-merge threshold.
+
+Kept as `research/docs/dedupe_labels_ordered.json` rather than deleted, because
+the difference between the two files is the evidence for the paragraph above.
+
+**The labels are a proxy.** They are machine-generated. Neil marks a stratified
+sample of 20 and the agreement rate is recorded here; until that lands, the
+eval is unvalidated and this paragraph says so rather than implying otherwise.
+
+**Human-checked agreement: 15/20 = 0.75**, on a blind stratified sample of 20. All five disagreements ran one way, which is the finding rather than the rate — see D59b.
+
+### Anchoring, and the two tie-breaks
+
+Highest score, and the tie-break differs by path because within a release train
+every member usually scores the same, so the tie-break decides every group.
+Articles break towards the earliest — the Astra launch and the API docs page
+both score 100, two days apart, and "most recent" would put a reference page at
+the top of the feed with the launch folded under it. Releases break towards the
+latest: a `claude-code` card should name the version the repo is on. Score still
+comes first, so v2.1.259 (66.7) anchors over v2.1.260 (22.2).
+
+### Consequence
+
+647 articles become 554 groups; 93 rows collapse. 10 pairs reach the
+adjudicator on a full backfill and 3 of them merge. `app/pipeline/dedupe.py`,
+`config/dedupe.yaml`, `prompts/duplicate_adjudication/v1.md`, migrations 0010
+and 0011, a phase between the ETL and the digest, `research/dedupe/`, and 41
+tests. Spend: $0.000682 to embed 647 articles, $0.057 on adjudication.
+
+Not built: the cross-event-type "story" link that would group the Astra release,
+safety and customer-story rows as one thing. Its value in that case was
+rescuing the safety row from a scoring bug being fixed separately, so it is
+recorded in `next_steps_0309.md` and revisited only if that row still fails to
+surface once scored right.
+
+## D59a — What the review of the duplicate collapse found (2026-09-05)
+
+Fourteen findings on `feature/disambiguation`. The grouping algorithm itself
+survived — the reviewer could not construct a duplicate-row or transitive-merge
+failure — and every finding was around it. Four are worth recording because
+each is a class of mistake rather than a typo.
+
+**The phase spent money on `--dry-run`.** Every other LLM stage is gated on
+`spend`; this one was not, so a dry run against a fresh deployment would have
+made seven OpenAI calls and a dozen Anthropic ones. `budget=None` does not fix
+it — to `embed` and `adjudicate` that reads as *unlimited*, not *do not call* —
+so `assign` takes an explicit `adjudicate_pairs` flag and the band is counted as
+`deferred` instead of resolved.
+
+**The cost landed on the wrong run.** `_etl`'s `load_costs` is the single place
+a firing's spend is totalled and it had already run, so records written by this
+phase sat in the log until the *next* firing claimed them. The run that spent
+the money reported zero. Fixed by sweeping the log a second time after the
+phase; `load_costs` upserts on `(url, at)`, so the second sweep costs nothing
+and inserts only what was just written. The first attempt at this fix charged a
+dry run $31 of unrelated history, which `TestDryRun::test_no_llm_stage_runs`
+caught — the run total now takes the phase's own measured figure and the sweep
+only moves records into the ledger.
+
+**A comment described degradation the code did not do.** The phase claimed that
+if embedding failed the exact pass and release trains would still run. They are
+inside `assign`, which was in the same `try` as `embed` and therefore never
+reached. The two halves now fail independently, and `dedupe_unavailable` raises
+a system alert — the phase swallows its own exceptions by design, which is
+exactly how `drift_unavailable`'s outage went unnoticed for days (D45).
+
+**One anchor cannot serve two audiences or two windows.** `is_anchor` is chosen
+once over the whole corpus on a single significance score; a digest is one
+window and one audience. Two consequences, both silent: a release train's
+corpus-wide anchor can sit outside the window, so every release that *did* ship
+in it folds against an absent row and the section renders empty; and
+`event_type` is a multiplicative term in the investment score and absent from
+the AI score, so the member ranking highest overall can score zero on the axis
+being published while the member carrying that axis' signal is the one folded
+away. Membership is the durable fact and stays in the table; **which member
+speaks for a group is now decided by each surface**, per window and per
+audience. Confirmed as a code path; it does not fire on today's data.
+
+Also fixed: the embedding cache ignored which model produced a vector, so a
+same-width model swap re-embedded nothing and silently mixed two vector spaces;
+release trains chained without bound, so a daily-release repo became one
+permanent group; `check_dedupe` did not validate the model names it would spend
+money on, and `_cost` indexes `PRICES[model]` only *after* the call is billed;
+two config keys were read by nothing; and `assign`, the function that writes,
+had no test at all — 41 green tests, none of them calling it.
+
+Not changed: the reviewer suggested using the adjudicator's `more_complete`
+field as an anchor hint. Per-surface anchoring removed the need, so the field
+was dropped from the schema and the prompt instead. An output that is bought and
+discarded is a cost with no reader.
+
+## D59b — The spot-check found a bias, and it pointed the right way (2026-09-05)
+
+D57 shipped with "Human-checked agreement: pending". This is that number, and it
+did more than validate a proxy.
+
+**15/20 = 0.75.** Twenty pairs, stratified across the cosine range and weighted
+towards the ones the labeller itself flagged low-confidence, marked blind — the
+sheet did not show the machine's label, so agreement measures judgement rather
+than anchoring.
+
+**Every one of the five disagreements ran the same way**: the model said
+`different`, the human said `same`. A one-directional error on every miss is a
+calibration fault, not sampling noise, and 0.75 alone would have hidden it — the
+rate reads like ordinary disagreement until you look at the signs.
+
+**The bias is narrower than "too conservative".** The model and the human agree
+that a safety disclosure is distinct from the launch it accompanies — the case
+the event-type gate exists for. They diverge on **companion pieces**: an
+umbrella announcement and its named sub-initiative (Daybreak / Patch the
+Planet), an introduction and its deep-dive (GeneBench-Pro), one rollout
+staggered across apps (Grok for Word / for PowerPoint), two safety documents
+about one model (Path to Astra / Safety overview). v1 carried no worked example
+of that shape; every example in it was about telling things apart, so that is
+what it kept doing.
+
+Fixed in `prompts/duplicate_adjudication/v2.md`, which names the shape as a
+category and uses all five failures as examples, then re-labelled and
+re-derived. The asymmetry warning is unchanged: v2 widens what counts as one
+event, it does not licence merging a distinct claim away.
+
+### Two things the spot-check confirmed rather than found
+
+**Gate 2 is right, and a human said so independently.** Neil marked `7606-7610`
+— the Astra launch against the safety overview carrying the Critical
+cybersecurity claim — as `different`, and split `7606-7656` the same way. The
+gate's justification in D57 was my argument from one example. It is now a
+human's judgement on a blind sample.
+
+**The ordering-leak fix was right.** The two labels that flipped when the blind
+file was shuffled were `7610-7655` and `7655-7656`. Neil marked both `same`,
+agreeing with the corrected pass rather than the leaked one. `cosine_high`
+belongs at 0.84.
+
+### What it says about the method
+
+The spot-check cost about ten minutes and changed a prompt, a threshold, and a
+recommendation about a $7.50 spending decision elsewhere
+(docs/next_steps_0309.md). Reported as a rate alone — "0.75, acceptable" — none
+of that would have surfaced. **The direction of the errors carried more than the
+count did**, which is the argument for examining disagreements rather than
+averaging them, made in CLAUDE.md and here demonstrated on a set of five.
+
+Honest limit: 20 pairs, 9 of them positives by the human's reading. The
+agreement rate has a wide interval. It is a sanity check on the labelling, not a
+measurement of the product.
+
+## D59c — Fixing the labeller's bias, and the error that replaced it (2026-09-05)
+
+D59b measured the labeller at 0.75 against a human and found every miss running
+one way. `prompts/duplicate_adjudication/v2.md` is the fix: it names **companion
+pieces** as a category — an umbrella announcement and its named strand, an
+introduction and its deep-dive, one rollout staggered across surfaces, a
+restatement on a second channel, a precursor carrying no claim of its own — and
+uses all five of the human's corrections as worked examples. Everything else in
+v1 is unchanged, including the asymmetry warning, which is the part that stops a
+widening becoming a licence.
+
+Re-labelled the same 82 pairs. `same` went from 9 to 26.
+
+**The headline was 0.75 → 0.90, and that number is a training score.** Caught in
+review (D59d), and it is the most important correction in this branch.
+
+Seven of the human's 20 marked pairs are worked examples *in v2's own prompt*,
+with the answer supplied. Splitting the sheet on that:
+
+| | in-prompt (7) | **out-of-sample (13)** |
+|---|---:|---:|
+| v1 rubric | 3/7 | **12/13** |
+| v2 rubric | 6/7 | **12/13** |
+
+**Out of sample, v2 is not better than v1.** Every point of the apparent gain
+sits on pairs the prompt was shown the answers to. The only out-of-sample
+movement is a *regression*: `7235-7236`, the Jalapeño CFO strategy piece against
+the Jalapeño results post, which v2 merges and the human keeps apart — a false
+merge, the expensive direction by this system's own asymmetry.
+
+The direction of the error did genuinely flip: v1 was too conservative 5 times
+and never over-merged, v2 over-merges twice and never under-merges. That is a
+real change in behaviour. What is *not* established is that it is an
+improvement on anything the prompt was not shown.
+
+**Kept anyway, and the reasoning matters more than the verdict.** The five
+corrections v2 encodes are real fixes to real misclassifications — those pairs
+were wrong, and now they are right, which is worth having even if it
+demonstrates nothing about the sixth case. The threshold band is also a second
+filter the labels are not: a pair the labeller calls `same` still has to clear
+`cosine_high` or convince the adjudicator before anything merges.
+
+But no claim of generalisation is supported, and the honest next step is a
+fresh 20-pair blind check on pairs the prompt has never seen. Until that runs,
+**the defensible statement is "v2 corrects the errors it was shown, and its
+behaviour on unseen pairs is unmeasured"** — not 0.90.
+
+**And the thresholds rest on these labels.** `cosine_high` moved 0.84 → 0.80 on
+a set produced by a rubric fitted to five human answers. That is a weaker
+foundation than D59b's, and it is why the caveat in `config/dedupe.yaml` now
+says so.
+
+**A transitivity wrinkle, noted not fixed.** The human marked `7565-7616` as
+`same` and `7098-7565` as `different`, while `7098-7616` is an exact-pass merge
+(one article at two URLs). Union-find makes grouping transitive; human judgement
+of "is this the same story" evidently is not. The system will group all three.
+That is defensible — they are all the same Daybreak announcement — but it is a
+case where the data model is more certain than the person it is modelling.
+
+### Consequence
+
+Band moves from [0.76, 0.84) to **[0.70, 0.80)**. 19 adjudications on a full
+backfill against 10, so about six cents, and near zero incrementally.
+
+647 classified articles become **547 groups**; 100 rows collapse, up from 93.
+The GPT-6 Astra cluster is now four rows rather than five: the launch, its forum
+restatement and the API docs page as one; the two safety documents about the
+same Preparedness assessment as another; and the two customer stories on their
+own. The safety row still does not fold into the launch — which both the gate
+and the human independently insist on.
+
+**The low edge is now at the edge of the evidence.** `cosine_low` is 0.70 and
+the census floor in `research/dedupe/candidates.py` is also 0.70: every pair at
+or above it was labelled, and below it only 30 of 4,360 were sampled. Lowering
+it further would need a wider census first, and the config says so.
+
+**Not grouped: the 47 paper rows** another branch landed in the shared database
+mid-build. They carry no `v9` classification yet, so `_rows` does not see them —
+correct behaviour, and they group on the first run after they are classified.
+
+---
+
+## D59d — Reviewing the fixes, which is where the real bugs were (2026-09-05)
+
+The first review (D59a) covered the original commit. Its *fixes* went unreviewed
+until Neil asked whether they had been. They had not, and they contained the
+worst defect in the branch.
+
+**The dashboard did not render at all.** The per-audience anchoring fix added
+`anchorFor` to two `useMemo` dependency arrays about fifty lines above the
+`const` that declares it. A dependency array is evaluated during render, so
+`Dashboard()` threw `ReferenceError: Cannot access 'anchorFor' before
+initialization` on first paint. Every authenticated user would have got a blank
+page. It was committed and pushed.
+
+**`next build` passed the whole time**, and I offered that as evidence the page
+worked. It is not evidence of that: building bundles the component, it never
+calls it. CI runs `pytest` and two node smoke scripts and had no frontend step
+at all. `tests/smoke_dashboard_render.js` now evaluates the hook section with
+stubbed hooks — verified to fail on the bug and pass on the fix — and CI runs
+both it and `next build`, because neither catches the other's class.
+
+### Two losses the anchoring rewrite introduced
+
+Both reproduced by the reviewer, neither caught by the tests written alongside
+the rewrite.
+
+**A holding link could vanish from the investment digest.** The rewrite chose a
+group's speaker by the audience's *score*. But `_investment_item` gates on
+connection strength or band and ranks on `(peak_strength, score)` — so the
+speaker was picked on the secondary criterion. A group whose top scorer carried
+no holding link emitted nothing at all while a member with a 0.9 NVIDIA
+connection sat folded behind it, and `collapsed` reported it as "another row
+already says this" when no row said it. The group is now represented by its best
+member *that the audience's rule accepts*, and only counts as collapsed when
+something actually surfaced.
+
+**Every release train anchored on its earliest release.** `rank()` broke ties
+towards the earliest unconditionally, and since neither the digest nor the feed
+reads `is_anchor` any more, `anchor_of(prefer="latest")` had quietly become dead
+code — the exact bug it was written in D57 to prevent, reintroduced one layer
+up. 380 of 647 articles are releases and within a train they usually score
+identically, so the tie-break decided all of them: the AI digest published
+`claude-code v2.1.258` with v2.1.260 folded inside it.
+
+**And the test could not see it**, because it asserted on `ArticleGroup.is_anchor`
+— a column no consumer reads any more. It tested the table, not the product. The
+replacement asserts on what the digest publishes.
+
+### The recalibration number was a training score
+
+D59c reported v2 at 0.90 against Neil's 20 marks. Seven of those 20 are worked
+examples *inside v2's prompt*, with the answers supplied. Split:
+
+| | in-prompt (7) | out-of-sample (13) |
+|---|---:|---:|
+| v1 | 3/7 | **12/13** |
+| v2 | 6/7 | **12/13** |
+
+**Out of sample v2 is exactly as good as v1**, and it adds one false merge v1
+did not make. Every point of the headline gain was in-sample. D59c and
+`config/dedupe.yaml` are corrected; the defensible claim is "v2 corrects the
+errors it was shown, and its behaviour on unseen pairs is unmeasured".
+
+That matters beyond the number, because the thresholds moved 0.84 → 0.80 on
+labels this rubric produced. Outstanding work, recorded rather than done: a
+fresh 20-pair blind check on pairs the prompt has never seen.
+
+### And a prompt was edited in place
+
+`more_complete` was deleted from `v1.md` when the schema dropped it — but
+`dedupe_labels_v1rubric.json` was produced by the original text, so the file
+named `v1` no longer described what made those labels. Restored verbatim, and
+all three label sets now carry a `prompt_version` stamp instead of being
+identified by filename.
+
+### Why this entry exists
+
+Four of this branch's defects have now been the same shape: **a failure that
+reports success.** A comment describing degradation the code did not do; a
+`--dry-run` that spent money; a grouping that changed between identical runs; a
+similarity check that never ran and looked like a corpus with no duplicates. The
+grouping algorithm itself has survived two reviews without a correctness finding.
+
+The lesson is not "review the code" — it is that the fixes deserved the same
+suspicion as the original, and got less of it because they were written against
+a checklist under time pressure.
+
+## D60 — Papers are not deduped, and not linked to announcements (2026-09-05)
+
+D59 built near-duplicate collapse over announcements and GitHub releases. D57
+landed 47 papers as a second scored corpus under `p1`. The obvious next move is
+to point the first at the second. Measured over the live corpus, it should not
+be — and the reason is not "no payoff", it is that one half of it would do
+damage.
+
+`dedupe.assign` and `dedupe.embed` take a single `prompt_version` and the worker
+passes `v9`, so the 647 grouped rows are 380 releases plus 267 announcements and
+the 47 papers are outside grouping entirely. That stays true.
+
+### Papers do not duplicate each other, and the gate that would protect them is inert
+
+230 same-lab paper pairs. **Zero duplicates.** The twelve most title-similar
+pairs are all distinct documents and **not one is inside the 14-day window** —
+the closest same-lab neighbours are "Circuits Updates — May 2026" / "June 2026"
+(Jaccard 0.60, 29 days) and "GPT-5 System Card" / "o1 System Card" (Jaccard 0.75,
+363 days). Both are template-shaped titles for unrelated events, which is a
+failure mode the announcements corpus produces far less of.
+
+The decisive number is what survives the gates:
+
+| filter | pairs |
+|---|---:|
+| same lab | 230 |
+| same lab, within 14 days | 41 |
+| same lab, within 14 days, **same `event_type`** | **40** |
+
+**The event-type gate rejects one pair in forty-one.** D57 measured 34 of 47
+papers classifying `research_result`; on announcements that gate does the
+separating work before anything reaches the cosine band, and on papers it does
+almost nothing. The whole burden would fall on a threshold calibrated against a
+corpus where that filtering had already happened.
+
+And the 40 survivors are the hardest possible negatives: Anthropic's alignment
+blog publishing *Diffuse AI Control*, *Modular Pretraining*, *Agentic
+Misalignment*, *Fine-Tuned Lie Detectors* and *TASTE* inside one fortnight. Same
+lab, same window, same event type, same vocabulary, five different papers.
+Collapsing any two of those is a worse outcome than the duplicate rows the
+feature exists to remove.
+
+### Exactly one paper–announcement duplicate exists
+
+```
+7408  meta-ai  2026-06-29  [research_result] v9  From Brain Waves to Words: Brain2Qwerty…
+7672  meta-ai  2026-06-29  [research_result] p1  Accurate Decoding of Natural Sentences…
+```
+
+Meta's blog post and the paper it describes. Same lab, same day, same event
+type, both scored 0.0 / 5.6, neither notable — so collapsing them removes one
+row that nothing surfaces. Everything else the title and body scans returned was
+noise, matching on `openai`, `science`, `expanding`.
+
+Two details are worth keeping. `subjects(title)` returns `[]` for **both**:
+"Brain2Qwerty" is a novel product name with no version number, which is the gap
+`config/entities.yaml` documents about itself, so the identifier gate cannot make
+this link. Only the cosine band could. And the case that would actually pay — a
+technical report landing the same day as its launch post, the DeepSeek-V4 shape —
+is not in the corpus. V4's report is 2026-04-26; the V4 announcements are point
+releases in August, 109 days later.
+
+### What was rejected
+
+**A paper-specific similarity path with its own thresholds.** There is not one
+labelled paper pair. `cosine_high 0.80 / cosine_low 0.70` came from 82 labelled
+announcement pairs, and D59c is the record of what happens when a number from one
+distribution is reported against another. Calibrating properly means a labelling
+round, which is the cost of the feature, not a detail of it.
+
+**Widening `window_days` to catch the report-plus-launch case.** The window is
+already doing double duty. `stem()` folds family and version, so the DeepSeek-V4
+paper and `DeepSeek-V4-Pro GA Release` share a stem and are separated only by
+being 109 days apart — while the pair we *want* is the same signal at a shorter
+gap. Widening the window to catch the true case admits the false one, and it
+would also pull the Circuits Updates pair from 15 days of margin down to none.
+
+### Two things to do first if this is revisited
+
+Recorded so the next attempt does not start from scratch. Neither is queued.
+
+- **Widen the version filter to a set rather than build anything new.** `embed`,
+  `_rows` and `assign` take one version string; `article_groups.article_id` is
+  UNIQUE and no article carries two classifications (checked: zero), so one pass
+  spanning `{v9, p1}` is safe and gets the free exact and identifier passes
+  across both corpora. Embedding 47 papers costs about $0.00005 against the
+  $0.000682 the 647 already cost.
+- **An arXiv-identity pass, as a Gate 0 sibling.** All 15 arXiv papers carry a
+  version suffix (`2303.08774v6`, `2412.19437v2`) and all 15 base ids are
+  distinct today. But `raw_articles` is keyed on URL, so a re-harvest landing
+  `v7` creates a second row of the same paper. Deterministic, free, and it is the
+  one duplicate shape papers genuinely have.
+
+### Two product decisions that are not threshold questions
+
+Both bite the moment a paper folds behind an announcement, and neither was
+answered here.
+
+- **Anchoring.** `research_result` ceilings at 60.0 by design (D57) and
+  announcements do not, so on a mixed group the announcement wins the anchor on
+  score and the paper — the document carrying the numbers — is folded behind it.
+  D59d's per-audience fix picks the best member each rule accepts, but the
+  ranking is still score-only.
+- **The `docType` filter.** `api/queries.py:136` stamps `docType` per row and
+  `frontend/app/page.js:310` filters on it. Fold a paper behind an announcement
+  anchor and selecting **Papers** makes the group disappear. That failure mode
+  could not exist while grouping was announcements-only.
+
+### Consequence
+
+Papers stay ungrouped and unlinked. The corpus carries one uncollapsed duplicate
+pair, both rows scoring 0.0 / 5.6, and no known false merges. If a lab ships a
+technical report alongside its launch post the two will take separate rows, which
+is the cost of this decision and the trigger for reversing it.

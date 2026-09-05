@@ -408,6 +408,26 @@ because a scorer that quietly degrades is the failure this system exists to
 catch. If the monthly budget ever binds, `cadence.drift` is the first dial to
 turn.
 
+---
+
+## Release notes leg, first firing (2026-09-04)
+
+The releases leg ingests for free: GitHub's API is unmetered on an
+authenticated token, and the first firing's 8 sources cost **$0.0000**.
+
+| Workflow | Calls | USD | Note |
+|---|---:|---:|---|
+| Release ingestion, 8 orgs | ~400 REST | $0.0000 | free tier, 5,000/hour |
+| Release classification | not yet run | — | 380 documents queued |
+
+**380 documents are ingested and unclassified.** At the measured $0.028 per
+release that is roughly **$10.64**, against a `per_run_usd` ceiling of $3.00 --
+so the budget guard will spend $3, report the rest as `skipped_for_budget`, and
+catch up over about four firings. That is the guard working, but it is not what
+this leg is for, so `releases_watch` is now 10 per org rather than 40.
+
+**First-mention detection costs nothing at all.** It is one query over
+`raw_articles` and a regex; no LLM call is made, on any run.
 ## 2026-09-04 — v8 prompt probe, and the per-run ceiling raised
 
 | Workflow | Calls | $ | Note |
@@ -443,3 +463,122 @@ articles are pending. Month stands at $14.58 in `raw_costs`, and drift adds
 ~$0.75 nightly, so the re-run lands September near $41. That is inside the
 €100 project budget — which is now the only limit that matters, since the
 config ceiling no longer binds below it.
+
+## 2026-09-05 — v9 re-score after the OpenAI text recovery
+
+| | |
+|---|---|
+| articles | 259 |
+| failed | 0 |
+| cost | **$7.16** |
+| model | claude-sonnet-5 |
+| ceiling | `per_run_usd: 15.00` |
+
+Estimated $7.47 beforehand and it came in at $7.16. Worth recording why the
+estimate had to be rebuilt rather than taken from the log: the standing
+$0.025/article rate was measured when OpenAI — 59% of the corpus — was
+200-character summaries. Recovering that text made the corpus 2.3x larger in
+characters, so the old rate understated this run by about 15%.
+
+Not spent **against the local database**: ~$10 that a v9 re-score of the 380
+release documents would have cost. The rows were carried forward with a
+`_carried_forward` provenance marker instead (D56, D56a).
+
+Read that as local-only. `carry_forward_releases.py` writes to whichever
+database it is pointed at and is wired into no deploy path, so any environment
+whose Postgres has not had it run — and any `bitcap-db rebuild`, which drops the
+carried rows — pays the ~$10 on its first firing. The saving is real and it is
+not yet portable.
+
+## Duplicate collapse (D59) — 2026-09-05
+
+| Workflow | Model | Calls | Tokens | USD |
+|---|---|---:|---:|---:|
+| Embedding the corpus | `text-embedding-3-small` | 7 batches | 34,115 | $0.000682 |
+| Duplicate adjudication | `claude-sonnet-5` | 41 | ~62,000 | $0.1834 |
+| **Total** | | | | **$0.1841** |
+
+Adjudication was billed three times, not once: at the original thresholds, again
+after the labelling-order leak moved them (D59a), and again after the human
+spot-check moved them a second time (D59c). **A production run pays for one
+pass** — 19 pairs in the band, about six cents — and an incremental run pays for
+almost none, since only new pairs reach it. Calibration is a build cost, not a
+running one.
+
+647 articles embedded for **under a tenth of a cent**, because what is embedded
+is title + classifier summary rather than the article body — 37k tokens against
+roughly 700k for the full text, and the bodies are mostly site chrome that
+inflates similarity between any two pages from one lab.
+
+**A re-run costs nothing.** Vectors are cached on a hash of the embedded text,
+so an unchanged corpus embeds zero rows; verified live (647 embedded, then 0).
+The adjudication band is the only per-pair spend and only 12 of 4,412 candidate
+pairs fall inside it. Incremental runs adjudicate near zero.
+
+The one recurring cost to watch is a **prompt-version bump**: that rewrites
+every summary, which invalidates every cached vector. A v10 re-classification
+therefore carries this $0.0007 with it — negligible, but it is the reason the
+cache keys on the embedded text rather than on the article payload.
+
+EUR: *pending* — with the rest, at the card statement.
+
+---
+
+## 2026-09-05 — papers become a scored corpus (D57)
+
+| | |
+|---|---|
+| papers scored | 47 of 49 |
+| failed | 0 |
+| n=5 probes before the run | $0.100 |
+| **corpus run** | **$0.7537** |
+| model | claude-sonnet-5, prompt `p1` |
+| ceiling | `per_run_usd: 15.00`, unbound |
+
+Projected $1.20, came in at **$0.75**. The projection assumed abstracts near
+5,000 characters; the corpus mean is 2,011, because 30 of 47 are structured
+abstracts (arXiv `<blockquote>`, DeepMind's "Abstract" heading) rather than the
+longer lead sections the Anthropic and Meta pages give.
+
+**What the scope decision saved.** Full paper text was measured at ~59,200 input
+tokens per paper — mean 182,974 visible characters across five arXiv `/html/`
+pages, about 43x the mean article in this register. That run would have cost
+**~$11.30**, and the case for it was that it makes `text_source: full_text`
+literally true. It was rejected because every figure that made these papers
+worth scoring is in the abstract (D57), so the extra $10.55 buys ablations,
+appendices and bibliographies.
+
+**What the version decision saved.** Papers classify under their own `p1`
+version, so v9 and the 647 existing classifications were not touched. Sharing
+`PROMPT_VERSION` would have meant a v10 bump at ~$0.0258/article — **~$16.70** to
+re-ask an unchanged question of unchanged text.
+
+Not free, and worth naming: the five probe calls at $0.100 were `classify_one`
+against a scratch cache, so they wrote nothing to the register and are not in
+`raw_costs`. Same convention as the v8 probes above — eval calls, not pipeline
+spend. They are counted in the project total.
+
+**Running total across all workflows: ~$18.05.** Month-to-date in `raw_costs`
+stands at $29.29 against the `per_month_usd: 250.00` runaway guard, which as
+recorded on 2026-09-04 no longer binds below the €100 project budget.
+
+### Paper gold baseline (2026-09-05)
+
+`research/papers/grade_paper_gold.py`, 10 gold papers under `p1`,
+`claude-sonnet-5`, **uncached by design** — a grading run read through the
+result cache reports perfect agreement forever.
+
+| | |
+|---|---|
+| papers graded | 10 of 10, 0 errors |
+| **cost** | **$0.1538** (~$0.015/paper) |
+| result | `research/test_results/paper_gold_20260905T000000Z_p1.json` |
+
+Not pipeline spend and not in `raw_costs`: this is an eval call against a
+standalone script, the same convention as the v8 and `p1` probes above, and it
+is counted in the project total. **A one-off, not a nightly charge** — D58
+rejected the recurring drift check, so this is billed when `p1` or the
+classification model changes, not on a cadence. Had it run nightly it would have
+been ~$4.60/month on top of the announcement check's ~$22.
+
+**Running total across all workflows: ~$18.20.**

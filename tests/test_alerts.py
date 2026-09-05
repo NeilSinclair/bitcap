@@ -16,6 +16,7 @@ The silent failures these catch:
 """
 
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine, func, select
@@ -25,6 +26,7 @@ from app import models as m
 from app.db import create_all
 from app.pipeline import alerts
 from app.pipeline import state as state_mod
+from api.ops import unacknowledged_system_alerts
 from app.pipeline.budget import BudgetExceeded
 
 CONFIG = {
@@ -320,8 +322,8 @@ class TestDelivery:
         alerts.dispatch(session, candidates, CONFIG)
         stats = alerts.dispatch(session, candidates, CONFIG)
 
-        assert stats == {"raised": 0, "duplicate": 1, "delivered": 0,
-                         "suppressed": 0, "failed": 0}
+        assert stats == {"raised": 0, "duplicate": 1, "reopened": 0,
+                         "delivered": 0, "suppressed": 0, "failed": 0}
 
     def test_an_unknown_channel_raises_rather_than_dropping_alerts(self, session):
         with pytest.raises(ValueError, match="unknown alert channel"):
@@ -349,6 +351,164 @@ class TestTheRealConfig:
             assert key in config
         assert config["channel"] in alerts.CHANNELS
         assert config["content_band"] in alerts.BANDS
+
+
+class TestAcknowledgementCannotHideALiveFault:
+    """The safety property the clear-badge button rests on, driven through the
+    real rules rather than through hand-written dedupe keys.
+
+    The trap this exists to catch, which a first version of this feature walked
+    straight into. It is natural to argue "a still-broken source raises a new
+    alert on the next firing, so acknowledging can only clear a settled fault."
+    It is false, and the codebase says so two lines from the rule:
+    `source_down` keys on `last_success_at` *precisely because* it must not move
+    while an outage continues, so a week-long outage is one row. Nothing new is
+    ever written during the outage. Acknowledge once and the badge would stay
+    green through the entire incident — a system-failure alerter that goes quiet
+    exactly when the system is failing.
+
+    A test that hand-writes `source_down:x:1` and `source_down:x:2` "passes"
+    while the product is broken, because two different keys only ever occur when
+    the outage *ended and restarted*. These drive `evaluate` + `dispatch`, so the
+    keys are whatever the real rules produce.
+    """
+
+    def _down_since(self, session, since, failures=3):
+        st = state_mod.load(session, "announcements", "openai")
+        st.consecutive_failures = failures
+        st.last_error = "503 from the archive"
+        st.last_success_at = since
+        session.commit()
+        return st
+
+    def _fire(self, session):
+        return alerts.dispatch(
+            session, alerts.evaluate(session, CONFIG, rules=("source_down",)), CONFIG
+        )
+
+    def test_an_ongoing_outage_reopens_the_acknowledgement(self, session):
+        self._down_since(session, NOW - timedelta(days=1))
+        self._fire(session)
+        assert alerts.acknowledge(session, "system") == 1
+        session.commit()
+
+        # Still down. The rules regenerate the same episode key, so no new row
+        # is written -- the acknowledgement itself has to be withdrawn.
+        stats = self._fire(session)
+
+        assert stats["duplicate"] == 1 and stats["raised"] == 0
+        assert stats["reopened"] == 1
+        assert session.scalar(select(func.count()).select_from(m.Alert)) == 1
+        row = session.scalars(select(m.Alert)).one()
+        assert row.acknowledged_at is None, "a live outage must not stay acknowledged"
+
+    def test_a_settled_fault_stays_acknowledged(self, session):
+        """The other half. If recovery did not stick, the button does nothing
+        and the operator is back to a permanently red badge."""
+        st = self._down_since(session, NOW - timedelta(days=1))
+        self._fire(session)
+        alerts.acknowledge(session, "system")
+        session.commit()
+
+        st.consecutive_failures = 0                      # the source recovers
+        st.last_success_at = NOW
+        session.commit()
+        stats = self._fire(session)
+
+        assert stats["duplicate"] == 0 and stats["reopened"] == 0
+        assert session.scalars(select(m.Alert)).one().acknowledged_at is not None
+
+    def test_reopening_survives_repeated_firings(self, session):
+        """A nightly cron over a week-long outage. The badge must stay red for
+        every one of those firings, not just the first after acknowledging."""
+        st = self._down_since(session, NOW - timedelta(days=1))
+        self._fire(session)
+        alerts.acknowledge(session, "system")
+        session.commit()
+
+        for run in range(4):
+            st.consecutive_failures = 3 + run
+            session.commit()
+            self._fire(session)
+            assert session.scalars(select(m.Alert)).one().acknowledged_at is None, (
+                f"badge went green on firing {run + 2} of an ongoing outage"
+            )
+        assert session.scalar(select(func.count()).select_from(m.Alert)) == 1
+
+    def test_the_badge_reflects_a_reopen_however_old_the_row_is(self, session):
+        """The half a seven-day badge window silently swallowed.
+
+        Reopening does not move `created_at` — it cannot, that is the record of
+        when the fault was first raised. So while the badge counted
+        `created_at >= now - 7 days`, `dispatch` withdrew the acknowledgement
+        every night of a long outage and the reader saw nothing: probed at day
+        10, `reopened: 1` with the badge at 0. The safety property worked
+        perfectly and was invisible, at exactly the "week-long outage" length
+        the module docstring uses as its design case.
+        """
+        self._down_since(session, NOW - timedelta(days=20))
+        self._fire(session)
+        row = session.scalars(select(m.Alert)).one()
+        row.created_at = datetime.now(timezone.utc) - timedelta(days=10)
+        session.commit()
+        alerts.acknowledge(session, "system")
+        session.commit()
+        assert unacknowledged_system_alerts(session) == 0
+
+        self._fire(session)          # still down on day 10
+
+        assert unacknowledged_system_alerts(session) == 1, (
+            "an unresolved outage went green on the badge because the row was old"
+        )
+
+    def test_an_old_unacknowledged_alert_still_counts(self, session):
+        """Age is not evidence a fault was handled. Under the old window a real
+        failure nobody ever looked at dropped off the badge by itself after a
+        week."""
+        self._down_since(session, NOW - timedelta(days=30))
+        self._fire(session)
+        row = session.scalars(select(m.Alert)).one()
+        row.created_at = datetime.now(timezone.utc) - timedelta(days=60)
+        session.commit()
+
+        assert unacknowledged_system_alerts(session) == 1
+
+    def test_the_drift_rule_is_evaluated_every_firing(self, session):
+        """Reopening only happens for rules that actually run.
+
+        `dispatch` withdraws an acknowledgement when it *sees the candidate
+        again*, so a rule the firing skips cannot reopen anything. `source_down`
+        reads persisted `SourceState` and is evaluated every run, but `drift`
+        needs `context["drift"]`, which `worker` only supplies on its cadence.
+        At `cadence.drift: 1` there is no gap. Raise it to 7 — and the comments
+        in `config/pipeline.yaml` discuss drift measurement costing real money,
+        so it is the most likely value in that file to be raised — and
+        acknowledging a live drift alert greens the badge for six consecutive
+        nights of a below-floor classifier.
+
+        Pinned here rather than argued in a docstring, because the coupling is
+        invisible from either side: nothing in `alerts.py` mentions the cadence
+        and nothing in `pipeline.yaml` mentions the badge.
+        """
+        import yaml
+
+        config = yaml.safe_load(
+            (Path(__file__).parent.parent / "config" / "pipeline.yaml").read_text()
+        )
+        assert config["cadence"]["drift"] == 1, (
+            "raising cadence.drift means an acknowledged drift alert cannot "
+            "reopen on the firings that skip the rule — the badge would stay "
+            "green while the classifier is below its floor. Either keep it at "
+            "1, or make the badge count live conditions rather than rows."
+        )
+
+    def test_an_unacknowledged_duplicate_is_untouched(self, session):
+        """Reopening must be confined to acknowledged rows: touching the others
+        would rewrite `acknowledged_at` on every firing for no reason."""
+        self._down_since(session, NOW - timedelta(days=1))
+        self._fire(session)
+
+        assert self._fire(session)["reopened"] == 0
 
 
 class TestDedupeKeysSurviveARebuild:
@@ -537,3 +697,82 @@ class TestDriftMeasuringNothingIsAnIncident:
     def test_the_rule_is_registered(self):
         """A rule absent from RULES never runs, however well it is written."""
         assert "drift_unavailable" in alerts.RULES
+
+class TestDedupeUnavailable:
+    """The collapse swallows its own failures, so this is the only path out.
+
+    The silent failure: a dead `OPENAI_API_KEY` means the phase raises every
+    night, the exception is caught so the firing still reports `succeeded` and
+    exits 0, and the digest keeps folding against a grouping nobody is updating.
+    Every surface looks healthy. This is the shape `drift_unavailable` was built
+    for after the same thing went unnoticed for days (D45).
+    """
+
+    def test_a_healthy_phase_raises_nothing(self, session):
+        context = {"stats": {"dedupe": {"groups": 555, "collapsed": 92,
+                                        "articles": 647, "coverage": 1.0}}}
+        assert alerts.dedupe_unavailable(session, CONFIG, context) == []
+
+    def test_a_collapse_with_no_embeddings_is_reported(self, session):
+        """The failure with no other symptom, and the reason `coverage` exists.
+
+        An empty or model-mismatched vector cache makes gate 3 a no-op. Nothing
+        raises: every pair is skipped, the phase returns cleanly, and
+        `collapsed` is merely lower than it should be. Reproduced directly —
+        `assign` over two true duplicates with an empty cache returns two
+        groups, zero collapsed, and no error. Without this rule, swapping the
+        embedding model in config silently switches off half the feature and
+        every surface still looks healthy.
+        """
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.0,
+                                        "groups": 647, "collapsed": 0}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert found[0].kind == alerts.SYSTEM
+        assert "no-op" in found[0].subject
+
+    def test_partial_coverage_is_not_reported(self, session):
+        """A budget cut mid-embed leaves some vectors, which still works."""
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.4,
+                                        "groups": 600, "collapsed": 47}}}
+        assert alerts.dedupe_unavailable(session, CONFIG, context) == []
+
+    def test_a_phase_that_did_not_run_raises_nothing(self, session):
+        """Absent is not failed — a dry run does not alert."""
+        assert alerts.dedupe_unavailable(session, CONFIG, {"stats": {}}) == []
+
+    def test_a_failed_grouping_is_a_system_alert(self, session):
+        context = {"stats": {"dedupe": {"error": "connection refused"}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert found[0].kind == alerts.SYSTEM
+        assert "connection refused" in found[0].body
+
+    def test_an_embedding_outage_reports_itself_as_partial(self, session):
+        """The deterministic passes still ran, and the alert has to say so.
+
+        Reporting a degraded collapse the same way as a dead one sends somebody
+        looking for a broken feed when most of the volume is still being
+        collapsed correctly.
+        """
+        context = {"stats": {"dedupe": {"embed_error": "no api key", "groups": 500}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert "still ran" in found[0].body
+        assert found[0].dedupe_key.endswith("embed")
+
+    def test_one_outage_is_one_alert_not_one_a_night(self, session):
+        """Keyed on the failure kind, so a week of failures is a single row."""
+        context = {"stats": {"dedupe": {"error": "boom"}}}
+
+        first = alerts.dedupe_unavailable(session, CONFIG, context)
+        second = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert first[0].dedupe_key == second[0].dedupe_key
+

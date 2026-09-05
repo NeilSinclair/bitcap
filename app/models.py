@@ -171,6 +171,16 @@ class Alert(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
     sent_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
     delivery_error: Mapped[str | None]
+    # Acknowledgement, not deletion. The row stays in the history forever; what
+    # this clears is the header badge, which counts unacknowledged system alerts
+    # and so stays red until someone says they have seen them — there is no
+    # window, and nothing ages out on its own.
+    #
+    # Cleared again by `dispatch` when the rules regenerate this row's episode
+    # key, which is what stops an acknowledgement hiding a live fault. It has to
+    # work that way round: `dedupe_key` holds still while a fault continues, so
+    # an ongoing outage writes no new row to notice.
+    acknowledged_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
 
 
 
@@ -213,15 +223,45 @@ class Digest(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
+class FetchCache(Base):
+    """One HTTP response body, keyed by URL, so a re-run does not re-fetch it.
+
+    The papers harvesters each cached to disk under `research/docs/*_cache/`.
+    That works on a laptop and does nothing in the deployment, which has no
+    disk: every cron firing started cold and replayed ~70 requests at arXiv,
+    which is what got the egress IP rate-limited (docs/decisions.md D53).
+    Postgres is the only thing that persists there, so the cache lives here.
+
+    `expires_at` is the part that is not optional. A permanent cache of a
+    *discovery* URL — `au:"DeepSeek-AI"`, a paginated listing — would freeze
+    the register at whatever it knew on the first run and report success
+    forever after. Immutable content (a versioned arXiv id) stores NULL and is
+    never re-fetched; everything else carries a TTL. See
+    `research/papers/fetch_cache.py` for which is which and why.
+    """
+
+    __tablename__ = "fetch_cache"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(sa.Text, unique=True)
+    body: Mapped[str] = mapped_column(sa.Text)
+    fetched_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    # NULL means immutable: no expiry, never re-fetched.
+    expires_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+
+
 # Tables that survive a rebuild. Everything else in this schema is a pure
-# function of committed files, so dropping it loses nothing; these six are not
-# — run history, per-source failure counts, raised alerts, drift snapshots and
-# published digests are only ever produced by a run that actually happened.
-# `rebuild` dropping `pipeline_runs` was a real (if quiet) loss of history
-# before this existed.
+# function of committed files, so dropping it loses nothing; these eight are not
+# — run history, per-source failure counts, raised alerts, drift snapshots,
+# published digests, the fetch cache and the embedding cache are only ever
+# produced by a run that actually happened. `rebuild` dropping `pipeline_runs`
+# was a real (if quiet) loss of history before this existed, and dropping
+# `fetch_cache` would send the next run back to arXiv for everything it already
+# has. `raw_article_embeddings` is here on exactly that reasoning: dropping it
+# sends the next run back to OpenAI for every article it has already embedded.
 OPS_TABLES = frozenset(
     {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts",
-     "digests"}
+     "digests", "fetch_cache", "raw_article_embeddings"}
 )
 
 
@@ -256,6 +296,39 @@ class RawLlmResponse(Base):
     payload: Mapped[dict] = mapped_column(JSONVariant)
     loaded_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
     load_run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
+class RawArticleEmbedding(Base):
+    """One article's embedding vector, keyed by URL, so a re-run does not re-embed.
+
+    What is embedded is the article's title plus its classifier summary, never
+    the body. Bodies carry site chrome — two OpenAI pages both open "OpenAI
+    Research Products Business Developers Company Foundation Log in Try
+    ChatGPT" — which lifts the cosine between any two pages from one lab
+    regardless of what they say. The summary is already the model's distilled
+    statement of the article's claim, which is the thing a duplicate check
+    needs to compare.
+
+    `content_hash` is over that embedded text, not the article payload, so a
+    re-classification that rewrites the summary re-embeds and a re-run that
+    changes nothing does not. That is what makes the phase free on a re-run.
+
+    The vector is base64 of little-endian float32 rather than a JSON array:
+    1,536 floats per row is ~6 KB packed against ~30 KB as JSON text, and it
+    loads into numpy with one frombuffer rather than a parse. `dim` is stored
+    so a model swap that changes the width is caught rather than silently
+    producing a ragged matrix.
+    """
+
+    __tablename__ = "raw_article_embeddings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(unique=True)
+    content_hash: Mapped[str]
+    model: Mapped[str]
+    dim: Mapped[int]
+    vector: Mapped[str] = mapped_column(sa.Text)
+    created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
 
 
 class RawCost(Base):
@@ -666,6 +739,43 @@ class UnresolvedItem(Base):
     reason: Mapped[str]
     first_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
     last_seen_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
+class ArticleGroup(Base):
+    """One article's membership of a near-duplicate group.
+
+    Silver, not bronze: a pure function of the articles, their classifications
+    and the thresholds in `config/dedupe.yaml`, so it is rebuilt each run rather
+    than accumulated. The embeddings it is derived from are the expensive part
+    and those are cached separately.
+
+    Every article gets a row, including the ones that group with nothing — a
+    singleton is a group of one. That keeps the read path a join rather than an
+    outer join with a null branch, and makes "was this considered and left
+    alone" answerable rather than indistinguishable from "was never looked at".
+
+    `reason` is required for the same purpose a tag's `quote` is: a decision the
+    product acts on has to carry why. For an identifier match it names the
+    shared identifier; for an adjudicated pair it is the model's own sentence.
+
+    `is_anchor` marks the member that represents the group — highest score,
+    earliest on a tie. Deliberately not the most recent: on the GPT-6 Astra
+    cluster the most recent member is the API documentation page, and anchoring
+    there would have buried the launch announcement behind it.
+    """
+
+    __tablename__ = "article_groups"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    article_id: Mapped[int] = mapped_column(sa.ForeignKey("articles.id"), unique=True)
+    group_id: Mapped[str] = mapped_column(index=True)
+    is_anchor: Mapped[bool] = mapped_column(default=False)
+    group_size: Mapped[int] = mapped_column(default=1)
+    # exact | release_train | llm | embedding | singleton — in that order of
+    # trust, which is how `_evidence` picks one when several gates contributed.
+    method: Mapped[str]
+    reason: Mapped[str]
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 

@@ -17,7 +17,7 @@ The specific silent failures these tests catch:
   different questions and makes a version bump look like degradation.
 """
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 from sqlalchemy import create_engine
@@ -27,6 +27,7 @@ from sqlalchemy.pool import StaticPool
 from api import ops
 from app import models as m
 from app.db import create_all
+from app import digest as digest_mod
 from app.cli import PROMPT_VERSION
 from app.pipeline import drift as drift_mod
 
@@ -234,11 +235,149 @@ class TestEndpoints:
         """Silently returning everything would look like a working filter."""
         assert client.get("/api/alerts?kind=urgent").status_code == 400
 
+    def test_acknowledging_clears_the_badge_without_deleting_the_history(self, client, session):
+        """The badge is the only thing that gets the ops page opened.
+
+        Windowed alone, one transient outage held it red for seven days, and a
+        badge that is red on a healthy pipeline is a badge nobody reads. The
+        failure this catches is the obvious over-fix: clearing by deleting, so
+        the alert history — the record of what broke and when — quietly empties
+        every time someone tidies the badge.
+        """
+        session.add(m.Alert(kind="system", rule="source_down", severity="warning",
+                            subject="s", body="b", dedupe_key="k1"))
+        session.commit()
+        assert client.get("/api/health").json()["unacknowledged_system_alerts"] == 1
+
+        assert client.post("/api/alerts/acknowledge").json() == {
+            "acknowledged": 1, "kind": "system",
+        }
+
+        assert client.get("/api/health").json()["unacknowledged_system_alerts"] == 0
+        rows = client.get("/api/alerts?kind=system").json()
+        assert len(rows) == 1 and rows[0]["acknowledged_at"]
+
+    def test_acknowledging_leaves_content_alerts_alone(self, client, session):
+        """The two kinds are the distinction the alerting rests on. Clearing the
+        pipeline-health badge must not also mark the findings as seen."""
+        session.add_all([
+            m.Alert(kind="system", rule="source_down", severity="warning",
+                    subject="s", body="b", dedupe_key="k1"),
+            m.Alert(kind="content", rule="high_band_item", severity="info",
+                    subject="c", body="b", dedupe_key="k2"),
+        ])
+        session.commit()
+
+        client.post("/api/alerts/acknowledge")
+
+        assert client.get("/api/alerts?kind=content").json()[0]["acknowledged_at"] is None
+
+    def test_a_live_outage_turns_the_badge_red_again(self, client, session):
+        """What makes the button safe to expose, driven through the real rules.
+
+        An earlier version of this test hand-wrote two dedupe keys
+        (`source_down:mistral:1` and `...:2`) and asserted the badge reddened.
+        It passed while the product was broken: two different keys only occur
+        when an outage *ended and restarted*, so it tested a recovery, never the
+        dangerous case. `source_down` keys on `last_success_at`, which holds
+        still while a fault continues, so an ongoing outage writes no new row —
+        acknowledging once would have greened the badge for the whole incident.
+        Driving `evaluate` + `dispatch` uses whatever key the rule really emits.
+        """
+        from app.pipeline import alerts as alerts_mod
+        from app.pipeline import state as state_mod
+
+        st = state_mod.load(session, "announcements", "openai")
+        st.consecutive_failures = 5
+        st.last_success_at = datetime(2026, 8, 29, tzinfo=timezone.utc)
+        st.last_error = "503"
+        session.commit()
+
+        def firing():
+            alerts_mod.dispatch(
+                session,
+                alerts_mod.evaluate(session, alerts_mod.settings(), rules=("source_down",)),
+                alerts_mod.settings(),
+            )
+            session.commit()
+
+        firing()
+        assert client.get("/api/health").json()["unacknowledged_system_alerts"] == 1
+        client.post("/api/alerts/acknowledge")
+        assert client.get("/api/health").json()["unacknowledged_system_alerts"] == 0
+
+        firing()   # still down, and the rule emits the same episode key
+
+        assert client.get("/api/health").json()["unacknowledged_system_alerts"] == 1, (
+            "acknowledging silenced the badge for an outage that never ended"
+        )
+
+    def test_acknowledging_twice_is_a_no_op(self, client, session):
+        session.add(m.Alert(kind="system", rule="source_down", severity="warning",
+                            subject="s", body="b", dedupe_key="k1"))
+        session.commit()
+        client.post("/api/alerts/acknowledge")
+
+        assert client.post("/api/alerts/acknowledge").json()["acknowledged"] == 0
+
+    def test_content_alerts_cannot_be_acknowledged(self, client, session):
+        """Not exposed, because it could not work. Content rules regenerate
+        every firing, so acknowledging findings would be undone by the next cron
+        run; and the badge does not count them, so it would clear nothing."""
+        session.add(m.Alert(kind="content", rule="high_band_item", severity="info",
+                            subject="c", body="b", dedupe_key="k2"))
+        session.commit()
+
+        client.post("/api/alerts/acknowledge?kind=content")   # ignored, not honoured
+
+        assert client.get("/api/alerts?kind=content").json()[0]["acknowledged_at"] is None
+
     def test_health_endpoint(self, client, session):
         a_run(session)
         session.commit()
         body = client.get("/api/health").json()
         assert "spend" in body and "counts" in body
+
+    def test_the_health_payload_carries_both_badge_keys(self, client, session):
+        """The rename has to survive a staggered deploy.
+
+        `render.yaml` ships the API and the static frontend as two independent
+        services, so a blueprint sync leaves a window where one is live and the
+        other is not. A browser holding the old bundle reads
+        `recent_system_alerts`; drop that key and it gets `undefined`, falls
+        through its `?? 0`, and paints the Health badge green while system
+        alerts are outstanding — a false green on the one indicator this feature
+        exists to keep honest, and it fails in the safe-looking direction, which
+        is why nobody would notice.
+        """
+        session.add(m.Alert(kind="system", rule="source_down", severity="warning",
+                            subject="s", body="b", dedupe_key="k1"))
+        session.commit()
+        body = client.get("/api/health").json()
+
+        assert body["unacknowledged_system_alerts"] == 1
+        assert body["recent_system_alerts"] == 1, "old bundles would read a green badge"
+
+    def test_the_digest_preview_window_ends_now(self, client, session):
+        """The live view must not be a period behind, and one line delivers it.
+
+        `quantise=False` at the endpoint is the whole of the fix for "the digest
+        says 48 hours to the 3rd while I am reading it on the 5th": published
+        editions snap to a fixed grid, so the newest window a quantised preview
+        can name is the last one that *closed*. Nothing else asserts that line
+        exists, so deleting it would have gone green — the page would just go
+        quietly stale again, which is exactly how it shipped the first time.
+        """
+        body = client.get("/api/digests/preview?kind=investment").json()
+        start = datetime.fromisoformat(body["window_start"])
+        end = datetime.fromisoformat(body["window_end"])
+        now = datetime.now(timezone.utc)
+
+        assert abs((now - end).total_seconds()) < 300, (
+            f"preview window ends {end}, not ~now — the grid is back"
+        )
+        # And it is still the configured width, not an unbounded lookback.
+        assert (end - start) == timedelta(hours=digest_mod.settings()["window_hours"])
 
     def test_drift_endpoint(self, client, session):
         # The endpoint defaults to the current prompt version, so the snapshot

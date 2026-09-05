@@ -46,6 +46,14 @@ services:
           property: connectionString
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Embeddings for the duplicate collapse (D59). Anthropic has no
+      # embeddings API, so `providers.embed_openai` is the only path the cosine
+      # gate has, and it builds a bare `OpenAI()` which reads this name itself.
+      # Unset, the phase degrades to the free deterministic passes and reports
+      # `coverage: 0` — a half-working feature that deploys green, which is why
+      # the key is declared here rather than left to the dashboard.
+      - key: OPENAI_API_KEY
+        sync: false
       - key: GITHUB_TOKEN
         sync: false
       - key: ALERT_WEBHOOK_URL
@@ -84,6 +92,10 @@ services:
       # row `running`, which blocks every later run through the concurrency
       # guard until somebody clears it by hand.
       - key: ANTHROPIC_API_KEY
+        sync: false
+      # On both services for the same reason as ANTHROPIC_API_KEY: the pipeline
+      # tab starts firings from the API, and a firing runs the dedupe phase.
+      - key: OPENAI_API_KEY
         sync: false
       - key: GITHUB_TOKEN
         sync: false

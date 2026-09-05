@@ -132,6 +132,48 @@ empty-tag runs went 39% → 47%, slightly *worse*. Recorded because an agent tha
 `decisions.md` was disciplined; nothing here is *new* information, but reconstructing it
 took an hour that writing it as it happened would not have.
 
+
+---
+
+## 2026-09-05 — The corpus that quietly stopped being the corpus
+
+**Where the loop broke, and it was not the model.** A backfill recovered 141
+OpenAI articles from the Internet Archive on 09-02. The next fetch, one day
+later, overwrote every one of them — the fetcher rebuilds its output file from
+scratch, and the backfill was a separate script editing that same file
+afterwards. Nothing raised, nothing logged, 1,194 tests stayed green, and the
+lab that is 59% of the corpus was scored on its own meta descriptions for two
+days. **No agent did anything wrong; the two scripts were each correct alone.**
+
+**The tell was in the wrong direction.** The investigation started from "the v8
+prompt halved our alert volume, v8 is a regression". Checking rather than
+accepting it inverted the finding twice: first that v7's quotes did not resolve
+against the corpus (50% of them), which looked like mass hallucination; then
+that they *did* resolve against the archived text, so v7 was right and the
+corpus had degraded under it. Two wrong conclusions were stated to Neil before
+the third one held. Both were wrong in the confident direction.
+
+**The eval could not have caught it.** The gold set carries its own copy of each
+document, and 11 of the 20 were 2×–98× richer than what the pipeline actually
+scored — 13,283 characters against 249 on the same article. Gold agreement was
+measured on text production never sees, so the drift check would have kept
+reporting health indefinitely. **An eval that reads different bytes than the
+product is not an eval**, and nothing in the design said so out loud.
+
+**A defect introduced and caught inside the same session.** The first version of
+the fix trusted the archive's wildcard index. It missed `path-to-astra` — the
+substantive half of a frontier launch — which an exact lookup finds instantly.
+It surfaced only because Neil asked a question about a *different* thing (which
+channel the Astra articles arrive on) and checking it properly meant querying
+each URL directly. Nothing in the test suite would have found it: the fix was
+green, live-verified at n=1 on two articles, and wrong on a third.
+
+**What that says about verification at n=1.** Two articles recovered, both
+correct, was taken as proof the mechanism worked. It proved the mechanism worked
+*for articles the bulk query already found*. The n=1 rule catches "does this work
+at all" and not "does this work for the cases I did not sample" — and the second
+is where this project's failures have actually lived.
+
 ---
 
 ## `[NEIL]` — only you can answer these
@@ -146,3 +188,49 @@ Placeholders, not suggestions. Cut any that don't ring true.
 - What did you stop trusting the agents with over the twelve days?
 - The review agent found defects in three passes running. Would you have caught them by
   reading the diff yourself, and how long would it have taken?
+
+---
+
+## 2026-09-05 — papers: three wrong answers, each caught by being asked to show the number
+
+Operational picture of this leg: [`handover-papers.md`](handover-papers.md).
+Rationale: [`decisions.md`](decisions.md) §D57.
+
+**An estimate stated with the confidence of a measurement.** The plan costed
+full-text paper classification at ~$4 and recommended against it on other
+grounds. Neil's question was *"why do you think it will only cost ~$4?"* — and
+the honest answer was that the figure assumed papers fit inside the existing
+60,000-character budget, which nothing had checked. Measured, arXiv `/html/`
+full texts average 182,974 visible characters, ~59,200 tokens, about **43x the
+mean article**. Real cost $11.30. The recommendation happened to survive, but
+the argument it rested on did not, and it was reversed for a different reason.
+**The tell was not that the number looked wrong; it was that nobody had made it.**
+
+**A defect the tests could not have found, caught in a count.** Mistral's paper
+citations *are* its announcement URLs, and `raw_articles` is keyed on URL. The
+first landing overwrote two 13,000-character announcements with 2,000-character
+lead sections. No test failed, no exception raised — the only visible trace was
+`47 inserted, 2 updated` where 49 inserted was expected. This is the same class
+of failure as the OpenAI corpus overwrite above: two correct scripts, one shared
+output key, silent loss. **Twice now, in one project, and the second time was
+caught only because the first one taught us to read the counts.**
+
+**A claim about our own evaluation that was simply false.** Neil was told the
+announcement gold set was human-adjudicated. It is not — `gold_human/` was
+deleted on 2026-09-01, and the set is cross-model adjudication (Sonnet 5
+classifier, Opus 5 adjudicator). The error mattered because the papers set was
+about to be labelled by Fable 5, and the whole honesty constraint was *don't mix
+a model proxy with human ground truth without saying so*. The constraint was
+being applied against a baseline that was itself a proxy. Corrected in D57, in
+the builder docstring, and in a new `research/papers/test/README.md`.
+
+**The review agent found eleven defects and three of them were real.** Each of
+the three majors was verified the only way that counts — revert the fix, watch
+the test go red, reapply. The eight minors were mostly comments that had drifted
+from the code they described. `[NEIL]` — worth noting whether that ratio held
+across the other review passes.
+
+**What worked.** Committing the corpus as an artifact means `bitcap-db rebuild`
+reproduces 306 articles, 47 papers and 126 paper connections offline with no API
+key, which is the clone-to-running requirement and also the thing that made
+every one of the above recoverable in seconds rather than dollars.

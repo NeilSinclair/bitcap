@@ -18,12 +18,25 @@ from sqlalchemy import func, select
 from app import models as m
 from app.connect import connect as run_connect
 from app.db import drop_all, ensure_schema, get_engine, get_session, load_env
-from app.load_raw import load_articles, load_classifications, load_costs
+from app.load_raw import PAPERS as PAPERS_CORPUS_FILE
+from app.pipeline.registry import CORPUS_LABELS, PAPERS_CORPUS
+from app.load_raw import PAPER_SCORES_DIR, load_articles, load_classifications, load_costs
 from app.load_refs import load_refs
 from app.runs import tracked, watermarks
 from app.transform import transform
 
-PROMPT_VERSION = "v8"
+PROMPT_VERSION = "v9"
+
+# Papers are scored under their own version against prompts/paper_scoring/p1.md.
+# Sharing PROMPT_VERSION would force a v10 for every announcement too -- ~$16.70
+# to re-classify 647 rows that ask the same question of unchanged text -- so the
+# two corpora carry their own versions and the readers below take both.
+PAPER_PROMPT_VERSION = "p1"
+
+# Every reader of `classifications` must span both, and `connect` especially:
+# it deletes the whole table before rebuilding, so running it once per version
+# would leave only the second version's rows (app/connect.py).
+PROMPT_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION)
 
 
 _load_env = load_env  # kept as a name here; the implementation lives in app.db
@@ -49,21 +62,43 @@ def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
     """
     stats: dict = {}
     with tracked(session, kind, stats) as run:
+        versions = (prompt_version, PAPER_PROMPT_VERSION)
         stats["refs"] = load_refs(session)
         stats["articles"] = load_articles(session, run_id=run.id)
-        stats["classifications"] = load_classifications(session, prompt_version, run_id=run.id)
+        # The papers corpus is a committed artifact, so `rebuild` reproduces it
+        # without a network call. The leg still refreshes it on a live firing.
+        stats["paper_corpus"] = load_articles(session, path=PAPERS_CORPUS_FILE,
+                                              run_id=run.id)
+        stats["classifications"] = load_classifications(
+            session, prompt_version, run_id=run.id,
+            source_files=tuple(c for c in CORPUS_LABELS.values() if c != PAPERS_CORPUS))
+        stats["paper_classifications"] = load_classifications(
+            session, PAPER_PROMPT_VERSION, scores_dir=PAPER_SCORES_DIR, run_id=run.id,
+            source_files=(PAPERS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
+        # Once per version: `transform` scopes its delete by prompt_version, so
+        # the two derivations are additive. `connect` is not -- it rebuilds the
+        # whole table -- so it is called once, spanning both.
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
-        stats["connections"] = run_connect(session, prompt_version, run_id=run.id)
+        stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
+        stats["connections"] = run_connect(session, versions, run_id=run.id)
         run.cost_usd = costs["new_usd"]
         run.watermarks = watermarks(session)
 
 
 def cmd_connect(session, prompt_version: str) -> None:
-    """Rebuild connections under a tracked run."""
+    """Rebuild connections under a tracked run.
+
+    Spans the announcement version *and* the paper version, always. `connect`
+    deletes the whole table before rebuilding, so passing one version here would
+    delete every paper's holding connections and rebuild announcements only --
+    silently, leaving the UI showing papers with an empty impact row and the
+    investment digest missing every paper on the holding route.
+    """
     stats: dict = {}
     with tracked(session, "connect", stats) as run:
-        stats["connections"] = run_connect(session, prompt_version, run_id=run.id)
+        stats["connections"] = run_connect(
+            session, (prompt_version, PAPER_PROMPT_VERSION), run_id=run.id)
         run.watermarks = watermarks(session)
 
 

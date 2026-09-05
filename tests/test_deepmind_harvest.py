@@ -17,6 +17,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "research" / "papers"))
 
 import deepmind_harvest as dh
+import fetch_cache as fc
 from deepmind_harvest import Paper, aggregate, detail_page_info
 
 
@@ -163,13 +164,21 @@ class TestFetchRetry:
     """A live run against arXiv's /html/ endpoint hit a transient 403
     mid-batch and crashed the whole run -- fetch() must retry with backoff
     before giving up, same as fetch_announcements.py's fetch().
+
+    The retry itself now lives in `fetch_cache.py` and is shared by all five
+    harvesters that touch arXiv (docs/decisions.md D53); its own behaviour is
+    covered in tests/test_fetch_cache.py. These two stay here because they
+    assert the property *this* harvester needs and once lost: `dh.fetch` still
+    retries rather than dying on the first 403.
     """
 
     def test_retries_then_succeeds(self, tmp_path, monkeypatch):
         import urllib.error
 
         monkeypatch.setattr(dh, "CACHE", tmp_path)
-        monkeypatch.setattr(dh.time, "sleep", lambda s: None)
+        monkeypatch.setattr(fc.time, "sleep", lambda s: None)
+        monkeypatch.setattr(fc, "db_get", lambda url: None)
+        monkeypatch.setattr(fc, "db_put", lambda url, body, expires: False)
 
         calls = {"n": 0}
 
@@ -177,19 +186,13 @@ class TestFetchRetry:
             def read(self):
                 return b"ok body"
 
-            def __enter__(self):
-                return self
-
-            def __exit__(self, *a):
-                return False
-
-        def fake_urlopen(req, timeout=60):
+        def fake_urlopen(req, timeout=90):
             calls["n"] += 1
             if calls["n"] < 3:
                 raise urllib.error.HTTPError(req.full_url, 403, "Forbidden", {}, None)
             return FakeResponse()
 
-        monkeypatch.setattr(dh.urllib.request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(fc.urllib.request, "urlopen", fake_urlopen)
         assert dh.fetch("https://arxiv.org/html/9999.99999") == "ok body"
         assert calls["n"] == 3
 
@@ -197,12 +200,14 @@ class TestFetchRetry:
         import urllib.error
 
         monkeypatch.setattr(dh, "CACHE", tmp_path)
-        monkeypatch.setattr(dh.time, "sleep", lambda s: None)
+        monkeypatch.setattr(fc.time, "sleep", lambda s: None)
+        monkeypatch.setattr(fc, "db_get", lambda url: None)
+        monkeypatch.setattr(fc, "db_put", lambda url, body, expires: False)
 
-        def always_fails(req, timeout=60):
+        def always_fails(req, timeout=90):
             raise urllib.error.HTTPError(req.full_url, 403, "Forbidden", {}, None)
 
-        monkeypatch.setattr(dh.urllib.request, "urlopen", always_fails)
+        monkeypatch.setattr(fc.urllib.request, "urlopen", always_fails)
         with pytest.raises(RuntimeError):
             dh.fetch("https://arxiv.org/html/9999.99999", retries=2)
 

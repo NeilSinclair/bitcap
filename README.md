@@ -28,7 +28,7 @@ Where to look first, in the order the brief asks its questions:
 | Page | Answers |
 |---|---|
 | `/digest` | Did it surface something worth knowing, and what did it suppress to get there |
-| `/` | The whole scored corpus, filterable by band, lab and holding |
+| `/` | The whole scored corpus — announcements and papers — filterable by band, lab, source and holding |
 | `/register` | Who is tracked — and the four possible researcher moves in it |
 | `/ops` | Can any of the above be trusted: run history, source health, spend, classifier drift |
 | `/pipeline` | Run it yourself |
@@ -55,8 +55,9 @@ terminal — the API, the frontend, a fresh `bitcap-db` invocation — picks it 
 the same way, instead of only the shell that ran this command.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
-announcement corpus (June–Aug 2026), 26 holdings with their mechanism and
-lab-exposure edges, and the full cost log — and derives the clean tables and
+announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
+six labs, 2023–2026), 26 holdings with their mechanism and lab-exposure edges,
+and the full cost log — and derives the clean tables and
 joins. It is always safe to re-run.
 
 It is safe because everything it drops is derived from files in the repo. The
@@ -72,7 +73,16 @@ uv run alembic current         # what revision is it on
 
 `bitcap-db rebuild`/`load` call this for you. A database created before
 migrations existed is stamped automatically on first use, so no manual step is
-needed on an existing clone.
+needed on an existing clone — *provided its columns already match the models*.
+`create_all` can add a missing table but not a missing column, so a database
+that predates a column-only migration would otherwise be stamped `head` while
+structurally behind, and no later `upgrade` would ever fix it. That case now
+fails loudly with `SchemaDrift` instead, naming the recovery:
+
+```bash
+uv run alembic stamp <revision it actually matches>
+uv run alembic upgrade head
+```
 
 ## What the database holds
 
@@ -130,6 +140,7 @@ Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yam
 | Setting | Why it exists |
 |---|---|
 | `budget.per_run_usd` / `per_month_usd` | A cron making LLM calls with no ceiling is the one thing that can hurt on a fixed budget. Exceeding it stops classification; ingested data still lands. |
+| `enabled` | The kill switch, one line per leg. `false` means not fetched, not landed, and not classified — including rows the leg ingested on earlier firings, which stay in bronze and would otherwise keep costing money. It outranks `cadence` and an explicit `--legs`. A leg absent from the map is on. |
 | `cadence` | Per leg. A rolling 12-month GitHub window barely moves in a day; re-harvesting nightly is the most expensive thing here in wall-clock. Firing 1 runs everything. |
 | `alerts.source_down_runs` | One firing down and back up is noise. N in a row is an incident. |
 | `alerts.max_deliveries_per_run` | Everything raised is recorded; only delivery is capped, so a first run over an existing corpus does not fire 135 notifications. |
@@ -160,7 +171,7 @@ for the same answer:
 
 | Cache | Where | A cold start... |
 |---|---|---|
-| Classifier output | `raw_classifications`, keyed on prompt version | never re-classifies |
+| Classifier output | `raw_llm_responses`, keyed on prompt version — `v9` for announcements, `p1` for papers | never re-classifies |
 | GitHub commit history | `raw_github_repos`, keyed on `pushed_at` | walks only repos that were pushed to |
 | Fetched pages, extracted bylines | `research/docs/` on disk | re-fetches and re-extracts |
 
@@ -179,6 +190,7 @@ Secrets, none of which are in the repo:
 |---|---|
 | `DATABASE_URL` | everything |
 | `ANTHROPIC_API_KEY` | classification and drift. Needed on **both** `bitcap-worker` and `bitcap-api` — the pipeline tab runs firings from the API service, and without it the gold-set check measures nothing (D45) |
+| `OPENAI_API_KEY` | embeddings for the duplicate collapse. On **both** services, same reason as above. Unset, the phase still runs its free passes but the cosine gate never fires and `dedupe.coverage` is 0 — the deploy goes green with half the feature off |
 | `GITHUB_TOKEN` | the GitHub leg |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
 | `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the sign-in — see below |
@@ -299,4 +311,7 @@ counter that decides when the GitHub leg is due.
   the single-account gate (`api/auth.py`), and the manual trigger (`api/pipeline.py`)
 - `frontend/` — Next.js app (investment/AI-team dashboards, insight detail view)
 - `docs/` — planning, running decision log, cost ledger
-- `tests/` — `uv run pytest`
+- `tests/` — `uv run pytest`. Two display smoke tests sit outside it and run
+  under plain node, because there is no browser in CI and a rendering bug in
+  either is invisible until someone opens the page:
+  `node tests/smoke_report.js` and `node tests/smoke_digest_window.js`

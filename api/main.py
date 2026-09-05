@@ -41,7 +41,7 @@ from api.queries import build_items
 from app import digest as digest_mod
 from app import people as people_mod
 from app import models as m
-from app.cli import PROMPT_VERSION
+from app.cli import PROMPT_VERSION, PROMPT_VERSIONS
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import drift as drift_mod
@@ -131,10 +131,14 @@ app.include_router(pipeline_api.build_router(engine))
 
 @app.get("/api/items", dependencies=[Depends(require_auth)])
 def list_items() -> list[dict]:
-    """Every article with a classification for PROMPT_VERSION, tags and connections inline."""
+    """Every classified document, tags and connections inline.
+
+    Spans both prompt versions: announcements at PROMPT_VERSION and papers at
+    PAPER_PROMPT_VERSION reach one list, distinguished by each item's `docType`.
+    """
     session = get_session(engine)
     try:
-        return build_items(session, PROMPT_VERSION)
+        return build_items(session, PROMPT_VERSIONS)
     finally:
         session.close()
 
@@ -192,6 +196,37 @@ def alert_feed(kind: str | None = None, limit: int = 50) -> list[dict]:
         session.close()
 
 
+@app.post("/api/alerts/acknowledge", dependencies=[Depends(require_auth)])
+def acknowledge_alerts() -> dict:
+    """Clear the health badge by marking outstanding alerts as seen.
+
+    Nothing is deleted — the alert history below the button is unchanged, each
+    acknowledged row still listed and now marked. What resets is the badge,
+    which counts *unacknowledged* system alerts (api/ops.py).
+
+    Safe to expose because acknowledgement is withdrawn automatically: an
+    unresolved fault makes the rules emit the same episode key on the next
+    firing, and `alerts.dispatch` clears `acknowledged_at` when it sees one.
+    The badge therefore reddens again on its own for anything still broken —
+    it does not depend on the operator judging what has settled.
+
+    System alerts only, and deliberately not parameterised.
+    `alerts.acknowledge` takes a `kind` because the column is general, but there
+    is nothing coherent to expose here for `content`: the badge does not count
+    content alerts, and the content rules regenerate their candidates every
+    firing, so acknowledging the findings would achieve nothing except having
+    the next cron run reopen all of them. A parameter whose only effect is to be
+    undone is worse than no parameter.
+    """
+    session = get_session(engine)
+    try:
+        count = alerts_mod.acknowledge(session, kind="system")
+        session.commit()
+        return {"acknowledged": count, "kind": "system"}
+    finally:
+        session.close()
+
+
 @app.get("/api/digests", dependencies=[Depends(require_auth)])
 def digest_feed(kind: str | None = None, limit: int = 20) -> list[dict]:
     """Published digests, newest first — the brief's "read past reports".
@@ -220,6 +255,13 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
     shows the current window rather than an empty page. `hours` overrides the
     configured window for a reader who wants to widen it; the published edition
     always uses the configured value.
+
+    Rolling, not quantised (`quantise=False`). Published editions snap to a
+    fixed grid so re-runs update one edition instead of issuing several; the
+    preview writes nothing, so it has no such constraint, and the grid cost it
+    real freshness — the newest day in a quantised preview is always the last
+    one that *closed*, so the live view claimed "the 48 hours to the 3rd" while
+    the reader was looking at it on the 5th. The rolling window ends now.
     """
     if kind not in digest_mod.KINDS:
         raise HTTPException(
@@ -232,7 +274,8 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
     session = get_session(engine)
     try:
         built = digest_mod.build(
-            session, kind, PROMPT_VERSION, datetime.now(timezone.utc), config
+            session, kind, PROMPT_VERSIONS, datetime.now(timezone.utc), config,
+            quantise=False,
         )
         return {
             **built,

@@ -48,18 +48,21 @@ from sqlalchemy.exc import IntegrityError
 
 from app import digest as digest_mod
 from app import models as m
-from app.cli import PROMPT_VERSION
+from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
-from app.load_raw import load_articles, load_classifications, load_costs
+from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
+                          load_classifications, load_costs)
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
+from app.pipeline import dedupe as dedupe_mod
 from app.pipeline import drift as drift_mod
 from app.pipeline import register as register_mod
 from app.pipeline.budget import Budget
 from app.pipeline.classify import budget_breach, classify_new
 from app.pipeline.orchestrator import ingest
-from app.pipeline.registry import LEGS, load_sources
+from app.pipeline import adapters
+from app.pipeline.registry import CORPUS_LABELS, LEGS, PAPERS_CORPUS, load_sources
 from app.pipeline.sink import merge_announcements
 from app.runs import tracked, watermarks
 from app.transform import transform
@@ -95,11 +98,55 @@ def firing_number(session: Session) -> int:
     return int(done or 0) + 1
 
 
+
+def live_legs(config: dict) -> tuple[str, ...]:
+    """Legs not switched off in config, ignoring cadence.
+
+    Cadence says *when* a leg runs; this says whether it exists at all. The
+    landing and classification phases need the second question: a leg that is
+    merely not due this firing still has rows in bronze that should be derived
+    and classified as usual.
+
+    Args:
+        config: Parsed pipeline config.
+
+    Returns:
+        Leg names, in registry order.
+    """
+    enabled = config.get("enabled", {})
+    return tuple(leg for leg in LEGS if enabled.get(leg, True))
+
+
+def dead_corpora(config: dict) -> tuple[str, ...]:
+    """`raw_articles.source_file` values belonging to legs switched off.
+
+    A leg's rows outlive the firing that fetched them, so stopping the fetch
+    does nothing about the corpus already in bronze. Without this the kill
+    switch stops ingestion and nothing else: the operator who switched the leg
+    off after looking at its output still pays to classify that output on the
+    next firing.
+
+    Args:
+        config: Parsed pipeline config.
+
+    Returns:
+        Source-file labels to exclude from the classification work list.
+    """
+    live = set(live_legs(config))
+    return tuple(label for leg, label in CORPUS_LABELS.items() if leg not in live)
+
+
 def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> tuple[str, ...]:
     """Which legs run on this firing.
 
     ``(firing - 1) % cadence == 0``, so firing 1 runs every leg — a fresh
     deployment does a full sweep rather than waiting six days for GitHub.
+
+    `enabled: false` outranks both cadence and an explicit `--legs`. A leg
+    switched off must stay off however the worker is invoked — including from
+    the manual trigger and including firing 1's full sweep — or the switch is
+    only a suggestion, and the reason to reach for it is usually that the leg
+    is producing something wrong.
 
     Args:
         firing: 1-based firing number.
@@ -115,12 +162,41 @@ def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> 
     Returns:
         Leg names, in registry order.
     """
+    live = live_legs(config)
     if only is not None:
-        return tuple(leg for leg in LEGS if leg in only)
+        return tuple(leg for leg in live if leg in only)
     cadence = config.get("cadence", {})
     return tuple(
-        leg for leg in LEGS if (firing - 1) % max(1, int(cadence.get(leg, 1))) == 0
+        leg for leg in live if (firing - 1) % max(1, int(cadence.get(leg, 1))) == 0
     )
+
+
+def _sweep_dedupe_cost(session: Session, run_id: int) -> float:
+    """Carry the dedupe phase's cost records into `raw_costs` for *this* run.
+
+    `_etl`'s `load_costs` is the single place a firing's spend is totalled, and
+    it has already run by the time this phase spends anything. Left alone, the
+    records sit in the append-only log until the *next* firing loads them —
+    which reports the money under a run that did not spend it, and leaves the
+    run that did reporting zero.
+
+    So the log is swept a second time. `load_costs` upserts on `(url, at)`, so
+    the second sweep inserts only what this phase just wrote and re-reading the
+    earlier records costs nothing. One ledger, one place cost is counted, and
+    the attribution follows the money.
+
+    Args:
+        session: Open session; the caller commits.
+        run_id: Run to attribute the newly-loaded records to.
+
+    Returns:
+        USD newly loaded. **The caller discards this and adds the phase's own
+        measured figure instead**, and must keep doing so: the sweep also picks
+        up any record an earlier firing left unloaded, which charged a dry run
+        $31 of unrelated history the first time this was written. The return is
+        here for logging, not for arithmetic.
+    """
+    return float(load_costs(session, run_id=run_id).get("new_usd") or 0.0)
 
 
 def ingest_cost(session: Session, run_id: int) -> float:
@@ -148,10 +224,21 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         stats["refs"] = load_refs(session)
         # `load_articles` is deliberately absent: phase 2 already put this
         # firing's articles into bronze so the classifier could see them.
-        stats["classifications"] = load_classifications(session, prompt_version, run_id=run.id)
+        stats["classifications"] = load_classifications(
+            session, prompt_version, run_id=run.id,
+            source_files=tuple(c for c in CORPUS_LABELS.values() if c != PAPERS_CORPUS))
+        stats["paper_classifications"] = load_classifications(
+            session, PAPER_PROMPT_VERSION, scores_dir=PAPER_SCORES_DIR, run_id=run.id,
+            source_files=(PAPERS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
+        # Once per version: `transform` scopes its delete by prompt_version, so
+        # the derivations are additive. `connect` rebuilds the whole table, so
+        # it runs once across both -- calling it per version would leave only
+        # the last one's rows.
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
-        stats["connections"] = run_connect(session, prompt_version, run_id=run.id)
+        stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
+        stats["connections"] = run_connect(
+            session, (prompt_version, PAPER_PROMPT_VERSION), run_id=run.id)
         # Assign, never accumulate: `new_usd` is this run's whole delta on the
         # shared cost log, covering classification and drift alike. Adding it to
         # a figure those stages had already contributed double-counted them.
@@ -281,6 +368,12 @@ def _phases(
     note("landing")
     if "announcements" in chosen:
         stats["corpus"] = merge_announcements(report.items_for("announcements"))
+    # Releases are deliberately absent here. They go into bronze inside their
+    # own adapter, in the same transaction that advances the cursor gating
+    # every future fetch — landing them a phase later would let a failure in
+    # between lose them permanently and silently (docs/decisions.md D52).
+    if "releases" in chosen:
+        stats["releases"] = {"landed_in": "adapter"}
     # Into bronze here, not in the ETL. `classify_new` picks its work list from
     # `raw_articles` (a LEFT JOIN against `raw_llm_responses`), so while this
     # ran in phase 5 the classifier in phase 3 could only ever see articles
@@ -290,6 +383,34 @@ def _phases(
     # (docs/decisions.md D38).
     stats["articles"] = load_articles(session, run_id=run.id)
     stats["register"] = register_mod.load_report(session, report, run.id)
+    # Papers land twice, for two different purposes: `load_report` above wrote
+    # their bylines into the people register, and this writes one
+    # abstract-shaped article each into the same bronze table announcements use,
+    # so the scoring leg is one more corpus rather than a second pipeline.
+    # Ordered after `load_report` because it reads the `raw_papers` rows that
+    # writes.
+    if "papers" in chosen:
+        records, unresolved = adapters.fetch_paper_abstracts(session)
+        stats["paper_corpus"] = load_article_records(
+            session, records, PAPERS_CORPUS, run_id=run.id)
+        stats["paper_corpus"]["unresolved"] = len(unresolved)
+        # Per (lab, configured, actual): the shape `extraction_downgraded` reads,
+        # and the shape a human reads in the run stats without it.
+        seen: dict[tuple[str, str, str], int] = {}
+        for record in records:
+            key = (record["lab"], record["extraction_configured"], record["extraction"])
+            seen[key] = seen.get(key, 0) + 1
+        extraction = [{"lab": lab, "configured": cfg, "actual": act, "n": n}
+                      for (lab, cfg, act), n in sorted(seen.items())]
+        stats["paper_corpus"]["extraction"] = extraction
+        # Per lab, because `unresolved_items` is keyed on (leg, source_id,
+        # identifier): one lab's page shape breaking must be visible as that
+        # lab's problem, not as an undifferentiated papers failure.
+        by_lab: dict[str, list] = {}
+        for item in unresolved:
+            by_lab.setdefault(item["lab"], []).append(item)
+        for lab, items in by_lab.items():
+            register_mod.load_unresolved(session, "papers", lab, items, run.id)
     session.commit()
 
     # 3. Classify what is new, under a ceiling.
@@ -300,8 +421,28 @@ def _phases(
     # the same money twice.
     if spend:
         note("classify")
-        stats["classify"] = classify_new(session, prompt_version, budget, config_path=config_path)
+        stats["classify"] = classify_new(
+            session, prompt_version, budget, config_path=config_path,
+            # A leg switched off must stop costing money, not just
+            # stop fetching: its rows are already in bronze from
+            # earlier firings and would otherwise be classified.
+            #
+            # Papers are excluded rather than announcements being named
+            # explicitly, so a future article-producing leg is picked up here by
+            # default instead of being silently skipped. They are not skipped —
+            # they are scored below, under their own prompt.
+            exclude_source_files=dead_corpora(config) + (PAPERS_CORPUS,))
         session.commit()
+
+        # Papers, under their own prompt version and the same ceiling. Named
+        # explicitly here, the opposite way round: this stage must never widen
+        # to a corpus the paper prompt was not written for.
+        if "papers" in chosen:
+            note("classify papers")
+            stats["classify_papers"] = classify_new(
+                session, PAPER_PROMPT_VERSION, budget, config_path=config_path,
+                include_source_files=(PAPERS_CORPUS,), corpus="papers")
+            session.commit()
 
     # 4. Is the scorer still agreeing with itself? Before the ETL so its spend
     #    is in the log by the time load_costs reads it.
@@ -334,6 +475,70 @@ def _phases(
         snapshot_id = drift_mod.record(session, drift_metrics, prompt_version, run.id).id
         session.commit()
 
+    # 5b. Collapse near-duplicates into one row per event.
+    #
+    #     Between the ETL and the digest because it needs `event_type` and
+    #     `summary` (so after `transform`) and the digest selects what surfaces
+    #     (so before it). Deliberately NOT inside `_etl`: that is one
+    #     transaction and this phase calls two external APIs, so an OpenAI
+    #     timeout there would roll back the whole rebuild.
+    #
+    #     The two halves fail independently, and that is the whole point of
+    #     splitting them. `embed` is the only part that needs a provider; the
+    #     exact pass and the release trains inside `assign` are deterministic
+    #     and account for most of the collapse by volume, so a dead OpenAI key
+    #     degrades the feature rather than switching it off. Running them under
+    #     one `try` made that claim false — `assign` was never reached.
+    #
+    #     `_etl`'s `load_costs` has already run by this point, so a record this
+    #     phase appends to the shared log would otherwise be picked up by the
+    #     *next* firing and charged to a run that did not spend it. The log is
+    #     therefore swept a second time here, into `raw_costs` under this run.
+    #     Nothing is written to `run_sources` — `budget.month_to_date` sums both
+    #     and relies on them being disjoint.
+    note("dedupe")
+    dedupe_stats: dict = {}
+    if spend:
+        try:
+            embedded = dedupe_mod.embed(session, prompt_version, budget=budget)
+            dedupe_stats.update(embedded=embedded["embedded"], usd=embedded["usd"])
+        except Exception as error:  # noqa: BLE001 - a provider outage is not a failed run
+            session.rollback()
+            dedupe_stats["embed_error"] = str(error)[:500]
+    else:
+        # --dry-run exercises the shape for free. Passing `budget=None` would
+        # not do it: to `embed` and `adjudicate` that means *unlimited*, not
+        # *do not call*.
+        dedupe_stats["embedded"] = 0
+
+    try:
+        grouped = dedupe_mod.assign(
+            session, prompt_version, run_id=run.id,
+            budget=budget if spend else None, adjudicate_pairs=spend,
+        )
+        dedupe_stats.update(grouped)
+        dedupe_stats["usd"] = dedupe_stats.get("usd", 0.0) + grouped.get("usd", 0.0)
+    except Exception as error:  # noqa: BLE001 - a duplicate row must not fail a run
+        session.rollback()
+        dedupe_stats["error"] = str(error)[:500]
+
+    stats["dedupe"] = dedupe_stats
+    if spend:
+        # Swept whenever the phase was *allowed* to spend, not only when it
+        # reported spending. `embed` and `assign` return their usd figure on the
+        # success path only, so a batch that was billed and then timed out
+        # leaves money in the log with no figure attached — and gating the sweep
+        # on that figure sent exactly those records to the next firing, which is
+        # the misattribution this function exists to prevent.
+        #
+        # The run total still takes the phase's own measured figure rather than
+        # the sweep's return, because the sweep also picks up anything an
+        # earlier firing left unloaded. Charging that here cost a dry run $31 of
+        # somebody else's history.
+        _sweep_dedupe_cost(session, run.id)
+        run.cost_usd = (run.cost_usd or 0.0) + float(dedupe_stats.get("usd") or 0.0)
+    session.commit()
+
     # 6. Publish both audiences' digests for the window this firing closes.
     #    After the ETL because the investment cut reads `connections`, which the
     #    ETL rebuilds; free and deterministic, so it runs on every firing
@@ -341,7 +546,8 @@ def _phases(
     #    a re-run updates the edition it already published rather than issuing a
     #    second one for the same period.
     note("digest")
-    published = digest_mod.publish(session, prompt_version, run.started_at, run_id=run.id)
+    published = digest_mod.publish(
+        session, (prompt_version, PAPER_PROMPT_VERSION), run.started_at, run_id=run.id)
     stats["digest"] = {d.kind: d.stats for d in published}
     session.commit()
 
@@ -359,6 +565,11 @@ def _phases(
         "drift": drift_metrics,
         "snapshot_id": snapshot_id,
         "skipped_for_budget": stats.get("classify", {}).get("skipped_for_budget"),
+        # `dedupe_unavailable` reads the phase's own stats: it swallows its
+        # exceptions so a provider outage does not fail the firing, which means
+        # this is the only path by which the failure is ever reported.
+        "stats": stats,
+        "paper_extraction": stats.get("paper_corpus", {}).get("extraction"),
     }
     stats["alerts"] = alerts_mod.dispatch(
         session,

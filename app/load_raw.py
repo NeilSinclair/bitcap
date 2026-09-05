@@ -21,7 +21,15 @@ from app.models import utcnow
 
 ROOT = Path(__file__).parent.parent
 ARTICLES = ROOT / "research" / "docs" / "announcements.json"
+# Committed like the announcements corpus, and for the same reason: `rebuild`
+# must reproduce the whole register from files in the repo, with no API key and
+# no network. Without it a fresh clone has no papers at all -- the leg's rows
+# only ever reached bronze from a live firing.
+PAPERS = ROOT / "research" / "docs" / "papers_corpus.json"
 SCORES_DIR = ROOT / "research" / "docs" / "announcement_scores"
+# Papers are cached under their own prompt version, so their per-call
+# provenance lives in its own tree (score_announcements.PAPERS).
+PAPER_SCORES_DIR = ROOT / "research" / "docs" / "paper_scores"
 COSTS = ROOT / "research" / "docs" / "announcement_cost.json"
 
 
@@ -55,6 +63,29 @@ def load_articles(session: Session, path: Path = ARTICLES,
         Counts: inserted / updated / unchanged.
     """
     records = json.loads(path.read_text())[:limit]
+    source = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else path.name
+    return load_article_records(session, records, source, run_id)
+
+
+def load_article_records(session: Session, records: list[dict], source_file: str,
+                         run_id: int | None = None) -> dict:
+    """Upsert article records into raw_articles.
+
+    Split out of :func:`load_articles` because not every leg has a file. The
+    releases leg fetches its documents and hands them straight over: there is
+    no committed corpus for them to merge into, and the deployed container has
+    no disk to keep one on (D31), so bronze is the only store.
+
+    Args:
+        session: Open session; this function flushes, the caller commits.
+        records: Article records, each carrying a resolvable `url`.
+        source_file: Provenance recorded on new rows. A shared table needs it
+            to say which leg a row came from, and the kill switch matches on it.
+        run_id: pipeline_runs row to attribute inserts/updates to.
+
+    Returns:
+        Counts: inserted / updated / unchanged.
+    """
     existing = {r.url: r for r in session.scalars(select(m.RawArticle))}
     counts = {"inserted": 0, "updated": 0, "unchanged": 0}
     now = utcnow()
@@ -62,11 +93,10 @@ def load_articles(session: Session, path: Path = ARTICLES,
         digest = content_hash(rec)
         row = existing.get(rec["url"])
         if row is None:
-            source = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else path.name
             row = m.RawArticle(url=rec["url"], payload=rec, content_hash=digest,
-                               source_file=source, load_run_id=run_id)
+                               source_file=source_file, load_run_id=run_id)
             session.add(row)
-            existing[rec["url"]] = row  # a repeated URL in one file updates, not IntegrityError
+            existing[rec["url"]] = row  # a repeated URL in one batch updates, not IntegrityError
             counts["inserted"] += 1
         elif row.content_hash != digest:
             row.payload, row.content_hash = rec, digest
@@ -80,9 +110,10 @@ def load_articles(session: Session, path: Path = ARTICLES,
 
 
 def load_classifications(session: Session, prompt_version: str,
-                         articles_path: Path = ARTICLES,
+                         articles_path: Path | None = None,
                          scores_dir: Path = SCORES_DIR,
-                         run_id: int | None = None, limit: int | None = None) -> dict:
+                         run_id: int | None = None, limit: int | None = None,
+                         source_files: tuple[str, ...] = ()) -> dict:
     """Upsert the per-URL score cache into raw_llm_responses.
 
     Reads the cache files (the true per-call provenance) rather than the merged
@@ -91,15 +122,37 @@ def load_classifications(session: Session, prompt_version: str,
     Args:
         session: Open session; this function flushes, the caller commits.
         prompt_version: Which cache directory to read (e.g. "v7").
-        articles_path: Register supplying the URL list.
+        articles_path: Take the URL list from this corpus file instead of
+            from `raw_articles`. For one-off loads over a corpus that is
+            not in the database; the default covers every source file.
         scores_dir: Parent of the per-version cache directories.
         run_id: pipeline_runs row to attribute writes to.
         limit: Only the first N articles.
+        source_files: Restrict the URL list to these corpora. Without it the
+            `missing` count below is meaningless once a second prompt version
+            exists: every announcement is "missing" from the papers version and
+            vice versa, so a healthy firing reports ~647 and ~47 missing. That
+            number is a diagnostic -- `classifications.missing: 4` is how the
+            D38 failure was caught -- and a permanently non-zero one is noise.
 
     Returns:
         Counts: inserted / updated / unchanged / missing (no cache file).
     """
-    urls = [rec["url"] for rec in json.loads(articles_path.read_text())[:limit]]
+    if articles_path is not None:
+        urls = [rec["url"] for rec in json.loads(articles_path.read_text())[:limit]]
+    else:
+        # From bronze, not from one corpus file. `raw_articles` carries a row
+        # per article-producing leg, and driving this from announcements.json
+        # alone leaves every release scored, paid for and cached on disk but
+        # never loaded: `transform` finds no classification, counts it under
+        # `no_classification` and skips it. The next firing re-lists the same
+        # URLs as pending, serves every one from cache for free, and reports
+        # `classified: N, cost_usd: 0.0` -- indistinguishable from a healthy
+        # incremental run, for ever.
+        query = select(m.RawArticle.url)
+        if source_files:
+            query = query.where(m.RawArticle.source_file.in_(tuple(source_files)))
+        urls = list(session.scalars(query))[:limit]
     cache = scores_dir / prompt_version
     existing = {
         r.url: r for r in session.scalars(

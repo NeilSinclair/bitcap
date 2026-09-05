@@ -21,13 +21,13 @@ import argparse
 import html as html_mod
 import json
 import re
-import time
 import urllib.parse
-import urllib.request
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+
+import fetch_cache
 
 ROOT = Path(__file__).parent.parent.parent
 CACHE = ROOT / "research" / "docs" / "deepseek_cache"
@@ -63,26 +63,29 @@ class Paper:
     order_meaningful: bool = False  # papers state the order is alphabetical
 
 
-def fetch(url: str, pause: float = 3.0) -> str:
-    """Fetch a URL, caching to disk so re-runs are free and idempotent.
+def fetch(url: str, retries: int | None = None) -> str:
+    """Fetch a URL through the shared cache, throttle and retry policy.
+
+    This function had no retry at all, which is why DeepSeek and OpenAI (which
+    imports it) both died on a single 429 on 2026-09-04 while the two
+    harvesters that did retry survived three attempts each. Retry, backoff,
+    `Retry-After` and the shared arXiv throttle now live in `fetch_cache.py`
+    (docs/decisions.md D53).
 
     Args:
         url: Absolute URL.
-        pause: Seconds to wait after a live fetch, per arXiv's rate guidance.
+        retries: Attempts before giving up. None takes the configured value.
 
     Returns:
         Decoded response body.
+
+    Raises:
+        RuntimeError: If every attempt fails. One dead source is a partial run,
+            not a dead one (D27).
     """
-    CACHE.mkdir(parents=True, exist_ok=True)
-    key = re.sub(r"[^A-Za-z0-9]+", "_", url).strip("_")[:150]
-    path = CACHE / f"{key}.txt"
-    if path.exists():
-        return path.read_text(encoding="utf-8")
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    body = urllib.request.urlopen(req, timeout=90).read().decode("utf-8", "replace")
-    path.write_text(body, encoding="utf-8")
-    time.sleep(pause)
-    return body
+    return fetch_cache.fetch(
+        url, cache_dir=CACHE, suffix=".txt", user_agent=UA, retries=retries
+    )
 
 
 def arxiv_query(search: str, max_results: int = 60) -> list[dict]:

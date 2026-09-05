@@ -1,0 +1,95 @@
+# The suite only ran when someone remembered to run it. 1225 tests, ~25s, and
+# nothing in the repo enforced them before this.
+#
+# No services and no secrets, and that is a property of the suite rather than an
+# omission: `app/db.py` falls back to a local sqlite file when DATABASE_URL is
+# unset, and every test that needs an LLM stubs it. Measured before writing this
+# — the suite passes with `.env` absent. A workflow that needed a Postgres
+# container and an API key would be one more thing to keep working.
+#
+# Deliberately no linting. Of ruff's 208 findings on this tree ~7 were real
+# (dead imports) and the rest were style; the 40 naive-datetime flags are the
+# only ones with real value and none are auto-fixable. That call is recorded in
+# docs/decisions.md — do not add ruff here without revisiting it.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+# A second push to the same branch makes the first run irrelevant; cancel it
+# rather than queueing behind it.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned to the version the Dockerfile ships (`FROM python:3.12-slim`),
+      # not to whatever the runner happens to offer. `requires-python = ">=3.12"`
+      # is a floor, so an unpinned `uv sync` resolves to the newest interpreter
+      # present — a clean clone of this repo picks 3.14 — and CI would then be
+      # green on an interpreter production does not run. `python-version` here
+      # sets UV_PYTHON, so `uv sync` and `uv run` both honour it.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      # Fail loudly if the pin ever stops taking effect, rather than testing the
+      # wrong interpreter quietly for months.
+      - name: Confirm the interpreter matches the Dockerfile
+        run: |
+          uv run python -c "import sys; assert sys.version_info[:2] == (3, 12), sys.version"
+          grep -q "FROM python:3.12-slim" Dockerfile
+
+      # `--frozen` fails if uv.lock disagrees with pyproject.toml, so a
+      # dependency added without relocking is caught here rather than by the
+      # next person whose environment silently resolves differently.
+      - name: Install
+        run: uv sync --frozen
+
+      - name: pytest
+        run: uv run pytest -q
+
+      # Runs under plain node, outside pytest: the report is a single
+      # self-contained HTML file with no build step, so a runtime error in its
+      # inlined script is invisible until someone opens it. It has already
+      # caught a temporal-dead-zone crash and a parseFloat that turned
+      # "1,406.8 M EUR" into 1.
+      # Pinned for the same reason as Python: these two scripts are the only
+      # thing standing behind the report and the digest window label, and
+      # `runs-on: ubuntu-latest` changes its default node without warning.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Smoke-test the built report
+        run: node tests/smoke_report.js
+
+      # Also outside pytest. The digest window label has been wrong twice, both
+      # times silently: an exclusive bound rendered as inclusive, then a
+      # local-time format that shifted both ends a day west of Greenwich.
+      - name: Smoke-test the digest window label
+        run: node tests/smoke_digest_window.js
+
+      # The dashboard was pushed in a state where it threw on first render:
+      # `anchorFor` was named in two dependency arrays fifty lines above its own
+      # declaration, so every authenticated user got a blank page. `next build`
+      # passed throughout — it bundles the component, it never calls it — and
+      # "the frontend builds" was offered as evidence the page worked.
+      - name: Smoke-test that the dashboard renders
+        run: node tests/smoke_dashboard_render.js
+
+      # Catches the class the smoke test cannot: a syntax or import error that
+      # stops the bundle being produced at all. Neither check subsumes the
+      # other, which is why both are here.
+      - name: Build the frontend
+        run: npm ci --prefix frontend && npm run build --prefix frontend

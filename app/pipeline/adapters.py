@@ -40,6 +40,31 @@ for _leg in ("announcements", "papers", "github"):
         sys.path.insert(0, _path)
 
 
+def fetch_paper_abstracts(session, limit: int | None = None) -> tuple[list, list]:
+    """Turn the papers already in bronze into article-shaped records to score.
+
+    Separate from `fetch_papers`, which harvests bylines for the people
+    register. This reads `raw_papers` and fetches each paper's *citation page*
+    for its abstract, so the scored text and the link the reader clicks are the
+    same document.
+
+    Args:
+        session: Open session.
+        limit: Stop after N papers (the n=1 proving path).
+
+    Returns:
+        Tuple of (article records, unresolved). Both are handed to the caller
+        rather than written here, so landing stays in one place in the worker.
+    """
+    import yaml
+    from paper_text import collect
+
+    config = yaml.safe_load(
+        (ROOT / "config" / "papers_sources.yaml").read_text(encoding="utf-8"))
+    labs = {entry["lab"]: entry for entry in config["labs"]}
+    return collect(session, labs, limit=limit)
+
+
 @dataclass
 class FetchResult:
     """What one source produced on one attempt.
@@ -159,13 +184,16 @@ def _settled_urls(session, prompt_version: str = PROMPT_VERSION) -> set[str]:
     stored in `raw_articles` yields nothing new by being fetched a second time,
     and its text is already in the database for everything downstream.
 
-    **Stored is not enough on its own — it has to be classified too.** An
-    article that is stored but still pending (a run that hit its budget ceiling,
-    say) has to be refetched, because `classify_new` reads article *text* from
-    the corpus file rather than from the database, and on a container with no
-    disk that file resets to the image copy every firing. Skipping it here would
-    leave it pending for ever with nothing able to classify it, which is
-    planning.md §13.3 turned from an edge case into the normal path.
+    **Stored is not enough on its own — it has to be classified too.** That
+    was originally because `classify_new` read article text from the corpus
+    file, which resets to the image copy every firing on a container with no
+    disk, so a stored-but-pending article could never be classified unless the
+    page was fetched again. `classify_new` now reads the payload from
+    `raw_articles` (D53), so the hazard is gone and the refetch is no longer
+    load-bearing — it is left in place only because a stored article that is
+    still pending is also the one case where the stored *text* may be a
+    partial fetch worth replacing. Dropping the classified check would be safe
+    for the classifier and is the obvious next simplification.
 
     Args:
         session: Open session, or None when there is no database to ask.
@@ -275,6 +303,27 @@ def fetch_announcements(source, state=None, session=None) -> FetchResult:
             })
     if errors and len(errors) == len(channels):
         raise errors[-1]
+
+    # Recovery, in the same call as discovery. A lab whose site blocks us
+    # (`backfill: wayback` in sources.yaml) yields a title and a one-sentence
+    # summary from its feed; the archive has the page. This used to be a
+    # separate script run by hand against announcements.json, which meant the
+    # deployed pipeline never ran it at all and every OpenAI article reached
+    # the classifier as a ~200-character blurb.
+    #
+    # Failures here are recorded, never raised: articles found is the source's
+    # job and it has already done it. An article the archive has not crawled
+    # yet is the ordinary case for anything published in the last few days.
+    if lab.get("backfill") == "wayback" and items:
+        try:
+            unresolved.extend(fa.enrich_wayback(lab, items, since))
+        except Exception as exc:  # noqa: BLE001
+            unresolved.append({
+                "kind": "backfill",
+                "name": f"{lab['id']}:wayback",
+                "reason": f"backfill failed, articles kept on summaries: {exc}",
+            })
+
     newest = max((a["date"] for a in items), default=None)
     return FetchResult(
         items=items,
@@ -385,6 +434,43 @@ def _in_window(payload: dict, since: datetime) -> dict:
     return {**payload, "commits": commits, "total": len(commits)}
 
 
+def _listing_fields(payload: dict, repo: dict) -> dict:
+    """Overlay a live REST listing entry onto a repository's stored history.
+
+    The releases leg ranks on stars, and bronze's copy is only as fresh as the
+    last time that repository's history was re-walked — which happens when its
+    `pushed_at` moves, and the github leg runs at cadence 3. A repository that
+    stops being committed to would rank for ever on a frozen star count, and
+    `deepseek-harness` gained 200,000 stars in the weeks this was built.
+
+    So the releases leg lists each org itself: one cheap REST call chain, free
+    on an authenticated token, and it leaves the github leg's incremental
+    contract completely alone.
+
+    `created_at` comes from the same place, and cannot be inferred. The obvious
+    proxy — the earliest commit in the harvest window — reports `openai/whisper`
+    (2022) as created in 2026, because it was dormant and got touched once. The
+    error lands on exactly the famous quiet repositories a star ranking floats
+    to the top (docs/decisions.md).
+
+    Args:
+        payload: The stored history from `raw_github_repos`.
+        repo: The REST listing entry for the same repository.
+
+    Returns:
+        The payload with the listing fields overlaid.
+    """
+    return {
+        **payload,
+        "stars": repo.get("stargazers_count", 0),
+        "description": repo.get("description"),
+        "created_at": repo.get("created_at"),
+        "language": repo.get("language"),
+        "topics": repo.get("topics") or [],
+        "archived": bool(repo.get("archived")),
+    }
+
+
 def fetch_github(source, state=None, session=None) -> FetchResult:
     """Harvest one org's commits and aggregate them into a people register.
 
@@ -468,10 +554,184 @@ def fetch_github(source, state=None, session=None) -> FetchResult:
     )
 
 
+
+
+def fetch_releases(source, state=None, session=None) -> FetchResult:
+    """Fetch this org's new release notes from its top-starred repositories.
+
+    **The star ranking is the gate.** Watching all 770 repositories would be
+    absurd; watching the top few dozen is one cheap call each. The ranking is
+    computed here from `raw_github_repos` -- the bronze the github leg already
+    maintains -- so this leg reads no file and needs no separate metadata
+    fetch. On a container with no disk that is the only place it could come
+    from anyway (D31).
+
+    **The cursor is the watermark.** `source_state.watermark["cursors"]` holds
+    one `published_at` per repository, and the orchestrator persists whatever
+    this returns. An earlier version kept it in a JSON file beside a lock file;
+    on the deployed shape that file resets to the image copy every firing, so
+    the cursor would never advance past the first backfill and the leg would
+    re-fetch the same few releases forever while looking healthy.
+
+    Args:
+        source: A releases source; its config is the github_sources.yaml entry
+            plus `org`.
+        state: The source's persistent state; `watermark["cursors"]` bounds
+            each repository's fetch.
+        session: Open session, for reading `raw_github_repos`. Without one
+            there is no ranking and the source fails loudly rather than
+            reporting no releases.
+
+    Returns:
+        Release notes in the announcements item shape, with the advanced
+        cursors as the watermark. The documents are also written into
+        `session` here rather than by the worker's landing phase, so that the
+        cursor and the rows it describes become durable together.
+
+    Raises:
+        RuntimeError: When bronze holds no repositories for this org ("the
+            github leg has not run", not "this org ships nothing"), when the
+            live listing comes back empty against a non-empty bronze, or when
+            every watched repository failed.
+    """
+    import harvest_github
+    import rank_repos
+    import yaml
+
+    import fetch_releases as fr
+
+    entry = source.config
+    org = entry["org"]
+    lab = entry["lab"]
+    cfg = yaml.safe_load(
+        (ROOT / "config" / "repo_signals.yaml").read_text(encoding="utf-8"))
+    token = harvest_github.load_token()
+
+    rows = session.scalars(
+        select(m.RawGithubRepo).where(m.RawGithubRepo.org == org)
+    ).all() if session is not None else []
+    if not rows:
+        raise RuntimeError(
+            f"{org}: no repositories in raw_github_repos -- the github leg has "
+            "not run, and reporting no releases here would be indistinguishable "
+            "from an org that ships none"
+        )
+
+    # Stars and `created_at` come from a live listing, not from bronze. Bronze
+    # is only as fresh as the last history walk, which happens when a
+    # repository's `pushed_at` moves and on a leg running at cadence 3 -- so a
+    # repository that stops being committed to would rank for ever on a frozen
+    # star count. One listing chain per org, free on an authenticated token.
+    since = datetime.now(timezone.utc) - timedelta(days=entry.get("months", 12) * 30)
+    listing = {r["name"]: r for r in harvest_github.repos(org, token, since)}
+    if not listing:
+        # Bronze holds repositories for this org, so an empty listing is the
+        # API failing to answer, not the org going quiet. Watching nothing and
+        # reporting no releases would be indistinguishable from a week in which
+        # nobody shipped.
+        raise RuntimeError(
+            f"{org}: the repository listing came back empty while bronze holds "
+            f"{len(rows)} repositories -- treating that as a failed source "
+            "rather than as an org with nothing to watch"
+        )
+
+    ranked = rank_repos.rank(
+        [(r.org, r.repo, _listing_fields(r.payload, listing.get(r.repo, {})))
+         for r in rows if r.repo in listing],
+        cfg,
+    )[: cfg["releases_watch"]]
+
+    cursors = dict((getattr(state, "watermark", None) or {}).get("cursors") or {})
+
+    items: list[dict] = []
+    truncated = 0
+    reached_all = True
+    failures: list[str] = []
+
+    for row in ranked:
+        repo = row["repo"]
+        try:
+            found, stats = fr.new_releases(
+                org, repo, token, lab, cursors.get(repo),
+                cfg["releases_backfill"], cfg["releases_per_run"],
+                cfg["releases_max_pages"])
+        except Exception as exc:
+            # One repository must not take out the org. A repository renamed or
+            # made private since bronze last saw it raises a 404 that `_call`
+            # does not retry, and letting it propagate would discard every
+            # release already fetched from the repositories before it, waste
+            # their rate limit, advance no cursor, and repeat every firing.
+            failures.append(f"{repo}: {exc}")
+            continue
+        truncated += stats["truncated"]
+        reached_all = reached_all and stats["reached_cursor"]
+        if found:
+            items += found
+            cursors[repo] = fr.next_cursor(found)
+
+    # Land the documents here, not in the worker's landing phase, because the
+    # cursor gates every future fetch. `run_source` commits the advanced
+    # watermark as soon as this returns; the landing phase commits its rows a
+    # phase later. Anything failing in between -- the register load, a
+    # redeploy, an OOM kill during a 9-30 minute firing -- rolls the rows back
+    # while the cursor stays advanced, and `new_releases` then filters those
+    # releases out for ever as already-seen. They would not appear in
+    # `truncated`, no alert would name them, and a missing release is
+    # indistinguishable from a quiet week.
+    #
+    # Writing them into the same session makes both durable at the same commit.
+    # The failure direction is safe too: if this raises after landing,
+    # `record_failure` leaves the watermark alone, so the next firing refetches
+    # and the url-keyed upsert absorbs the duplicate.
+    #
+    # This is the first leg whose watermark gates future fetches. The github
+    # leg is immune because it re-derives from `pushed_at` against bronze.
+    if session is not None and items:
+        from app.load_raw import load_article_records
+        from app.pipeline.registry import CORPUS_LABELS, RELEASES
+
+        load_article_records(session, items, CORPUS_LABELS[RELEASES])
+
+    newest = max((i["published_at"] for i in items), default=None)
+    watermark = {
+        "cursors": cursors,
+        "repos_watched": len(ranked),
+        # The new/established split of what is being watched. Surfaced because
+        # a star ranking is a hall of fame -- if this reads "established: 10"
+        # every night, the leg is watching archives and the cut needs to become
+        # a filter rather than a label.
+        "watching": {age: sum(1 for r in ranked if r["age"] == age)
+                     for age in ("new", "established", "unknown")},
+        "truncated": truncated,
+        # Kept because a walk that never reached the cursor left releases above
+        # it unfetched and uncounted -- `truncated` only counts what this call
+        # saw and dropped. Discarding it made that case indistinguishable from
+        # a clean run.
+        "reached_cursor": reached_all,
+    }
+    if newest:
+        watermark["max_published"] = newest
+    if failures:
+        watermark["repo_failures"] = failures
+
+    # Every watched repository failing is a broken source, not a quiet week --
+    # a token rotated to one without the right scope 404s on all of them. Left
+    # as a success it would reset `consecutive_failures` to zero every firing,
+    # so `source_down` could never fire and the leg would stay dead behind
+    # eight green rows.
+    if ranked and len(failures) == len(ranked):
+        raise RuntimeError(
+            f"{org}: all {len(ranked)} watched repositories failed -- "
+            f"first was {failures[0]}"
+        )
+    return FetchResult(items=items, watermark=watermark)
+
+
 ADAPTERS = {
     "announcements": fetch_announcements,
     "papers": fetch_papers,
     "github": fetch_github,
+    "releases": fetch_releases,
 }
 
 

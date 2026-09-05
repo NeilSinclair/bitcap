@@ -192,3 +192,48 @@ articles a fund would most want to get right** — the open-weights frontier
 release, the government recall, and the news about the largest holding. Accuracy
 is not uniform across the score range, and averaging it into one number would
 hide that.
+
+---
+
+## OPEN FOR NEIL — `accelerator_custom_si` sign on `15.json` (raised 2026-09-05)
+
+**Not actioned. Neil to look at when there is time.**
+
+On gold article `15` (Jalapeño, OpenAI's own inference chip) the human label for
+the **category** `accelerator_custom_si` is `mixed`. Every model version says
+`positive`:
+
+| | mechanism `custom_silicon_substitution` | category `accelerator_custom_si` |
+|---|---|---|
+| gold (hand-labelled) | positive / high / high | **mixed** / medium |
+| v7 (blurb, quotes unresolvable) | positive / high / high | positive / high |
+| v8 (blurb) | positive / medium / medium | positive / medium |
+| v9 (13,311 chars, recovered) | positive / high / high | positive / high |
+
+**Why it is worth a look.** The disagreement is stable across v7, v8 and v9,
+and v9 reads the full archived article while v8 read 249 characters. So it is
+not a text problem, and D55/D56 did not touch it — it is the prompt or the
+category definition in `config/categories.yaml`.
+
+The mechanism tag agrees with the human exactly; only the category sign differs.
+That is the interesting part: `custom_silicon_substitution` is a claim about one
+company's substitution away from merchant accelerators, and it is unambiguously
+positive for that mechanism. `accelerator_custom_si` is a claim about the
+*category* of custom-silicon accelerators, and a reasonable reader can hold that
+OpenAI building its own chip is good for custom silicon as a category and bad
+for the incumbent accelerator vendors inside it — which is what `mixed` says.
+The model may be flattening a genuine two-sidedness, or the human may be
+over-reading it. One article is not enough to tell.
+
+**Where it bites.** Category rows carry the article's own direction (see
+`app/connect.py`), so a sign that should be `mixed` and reads `positive`
+propagates a direction into every holding routed through that category. It also
+feeds `_drop_contradicted_category_rows`: `mixed` contradicts nothing, so a
+`mixed` label would leave a company-specific mechanism row standing beside it,
+where `positive` can suppress one.
+
+**Cheapest next step:** check whether the same disagreement appears on the other
+custom-silicon articles in the corpus (`openai-broadcom-jalapeno-inference-chip`
+is the obvious second case) before changing anything. A single-article
+disagreement is a data point; two is a pattern in the category definition.
+

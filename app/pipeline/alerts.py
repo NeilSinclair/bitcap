@@ -35,7 +35,7 @@ import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -267,6 +267,28 @@ def drift_unavailable(session: Session, config: dict, context: dict) -> list[Can
 # Content rules — the pipeline found something
 # --------------------------------------------------------------------------
 
+def _recent_enough(config: dict):
+    """Publication-age bound shared by both content rules.
+
+    A content alert is a claim that a lab published something worth seeing now.
+    Neither rule was bounded by age, which was harmless while every corpus was a
+    rolling window and stopped being harmless the moment a backfill landed: the
+    papers leg carries documents back to 2023, several correctly scoring 100.
+
+    Bounds `published_on`, not discovery. Alerting on everything found tonight
+    would fire on the whole backfill at once, which is the same problem wearing
+    a different hat.
+
+    Args:
+        config: The `alerts` block of config/pipeline.yaml.
+
+    Returns:
+        A SQLAlchemy criterion for use in a `.where()`.
+    """
+    days = int(config.get("content_max_age_days", 120))
+    return m.Article.published_on >= (date.today() - timedelta(days=days))
+
+
 def high_band_items(session: Session, config: dict, context: dict) -> list[Candidate]:
     """Newly classified articles at or above the configured band.
 
@@ -284,6 +306,7 @@ def high_band_items(session: Session, config: dict, context: dict) -> list[Candi
         select(m.Article, m.Classification)
         .join(m.Classification, m.Classification.article_id == m.Article.id)
         .where(m.Classification.band.in_(wanted))
+        .where(_recent_enough(config))
         .order_by(m.Classification.score.desc())
     ).all()
 
@@ -321,6 +344,7 @@ def holding_impact(session: Session, config: dict, context: dict) -> list[Candid
         .join(m.Article, m.Article.id == m.Connection.article_id)
         .join(m.Holding, m.Holding.isin == m.Connection.isin)
         .where(m.Connection.strength >= threshold)
+        .where(_recent_enough(config))
         .order_by(m.Connection.strength.desc())
     ).all()
 
@@ -353,12 +377,133 @@ def holding_impact(session: Session, config: dict, context: dict) -> list[Candid
     ]
 
 
+def dedupe_unavailable(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """The duplicate collapse failed, and nothing else would ever say so.
+
+    The phase swallows its exceptions on purpose — a feed with duplicate rows is
+    a worse product, not a broken run, so a dead embeddings provider must not
+    fail the firing. But swallowed and unreported is how `drift_unavailable`'s
+    outage went unnoticed for days (D45): the run reports `succeeded`, exits 0,
+    and the digest keeps folding against a grouping that is no longer being
+    updated. New articles are never grouped and every surface still looks
+    healthy.
+
+    A **system** alert, because it is the pipeline that is broken and not the
+    world that is interesting.
+
+    `warning` rather than `critical`, and the distinction is the blast radius.
+    `drift_unavailable` means the classifier is running unverified — every later
+    firing is unchecked. This means duplicates reach the feed, which a reader
+    can see and work around. Raising both at `critical` would flatten a real
+    difference in how fast somebody needs to get up.
+    """
+    stats = (context.get("stats") or {}).get("dedupe")
+    if not stats:
+        # The phase did not run this firing. Not a failure.
+        return []
+
+    # Zero vector coverage raises nothing and looks exactly like zero
+    # duplicates: gate 3 skips every pair, the phase returns cleanly, and
+    # `collapsed` is merely lower than it should be. That happens whenever the
+    # cache is empty or holds vectors from a model the config no longer names —
+    # a config edit, not a crash, so no exception exists to catch. Reported
+    # before the error branch because it is the case with no other symptom.
+    coverage = stats.get("coverage")
+    articles = stats.get("articles") or 0
+    if coverage is not None and articles and coverage == 0 and "error" not in stats:
+        return [Candidate(
+            kind=SYSTEM, rule="dedupe_unavailable", severity=WARNING,
+            subject="Duplicate collapse ran with no embeddings — similarity matching is a no-op",
+            body=(
+                f"Grouping completed over {articles} articles with zero cached "
+                "vectors, so every similarity comparison was skipped. Exact "
+                "matches and release trains still grouped. Most likely the "
+                "embedding model in config/dedupe.yaml changed without a "
+                "re-embed, or the embedding step never ran."
+            ),
+            dedupe_key="dedupe_unavailable:no_coverage",
+            payload=stats,
+            run_id=context.get("run_id"),
+        )]
+
+    errors = {k: v for k, v in stats.items() if k in ("error", "embed_error")}
+    if not errors:
+        return []
+
+    # An embedding outage alone still leaves the exact pass and the release
+    # trains running, which is most of the collapse by volume. Say which it was
+    # rather than reporting both the same way.
+    partial = "error" not in errors
+    first = errors.get("error") or errors.get("embed_error") or "no reason recorded"
+    scope = "similarity matching" if partial else "the whole collapse"
+    return [Candidate(
+        kind=SYSTEM, rule="dedupe_unavailable", severity=WARNING,
+        subject=f"Duplicate collapse degraded — {scope} is not running",
+        body=(
+            f"The dedupe phase reported: {str(first)[:300]}. "
+            + ("Exact-match and release-train grouping still ran; only the "
+               "embedding-based pass is missing."
+               if partial else
+               "No grouping was written this firing, so the digest and feed are "
+               "folding against whatever the last successful run left behind.")
+        ),
+        # Keyed on the failure kind, not the run: one outage is one alert rather
+        # than one a night, and it reopens if the other half starts failing too.
+        dedupe_key=f"dedupe_unavailable:{'embed' if partial else 'assign'}",
+        payload=stats,
+        run_id=context.get("run_id"),
+    )]
+def extraction_downgraded(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """A lab's abstracts stopped coming from the element config names.
+
+    Extraction falls back through the weaker strategies so one lab changing its
+    page shape degrades rather than dropping papers out of the register. That
+    resilience is also the hazard: `_lead_section` returns the whole document
+    when it finds no `<article>`, and arXiv's `/abs/` furniture clears the
+    200-character floor comfortably. Renaming one CSS class would land every new
+    DeepSeek paper as navigation text, scoring zero on both axes, with
+    `unresolved` at zero and the ingest counts looking healthy.
+
+    A SYSTEM alert, not a content one: nothing has been learned about the world.
+    Keyed on lab and strategy pair, so one page-shape change is one alert rather
+    than one per firing.
+
+    Args:
+        session: Open session, unused -- this reads the run's own counts.
+        config: The `alerts` block.
+        context: Needs `paper_extraction`, a list of
+            ``{lab, configured, actual, n}`` rows from the landing phase.
+
+    Returns:
+        One candidate per (lab, configured, actual) that disagrees.
+    """
+    out = []
+    for row in context.get("paper_extraction") or []:
+        if row["configured"] == row["actual"]:
+            continue
+        out.append(Candidate(
+            kind=SYSTEM, rule="extraction_downgraded", severity=WARNING,
+            subject=f"{row['lab']}: abstracts now extracted by {row['actual']}"[:300],
+            body=(f"config/papers_sources.yaml names `{row['configured']}` for "
+                  f"{row['lab']}, but {row['n']} paper(s) fell back to "
+                  f"`{row['actual']}`. The page shape has probably changed; the "
+                  f"text is still being scored, so check it is not furniture."),
+            dedupe_key=f"extraction_downgraded:{row['lab']}:"
+                       f"{row['configured']}:{row['actual']}",
+            payload=row,
+            run_id=context.get("run_id"),
+        ))
+    return out
+
+
 RULES = {
     "run_failed": run_failed,
+    "extraction_downgraded": extraction_downgraded,
     "source_down": source_down,
     "budget_exceeded": budget_exceeded,
     "drift": drift,
     "drift_unavailable": drift_unavailable,
+    "dedupe_unavailable": dedupe_unavailable,
     "high_band_item": high_band_items,
     "holding_impact": holding_impact,
 }
@@ -445,7 +590,9 @@ def dispatch(
         channel: Override the configured channel.
 
     Returns:
-        ``{raised, duplicate, delivered, suppressed, failed}``.
+        ``{raised, duplicate, reopened, delivered, suppressed, failed}``.
+        `reopened` counts alerts whose acknowledgement this firing withdrew
+        because the rules produced their episode key again.
     """
     config = config if config is not None else settings()
     channel = channel or config.get("channel", "stdout")
@@ -454,7 +601,8 @@ def dispatch(
     if send is None:
         raise ValueError(f"unknown alert channel {channel!r}")
 
-    stats = {"raised": 0, "duplicate": 0, "delivered": 0, "suppressed": 0, "failed": 0}
+    stats = {"raised": 0, "duplicate": 0, "reopened": 0,
+             "delivered": 0, "suppressed": 0, "failed": 0}
     fresh: list[m.Alert] = []
 
     for candidate in candidates:
@@ -463,6 +611,18 @@ def dispatch(
         )
         if exists is not None:
             stats["duplicate"] += 1
+            # A duplicate is proof the condition is still live, and this is the
+            # only place in the system that knows it. Dedupe keys identify the
+            # *episode* and deliberately do not move while a fault continues —
+            # `source_down` keys on `last_success_at` precisely so a week-long
+            # outage is one alert. That is what makes acknowledgement dangerous
+            # on its own: an operator clears the badge, the source stays down,
+            # no new row is ever written, and the badge stays green through the
+            # entire outage. Acknowledging is a claim the fault had settled; the
+            # rules regenerating the same key withdraws that claim.
+            if exists.acknowledged_at is not None:
+                exists.acknowledged_at = None
+                stats["reopened"] += 1
             continue
         alert = m.Alert(
             kind=candidate.kind, rule=candidate.rule, severity=candidate.severity,
@@ -514,6 +674,42 @@ def recent(session: Session, kind: str | None = None, limit: int = 50) -> list[d
             "created_at": a.created_at.isoformat() if a.created_at else None,
             "sent_at": a.sent_at.isoformat() if a.sent_at else None,
             "delivery_error": a.delivery_error, "run_id": a.run_id,
+            "acknowledged_at": a.acknowledged_at.isoformat() if a.acknowledged_at else None,
         }
         for a in session.scalars(query)
     ]
+
+
+def acknowledge(session: Session, kind: str = "system") -> int:
+    """Mark every unacknowledged alert of one kind as seen. Returns how many.
+
+    Acknowledgement is the only thing this clears: the rows stay in the history
+    and the ops page still lists them, marked. What it resets is the header
+    badge, which counts unacknowledged system alerts and stays red until someone
+    says they have seen them — nothing ages out by itself.
+
+    **A live fault reopens this, and that safety property lives in `dispatch`,
+    not here.** It is tempting to argue that a still-broken source raises a new
+    alert on its next firing — it does not. Dedupe keys identify the *episode*
+    and hold still while a fault continues (`source_down` keys on
+    `last_success_at` for exactly that reason), so nothing new is ever written
+    during an outage. Acknowledging alone would therefore green the badge for
+    the whole of it. `dispatch` closes that: when the rules regenerate a key
+    whose row is acknowledged, it clears `acknowledged_at` and the badge
+    reddens on the next firing.
+
+    Args:
+        session: Open session; the caller commits.
+        kind: `system` or `content`.
+
+    Returns:
+        Number of alerts acknowledged.
+    """
+    rows = list(session.scalars(
+        select(m.Alert).where(m.Alert.kind == kind, m.Alert.acknowledged_at.is_(None))
+    ))
+    now = datetime.now(timezone.utc)
+    for row in rows:
+        row.acknowledged_at = now
+    session.flush()
+    return len(rows)

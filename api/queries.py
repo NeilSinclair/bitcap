@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app import models as m
 from app.connect import match_name
+from app.pipeline.registry import PAPERS_CORPUS
 
 
 def _short_name(name: str) -> str:
@@ -56,12 +57,14 @@ def _connection_label(route: str, via: str, mech_labels: dict, cat_labels: dict)
     return via
 
 
-def build_items(session: Session, prompt_version: str) -> list[dict]:
+def build_items(session: Session, prompt_version: str | tuple[str, ...]) -> list[dict]:
     """Assemble the full item list for one classification version.
 
     Args:
         session: Open session.
         prompt_version: Which classification run to read (see app.cli.PROMPT_VERSION).
+            A tuple spans several, which is how papers and announcements reach
+            one list.
 
     Returns:
         One dict per article that has a classification for this version, each
@@ -73,10 +76,23 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
     prac_labels = {r.id: r.label for r in session.scalars(select(m.RefPractice))}
     holding_names = {h.isin: _short_name(h.name) for h in session.scalars(select(m.Holding))}
 
+    versions = ((prompt_version,) if isinstance(prompt_version, str)
+                else tuple(prompt_version))
     classifications = {
         c.article_id: c for c in session.scalars(
-            select(m.Classification).where(m.Classification.prompt_version == prompt_version)
+            select(m.Classification).where(m.Classification.prompt_version.in_(versions))
         )
+    }
+    # Which leg a row came from. `source_file` is the provenance the shared
+    # bronze table already carries, so the reader does not need a second column
+    # on `articles` that could disagree with it.
+    # Columns, not entities: `RawArticle.payload` is an eagerly-mapped JSON
+    # column holding full article text, so hydrating ~700 rows to read two
+    # strings parsed and threw away several MB of JSON on every dashboard load.
+    doc_types = {
+        row_id: ("paper" if source_file == PAPERS_CORPUS else "announcement")
+        for row_id, source_file in session.execute(
+            select(m.RawArticle.id, m.RawArticle.source_file))
     }
     cls_ids = [c.id for c in classifications.values()]
 
@@ -102,17 +118,31 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
     for row in session.scalars(select(m.Connection).order_by(m.Connection.strength.desc())):
         conns_by_article[row.article_id].append(row)
 
+    # Near-duplicate grouping. Every row still ships, including the folded ones:
+    # the frontend hides them behind their anchor's expander, and a reader who
+    # wants to check a merge has to be able to see what was merged. Filtering
+    # them out server-side would make a collapse indistinguishable from an
+    # article that was never ingested.
+    groups = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
+
     items = []
     for art in session.scalars(select(m.Article).order_by(m.Article.published_on.desc())):
         cls = classifications.get(art.id)
         if cls is None:
             continue
+        group = groups.get(art.id)
         items.append({
             "id": art.id,
+            "docType": doc_types.get(art.raw_article_id, "announcement"),
             "lab": art.lab,
             "labLabel": labs.get(art.lab, art.lab),
             "date": str(art.published_on),
             "title": art.title,
+            "groupId": group.group_id if group else f"g{art.id}",
+            "groupSize": group.group_size if group else 1,
+            "isAnchor": group.is_anchor if group else True,
+            "groupMethod": group.method if group else "singleton",
+            "groupReason": group.reason if group else "",
             "summary": cls.summary,
             "notableReason": cls.notable_reason,
             "sourceUrl": art.url,

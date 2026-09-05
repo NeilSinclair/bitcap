@@ -219,6 +219,22 @@ def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], lis
     return errors, warnings
 
 
+# Every key a lab entry may carry. An allowlist rather than a spell-check:
+# `backfil: wayback` is not a near miss of anything by string distance, it is
+# simply a key no code reads, and the lab silently keeps its feed summaries.
+# Add a key here when you add one to sources.yaml -- that is the point.
+SOURCE_LAB_KEYS = {
+    "id", "label", "method", "index_url", "text_source", "date_from",
+    "url_contains", "notes", "also", "enabled", "backfill", "window_months",
+    "baseline", "date_basis", "category", "page_param", "user_agent",
+}
+
+# Text-recovery strategies a lab may declare with `backfill:`. Read by
+# `fetch_announcements.collect` and `adapters.fetch_announcements`; listed here
+# so an unknown value is an error rather than a silent no-op.
+BACKFILL_METHODS = {"wayback"}
+
+
 def check_sources(root: Path) -> list[str]:
     """Validate sources.yaml: every lab carries the keys its method needs.
 
@@ -264,6 +280,32 @@ def check_sources(root: Path) -> list[str]:
                         f"sources.yaml/{lab_id}: method '{method}' requires "
                         f"'{key}', missing"
                     )
+
+        # `backfill` selects text recovery for a lab whose site blocks us, and
+        # is matched by equality in two places, so a wrong value does not raise
+        # -- it silently leaves the lab on feed summaries, which is how OpenAI
+        # came to be scored on 200-character blurbs while every check stayed
+        # green.
+        backfill = lab.get("backfill")
+        if backfill is not None and backfill not in BACKFILL_METHODS:
+            errors.append(
+                f"sources.yaml/{lab_id}: unknown backfill '{backfill}' "
+                f"(known: {', '.join(sorted(BACKFILL_METHODS))})"
+            )
+
+        # A misspelt *key* is the same failure and nothing else can see it: no
+        # code reads `backfil`, so the lab quietly keeps its summaries. This
+        # replaces a near-miss test that did not catch `backfil` -- the very
+        # example its own comment cited -- because collapsing case and
+        # underscores cannot recover a dropped letter. An allowlist has no such
+        # gap: anything not named here is either a typo or a key someone added
+        # without telling this file.
+        for key in lab:
+            if key not in SOURCE_LAB_KEYS:
+                errors.append(
+                    f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
+                    f"reads it (known: {', '.join(sorted(SOURCE_LAB_KEYS))})"
+                )
     return errors
 
 
@@ -304,6 +346,75 @@ def check_github_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     return errors
 
 
+
+
+def check_entities(root: Path) -> list[str]:
+    """Validate entities.yaml — the first-mention vocabulary.
+
+    `research/corpus/first_mention.py` indexes `model_families`,
+    `max_version_parts`, `new_within_days` and `unannounced_top` directly, so a
+    mistyped key is a KeyError deep into a run. An empty `model_families` is
+    worse than that: it raises nothing, matches nothing, and reports a quiet
+    week for ever.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "entities.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    for key in ("new_within_days", "max_version_parts", "unannounced_top"):
+        value = doc.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(
+                f"entities.yaml: {key} must be a positive integer, not {value!r}")
+    families = doc.get("model_families")
+    if not families or not all(isinstance(f, str) and f for f in families):
+        errors.append(
+            "entities.yaml: model_families must be a non-empty list of strings "
+            "-- an empty one matches nothing and reports a quiet week for ever")
+    if not isinstance(doc.get("deny") or [], list):
+        errors.append("entities.yaml: deny must be a list")
+    return errors
+
+
+def check_repo_signals(root: Path) -> list[str]:
+    """Validate repo_signals.yaml — what the releases leg reads at runtime.
+
+    `adapters.fetch_releases` indexes `releases_watch`, `releases_backfill`,
+    `releases_per_run` and `releases_max_pages` directly, so a mistyped key is
+    a KeyError that fails every releases source on every firing. Worse is a
+    value of the wrong type: `releases_watch: "25"` slices the ranked rows with
+    a string and raises something considerably less legible than this message.
+
+    Args:
+        root: Directory holding the config files.
+
+    Returns:
+        Error message list.
+    """
+    path = root / "repo_signals.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+    for key in ("releases_watch", "releases_backfill", "releases_per_run",
+                "releases_max_pages", "new_within_days"):
+        value = doc.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(
+                f"repo_signals.yaml: {key} must be a positive integer, not {value!r}"
+            )
+    if not isinstance(doc.get("min_stars"), int):
+        errors.append("repo_signals.yaml: min_stars must be an integer")
+    return errors
+
+
 def check_pipeline(root: Path) -> list[str]:
     """Validate pipeline.yaml — the file that decides what the cron spends.
 
@@ -312,6 +423,8 @@ def check_pipeline(root: Path) -> list[str]:
 
     * `content_band: High` (capitalised) makes the band filter match nothing, so
       **zero content alerts are raised, forever**, with no error anywhere.
+    * `content_max_age_days: 0` does the same thing by a different route: both
+      content rules bound `published_on` by it, so nothing is ever recent enough.
     * a mistyped `cadence` key means that leg never runs, and the register
       quietly covers less than anyone thinks.
     * a `channel` with no delivery function, or a `budget` that is absent or
@@ -341,7 +454,12 @@ def check_pipeline(root: Path) -> list[str]:
                 "run can never complete inside the monthly ceiling"
             )
 
-    legs = {"announcements", "papers", "github"}
+    # Imported, not restated. A hardcoded copy of this set goes stale the first
+    # time a leg is added: the new leg's cadence entry is then reported as not
+    # a leg, by the very check meant to catch a mistyped one.
+    from app.pipeline.registry import LEGS
+
+    legs = set(LEGS)
     for key, value in (doc.get("cadence") or {}).items():
         if key not in legs | {"drift"}:
             errors.append(
@@ -350,8 +468,35 @@ def check_pipeline(root: Path) -> list[str]:
         if not isinstance(value, int) or value < 1:
             errors.append(f"pipeline.yaml/cadence/{key}: must be an integer >= 1")
 
+    # The kill switch. A typo here is the worst silent failure in this file:
+    # `enabled: {releaces: false}` leaves the leg running and reads, to whoever
+    # typed it, as switched off. And any non-empty string is truthy.
+    for key, value in (doc.get("enabled") or {}).items():
+        if key not in legs:
+            errors.append(
+                f"pipeline.yaml/enabled: '{key}' is not a leg {sorted(legs)} -- "
+                "the leg it was meant to switch off is still running"
+            )
+        if not isinstance(value, bool):
+            errors.append(
+                f"pipeline.yaml/enabled/{key}: must be true or false, not "
+                f"{value!r} -- any non-empty string reads as on"
+            )
+
     alerts = doc.get("alerts") or {}
     bands = ("none", "low", "medium", "high")
+    # 0 suppresses every content alert forever, in exactly the way a
+    # capitalised `content_band` does, and reads as a deliberate-looking number.
+    max_age = alerts.get("content_max_age_days")
+    if not isinstance(max_age, int) or isinstance(max_age, bool) or max_age < 1:
+        errors.append(
+            f"pipeline.yaml/alerts: content_max_age_days {max_age!r} must be a "
+            f"positive int -- 0 or missing silently stops every content alert")
+    elif max_age < 92:
+        errors.append(
+            f"pipeline.yaml/alerts: content_max_age_days {max_age} is shorter "
+            f"than the ~3-month announcements window, so real announcements "
+            f"would stop alerting")
     if alerts.get("content_band") not in bands:
         errors.append(
             f"pipeline.yaml/alerts: content_band {alerts.get('content_band')!r} is not "
@@ -373,6 +518,50 @@ def check_pipeline(root: Path) -> list[str]:
         errors.append("pipeline.yaml/classification: no 'model'")
     if not isinstance(classification.get("workers", 1), int) or classification.get("workers", 1) < 1:
         errors.append("pipeline.yaml/classification: workers must be an integer >= 1")
+
+    # `fetch:` fails silently in the way this whole function exists to catch.
+    # `min_interval_seconds` is keyed by *registrable domain* and matched with
+    # `host == key or host.endswith("." + key)`, so writing `arxiv` instead of
+    # `arxiv.org` matches nothing, falls through to `default_min_interval_seconds`,
+    # and hits arXiv three times faster than its published guidance -- which is
+    # what caused the 2026-09-04 outage (D53). Validation would report clean.
+    fetch = doc.get("fetch") or {}
+    if not fetch:
+        errors.append("pipeline.yaml: no 'fetch' block -- the papers harvesters "
+                      "would fall back to hardcoded defaults with nothing saying so")
+    intervals = fetch.get("min_interval_seconds")
+    if not isinstance(intervals, dict) or not intervals:
+        errors.append("pipeline.yaml/fetch: min_interval_seconds must be a non-empty "
+                      "mapping of host -> seconds")
+    else:
+        for host, seconds in intervals.items():
+            if "." not in str(host):
+                errors.append(
+                    f"pipeline.yaml/fetch/min_interval_seconds: {host!r} is not a domain "
+                    "(host matching is exact-or-subdomain, so a bare name never matches "
+                    "and the host silently drops to default_min_interval_seconds)"
+                )
+            if not isinstance(seconds, (int, float)) or seconds <= 0:
+                errors.append(
+                    f"pipeline.yaml/fetch/min_interval_seconds/{host}: must be a positive number"
+                )
+        if "arxiv.org" not in intervals:
+            errors.append(
+                "pipeline.yaml/fetch/min_interval_seconds: no 'arxiv.org' entry -- five "
+                "harvesters fetch arXiv and it is the host that rate-limited us (D53)"
+            )
+    for key, kind in (("default_min_interval_seconds", (int, float)),
+                      ("discovery_ttl_hours", (int, float)),
+                      ("max_backoff_seconds", (int, float)),
+                      ("retries", int)):
+        value = fetch.get(key)
+        if not isinstance(value, kind) or isinstance(value, bool) or value <= 0:
+            errors.append(f"pipeline.yaml/fetch: '{key}' must be a positive number")
+    if isinstance(fetch.get("retries"), int) and fetch["retries"] > 10:
+        errors.append(
+            "pipeline.yaml/fetch: retries above 10 means a rate-limited host is hammered "
+            "for minutes; a lost source is a partial run, not a dead one (D27)"
+        )
     return errors
 
 
@@ -398,11 +587,32 @@ def check_papers_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     errors = []
     url_fields = {"url", "meta_url", "announcement_url"}
     returns = {"papers", "papers_and_unresolved"}
+    strategies = {"blockquote_abstract", "heading_section", "lead_section"}
 
     for entry in doc.get("labs", []):
         lab = entry.get("lab", "?")
         if lab not in tracked_labs:
             errors.append(f"papers_sources.yaml/{lab}: lab not in sources.yaml")
+        # A mistyped strategy is the same class of silent failure as a mistyped
+        # `url_field`: extraction falls back through the weaker strategies, so
+        # the papers still arrive -- as lead sections full of page furniture,
+        # scoring zero, with nothing recorded as unresolved.
+        abstract = entry.get("abstract") or {}
+        if not isinstance(abstract, dict) or "strategy" not in abstract:
+            errors.append(
+                f"papers_sources.yaml/{lab}: no `abstract` block -- the scoring "
+                f"leg has no way to read this lab's papers")
+        else:
+            if abstract.get("strategy") not in strategies:
+                errors.append(
+                    f"papers_sources.yaml/{lab}: abstract.strategy "
+                    f"{abstract.get('strategy')!r} not in {sorted(strategies)} -- "
+                    f"extraction would fall back and never say so")
+            if not isinstance(abstract.get("max_chars"), int) or abstract["max_chars"] < 200:
+                errors.append(
+                    f"papers_sources.yaml/{lab}: abstract.max_chars "
+                    f"{abstract.get('max_chars')!r} must be an int >= 200 -- the "
+                    f"extractor rejects anything shorter as furniture")
         if entry.get("url_field") not in url_fields:
             errors.append(
                 f"papers_sources.yaml/{lab}: url_field {entry.get('url_field')!r} not in "
@@ -470,6 +680,104 @@ def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
         errors.append(f"people.yaml/{lab}: registered lab with no people entry")
     return errors
 
+
+
+def check_dedupe(path: Path | None = None) -> list[str]:
+    """Check dedupe.yaml.
+
+    The band is what this guards. `cosine_high` below `cosine_low` inverts the
+    logic silently — every pair falls through to "auto-merge" and the collapse
+    starts deleting claims with no error anywhere. A null threshold does the
+    same by crashing the phase mid-run instead of at startup.
+
+    Args:
+        path: dedupe.yaml to check. Defaults to the shipped one; tests override.
+
+    Returns:
+        Error message list.
+    """
+    path = path or ROOT / "dedupe.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+
+    thresholds = doc.get("thresholds") or {}
+    high, low = thresholds.get("cosine_high"), thresholds.get("cosine_low")
+    for name, value in (("cosine_high", high), ("cosine_low", low)):
+        if not isinstance(value, (int, float)) or not 0.0 <= value <= 1.0:
+            errors.append(
+                f"dedupe.yaml: {name}={value!r} must be a number in [0, 1] — "
+                "run research/dedupe/calibrate.py to derive it from the labels"
+            )
+    if isinstance(high, (int, float)) and isinstance(low, (int, float)) and high < low:
+        errors.append(
+            f"dedupe.yaml: cosine_high={high} is below cosine_low={low}, which "
+            "inverts the band — every pair would auto-merge"
+        )
+
+    window = doc.get("window_days")
+    if not isinstance(window, int) or window < 1:
+        errors.append(f"dedupe.yaml: window_days={window!r} must be a positive integer")
+
+    releases = (doc.get("releases") or {}).get("window_hours")
+    if not isinstance(releases, int) or releases < 24:
+        errors.append(
+            f"dedupe.yaml: releases.window_hours={releases!r} must be an integer "
+            ">= 24 — published_on is a date, so a shorter window collapses to zero"
+        )
+
+    adjudication = doc.get("adjudication") or {}
+    version = adjudication.get("prompt_version")
+    prompt = ROOT.parent / "prompts" / "duplicate_adjudication" / f"{version}.md"
+    if not version or not prompt.exists():
+        errors.append(
+            f"dedupe.yaml: adjudication.prompt_version={version!r} has no file at "
+            f"prompts/duplicate_adjudication/{version}.md"
+        )
+
+    embedding = (doc.get("embedding") or {}).get("batch_size")
+    if not isinstance(embedding, int) or embedding < 1:
+        errors.append(f"dedupe.yaml: embedding.batch_size={embedding!r} must be positive")
+
+    span = (doc.get("releases") or {}).get("max_span_days")
+    if not isinstance(span, int) or span < 1:
+        errors.append(
+            f"dedupe.yaml: releases.max_span_days={span!r} must be a positive integer — "
+            "without a ceiling a daily-release repo chains into one permanent group"
+        )
+
+    # Both model names are checked against the price table, because `_cost`
+    # indexes `PRICES[model]` *after* the provider has billed the call. An
+    # unpriced model therefore spends real money and then raises a KeyError,
+    # which the dedupe phase swallows: money gone, no cost record, no groups.
+    # Failing here is the difference between a typo caught in CI and a typo
+    # found in the ledger.
+    import sys as _sys
+    # Guarded: unguarded, repeated validation in one process prepends this path
+    # again each time and permanently shadows any same-named installed module.
+    _shim = str(ROOT.parent / "research" / "announcements")
+    if _shim not in _sys.path:
+        _sys.path.insert(0, _shim)
+    try:
+        from providers import PRICES, PROVIDERS
+    except ImportError:  # pragma: no cover - only if the shim moves
+        return errors + ["dedupe.yaml: cannot import providers to check model names"]
+
+    for key, model in (("embedding.model", (doc.get("embedding") or {}).get("model")),
+                       ("adjudication.model", adjudication.get("model"))):
+        if model not in PRICES:
+            errors.append(
+                f"dedupe.yaml: {key}={model!r} is not in providers.PRICES — the call "
+                "would be billed and then fail when its cost is computed"
+            )
+    provider = adjudication.get("provider")
+    if provider not in PROVIDERS:
+        errors.append(
+            f"dedupe.yaml: adjudication.provider={provider!r} not in {sorted(PROVIDERS)}"
+        )
+
+    return errors
 
 
 def check_digest(path: Path | None = None) -> list[str]:
@@ -665,9 +973,13 @@ def main() -> int:
     papers_errors = check_papers_sources(ROOT, tracked_labs)
     people_errors = check_people(ROOT, tracked_labs)
     digest_errors = check_digest()
+    dedupe_errors = check_dedupe()
+    signal_errors = check_repo_signals(ROOT)
+    entity_errors = check_entities(ROOT)
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
                   + pipe_errors + papers_errors + people_errors
-                  + digest_errors)
+                  + digest_errors + signal_errors + dedupe_errors
+                  + entity_errors)
     for e in new_errors:
         print(f"ERROR   {e}")
     for w in reg_warnings + prac_warnings:

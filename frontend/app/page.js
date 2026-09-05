@@ -47,6 +47,41 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
   );
 }
 
+function FoldedGroup({ members, reason, onOpen }) {
+  const [open, setOpen] = useState(false);
+  const span = members.length === 1 ? "1 more" : `${members.length} more`;
+  return (
+    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        style={{
+          background: "none", border: "none", padding: 0, cursor: "pointer",
+          font: "inherit", fontSize: 12, color: "var(--muted-2)",
+        }}
+      >
+        {open ? "▾" : "▸"} {span} on this — same event
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+          {/* Why they were merged, in the model's or the rule's own words. A
+              collapse the reader cannot interrogate is a collapse they have to
+              take on trust. */}
+          <div style={{ fontSize: 11, color: "var(--muted-2)", fontStyle: "italic" }}>{reason}</div>
+          {members.map((f) => (
+            <div
+              key={f.id}
+              onClick={(e) => { e.stopPropagation(); onOpen(f.id); }}
+              style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
+            >
+              <span style={{ color: "var(--muted-2)" }}>{f.date}</span> · {f.title}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
@@ -55,6 +90,7 @@ function Dashboard() {
   // the whole corpus with its connections nested, so filtering here costs a
   // render and filtering server-side would cost a round trip per keystroke.
   const [labFilter, setLabFilter] = useState("all");
+  const [docFilter, setDocFilter] = useState("all");
   const [holdingFilter, setHoldingFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score");
   const [selectedId, setSelectedId] = useState(null);
@@ -89,7 +125,12 @@ function Dashboard() {
     // full alert bodies to render one integer — and an all-time count could
     // never fall back to zero once anything had ever broken.
     apiFetch("/api/health")
-      .then((h) => setSystemAlerts(h?.recent_system_alerts ?? 0))
+      // Falls back to the pre-rename key: the API and this bundle deploy as
+      // separate Render services, so for a few minutes on a sync one of them is
+      // behind. Reading only the new key would paint the badge green against an
+      // older API — a false green on the health indicator.
+      .then((h) => setSystemAlerts(
+        h?.unacknowledged_system_alerts ?? h?.recent_system_alerts ?? 0))
       .catch(() => setSystemAlerts(0));
   }, []);
 
@@ -163,23 +204,68 @@ function Dashboard() {
     });
   }, [items, audience]);
 
+  // Which member of a near-duplicate group speaks for it, decided per audience
+  // rather than read from `isAnchor`. That flag is picked once over the whole
+  // corpus on a single score; event_type is a multiplicative term in the
+  // investment score and absent from the AI score, so the member ranking
+  // highest overall can score zero on the axis being displayed — and the member
+  // carrying the signal for this audience is the one that got folded.
+  //
+  // Folded members stay in `decorated` so a reader can expand a card and check
+  // the merge. Dropping them would make a collapse look like an article we
+  // never had.
+  const [anchorFor, foldedByGroup] = useMemo(() => {
+    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
+    // Score first, then by date — and the date direction flips for release
+    // trains, where every member usually scores the same so this decides every
+    // one of them. A repo's card must name the version it is on, not the one it
+    // has left. Everywhere else earliest wins, because being early is the
+    // claim. Same rule as app/digest.py `rank`; the two must agree or the feed
+    // and the digest name different articles as the same event.
+    const better = (a, b) => {
+      if (value(a) !== value(b)) return value(a) > value(b);
+      const latest = a.groupMethod === "release_train";
+      if (a.date !== b.date) return latest ? a.date > b.date : a.date < b.date;
+      // Ids break a full tie, or the winner depends on the order the API
+      // happened to return rows in — which has no secondary sort within a day.
+      return latest ? a.id > b.id : a.id < b.id;
+    };
+    const best = {};
+    for (const it of decorated) {
+      const cur = best[it.groupId];
+      if (!cur || better(it, cur)) best[it.groupId] = it;
+    }
+    const folded = {};
+    for (const it of decorated) {
+      if (best[it.groupId] === it) continue;
+      (folded[it.groupId] = folded[it.groupId] || []).push(it);
+    }
+    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
+    return [best, folded];
+  }, [decorated, audience]);
+
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
   // it before the reader spends a click finding out.
+  //
+  // Counted over anchors only, matching what a click actually reveals. Counting
+  // folded members too made "OpenAI 23" open 19 cards.
   const labOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (audience === "investment" ? it.score <= 0 : it.aiScore <= 0) continue;
       const seen = counts.get(it.lab) || { lab: it.lab, label: it.labLabel, n: 0 };
       seen.n += 1;
       counts.set(it.lab, seen);
     }
     return [...counts.values()].sort((a, b) => b.n - a.n);
-  }, [decorated, audience]);
+  }, [decorated, anchorFor, audience]);
 
   const holdingOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (it.score <= 0) continue;
       // One count per article, not per connection: an article linked to a
       // holding by three routes is still one thing that happened to it.
@@ -190,7 +276,7 @@ function Dashboard() {
     return [...counts.entries()]
       .map(([holding, n]) => ({ holding, n }))
       .sort((a, b) => b.n - a.n || a.holding.localeCompare(b.holding));
-  }, [decorated]);
+  }, [decorated, anchorFor]);
 
   // A holding filter has no meaning on the AI side — those items carry
   // practices, not connections — so it is dropped rather than left set and
@@ -212,14 +298,19 @@ function Dashboard() {
   }
 
   const visible = useMemo(() => {
-    const relevant = decorated.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
+    const anchors = decorated.filter((it) => anchorFor[it.groupId] === it);
+    const relevant = anchors.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
     const byBand = bandFilter === "all"
       ? relevant
       : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
     const byLab = labFilter === "all" ? byBand : byBand.filter((it) => it.lab === labFilter);
+    // Papers and announcements are one corpus scored by one rule, so they rank
+    // in one list by default. The filter is here because "what has the lab
+    // published" and "what has the lab written up" are different questions.
+    const byDoc = docFilter === "all" ? byLab : byLab.filter((it) => it.docType === docFilter);
     const byHolding = !holdingActive
-      ? byLab
-      : byLab.filter((it) => it.connections.some((c) => c.holding === holdingFilter));
+      ? byDoc
+      : byDoc.filter((it) => it.connections.some((c) => c.holding === holdingFilter));
 
     const sorted = [...byHolding].sort((a, b) => {
       if (sortBy === "date") return b.date.localeCompare(a.date);
@@ -244,7 +335,7 @@ function Dashboard() {
         showImpactRow: true,
       };
     });
-  }, [decorated, audience, bandFilter, labFilter, holdingFilter, holdingActive, sortBy]);
+  }, [decorated, anchorFor, audience, bandFilter, labFilter, docFilter, holdingFilter, holdingActive, sortBy]);
 
   const selected = decorated.find((it) => it.id === selectedId) || null;
 
@@ -272,11 +363,11 @@ function Dashboard() {
               <span style={{ width: 6, height: 6, background: runStatus?.status === "failed" ? NEGATIVE : ACCENT, display: "inline-block" }} />
               {loading ? "Loading…" : lastRunLabel}
             </div>
+            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
+            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
+            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             {/* The health surface is a link rather than a tab: the dashboard
                 answers "what did we learn", /ops answers "can I trust it". */}
-            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
-            <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Digest</a>
-            <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none", display: "flex", alignItems: "center", gap: 8, borderColor: systemAlerts ? NEGATIVE : undefined, color: systemAlerts ? NEGATIVE : undefined }}>
               Health
               {systemAlerts ? <span style={{ fontSize: 11 }}>{systemAlerts}</span> : null}
@@ -310,6 +401,19 @@ function Dashboard() {
                   );
                 })}
               </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="label-bracket">Source</span>
+              <select
+                className="field-input"
+                value={docFilter}
+                onChange={(e) => setDocFilter(e.target.value)}
+                style={{ padding: "8px 10px", fontSize: 13 }}
+              >
+                <option value="all">Everything</option>
+                <option value="announcement">Announcements</option>
+                <option value="paper">Papers</option>
+              </select>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <span className="label-bracket">Lab</span>
@@ -369,19 +473,20 @@ function Dashboard() {
               <div style={{ fontSize: 13, color: "var(--muted)" }}>{visible.length} items</div>
               {/* An empty list under a filter is an answer, not a failure —
                   but only if it says which filter produced it. */}
-              {bandFilter !== "all" || labFilter !== "all" || holdingActive ? (
+              {bandFilter !== "all" || labFilter !== "all" || docFilter !== "all" || holdingActive ? (
                 <>
                   <div style={{ fontSize: 11, color: "var(--muted-2)", lineHeight: 1.6 }}>
                     {[
                       bandFilter !== "all" ? `${bandFilter} band` : null,
                       labFilter !== "all" ? labOptions.find((o) => o.lab === labFilter)?.label : null,
+                      docFilter !== "all" ? `${docFilter}s` : null,
                       holdingActive ? holdingFilter : null,
                     ].filter(Boolean).join(" · ")}
                   </div>
                   <button
                     className="btn"
                     style={{ background: "none", border: "none", padding: 0, color: ACCENT, textAlign: "left", fontSize: 11 }}
-                    onClick={() => { setBandFilter("all"); setLabFilter("all"); setHoldingFilter("all"); }}
+                    onClick={() => { setBandFilter("all"); setLabFilter("all"); setDocFilter("all"); setHoldingFilter("all"); }}
                   >
                     Clear filters
                   </button>
@@ -423,6 +528,13 @@ function Dashboard() {
                       <span key={i} className="conn-pill" style={{ color: p.color, borderColor: p.color }}>→ {p.label}</span>
                     ))}
                   </div>
+                )}
+                {(foldedByGroup[item.groupId] || []).length > 0 && (
+                  <FoldedGroup
+                    members={foldedByGroup[item.groupId]}
+                    reason={item.groupReason}
+                    onOpen={setSelectedId}
+                  />
                 )}
               </div>
             ))}

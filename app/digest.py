@@ -171,9 +171,10 @@ def _holdings_line(conns: list[m.Connection], names: dict, shown: int) -> dict:
 def build(
     session: Session,
     kind: str,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     config: dict | None = None,
+    quantise: bool = True,
 ) -> dict:
     """Select and render one audience's digest for the window ending at `end`.
 
@@ -183,9 +184,16 @@ def build(
     Args:
         session: Open session.
         kind: `investment` or `ai`.
-        prompt_version: Which classification run to read.
+        prompt_version: Which classification run to read; a tuple spans several,
+            so one digest can rank announcements and papers together.
         end: Right edge of the publication window.
         config: Parsed config; read from disk when omitted.
+        quantise: Snap the window to the fixed grid and take the last *complete*
+            period. True for anything that publishes — the grid is what makes
+            `publish` idempotent and consecutive editions a partition. False for
+            the unpersisted preview, which takes the rolling `[end - W, end]`
+            instead: quantised, the preview's newest day is always the one that
+            closed, so on the 5th it read "up to the 3rd" and looked stale.
 
     Returns:
         ``{"kind", "window_start", "window_end", "stats", "items"}``. `stats`
@@ -200,7 +208,13 @@ def build(
         raise ValueError(f"unknown digest kind: {kind!r}")
 
     config = config or settings()
-    start, end = window_for(end, config)   # `end` becomes the period boundary
+    if quantise:
+        start, end = window_for(end, config)   # `end` becomes the period boundary
+    else:
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
+        end = end.astimezone(timezone.utc)
+        start = end - timedelta(hours=config["window_hours"])
     rules = config[kind]
 
     labs = {r.id: r.label for r in session.scalars(select(m.RefLab))}
@@ -211,7 +225,10 @@ def build(
     classifications = {
         c.article_id: c
         for c in session.scalars(
-            select(m.Classification).where(m.Classification.prompt_version == prompt_version)
+            select(m.Classification).where(
+                m.Classification.prompt_version.in_(
+                    (prompt_version,) if isinstance(prompt_version, str)
+                    else tuple(prompt_version)))
         )
     }
 
@@ -235,20 +252,91 @@ def build(
     ):
         pracs[t.classification_id].append(t)
 
-    considered, selected = 0, []
-    for art in session.scalars(select(m.Article)):
-        cls = classifications.get(art.id)
-        if cls is None or not _in_window(art, start, end):
-            continue
-        considered += 1
-        item = (
+    # Folded near-duplicates never reach the cut. An edition carries at most
+    # eight items, so publishing a launch post and its forum restatement as two
+    # of them spends a quarter of the space saying one thing twice.
+    #
+    # **The anchor is chosen here, not read from the table.** `is_anchor` is
+    # picked once over the whole corpus on a single significance score, and this
+    # edition is neither. Two ways that goes wrong if trusted:
+    #
+    # * *Out of window.* A release train spans days; its corpus-wide anchor can
+    #   sit outside this window entirely, so every member that did ship inside it
+    #   folds against an absent row and the section renders empty for a repo that
+    #   shipped four versions.
+    # * *Wrong audience.* One anchor serves both cuts. `event_type` is a
+    #   multiplicative term in the investment score and absent from the AI score,
+    #   so the member that ranks highest overall can score zero on this axis —
+    #   and the member carrying the investment signal is already folded. The item
+    #   disappears from the investment digest and the loss reads as intentional.
+    #
+    # Membership is the durable fact and lives in the table; which member speaks
+    # for the group is a property of the view, so each view decides it.
+    axis = "score" if kind == INVESTMENT else "ai_score"
+    grouping = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
+    groups = {article_id: g.group_id for article_id, g in grouping.items()}
+    methods = {g.group_id: g.method for g in grouping.values()}
+
+    in_window = [
+        art for art in session.scalars(select(m.Article))
+        if classifications.get(art.id) is not None and _in_window(art, start, end)
+    ]
+
+    def rank(art) -> tuple:
+        """Highest score on this edition's axis, then by date.
+
+        The date tie-break flips for release trains, and it decides every one of
+        them: within a train each release usually carries the same score, so the
+        secondary key is the whole decision. A repo's card must name the version
+        it is on — anchoring earliest published `claude-code v2.1.258` while
+        v2.1.260 sat folded inside it, which states the opposite of what the
+        group means. Elsewhere earliest wins, because being early is the
+        product's claim.
+        """
+        latest = methods.get(groups.get(art.id, f"g{art.id}")) == "release_train"
+        direction = 1 if latest else -1
+        return (getattr(classifications[art.id], axis) or 0.0,
+                direction * art.published_on.toordinal(), direction * art.id)
+
+    def item_for(art):
+        """Render `art` under this edition's rule, or None if it does not pass."""
+        cls = classifications[art.id]
+        return (
             _investment_item(art, cls, conns_by_article[art.id], mechs[cls.id],
                              labs, names, mech_labels, rules, config)
             if kind == INVESTMENT
             else _ai_item(art, cls, pracs[cls.id], labs, prac_labels, rules)
         )
-        if item is not None:
-            selected.append(item)
+
+    # Ranked candidates per group, best first. The whole list is kept rather
+    # than just the winner because the top-ranked member is not necessarily the
+    # one that *passes*: `_investment_item` gates on connection strength and
+    # band, and `rank` orders on score. A group whose highest scorer carries no
+    # holding link would emit nothing at all while a folded member with a 0.9
+    # NVIDIA connection sat behind it — the link never reaching a reader, and
+    # `collapsed` claiming another row already said it when no row did.
+    #
+    # So the group is represented by its best member that the audience's own
+    # rule accepts, and only genuinely says nothing when none of them do.
+    candidates: dict[str, list] = {}
+    for art in in_window:
+        candidates.setdefault(groups.get(art.id, f"g{art.id}"), []).append(art)
+
+    considered, selected, collapsed = 0, [], 0
+    for members in candidates.values():
+        members.sort(key=rank, reverse=True)
+        considered += 1
+        for index, art in enumerate(members):
+            item = item_for(art)
+            if item is not None:
+                selected.append(item)
+                collapsed += len(members) - 1
+                break
+        else:
+            # Nobody passed. The group is suppressed on merit, not collapsed —
+            # counting it as collapsed would report a merge as the reason a
+            # reader saw nothing.
+            collapsed += len(members) - 1
 
     selected.sort(key=lambda i: i["rank"], reverse=True)
     items = selected[: rules["max_items"]]
@@ -267,6 +355,11 @@ def build(
             # a reader asking "what did you not tell me" does not care which.
             "suppressed": considered - len(items),
             "matched_rule": len(selected),
+            # Kept separate from `suppressed`: those items lost on merit or to
+            # the cap, these were never candidates because another row in the
+            # edition already says the same thing. Conflating them would make a
+            # collapse read as a rejection.
+            "collapsed": collapsed,
         },
         "items": items,
     }
@@ -376,7 +469,7 @@ def _ai_item(art, cls, prac_tags, labs, prac_labels, rules):
 
 def publish(
     session: Session,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     run_id: int | None = None,
     config: dict | None = None,
@@ -387,9 +480,14 @@ def publish(
     updates the edition it already published rather than issuing a second,
     subtly different one for the same period.
 
+    A digest may read several classification versions (announcements and papers
+    carry their own), but the uniqueness key is one column. The *first* version
+    given is the label, and the full set is recorded in `stats["versions"]` --
+    so the key stays stable while the edition still says what produced it.
+
     Args:
         session: Open session; the caller commits.
-        prompt_version: Which classification run to read.
+        prompt_version: Which classification run to read. A tuple spans several.
         end: Right edge of the publication window.
         run_id: Firing that produced this, when there is one.
         config: Parsed config; read from disk when omitted.
@@ -398,6 +496,9 @@ def publish(
         The persisted rows, investment first.
     """
     config = config or settings()
+    versions = ((prompt_version,) if isinstance(prompt_version, str)
+                else tuple(prompt_version))
+    label = versions[0]
     rows = []
     for kind in KINDS:
         built = build(session, kind, prompt_version, end, config)
@@ -405,7 +506,7 @@ def publish(
             select(m.Digest).where(
                 m.Digest.kind == kind,
                 m.Digest.window_end == built["window_end"],
-                m.Digest.prompt_version == prompt_version,
+                m.Digest.prompt_version == label,
             )
         )
         if row is None:
@@ -413,10 +514,10 @@ def publish(
                 kind=kind,
                 window_start=built["window_start"],
                 window_end=built["window_end"],
-                prompt_version=prompt_version,
+                prompt_version=label,
             )
             session.add(row)
-        row.stats = built["stats"]
+        row.stats = {**built["stats"], "versions": list(versions)}
         row.payload = {"items": built["items"]}
         row.run_id = run_id
         rows.append(row)

@@ -430,3 +430,88 @@ class TestTheBatchPathIsAlsoBounded:
         count, summary = self._run_batch_with(monkeypatch, tmp_path, None, 10)
         assert count == 10
         assert summary["skipped_for_budget"] == 0
+
+
+class TestTheScorerReadsBronze:
+    """`classify_new` takes article text from `raw_articles`, not a file.
+
+    This is the path that spends money and it had no test: every existing case
+    either passed `articles_path` (the legacy file branch), returned at the
+    `pending: 0` short-circuit, or monkeypatched `classify_new` away. Revert
+    the DB read and the suite stayed green while every release row sat pending
+    for ever -- re-listed each firing, costing nothing, producing nothing, and
+    reporting `classified: N, cost_usd: 0.0` like a healthy incremental run.
+    """
+
+    def _rows(self, session):
+        session.add_all([
+            m.RawArticle(url="https://openai.com/a", content_hash="h1",
+                         source_file="research/docs/announcements.json",
+                         payload={"url": "https://openai.com/a", "lab": "openai",
+                                  "date": "2026-09-01", "title": "post",
+                                  "text": "announcement body",
+                                  "text_source": "rss_summary"}),
+            m.RawArticle(url="https://github.com/o/r/releases/tag/v1",
+                         content_hash="h2", source_file="github_releases",
+                         payload={"url": "https://github.com/o/r/releases/tag/v1",
+                                  "lab": "openai", "date": "2026-09-03",
+                                  "title": "o/r v1", "text": "release body",
+                                  "text_source": "github_release"}),
+        ])
+        session.commit()
+
+    def _spy(self, monkeypatch, seen):
+        def fake_run(articles, model, workers, batch, budget):
+            seen.extend(articles)
+            return {"scored": [], "failures": [], "cost_usd": 0.0,
+                    "classified": len(articles), "skipped_for_budget": 0,
+                    "bands": {}}
+
+        import score_announcements as scorer
+        monkeypatch.setattr(scorer, "run", fake_run)
+
+    def test_the_payload_from_bronze_is_what_reaches_the_scorer(
+            self, session, monkeypatch):
+        self._rows(session)
+        seen = []
+        self._spy(monkeypatch, seen)
+
+        classify.classify_new(session, "v7",
+                              budget=Budget(per_run_usd=5.0, per_month_usd=20.0))
+
+        texts = {a["text"] for a in seen}
+        assert texts == {"announcement body", "release body"}
+
+    def test_a_release_row_is_not_dropped_for_being_in_another_source_file(
+            self, session, monkeypatch):
+        """The failure D53 fixes: filtering one corpus file against a work list
+        built from the whole table silently drops every other file's rows."""
+        self._rows(session)
+        seen = []
+        self._spy(monkeypatch, seen)
+
+        result = classify.classify_new(
+            session, "v7", budget=Budget(per_run_usd=5.0, per_month_usd=20.0))
+
+        assert result["classified"] == result["pending"] == 2
+        assert "https://github.com/o/r/releases/tag/v1" in {a["url"] for a in seen}
+
+    def test_the_scorer_gets_the_work_list_in_its_own_order(self, session,
+                                                            monkeypatch):
+        """Ordering `pending_urls` alone does nothing: this is the list the
+        scorer slices when the budget binds, so which articles a truncated run
+        paid for has to follow it."""
+        for url in ("https://c", "https://a", "https://b"):
+            session.add(m.RawArticle(
+                url=url, content_hash="h", source_file="f",
+                payload={"url": url, "text": "t", "lab": "openai",
+                         "date": "2026-09-01", "title": "t",
+                         "text_source": "rss_summary"}))
+        session.commit()
+        seen = []
+        self._spy(monkeypatch, seen)
+
+        classify.classify_new(session, "v7",
+                              budget=Budget(per_run_usd=5.0, per_month_usd=20.0))
+
+        assert [a["url"] for a in seen] == ["https://a", "https://b", "https://c"]

@@ -1,0 +1,41 @@
+{
+  "id": "08",
+  "lab": "openai",
+  "date": "2025-08-08",
+  "title": "gpt-oss-120b & gpt-oss-20b Model Card",
+  "url": "https://arxiv.org/abs/2508.10925v1",
+  "text_source": "paper_abstract",
+  "document_type": "system_card",
+  "text": "We present gpt-oss-120b and gpt-oss-20b, two open-weight reasoning models that push the frontier of accuracy and inference cost. The models use an efficient mixture-of-expert transformer architecture and are trained using large-scale distillation and reinforcement learning. We optimize the models to have strong agentic capabilities (deep research browsing, python tool use, and support for developer-provided functions), all while using a rendered chat format that enables clear instruction following and role delineation. Both models achieve strong results on benchmarks ranging from mathematics, coding, and safety. We release the model weights, inference implementations, tool environments, and tokenizers under an Apache 2.0 license to enable broad use and further research.",
+  "gold": {
+    "labelled_by": "claude-fable-5",
+    "event_type": "open_weights",
+    "mechanisms": [
+      {
+        "id": "inference_cost_down",
+        "sign": "positive",
+        "magnitude": "medium",
+        "confidence": "medium",
+        "reason": "The lab states outright that the models push the inference-cost frontier and names the efficiency techniques (mixture-of-experts, distillation), though it gives no figure.",
+        "quote": "We present gpt-oss-120b and gpt-oss-20b, two open-weight reasoning models that push the frontier of accuracy and inference cost. The models use an efficient mixture-of-expert transformer architecture and are trained using large-scale distillation and reinforcement learning."
+      }
+    ],
+    "categories": [],
+    "practices": [
+      {
+        "id": "model_capability",
+        "action": "investigate",
+        "impact": "medium",
+        "confidence": "high",
+        "dimensions": [
+          "open_weights",
+          "agentic_tool_use",
+          "cost"
+        ],
+        "reason": "Openly licensed reasoning models with stated agentic optimization and an inference-cost claim make self-hosting a concrete option to evaluate against the lab's own benchmark claims.",
+        "quote": "We release the model weights, inference implementations, tool environments, and tokenizers under an Apache 2.0 license to enable broad use and further research."
+      }
+    ]
+  },
+  "review": {}
+}

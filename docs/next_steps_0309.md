@@ -22,6 +22,104 @@
 
 - Incorporate a model reliability tab. This should have a timeline of results with the LLM classifier run compared to the gold set so we can see model reliability over time. This test should be run every time the pipeline is run (this, specifically would sit outside of design and in the Data collect / Pipeline section below), however there should also be a button to run it manually. Let's discuss which comparison metrics to show.
 
+
+### Scoring / gold set
+
+- **`capability_result` vs `safety_policy`: a safety document that reports a
+  *crossed* threshold is being scored as a voluntary policy.** "Safety overview:
+  GPT-6 Astra" states the model is "our first to reach the Critical level of
+  cybersecurity capability under our Preparedness Framework" — a crossed
+  capability threshold, which `prompts/announcement_scoring/v9.md:205` defines as
+  `capability_result` (event weight 4). It is classified `safety_policy` (weight
+  1, `config/scoring.yaml`), so it scores **10.0** where the boundary would put
+  it near 40, and it sits far down a score-sorted feed while the launch post it
+  accompanies scores 100.
+
+  `config/scoring.yaml`'s own header documents the identical v1 failure: "the
+  first US export control on a frontier model scored 20 because it was
+  classified `safety_policy` (weight 1) rather than as an action taken ON the
+  lab." Same shape, new instance — the boundary does not distinguish a lab
+  *announcing a policy* from a lab *reporting it crossed a line*.
+
+  Fix is a v10 prompt boundary change plus a full re-classification and a gold
+  re-run, so it wants its own branch and its own cost line. Raised 2026-09-05
+  while building the duplicate collapse (docs/decisions.md D59), **not
+  actioned**. Noted there because the collapse deliberately does *not* fold this
+  row into the launch card — merging it would have hidden the mis-score instead
+  of surfacing it.
+
+  **Three instances now, and they argue for the full re-score over the cheap
+  one.** The duplicate collapse surfaced two more cases of one initiative
+  getting two `event_type` labels, both found by Neil's spot-check (D59b):
+
+  | one thing | labelled |
+  |---|---|
+  | "Introducing Intelligence Age", same day, two URLs | `other` / `safety_policy` |
+  | GeneBench-Pro launch and its deep-dive | `capability_result` / `research_result` |
+  | Daybreak access expansion, two posts one day | `enterprise_partnership` / `product_launch` |
+
+  These are not the same bug as the `capability_result` boundary above — that
+  one is a *wrong* label, these are *inconsistent* ones. But they share a cause
+  worth naming: the event vocabulary has no way to say "this post is part of a
+  larger announcement", so the model picks whichever label fits the fragment in
+  front of it.
+
+  Cost consequence, so it is decided on evidence rather than budget: a targeted
+  re-score of `safety_policy` + `capability_result` is ~$1.20 and catches only
+  articles moving *out* of those classes. A full non-release re-score is ~$8.70
+  (314 articles at the measured $0.0276) and catches movement in both
+  directions. Inconsistency across `research_result`, `product_launch` and
+  `enterprise_partnership` is movement *into* the affected classes, which the
+  cheap option cannot see. **Recommend the full re-score.**
+
+  Deliberately not worked around in the collapse. Two of those pairs are
+  refused by the event-type gate, which is the one rule stopping the system
+  folding the Astra safety disclosure into the launch card — and Neil's
+  spot-check independently confirmed that split is right. Weakening a correct
+  gate to compensate for a noisy input would trade a real guarantee for two
+  edge cases.
+
+- **Declined: the cross-event-type "story" link.** After the collapse, GPT-6
+  Astra is three rows — release, safety, customer stories — because gate 2
+  refuses to merge across event types. A "story" link would group them in the
+  feed as one thing. Not built: its value in the Astra case is almost entirely
+  rescuing the safety row from the mis-scoring above, and building it now would
+  paper over the bug rather than fix it. Revisit only once the
+  `capability_result` boundary is corrected, and only if that row still fails to
+  surface on its own merits. Recorded 2026-09-05 (D59).
+
+- **`accelerator_custom_si` sign disagrees with the gold label** on article `15`
+  (Jalapeño). Human says `mixed`, every model version v7/v8/v9 says `positive`.
+  Stable across a 53x change in input text, so it is the prompt or
+  `config/categories.yaml`, not the article. Full write-up and the reason it
+  matters for holding routing: [docs/gold_review.md](gold_review.md), last
+  section. Raised 2026-09-05, **not actioned**.
+
+### Cost log
+
+- **`research/docs/announcement_cost.json` corrupted under concurrent writers,
+  live, on 2026-09-05.** Every cost recorder — `score_announcements`,
+  `drift._record_cost`, `dedupe._record_cost` — does read-modify-write on one
+  JSON file with no lock. The duplicate-collapse phase and the papers
+  classifier ran at the same moment against the same working tree and spliced
+  two records into one: a `dedupe:7216-7241` record lost its closing brace and
+  a Meta paper's fields were grafted onto it. The file stopped parsing, which
+  took out eleven tests in `test_pipeline_db.py` and `test_worker.py`.
+
+  Repaired by hand; both records recovered, 1,540 rows, $32.42 total. **No
+  spend was lost** — but only because the collision happened to land mid-record
+  rather than truncating the array.
+
+  `pipeline_runs`' single-running index (D44) does not prevent this: it stops
+  two *pipeline runs*, and this was a run alongside a manual `dedupe.assign`.
+  Two agents on one machine is now a normal working pattern here, so the guard
+  is in the wrong place.
+
+  The fix is a lock around the read-modify-write, or an append-only format that
+  does not require reading first — JSON Lines would make a concurrent append
+  atomic at the line level and remove the failure mode rather than narrowing it.
+  Not actioned; raised 2026-09-05 (D59d).
+
 # Data collection / Pipeline
 
 - Collect the names of the leaders of the frontier labs; this has to be inserted as part of the pipeline

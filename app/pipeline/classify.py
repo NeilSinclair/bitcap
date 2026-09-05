@@ -37,12 +37,28 @@ if _ANNOUNCEMENTS not in sys.path:
     sys.path.insert(0, _ANNOUNCEMENTS)
 
 
-def pending_urls(session: Session, prompt_version: str) -> list[str]:
+def pending_urls(session: Session, prompt_version: str,
+                 exclude_source_files: tuple[str, ...] = (),
+                 include_source_files: tuple[str, ...] = ()) -> list[str]:
     """URLs with a raw article but no classification at this prompt version.
+
+    Ordered by url so a budget ceiling cuts the same list the same way twice.
+    Without it the order is whatever the engine returns, which differs between
+    the sqlite the tests use and the Postgres that runs -- so *which* articles
+    a truncated run paid for would be unreproducible and untestable.
 
     Args:
         session: Open session.
         prompt_version: Classifier version, e.g. "v7".
+        exclude_source_files: `raw_articles.source_file` values to leave out.
+            This is how a leg switched off in config stops costing money: its
+            rows are already in the table from earlier firings, and skipping
+            the fetch does nothing about them.
+        include_source_files: Restrict to these `source_file` values. Papers are
+            classified under their own prompt version, so at that version every
+            announcement in the table also lists as pending; naming the corpus
+            wanted is safer than excluding every other one, which would silently
+            start paying for a new leg the day it is added.
 
     Returns:
         URLs needing classification. Empty means there is nothing to pay for,
@@ -51,11 +67,14 @@ def pending_urls(session: Session, prompt_version: str) -> list[str]:
     classified = select(m.RawLlmResponse.url).where(
         m.RawLlmResponse.prompt_version == prompt_version
     )
-    return list(
-        session.scalars(
-            select(m.RawArticle.url).where(m.RawArticle.url.not_in(classified))
-        )
-    )
+    query = select(m.RawArticle.url).where(m.RawArticle.url.not_in(classified))
+    if include_source_files:
+        query = query.where(
+            m.RawArticle.source_file.in_(tuple(include_source_files)))
+    if exclude_source_files:
+        query = query.where(
+            m.RawArticle.source_file.not_in(tuple(exclude_source_files)))
+    return list(session.scalars(query.order_by(m.RawArticle.url)))
 
 
 def settings(path: Path = CONFIG) -> dict:
@@ -69,6 +88,9 @@ def classify_new(
     budget: Budget | None = None,
     articles_path: Path | None = None,
     config_path: Path = CONFIG,
+    exclude_source_files: tuple[str, ...] = (),
+    include_source_files: tuple[str, ...] = (),
+    corpus: str = "announcements",
 ) -> dict:
     """Classify every article this prompt version has not seen.
 
@@ -76,8 +98,17 @@ def classify_new(
         session: Open session, used for the work list and month-to-date spend.
         prompt_version: Classifier version to fill in.
         budget: Ceiling to run under; built from config when omitted.
-        articles_path: Corpus file; defaults to the committed one.
+        articles_path: Read the article records from this file instead of
+            from `raw_articles`. Kept for tests and one-off runs over a
+            corpus that is not loaded; the default reads the database, so
+            every source file's rows are classified.
         config_path: Pipeline config.
+        exclude_source_files: Corpus files whose rows must not be
+            classified, for a leg switched off in config.
+        include_source_files: Restrict the work list to these corpus files.
+        corpus: Which prompt and cache to score under -- "announcements" or
+            "papers". Same scorer, same schema, same vocabularies and same
+            budget; only the prompt file and the cache directory differ.
 
     Returns:
         ``{pending, classified, skipped_for_budget, failures, cost_usd, bands,
@@ -86,7 +117,8 @@ def classify_new(
     """
     import json
 
-    pending = pending_urls(session, prompt_version)
+    pending = pending_urls(
+        session, prompt_version, exclude_source_files, include_source_files)
     if not pending:
         return {
             "pending": 0, "classified": 0, "skipped_for_budget": 0,
@@ -96,10 +128,44 @@ def classify_new(
 
     import score_announcements as scorer
 
-    path = articles_path or scorer.ARTICLES
-    corpus = json.loads(path.read_text(encoding="utf-8"))
-    wanted = set(pending)
-    articles = [a for a in corpus if a["url"] in wanted]
+    # Passed only for papers. The announcements call stays exactly what it was,
+    # so the default keeps resolving from the scorer's module globals -- which is
+    # the seam tests and one-off scripts use to redirect a run at a scratch
+    # directory (see `score_announcements.announcements`).
+    variant = {"variant": scorer.papers()} if corpus == "papers" else {}
+
+    if articles_path is not None:
+        corpus = json.loads(articles_path.read_text(encoding="utf-8"))
+        wanted = set(pending)
+        articles = [a for a in corpus if a["url"] in wanted]
+    else:
+        # Read the payloads from the rows the work list was built from, rather
+        # than re-reading one corpus file. Two things were wrong with the file.
+        #
+        # It is not the only source any more: `raw_articles` carries a row per
+        # leg that produces articles, and filtering one file against a work
+        # list built from the whole table silently drops every row loaded from
+        # any other file. Those rows stay pending, are re-listed every firing,
+        # never cost anything, and never produce a classification -- while the
+        # leg reports a healthy ingest.
+        #
+        # And on the deployed container the file resets to the image copy every
+        # firing, because there is no disk (D31). An article ingested tonight
+        # and left pending by a budget ceiling could then never be classified
+        # at all: the work list still names it, and the file no longer holds
+        # its text. `_settled_urls` documents that hazard and works around it
+        # by refetching the page; reading the payload here removes it.
+        # Rebuilt *in `pending` order*, not in whatever order the rows come
+        # back. Ordering `pending_urls` alone does nothing: this is the list
+        # the scorer slices when the budget binds, so which articles a
+        # truncated run paid for would still be whatever Postgres returned --
+        # and differently arbitrary from the sqlite the tests run on.
+        by_url = {
+            row.url: row.payload for row in session.scalars(
+                select(m.RawArticle).where(m.RawArticle.url.in_(pending))
+            )
+        }
+        articles = [by_url[url] for url in pending if url in by_url]
 
     budget = budget if budget is not None else Budget.from_config(session, config_path)
     config = settings(config_path)
@@ -110,6 +176,7 @@ def classify_new(
         workers=config["workers"],
         batch=config.get("batch", False),
         budget=budget,
+        **variant,
     )
 
     return {

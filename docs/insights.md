@@ -79,3 +79,72 @@ lab-owned email domain) and 583 `confirmed_org_wide` (a parent-company domain
 like @google.com, which covers all of Alphabet). The lesson for the design doc:
 a raw contributor count is nearly meaningless as a measure of a lab, and any
 figure quoted has to carry its evidence tier or it is just repo popularity.
+
+
+---
+
+**Four model names have appeared in the labs' own public code before any
+announcement, across three labs.** Running the first-mention pass over 630
+documents in bronze -- 250 announcements and 380 release notes -- turns up 39
+identifiers appearing for the first time in 120 days. Thirty-five were first
+seen in the lab's own announcement, which is an ordinary launch. Four were
+first seen in shipped code with nothing written about them anywhere:
+
+- `gpt-6-astra` — *"Added support for configuring GPT-6-Astra through the API
+  without changing the default model or showing it in the model picker"*,
+  `openai/codex` rust-v0.153.1, 2026-09-03
+- `gpt-5.6-luna` — became the **default model** of the OpenAI Agents SDK,
+  2026-08-11
+- `gemma-4` — *"Add Gemma 4."*, `google-deepmind/gemma` v4.0.0, **2026-05-13**
+- `gemma-3` — in a DeepMind fine-tuning example, 2026-07-14
+
+The `gemma-4` case is the strongest of the four on timing: a version bump in a
+public repository nearly four months before anything in the announcements
+corpus names it. And the distinction between the four and the other
+thirty-five is not something the system was told to look for -- it falls out of
+recording which corpus reached a name first, which is only possible because
+every leg's documents land in one table.
+
+---
+
+## The efficiency claim that only exists in the paper
+
+DeepSeek-V4's abstract, scored 100.0 on the investment axis and quoted verbatim
+by the register:
+
+> "In the one-million-token context setting, DeepSeek-V4-Pro requires only 27%
+> of single-token inference FLOPs and **10% of KV cache** compared with
+> DeepSeek-V3.2."
+
+KV cache is HBM-resident, so a tenfold reduction per served token is a
+first-order claim about memory demand at long context — the transmission the
+brief names as its calibration case, stated in numbers rather than inferred.
+The system routes it to NVIDIA, Micron, TSMC, Amazon, TeraWulf and IREN at
+strength 1.00: memory and the energy complex, which is what that claim argues
+about. DeepSeek-V3's technical report routes **negative** to the same names.
+
+**The announcements leg cannot reach this.** The figures are in the technical
+report and nowhere else, which is the whole case for scoring papers at all
+(D57) — and the reverse of the assumption we started from, that research would
+be interesting to engineers and not to investors.
+
+The corpus splits by *document type*, not by lab and not by research-versus-
+announcement:
+
+| type | n | investment | AI team |
+|---|---|---|---|
+| Flagship technical reports (DeepSeek) | 8 | strongest evidence in the register | high |
+| System / model cards (OpenAI) | 7 | high, but duplicative of the launch | low |
+| Alignment & interpretability (Anthropic) | 12 | **0.0, all twelve** | up to 44.4 |
+| Safety / social science (DeepMind) | 15 | 0.0 | 0.0 |
+| Component research (Meta) | 5 | ~0 | low–medium |
+
+DeepSeek-R1 (2025-01-22) scores **100.0 / 100.0** — the system recovering the
+brief's own calibration case from a paper abstract, unprompted.
+
+The counterweight matters as much as the finding. The largest single group is
+DeepMind's safety and social-science work, and *"A moral Turing test"* and
+*"Artificial Minds, Human Disagreement: The Politics of AI Consciousness"* both
+score 0.0 on both axes. 33 of 47 papers score zero for investors. That is the
+result, not a shortfall: if those papers scored, they would bury the eight that
+matter.
