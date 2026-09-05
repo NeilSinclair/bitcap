@@ -43,6 +43,12 @@ def deepmind():
 
 
 @pytest.fixture(scope="module")
+def meta():
+    config = yaml.safe_load((ROOT / "config" / "sources.yaml").read_text())
+    return next(l for l in config["labs"] if l["id"] == "meta-ai")
+
+
+@pytest.fixture(scope="module")
 def register():
     return json.loads((ROOT / "research" / "docs" / "announcements.json").read_text())
 
@@ -2542,11 +2548,29 @@ class TestDeepMindDiscoveryChannel:
         assert deepmind["method"] == "rss"
         assert deepmind["index_url"] == "https://deepmind.google/blog/rss.xml"
 
-    def test_the_date_comes_from_the_feed_not_the_page(self, deepmind):
+    def test_the_date_comes_from_the_feed_not_the_page(self, monkeypatch):
         """Page-read dates drifted: 06-18 against the feed's 06-16 for
         "Securing the future of AI agents", because the first "Month D, YYYY"
-        in a stripped DeepMind page is not reliably the article's own."""
-        assert deepmind["date_from"] == "feed"
+        in a stripped DeepMind page is not reliably the article's own.
+
+        Asserts the behaviour, not `date_from: feed`. Only `from_sitemap`
+        reads that key -- `from_rss` always dates from `pubDate` -- so pinning
+        the config value would pass unchanged if this path started reading
+        dates off the page tomorrow.
+        """
+        def fake_fetch(url, **kw):
+            if url == "https://feed.example/rss":
+                return _rss_xml(link="https://x.example/a")  # pubDate 2025-09-01
+            return "<html><body><p>Date June 18, 2026 body text.</p></body></html>"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "full_text", "date_from": "page"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+
+        assert out[0]["date"] == "2025-09-01", (
+            "from_rss must date from the feed's pubDate even when the page "
+            "prints a different date, and regardless of `date_from`")
 
     def test_coverage_has_not_fallen_back_to_sitemap_depth(self, register):
         """The floor that fails if discovery silently narrows again.
@@ -2742,3 +2766,150 @@ class TestFromRssTitleEncoding:
                "text_source": "rss_summary"}
         out = from_rss(lab, datetime(2025, 1, 1))
         assert out[0]["title"] == "Gemini’s guided learning"
+
+
+class TestMetaDiscoveryChannels:
+    """Meta's coverage, which D63 fixed differently from DeepMind's.
+
+    `ai.meta.com/blog` was never broken -- crawled to exhaustion it holds 231
+    articles back to 2019, of which exactly 5 are in window, and the register
+    held all 5. The gap was that Meta's investment-relevant AI news is on the
+    newsroom, so a second channel was added rather than the first one fixed.
+
+    That makes this the more fragile half of D63: the newsroom channel is one
+    `enabled: false` away from disappearing, and `channels()`' own docstring
+    invites exactly that edit for a misbehaving source. It carries all four of
+    the 100.0-scoring compute-buildout items in `docs/insights.md`, and none of
+    them appear on the AI blog in any form, so losing it silently returns the
+    register to its pre-D63 state with every test green. DeepMind got a
+    register-level floor for the same reason; this is its counterpart.
+    """
+
+    @staticmethod
+    def _newsroom(meta):
+        return [c for c in meta.get("also", [])
+                if "about.fb.com" in c.get("index_url", "")]
+
+    def test_the_blog_channel_is_still_the_primary(self, meta):
+        assert meta["method"] == "listing_pagination"
+        assert meta["index_url"] == "https://ai.meta.com/blog/"
+
+    def test_the_newsroom_channel_exists_and_is_enabled(self, meta):
+        found = self._newsroom(meta)
+        assert len(found) == 1, "the about.fb.com AI channel is gone"
+        assert found[0].get("enabled", True) is True, (
+            "the newsroom channel is disabled; Meta coverage falls back to the "
+            "AI blog alone, which is where D63 started")
+
+    def test_the_newsroom_channel_pages_deep_enough_for_the_window(self, meta):
+        """It serves ten items a page and page 1 reached only 2026-07-07 --
+        short of three months. Without paging the June items are lost, the
+        Reliance data-centre JV among them."""
+        channel = self._newsroom(meta)[0]
+        assert channel.get("feed_pages", 1) >= 2
+
+    def test_both_channels_reach_the_register(self, register):
+        found = [a for a in register if a["lab"] == "meta-ai"]
+        hosts = {"ai.meta.com" in a["url"] and "blog" or "about.fb.com"
+                 for a in found}
+        assert any("ai.meta.com/blog" in a["url"] for a in found), "blog channel missing"
+        assert any("about.fb.com" in a["url"] for a in found), "newsroom channel missing"
+        assert hosts  # both legs present
+
+    def test_coverage_has_not_fallen_back_to_the_blog_alone(self, register):
+        """The floor that fails if the newsroom channel silently stops.
+
+        The blog alone yields 5 over this window and both channels yield 20.
+        12 sits well above the former and below the latter, so a quiet month
+        on either leg does not fail this.
+        """
+        found = [a for a in register if a["lab"] == "meta-ai"]
+        assert len(found) >= 12, (
+            f"Meta coverage is {len(found)} articles; the AI blog alone "
+            "produced 5 before D63 added the newsroom channel.")
+
+    def test_the_compute_buildout_items_are_in_the_register(self, register):
+        """A count alone could be met while losing exactly the items that
+        justified the channel -- the CSR and programme posts it also carries
+        would satisfy a floor on their own."""
+        titles = " ".join(a["title"].lower() for a in register
+                          if a["lab"] == "meta-ai")
+        for item in ("blackrock", "reliance", "louisiana", "canada"):
+            assert item in titles, f"{item} data-centre item missing from Meta coverage"
+
+
+class TestFromRssRefusesASilentlyEmptyFeed:
+    """Zero articles from a healthy-looking run is the D63 failure itself.
+
+    `adapters.fetch_announcements` records a channel as failed only when the
+    method raises, and `alerts.source_down` keys off that -- so returning `[]`
+    reports "this lab published nothing" with every check green. DeepMind is
+    deliberately single-channel on this feed (D63 rejected a redundant
+    sitemap), which is what makes the guard load-bearing rather than tidy.
+    Matches `from_model_index`'s "parsed 0 models" and `from_discourse`'s
+    "listed 0 topics".
+    """
+
+    def test_a_feed_that_parses_to_nothing_raises(self, monkeypatch):
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            lambda url, **kw: "<rss><channel></channel></rss>")
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        with pytest.raises(RuntimeError, match="parsed 0 items"):
+            from_rss(lab, datetime(2025, 1, 1))
+
+    def test_an_atom_feed_raises_rather_than_reporting_nothing(self, monkeypatch):
+        """The realistic shape of this: a feed migrating to Atom serves
+        `<entry>`, the `<item>` regex matches nothing, and the fetch 200s."""
+        atom = "<feed><entry><title>A</title></entry></feed>"
+        monkeypatch.setattr(fetch_announcements, "fetch", lambda url, **kw: atom)
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        with pytest.raises(RuntimeError, match="parsed 0 items"):
+            from_rss(lab, datetime(2025, 1, 1))
+
+    def test_a_first_page_fetch_failure_propagates(self, monkeypatch):
+        """Paging introduced a try/except that swallowed this. Page 1 is the
+        channel; pages 2+ are only depth."""
+        def boom(url, **kw):
+            raise RuntimeError("fetch failed: 503")
+
+        monkeypatch.setattr(fetch_announcements, "fetch", boom)
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary", "feed_pages": 3}
+        with pytest.raises(RuntimeError, match="fetch failed"):
+            from_rss(lab, datetime(2025, 1, 1))
+
+    def test_a_feed_with_items_but_none_in_window_is_not_an_error(self, monkeypatch):
+        """The guard must fire on an unparseable feed, not a quiet lab."""
+        monkeypatch.setattr(fetch_announcements, "fetch",
+                            lambda url, **kw: _rss_xml())
+        lab = {"id": "google-deepmind", "index_url": "https://feed.example/rss",
+               "text_source": "rss_summary"}
+        assert from_rss(lab, datetime(2026, 1, 1)) == []
+
+
+class TestFromRssTruncatesLikeEveryOtherPath:
+    """`from_rss` was the only discovery path not applying the 24000 cap, which
+    stayed invisible while every configured feed served short pages --
+    DeepMind's longest article is 18.5k. about.fb.com has no such discipline
+    and stored a 47k row, the first in the corpus over the cap, and
+    `build_prompt` interpolates the text verbatim.
+    """
+
+    def test_a_long_article_is_capped(self, monkeypatch):
+        def fake_fetch(url, **kw):
+            if url == "https://feed.example/rss":
+                return _rss_xml(link="https://x.example/a")
+            return "<html><body><p>" + ("x" * 50000) + "</p></body></html>"
+
+        monkeypatch.setattr(fetch_announcements, "fetch", fake_fetch)
+        lab = {"id": "meta-ai", "index_url": "https://feed.example/rss",
+               "text_source": "full_text"}
+        out = from_rss(lab, datetime(2025, 1, 1))
+        assert len(out[0]["text"]) == 24000
+
+    def test_the_committed_register_holds_no_row_over_the_cap(self, register):
+        over = [(a["lab"], a["url"], len(a["text"])) for a in register
+                if len(a["text"]) > 24000]
+        assert over == [], f"rows exceed the 24000 cap: {over}"

@@ -17262,5 +17262,17 @@
     "usd": 0.085283,
     "seconds": 83.61,
     "at": "2026-09-05T20:03:10.448514+00:00"
+  },
+  {
+    "url": "https://about.fb.com/news/2026/08/the-future-is-for-everyone/",
+    "model": "claude-sonnet-5",
+    "mode": "interactive",
+    "input_tokens": 7340,
+    "output_tokens": 2952,
+    "cache_write_tokens": 9663,
+    "cache_read_tokens": 0,
+    "usd": 0.068358,
+    "seconds": 28.92,
+    "at": "2026-09-05T20:31:01.449667+00:00"
   }
 ]

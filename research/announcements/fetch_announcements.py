@@ -346,16 +346,30 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
     # three months; paging stops on the first page that yields no items, so a
     # feed shorter than its configured page count costs one wasted fetch rather
     # than an error.
+    # Page 1 is the channel; pages 2+ are depth. A failure on the first page
+    # therefore propagates -- `adapters.fetch_announcements` only records a
+    # channel as failed when the method raises, and `alerts.source_down` keys
+    # off that, so swallowing it would report "this lab published nothing"
+    # with every check green. That is the sentence D63 was written about.
+    # A later page failing or running out is ordinary and only ends the paging.
     pages = []
     for page in range(1, lab.get("feed_pages", 1) + 1):
         url = lab["index_url"] if page == 1 else (
             f"{lab['index_url']}?{lab.get('feed_page_param', 'paged')}={page}")
         try:
             doc = fetch(url, user_agent=ua, max_age_hours=DISCOVERY_MAX_AGE_HOURS)
-        except RuntimeError as exc:
-            print(f"    SKIP feed page {page}: {exc}", flush=True)
+        except RuntimeError:
+            if page == 1:
+                raise
+            print(f"    SKIP feed page {page}: unreachable", flush=True)
             break
         if "<item>" not in doc:
+            # Same reasoning as `from_model_index`'s "parsed 0 models": a feed
+            # that migrates to Atom (`<entry>`) or serves an error page with a
+            # 200 parses to nothing, and zero articles from a healthy-looking
+            # run is indistinguishable from a quiet lab.
+            if page == 1:
+                raise RuntimeError(f"feed parsed 0 items: {lab['index_url']}")
             break
         pages.append(doc)
 
@@ -404,7 +418,13 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
 
         if lab.get("text_source") == "full_text" and url:
             try:
-                text = strip_html(fetch(url, user_agent=ua))
+                # Capped like every other discovery path. This was the one
+                # that was not, which stayed invisible while the feeds served
+                # short pages: DeepMind's longest article is 18.5k. The
+                # about.fb.com channel stored a 47k row, the first in the
+                # corpus over the cap, and nothing downstream bounds it --
+                # `build_prompt` interpolates the text verbatim.
+                text = strip_html(fetch(url, user_agent=ua))[:24000]
                 text_source = "full_text"
             except RuntimeError as exc:
                 print(f"    SKIP full text, using summary for {url}: {exc}", flush=True)

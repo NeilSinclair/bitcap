@@ -6593,3 +6593,82 @@ assertions were verified to fail against the pre-fix register.
 silently narrows on a lab this exercise did not touch. The honest prerequisite
 is a per-lab expected-cadence baseline, which is the cost of that detector
 rather than a detail of it — same reasoning as D61's link-count arm.
+
+### D63a — what review caught, and the one finding that was a regression I introduced
+
+Six findings from `bitcap-reviewer` against the D63 branch. Four fixed, one
+already-correct-but-untested, one that turned out to be a regression this
+change itself introduced rather than the pre-existing gap it was reported as.
+
+**The validator could not see inside `also:`.** `check_sources` validated
+required keys over `[lab] + also` but ran its unknown-key allowlist over `lab`
+alone. Verified by execution: renaming `feed_pages` to `feed_pagees` inside the
+meta-ai newsroom channel returns `[]` from the validator. `from_rss` then falls
+back to one page, which the config's own note records as reaching 2026-07-07 —
+two months, not three — silently dropping the June items including the Reliance
+data-centre JV that `docs/insights.md` names as a top finding. Green validator,
+green suite, successful run. That is the D63 failure exactly, one level down,
+and it was introduced by adding config keys the allowlist did not know about.
+Fixed by iterating the same `[lab] + also` the loop above it already used, and
+`also` is now rejected *inside* a channel because `channels()` merges one level
+and never recurses, so a nested one is a silent no-op.
+
+**The Meta half had no register-level test where DeepMind got two.** The
+asymmetry mattered more than it looked: Meta's fix is a *second channel*, which
+is one `enabled: false` away from vanishing — an edit `channels()`' docstring
+explicitly invites — and that channel carries all four 100.0-scoring items.
+Losing it returns the register to its pre-D63 state with every test passing.
+`TestMetaDiscoveryChannels` now pins the channel's presence and enablement, its
+page depth, a coverage floor of 12, and the four named data-centre items, on the
+same reasoning as DeepMind's: a floor alone could be met by the CSR posts the
+feed also carries.
+
+**`from_rss` was the only path not truncating to 24000.** Pre-existing, and
+invisible until this change: every configured feed served short pages, and
+DeepMind's longest article is 18.5k. `about.fb.com` has no such discipline and
+stored a 47,148-character row — the first in the corpus over a cap every other
+discovery path enforces, and nothing downstream bounds it, since `build_prompt`
+interpolates the text verbatim. Capped, and the one oversized row truncated.
+
+Re-scoring that row after truncation is worth recording, because it is a
+variance observation and not a truncation one: the full text scored `none` with
+zero mechanisms, the truncated text scored `low` (3.3) with four, all four
+quotes resolving. The article is a vision essay whose signal is genuinely
+marginal either way, so this changes nothing about the corpus — but it is the
+same classifier, the same prompt and near-identical text disagreeing with
+itself, which is what `docs/drift` exists to watch and is worth not averaging
+away.
+
+**A test that pinned a string no code reads.**
+`test_the_date_comes_from_the_feed_not_the_page` asserted
+`deepmind["date_from"] == "feed"`. Only `from_sitemap` reads that key;
+`from_rss` always dates from `pubDate`, so the test would have passed unchanged
+if this path started reading dates off the page. Rewritten to feed a fake whose
+page date differs from its `pubDate` and assert the feed's date wins.
+
+**The empty-feed guard, and the regression underneath it.** Reported as
+pre-existing: `from_rss` returning `[]` is indistinguishable from a quiet lab,
+because `adapters.fetch_announcements` records a channel as failed only when the
+method raises. Half right. The zero-item case was pre-existing and is now
+guarded, matching `from_model_index`'s "parsed 0 models" and `from_discourse`'s
+"listed 0 topics" — and it matters more here because D63 deliberately left
+DeepMind single-channel. But the `try/except RuntimeError: break` that paging
+introduced was *new*, and it swallowed a page-1 **fetch failure** that
+previously propagated. Paging turned a loud failure into a silent one while
+adding depth. Page 1 now re-raises; only later pages are tolerated, since page 1
+is the channel and pages 2+ are only depth.
+
+**Verified clean by review, recorded because the checks are worth having run:**
+all 292 stored tag quotes resolve under the real `verbatim.enforce`; `score_of`
+recomputed from `config/scoring.yaml` matches every stored `(score, band)`; the
+artifact surgery changed zero rows present in both versions, so the D55 OpenAI
+revert hazard was in fact avoided; and the UA logic is correct — `user_agent`
+appears on exactly one lab entry, so openai, mistral and deepmind resolve to the
+module default and are byte-identical to before.
+
+**Also cleaned:** the 12 orphan v9 cache files left by the URL-form change.
+D63's trap note said the scored register was pruned by hand; the score cache was
+not, and it is not read by URL glob so nothing broke — but it left a 12-file
+discrepancy for the next person auditing cache coverage. Register, cache and
+scored register are now 1:1 at 292 with zero orphans in either direction, which
+is asserted rather than claimed.

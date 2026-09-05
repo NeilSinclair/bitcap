@@ -622,4 +622,9 @@ knowable from here. It is one call and the amount is immaterial, but the ledger
 should not be read as complete to the cent on a run that had a transport
 failure.
 
-**Running total across all workflows: ~$19.85.**
+One further call after review: the 47k `about.fb.com` row was truncated to the
+24000-character cap every other discovery path enforces, and re-classified so
+the stored text and its classification agree — **$0.0684**. Run total
+**$1.7229**.
+
+**Running total across all workflows: ~$19.92.**
