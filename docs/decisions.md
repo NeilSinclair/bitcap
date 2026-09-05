@@ -6184,3 +6184,118 @@ grouping algorithm itself has survived two reviews without a correctness finding
 The lesson is not "review the code" — it is that the fixes deserved the same
 suspicion as the original, and got less of it because they were written against
 a checklist under time pressure.
+
+## D60 — Papers are not deduped, and not linked to announcements (2026-09-05)
+
+D59 built near-duplicate collapse over announcements and GitHub releases. D57
+landed 47 papers as a second scored corpus under `p1`. The obvious next move is
+to point the first at the second. Measured over the live corpus, it should not
+be — and the reason is not "no payoff", it is that one half of it would do
+damage.
+
+`dedupe.assign` and `dedupe.embed` take a single `prompt_version` and the worker
+passes `v9`, so the 647 grouped rows are 380 releases plus 267 announcements and
+the 47 papers are outside grouping entirely. That stays true.
+
+### Papers do not duplicate each other, and the gate that would protect them is inert
+
+230 same-lab paper pairs. **Zero duplicates.** The twelve most title-similar
+pairs are all distinct documents and **not one is inside the 14-day window** —
+the closest same-lab neighbours are "Circuits Updates — May 2026" / "June 2026"
+(Jaccard 0.60, 29 days) and "GPT-5 System Card" / "o1 System Card" (Jaccard 0.75,
+363 days). Both are template-shaped titles for unrelated events, which is a
+failure mode the announcements corpus produces far less of.
+
+The decisive number is what survives the gates:
+
+| filter | pairs |
+|---|---:|
+| same lab | 230 |
+| same lab, within 14 days | 41 |
+| same lab, within 14 days, **same `event_type`** | **40** |
+
+**The event-type gate rejects one pair in forty-one.** D57 measured 34 of 47
+papers classifying `research_result`; on announcements that gate does the
+separating work before anything reaches the cosine band, and on papers it does
+almost nothing. The whole burden would fall on a threshold calibrated against a
+corpus where that filtering had already happened.
+
+And the 40 survivors are the hardest possible negatives: Anthropic's alignment
+blog publishing *Diffuse AI Control*, *Modular Pretraining*, *Agentic
+Misalignment*, *Fine-Tuned Lie Detectors* and *TASTE* inside one fortnight. Same
+lab, same window, same event type, same vocabulary, five different papers.
+Collapsing any two of those is a worse outcome than the duplicate rows the
+feature exists to remove.
+
+### Exactly one paper–announcement duplicate exists
+
+```
+7408  meta-ai  2026-06-29  [research_result] v9  From Brain Waves to Words: Brain2Qwerty…
+7672  meta-ai  2026-06-29  [research_result] p1  Accurate Decoding of Natural Sentences…
+```
+
+Meta's blog post and the paper it describes. Same lab, same day, same event
+type, both scored 0.0 / 5.6, neither notable — so collapsing them removes one
+row that nothing surfaces. Everything else the title and body scans returned was
+noise, matching on `openai`, `science`, `expanding`.
+
+Two details are worth keeping. `subjects(title)` returns `[]` for **both**:
+"Brain2Qwerty" is a novel product name with no version number, which is the gap
+`config/entities.yaml` documents about itself, so the identifier gate cannot make
+this link. Only the cosine band could. And the case that would actually pay — a
+technical report landing the same day as its launch post, the DeepSeek-V4 shape —
+is not in the corpus. V4's report is 2026-04-26; the V4 announcements are point
+releases in August, 109 days later.
+
+### What was rejected
+
+**A paper-specific similarity path with its own thresholds.** There is not one
+labelled paper pair. `cosine_high 0.80 / cosine_low 0.70` came from 82 labelled
+announcement pairs, and D59c is the record of what happens when a number from one
+distribution is reported against another. Calibrating properly means a labelling
+round, which is the cost of the feature, not a detail of it.
+
+**Widening `window_days` to catch the report-plus-launch case.** The window is
+already doing double duty. `stem()` folds family and version, so the DeepSeek-V4
+paper and `DeepSeek-V4-Pro GA Release` share a stem and are separated only by
+being 109 days apart — while the pair we *want* is the same signal at a shorter
+gap. Widening the window to catch the true case admits the false one, and it
+would also pull the Circuits Updates pair from 15 days of margin down to none.
+
+### Two things to do first if this is revisited
+
+Recorded so the next attempt does not start from scratch. Neither is queued.
+
+- **Widen the version filter to a set rather than build anything new.** `embed`,
+  `_rows` and `assign` take one version string; `article_groups.article_id` is
+  UNIQUE and no article carries two classifications (checked: zero), so one pass
+  spanning `{v9, p1}` is safe and gets the free exact and identifier passes
+  across both corpora. Embedding 47 papers costs about $0.00005 against the
+  $0.000682 the 647 already cost.
+- **An arXiv-identity pass, as a Gate 0 sibling.** All 15 arXiv papers carry a
+  version suffix (`2303.08774v6`, `2412.19437v2`) and all 15 base ids are
+  distinct today. But `raw_articles` is keyed on URL, so a re-harvest landing
+  `v7` creates a second row of the same paper. Deterministic, free, and it is the
+  one duplicate shape papers genuinely have.
+
+### Two product decisions that are not threshold questions
+
+Both bite the moment a paper folds behind an announcement, and neither was
+answered here.
+
+- **Anchoring.** `research_result` ceilings at 60.0 by design (D57) and
+  announcements do not, so on a mixed group the announcement wins the anchor on
+  score and the paper — the document carrying the numbers — is folded behind it.
+  D59d's per-audience fix picks the best member each rule accepts, but the
+  ranking is still score-only.
+- **The `docType` filter.** `api/queries.py:136` stamps `docType` per row and
+  `frontend/app/page.js:310` filters on it. Fold a paper behind an announcement
+  anchor and selecting **Papers** makes the group disappear. That failure mode
+  could not exist while grouping was announcements-only.
+
+### Consequence
+
+Papers stay ungrouped and unlinked. The corpus carries one uncollapsed duplicate
+pair, both rows scoring 0.0 / 5.6, and no known false merges. If a lab ships a
+technical report alongside its launch post the two will take separate rows, which
+is the cost of this decision and the trigger for reversing it.
