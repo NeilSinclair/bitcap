@@ -4492,3 +4492,232 @@ the text_source literals out of `fetch_announcements.py`, `backfill_openai.py`
 and `sources.yaml` and asserts each is described in the current prompt.
 Verified to fail against v7 naming `model_spec`. Any future channel that
 invents a text_source now fails at test time rather than scoring quietly wrong.
+
+## D53 — The papers cache never existed where it mattered (2026-09-05)
+
+**What happened.** The cron firing of 2026-09-04 lost four of six papers
+sources at once, all to arXiv `429`s:
+
+| Source | Error shape |
+|---|---|
+| papers/openai | `HTTP Error 429: Unknown Error` |
+| papers/deepseek | `HTTP Error 429: Unknown Error` |
+| papers/meta-ai | `fetch failed: <arXiv API url>: HTTP Error 429` |
+| papers/mistral | `fetch failed: <arXiv API url>: HTTP Error 429` |
+
+The two error shapes are the two fetch implementations. `deepseek_harvest.fetch`
+(which `openai_harvest` imports) raised the bare `HTTPError` because **it had no
+retry at all**; `arxiv_resolve.fetch` wrapped it in a `RuntimeError` after three
+attempts. Probed from a laptop the same day, the exact failing Mistral query
+returned `200` in 0.27s — arXiv was healthy and rate-limiting our address.
+
+**Root cause, and it is a deployment-shape bug, not a code bug.**
+`research/docs/*_cache/` is in `.gitignore` (line 156) *and* `.dockerignore`
+(line 7), and the Render cron has no disk. The disk cache every harvester was
+built around **has never existed on the deployment**. Locally there are 46 files
+in `arxiv_cache` and 24 in `deepseek_cache`, so a laptop run makes almost no
+live requests; the deployment started cold every night and replayed the lot.
+
+Volume on a cold run, roughly 70 serialised arXiv requests:
+
+| Lab | Requests | Window |
+|---|---|---|
+| openai | 7 `ti:` queries + 7 paper pages | none — re-harvests all history nightly |
+| deepseek | 2 queries + ~15 paper pages | none — same |
+| meta-ai | 1–2 queries per candidate title | 1 month |
+| mistral | 1–2 queries per candidate title | 1 month |
+
+Five of the six harvesters fetch `arxiv.org/html/` as well as their own lab's
+site, and each held a private opinion about the rate limit (1.5s in three of
+them, 3.0s in two). Each looked polite alone; none of them was in aggregate.
+`0e8ca97` ("Deployment branch: the tree, without 242 MB of cache history") is
+where the caches left the image — a reasonable call for image size that
+silently moved these sources from *mostly cached* to *fully cold*, and nothing
+registered the change.
+
+**Three defects in the retry layer**, all real, all small:
+
+1. `deepseek_harvest.fetch`: no retry, no backoff. One 429 killed the source.
+2. `arxiv_resolve.fetch`: backoff `2**attempt` = 1s, 2s against its own 3.0s
+   polite pause. **It retried a 429 faster than the rate it had already decided
+   was courteous** — turning one 429 into three.
+3. Nothing read `Retry-After`, which arXiv sends.
+
+Every harvester also slept *after* a successful fetch, so the first request of
+a process fired with no spacing at all — precisely the request that fails when
+the previous firing left the address hot.
+
+**Decision.** One shared fetch layer (`research/papers/fetch_cache.py`) behind
+all five arXiv-touching harvesters, whose own `fetch()` becomes a delegation
+that keeps its signature. The cache moves to Postgres (`fetch_cache`, migration
+`0008`), which is the only store that survives a firing on Render. One token
+bucket covers every `arxiv.org` host, backoff is never shorter than the polite
+interval, and `Retry-After` is honoured up to a cap. The numbers live under
+`fetch:` in `config/pipeline.yaml`.
+
+**The trap this nearly walked into, which is the interesting part.** A
+permanent URL-keyed cache would have *frozen discovery*. `meta_harvest` caches
+its paginated listing pages and `deepseek_harvest` caches the
+`au:"DeepSeek-AI"` query — the two URLs whose entire purpose is to return
+something different the day a new paper appears. Caching those forever would
+have stopped the register finding papers while every run went on reporting
+success: a worse failure than the 429s, and one nothing would have surfaced.
+So the cache has two classes. A versioned arXiv id (`arxiv.org/html/2501.12948v2`)
+is immutable and stored with `expires_at = NULL`, never re-fetched — and that
+is where nearly all the volume was. Everything else carries a TTL,
+`discovery_ttl_hours: 336`.
+
+**Rejected: baking the caches into the Docker image.** They are small enough
+(1.4 MB + 11 MB) and it was the first thing considered. It fixes the ~70
+requests already known about and does nothing for new papers, which is the case
+that matters; it goes stale silently; and it is the same shape as the bug that
+stranded eight articles the day before — state on ephemeral disk that quietly
+resets. A frozen snapshot with an expiry date, in place of a store that
+self-heals.
+
+**Rejected: a seed command to pre-load the deployment's cache.** Drafted, then
+cut. The disk cache's filenames are lossy (punctuation collapsed, truncated to
+150 chars), so a URL cannot be recovered from a filename, and reconstructing
+the URL list meant re-implementing discovery. It was fragile machinery to save
+exactly one cold run. Seeding is instead an operational step needing no code:
+point `DATABASE_URL` at the deployment and run the papers leg locally — every
+disk hit is promoted into Postgres having made no request at all, which is a
+path `fetch()` takes anyway rather than a special case. Verified with the
+network hard-blocked: 6/6 URLs served from disk and written to Postgres.
+
+**Consequence.** Steady state drops from ~70 live arXiv requests a night to
+roughly 8: discovery queries re-run on staggered expiry, paper pages never
+again. Night one is still cold, and that is now survivable — 70 requests spaced
+3s apart is inside arXiv's own guidance, which the previous uncoordinated
+1.5s-and-bursts pacing was not. If night one does fail, the run is partial
+rather than dead (D27) and whatever succeeded is permanent, so it converges
+across firings instead of repeating the same cold start forever.
+
+Measured: 4.2 MB of paper HTML stores as 912 kB (Postgres TOAST compresses it),
+so the full papers cache is ~6 MB. `fetch_cache` is in `OPS_TABLES` — `rebuild`
+dropping it would send the next run back to arXiv for everything it already has.
+
+**Not fixed, deliberately.** OpenAI's and DeepSeek's harvesters still take no
+window argument and re-harvest their entire history every firing. With the cache
+permanent that is now free, so it stops being a cost problem; it stays a wart.
+Meta's and Mistral's own lab sites, and DeepMind's sitemap, go through the same
+layer and get the same benefit — that was not the goal, but they share the
+function.
+
+**Regression tests.** `tests/test_fetch_cache.py`, 32 cases, written against
+this incident: a single 429 no longer kills a source; backoff never dips below
+the polite interval (asserts the exact `[3.0, 6.0]` sequence); `Retry-After` is
+read in both header forms and capped; `export.arxiv.org` and `arxiv.org` share
+one bucket; the first request does not sleep. The load-bearing ones are the
+`_expiry` cases — a discovery query *must* expire, an immutable paper id *must
+not* — and `test_no_harvester_keeps_a_private_fetch_loop`, which greps the five
+harvesters for a reintroduced `urllib.request.urlopen` so a future edit cannot
+quietly stop sharing the throttle.
+
+## D53a — A frozen artifact cannot track a moving one (2026-09-05)
+
+`test_corpus_fully_loaded` had been red since the discourse channel landed, and
+it was the test that was wrong, not the pipeline.
+
+It asserted `Article count == corpus_size()` **and** `Classification count ==
+corpus_size()`. The first is fine. The second made
+`research/docs/announcement_scores/v7/` — a committed snapshot — responsible for
+tracking `announcements.json`, which rolls forward on every fetch. The GPT-6
+Astra forum post arrived via the discourse channel (D47) after v7 was written,
+so no v7 cache file for it can exist. The suite went red for a pipeline that had
+just worked, which is the exact failure `corpus_size()` was introduced to kill
+one layer up when these assertions carried a literal `236`.
+
+**Rejected: classifying the article at v7 to close the gap.** ~$0.03, and it
+would have worked. But v7's prompt has no description of `forum_post` — that was
+added in v8 (D52) — so it means paying to generate a score we already know is
+under-informed, purely to make a count match. Filling a gap with a bad number is
+worse than reporting the gap.
+
+**Decision.** Assert against what the cache actually covers, using the loader's
+own recorded stat: `load_classifications` already counts the corpus URLs it
+found no cache file for, and `cmd_load` records it on the run row. So the test
+now asserts `Classification count == corpus_size() - missing`. Every article the
+cache covers must still reach a Classification row, so a silent drop between
+load and transform is still a hard failure. `test_scores_reconcile_with_register`
+already reasons this way about register/corpus drift; this test now matches it.
+
+**The bite that equality was carrying is now explicit.** D10 was a whole lab
+silently unscored, and a tolerated gap would hide exactly that, so the test also
+asserts every lab present in `articles` has at least one classification.
+Verified by deliberate breakage rather than assumed: dropping all nine Mistral
+classifications fails the test, and so does dropping a single classification for
+an article that does have a cache file. Both cases were red before the change
+and are red after it — the tolerance admits only articles the frozen cache
+cannot cover, and nothing else.
+
+## D53b — What an independent review found in the fix (2026-09-05)
+
+`bitcap-reviewer` was run against the D53 work before it was committed. It
+returned twelve findings. Nine were acted on; the reasoning for the rest is
+below, because "we saw it and declined" and "we missed it" must not look the
+same later.
+
+**Two were serious, and both were in the part of the fix that was supposed to
+be the careful part.**
+
+*The disk-cache path never consulted the TTL.* `fetch()` checked expiry on the
+database row and then, three lines later, returned a disk file without checking
+anything — and promoted it into Postgres stamped `now + 336h`. A year-old
+`au:"DeepSeek-AI"` answer was therefore served as a hit *and laundered into a
+fresh one*. That is precisely the frozen-discovery failure D53 says the module
+exists to prevent, reached by the one path that skipped the check. The TTL is
+now measured from the file's mtime, and promotion carries the file's real age.
+
+*`_IMMUTABLE` matched unversioned arXiv ids.* `arxiv.org/abs/2501.12948` with no
+`v` suffix resolves to the *latest* version, so it is mutable by definition, and
+it was being stored permanently. Not theoretical: `deepmind_harvest.py:66`
+strips the version deliberately and line 189 builds `arxiv.org/html/<bare id>`
+from it, so a DeepMind paper going v1→v2 with a changed author list — routine
+between preprint and camera-ready — would have kept the v1 byline forever, on
+the harvester whose entire output is bylines. **And the test suite asserted the
+defect**, which is the part worth remembering: a test written from the same
+misunderstanding as the code confirms it rather than catching it. The version
+suffix is now required.
+
+**Three more that would have bitten.** `email.utils.parsedate_to_datetime`
+*raises* on unparseable input rather than returning None, so the `is None` guard
+was dead code and a `Retry-After: soon` would have escaped `fetch()` as a
+`ValueError` — which the harvesters do not catch, killing a whole harvest
+instead of one paper. `_engine()` created the `fetch_cache` table out of band;
+`app/db.py:181-186` documents exactly why that is fatal (`op.create_table` has
+no `checkfirst`, so pre-creating a table a pending migration will add kills that
+migration every firing until a human intervenes). It now probes and never
+creates. And `_DB_CHECKED` was set *before* the engine resolved, so a second
+thread arriving mid-init concluded there was no cache and fetched live in
+silence.
+
+**One review finding was itself wrong, and the test suite caught it.** Gating
+retries on status code — correct in general, since retrying a 404 spent four
+arXiv requests per missing paper — initially dropped 403. That re-broke
+`test_deepmind_harvest.py::TestFetchRetry`, which exists because a live run
+observed arXiv returning **403 as a rate-limit response**, not a real refusal.
+403 is retryable here on evidence, and the constant says so.
+
+**Not taken: pruning expired rows to bound table growth.** The finding assumed
+nightly re-harvesting accumulates rows. It does not — `db_put` updates the row
+for an existing URL, so growth is bounded by *distinct URLs ever seen*, not by
+time. `DELETE WHERE expires_at < now()` would also delete precisely the rows
+about to be re-fetched, and would not touch the real growth vector, which is
+permanent paper rows. Measured: 4.2 MB of paper HTML stores as 912 kB. At a few
+hundred papers over the project's life this is tens of megabytes. Revisit if
+`pg_total_relation_size('fetch_cache')` passes ~500 MB; not before.
+
+**Also fixed: the config was unvalidated.** `check_pipeline` covered budget,
+cadence, alerts and classification but not the new `fetch:` block. Writing
+`arxiv` instead of `arxiv.org` matches no host (matching is exact-or-subdomain),
+falls through to `default_min_interval_seconds: 1.0`, hits arXiv three times
+faster than its guidance, and validates clean — reproducing D53 exactly.
+Verified by mutation: six malformed variants, six caught, control clean.
+
+**And the D53a bound.** `test_corpus_fully_loaded` tolerated an *unbounded*
+`missing`, so a `budget.per_run_usd` breach that stopped classification partway
+would move the expected count down in lockstep and report success on a corpus a
+quarter unscored. Now bounded at 5 (measured: 1). The per-lab assertion added in
+D53a is kept but is the cheap half — it needs only one classified article per
+lab, so the largest lab could lose 149 of 151 and pass. Both halves are needed.

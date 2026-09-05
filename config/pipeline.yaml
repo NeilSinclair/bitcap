@@ -109,3 +109,47 @@ classification:
   # completion, which suits a backfill and not a scheduled firing that has to
   # finish (planning.md 4a).
   batch: false
+
+# How the papers harvesters talk to the outside world. Every value here exists
+# because one of them was wrong on 2026-09-04 (docs/decisions.md D53): four of
+# six papers sources failed in one firing when arXiv rate-limited the
+# deployment's egress IP.
+#
+# The cache those harvesters relied on was a directory under
+# `research/docs/*_cache/`, which is in .gitignore AND .dockerignore, and the
+# cron has no disk. So the deployment never had a cache at all and replayed
+# ~70 requests at arXiv every night. The cache now lives in Postgres
+# (`fetch_cache`), which is the only store that survives a firing there.
+fetch:
+  # Seconds between two live requests to one host family. arXiv publishes a
+  # one-request-per-three-seconds guideline and enforces it with 429s; this is
+  # that number. `export.arxiv.org` and `arxiv.org` share the bucket because
+  # they are one operator enforcing one limit -- keeping them separate is how
+  # five harvesters each looked polite alone and were not in aggregate.
+  min_interval_seconds:
+    arxiv.org: 3.0
+  # Everything else: labs' own sites, one request per second, which no lab has
+  # ever objected to.
+  default_min_interval_seconds: 1.0
+
+  # How long a *discovery* URL's answer is trusted: API queries, paginated
+  # listings, sitemaps. Immutable URLs -- a versioned arXiv id names a document
+  # that is never edited -- ignore this and are cached permanently, which is
+  # where nearly all the request volume was.
+  #
+  # This number is the trade between cost and lag, and it is the one value here
+  # worth arguing about. 336 hours (14 days) means a paper that reaches arXiv
+  # after we first looked for it is found within a fortnight, and the ~36
+  # title-resolution queries re-run on staggered expiry rather than all at once
+  # -- roughly 8 live requests a night in the steady state against 70 before.
+  # Lower it if the register starts looking stale; the cost is linear.
+  discovery_ttl_hours: 336
+
+  # Attempts before a source is recorded as failed. A lost source is a partial
+  # run, not a dead one (D27), so this is deliberately small: sitting in a
+  # retry loop against a rate-limited address does not help and only makes the
+  # firing longer.
+  retries: 4
+  # Ceiling on any single backoff, including one the server asks for via
+  # Retry-After. Stops a misbehaving `Retry-After: 86400` hanging the run.
+  max_backoff_seconds: 120.0
