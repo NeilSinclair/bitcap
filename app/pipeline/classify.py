@@ -30,6 +30,10 @@ from app import models as m
 from app.pipeline.budget import Budget, BudgetExceeded
 
 ROOT = Path(__file__).parent.parent.parent
+# The corpus names `classify_new` accepts. Declared here rather than inside
+# the function so the name can be validated before the scorer is imported.
+CORPORA = ("announcements", "papers", "posts")
+
 CONFIG = ROOT / "config" / "pipeline.yaml"
 
 _ANNOUNCEMENTS = str(ROOT / "research" / "announcements")
@@ -106,9 +110,13 @@ def classify_new(
         exclude_source_files: Corpus files whose rows must not be
             classified, for a leg switched off in config.
         include_source_files: Restrict the work list to these corpus files.
-        corpus: Which prompt and cache to score under -- "announcements" or
-            "papers". Same scorer, same schema, same vocabularies and same
-            budget; only the prompt file and the cache directory differ.
+        corpus: Which prompt and cache to score under -- "announcements",
+            "papers" or "posts". Same scorer, same schema, same vocabularies and
+            same budget; only the prompt file and the cache directory differ.
+
+    Raises:
+        ValueError: On an unknown corpus name. Checked before anything else so
+            a typo costs nothing.
 
     Returns:
         ``{pending, classified, skipped_for_budget, failures, cost_usd, bands,
@@ -116,6 +124,12 @@ def classify_new(
         at all, so a run with nothing to do needs no API key.
     """
     import json
+
+    # Before the work list and before any import: an unknown corpus name is a
+    # programming error, and the expensive way to find out is a full run scored
+    # under the wrong prompt.
+    if corpus not in CORPORA:
+        raise ValueError(f"unknown corpus {corpus!r}; expected one of {sorted(CORPORA)}")
 
     pending = pending_urls(
         session, prompt_version, exclude_source_files, include_source_files)
@@ -132,7 +146,12 @@ def classify_new(
     # so the default keeps resolving from the scorer's module globals -- which is
     # the seam tests and one-off scripts use to redirect a run at a scratch
     # directory (see `score_announcements.announcements`).
-    variant = {"variant": scorer.papers()} if corpus == "papers" else {}
+    # A LOOKUP, NOT A TERNARY. As a ternary any corpus name that was not
+    # literally "papers" fell through to the announcement variant and was scored
+    # under the wrong prompt, silently and at full price.
+    builder = {"announcements": None, "papers": scorer.papers,
+               "posts": scorer.posts}[corpus]
+    variant = {"variant": builder()} if builder else {}
 
     if articles_path is not None:
         corpus = json.loads(articles_path.read_text(encoding="utf-8"))

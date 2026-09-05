@@ -48,7 +48,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app import digest as digest_mod
 from app import models as m
-from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION
+from app.cli import PAPER_PROMPT_VERSION, POST_PROMPT_VERSION, PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
@@ -62,7 +62,8 @@ from app.pipeline.budget import Budget
 from app.pipeline.classify import budget_breach, classify_new
 from app.pipeline.orchestrator import ingest
 from app.pipeline import adapters
-from app.pipeline.registry import CORPUS_LABELS, LEGS, PAPERS_CORPUS, load_sources
+from app.pipeline.registry import (CORPUS_LABELS, LEGS, PAPERS_CORPUS, POSTS_CORPUS,
+                                   load_sources)
 from app.pipeline.sink import merge_announcements
 from app.runs import tracked, watermarks
 from app.transform import transform
@@ -226,10 +227,14 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         # firing's articles into bronze so the classifier could see them.
         stats["classifications"] = load_classifications(
             session, prompt_version, run_id=run.id,
-            source_files=tuple(c for c in CORPUS_LABELS.values() if c != PAPERS_CORPUS))
+            source_files=tuple(c for c in CORPUS_LABELS.values()
+                               if c not in (PAPERS_CORPUS, POSTS_CORPUS)))
         stats["paper_classifications"] = load_classifications(
             session, PAPER_PROMPT_VERSION, scores_dir=PAPER_SCORES_DIR, run_id=run.id,
             source_files=(PAPERS_CORPUS,))
+        stats["post_classifications"] = load_classifications(
+            session, POST_PROMPT_VERSION, scores_dir=POST_SCORES_DIR, run_id=run.id,
+            source_files=(POSTS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
         # Once per version: `transform` scopes its delete by prompt_version, so
         # the derivations are additive. `connect` rebuilds the whole table, so
@@ -237,6 +242,7 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         # the last one's rows.
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
         stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
+        stats["post_transform"] = transform(session, POST_PROMPT_VERSION, run_id=run.id)
         stats["connections"] = run_connect(
             session, (prompt_version, PAPER_PROMPT_VERSION), run_id=run.id)
         # Assign, never accumulate: `new_usd` is this run's whole delta on the
@@ -411,6 +417,24 @@ def _phases(
             by_lab.setdefault(item["lab"], []).append(item)
         for lab, items in by_lab.items():
             register_mod.load_unresolved(session, "papers", lab, items, run.id)
+
+    # Posts land the same way papers do: the adapter returns article-shaped
+    # records and they go into the same bronze table, so this is a fourth
+    # corpus rather than a fourth pipeline. Unresolved handles are grouped by
+    # lab for the same reason papers are -- one lab's handles going quiet must
+    # be visible as that lab's problem.
+    if "posts" in chosen:
+        post_items = report.items_for("posts")
+        if post_items:
+            stats["posts_corpus"] = load_article_records(
+                session, post_items, POSTS_CORPUS, run_id=run.id)
+        by_lab_posts: dict[str, list] = {}
+        for outcome in report.outcomes:
+            if outcome.source.leg == "posts" and outcome.result:
+                for item in outcome.result.unresolved:
+                    by_lab_posts.setdefault(item.get("lab", "unknown"), []).append(item)
+        for lab, items in by_lab_posts.items():
+            register_mod.load_unresolved(session, "posts", lab, items, run.id)
     session.commit()
 
     # 3. Classify what is new, under a ceiling.
@@ -431,7 +455,7 @@ def _phases(
             # explicitly, so a future article-producing leg is picked up here by
             # default instead of being silently skipped. They are not skipped —
             # they are scored below, under their own prompt.
-            exclude_source_files=dead_corpora(config) + (PAPERS_CORPUS,))
+            exclude_source_files=dead_corpora(config) + (PAPERS_CORPUS, POSTS_CORPUS))
         session.commit()
 
         # Papers, under their own prompt version and the same ceiling. Named
@@ -442,6 +466,15 @@ def _phases(
             stats["classify_papers"] = classify_new(
                 session, PAPER_PROMPT_VERSION, budget, config_path=config_path,
                 include_source_files=(PAPERS_CORPUS,), corpus="papers")
+            session.commit()
+
+        # Posts, same shape and the same reasoning: named explicitly so this
+        # stage can never widen to a corpus the post prompt was not written for.
+        if "posts" in chosen:
+            note("classify posts")
+            stats["classify_posts"] = classify_new(
+                session, POST_PROMPT_VERSION, budget, config_path=config_path,
+                include_source_files=(POSTS_CORPUS,), corpus="posts")
             session.commit()
 
     # 4. Is the scorer still agreeing with itself? Before the ETL so its spend

@@ -30,6 +30,8 @@ SCORES_DIR = ROOT / "research" / "docs" / "announcement_scores"
 # Papers are cached under their own prompt version, so their per-call
 # provenance lives in its own tree (score_announcements.PAPERS).
 PAPER_SCORES_DIR = ROOT / "research" / "docs" / "paper_scores"
+POSTS = ROOT / "research" / "docs" / "posts_corpus.json"
+POST_SCORES_DIR = ROOT / "research" / "docs" / "post_scores"
 COSTS = ROOT / "research" / "docs" / "announcement_cost.json"
 
 

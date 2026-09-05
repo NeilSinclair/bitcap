@@ -27,7 +27,8 @@ ROOT = Path(__file__).parent.parent
 PEOPLE = ROOT / "config" / "people.yaml"
 SOURCES = ROOT / "config" / "sources.yaml"
 
-X_EVIDENCE_TIERS = {"own_site", "self_post", "lab_post", "search_index"}
+X_EVIDENCE_TIERS = {"own_site", "self_post", "api_profile", "lab_post",
+                    "search_index"}
 HANDLE_RE = re.compile(r"^[A-Za-z0-9_]{1,15}$")
 
 
@@ -112,8 +113,19 @@ class TestEveryClaimIsCited:
         assert not silent, f"unfetched source with no admission in its note: {silent}"
 
     def test_no_source_is_dated_after_the_research_date(self, people):
+        """A citation dated after the file was last touched is a fabrication.
+
+        Compared against `revised` where present, not `researched`: the file is
+        added to after the bulk pass (D64 read six profiles through the X API on
+        2026-09-05), and those sources are legitimately newer. `revised` must
+        still be a real date, so the guard cannot be escaped by omitting it.
+        """
         researched = people["researched"]
         assert isinstance(researched, date)
+        revised = people.get("revised", researched)
+        assert isinstance(revised, date)
+        assert revised >= researched
+        researched = revised
         future = [
             (lab, p["name"], s["url"], d)
             for lab, p in _all_people(people)

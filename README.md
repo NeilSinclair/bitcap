@@ -56,9 +56,9 @@ the same way, instead of only the shell that ran this command.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
 announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
-six labs, 2023–2026), 26 holdings with their mechanism and lab-exposure edges,
-and the full cost log — and derives the clean tables and
-joins. It is always safe to re-run.
+six labs, 2023–2026), the scored posts corpus (238 X posts from 19 lab leaders,
+90 days), 26 holdings with their mechanism and lab-exposure edges, and the full
+cost log — and derives the clean tables and joins. It is always safe to re-run.
 
 **Two things it does not restore, both of which need a worker run.** GitHub
 releases are a live fetch, not a file — `registry.py` labels them

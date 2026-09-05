@@ -74,16 +74,18 @@ class TestCadence:
     def test_the_first_firing_runs_every_leg(self):
         """A fresh deployment gets a full sweep, not six days of partial ones."""
         config = {"cadence": {"announcements": 1, "papers": 3, "github": 7}}
-        assert worker.due_legs(1, config) == ("announcements", "papers", "github", "releases")
+        assert worker.due_legs(1, config) == ("announcements", "papers", "github", "releases",
+                                              "posts")
 
     def test_a_slow_leg_is_skipped_between_its_turns(self):
         config = {"cadence": {"announcements": 1, "papers": 3, "github": 7}}
-        assert worker.due_legs(2, config) == ("announcements", "releases")
+        assert worker.due_legs(2, config) == ("announcements", "releases", "posts")
         # papers every 3rd firing: 1, 4, 7, 10...  github every 7th: 1, 8, 15...
-        assert worker.due_legs(4, config) == ("announcements", "papers", "releases")
-        assert worker.due_legs(7, config) == ("announcements", "papers", "releases")
-        assert worker.due_legs(8, config) == ("announcements", "github", "releases")
-        assert worker.due_legs(22, config) == ("announcements", "papers", "github", "releases")
+        assert worker.due_legs(4, config) == ("announcements", "papers", "releases", "posts")
+        assert worker.due_legs(7, config) == ("announcements", "papers", "releases", "posts")
+        assert worker.due_legs(8, config) == ("announcements", "github", "releases", "posts")
+        assert worker.due_legs(22, config) == ("announcements", "papers", "github", "releases",
+                                               "posts")
 
     def test_an_explicit_override_ignores_cadence(self):
         config = {"cadence": {"github": 7}}
@@ -98,10 +100,12 @@ class TestCadence:
         """
         config = {"cadence": {"announcements": 1, "papers": 1, "github": 1}}
         assert worker.due_legs(1, config, ()) == ()
-        assert worker.due_legs(1, config, None) == ("announcements", "papers", "github", "releases")
+        assert worker.due_legs(1, config, None) == ("announcements", "papers", "github",
+                                                    "releases", "posts")
 
     def test_a_missing_cadence_entry_means_every_firing(self):
-        assert worker.due_legs(5, {"cadence": {}}) == ("announcements", "papers", "github", "releases")
+        assert worker.due_legs(5, {"cadence": {}}) == ("announcements", "papers", "github",
+                                                       "releases", "posts")
 
     def test_the_real_config_names_only_real_legs(self):
         cadence = worker.load_config()["cadence"]
@@ -431,7 +435,7 @@ class TestTheKillSwitch:
         """Adding the switch must not silently disable the legs predating it."""
         assert worker.due_legs(
             1, {"enabled": {"releases": False}, "cadence": {}}) == (
-                "announcements", "papers", "github")
+                "announcements", "papers", "github", "posts")
 
     def test_the_committed_config_names_only_real_legs(self):
         enabled = worker.load_config().get("enabled", {})
