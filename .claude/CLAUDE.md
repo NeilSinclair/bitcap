@@ -139,10 +139,13 @@ Where honest ground truth isn't reachable, say so plainly and use a defensible p
 - `docs/cost.md` — tokens and € per workflow, plus receipts (€100 budget, reimbursed)
 - `docs/agentic-log.md` — our own setup, what agents verified themselves, where the loop broke
 - `docs/insights.md` — the most interesting real things the system surfaces, captured as they appear (3–5 go in the final doc)
+- `docs/handover*.md` — per-workstream operational handovers: state when written, traps, known-open. Start here when picking the project up cold.
 
 ## Current state
 
-Pre-implementation. Next: research BIT Capital's disclosed positions (at least one fund document lists holdings to ~95% of portfolio), then enumerate the labs.
+The pipeline runs end to end: register, ingestion, extraction, dual-axis scoring, signal filter, digest and alerts, an API and a dashboard, on Postgres with a scheduled worker. Two scored corpora — announcements under `v9`, papers under `p1` (`docs/decisions.md` D57). `bitcap-db rebuild` reproduces the whole database from committed artifacts with no API key.
+
+For what was last worked on and what it left open, read the newest entries in `docs/decisions.md` and `docs/agentic-log.md`, then the matching `docs/handover*.md`.
 
 Open questions live in [docs/planning.md](docs/planning.md) §7 — positions coverage, whether X/Twitter earns its cost, digest cadence, register breadth and depth. Each is decided on evidence and the reasoning recorded, not settled by assumption.
 

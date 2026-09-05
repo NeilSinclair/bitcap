@@ -1,0 +1,408 @@
+{
+  "model": "claude-sonnet-5",
+  "prompt": "p1",
+  "labelled_by": "claude-fable-5",
+  "at": "2026-09-05T00:00:00+00:00",
+  "usd": 0.153811,
+  "errors": [],
+  "runs": {
+    "01": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "Anthropic researchers present an interpretability technique identifying a subset of internal model representations that are 'verbalizable' and available for report, modulation, and reasoning, drawing an analogy to a cognitive global workspace.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "medium",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "A new interpretability technique surfaces which concepts a model is poised to verbalize, offering a way to probe internal reasoning not visible in outputs, but described as a lab-internal research method rather than a transferable tool.",
+          "quote": "We identify these representations using a new interpretability technique, which surfaces the concepts a model is poised to verbalize at any point in its processing."
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 11.1,
+      "ai_band": "low"
+    },
+    "02": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "The paper analyzes 23 million WIOA workforce retraining records to assess whether U.S. job retraining programs help workers transition away from automation-exposed occupations, finding limited success outside employer-led apprenticeships.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 0.0,
+      "ai_band": "none"
+    },
+    "03": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "Google DeepMind researchers present Seed2Harvest, a hybrid human-AI red-teaming framework that expands human-authored adversarial prompts for text-to-image safety evaluation, increasing demographic and geographic coverage roughly 20x while preserving attack effectiveness.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "investigate",
+          "impact": "medium",
+          "confidence": "high",
+          "dimensions": [],
+          "reason": "An engineering team building T2I safety evaluation could adopt the prompt-expansion methodology to scale red-teaming coverage without proportional human effort.",
+          "quote": "human-authored adversarial prompts serve as \"seeds\" systematically expanded using sociolinguistic attack strategies distilled through reflexive thematic analysis of 3,748 human-crafted adversarial prompts"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 44.4,
+      "ai_band": "medium"
+    },
+    "04": {
+      "is_signal": true,
+      "event_type": "research_result",
+      "summary": "Meta introduces S-EMBER, a benchmark of 3,141 egocentric videos and 9,448 QA pairs for evaluating streaming episodic memory retrieval in wearable AI, and reports that temporal grounding precision does not improve with model scale.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "investigate",
+          "impact": "medium",
+          "confidence": "high",
+          "dimensions": [],
+          "reason": "A new streaming egocentric memory benchmark with QA pairs and temporal-localization scoring could be used to test our own multimodal/agentic systems for wearable use cases.",
+          "quote": "We provide 9,448 QA pairs requiring manual visual proof through precise temporal localization and supporting flexible response lengths to simulate natural human-AI interaction."
+        },
+        {
+          "id": "model_capability",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [
+            "vision_multimodal",
+            "reasoning"
+          ],
+          "reason": "The finding that temporal grounding precision stagnates despite scale informs what dimensions to expect improvement on when evaluating frontier models for episodic memory tasks.",
+          "quote": "while semantic reasoning improves with parameter scale, temporal grounding precision remains a stagnant architectural bottleneck that does not benefit from brute-force increases in model size, resolution, or frame density"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 44.4,
+      "ai_band": "medium"
+    },
+    "07": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "Anthropic researchers train a one-layer transformer and use it to characterize 'interference weights' arising from weight superposition, studying effectiveness and helpfulness metrics for interpreting model weights.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The paper introduces a method to score virtual weights by effectiveness and helpfulness to identify interference weights, which is an interpretability evaluation technique but on a toy one-layer model, not transferable to production systems.",
+          "quote": "A weight's effectiveness is the magnitude of its effect on the model's outputs. A weight's helpfulness is the magnitude and sign of its effect on the loss."
+        },
+        {
+          "id": "serving_efficiency",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The paper notes that pruning the least effective weights barely worsens loss, a pruning-related observation, but it is a research finding on a tiny model rather than a reproducible serving technique.",
+          "quote": "pruning the least effective 70% only worsens the model's loss by 0.01 nats"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 5.6,
+      "ai_band": "low"
+    },
+    "05": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "Google DeepMind researchers compare human, frontier LLM, and Bayesian agent behavior in multi-player bargaining games, finding that similar aggregate performance masks different negotiation strategies.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The study shows that performance-parity benchmarks can mask procedural differences between LLM and human agents in multi-agent settings, informing how agentic evaluations should be designed.",
+          "quote": "These findings highlight that performance parity—a common benchmark in agent evaluation—can mask substantive procedural differences in how LLMs behave in complex multi-agent interactions."
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 5.6,
+      "ai_band": "low"
+    },
+    "10": {
+      "is_signal": true,
+      "event_type": "frontier_model_release",
+      "summary": "OpenAI's technical report introduces GPT-4, a multimodal (text and image input) large language model with improved post-training alignment and predictable scaling behavior verified from much smaller-scale training runs.",
+      "mechanisms": [
+        {
+          "id": "capability_jump",
+          "sign": "positive",
+          "magnitude": "high",
+          "confidence": "high",
+          "reason": "The report describes a new frontier multimodal model achieving human-level performance on professional and academic benchmarks, a step change from prior models.",
+          "quote": "GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers."
+        }
+      ],
+      "categories": [],
+      "practices": [
+        {
+          "id": "model_capability",
+          "action": "adopt",
+          "impact": "high",
+          "confidence": "high",
+          "dimensions": [
+            "vision_multimodal",
+            "reasoning",
+            "reliability"
+          ],
+          "reason": "GPT-4 adds image input capability alongside text and shows improved factuality and instruction adherence after post-training alignment, changing what tasks and modalities a team can target.",
+          "quote": "GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs ... The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior.",
+          "quote_repaired": true
+        }
+      ],
+      "notable": true,
+      "notable_reason": "This is the original GPT-4 technical report, a frontier model release that reset expectations for multimodal LLM capability.",
+      "dropped_tags": [
+        "practices:evaluation:quote not in document"
+      ],
+      "score": 100.0,
+      "band": "high",
+      "ai_score": 100.0,
+      "ai_band": "high"
+    },
+    "06": {
+      "is_signal": false,
+      "event_type": "research_result",
+      "summary": "Meta researchers present RA-RFT, a retrieval-augmented reinforcement fine-tuning framework that trains a retriever to surface analogous reasoning traces and improves mathematical reasoning benchmark scores over standard RL fine-tuning on Qwen3 models.",
+      "mechanisms": [],
+      "categories": [],
+      "practices": [
+        {
+          "id": "orchestration",
+          "action": "investigate",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "Describes a retrieval-design technique for structuring reasoning fine-tuning around retrieved analogous demonstrations, but is demonstrated only on third-party Qwen3 models rather than a production stack.",
+          "quote": "RA-RFT uses gold-relevance distillation to train a retriever that ranks contexts by expected reasoning benefit rather than semantic overlap, and then fine-tunes the policy model via reinforcement fine-tuning methods with retrieved analogous demonstrations"
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 0.0,
+      "band": "none",
+      "ai_score": 11.1,
+      "ai_band": "low"
+    },
+    "09": {
+      "is_signal": true,
+      "event_type": "open_weights",
+      "summary": "DeepSeek released DeepSeek-Coder-V2, an open-source MoE code model continued-pretrained from DeepSeek-V2 with 6 trillion additional tokens, extending context length to 128K and language support to 338, matching or exceeding GPT-4-Turbo, Claude 3 Opus and Gemini 1.5 Pro on coding and math benchmarks.",
+      "mechanisms": [
+        {
+          "id": "memory_intensity_up",
+          "sign": "positive",
+          "magnitude": "medium",
+          "confidence": "high",
+          "reason": "The model's context window was extended eightfold, increasing per-token serving memory requirements for those using long context.",
+          "quote": "extending the context length from 16K to 128K"
+        }
+      ],
+      "categories": [],
+      "practices": [
+        {
+          "id": "model_capability",
+          "action": "investigate",
+          "impact": "medium",
+          "confidence": "high",
+          "dimensions": [
+            "coding",
+            "reasoning",
+            "long_context"
+          ],
+          "reason": "An open-weights code model with extended context and stronger coding/math reasoning is worth evaluating for self-hosted coding assistants.",
+          "quote": "DeepSeek-Coder-V2 substantially enhances the coding and mathematical reasoning capabilities of DeepSeek-V2, while maintaining comparable performance in general language tasks."
+        },
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The paper reports standard benchmark comparisons against closed-source frontier models, which an engineer could reference but not directly reuse as a method.",
+          "quote": "In standard benchmark evaluations, DeepSeek-Coder-V2 achieves superior performance compared to closed-source models such as GPT4-Turbo, Claude 3 Opus, and Gemini 1.5 Pro in coding and math benchmarks."
+        }
+      ],
+      "notable": false,
+      "notable_reason": "",
+      "dropped_tags": [],
+      "score": 66.7,
+      "band": "high",
+      "ai_score": 44.4,
+      "ai_band": "medium"
+    },
+    "08": {
+      "is_signal": true,
+      "event_type": "open_weights",
+      "summary": "OpenAI released gpt-oss-120b and gpt-oss-20b, two open-weight mixture-of-expert reasoning models with agentic tool-use capabilities, under an Apache 2.0 license.",
+      "mechanisms": [
+        {
+          "id": "inference_cost_down",
+          "sign": "positive",
+          "magnitude": "medium",
+          "confidence": "medium",
+          "reason": "The models are described as using an efficient MoE architecture explicitly to push down inference cost, though no specific FLOPs or cost figure is given.",
+          "quote": "two open-weight reasoning models that push the frontier of accuracy and inference cost. The models use an efficient mixture-of-expert transformer architecture"
+        }
+      ],
+      "categories": [],
+      "practices": [
+        {
+          "id": "model_capability",
+          "action": "investigate",
+          "impact": "high",
+          "confidence": "high",
+          "dimensions": [
+            "open_weights",
+            "cost",
+            "agentic_tool_use"
+          ],
+          "reason": "Teams could self-host these permissively licensed, agentic-capable reasoning models and evaluate them for production use given the stated inference-cost focus.",
+          "quote": "We release the model weights, inference implementations, tool environments, and tokenizers under an Apache 2.0 license to enable broad use and further research."
+        },
+        {
+          "id": "evaluation",
+          "action": "watch",
+          "impact": "low",
+          "confidence": "medium",
+          "dimensions": [],
+          "reason": "The paper cites benchmark categories used to assess the models, which an engineer could reference but with no specifics or transferable methodology given.",
+          "quote": "Both models achieve strong results on benchmarks ranging from mathematics, coding, and safety."
+        }
+      ],
+      "notable": true,
+      "notable_reason": "OpenAI releasing open-weight frontier-class reasoning models with agentic capabilities under a permissive license is a significant departure from its usual closed-weight strategy.",
+      "dropped_tags": [],
+      "score": 33.3,
+      "band": "medium",
+      "ai_score": 66.7,
+      "ai_band": "high"
+    }
+  },
+  "metrics": {
+    "compared": 10,
+    "event_type_agreement": 0.9,
+    "event_type_kappa": 0.7872,
+    "event_type_disagreements": [
+      {
+        "id": "09",
+        "document_type": "technical_report",
+        "reference": "frontier_model_release",
+        "run": "open_weights"
+      }
+    ],
+    "axes": {
+      "mechanisms": {
+        "axis": "mechanisms",
+        "reference_tags": 4,
+        "run_tags": 3,
+        "matched": 3,
+        "micro_precision": 1.0,
+        "micro_recall": 0.75,
+        "micro_f1": 0.8571428571428571,
+        "macro_f1": 0.9666666666666666,
+        "articles_identical": 9,
+        "articles": 10
+      },
+      "categories": {
+        "axis": "categories",
+        "reference_tags": 0,
+        "run_tags": 0,
+        "matched": 0,
+        "micro_precision": 0.0,
+        "micro_recall": 0.0,
+        "micro_f1": 0.0,
+        "macro_f1": 1.0,
+        "articles_identical": 10,
+        "articles": 10
+      },
+      "practices": {
+        "axis": "practices",
+        "reference_tags": 9,
+        "run_tags": 13,
+        "matched": 8,
+        "micro_precision": 0.6153846153846154,
+        "micro_recall": 0.8888888888888888,
+        "micro_f1": 0.7272727272727274,
+        "macro_f1": 0.7666666666666666,
+        "articles_identical": 5,
+        "articles": 10
+      }
+    },
+    "scores": {
+      "investment": {
+        "mae": 3.34,
+        "zero_agreement": 1.0,
+        "both_zero": 7,
+        "identical": 9,
+        "sign_disagreements": []
+      },
+      "ai_team": {
+        "mae": 12.77,
+        "zero_agreement": 0.9,
+        "both_zero": 1,
+        "identical": 3,
+        "sign_disagreements": [
+          {
+            "id": "07",
+            "document_type": "interpretability",
+            "reference": 0.0,
+            "run": 5.6
+          }
+        ]
+      }
+    },
+    "tags_surviving": 16,
+    "quotes_dropped": 1,
+    "other_dropped": 0
+  }
+}

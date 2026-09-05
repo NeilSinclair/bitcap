@@ -38,7 +38,8 @@ if _ANNOUNCEMENTS not in sys.path:
 
 
 def pending_urls(session: Session, prompt_version: str,
-                 exclude_source_files: tuple[str, ...] = ()) -> list[str]:
+                 exclude_source_files: tuple[str, ...] = (),
+                 include_source_files: tuple[str, ...] = ()) -> list[str]:
     """URLs with a raw article but no classification at this prompt version.
 
     Ordered by url so a budget ceiling cuts the same list the same way twice.
@@ -53,6 +54,11 @@ def pending_urls(session: Session, prompt_version: str,
             This is how a leg switched off in config stops costing money: its
             rows are already in the table from earlier firings, and skipping
             the fetch does nothing about them.
+        include_source_files: Restrict to these `source_file` values. Papers are
+            classified under their own prompt version, so at that version every
+            announcement in the table also lists as pending; naming the corpus
+            wanted is safer than excluding every other one, which would silently
+            start paying for a new leg the day it is added.
 
     Returns:
         URLs needing classification. Empty means there is nothing to pay for,
@@ -62,6 +68,9 @@ def pending_urls(session: Session, prompt_version: str,
         m.RawLlmResponse.prompt_version == prompt_version
     )
     query = select(m.RawArticle.url).where(m.RawArticle.url.not_in(classified))
+    if include_source_files:
+        query = query.where(
+            m.RawArticle.source_file.in_(tuple(include_source_files)))
     if exclude_source_files:
         query = query.where(
             m.RawArticle.source_file.not_in(tuple(exclude_source_files)))
@@ -80,6 +89,8 @@ def classify_new(
     articles_path: Path | None = None,
     config_path: Path = CONFIG,
     exclude_source_files: tuple[str, ...] = (),
+    include_source_files: tuple[str, ...] = (),
+    corpus: str = "announcements",
 ) -> dict:
     """Classify every article this prompt version has not seen.
 
@@ -94,6 +105,10 @@ def classify_new(
         config_path: Pipeline config.
         exclude_source_files: Corpus files whose rows must not be
             classified, for a leg switched off in config.
+        include_source_files: Restrict the work list to these corpus files.
+        corpus: Which prompt and cache to score under -- "announcements" or
+            "papers". Same scorer, same schema, same vocabularies and same
+            budget; only the prompt file and the cache directory differ.
 
     Returns:
         ``{pending, classified, skipped_for_budget, failures, cost_usd, bands,
@@ -102,7 +117,8 @@ def classify_new(
     """
     import json
 
-    pending = pending_urls(session, prompt_version, exclude_source_files)
+    pending = pending_urls(
+        session, prompt_version, exclude_source_files, include_source_files)
     if not pending:
         return {
             "pending": 0, "classified": 0, "skipped_for_budget": 0,
@@ -111,6 +127,12 @@ def classify_new(
         }
 
     import score_announcements as scorer
+
+    # Passed only for papers. The announcements call stays exactly what it was,
+    # so the default keeps resolving from the scorer's module globals -- which is
+    # the seam tests and one-off scripts use to redirect a run at a scratch
+    # directory (see `score_announcements.announcements`).
+    variant = {"variant": scorer.papers()} if corpus == "papers" else {}
 
     if articles_path is not None:
         corpus = json.loads(articles_path.read_text(encoding="utf-8"))
@@ -154,6 +176,7 @@ def classify_new(
         workers=config["workers"],
         batch=config.get("batch", False),
         budget=budget,
+        **variant,
     )
 
     return {

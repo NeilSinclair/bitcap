@@ -104,3 +104,47 @@ corpus names it. And the distinction between the four and the other
 thirty-five is not something the system was told to look for -- it falls out of
 recording which corpus reached a name first, which is only possible because
 every leg's documents land in one table.
+
+---
+
+## The efficiency claim that only exists in the paper
+
+DeepSeek-V4's abstract, scored 100.0 on the investment axis and quoted verbatim
+by the register:
+
+> "In the one-million-token context setting, DeepSeek-V4-Pro requires only 27%
+> of single-token inference FLOPs and **10% of KV cache** compared with
+> DeepSeek-V3.2."
+
+KV cache is HBM-resident, so a tenfold reduction per served token is a
+first-order claim about memory demand at long context — the transmission the
+brief names as its calibration case, stated in numbers rather than inferred.
+The system routes it to NVIDIA, Micron, TSMC, Amazon, TeraWulf and IREN at
+strength 1.00: memory and the energy complex, which is what that claim argues
+about. DeepSeek-V3's technical report routes **negative** to the same names.
+
+**The announcements leg cannot reach this.** The figures are in the technical
+report and nowhere else, which is the whole case for scoring papers at all
+(D57) — and the reverse of the assumption we started from, that research would
+be interesting to engineers and not to investors.
+
+The corpus splits by *document type*, not by lab and not by research-versus-
+announcement:
+
+| type | n | investment | AI team |
+|---|---|---|---|
+| Flagship technical reports (DeepSeek) | 8 | strongest evidence in the register | high |
+| System / model cards (OpenAI) | 7 | high, but duplicative of the launch | low |
+| Alignment & interpretability (Anthropic) | 12 | **0.0, all twelve** | up to 44.4 |
+| Safety / social science (DeepMind) | 15 | 0.0 | 0.0 |
+| Component research (Meta) | 5 | ~0 | low–medium |
+
+DeepSeek-R1 (2025-01-22) scores **100.0 / 100.0** — the system recovering the
+brief's own calibration case from a paper abstract, unprompted.
+
+The counterweight matters as much as the finding. The largest single group is
+DeepMind's safety and social-science work, and *"A moral Turing test"* and
+*"Artificial Minds, Human Disagreement: The Politics of AI Consciousness"* both
+score 0.0 on both axes. 33 of 47 papers score zero for investors. That is the
+result, not a shortfall: if those papers scored, they would bury the eight that
+matter.

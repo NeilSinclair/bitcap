@@ -55,6 +55,7 @@ function Dashboard() {
   // the whole corpus with its connections nested, so filtering here costs a
   // render and filtering server-side would cost a round trip per keystroke.
   const [labFilter, setLabFilter] = useState("all");
+  const [docFilter, setDocFilter] = useState("all");
   const [holdingFilter, setHoldingFilter] = useState("all");
   const [sortBy, setSortBy] = useState("score");
   const [selectedId, setSelectedId] = useState(null);
@@ -222,9 +223,13 @@ function Dashboard() {
       ? relevant
       : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
     const byLab = labFilter === "all" ? byBand : byBand.filter((it) => it.lab === labFilter);
+    // Papers and announcements are one corpus scored by one rule, so they rank
+    // in one list by default. The filter is here because "what has the lab
+    // published" and "what has the lab written up" are different questions.
+    const byDoc = docFilter === "all" ? byLab : byLab.filter((it) => it.docType === docFilter);
     const byHolding = !holdingActive
-      ? byLab
-      : byLab.filter((it) => it.connections.some((c) => c.holding === holdingFilter));
+      ? byDoc
+      : byDoc.filter((it) => it.connections.some((c) => c.holding === holdingFilter));
 
     const sorted = [...byHolding].sort((a, b) => {
       if (sortBy === "date") return b.date.localeCompare(a.date);
@@ -249,7 +254,7 @@ function Dashboard() {
         showImpactRow: true,
       };
     });
-  }, [decorated, audience, bandFilter, labFilter, holdingFilter, holdingActive, sortBy]);
+  }, [decorated, audience, bandFilter, labFilter, docFilter, holdingFilter, holdingActive, sortBy]);
 
   const selected = decorated.find((it) => it.id === selectedId) || null;
 
@@ -317,6 +322,19 @@ function Dashboard() {
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="label-bracket">Source</span>
+              <select
+                className="field-input"
+                value={docFilter}
+                onChange={(e) => setDocFilter(e.target.value)}
+                style={{ padding: "8px 10px", fontSize: 13 }}
+              >
+                <option value="all">Everything</option>
+                <option value="announcement">Announcements</option>
+                <option value="paper">Papers</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <span className="label-bracket">Lab</span>
               <select
                 className="field-input"
@@ -374,19 +392,20 @@ function Dashboard() {
               <div style={{ fontSize: 13, color: "var(--muted)" }}>{visible.length} items</div>
               {/* An empty list under a filter is an answer, not a failure —
                   but only if it says which filter produced it. */}
-              {bandFilter !== "all" || labFilter !== "all" || holdingActive ? (
+              {bandFilter !== "all" || labFilter !== "all" || docFilter !== "all" || holdingActive ? (
                 <>
                   <div style={{ fontSize: 11, color: "var(--muted-2)", lineHeight: 1.6 }}>
                     {[
                       bandFilter !== "all" ? `${bandFilter} band` : null,
                       labFilter !== "all" ? labOptions.find((o) => o.lab === labFilter)?.label : null,
+                      docFilter !== "all" ? `${docFilter}s` : null,
                       holdingActive ? holdingFilter : null,
                     ].filter(Boolean).join(" · ")}
                   </div>
                   <button
                     className="btn"
                     style={{ background: "none", border: "none", padding: 0, color: ACCENT, textAlign: "left", fontSize: 11 }}
-                    onClick={() => { setBandFilter("all"); setLabFilter("all"); setHoldingFilter("all"); }}
+                    onClick={() => { setBandFilter("all"); setLabFilter("all"); setDocFilter("all"); setHoldingFilter("all"); }}
                   >
                     Clear filters
                   </button>
