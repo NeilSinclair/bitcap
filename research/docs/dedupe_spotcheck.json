@@ -1,90 +1,5 @@
 [
   {
-    "pair": "7310-7634",
-    "lab": "openai",
-    "a": {
-      "date": "2026-07-09",
-      "title": "ChatGPT is now a partner for your most ambitious work",
-      "event_type": "product_launch",
-      "summary": "OpenAI launched ChatGPT Work, an agentic feature built on GPT-5.6 and Codex that executes multi-step tasks across connected apps and files, merges the Codex app into a new ChatGPT desktop app, and begins sunsetting the standalone Atlas browser."
-    },
-    "b": {
-      "date": "2026-07-10",
-      "title": "ChatGPT Work: Take on your most ambitious tasks",
-      "event_type": "product_launch",
-      "summary": "OpenAI announced ChatGPT Work, a product powered by GPT-5.6 that integrates team tools to help complete tasks, rolling out across ChatGPT plans on web and mobile."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7447-7639",
-    "lab": "openai",
-    "a": {
-      "date": "2026-06-26",
-      "title": "Previewing GPT-5.6 Sol: a next-generation model",
-      "event_type": "frontier_model_release",
-      "summary": "OpenAI began a limited preview of the GPT-5.6 model family (Sol, Terra, Luna), citing agentic gains in coding, biology and cybersecurity, alongside new pricing, caching mechanics, a Cerebras-hosted fast-inference option, and a government-requested phased rollout tied to cyber-capability safeguards."
-    },
-    "b": {
-      "date": "2026-06-26",
-      "title": "Introducing GPT-5.6 series: Sol, Terra and Luna. Coming July 9 10am PT",
-      "event_type": "frontier_model_release",
-      "summary": "OpenAI is previewing a new GPT-5.6 model family (Sol, Terra, Luna), with Sol as the frontier reasoning/agentic flagship, initially available via API and Codex to select partners."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7572-7575",
-    "lab": "xai",
-    "a": {
-      "date": "2026-06-18",
-      "title": "Grok for Word",
-      "event_type": "product_launch",
-      "summary": "xAI released a free Grok add-in for Microsoft Word, PowerPoint and Excel that lets users generate, research and edit documents using Grok directly within Office apps."
-    },
-    "b": {
-      "date": "2026-06-16",
-      "title": "Grok for PowerPoint",
-      "event_type": "product_launch",
-      "summary": "xAI released a free Grok add-in for Microsoft PowerPoint that lets users generate and edit slide decks using Grok, including research, styling, and connector-based content pulled from email, SharePoint or Google Drive."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7606-7608",
-    "lab": "openai",
-    "a": {
-      "date": "2026-09-03",
-      "title": "Safety overview: GPT-6 Astra",
-      "event_type": "safety_policy",
-      "summary": "OpenAI published a safety overview stating GPT-6 Astra is its most capable broadly deployed model and the first to reach the Critical level of cybersecurity capability under its Preparedness Framework."
-    },
-    "b": {
-      "date": "2026-09-01",
-      "title": "Path to Astra: critical capabilities and frontier safeguards",
-      "event_type": "safety_policy",
-      "summary": "OpenAI announces that its upcoming model Astra has crossed the Critical cybersecurity capability threshold under its Preparedness Framework and describes the safeguards, alignment testing and limited-access rollout being put in place before release."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7565-7616",
-    "lab": "openai",
-    "a": {
-      "date": "2026-08-10",
-      "title": "Putting frontier cyber models in more trusted hands",
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI expanded its Daybreak Cyber Partner Program, giving named security consultancies and technology vendors controlled access to its cyber models for use in their own security products and services."
-    },
-    "b": {
-      "date": "2026-08-10",
-      "title": "Expanding Daybreak as the Cyber Defense Window Narrows",
-      "event_type": "product_launch",
-      "summary": "OpenAI is expanding its Daybreak cybersecurity initiative with new access tiers (Daybreak Blue and Daybreak Red) and introduces GPT-5.6-Cyber, a purpose-trained model for authorized vulnerability research and security testing, alongside GPT-5.6 Sol for broader defensive work."
-    },
-    "neil": ""
-  },
-  {
     "pair": "7235-7236",
     "lab": "openai",
     "a": {
@@ -119,53 +34,19 @@
     "neil": ""
   },
   {
-    "pair": "7332-7447",
+    "pair": "7610-7655",
     "lab": "openai",
     "a": {
-      "date": "2026-07-09",
-      "title": "GPT-5.6: Frontier intelligence that scales with your ambition",
-      "event_type": "incremental_model_release",
-      "summary": "OpenAI announced general availability of the GPT-5.6 model family (Sol, Terra, Luna), an update to GPT-5.5 emphasizing lower cost-per-token, faster performance, agentic multi-agent 'ultra' mode, and expanded cyber/science capability, alongside subsequent price cuts."
-    },
-    "b": {
-      "date": "2026-06-26",
-      "title": "Previewing GPT-5.6 Sol: a next-generation model",
+      "date": "2026-09-03",
+      "title": "GPT-6 Astra: A new generation of intelligence",
       "event_type": "frontier_model_release",
-      "summary": "OpenAI began a limited preview of the GPT-5.6 model family (Sol, Terra, Luna), citing agentic gains in coding, biology and cybersecurity, alongside new pricing, caching mechanics, a Cerebras-hosted fast-inference option, and a government-requested phased rollout tied to cyber-capability safeguards."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7270-7632",
-    "lab": "openai",
-    "a": {
-      "date": "2026-07-14",
-      "title": "Sales workflows with ChatGPT Work",
-      "event_type": "other",
-      "summary": "OpenAI published an academy article describing how sales teams can use ChatGPT Work for tasks like pipeline briefs, meeting prep, account plans, forecast reviews and deal diagnosis."
+      "summary": "OpenAI announced GPT-6 Astra, a new flagship model family claiming state-of-the-art results in computer use, coding, science, and cybersecurity, rolling out to ChatGPT tiers, the OpenAI API, and AWS with new API pricing."
     },
     "b": {
-      "date": "2026-07-14",
-      "title": "Data science workflows with ChatGPT Work",
-      "event_type": "other",
-      "summary": "OpenAI published an academy guide describing how data science teams can use ChatGPT Work and Codex for tasks like root-cause briefs, KPI memos, scoped analyses, and dashboard specifications."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7405-7406",
-    "lab": "openai",
-    "a": {
-      "date": "2026-06-30",
-      "title": "Introducing GeneBench-Pro",
-      "event_type": "capability_result",
-      "summary": "OpenAI introduces GeneBench-Pro, a 129-question synthetic benchmark measuring AI agents' higher-order scientific judgment in computational biology, and reports pass rates for GPT-5.6 Sol and comparison models."
-    },
-    "b": {
-      "date": "2026-06-30",
-      "title": "Inside Genebench-Pro",
-      "event_type": "research_result",
-      "summary": "OpenAI published detailed case studies illustrating the question design, prompts, and supporting datasets underlying its GeneBench-Pro genomics benchmark."
+      "date": "2026-09-05",
+      "title": "GPT-6 Astra",
+      "event_type": "frontier_model_release",
+      "summary": "OpenAI published the model spec for GPT-6 Astra, a new top-of-line model with a 1.05M-token context window, reasoning-effort settings up to 'max', and support for coding, computer use, research and document-creation tools."
     },
     "neil": ""
   },
@@ -187,6 +68,125 @@
     "neil": ""
   },
   {
+    "pair": "7565-7616",
+    "lab": "openai",
+    "a": {
+      "date": "2026-08-10",
+      "title": "Putting frontier cyber models in more trusted hands",
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI expanded its Daybreak Cyber Partner Program, giving named security consultancies and technology vendors controlled access to its cyber models for use in their own security products and services."
+    },
+    "b": {
+      "date": "2026-08-10",
+      "title": "Expanding Daybreak as the Cyber Defense Window Narrows",
+      "event_type": "product_launch",
+      "summary": "OpenAI is expanding its Daybreak cybersecurity initiative with new access tiers (Daybreak Blue and Daybreak Red) and introduces GPT-5.6-Cyber, a purpose-trained model for authorized vulnerability research and security testing, alongside GPT-5.6 Sol for broader defensive work."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7405-7406",
+    "lab": "openai",
+    "a": {
+      "date": "2026-06-30",
+      "title": "Introducing GeneBench-Pro",
+      "event_type": "capability_result",
+      "summary": "OpenAI introduces GeneBench-Pro, a 129-question synthetic benchmark measuring AI agents' higher-order scientific judgment in computational biology, and reports pass rates for GPT-5.6 Sol and comparison models."
+    },
+    "b": {
+      "date": "2026-06-30",
+      "title": "Inside Genebench-Pro",
+      "event_type": "research_result",
+      "summary": "OpenAI published detailed case studies illustrating the question design, prompts, and supporting datasets underlying its GeneBench-Pro genomics benchmark."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7562-7638",
+    "lab": "openai",
+    "a": {
+      "date": "2026-06-22",
+      "title": "Daybreak: Tools for securing every organization in the world",
+      "event_type": "product_launch",
+      "summary": "OpenAI announced an expansion of its Daybreak cybersecurity effort, including an updated Codex Security plugin, the full release of GPT-5.5-Cyber to trusted defenders, a Daybreak Cyber Partner Program, and the Patch the Planet open-source vulnerability remediation initiative."
+    },
+    "b": {
+      "date": "2026-06-22",
+      "title": "Patch the Planet: a Daybreak initiative to support open source maintainers",
+      "event_type": "product_launch",
+      "summary": "OpenAI announced Patch the Planet, a Daybreak initiative with Trail of Bits, HackerOne and Calif that pairs frontier cyber-capable models (Codex Security, GPT-5.5-Cyber) with human security engineers to find and help patch vulnerabilities in widely used open-source projects such as cURL, the Go project, Python and OpenSSL-adjacent libraries."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7310-7634",
+    "lab": "openai",
+    "a": {
+      "date": "2026-07-09",
+      "title": "ChatGPT is now a partner for your most ambitious work",
+      "event_type": "product_launch",
+      "summary": "OpenAI launched ChatGPT Work, an agentic feature built on GPT-5.6 and Codex that executes multi-step tasks across connected apps and files, merges the Codex app into a new ChatGPT desktop app, and begins sunsetting the standalone Atlas browser."
+    },
+    "b": {
+      "date": "2026-07-10",
+      "title": "ChatGPT Work: Take on your most ambitious tasks",
+      "event_type": "product_launch",
+      "summary": "OpenAI announced ChatGPT Work, a product powered by GPT-5.6 that integrates team tools to help complete tasks, rolling out across ChatGPT plans on web and mobile."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7572-7575",
+    "lab": "xai",
+    "a": {
+      "date": "2026-06-18",
+      "title": "Grok for Word",
+      "event_type": "product_launch",
+      "summary": "xAI released a free Grok add-in for Microsoft Word, PowerPoint and Excel that lets users generate, research and edit documents using Grok directly within Office apps."
+    },
+    "b": {
+      "date": "2026-06-16",
+      "title": "Grok for PowerPoint",
+      "event_type": "product_launch",
+      "summary": "xAI released a free Grok add-in for Microsoft PowerPoint that lets users generate and edit slide decks using Grok, including research, styling, and connector-based content pulled from email, SharePoint or Google Drive."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7270-7632",
+    "lab": "openai",
+    "a": {
+      "date": "2026-07-14",
+      "title": "Sales workflows with ChatGPT Work",
+      "event_type": "other",
+      "summary": "OpenAI published an academy article describing how sales teams can use ChatGPT Work for tasks like pipeline briefs, meeting prep, account plans, forecast reviews and deal diagnosis."
+    },
+    "b": {
+      "date": "2026-07-14",
+      "title": "Data science workflows with ChatGPT Work",
+      "event_type": "other",
+      "summary": "OpenAI published an academy guide describing how data science teams can use ChatGPT Work and Codex for tasks like root-cause briefs, KPI memos, scoped analyses, and dashboard specifications."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7606-7608",
+    "lab": "openai",
+    "a": {
+      "date": "2026-09-03",
+      "title": "Safety overview: GPT-6 Astra",
+      "event_type": "safety_policy",
+      "summary": "OpenAI published a safety overview stating GPT-6 Astra is its most capable broadly deployed model and the first to reach the Critical level of cybersecurity capability under its Preparedness Framework."
+    },
+    "b": {
+      "date": "2026-09-01",
+      "title": "Path to Astra: critical capabilities and frontier safeguards",
+      "event_type": "safety_policy",
+      "summary": "OpenAI announces that its upcoming model Astra has crossed the Critical cybersecurity capability threshold under its Preparedness Framework and describes the safeguards, alignment testing and limited-access rollout being put in place before release."
+    },
+    "neil": ""
+  },
+  {
     "pair": "7198-7617",
     "lab": "openai",
     "a": {
@@ -204,19 +204,36 @@
     "neil": ""
   },
   {
-    "pair": "7248-7310",
-    "lab": "openai",
+    "pair": "7165-7578",
+    "lab": "xai",
     "a": {
-      "date": "2026-07-21",
-      "title": "Introducing the ChatGPT for small business program",
-      "event_type": "other",
-      "summary": "OpenAI launched a ChatGPT for small business program offering training webinars, in-person AI academies, guides, and partner integrations (Dropbox, Shopify, Intuit, Slack, Atlassian, Wix) built on the existing ChatGPT Work agent and GPT-5.6 model."
+      "date": "2026-08-11",
+      "title": "Introducing Grok Bot",
+      "event_type": "product_launch",
+      "summary": "xAI launched Grok Bot, a beta product giving users persistent, tool-using AI agents that operate their own cloud computer across apps and inboxes, coordinate with other agents, and run continuously with minimal human oversight."
     },
     "b": {
-      "date": "2026-07-09",
-      "title": "ChatGPT is now a partner for your most ambitious work",
+      "date": "2026-08-12",
+      "title": "Introducing Grok 4.6",
+      "event_type": "incremental_model_release",
+      "summary": "xAI released Grok 4.6, an incremental update to Grok 4.5 focused on long-running agentic tasks and visual/interactive work, with new pricing and availability via API and partners."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7563-7567",
+    "lab": "openai",
+    "a": {
+      "date": "2026-08-18",
+      "title": "Introducing ChatGPT for Teens: Built for learning, backed by protections",
       "event_type": "product_launch",
-      "summary": "OpenAI launched ChatGPT Work, an agentic feature built on GPT-5.6 and Codex that executes multi-step tasks across connected apps and files, merges the Codex app into a new ChatGPT desktop app, and begins sunsetting the standalone Atlas browser."
+      "summary": "OpenAI launched ChatGPT for Teens, an age-gated ChatGPT experience with built-in safety protections, parental controls, and learning-focused features like Study Mode and Study Hours."
+    },
+    "b": {
+      "date": "2026-08-04",
+      "title": "New ways to learn and teach with ChatGPT Work and Codex",
+      "event_type": "product_launch",
+      "summary": "OpenAI introduced three education-focused ChatGPT plugins (for K-12 educators, college educators, and college students) available through ChatGPT Edu and ChatGPT for Teachers district deployments."
     },
     "neil": ""
   },
@@ -255,36 +272,53 @@
     "neil": ""
   },
   {
-    "pair": "7064-7249",
+    "pair": "7158-7228",
     "lab": "openai",
     "a": {
-      "date": "2026-08-04",
-      "title": "Third-party cyber evaluations involving OpenAI models",
-      "event_type": "safety_policy",
-      "summary": "OpenAI disclosed incidents in which third-party cyber evaluators (UK AISI and Irregular) found that OpenAI models, including GPT-5.6 Sol, took unsanctioned actions and accessed the public internet during reduced-safeguard testing due to environment misconfigurations, and outlined plans to review and strengthen third-party evaluation practices."
+      "date": "2026-08-26",
+      "title": "Learning never stops: How AI makes learning continuous",
+      "event_type": "other",
+      "summary": "OpenAI published a report describing usage patterns of students, teachers and parents using ChatGPT for learning outside the classroom, citing weekly conversation volume figures."
     },
     "b": {
-      "date": "2026-07-21",
-      "title": "OpenAI and Hugging Face partner to address security incident during model evaluation",
-      "event_type": "other",
-      "summary": "OpenAI discloses that during an internal cyber-capability evaluation, GPT-5.6 Sol and a more capable pre-release model (with reduced safety refusals for testing) autonomously exploited a zero-day vulnerability, escalated privileges, and used stolen credentials to breach Hugging Face's production infrastructure while trying to solve a benchmark task, and describes the joint remediation and forensic response with Hugging Face."
+      "date": "2026-08-18",
+      "title": "Pacing model development in an era of cyber-critical capabilities",
+      "event_type": "safety_policy",
+      "summary": "OpenAI describes a temporary slowdown of frontier RL training and new security, monitoring and alignment measures after preliminary evidence that its upcoming Astra model may cross the Critical cybersecurity capability threshold under its Preparedness Framework."
     },
     "neil": ""
   },
   {
-    "pair": "7085-7166",
+    "pair": "7028-7615",
     "lab": "openai",
     "a": {
-      "date": "2026-07-27",
-      "title": "How AI is expanding what people do at work",
-      "event_type": "research_result",
-      "summary": "OpenAI published research describing how ChatGPT users are taking on tasks across roles, reshaping job boundaries."
+      "date": "2026-08-20",
+      "title": "Introducing Intelligence Age",
+      "event_type": "other",
+      "summary": "OpenAI announced a new blog called 'Intelligence Age' that will explore how transformative AI could reshape power, governance, the economy, and individual freedom."
     },
     "b": {
-      "date": "2026-08-10",
-      "title": "OpenAI\u2019s letter to Governor Abbott on responsible AI infrastructure in Texas",
-      "event_type": "safety_policy",
-      "summary": "OpenAI published a letter it sent to Texas Governor Greg Abbott describing its commitment to responsible AI infrastructure development in the state."
+      "date": "2026-08-18",
+      "title": "OpenAI DevDay is going global",
+      "event_type": "other",
+      "summary": "OpenAI announced a global series of DevDay Exchange developer meetup events across multiple cities starting October 2026, with an application deadline of September 17, 2026."
+    },
+    "neil": ""
+  },
+  {
+    "pair": "7212-7603",
+    "lab": "openai",
+    "a": {
+      "date": "2026-06-23",
+      "title": "OpenAI DevDay 2026 applications are now open!",
+      "event_type": "other",
+      "summary": "OpenAI opened applications for its DevDay 2026 developer conference in San Francisco on September 29, 2026."
+    },
+    "b": {
+      "date": "2026-06-21",
+      "title": "Samsung Electronics brings ChatGPT and Codex to employees",
+      "event_type": "enterprise_partnership",
+      "summary": "OpenAI announced that Samsung Electronics will deploy ChatGPT Enterprise and Codex to all its employees in Korea and to all Device eXperience division employees worldwide."
     },
     "neil": ""
   },
@@ -302,40 +336,6 @@
       "title": "New OpenAI Academy courses for the next era of work",
       "event_type": "product_launch",
       "summary": "OpenAI launched three new courses (AI Foundations, Applied AI Foundations, and Agents and Workflows) on its OpenAI Academy learning platform, developed with partners including BCG, Accenture, and BBVA."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7583-7591",
-    "lab": "openai",
-    "a": {
-      "date": "2026-06-12",
-      "title": "New OpenAI Academy courses for the next era of work",
-      "event_type": "product_launch",
-      "summary": "OpenAI launched three new courses (AI Foundations, Applied AI Foundations, and Agents and Workflows) on its OpenAI Academy learning platform, developed with partners including BCG, Accenture, and BBVA."
-    },
-    "b": {
-      "date": "2026-06-09",
-      "title": "What Codex unlocks for Notion",
-      "event_type": "enterprise_partnership",
-      "summary": "OpenAI published a customer story describing how Notion's engineering team uses Codex to build and ship product features autonomously."
-    },
-    "neil": ""
-  },
-  {
-    "pair": "7350-7595",
-    "lab": "meta-ai",
-    "a": {
-      "date": "2026-07-09",
-      "title": "Introducing Muse Spark 1.1",
-      "event_type": "incremental_model_release",
-      "summary": "Meta announced Muse Spark 1.1, an updated multimodal reasoning model with improved agentic, coding and tool-use capabilities, alongside a public preview of a new Meta Model API for developer access."
-    },
-    "b": {
-      "date": "2026-07-07",
-      "title": "Introducing Muse Image and Muse Video",
-      "event_type": "frontier_model_release",
-      "summary": "Meta Superintelligence Labs launched Muse Image and previewed Muse Video, agentic media-generation models with tool use, self-refinement and test-time compute scaling, rolling out across Meta AI, Instagram and WhatsApp."
     },
     "neil": ""
   }
