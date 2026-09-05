@@ -171,7 +171,7 @@ def _holdings_line(conns: list[m.Connection], names: dict, shown: int) -> dict:
 def build(
     session: Session,
     kind: str,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     config: dict | None = None,
     quantise: bool = True,
@@ -184,7 +184,8 @@ def build(
     Args:
         session: Open session.
         kind: `investment` or `ai`.
-        prompt_version: Which classification run to read.
+        prompt_version: Which classification run to read; a tuple spans several,
+            so one digest can rank announcements and papers together.
         end: Right edge of the publication window.
         config: Parsed config; read from disk when omitted.
         quantise: Snap the window to the fixed grid and take the last *complete*
@@ -224,7 +225,10 @@ def build(
     classifications = {
         c.article_id: c
         for c in session.scalars(
-            select(m.Classification).where(m.Classification.prompt_version == prompt_version)
+            select(m.Classification).where(
+                m.Classification.prompt_version.in_(
+                    (prompt_version,) if isinstance(prompt_version, str)
+                    else tuple(prompt_version)))
         )
     }
 
@@ -435,7 +439,7 @@ def _ai_item(art, cls, prac_tags, labs, prac_labels, rules):
 
 def publish(
     session: Session,
-    prompt_version: str,
+    prompt_version: str | tuple[str, ...],
     end: datetime,
     run_id: int | None = None,
     config: dict | None = None,
@@ -446,9 +450,14 @@ def publish(
     updates the edition it already published rather than issuing a second,
     subtly different one for the same period.
 
+    A digest may read several classification versions (announcements and papers
+    carry their own), but the uniqueness key is one column. The *first* version
+    given is the label, and the full set is recorded in `stats["versions"]` --
+    so the key stays stable while the edition still says what produced it.
+
     Args:
         session: Open session; the caller commits.
-        prompt_version: Which classification run to read.
+        prompt_version: Which classification run to read. A tuple spans several.
         end: Right edge of the publication window.
         run_id: Firing that produced this, when there is one.
         config: Parsed config; read from disk when omitted.
@@ -457,6 +466,9 @@ def publish(
         The persisted rows, investment first.
     """
     config = config or settings()
+    versions = ((prompt_version,) if isinstance(prompt_version, str)
+                else tuple(prompt_version))
+    label = versions[0]
     rows = []
     for kind in KINDS:
         built = build(session, kind, prompt_version, end, config)
@@ -464,7 +476,7 @@ def publish(
             select(m.Digest).where(
                 m.Digest.kind == kind,
                 m.Digest.window_end == built["window_end"],
-                m.Digest.prompt_version == prompt_version,
+                m.Digest.prompt_version == label,
             )
         )
         if row is None:
@@ -472,10 +484,10 @@ def publish(
                 kind=kind,
                 window_start=built["window_start"],
                 window_end=built["window_end"],
-                prompt_version=prompt_version,
+                prompt_version=label,
             )
             session.add(row)
-        row.stats = built["stats"]
+        row.stats = {**built["stats"], "versions": list(versions)}
         row.payload = {"items": built["items"]}
         row.run_id = run_id
         rows.append(row)

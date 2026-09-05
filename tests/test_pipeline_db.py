@@ -14,12 +14,21 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.cli import PROMPT_VERSION, cmd_connect, cmd_load
+from app.cli import PAPER_PROMPT_VERSION, PROMPT_VERSION, cmd_connect, cmd_load
 from app.db import create_all
 
 ROOT = Path(__file__).parent.parent
 REGISTER = ROOT / "research" / "docs" / f"scored_announcements_{PROMPT_VERSION}.json"
+PAPER_REGISTER = ROOT / "research" / "docs" / f"scored_papers_{PAPER_PROMPT_VERSION}.json"
 CORPUS = ROOT / "research" / "docs" / "announcements.json"
+PAPERS_CORPUS_FILE = ROOT / "research" / "docs" / "papers_corpus.json"
+
+
+def paper_register_rows() -> list[dict]:
+    """The scored papers register. Empty if the leg has not been run here."""
+    if not PAPER_REGISTER.exists():
+        return []
+    return json.loads(PAPER_REGISTER.read_text()).get("scored", [])
 
 
 def register_rows() -> list[dict]:
@@ -49,8 +58,12 @@ def corpus_size() -> int:
     red -- the test failed precisely when the pipeline worked. What is worth
     asserting is that everything in the corpus loads and everything loaded is
     classified, not what the corpus happens to contain this week.
+
+    Both corpora, since `rebuild` loads both: announcements and the committed
+    papers corpus land in the same `articles` table under different
+    `source_file` values.
     """
-    return len(json.loads(CORPUS.read_text()))
+    return len(json.loads(CORPUS.read_text())) + len(json.loads(PAPERS_CORPUS_FILE.read_text()))
 
 
 @pytest.fixture(scope="module")
@@ -149,7 +162,10 @@ def test_tag_rows_match_register_totals(session):
     # Same window-drift reasoning as test_scores_reconcile_with_register:
     # sum only over register rows whose article is actually loaded now.
     loaded_urls = set(session.scalars(select(m.Article.url)))
-    register = [r for r in register_rows() if r["url"] in loaded_urls]
+    # Both registers: the tag tables are shared, so summing only the
+    # announcement register would report every paper's tags as unexpected.
+    register = [r for r in register_rows() + paper_register_rows()
+                if r["url"] in loaded_urls]
     for table, key in ((m.ArticleMechanism, "mechanisms"),
                        (m.ArticleCategory, "categories"),
                        (m.ArticlePractice, "practices")):
@@ -269,7 +285,8 @@ class TestFailureLeavesTheDatabaseUsable:
         run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
         assert run.status == "failed" and "nope" in run.error
         # Not `{}`: an operator must be able to see which stage died.
-        assert set(run.stats) == {"refs", "articles", "classifications", "costs"}
+        assert set(run.stats) == {"refs", "articles", "paper_corpus", "classifications",
+                              "paper_classifications", "costs"}
         assert "transform" not in run.stats
         s.close()
 

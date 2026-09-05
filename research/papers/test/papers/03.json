@@ -1,0 +1,28 @@
+{
+  "id": "03",
+  "lab": "google-deepmind",
+  "date": "2026-06-26",
+  "title": "Bridging the Scale Gap: Augmenting Human Red-Teaming to Uncover Latent Risks in T2I Models",
+  "url": "https://deepmind.google/research/publications/149262/",
+  "text_source": "paper_abstract",
+  "document_type": "safety_social",
+  "text": "Human red-teaming is essential for identifying culturally-specific and context-dependent harms in Text-to-Image (T2I) models, yet it faces a fundamental \"scale gap\": human insight is resource-intensive, while automated approaches lack the sociolinguistic nuance to detect subtle failures. This leaves models vulnerable to \"implicitly adversarial\" prompts -- inputs that appear benign but trigger unsafe or biased generations, disproportionately affecting users from underrepresented communities. We introduce Seed2Harvest, a hybrid framework that bridges this gap by operationalizing human expertise rather than replacing it: human-authored adversarial prompts serve as \"seeds\" systematically expanded using sociolinguistic attack strategies distilled through reflexive thematic analysis of 3,748 human-crafted adversarial prompts. These human-derived strategies provide the structured guidance directing prompt expansion, distinguishing our approach from zero-shot synthetic generation. Our approach achieves what neither paradigm accomplishes alone: balanced threat discovery across harm categories, without proportional increases in human auditor effort. This pattern holds across three evaluation datasets (Adversarial Nibbler, I2P, and CoPro), with expanded datasets preserving attack effectiveness comparable to human baselines while increasing geographic and demographic coverage by a factor of ~20x on average. Our work demonstrates that an effective path to comprehensive T2I safety evaluation is not replacing human auditors with automation, but systematically amplifying what makes them irreplaceable.",
+  "gold": {
+    "labelled_by": "claude-fable-5",
+    "event_type": "research_result",
+    "mechanisms": [],
+    "categories": [],
+    "practices": [
+      {
+        "id": "evaluation",
+        "action": "investigate",
+        "impact": "medium",
+        "confidence": "high",
+        "dimensions": [],
+        "reason": "A red-teaming framework with a stated coverage gain is directly relevant to a team safety-testing image generation, though the abstract alone under-specifies the method for reuse.",
+        "quote": "We introduce Seed2Harvest, a hybrid framework that bridges this gap by operationalizing human expertise rather than replacing it: human-authored adversarial prompts serve as \"seeds\" systematically expanded using sociolinguistic attack strategies distilled through reflexive thematic analysis of 3,748 human-crafted adversarial prompts."
+      }
+    ]
+  },
+  "review": {}
+}

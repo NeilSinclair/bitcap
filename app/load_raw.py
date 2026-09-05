@@ -21,7 +21,15 @@ from app.models import utcnow
 
 ROOT = Path(__file__).parent.parent
 ARTICLES = ROOT / "research" / "docs" / "announcements.json"
+# Committed like the announcements corpus, and for the same reason: `rebuild`
+# must reproduce the whole register from files in the repo, with no API key and
+# no network. Without it a fresh clone has no papers at all -- the leg's rows
+# only ever reached bronze from a live firing.
+PAPERS = ROOT / "research" / "docs" / "papers_corpus.json"
 SCORES_DIR = ROOT / "research" / "docs" / "announcement_scores"
+# Papers are cached under their own prompt version, so their per-call
+# provenance lives in its own tree (score_announcements.PAPERS).
+PAPER_SCORES_DIR = ROOT / "research" / "docs" / "paper_scores"
 COSTS = ROOT / "research" / "docs" / "announcement_cost.json"
 
 
@@ -104,7 +112,8 @@ def load_article_records(session: Session, records: list[dict], source_file: str
 def load_classifications(session: Session, prompt_version: str,
                          articles_path: Path | None = None,
                          scores_dir: Path = SCORES_DIR,
-                         run_id: int | None = None, limit: int | None = None) -> dict:
+                         run_id: int | None = None, limit: int | None = None,
+                         source_files: tuple[str, ...] = ()) -> dict:
     """Upsert the per-URL score cache into raw_llm_responses.
 
     Reads the cache files (the true per-call provenance) rather than the merged
@@ -119,6 +128,12 @@ def load_classifications(session: Session, prompt_version: str,
         scores_dir: Parent of the per-version cache directories.
         run_id: pipeline_runs row to attribute writes to.
         limit: Only the first N articles.
+        source_files: Restrict the URL list to these corpora. Without it the
+            `missing` count below is meaningless once a second prompt version
+            exists: every announcement is "missing" from the papers version and
+            vice versa, so a healthy firing reports ~647 and ~47 missing. That
+            number is a diagnostic -- `classifications.missing: 4` is how the
+            D38 failure was caught -- and a permanently non-zero one is noise.
 
     Returns:
         Counts: inserted / updated / unchanged / missing (no cache file).
@@ -134,7 +149,10 @@ def load_classifications(session: Session, prompt_version: str,
         # URLs as pending, serves every one from cache for free, and reports
         # `classified: N, cost_usd: 0.0` -- indistinguishable from a healthy
         # incremental run, for ever.
-        urls = list(session.scalars(select(m.RawArticle.url)))[:limit]
+        query = select(m.RawArticle.url)
+        if source_files:
+            query = query.where(m.RawArticle.source_file.in_(tuple(source_files)))
+        urls = list(session.scalars(query))[:limit]
     cache = scores_dir / prompt_version
     existing = {
         r.url: r for r in session.scalars(

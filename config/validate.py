@@ -423,6 +423,8 @@ def check_pipeline(root: Path) -> list[str]:
 
     * `content_band: High` (capitalised) makes the band filter match nothing, so
       **zero content alerts are raised, forever**, with no error anywhere.
+    * `content_max_age_days: 0` does the same thing by a different route: both
+      content rules bound `published_on` by it, so nothing is ever recent enough.
     * a mistyped `cadence` key means that leg never runs, and the register
       quietly covers less than anyone thinks.
     * a `channel` with no delivery function, or a `budget` that is absent or
@@ -483,6 +485,18 @@ def check_pipeline(root: Path) -> list[str]:
 
     alerts = doc.get("alerts") or {}
     bands = ("none", "low", "medium", "high")
+    # 0 suppresses every content alert forever, in exactly the way a
+    # capitalised `content_band` does, and reads as a deliberate-looking number.
+    max_age = alerts.get("content_max_age_days")
+    if not isinstance(max_age, int) or isinstance(max_age, bool) or max_age < 1:
+        errors.append(
+            f"pipeline.yaml/alerts: content_max_age_days {max_age!r} must be a "
+            f"positive int -- 0 or missing silently stops every content alert")
+    elif max_age < 92:
+        errors.append(
+            f"pipeline.yaml/alerts: content_max_age_days {max_age} is shorter "
+            f"than the ~3-month announcements window, so real announcements "
+            f"would stop alerting")
     if alerts.get("content_band") not in bands:
         errors.append(
             f"pipeline.yaml/alerts: content_band {alerts.get('content_band')!r} is not "
@@ -573,11 +587,32 @@ def check_papers_sources(root: Path, tracked_labs: set[str]) -> list[str]:
     errors = []
     url_fields = {"url", "meta_url", "announcement_url"}
     returns = {"papers", "papers_and_unresolved"}
+    strategies = {"blockquote_abstract", "heading_section", "lead_section"}
 
     for entry in doc.get("labs", []):
         lab = entry.get("lab", "?")
         if lab not in tracked_labs:
             errors.append(f"papers_sources.yaml/{lab}: lab not in sources.yaml")
+        # A mistyped strategy is the same class of silent failure as a mistyped
+        # `url_field`: extraction falls back through the weaker strategies, so
+        # the papers still arrive -- as lead sections full of page furniture,
+        # scoring zero, with nothing recorded as unresolved.
+        abstract = entry.get("abstract") or {}
+        if not isinstance(abstract, dict) or "strategy" not in abstract:
+            errors.append(
+                f"papers_sources.yaml/{lab}: no `abstract` block -- the scoring "
+                f"leg has no way to read this lab's papers")
+        else:
+            if abstract.get("strategy") not in strategies:
+                errors.append(
+                    f"papers_sources.yaml/{lab}: abstract.strategy "
+                    f"{abstract.get('strategy')!r} not in {sorted(strategies)} -- "
+                    f"extraction would fall back and never say so")
+            if not isinstance(abstract.get("max_chars"), int) or abstract["max_chars"] < 200:
+                errors.append(
+                    f"papers_sources.yaml/{lab}: abstract.max_chars "
+                    f"{abstract.get('max_chars')!r} must be an int >= 200 -- the "
+                    f"extractor rejects anything shorter as furniture")
         if entry.get("url_field") not in url_fields:
             errors.append(
                 f"papers_sources.yaml/{lab}: url_field {entry.get('url_field')!r} not in "

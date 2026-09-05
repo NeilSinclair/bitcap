@@ -273,7 +273,7 @@ def connections_for(article, cls_tags: dict, score: float, refs: dict,
     return _drop_contradicted_category_rows(list(best.values()))
 
 
-def connect(session: Session, prompt_version: str, run_id: int | None = None) -> dict:
+def connect(session: Session, prompt_version: str | tuple[str, ...], run_id: int | None = None) -> dict:
     """Rebuild the connections table for every classified article.
 
     Wholesale delete-and-rebuild: the table is fully derived, so rebuilding is
@@ -281,7 +281,10 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
 
     Args:
         session: Open session; this function flushes, the caller commits.
-        prompt_version: Which classifications to join from.
+        prompt_version: Which classifications to join from. A tuple spans
+            several -- papers and announcements are classified under different
+            versions and this table is rebuilt wholesale, so calling this once
+            per version would leave only the last one's rows.
         run_id: Accepted for CLI uniformity; connections carry no run column.
 
     Returns:
@@ -289,6 +292,7 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
         does not include rows a same-holding mechanism row contradicted)
         plus articles and holdings touched.
     """
+    versions = (prompt_version,) if isinstance(prompt_version, str) else tuple(prompt_version)
     rules = yaml.safe_load(SCORING.read_text())
     refs = {
         "holding_mechanisms": session.scalars(select(m.HoldingMechanism)).all(),
@@ -307,7 +311,7 @@ def connect(session: Session, prompt_version: str, run_id: int | None = None) ->
     pairs = session.execute(
         select(m.Article, m.Classification)
         .join(m.Classification, m.Classification.article_id == m.Article.id)
-        .where(m.Classification.prompt_version == prompt_version)
+        .where(m.Classification.prompt_version.in_(versions))
     ).all()
     for article, cls in pairs:
         tags = {

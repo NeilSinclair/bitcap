@@ -27,6 +27,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import NamedTuple
 
 import anthropic
 import yaml
@@ -60,6 +61,55 @@ SCORING = ROOT / "config" / "scoring.yaml"
 ARTICLES = ROOT / "research" / "docs" / "announcements.json"
 CACHE = ROOT / "research" / "docs" / "announcement_scores" / PROMPT_VERSION
 OUT = ROOT / "research" / "docs" / f"scored_announcements_{PROMPT_VERSION}.json"
+
+# Papers are the same scorer reading a different corpus under a different
+# prompt, not a second pipeline: the schema, the vocabularies, `drop_unknown_tags`,
+# `enforce_quotes`, `call_cost` and `app.scoring` are all shared below. What
+# differs is only which prompt file is read, which cache directory the results
+# land in, and which `prompt_version` they are keyed on -- so those three travel
+# together as a `Variant` rather than as three parameters that could disagree.
+#
+# The version is read from app/cli.py for the same reason PROMPT_VERSION is: two
+# constants that must agree by hand will eventually not, and the failure is
+# silent and billed nightly (see the note above).
+PAPER_PROMPT_VERSION = re.search(
+    r'^PAPER_PROMPT_VERSION = "([^"]+)"', _APP.read_text(encoding="utf-8"), re.M
+).group(1)
+
+
+class Variant(NamedTuple):
+    """Which corpus is being scored: its prompt, its cache and its version."""
+
+    version: str
+    prompt: Path
+    cache: Path
+    out: Path
+
+
+def announcements() -> Variant:
+    """The announcement variant, read from the module globals *at call time*.
+
+    Deliberately a function, not a constant. `CACHE` and `OUT` are monkeypatched
+    by tests and by one-off scripts to redirect a run at a scratch directory;
+    freezing them into a constant at import would silently ignore that and write
+    into the real register.
+    """
+    return Variant(PROMPT_VERSION, PROMPT, CACHE, OUT)
+
+
+PAPER_PROMPT = ROOT / "prompts" / "paper_scoring" / f"{PAPER_PROMPT_VERSION}.md"
+PAPER_CACHE = ROOT / "research" / "docs" / "paper_scores" / PAPER_PROMPT_VERSION
+PAPER_OUT = ROOT / "research" / "docs" / f"scored_papers_{PAPER_PROMPT_VERSION}.json"
+
+
+def papers() -> Variant:
+    """The papers variant, read from the module globals at call time.
+
+    A function for the same reason `announcements` is: a frozen constant would
+    ignore a monkeypatched cache directory and write straight into the real
+    register, which is precisely the seam a one-off re-score needs.
+    """
+    return Variant(PAPER_PROMPT_VERSION, PAPER_PROMPT, PAPER_CACHE, PAPER_OUT)
 COST = ROOT / "research" / "docs" / "announcement_cost.json"
 
 TAG = {
@@ -235,18 +285,21 @@ def strip_comments(prompt: str) -> str:
     return COMMENT.sub("", prompt)
 
 
-def build_prompt(article: dict) -> tuple[str, str]:
-    """Assemble the system and user prompts for one announcement.
+def build_prompt(article: dict, variant: Variant | None = None) -> tuple[str, str]:
+    """Assemble the system and user prompts for one document.
 
     Args:
-        article: Article record from announcements.json.
+        article: Article record from announcements.json, or a paper record from
+            the papers corpus -- the user message is the same shape for both.
+        variant: Which corpus is being scored; decides the prompt file.
 
     Returns:
         Tuple of (system prompt, user prompt).
     """
+    variant = variant or announcements()
     mech_block, cat_block, prac_block, _, _, _ = vocabularies()
     system = (
-        strip_comments(PROMPT.read_text(encoding="utf-8"))
+        strip_comments(variant.prompt.read_text(encoding="utf-8"))
         .replace("{mechanisms}", mech_block)
         .replace("{categories}", cat_block)
         .replace("{practices}", prac_block)
@@ -333,7 +386,8 @@ def drop_unknown_tags(
 
 
 def classify(
-    client: anthropic.Anthropic, model: str, article: dict
+    client: anthropic.Anthropic, model: str, article: dict,
+    variant: Variant | None = None,
 ) -> tuple[dict, dict]:
     """Classify one announcement, returning the result and its cost record.
 
@@ -341,6 +395,8 @@ def classify(
         client: Anthropic client.
         model: Model id.
         article: Article record.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         Tuple of (parsed result, cost record for this single call).
@@ -349,7 +405,8 @@ def classify(
         RuntimeError: On refusal or truncated output, rather than returning a
             partial classification that would look like a real one.
     """
-    system, user = build_prompt(article)
+    variant = variant or announcements()
+    system, user = build_prompt(article, variant)
     started = time.time()
     with client.messages.stream(
         model=model,
@@ -451,6 +508,7 @@ def classify_one(
     prac_ids: set[str] | None = None,
     dimensions: dict[str, set[str]] | None = None,
     max_dimensions: int | None = None,
+    variant: Variant | None = None,
 ) -> tuple[dict, dict | None, dict | None]:
     """Classify one article, or load it from cache.
 
@@ -467,17 +525,20 @@ def classify_one(
             which is what the pre-v5 callers (variance, vote) want.
         dimensions: Valid dimension names per practice id.
         max_dimensions: Cap on dimensions per tag.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         Tuple of (result, cost record or None if cached, failure or None).
     """
+    variant = variant or announcements()
     key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
-    cached = CACHE / key
+    cached = variant.cache / key
     if cached.exists():
         return json.loads(cached.read_text()), None, None
 
     try:
-        result, cost = classify(client, model, article)
+        result, cost = classify(client, model, article, variant)
     except Exception as exc:  # network, refusal, malformed JSON
         return {}, None, {"url": article["url"], "error": str(exc)}
 
@@ -500,6 +561,7 @@ def run_batch(
     dimensions: dict[str, set[str]] | None,
     max_dimensions: int | None,
     poll_seconds: int = 30,
+    variant: Variant | None = None,
 ) -> tuple[dict[str, dict], list[dict], list[dict]]:
     """Classify every uncached article in one Message Batches job.
 
@@ -525,6 +587,7 @@ def run_batch(
     Returns:
         Tuple of (results keyed by url, failures, cost records).
     """
+    variant = variant or announcements()
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
     from anthropic.types.messages.batch_create_params import Request
 
@@ -549,11 +612,11 @@ def run_batch(
 
     for article in articles:
         key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
-        cached = CACHE / key
+        cached = variant.cache / key
         if cached.exists():
             results[article["url"]] = json.loads(cached.read_text())
             continue
-        system, user = build_prompt(article)
+        system, user = build_prompt(article, variant)
         # A hash, not the truncated-slug cache key: two distinct URLs can
         # share a truncated slug, and custom_id is what results() uses to
         # route an answer back to its article -- a collision here would
@@ -643,7 +706,7 @@ def run_batch(
             continue
 
         key = re.sub(r"[^A-Za-z0-9]+", "_", article["url"])[:140] + ".json"
-        (CACHE / key).write_text(json.dumps(result))
+        (variant.cache / key).write_text(json.dumps(result))
         results[article["url"]] = result
         bill(article["url"], message.usage)
 
@@ -656,6 +719,7 @@ def run(
     workers: int = 12,
     batch: bool = False,
     budget=None,
+    variant: Variant | None = None,
 ) -> dict:
     """Classify the given articles, score them, and write the register.
 
@@ -673,13 +737,16 @@ def run(
             `.snapshot()`. Checked before each item is started, so a fan-out
             already in flight stops taking new work rather than being killed
             mid-call — a cancelled call is billed and produces nothing.
+        variant: Which corpus is being scored -- announcements or papers. Decides
+            the prompt file, the cache directory and the output register.
 
     Returns:
         ``{scored, failures, cost_usd, bands, classified, skipped_for_budget}``.
         `skipped_for_budget` is non-zero only when the ceiling was reached, and
         is what distinguishes "nothing left to classify" from "stopped early".
     """
-    CACHE.mkdir(parents=True, exist_ok=True)
+    variant = variant or announcements()
+    variant.cache.mkdir(parents=True, exist_ok=True)
     rules = yaml.safe_load(SCORING.read_text())
     _, _, _, mech_ids, cat_ids, prac_ids = vocabularies()
     dims, cap = practice_dimensions(), dimension_cap()
@@ -712,7 +779,8 @@ def run(
         # re-reading + re-appending batch_costs on top would duplicate every
         # entry it already wrote.
         results, failures, batch_costs = run_batch(
-            client, model, submitted, mech_ids, cat_ids, prac_ids, dims, cap
+            client, model, submitted, mech_ids, cat_ids, prac_ids, dims, cap,
+            variant=variant,
         ) if submitted else ({}, [], [])
         for cost in batch_costs:
             if budget is not None:
@@ -721,7 +789,7 @@ def run(
     else:
         results, failures, spent, skipped = _run_interactive(
             client, model, articles, workers, budget,
-            mech_ids, cat_ids, prac_ids, dims, cap,
+            mech_ids, cat_ids, prac_ids, dims, cap, variant,
         )
 
     scored = []
@@ -739,12 +807,13 @@ def run(
     # to be given. `failures` is this run's, deliberately: it describes this
     # attempt, where `scored` describes the corpus.
     merged = {}
-    if OUT.exists():
-        merged = {r["url"]: r for r in json.loads(OUT.read_text()).get("scored", [])}
+    if variant.out.exists():
+        merged = {r["url"]: r for r in json.loads(variant.out.read_text()).get("scored", [])}
     merged.update({r["url"]: r for r in scored})
     register = sorted(merged.values(), key=lambda a: -a["score"])
 
-    OUT.write_text(json.dumps({"scored": register, "failures": failures}, indent=2))
+    variant.out.write_text(
+        json.dumps({"scored": register, "failures": failures}, indent=2))
 
     return {
         "scored": scored,
@@ -759,7 +828,7 @@ def run(
 
 def _run_interactive(
     client, model, articles, workers, budget,
-    mech_ids, cat_ids, prac_ids, dims, cap,
+    mech_ids, cat_ids, prac_ids, dims, cap, variant=None,
 ):
     """The concurrent path: warm the prompt cache, then fan out.
 
@@ -767,6 +836,7 @@ def _run_interactive(
         Tuple of (results by url, failures, usd spent this call, items skipped
         because the budget ran out).
     """
+    variant = variant or announcements()
     results: dict[str, dict] = {}
     failures: list[dict] = []
     costs = json.loads(COST.read_text()) if COST.exists() else []
@@ -810,7 +880,8 @@ def _run_interactive(
         nonlocal skipped
         if budget is None:
             return classify_one(
-                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap
+                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap,
+                variant,
             )
         if not budget.begin_call():
             with lock:
@@ -819,7 +890,8 @@ def _run_interactive(
         cost = None
         try:
             out = classify_one(
-                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap
+                client, model, article, mech_ids, cat_ids, prac_ids, dims, cap,
+                variant,
             )
             cost = out[1]
             return out
