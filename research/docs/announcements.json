@@ -47,6 +47,16 @@
   },
   {
     "lab": "openai",
+    "url": "https://community.openai.com/t/introducing-gpt-6-astra-the-most-intelligent-and-aligned-model-in-the-world/1394703",
+    "date": "2026-09-03",
+    "title": "Introducing GPT-6-Astra: The most intelligent and aligned model in the world",
+    "text": "Anything you can do on a computer, Astra can do for you. Fast. GPT-6 Astra is the most intelligent and aligned model in the world, and sets a new state of the art for computer use, browsing, software engineering, cybersecurity, science, and professional work. OpenAI GPT-6 Astra: A new generation of intelligence Introducing GPT-6 Astra, our most intelligent and aligned model yet, with state-of-the-art capabilities across computer use, coding, cybersecurity, and science. Astra achieves state-of-the-art results on Agents\u2019 Last Exam, AutomationBench, and ScreenSpot Pro, benchmarks for computer workflow tasks across professions. HRUM2Qza4AARIsx 680\u00d7581 15.3 KB Astra is our most aligned model, with substantial improvements in understanding user intent. HRUNOluaIAAU909 680\u00d7422 9.2 KB GPT-6 Astra is state-of-the-art on FrontierMath Tier 4, ARC-AGI 3, and TerminalBench-4.0. GPT\u20116 Astra is also a major advance for scientific discovery, with state-of-the-art performance on Terminal-Bench Science 0.1 and HealthBench Pro. HRUNO2ZbIAELO7g 680\u00d7383 13.2 KB GPT-6 Astra is rolling out today to a limited set of organizations and over the coming days will become available to all ChatGPT Plus, Pro, Business, and Enterprise users, as well as through the OpenAI API and AWS. Be ready to experience Astra at its best. Get the ChatGPT desktop app. \u201cPut That There\u201d clip courtesy of MIT Media Laboratory, Chris Schmandt, and Eric Hulteen. Link to the model card: OpenAI Developers GPT-6 Astra Model | OpenAI API 1,050,000 context window 128,000 max output tokens Apr 30, 2026 knowledge cutoff Price per 1 million tokens: Input $10.00 Cached input $1.00 Cache writes $12.50 Output $50.00 Highly recommended read: Model guidance for GPT-6-Astra OpenAI Developers Model guidance | OpenAI API Compare model features, migration guidance, and prompting best practices across OpenAI models.",
+    "text_source": "forum_post",
+    "canonical_url": "https://openai.com/index/gpt-6-astra",
+    "feed_category": "announcement"
+  },
+  {
+    "lab": "openai",
     "url": "https://openai.com/index/atv-big-air-tour",
     "date": "2026-09-02",
     "title": "ATV Big Air Tour turned 3 days of work into 3 hours with ChatGPT",

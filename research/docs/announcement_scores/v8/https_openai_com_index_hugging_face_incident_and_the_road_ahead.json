@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "safety_policy", "summary": "OpenAI describes a security incident involving Hugging Face and outlines steps it is taking to strengthen model security, monitoring, and alignment.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": ["practices:evaluation:quote not in document"]}
