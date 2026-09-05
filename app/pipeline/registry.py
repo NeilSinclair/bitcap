@@ -46,11 +46,18 @@ STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3, RELEASES: 4}
 # What each article-producing leg writes into `raw_articles.source_file`.
 # Provenance for a shared table, and the key the kill switch matches on when a
 # leg is switched off and its already-ingested rows must stop being classified.
-# The papers and github legs are absent because they produce no articles.
+# The github leg is absent because it produces people, not articles. Papers
+# produce both: bylines for the register (`raw_papers`), and one abstract-shaped
+# article each for the scoring leg, which is this entry.
 CORPUS_LABELS = {
     ANNOUNCEMENTS: "research/docs/announcements.json",
+    PAPERS: "research/docs/papers_corpus.json",
     RELEASES: "github_releases",
 }
+
+# The papers corpus by name, for readers that need to tell a paper from an
+# announcement without importing the whole registry's config machinery.
+PAPERS_CORPUS = CORPUS_LABELS[PAPERS]
 
 
 @dataclass(frozen=True)

@@ -37,6 +37,11 @@
 #   url_field    Which attribute carries the primary citation. Differs per lab
 #                and is load-bearing: it is the URL a human clicks, never the
 #                arXiv page the byline happened to be scraped from.
+#   abstract     How to pull the abstract out of that citation page, for the
+#                scoring leg. `strategy` is the shape the lab's page actually
+#                has; extraction falls back through the weaker strategies, so a
+#                page that changes shape degrades to a lead section rather than
+#                dropping the paper. See research/papers/paper_text.py.
 #   enabled      false records a lab that is deliberately not covered.
 
 version: 1
@@ -48,6 +53,7 @@ labs:
     args: [months, model]
     returns: papers
     url_field: url
+    abstract: {strategy: lead_section, max_chars: 6000}
     enabled: true
     notes: >
       Deterministic parser in production with an LLM fallback (planning.md §11);
@@ -60,6 +66,7 @@ labs:
     args: []
     returns: papers
     url_field: url
+    abstract: {strategy: blockquote_abstract, max_chars: 6000}
     enabled: true
     notes: >
       Corpus is a hardcoded list in the module, not a discovered index — OpenAI
@@ -72,6 +79,7 @@ labs:
     args: []
     returns: papers
     url_field: url
+    abstract: {strategy: blockquote_abstract, max_chars: 6000}
     enabled: true
     notes: >
       arXiv `au:"DeepSeek-AI"` plus a small extra-titles list. 300-author papers;
@@ -83,6 +91,7 @@ labs:
     args: [months, model, limit]
     returns: papers
     url_field: url
+    abstract: {strategy: heading_section, max_chars: 6000}
     enabled: true
     notes: Sitemap discovery, LLM byline extraction off the linked arXiv page (D13).
 
@@ -92,6 +101,7 @@ labs:
     args: [months, model, limit]
     returns: papers_and_unresolved
     url_field: meta_url
+    abstract: {strategy: lead_section, max_chars: 6000}
     enabled: true
     notes: >
       Meta's listing 500s, so discovery goes via ai.meta.com/results/ and the
@@ -104,6 +114,7 @@ labs:
     args: [months, model, limit]
     returns: papers_and_unresolved
     url_field: announcement_url
+    abstract: {strategy: lead_section, max_chars: 6000}
     enabled: true
     notes: >
       No publications page exists at all, so candidate titles come from
@@ -117,6 +128,7 @@ labs:
     args: []
     returns: papers
     url_field: url
+    abstract: {strategy: lead_section, max_chars: 6000}
     enabled: false
     notes: >
       Not a gap. Checked twice, live (D16, reconfirmed D17): arXiv has no

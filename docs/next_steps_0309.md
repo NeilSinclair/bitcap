@@ -43,14 +43,14 @@
 
   Fix is a v10 prompt boundary change plus a full re-classification and a gold
   re-run, so it wants its own branch and its own cost line. Raised 2026-09-05
-  while building the duplicate collapse (docs/decisions.md D57), **not
+  while building the duplicate collapse (docs/decisions.md D59), **not
   actioned**. Noted there because the collapse deliberately does *not* fold this
   row into the launch card — merging it would have hidden the mis-score instead
   of surfacing it.
 
   **Three instances now, and they argue for the full re-score over the cheap
   one.** The duplicate collapse surfaced two more cases of one initiative
-  getting two `event_type` labels, both found by Neil's spot-check (D57b):
+  getting two `event_type` labels, both found by Neil's spot-check (D59b):
 
   | one thing | labelled |
   |---|---|
@@ -86,7 +86,7 @@
   rescuing the safety row from the mis-scoring above, and building it now would
   paper over the bug rather than fix it. Revisit only once the
   `capability_result` boundary is corrected, and only if that row still fails to
-  surface on its own merits. Recorded 2026-09-05 (D57).
+  surface on its own merits. Recorded 2026-09-05 (D59).
 
 - **`accelerator_custom_si` sign disagrees with the gold label** on article `15`
   (Jalapeño). Human says `mixed`, every model version v7/v8/v9 says `positive`.

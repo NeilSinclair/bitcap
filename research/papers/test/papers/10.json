@@ -1,0 +1,58 @@
+{
+  "id": "10",
+  "lab": "openai",
+  "date": "2023-03-15",
+  "title": "GPT-4 Technical Report",
+  "url": "https://arxiv.org/abs/2303.08774v6",
+  "text_source": "paper_abstract",
+  "document_type": "technical_report",
+  "text": "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs. While less capable than humans in many real-world scenarios, GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers. GPT-4 is a Transformer-based model pre-trained to predict the next token in a document. The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior. A core component of this project was developing infrastructure and optimization methods that behave predictably across a wide range of scales. This allowed us to accurately predict some aspects of GPT-4&#39;s performance based on models trained with no more than 1/1,000th the compute of GPT-4.",
+  "gold": {
+    "labelled_by": "claude-fable-5",
+    "event_type": "frontier_model_release",
+    "mechanisms": [
+      {
+        "id": "capability_jump",
+        "sign": "positive",
+        "magnitude": "high",
+        "confidence": "high",
+        "reason": "A frontier release claiming human-level results on professional benchmarks is the capability step itself, stated with a concrete exam result.",
+        "quote": "GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10% of test takers"
+      },
+      {
+        "id": "training_compute_up",
+        "sign": "positive",
+        "magnitude": "high",
+        "confidence": "medium",
+        "reason": "A frontier model trained at a thousand times the compute of its predictive test-bed models signals the training-scale commitment behind the release, though no cluster or spend is disclosed.",
+        "quote": "This allowed us to accurately predict some aspects of GPT-4&#39;s performance based on models trained with no more than 1/1,000th the compute of GPT-4."
+      }
+    ],
+    "categories": [],
+    "practices": [
+      {
+        "id": "model_capability",
+        "action": "investigate",
+        "impact": "high",
+        "confidence": "high",
+        "dimensions": [
+          "vision_multimodal",
+          "reasoning",
+          "reliability"
+        ],
+        "reason": "A new frontier model adding image input and claiming human-level professional performance changes what is worth putting in front of users, pending independent evaluation.",
+        "quote": "We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs."
+      },
+      {
+        "id": "evaluation",
+        "action": "watch",
+        "impact": "low",
+        "confidence": "high",
+        "dimensions": [],
+        "reason": "Predicting a frontier model's performance from runs at a thousandth of the compute is a measurement practice worth knowing, but it is the lab's internal process with nothing handed over.",
+        "quote": "This allowed us to accurately predict some aspects of GPT-4&#39;s performance based on models trained with no more than 1/1,000th the compute of GPT-4."
+      }
+    ]
+  },
+  "review": {}
+}

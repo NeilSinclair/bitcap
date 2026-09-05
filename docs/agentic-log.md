@@ -188,3 +188,49 @@ Placeholders, not suggestions. Cut any that don't ring true.
 - What did you stop trusting the agents with over the twelve days?
 - The review agent found defects in three passes running. Would you have caught them by
   reading the diff yourself, and how long would it have taken?
+
+---
+
+## 2026-09-05 — papers: three wrong answers, each caught by being asked to show the number
+
+Operational picture of this leg: [`handover-papers.md`](handover-papers.md).
+Rationale: [`decisions.md`](decisions.md) §D57.
+
+**An estimate stated with the confidence of a measurement.** The plan costed
+full-text paper classification at ~$4 and recommended against it on other
+grounds. Neil's question was *"why do you think it will only cost ~$4?"* — and
+the honest answer was that the figure assumed papers fit inside the existing
+60,000-character budget, which nothing had checked. Measured, arXiv `/html/`
+full texts average 182,974 visible characters, ~59,200 tokens, about **43x the
+mean article**. Real cost $11.30. The recommendation happened to survive, but
+the argument it rested on did not, and it was reversed for a different reason.
+**The tell was not that the number looked wrong; it was that nobody had made it.**
+
+**A defect the tests could not have found, caught in a count.** Mistral's paper
+citations *are* its announcement URLs, and `raw_articles` is keyed on URL. The
+first landing overwrote two 13,000-character announcements with 2,000-character
+lead sections. No test failed, no exception raised — the only visible trace was
+`47 inserted, 2 updated` where 49 inserted was expected. This is the same class
+of failure as the OpenAI corpus overwrite above: two correct scripts, one shared
+output key, silent loss. **Twice now, in one project, and the second time was
+caught only because the first one taught us to read the counts.**
+
+**A claim about our own evaluation that was simply false.** Neil was told the
+announcement gold set was human-adjudicated. It is not — `gold_human/` was
+deleted on 2026-09-01, and the set is cross-model adjudication (Sonnet 5
+classifier, Opus 5 adjudicator). The error mattered because the papers set was
+about to be labelled by Fable 5, and the whole honesty constraint was *don't mix
+a model proxy with human ground truth without saying so*. The constraint was
+being applied against a baseline that was itself a proxy. Corrected in D57, in
+the builder docstring, and in a new `research/papers/test/README.md`.
+
+**The review agent found eleven defects and three of them were real.** Each of
+the three majors was verified the only way that counts — revert the fix, watch
+the test go red, reapply. The eight minors were mostly comments that had drifted
+from the code they described. `[NEIL]` — worth noting whether that ratio held
+across the other review passes.
+
+**What worked.** Committing the corpus as an artifact means `bitcap-db rebuild`
+reproduces 306 articles, 47 papers and 126 paper connections offline with no API
+key, which is the clone-to-running requirement and also the thing that made
+every one of the above recoverable in seconds rather than dollars.

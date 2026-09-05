@@ -5423,7 +5423,360 @@ one check that would make a carried-forward row verifiable after the fact —
 pointed at directly by this whole exercise having begun with text changing
 underneath a stored classification.
 
-## D57 — The duplicate collapse, and what the labels said about it (2026-09-05)
+## D57 — Papers become a scored corpus, not a second pipeline (2026-09-05)
+
+**This supersedes D25.** That entry rejected scoring papers, and its reasoning
+was sound about the thing it described:
+
+> "The tempting move is to treat a paper like an announcement — classify it,
+> score it, join it to holdings. That is a second full pipeline (its own
+> prompts, its own scoring rule, its own gold set) and it answers a question
+> announcements already answer better."
+
+What is built here is not that. Papers land in `raw_articles` under
+`source_file = research/docs/papers_corpus.json` and share the JSON schema,
+`vocabularies()`, `drop_unknown_tags`, `enforce_quotes`, `call_cost`,
+`config/scoring.yaml`, `app/scoring.py`, `classifications` and its three tag
+tables, `connect`, `digest`, `/api/items` and the dashboard. One prompt file
+differs, and one work-list filter. That is one more corpus, not a second system.
+
+**And the second half of D25's claim turned out to be wrong.** Announcements do
+not answer this question better, because for the class that matters they cannot
+answer it at all. DeepSeek-V4's abstract states *"requires only 27% of
+single-token inference FLOPs and 10% of KV cache compared with DeepSeek-V3.2"*
+at one million tokens. KV cache is HBM-resident, so a tenfold cut is a
+first-order claim about memory demand per served token — the DeepSeek→NVIDIA
+transmission the brief names as its calibration case. Those numbers exist in the
+technical report and nowhere else.
+
+### Why the abstract, and not the paper
+
+Measured before deciding, not estimated. Five arXiv `/html/` full texts:
+DeepSeek-V4 170,913 visible characters, DeepSeek-V3 135,384, the GPT-5 system
+card 134,271, Meta's RL-code paper 401,194, Shieldstral 73,107 — mean **182,974
+characters, ~59,200 tokens, about 43x the mean article in this register**
+(4,290). Calibrated against 1,787 rows of `raw_costs`: 3.09 characters per input
+token, and output plateaus near 3,300 tokens because the schema bounds it
+(3,105 at 24k chars, 3,228 at 28k, 2,483 at 32k). Every measured `usd` predates
+Sonnet 5's list price, so forward cost is 1.5x the recorded column.
+
+| scope | input tokens | 49 papers | `text_source` honest? |
+|---|---|---|---|
+| full text | 59,200 | $11.30 | yes — `full_text` is true |
+| truncated to 60k chars | 19,400 | $5.30 | no — 4 of 5 sampled papers cut |
+| **abstract** | **~650** | **$0.75 actual** | needs a new value; see below |
+
+**Cost is not what decided it.** What decided it is that every number which made
+these papers worth scoring was stated in the abstract: DeepSeek-V4's 10% KV
+cache and 27% FLOPs, DeepSeek-V3.2's DSA and its IMO/IOI results, Meta's
+18.0%→31.3% strict top-50% pass@1, Anthropic's GRAM reconfiguring one model to
+match five filtered ones. Paying nine times as much to send ablations,
+appendices and bibliographies in order to reach a figure in the first paragraph
+is the same trade `llm_byline.HTML_BUDGET` already refuses for bylines —
+*"~100x for content that cannot contain the answer"*.
+
+**The honest cost of this choice:** a figure stated only in a results table or
+an ablation is invisible to us. That is a real ceiling on recall, and it is why
+`paper_abstract` is its own `text_source` rather than being passed off as
+`full_text`.
+
+Rejected: truncating the full text to the existing 60,000-character budget. It
+is cheaper than full text and it would let us keep the `full_text` label, which
+is exactly the problem — the label would be false for most of the corpus.
+
+### Why papers carry their own prompt version
+
+An abstract of a 180,000-character paper is authoritative but partial, and no
+existing `text_source` describes it. `full_text` means "the complete article";
+`rss_summary` caps confidence at medium, which would wrongly discount a
+first-party abstract. So a new value, which means a new prompt version.
+
+Sharing `PROMPT_VERSION` would have forced a `v10` for the whole register:
+647 rows at $0.0258 each is **~$16.70** to re-ask an unchanged question of
+unchanged text. The alternative was a carry-forward, and D56a is precisely the
+record of why that argument has to be airtight — v9's guard checked its
+precondition vacuously. A v10 carry-forward could not have made D56's
+byte-identical claim, only the weaker "the added block concerns a document type
+not present", which is not the same thing.
+
+`classifications.prompt_version` is a plain string, so papers are classified
+under `p1` against `prompts/paper_scoring/p1.md` and v9 is untouched at $0. The
+cost is that every reader of `classifications` must now span a set of versions.
+`connect` is the sharp edge: it deletes the whole table before rebuilding, so
+calling it once per version leaves only the last one's rows. Pinned by
+`tests/test_papers_scoring.py::TestOneSpineTwoVersions`, which asserts both the
+correct behaviour and the failure mode.
+
+`digests.prompt_version` stays single-valued — it is a uniqueness key — and
+records the announcement version, with the full set in `stats["versions"]`.
+
+### `research_result` no longer captures a technical report
+
+v9 defines `research_result` (weight 3) as *"a research finding: a paper or a
+novel method"*. A DeepSeek-V4-style technical report is literally a paper, so it
+classifies there by default — capping the strongest evidence in the register at
+`100 x (3/5) x (3/3) = 60.0`, against the 100.0 the same launch scores when
+announced as a blog post. `p1` rewords the type: a technical report, model card
+or system card that introduces a model *is how that model was launched*.
+
+This is a wording fix. **No new event types, and no edit to
+`config/scoring.yaml`.** New paper-specific types were considered and rejected:
+adding keys is mechanically free and costs no LLM spend, but the dashboard ranks
+papers and announcements in one column, so a separate event vocabulary makes
+"60" mean two different things in one list — and with no paper gold set yet, any
+new weight would be a guess against a config whose whole premise is that every
+number can be argued line by line. Two traps recorded for whoever revisits this:
+`max_event_weight` is pinned to `max(event_weight.values())`, so a new type
+above weight 5 silently rescales every existing announcement score downward; and
+`score_of` looks the type up with `.get(event_type, 0)`, so a type the prompt
+offers and `scoring.yaml` does not weight scores zero, silently.
+
+The asymmetry that remains is deliberate: a genuine research finding still
+ceilings at 60.0, so it reaches the digest's `always_band: high` route only on a
+high-magnitude, high-confidence, quote-backed tag, where a model release at the
+same evidence would not need one.
+
+Measured on the live corpus: 34 of 47 papers classify `research_result`, 9
+`frontier_model_release`, 2 `open_weights`, 1 `incremental_model_release`, 1
+`product_launch`. The disambiguation fires where it should and does not spread.
+
+### Two papers were already announcements
+
+Landing the corpus updated two existing rows rather than inserting them, which
+was not anticipated. Mistral has no publications page at all, so its papers
+harvester sources candidate titles from Mistral's own announcements corpus (D17)
+and its citation is `mistral.ai/news/<slug>` — a URL the announcements leg
+already holds, at full text, already scored under v9. `raw_articles` is keyed on
+URL, so the paper landed on top and replaced 13,000 characters of announcement
+with a 2,000-character lead section. Caught by reading the insert/update counts,
+repaired by re-running `load_articles`, and now prevented: `paper_text.collect`
+skips any paper whose URL is already in the corpus under another `source_file`,
+and records it in `unresolved_items` with a reason. The announcement wins — it
+is the complete document — and "deliberately not added" and "missing" must not
+look the same in the register. 47 of 49 papers are scored; the 2 are Mistral's.
+
+### Content alerts are now bounded by publication age
+
+`high_band_items` and `holding_impact` filtered on band and strength and nothing
+else. That was harmless while every corpus was a rolling window, and stopped
+being harmless the moment a backfill landed: the papers leg reaches back to 2023
+and eight of its documents score in the high band, so the first firing would
+have paged someone about GPT-4's technical report.
+
+`alerts.content_max_age_days: 120`, measured rather than chosen — the oldest
+high-band announcement in the register is 89 days old (the announcements window
+is ~3 months) and the newest backfilled paper is 132, so the bound changes
+nothing about announcement alerting today and excludes every backfill item.
+Verified live: 20 candidates with the bound, 28 without.
+
+The cost, stated: a genuinely important paper published four months ago and
+discovered tonight does not alert. It is still scored, still in the UI, still
+joined to holdings — and the 48-hour digest window would have excluded it
+anyway. Bounding discovery instead was rejected: it fires on the whole backfill
+at once, which is the same problem wearing a different hat.
+
+### What it produced
+
+47 papers classified, 0 failures, **$0.75** — against a $1.20 projection.
+Investment bands: 8 high, 1 medium, 5 low, 33 none. That distribution is the
+result, not a disappointment: the largest group in this corpus is safety and
+social-science papers, and *"A moral Turing test"* and *"Artificial Minds, Human
+Disagreement: The Politics of AI Consciousness"* both score 0.0 on both axes,
+which is what stops them burying the technical reports.
+
+The two ends of the register, both from abstracts:
+
+- **DeepSeek-R1 (2025-01-22) scores 100.0 / 100.0.** The calibration case the
+  brief names, recovered by the system rather than asserted by us.
+- **DeepSeek-V4 routes to NVIDIA, Micron, TSMC, Amazon, TeraWulf and IREN at
+  strength 1.00** — memory and the energy complex, which is what a 10x KV-cache
+  reduction argues about. DeepSeek-V3's technical report routes *negative* to
+  the same names.
+
+Anthropic's twelve papers score 0.0 investment and up to 44.4 on the AI axis,
+which is the shape the two-audience split was built to produce.
+
+### The gold set, and the first agreement numbers for paper scoring
+
+`research/papers/build_paper_gold_set.py` emits ten unlabelled papers stratified
+by **document type rather than by lab** — the finding this leg rests on is that a
+paper's value tracks what kind of document it is, not who wrote it. It
+over-samples the safety/social-science stratum deliberately: "correctly scored
+zero" is the case that fails silently.
+
+`gold.labelled_by` is a required field, so a file cannot reach the metrics
+without stating who produced it.
+
+**Correcting a claim made earlier in this work:** the announcements gold set is
+not human ground truth either. `gold_human/` was deleted on 2026-09-01 because
+labelling twenty ~14,000-character articles by hand was not going to happen
+(`research/announcements/test/README.md`), and what exists is cross-model
+adjudication — `claude-sonnet-5` classifier, `claude-opus-5` adjudicator — plus a
+human *read* of one run in `docs/gold_review.md`. So the paper set is
+methodologically consistent with the announcements set rather than a weaker
+substitute for it, and neither may be described as human-labelled anywhere in the
+design document.
+
+One real difference, in the paper set's favour and worth keeping: it is labelled
+**blind**. The announcements adjudicator sees the classifier's output and a
+second independent run before deciding; this labeller sees only `text`, `title`,
+`url` and `text_source`, and the builder is tested to keep it that way. Blind
+agreement means more because it cannot anchor. It also buys less: no second run
+to show where the scorer was unstable, and no recorded reason for rejecting a tag
+the scorer produced. The announcements set measured its adjudicator running high
+on ordered fields in 11 of 15 disagreements; nothing equivalent is measured here.
+
+**Labelled by `claude-fable-5`, blind, on 2026-09-05.** Ten papers, every quote
+mechanically verified as a verbatim substring before the labels were accepted.
+Measured against the `claude-sonnet-5` scorer under `p1`:
+
+| | |
+|---|---|
+| event_type agreement | **9 / 10** |
+| mechanism F1 | **0.86** (precision 1.00, recall 0.75) |
+| practice F1 | **0.76** (precision 0.67, recall 0.89) |
+
+**Mechanism precision is 1.00 — the scorer produced no mechanism tag the
+labeller rejected.** On the axis that routes to holdings, and where a
+hallucinated tag would be most expensive, there were no false positives across
+the sample. The one miss was `training_compute_up` on the GPT-4 technical report.
+
+**Every disagreement was pre-identified by the labeller as genuinely arguable**,
+which is the result worth reporting and is why the disagreement list was asked
+for alongside the labels:
+
+- The single event_type split is `09`, DeepSeek-Coder-V2 — gold
+  `frontier_model_release`, scorer `open_weights`. The labeller had already
+  flagged it as a three-way tie: "further pre-trained from an intermediate
+  checkpoint" reads incremental, the document frames it as a new top-of-range
+  coding model, and it is also an open-weights release. The rubric does not
+  break that tie, and neither answer is wrong.
+- All four practice false positives are on `08`, the gpt-oss model card, where
+  the scorer tagged `evaluation`, `integration` and `serving_efficiency`
+  alongside the agreed `model_capability`. A rich model card invites
+  over-tagging on the AI axis; nothing similar happens on the investment axis.
+- The remaining practice miss is `07`, a toy-model interpretability paper, which
+  the labeller explicitly called plausible to tag "both or neither".
+
+So the honest reading is that the scorer's errors on this sample fall inside the
+band where the rubric itself is ambiguous, not outside it. What that does **not**
+establish is corpus-level precision and recall: n = 10, stratified rather than
+proportional, exactly as on the announcements side.
+
+Still open: the set is not yet wired into `drift.measure`, so this is a one-off
+measurement rather than a metric that would catch the scorer degrading next
+month. That gap is real and is the next thing to close.
+
+**Closed in D58, by decision rather than by code**: the set was measured once,
+the classifier shipped, and the recurring check rejected because four mechanism
+tags cannot separate drift from jitter.
+
+## D58 — The papers classifier ships without a nightly drift check (2026-09-05)
+
+**Closes the gap D57 left open**, and not by filling it. D57 ended saying the
+paper gold set was not wired into `drift.measure` and that "that gap is real and
+is the next thing to close". It is closed here by measuring once and deciding
+the recurring check is not worth building, rather than by building it.
+
+### The measurement
+
+Ten gold papers, classified fresh under `p1` against `claude-sonnet-5`,
+**bypassing the result cache** — a check read through the cache reports perfect
+agreement forever, which is the failure mode that looks exactly like success.
+$0.1538. Run and metrics committed at
+`research/test_results/paper_gold_20260905T000000Z_p1.json`; re-derivable
+without paying via `grade_paper_gold.py --report`.
+
+```
+EVENT TYPE     9/10 = 90%       Cohen's kappa +0.787
+
+axis          ref  run  hit  microF1  macroF1  identical
+mechanisms      4    3    3     0.86     0.97      9/10
+categories      0    0    0        –     1.00     10/10
+practices       9   13    8     0.73     0.77      5/10
+
+investment    MAE  3.3    zero-vs-nonzero 10/10    both zero 7   identical 9/10
+AI-team       MAE 12.8    zero-vs-nonzero  9/10                  identical 3/10
+
+CITATION GATE  16 tags survived, 1 dropped for an unverifiable quote
+```
+
+**The noise filter holds, which is the result that mattered.** All seven papers
+whose correct investment score is zero scored zero — every DeepMind
+safety/social paper, both interpretability papers, both component papers.
+Investment MAE is 3.3 points on a 0–100 scale. The failure this leg was built to
+avoid — a study of how people perceive AI consciousness finding transmission and
+burying the technical reports — is not happening.
+
+### Decision: ship `p1` as it stands; no recurring drift check for papers
+
+**Rejected: a nightly paper drift check.** The gold set carries **4 mechanism
+tags**. D35 already rejected a six-item sample carrying **10** on exactly this
+ground — *"a single tag missed or gained moves micro-F1 by ~0.05 and a floor set
+at 0.80 sits well inside the noise"*. Four tags moves it by ~0.15 per tag, three
+times worse than the sample that was thrown out. The alert would fire on jitter,
+and a false alarm a week is how a system-alert channel gets muted — which costs
+more than the check is worth, because the announcements drift check shares it.
+
+**And labelling more would not rescue it.** The whole 47-paper corpus carries 27
+mechanism tags across 33 papers with none. Extending the gold set to 20 buys
+~8 mechanism tags, still below D35's bar. Papers are mechanism-sparse; that is a
+true fact about research papers, not a sampling defect, and no labelling budget
+changes it.
+
+**Rejected: a blended announcements + papers agreement score.** Announcements
+are `v9` and papers are `p1`. `drift.history()` already refuses to mix versions
+— *"comparing across versions is comparing two different questions"* — and
+`alerts._drift_scope` already keys the alert on `prompt_version` with the same
+reasoning. A blended figure also moves when the *mix* changes rather than when
+the classifier does, which breaks the fixed-sample guarantee that is drift's
+whole design premise.
+
+**Rejected: mechanism micro-F1 as the paper headline.** `gold_metrics.axis`
+computes micro-F1 from summed hits and tag counts, so an empty-vs-empty pair
+contributes to neither numerator nor denominator. Seven of ten gold papers are
+exactly that pair. The metric would grade the three papers we are least worried
+about and be blind to the seven the corpus exists to pin. `metrics()` reports
+`investment.zero_agreement` as the headline instead, and
+`tests/test_paper_gold_grading.py` pins the reason so the headline is not
+"fixed" back to mechanisms without meeting it.
+
+### The disagreements, named rather than averaged away
+
+**DeepSeek-Coder-V2 (09): gold `frontier_model_release`, run `open_weights`.**
+The sole event-type miss, and the classifier is arguably right — the paper is
+*"Breaking the Barrier of Closed-Source Models in Code Intelligence"*, an
+open-weights release. Both types carry **weight 5** in `config/scoring.yaml`, so
+this costs nothing in score. The 33.3 → 66.7 gap on that paper comes from one
+magnitude step on `memory_intensity_up` (low → medium), not from the event type.
+Recorded as a probable gold-label defect, not classifier error.
+
+**Practices over-tag: 13 run against 9 reference, precision 0.62, recall 0.89.**
+The real looseness in this run, and it errs toward `watch` — the least damaging
+direction, since `watch` carries the lowest action weight. The one AI-team sign
+disagreement is paper 07, 0.0 → 5.6, a single low-impact `watch` tag on an
+interpretability paper.
+
+### Provenance, stated because it changes what the numbers mean
+
+The labels are Fable 5's, produced blind from the same abstracts. Every figure
+here is **cross-model agreement, not accuracy**: 90% event-type agreement means
+two models reading the same text mostly concur. The announcements set is no
+better on this axis — it is Sonnet-5-classifier against Opus-5-adjudicator, and
+`gold_human/` was deleted on 2026-09-01. Both are the defensible proxies the
+brief permits; neither is ground truth, and `load_gold` raises on a file missing
+`gold.labelled_by` so a set whose provenance nobody recorded cannot reach a
+metric.
+
+### Consequence
+
+Paper scoring has 53 unit tests, this baseline, and **no ongoing degradation
+signal**. That is a real hole and it is accepted knowingly: if `p1` or
+`classification.model` changes, re-run `research/papers/grade_paper_gold.py` and
+compare against the table above. The trigger is a code change, not a calendar —
+which is honest about what the check can actually detect at this sample size.
+
+## D59 — The duplicate collapse, and what the labels said about it (2026-09-05)
 
 D48 rejected cross-article deduplication and deferred the embedding approach to
 `docs/next_steps_0309.md`. This reverses it. The case that forced it: GPT-6
@@ -5526,7 +5879,7 @@ the difference between the two files is the evidence for the paragraph above.
 sample of 20 and the agreement rate is recorded here; until that lands, the
 eval is unvalidated and this paragraph says so rather than implying otherwise.
 
-**Human-checked agreement: 15/20 = 0.75**, on a blind stratified sample of 20. All five disagreements ran one way, which is the finding rather than the rate — see D57b.
+**Human-checked agreement: 15/20 = 0.75**, on a blind stratified sample of 20. All five disagreements ran one way, which is the finding rather than the rate — see D59b.
 
 ### Anchoring, and the two tie-breaks
 
@@ -5552,7 +5905,7 @@ rescuing the safety row from a scoring bug being fixed separately, so it is
 recorded in `next_steps_0309.md` and revisited only if that row still fails to
 surface once scored right.
 
-## D57a — What the review of the duplicate collapse found (2026-09-05)
+## D59a — What the review of the duplicate collapse found (2026-09-05)
 
 Fourteen findings on `feature/disambiguation`. The grouping algorithm itself
 survived — the reviewer could not construct a duplicate-row or transitive-merge
@@ -5608,7 +5961,7 @@ field as an anchor hint. Per-surface anchoring removed the need, so the field
 was dropped from the schema and the prompt instead. An output that is bought and
 discarded is a cost with no reader.
 
-## D57b — The spot-check found a bias, and it pointed the right way (2026-09-05)
+## D59b — The spot-check found a bias, and it pointed the right way (2026-09-05)
 
 D57 shipped with "Human-checked agreement: pending". This is that number, and it
 did more than validate a proxy.
@@ -5664,9 +6017,9 @@ Honest limit: 20 pairs, 9 of them positives by the human's reading. The
 agreement rate has a wide interval. It is a sanity check on the labelling, not a
 measurement of the product.
 
-## D57c — Fixing the labeller's bias, and the error that replaced it (2026-09-05)
+## D59c — Fixing the labeller's bias, and the error that replaced it (2026-09-05)
 
-D57b measured the labeller at 0.75 against a human and found every miss running
+D59b measured the labeller at 0.75 against a human and found every miss running
 one way. `prompts/duplicate_adjudication/v2.md` is the fix: it names **companion
 pieces** as a category — an umbrella announcement and its named strand, an
 introduction and its deep-dive, one rollout staggered across surfaces, a
@@ -5678,7 +6031,7 @@ widening becoming a licence.
 Re-labelled the same 82 pairs. `same` went from 9 to 26.
 
 **The headline was 0.75 → 0.90, and that number is a training score.** Caught in
-review (D57d), and it is the most important correction in this branch.
+review (D59d), and it is the most important correction in this branch.
 
 Seven of the human's 20 marked pairs are worked examples *in v2's own prompt*,
 with the answer supplied. Splitting the sheet on that:
@@ -5713,7 +6066,7 @@ behaviour on unseen pairs is unmeasured"** — not 0.90.
 
 **And the thresholds rest on these labels.** `cosine_high` moved 0.84 → 0.80 on
 a set produced by a rubric fitted to five human answers. That is a weaker
-foundation than D57b's, and it is why the caveat in `config/dedupe.yaml` now
+foundation than D59b's, and it is why the caveat in `config/dedupe.yaml` now
 says so.
 
 **A transitivity wrinkle, noted not fixed.** The human marked `7565-7616` as
@@ -5744,9 +6097,11 @@ it further would need a wider census first, and the config says so.
 mid-build. They carry no `v9` classification yet, so `_rows` does not see them —
 correct behaviour, and they group on the first run after they are classified.
 
-## D57d — Reviewing the fixes, which is where the real bugs were (2026-09-05)
+---
 
-The first review (D57a) covered the original commit. Its *fixes* went unreviewed
+## D59d — Reviewing the fixes, which is where the real bugs were (2026-09-05)
+
+The first review (D59a) covered the original commit. Its *fixes* went unreviewed
 until Neil asked whether they had been. They had not, and they contained the
 worst defect in the branch.
 
@@ -5793,7 +6148,7 @@ replacement asserts on what the digest publishes.
 
 ### The recalibration number was a training score
 
-D57c reported v2 at 0.90 against Neil's 20 marks. Seven of those 20 are worked
+D59c reported v2 at 0.90 against Neil's 20 marks. Seven of those 20 are worked
 examples *inside v2's prompt*, with the answers supplied. Split:
 
 | | in-prompt (7) | out-of-sample (13) |
@@ -5802,7 +6157,7 @@ examples *inside v2's prompt*, with the answers supplied. Split:
 | v2 | 6/7 | **12/13** |
 
 **Out of sample v2 is exactly as good as v1**, and it adds one false merge v1
-did not make. Every point of the headline gain was in-sample. D57c and
+did not make. Every point of the headline gain was in-sample. D59c and
 `config/dedupe.yaml` are corrected; the defensible claim is "v2 corrects the
 errors it was shown, and its behaviour on unseen pairs is unmeasured".
 

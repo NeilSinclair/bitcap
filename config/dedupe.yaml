@@ -87,12 +87,12 @@ embedding:
 #    withheld and its rank was not, which is the same information one transform
 #    away. Two of 82 labels changed when the file was shuffled — and they were
 #    the top two negatives, which is exactly where the high edge sits.
-#    (0.87 -> 0.84, D57a.)
+#    (0.87 -> 0.84, D59a.)
 # 2. The labeller was then measured against a human on 20 blind pairs: 0.75,
 #    with all five misses in one direction. It was splitting companion pieces —
 #    an umbrella post and its named strand, a launch and its deep-dive, one
 #    rollout staggered across apps. Prompt v2 names that shape, and the band
-#    widened on the re-labelled set. (D57b, D57c.)
+#    widened on the re-labelled set. (D59b, D59c.)
 #
 #    READ THAT SECOND ONE CAREFULLY BEFORE TRUSTING THESE NUMBERS. v2's prompt
 #    contains seven of those 20 pairs as worked examples with the answers

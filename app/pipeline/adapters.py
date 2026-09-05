@@ -40,6 +40,31 @@ for _leg in ("announcements", "papers", "github"):
         sys.path.insert(0, _path)
 
 
+def fetch_paper_abstracts(session, limit: int | None = None) -> tuple[list, list]:
+    """Turn the papers already in bronze into article-shaped records to score.
+
+    Separate from `fetch_papers`, which harvests bylines for the people
+    register. This reads `raw_papers` and fetches each paper's *citation page*
+    for its abstract, so the scored text and the link the reader clicks are the
+    same document.
+
+    Args:
+        session: Open session.
+        limit: Stop after N papers (the n=1 proving path).
+
+    Returns:
+        Tuple of (article records, unresolved). Both are handed to the caller
+        rather than written here, so landing stays in one place in the worker.
+    """
+    import yaml
+    from paper_text import collect
+
+    config = yaml.safe_load(
+        (ROOT / "config" / "papers_sources.yaml").read_text(encoding="utf-8"))
+    labs = {entry["lab"]: entry for entry in config["labs"]}
+    return collect(session, labs, limit=limit)
+
+
 @dataclass
 class FetchResult:
     """What one source produced on one attempt.
