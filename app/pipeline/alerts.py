@@ -35,7 +35,7 @@ import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -267,6 +267,28 @@ def drift_unavailable(session: Session, config: dict, context: dict) -> list[Can
 # Content rules — the pipeline found something
 # --------------------------------------------------------------------------
 
+def _recent_enough(config: dict):
+    """Publication-age bound shared by both content rules.
+
+    A content alert is a claim that a lab published something worth seeing now.
+    Neither rule was bounded by age, which was harmless while every corpus was a
+    rolling window and stopped being harmless the moment a backfill landed: the
+    papers leg carries documents back to 2023, several correctly scoring 100.
+
+    Bounds `published_on`, not discovery. Alerting on everything found tonight
+    would fire on the whole backfill at once, which is the same problem wearing
+    a different hat.
+
+    Args:
+        config: The `alerts` block of config/pipeline.yaml.
+
+    Returns:
+        A SQLAlchemy criterion for use in a `.where()`.
+    """
+    days = int(config.get("content_max_age_days", 120))
+    return m.Article.published_on >= (date.today() - timedelta(days=days))
+
+
 def high_band_items(session: Session, config: dict, context: dict) -> list[Candidate]:
     """Newly classified articles at or above the configured band.
 
@@ -284,6 +306,7 @@ def high_band_items(session: Session, config: dict, context: dict) -> list[Candi
         select(m.Article, m.Classification)
         .join(m.Classification, m.Classification.article_id == m.Article.id)
         .where(m.Classification.band.in_(wanted))
+        .where(_recent_enough(config))
         .order_by(m.Classification.score.desc())
     ).all()
 
@@ -321,6 +344,7 @@ def holding_impact(session: Session, config: dict, context: dict) -> list[Candid
         .join(m.Article, m.Article.id == m.Connection.article_id)
         .join(m.Holding, m.Holding.isin == m.Connection.isin)
         .where(m.Connection.strength >= threshold)
+        .where(_recent_enough(config))
         .order_by(m.Connection.strength.desc())
     ).all()
 

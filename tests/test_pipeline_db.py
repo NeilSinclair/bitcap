@@ -269,7 +269,8 @@ class TestFailureLeavesTheDatabaseUsable:
         run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
         assert run.status == "failed" and "nope" in run.error
         # Not `{}`: an operator must be able to see which stage died.
-        assert set(run.stats) == {"refs", "articles", "classifications", "costs"}
+        assert set(run.stats) == {"refs", "articles", "classifications",
+                              "paper_classifications", "costs"}
         assert "transform" not in run.stats
         s.close()
 

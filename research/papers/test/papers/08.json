@@ -1,0 +1,18 @@
+{
+  "id": "08",
+  "lab": "openai",
+  "date": "2025-08-08",
+  "title": "gpt-oss-120b & gpt-oss-20b Model Card",
+  "url": "https://arxiv.org/abs/2508.10925v1",
+  "text_source": "paper_abstract",
+  "document_type": "system_card",
+  "text": "We present gpt-oss-120b and gpt-oss-20b, two open-weight reasoning models that push the frontier of accuracy and inference cost. The models use an efficient mixture-of-expert transformer architecture and are trained using large-scale distillation and reinforcement learning. We optimize the models to have strong agentic capabilities (deep research browsing, python tool use, and support for developer-provided functions), all while using a rendered chat format that enables clear instruction following and role delineation. Both models achieve strong results on benchmarks ranging from mathematics, coding, and safety. We release the model weights, inference implementations, tool environments, and tokenizers under an Apache 2.0 license to enable broad use and further research.",
+  "gold": {
+    "labelled_by": null,
+    "event_type": null,
+    "mechanisms": [],
+    "categories": [],
+    "practices": []
+  },
+  "review": {}
+}

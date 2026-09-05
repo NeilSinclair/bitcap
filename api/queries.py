@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app import models as m
 from app.connect import match_name
+from app.pipeline.registry import PAPERS_CORPUS
 
 
 def _short_name(name: str) -> str:
@@ -62,6 +63,8 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
     Args:
         session: Open session.
         prompt_version: Which classification run to read (see app.cli.PROMPT_VERSION).
+            A tuple spans several, which is how papers and announcements reach
+            one list.
 
     Returns:
         One dict per article that has a classification for this version, each
@@ -73,10 +76,19 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
     prac_labels = {r.id: r.label for r in session.scalars(select(m.RefPractice))}
     holding_names = {h.isin: _short_name(h.name) for h in session.scalars(select(m.Holding))}
 
+    versions = ((prompt_version,) if isinstance(prompt_version, str)
+                else tuple(prompt_version))
     classifications = {
         c.article_id: c for c in session.scalars(
-            select(m.Classification).where(m.Classification.prompt_version == prompt_version)
+            select(m.Classification).where(m.Classification.prompt_version.in_(versions))
         )
+    }
+    # Which leg a row came from. `source_file` is the provenance the shared
+    # bronze table already carries, so the reader does not need a second column
+    # on `articles` that could disagree with it.
+    doc_types = {
+        r.id: ("paper" if r.source_file == PAPERS_CORPUS else "announcement")
+        for r in session.scalars(select(m.RawArticle))
     }
     cls_ids = [c.id for c in classifications.values()]
 
@@ -109,6 +121,7 @@ def build_items(session: Session, prompt_version: str) -> list[dict]:
             continue
         items.append({
             "id": art.id,
+            "docType": doc_types.get(art.raw_article_id, "announcement"),
             "lab": art.lab,
             "labLabel": labs.get(art.lab, art.lab),
             "date": str(art.published_on),

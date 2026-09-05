@@ -41,7 +41,7 @@ from api.queries import build_items
 from app import digest as digest_mod
 from app import people as people_mod
 from app import models as m
-from app.cli import PROMPT_VERSION
+from app.cli import PROMPT_VERSION, PROMPT_VERSIONS
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import drift as drift_mod
@@ -131,10 +131,14 @@ app.include_router(pipeline_api.build_router(engine))
 
 @app.get("/api/items", dependencies=[Depends(require_auth)])
 def list_items() -> list[dict]:
-    """Every article with a classification for PROMPT_VERSION, tags and connections inline."""
+    """Every classified document, tags and connections inline.
+
+    Spans both prompt versions: announcements at PROMPT_VERSION and papers at
+    PAPER_PROMPT_VERSION reach one list, distinguished by each item's `docType`.
+    """
     session = get_session(engine)
     try:
-        return build_items(session, PROMPT_VERSION)
+        return build_items(session, PROMPT_VERSIONS)
     finally:
         session.close()
 
@@ -270,7 +274,7 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
     session = get_session(engine)
     try:
         built = digest_mod.build(
-            session, kind, PROMPT_VERSION, datetime.now(timezone.utc), config,
+            session, kind, PROMPT_VERSIONS, datetime.now(timezone.utc), config,
             quantise=False,
         )
         return {

@@ -5423,3 +5423,195 @@ one check that would make a carried-forward row verifiable after the fact —
 pointed at directly by this whole exercise having begun with text changing
 underneath a stored classification.
 
+
+---
+
+## D57 — Papers become a scored corpus, not a second pipeline (2026-09-05)
+
+**This supersedes D25.** That entry rejected scoring papers, and its reasoning
+was sound about the thing it described:
+
+> "The tempting move is to treat a paper like an announcement — classify it,
+> score it, join it to holdings. That is a second full pipeline (its own
+> prompts, its own scoring rule, its own gold set) and it answers a question
+> announcements already answer better."
+
+What is built here is not that. Papers land in `raw_articles` under
+`source_file = research/docs/papers_corpus.json` and share the JSON schema,
+`vocabularies()`, `drop_unknown_tags`, `enforce_quotes`, `call_cost`,
+`config/scoring.yaml`, `app/scoring.py`, `classifications` and its three tag
+tables, `connect`, `digest`, `/api/items` and the dashboard. One prompt file
+differs, and one work-list filter. That is one more corpus, not a second system.
+
+**And the second half of D25's claim turned out to be wrong.** Announcements do
+not answer this question better, because for the class that matters they cannot
+answer it at all. DeepSeek-V4's abstract states *"requires only 27% of
+single-token inference FLOPs and 10% of KV cache compared with DeepSeek-V3.2"*
+at one million tokens. KV cache is HBM-resident, so a tenfold cut is a
+first-order claim about memory demand per served token — the DeepSeek→NVIDIA
+transmission the brief names as its calibration case. Those numbers exist in the
+technical report and nowhere else.
+
+### Why the abstract, and not the paper
+
+Measured before deciding, not estimated. Five arXiv `/html/` full texts:
+DeepSeek-V4 170,913 visible characters, DeepSeek-V3 135,384, the GPT-5 system
+card 134,271, Meta's RL-code paper 401,194, Shieldstral 73,107 — mean **182,974
+characters, ~59,200 tokens, about 43x the mean article in this register**
+(4,290). Calibrated against 1,787 rows of `raw_costs`: 3.09 characters per input
+token, and output plateaus near 3,300 tokens because the schema bounds it
+(3,105 at 24k chars, 3,228 at 28k, 2,483 at 32k). Every measured `usd` predates
+Sonnet 5's list price, so forward cost is 1.5x the recorded column.
+
+| scope | input tokens | 49 papers | `text_source` honest? |
+|---|---|---|---|
+| full text | 59,200 | $11.30 | yes — `full_text` is true |
+| truncated to 60k chars | 19,400 | $5.30 | no — 4 of 5 sampled papers cut |
+| **abstract** | **~650** | **$0.75 actual** | needs a new value; see below |
+
+**Cost is not what decided it.** What decided it is that every number which made
+these papers worth scoring was stated in the abstract: DeepSeek-V4's 10% KV
+cache and 27% FLOPs, DeepSeek-V3.2's DSA and its IMO/IOI results, Meta's
+18.0%→31.3% strict top-50% pass@1, Anthropic's GRAM reconfiguring one model to
+match five filtered ones. Paying nine times as much to send ablations,
+appendices and bibliographies in order to reach a figure in the first paragraph
+is the same trade `llm_byline.HTML_BUDGET` already refuses for bylines —
+*"~100x for content that cannot contain the answer"*.
+
+**The honest cost of this choice:** a figure stated only in a results table or
+an ablation is invisible to us. That is a real ceiling on recall, and it is why
+`paper_abstract` is its own `text_source` rather than being passed off as
+`full_text`.
+
+Rejected: truncating the full text to the existing 60,000-character budget. It
+is cheaper than full text and it would let us keep the `full_text` label, which
+is exactly the problem — the label would be false for most of the corpus.
+
+### Why papers carry their own prompt version
+
+An abstract of a 180,000-character paper is authoritative but partial, and no
+existing `text_source` describes it. `full_text` means "the complete article";
+`rss_summary` caps confidence at medium, which would wrongly discount a
+first-party abstract. So a new value, which means a new prompt version.
+
+Sharing `PROMPT_VERSION` would have forced a `v10` for the whole register:
+647 rows at $0.0258 each is **~$16.70** to re-ask an unchanged question of
+unchanged text. The alternative was a carry-forward, and D56a is precisely the
+record of why that argument has to be airtight — v9's guard checked its
+precondition vacuously. A v10 carry-forward could not have made D56's
+byte-identical claim, only the weaker "the added block concerns a document type
+not present", which is not the same thing.
+
+`classifications.prompt_version` is a plain string, so papers are classified
+under `p1` against `prompts/paper_scoring/p1.md` and v9 is untouched at $0. The
+cost is that every reader of `classifications` must now span a set of versions.
+`connect` is the sharp edge: it deletes the whole table before rebuilding, so
+calling it once per version leaves only the last one's rows. Pinned by
+`tests/test_papers_scoring.py::TestOneSpineTwoVersions`, which asserts both the
+correct behaviour and the failure mode.
+
+`digests.prompt_version` stays single-valued — it is a uniqueness key — and
+records the announcement version, with the full set in `stats["versions"]`.
+
+### `research_result` no longer captures a technical report
+
+v9 defines `research_result` (weight 3) as *"a research finding: a paper or a
+novel method"*. A DeepSeek-V4-style technical report is literally a paper, so it
+classifies there by default — capping the strongest evidence in the register at
+`100 x (3/5) x (3/3) = 60.0`, against the 100.0 the same launch scores when
+announced as a blog post. `p1` rewords the type: a technical report, model card
+or system card that introduces a model *is how that model was launched*.
+
+This is a wording fix. **No new event types, and no edit to
+`config/scoring.yaml`.** New paper-specific types were considered and rejected:
+adding keys is mechanically free and costs no LLM spend, but the dashboard ranks
+papers and announcements in one column, so a separate event vocabulary makes
+"60" mean two different things in one list — and with no paper gold set yet, any
+new weight would be a guess against a config whose whole premise is that every
+number can be argued line by line. Two traps recorded for whoever revisits this:
+`max_event_weight` is pinned to `max(event_weight.values())`, so a new type
+above weight 5 silently rescales every existing announcement score downward; and
+`score_of` looks the type up with `.get(event_type, 0)`, so a type the prompt
+offers and `scoring.yaml` does not weight scores zero, silently.
+
+The asymmetry that remains is deliberate: a genuine research finding still
+ceilings at 60.0, so it reaches the digest's `always_band: high` route only on a
+high-magnitude, high-confidence, quote-backed tag, where a model release at the
+same evidence would not need one.
+
+Measured on the live corpus: 34 of 47 papers classify `research_result`, 9
+`frontier_model_release`, 2 `open_weights`, 1 `incremental_model_release`, 1
+`product_launch`. The disambiguation fires where it should and does not spread.
+
+### Two papers were already announcements
+
+Landing the corpus updated two existing rows rather than inserting them, which
+was not anticipated. Mistral has no publications page at all, so its papers
+harvester sources candidate titles from Mistral's own announcements corpus (D17)
+and its citation is `mistral.ai/news/<slug>` — a URL the announcements leg
+already holds, at full text, already scored under v9. `raw_articles` is keyed on
+URL, so the paper landed on top and replaced 13,000 characters of announcement
+with a 2,000-character lead section. Caught by reading the insert/update counts,
+repaired by re-running `load_articles`, and now prevented: `paper_text.collect`
+skips any paper whose URL is already in the corpus under another `source_file`,
+and records it in `unresolved_items` with a reason. The announcement wins — it
+is the complete document — and "deliberately not added" and "missing" must not
+look the same in the register. 47 of 49 papers are scored; the 2 are Mistral's.
+
+### Content alerts are now bounded by publication age
+
+`high_band_items` and `holding_impact` filtered on band and strength and nothing
+else. That was harmless while every corpus was a rolling window, and stopped
+being harmless the moment a backfill landed: the papers leg reaches back to 2023
+and eight of its documents score in the high band, so the first firing would
+have paged someone about GPT-4's technical report.
+
+`alerts.content_max_age_days: 120`, measured rather than chosen — the oldest
+high-band announcement in the register is 89 days old (the announcements window
+is ~3 months) and the newest backfilled paper is 132, so the bound changes
+nothing about announcement alerting today and excludes every backfill item.
+Verified live: 20 candidates with the bound, 28 without.
+
+The cost, stated: a genuinely important paper published four months ago and
+discovered tonight does not alert. It is still scored, still in the UI, still
+joined to holdings — and the 48-hour digest window would have excluded it
+anyway. Bounding discovery instead was rejected: it fires on the whole backfill
+at once, which is the same problem wearing a different hat.
+
+### What it produced
+
+47 papers classified, 0 failures, **$0.75** — against a $1.20 projection.
+Investment bands: 8 high, 1 medium, 5 low, 33 none. That distribution is the
+result, not a disappointment: the largest group in this corpus is safety and
+social-science papers, and *"A moral Turing test"* and *"Artificial Minds, Human
+Disagreement: The Politics of AI Consciousness"* both score 0.0 on both axes,
+which is what stops them burying the technical reports.
+
+The two ends of the register, both from abstracts:
+
+- **DeepSeek-R1 (2025-01-22) scores 100.0 / 100.0.** The calibration case the
+  brief names, recovered by the system rather than asserted by us.
+- **DeepSeek-V4 routes to NVIDIA, Micron, TSMC, Amazon, TeraWulf and IREN at
+  strength 1.00** — memory and the energy complex, which is what a 10x KV-cache
+  reduction argues about. DeepSeek-V3's technical report routes *negative* to
+  the same names.
+
+Anthropic's twelve papers score 0.0 investment and up to 44.4 on the AI axis,
+which is the shape the two-audience split was built to produce.
+
+### The gold set is built but not labelled
+
+`research/papers/build_paper_gold_set.py` emits ten unlabelled papers stratified
+by **document type rather than by lab** — the finding this leg rests on is that a
+paper's value tracks what kind of document it is, not who wrote it. It
+over-samples the safety/social-science stratum deliberately: "correctly scored
+zero" is the case that fails silently.
+
+`gold.labelled_by` is a required field, and the reason is a provenance one. The
+announcements gold set in `docs/gold_review.md` is human-adjudicated. If this one
+is labelled by a model it is a **cross-model proxy**, must be named as one
+wherever its numbers appear, and must not be averaged into the announcement
+figures. The brief permits a defensible proxy where honest ground truth is out of
+reach; it does not permit calling one gold. Until it is labelled, `drift` still
+grades announcements only — so paper scoring currently has unit tests but no
+agreement metric, and that gap is real.

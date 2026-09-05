@@ -22,6 +22,9 @@ from app.models import utcnow
 ROOT = Path(__file__).parent.parent
 ARTICLES = ROOT / "research" / "docs" / "announcements.json"
 SCORES_DIR = ROOT / "research" / "docs" / "announcement_scores"
+# Papers are cached under their own prompt version, so their per-call
+# provenance lives in its own tree (score_announcements.PAPERS).
+PAPER_SCORES_DIR = ROOT / "research" / "docs" / "paper_scores"
 COSTS = ROOT / "research" / "docs" / "announcement_cost.json"
 
 
