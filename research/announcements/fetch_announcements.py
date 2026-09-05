@@ -688,6 +688,140 @@ def from_wayback_cdx(
     return out
 
 
+# Recovery, not discovery. `from_wayback_cdx` above finds articles a blocked
+# site never listed anywhere; this upgrades articles we *did* find but hold only
+# a summary of. Selected per lab by `backfill: wayback` in sources.yaml.
+#
+# It runs inside the fetch because that is the only place it survives. It used
+# to live in `backfill_openai.py`, a separate script editing announcements.json
+# after the fact, and `collect()` rewrites that file from scratch: the recovery
+# landed on 2026-09-02 (141 of 152 OpenAI articles, mean 9,105 characters) and
+# the next fetch, one day later, overwrote every one of them back to a
+# 200-character RSS blurb. Nothing failed and nothing said anything. The whole
+# OpenAI corpus -- 59% of the register, and the lab whose announcements move
+# the most tickers -- was scored on its own meta descriptions for two days.
+#
+# Steady-state cost is near zero: `skip` removes already-settled articles
+# before they ever reach here, so a nightly run enriches only what is new.
+
+
+def _archive_key(url: str) -> str:
+    """Normalise a URL for comparison against a CDX row.
+
+    The archive's `original` column varies in scheme, `www.` and trailing
+    slash against the same page in our register, so neither side is compared
+    raw. The host is kept, unlike the OpenAI-only version this replaces, so
+    two labs cannot collide on a shared path.
+
+    Args:
+        url: Article or CDX URL.
+
+    Returns:
+        Lowercased `host/path`, without scheme, `www.`, query or trailing slash.
+    """
+    bare = re.sub(r"^https?://(www\.)?", "", url.split("?", 1)[0])
+    return bare.strip("/").lower()
+
+
+def _cdx_prefixes(urls: list[str]) -> list[str]:
+    """The smallest set of CDX wildcard patterns covering these URLs.
+
+    Derived from the URLs themselves rather than configured, so a lab that
+    publishes under a second path is covered without a config edit. OpenAI is
+    the live case: the script this replaces queried `openai.com/index*` alone
+    and could never have recovered an `openai.com/academy/*` article.
+
+    Args:
+        urls: Article URLs needing recovery.
+
+    Returns:
+        Sorted `host/segment*` patterns, one bulk query each.
+    """
+    prefixes = set()
+    for url in urls:
+        parts = _archive_key(url).split("/")
+        prefixes.add(f"{parts[0]}/{parts[1]}*" if len(parts) > 1 else f"{parts[0]}*")
+    return sorted(prefixes)
+
+
+def enrich_wayback(lab: dict, articles: list[dict], cutoff: datetime) -> list[dict]:
+    """Upgrade a lab's summary-only articles to archived full text, in place.
+
+    A snapshot shorter than the summary we already hold is a redirect stub or
+    an error page, never an improvement, and is refused — the same guard the
+    OpenAI script applied, kept because it fires on real snapshots.
+
+    Args:
+        lab: Lab entry from sources.yaml.
+        articles: The lab's fetched articles. Modified in place; entries that
+            are upgraded gain `archive_snapshot` and `text_source:
+            full_text_archived`.
+        cutoff: Earliest publication date this fetch covers; bounds the CDX
+            query, since no snapshot older than the window can belong to an
+            article inside it.
+
+    Returns:
+        One entry per article left on its summary, for the caller to record.
+        Not an error: the archive lags publication by days, so the newest
+        articles are routinely absent. Returned rather than logged because a
+        lab silently stuck on summaries is exactly the failure this exists to
+        end.
+    """
+    targets = [a for a in articles if a.get("text_source") == "rss_summary"]
+    if not targets:
+        return []
+
+    index: dict[str, str] = {}
+    for prefix in _cdx_prefixes([a["url"] for a in targets]):
+        query = (
+            f"{WAYBACK_CDX}?url={urllib.parse.quote(prefix)}"
+            f"&output=json&filter=statuscode:200"
+            f"&from={cutoff.strftime('%Y%m%d')}"
+            "&fl=original,timestamp&limit=6000"
+        )
+        for original, timestamp in json.loads(
+            fetch_wayback(query, max_age_hours=DISCOVERY_MAX_AGE_HOURS)
+        )[1:]:
+            key = _archive_key(original)
+            if key not in index or timestamp > index[key]:
+                index[key] = timestamp
+
+    unresolved = []
+    for article in targets:
+        timestamp = index.get(_archive_key(article["url"]))
+        if timestamp is None:
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": "no archive snapshot in window; still on the RSS summary",
+            })
+            continue
+
+        snapshot = f"http://web.archive.org/web/{timestamp}id_/{article['url']}"
+        try:
+            text = strip_html(fetch_wayback(snapshot))
+        except RuntimeError as exc:
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": f"archive fetch failed: {exc}",
+            })
+            continue
+
+        if len(text) <= len(article["text"]):
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": "archived page is no longer than the summary",
+            })
+            continue
+
+        article["text"] = text[:24000]
+        article["text_source"] = "full_text_archived"
+        article["archive_snapshot"] = snapshot
+    return unresolved
+
+
 # A model's spec page carries no publication date -- only a knowledge cutoff,
 # which is a different thing and must never be read as one. "New" therefore
 # means "absent from the baseline below and not already stored", and the date
@@ -991,13 +1125,27 @@ def collect() -> list[dict]:
 
     articles = []
     for lab in config["labs"]:
+        found_for_lab = []
         for channel in channels(lab):
             method = METHODS.get(channel["method"])
             if not method:
                 sys.exit(f"{lab['id']}: unknown method {channel['method']!r}")
             found = method(channel, cutoff)
             print(f"{lab['label']:<12} {channel['method']:<18} {len(found)} announcements")
-            articles.extend(found)
+            found_for_lab.extend(found)
+
+        # Recovery runs before the articles leave the loop, so the file this
+        # function overwrites is written with the full text already in it.
+        # Anything done to announcements.json afterwards does not survive the
+        # next fetch -- which is exactly how the OpenAI corpus regressed.
+        if lab.get("backfill") == "wayback":
+            missed = enrich_wayback(lab, found_for_lab, cutoff)
+            recovered = sum(
+                1 for a in found_for_lab if a["text_source"] == "full_text_archived"
+            )
+            print(f"{lab['label']:<12} {'backfill:wayback':<18} "
+                  f"{recovered} recovered, {len(missed)} left on summaries")
+        articles.extend(found_for_lab)
 
     articles.sort(key=lambda a: a["date"], reverse=True)
     return articles
