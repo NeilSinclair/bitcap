@@ -342,3 +342,38 @@ class TestTheCorpusIsBronze:
         row = first_mentions(load_corpus(session), CFG, date(2026, 9, 4))[0]
         assert row["quote"] in "Introducing GPT-6"
         assert "Today we are releasing" not in row["quote"]
+
+
+class TestTheDisplayWindowNeverReachesHere:
+    """`display.corpus_window_days` truncates the dashboard, never this module.
+
+    The silent failure it guards, and the reason it is worth a test rather than
+    a comment: firstness is a claim about the *whole* archive. Window this input
+    and a name whose earliest document fell outside the window is reported as
+    new when it is not — a confidently wrong answer, not a narrower one. Nothing
+    raises, and the report looks richer rather than broken.
+
+    `first_mention` has its own `new_within_days`, which bounds what is
+    *reported* rather than what is *read*. The two are easy to confuse, which is
+    exactly why this is pinned.
+    """
+
+    def test_an_article_older_than_any_display_window_still_reaches_the_corpus(
+        self, session
+    ):
+        session.add(m.RawArticle(
+            url="https://openai.com/old", content_hash="h",
+            source_file="research/docs/announcements.json",
+            payload={"lab": "openai", "date": "2019-06-26",
+                     "title": "Introducing GPT-6-Astra", "text_source": "rss_summary",
+                     "text": "body"}))
+        session.commit()
+
+        assert [d["date"] for d in load_corpus(session)] == ["2019-06-26"]
+
+    def test_load_corpus_takes_no_window_argument(self):
+        """A `since`/`days` parameter here would be the bug, not the fix."""
+        import inspect
+
+        taken = set(inspect.signature(load_corpus).parameters)
+        assert taken == {"session"}

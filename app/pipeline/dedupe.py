@@ -49,6 +49,7 @@ import hashlib
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 import sqlalchemy as sa
@@ -319,6 +320,27 @@ def _upsert(session: Session, url: str, text: str, model: str, vector: list[floa
     row.vector = pack(vector)
 
 
+def _extract(text: str) -> set[str]:
+    """Normalised model identifiers in `text`, denylist applied.
+
+    Shared by :func:`subjects` and :func:`release_subjects` so the two cannot
+    drift apart on which config they read — in particular so one of them cannot
+    quietly lose the denylist while the other keeps it.
+
+    Args:
+        text: Any string; the caller decides whether that is a title or a body.
+
+    Returns:
+        Exact normalised identifiers, without stems.
+    """
+    import first_mention as fm
+
+    cfg = fm.load_config()
+    pattern = fm.model_pattern(cfg["model_families"], cfg["max_version_parts"])
+    deny = {fm.normalise(d) for d in cfg.get("deny") or []}
+    return set(fm.identifiers(text or "", pattern, deny))
+
+
 def subjects(title: str) -> set[str]:
     """Extract the normalised model identifiers an article is *about* — gate 1.
 
@@ -346,13 +368,41 @@ def subjects(title: str) -> set[str]:
         safeguards" is a live instance: it precedes the name it is about.
         Gate 1b exists to cover exactly that.
     """
-    import first_mention as fm
-
-    cfg = fm.load_config()
-    pattern = fm.model_pattern(cfg["model_families"], cfg["max_version_parts"])
-    deny = {fm.normalise(d) for d in cfg.get("deny") or []}
-    found = set(fm.identifiers(title, pattern, deny))
+    found = _extract(title)
     return found | {stem(i) for i in found}
+
+
+def release_subjects(body: str, max_identifiers: int) -> set[str]:
+    """Extract the model identifiers a GitHub release *body* names — the pairing gate.
+
+    **Body, not title, and that is the whole point.** A release's title is built
+    by `fetch_releases.as_announcement` as "{org}/{repo} {tag}" — our string, not
+    GitHub's — so it can never contain a model name. Measured over the 380
+    releases in the corpus: 1 title yields an identifier against 24 bodies. Run
+    :func:`subjects` over a release and it returns the empty set every time,
+    which is why releases have never paired with anything.
+
+    The asymmetry with :func:`subjects` is deliberate, not an inconsistency, and
+    it already has a precedent: `first_mention.text_fields` returns `("text",)`
+    for a release and `("title", "text")` for everything else, for this reason.
+
+    Returns exact identifiers. :func:`release_links` adds the stems, because
+    whether to stem is a property of the join and not of the document — see
+    that function for why both spellings are needed and what stops the widening
+    from over-matching.
+
+    Args:
+        body: The release note text (`raw_articles.payload["text"]`).
+        max_identifiers: Above this count the release names nothing in
+            particular and yields no subjects. A changelog listing a model
+            catalogue is not *about* any one entry in it; 2 of 380 releases
+            exceed three identifiers.
+
+    Returns:
+        Exact normalised identifiers, empty if none are found or the cap trips.
+    """
+    found = _extract(body)
+    return set() if len(found) > max_identifiers else found
 
 
 def stem(identifier: str) -> str:
@@ -777,6 +827,11 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
     3. the gated pass — same event type, then the cosine band, with the
        adjudicator asked only inside it.
 
+    Then writes `article_links` from a fourth pass that is **not** a grouping
+    path: :func:`release_links` relates a release to the announcement naming the
+    same model without folding either away. It is computed from the same rows
+    and rebuilt in the same transaction, but it never reaches the union-find.
+
     Rebuilt wholesale each run rather than updated. The table is a pure function
     of the articles, their classifications and the config, so a re-run produces
     the same assignment and a changed threshold takes effect without a
@@ -795,7 +850,7 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     Returns:
         Stats: articles, groups, collapsed, adjudicated, deferred, usd,
-        coverage, by_method.
+        coverage, by_method, links, paired.
 
         `coverage` is the fraction of non-release articles that had a usable
         cached vector, and it is reported because **zero coverage looks exactly
@@ -816,6 +871,21 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
         session, rows, union, reasons, config, budget, adjudicate_pairs, path
     )
 
+    # Links are computed from the same rows but written independently: they must
+    # not influence the union-find. Note this is NOT failure isolation — the
+    # link write shares this function's transaction, so a raise here still costs
+    # the run its grouping. Nothing about pairing is expected to raise (no
+    # network, no provider, no parsing of foreign data), so it is not worth a
+    # second transaction; the claim is only about the union-find, not about
+    # blast radius.
+    links = release_links(rows, config)
+    session.execute(sa.delete(m.ArticleLink))
+    for from_id, to_id, evidence in links:
+        session.add(m.ArticleLink(
+            from_article_id=from_id, to_article_id=to_id,
+            relation="names_model", evidence=evidence, run_id=run_id,
+        ))
+
     session.execute(sa.delete(m.ArticleGroup))
     members: dict[int, list[dict]] = {}
     for row in rows:
@@ -823,7 +893,19 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     stats = {"articles": len(rows), "groups": len(members), "collapsed": 0,
              "adjudicated": adjudicated, "deferred": deferred, "usd": usd,
-             "coverage": round(coverage, 3), "by_method": {}}
+             "coverage": round(coverage, 3), "by_method": {},
+             # `paired` counts the releases involved, not the edges: one release
+             # linked to three descriptions of one launch is one release.
+             #
+             # Reported, but deliberately NOT claimed as the equivalent of
+             # `coverage`. That number has `alerts.dedupe_unavailable` reading
+             # it, which is what makes it a detector; these two have no rule
+             # behind them and are diagnostics a person reads. Zero links is the
+             # normal state of most windows, so alerting on it would need a
+             # calibrated idea of a healthy link count, and there is no labelled
+             # set to derive one from. See D61 for the bound this leaves open.
+             "links": len(links),
+             "paired": len({from_id for from_id, _, _ in links})}
     for root, group in members.items():
         prefer = "latest" if all(r["repo"] for r in group) else "earliest"
         anchor = anchor_of(group, "significance", prefer=prefer)
@@ -875,8 +957,13 @@ def _rows(session: Session, prompt_version: str) -> list[dict]:
     for record in session.execute(query):
         payload = record.payload or {}
         repo = None
+        body = ""
         if record.text_source == "github_release" and payload.get("repo"):
             repo = f"{payload.get('org')}/{payload['repo']}"
+            # Kept for releases only. An announcement body is the largest thing
+            # in the payload and no gate reads it — `subjects` is title-only by
+            # design — so holding ~270 of them would cost megabytes for nothing.
+            body = payload.get("text") or ""
         rows.append({
             "id": record.id, "url": record.url, "title": record.title or "",
             "lab": record.lab, "published_on": record.published_on,
@@ -884,6 +971,7 @@ def _rows(session: Session, prompt_version: str) -> list[dict]:
             "score": record.score or 0.0, "ai_score": record.ai_score or 0.0,
             "significance": max(record.score or 0.0, record.ai_score or 0.0),
             "repo": repo,
+            "body": body,
         })
     return rows
 
@@ -924,6 +1012,94 @@ def _apply_release_trains(rows: list[dict], union: _Union, reasons: dict,
                 f"{len(train)} releases of {train[0]['repo']} between "
                 f"{train[0]['published_on']} and {train[-1]['published_on']}",
             )
+
+
+def release_links(rows: list[dict], config: dict) -> list[tuple[int, int, str]]:
+    """Pair each release with the model-release announcements naming the same model.
+
+    Runs over the same `rows` as the grouping passes and returns edges rather
+    than touching the union-find, so no group changes shape and no article is
+    folded behind another. See `config/dedupe.yaml` for why that separation is
+    the design and not an implementation detail.
+
+    **Both sides are stemmed, and the event type is what bounds the join.** An
+    earlier version stemmed only the announcement side, on the reasoning that an
+    exact identifier on one end keeps the match tight. Measured against the
+    corpus, that silently lost the case the feature exists for: the identifier
+    pattern does not span a space, so "GPT-6 Astra: A new generation of
+    intelligence" — the launch post, scoring 100 — yields only `gpt-6`, while
+    the release body's "GPT-6-Astra" yields only `gpt-6-astra`. The two never
+    intersect, and the only announcements that linked were the ones that
+    happened to hyphenate. :func:`stem` exists precisely to reconcile those two
+    spellings; refusing it here re-opened the problem it was written for.
+
+    Stemming both sides then needs something else to stop `gpt-6` reaching every
+    Astra-adjacent post, because on identifiers alone the launch post and
+    "Legora reviewed 41 documents in minutes with GPT-6 Astra" are *identical* —
+    both yield exactly `{gpt-6}`. No threshold over identifiers can separate
+    them. Their `event_type` can, and does: `frontier_model_release` against
+    `enterprise_partnership`. That is the same field gate 2 already trusts as a
+    hard separator, so this reuses an axis the pipeline has rather than
+    inventing one.
+
+    The question a link answers is "this release ships support for a model —
+    where was that model announced", so the answer has to be an announcement
+    that releases a model. `pairing.announcement_events` is that list.
+
+    Args:
+        rows: Every article, from :func:`_rows`.
+        config: Parsed `config/dedupe.yaml`.
+
+    Returns:
+        `(release_id, announcement_id, shared_identifier)` triples, sorted so a
+        rebuilt table is byte-identical for unchanged input. Empty when pairing
+        is switched off.
+    """
+    rules = config.get("pairing") or {}
+    if not rules.get("enabled", True):
+        return []
+
+    window = int(rules.get("window_days", config["window_days"]))
+    cap = int(rules.get("max_identifiers", 3))
+    events = set(rules.get("announcement_events") or ())
+
+    releases = [r for r in rows if r["repo"]]
+    articles = [r for r in rows if not r["repo"] and r["event_type"] in events]
+    if not releases or not articles:
+        return []
+
+    # Announcement subjects are computed once per article, not once per pair:
+    # `subjects` re-reads and re-compiles the identifier config on every call,
+    # and the naive loop is |releases| x |articles| of them.
+    by_lab: dict[str, list[tuple[dict, set[str]]]] = defaultdict(list)
+    for article in articles:
+        found = subjects(article["title"])
+        if found:
+            by_lab[article["lab"]].append((article, found))
+
+    links: list[tuple[int, int, str]] = []
+    for release in releases:
+        found = release_subjects(release["body"], cap)
+        if not found:
+            continue
+        found = found | {stem(identifier) for identifier in found}
+        for article, article_subjects in by_lab.get(release["lab"], ()):
+            shared = found & article_subjects
+            if not shared:
+                continue
+            if abs((article["published_on"] - release["published_on"]).days) > window:
+                continue
+            # One edge, on the most specific identifier the two share. Emitting
+            # one per shared key wrote `gpt-6` and `gpt-6-astra` as two rows for
+            # one fact, and the card then said the same thing twice.
+            #
+            # `sorted` before `max` is load-bearing, not tidiness: `max` over a
+            # set breaks ties in iteration order, which follows string hash
+            # randomisation, so a pair sharing two same-length identifiers
+            # ("DeepSeek-V4" and "DeepSeek-R2") stored a different evidence
+            # string on each process. A table rebuilt wholesale has to converge.
+            links.append((release["id"], article["id"], max(sorted(shared), key=len)))
+    return sorted(links)
 
 
 def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dict,

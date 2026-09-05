@@ -82,6 +82,33 @@ function FoldedGroup({ members, reason, onOpen }) {
   );
 }
 
+// Related-but-distinct articles, deliberately shaped unlike FoldedGroup above.
+// A fold says "this is the same event, I have hidden the rest"; this says "these
+// are different documents about the same model, both are in the feed". So it
+// opens by default and never implies anything was removed — the reader is being
+// offered a cross-reference, not shown the remains of a merge.
+function RelatedItems({ items, onOpen }) {
+  return (
+    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
+      <div style={{ fontSize: 12, color: "var(--muted-2)", marginBottom: 6 }}>
+        Also mentions {[...new Set(items.map((r) => r.evidence))].join(", ")}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {items.map((r) => (
+          <div
+            key={`${r.id}-${r.evidence}`}
+            onClick={(e) => { e.stopPropagation(); onOpen(r.id); }}
+            style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
+          >
+            <span className="tag-pill" style={{ color: "var(--muted-2)", marginRight: 6 }}>{r.docType}</span>
+            {r.title}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
@@ -243,6 +270,44 @@ function Dashboard() {
     for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
     return [best, folded];
   }, [decorated, audience]);
+
+  // Related items, resolved through the group anchor rather than rendered as
+  // stored. Two things go wrong without this, and both were found in review:
+  //
+  // * 17 of 25 links on the live corpus point at a FOLDED member, so the link
+  //   was written, counted, and never displayed anywhere.
+  // * The three GPT-6 Astra posts are one group, so a release linked to all
+  //   three listed one launch three times.
+  //
+  // Resolving to `anchorFor` fixes both at once, and it must happen here rather
+  // than server-side because the anchor is decided per audience (see above) —
+  // `isAnchor` is a single corpus-wide flag and would name the wrong row on one
+  // of the two tabs.
+  // Keyed by GROUP, not by article, so a link carried by a folded member still
+  // reaches the card its reader is actually looking at. Both ends need that: on
+  // the live corpus the release links to all three Astra posts and only one of
+  // them is the anchor.
+  const relatedForGroup = useMemo(() => {
+    const byId = {};
+    for (const it of decorated) byId[it.id] = it;
+    const out = {};
+    for (const it of decorated) {
+      const seen = out[it.groupId] || (out[it.groupId] = new Map());
+      for (const rel of it.relatedTo || []) {
+        const target = byId[rel.id];
+        if (!target) continue;
+        const anchor = anchorFor[target.groupId] || target;
+        // A link inside one's own group is the grouping's story, not a
+        // cross-reference — FoldedGroup already says it, and better.
+        if (anchor.groupId === it.groupId) continue;
+        if (!seen.has(anchor.id)) {
+          seen.set(anchor.id, { ...rel, id: anchor.id, title: anchor.title, docType: anchor.docType });
+        }
+      }
+    }
+    return Object.fromEntries(
+      Object.entries(out).map(([groupId, seen]) => [groupId, [...seen.values()]]));
+  }, [decorated, anchorFor]);
 
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
@@ -413,6 +478,7 @@ function Dashboard() {
                 <option value="all">Everything</option>
                 <option value="announcement">Announcements</option>
                 <option value="paper">Papers</option>
+                <option value="release">Releases</option>
               </select>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -509,6 +575,12 @@ function Dashboard() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span className="label-bracket">{item.labLabel}</span>
+                    {/* Papers and releases are badged; announcements are not.
+                        Badging all three would put a pill on every card in the
+                        feed to distinguish the majority case from itself. */}
+                    {item.docType !== "announcement" && (
+                      <span className="tag-pill" style={{ color: "var(--muted-2)" }}>{item.docType}</span>
+                    )}
                     <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
                   </div>
                   <span className="tag-pill" style={item.displayStyle}>{item.displayScore} · {item.displayBand}</span>
@@ -528,6 +600,9 @@ function Dashboard() {
                       <span key={i} className="conn-pill" style={{ color: p.color, borderColor: p.color }}>→ {p.label}</span>
                     ))}
                   </div>
+                )}
+                {(relatedForGroup[item.groupId] || []).length > 0 && (
+                  <RelatedItems items={relatedForGroup[item.groupId]} onOpen={setSelectedId} />
                 )}
                 {(foldedByGroup[item.groupId] || []).length > 0 && (
                   <FoldedGroup
@@ -564,6 +639,15 @@ function Dashboard() {
             </a>
 
             <div style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text)" }}>{selected.summary}</div>
+
+            {/* Also here, not only on the card: the panel is reachable from a
+                folded row, whose own card the reader never saw. */}
+            {(relatedForGroup[selected.groupId] || []).length > 0 && (
+              <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 8 }}>
+                <span className="label-bracket">Related</span>
+                <RelatedItems items={relatedForGroup[selected.groupId]} onOpen={setSelectedId} />
+              </div>
+            )}
 
             {selected.notableReason && (
               <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 8 }}>

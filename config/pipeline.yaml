@@ -182,3 +182,32 @@ fetch:
   # Ceiling on any single backoff, including one the server asks for via
   # Retry-After. Stops a misbehaving `Retry-After: 86400` hanging the run.
   max_backoff_seconds: 120.0
+
+# How far back the dashboard renders. A READ cut, not an ingestion or
+# classification one: nothing here changes what is fetched, stored or scored.
+#
+# WHY IT IS NEEDED. `releases_backfill: 5` (config/repo_signals.yaml) takes the
+# five most recent releases of every watched repository, and for a repository
+# that stopped shipping years ago those five are years old. Measured on the live
+# corpus: 186 of 380 releases predate this window and the oldest is 2019-06-26,
+# against announcements where 260 of 267 already sit inside it. So this is a
+# releases-and-papers cut in practice; the announcements leg never needed one.
+#
+# 90 days matches the horizon the rest of the product already assumes -- the
+# GitHub commit harvest window and `repo_signals.new_within_days` both describe
+# recent activity, and a lab's release from 2021 is not intelligence about what
+# it is doing now.
+#
+# WHAT IT DOES NOT TOUCH, DELIBERATELY:
+#
+# * `app/digest.py` already windows to 48 hours (config/digest.yaml), so an
+#   edition is unaffected by this number.
+# * `research/corpus/first_mention.py` reads `raw_articles` directly and keeps
+#   the whole archive. Firstness is a claim about the entire corpus, so
+#   truncating its input would make it WRONG rather than merely narrower: a name
+#   whose earliest document fell outside the window would be reported as new
+#   when it is not. That module has its own `new_within_days` for reporting.
+# * Grouping and pairing run over the full corpus. An out-of-window document is
+#   still evidence about an in-window one.
+display:
+  corpus_window_days: 90
