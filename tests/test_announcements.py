@@ -2080,14 +2080,16 @@ class TestWaybackBackfillSurvivesTheFetch:
         """`backfill_openai.py` queried `openai.com/index*` only, so an
         `openai.com/academy/*` article could never be recovered however long
         the archive held it. Patterns come from the URLs themselves."""
-        queries = []
+        wildcard = []
         pages = {"https://openai.com/academy/getting-started": "<p>" + "y " * 500 + "</p>"}
 
         def fake_fetch(url, **kw):
             if "cdx/search/cdx" in url:
-                queries.append(url)
-                return _cdx_rows(
-                    ("https://openai.com/academy/getting-started", "20260902120000"))
+                if "%2A" in url or "*" in url:
+                    wildcard.append(url)
+                    return _cdx_rows(
+                        ("https://openai.com/academy/getting-started", "20260902120000"))
+                return _cdx_rows()  # the exact-lookup fallback finds nothing
             return pages[url.split("id_/", 1)[1]]
 
         monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
@@ -2095,9 +2097,56 @@ class TestWaybackBackfillSurvivesTheFetch:
                     self._summary("https://openai.com/academy/getting-started")]
         fetch_announcements.enrich_wayback(self._lab(), articles, datetime(2026, 6, 1))
 
-        assert len(queries) == 2, "one bulk query per distinct path prefix"
-        assert any("academy" in q for q in queries)
+        assert len(wildcard) == 2, "one bulk query per distinct path prefix"
+        assert any("academy" in q for q in wildcard)
         assert articles[1]["text_source"] == "full_text_archived"
+
+    def test_an_exact_lookup_catches_what_the_wildcard_index_misses(self, monkeypatch):
+        """The archive's wildcard index lags its exact one. Measured live:
+        `path-to-astra` has a 2026-09-03 snapshot that `openai.com/index*`
+        does not return at any date bound or row limit. Trusting the bulk
+        query alone leaves half a frontier launch on a 221-character blurb and
+        calls it "not archived yet" -- a wrong answer wearing a correct one's
+        clothes."""
+        article = self._summary("https://openai.com/index/path-to-astra")
+        body = "<p>" + ("Frontier capability thresholds. " * 200) + "</p>"
+
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    return _cdx_rows()  # the wildcard index does not have it
+                return _cdx_rows(
+                    ("https://openai.com/index/path-to-astra/", "20260903190243"))
+            return body
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        missed = fetch_announcements.enrich_wayback(
+            self._lab(), [article], datetime(2026, 6, 1))
+
+        assert missed == []
+        assert article["text_source"] == "full_text_archived"
+        assert article["archive_snapshot"].startswith(
+            "http://web.archive.org/web/20260903190243id_/")
+
+    def test_the_exact_lookup_runs_only_for_genuine_misses(self, monkeypatch):
+        """One extra request per miss, not per article. 149 exact lookups a
+        night to re-confirm what the bulk query already answered is the
+        request storm this leg must not become."""
+        hit = self._summary("https://openai.com/index/found")
+        exact = []
+
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    return _cdx_rows(("https://openai.com/index/found", "20260902120000"))
+                exact.append(url)
+                return _cdx_rows()
+            return "<p>" + "w " * 500 + "</p>"
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        fetch_announcements.enrich_wayback(self._lab(), [hit], datetime(2026, 6, 1))
+
+        assert exact == []
 
     def test_a_trailing_slash_still_matches_its_snapshot(self, monkeypatch):
         """The archive's `original` column and our register disagree on scheme,

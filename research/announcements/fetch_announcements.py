@@ -744,6 +744,38 @@ def _cdx_prefixes(urls: list[str]) -> list[str]:
     return sorted(prefixes)
 
 
+def _exact_snapshot(url: str) -> str | None:
+    """Look one URL up in CDX directly, for the misses of the bulk query.
+
+    The wildcard index lags the exact one. Measured on the 18 OpenAI articles
+    the bulk `openai.com/index*` query reported unarchived: `path-to-astra`
+    has a snapshot from 2026-09-03 that the wildcard query does not return at
+    any date bound or row limit, while an exact lookup finds it immediately.
+    The other 17 really are unarchived, so this is one extra request per
+    genuine miss, not per article -- and a miss is a handful a night once the
+    corpus is caught up.
+
+    Trusting the bulk query alone would have left the substantive half of a
+    frontier launch on a 221-character blurb while reporting it as simply not
+    archived yet, which is a wrong answer that looks like a correct one.
+
+    Args:
+        url: Article URL.
+
+    Returns:
+        Latest snapshot timestamp, or None if the archive has none.
+    """
+    query = (
+        f"{WAYBACK_CDX}?url={urllib.parse.quote(_archive_key(url))}"
+        "&output=json&filter=statuscode:200&fl=original,timestamp&limit=5"
+    )
+    try:
+        rows = json.loads(fetch_wayback(query, max_age_hours=DISCOVERY_MAX_AGE_HOURS))
+    except (RuntimeError, ValueError):
+        return None
+    return max((r[1] for r in rows[1:]), default=None)
+
+
 def enrich_wayback(lab: dict, articles: list[dict], cutoff: datetime) -> list[dict]:
     """Upgrade a lab's summary-only articles to archived full text, in place.
 
@@ -790,10 +822,12 @@ def enrich_wayback(lab: dict, articles: list[dict], cutoff: datetime) -> list[di
     for article in targets:
         timestamp = index.get(_archive_key(article["url"]))
         if timestamp is None:
+            timestamp = _exact_snapshot(article["url"])
+        if timestamp is None:
             unresolved.append({
                 "kind": "backfill",
                 "name": article["url"],
-                "reason": "no archive snapshot in window; still on the RSS summary",
+                "reason": "no archive snapshot; still on the RSS summary",
             })
             continue
 
