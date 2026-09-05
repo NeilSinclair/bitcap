@@ -562,6 +562,22 @@ def check_pipeline(root: Path) -> list[str]:
             "pipeline.yaml/fetch: retries above 10 means a rate-limited host is hammered "
             "for minutes; a lost source is a partial run, not a dead one (D27)"
         )
+
+    # The dashboard's horizon. Silent when wrong in the way that matters most:
+    # a value of 1 renders yesterday's articles and nothing else, which looks
+    # exactly like a pipeline that has stopped ingesting. Absent is legal and
+    # means no window; present and nonsense is not.
+    display = doc.get("display")
+    if display is not None:
+        window = display.get("corpus_window_days")
+        if window is not None and (
+            not isinstance(window, int) or isinstance(window, bool) or window < 7
+        ):
+            errors.append(
+                f"pipeline.yaml/display: corpus_window_days={window!r} must be an "
+                "integer of at least 7 -- a shorter horizon empties the dashboard and "
+                "reads as a stalled pipeline rather than as a setting"
+            )
     return errors
 
 
@@ -746,6 +762,47 @@ def check_dedupe(path: Path | None = None) -> list[str]:
             f"dedupe.yaml: releases.max_span_days={span!r} must be a positive integer — "
             "without a ceiling a daily-release repo chains into one permanent group"
         )
+
+    pairing = doc.get("pairing") or {}
+    if not isinstance(pairing.get("enabled"), bool):
+        errors.append(
+            f"dedupe.yaml: pairing.enabled={pairing.get('enabled')!r} must be true or "
+            "false — a missing kill switch reads as on, which is the wrong default "
+            "for a switch"
+        )
+    pair_window = pairing.get("window_days")
+    if not isinstance(pair_window, int) or pair_window < 1:
+        errors.append(
+            f"dedupe.yaml: pairing.window_days={pair_window!r} must be a positive integer"
+        )
+    cap = pairing.get("max_identifiers")
+    if not isinstance(cap, int) or cap < 1:
+        errors.append(
+            f"dedupe.yaml: pairing.max_identifiers={cap!r} must be a positive integer — "
+            "0 would silently disable pairing while `enabled` still claimed it was on"
+        )
+
+    # The gate that does the actual separating. Empty or misspelled, pairing
+    # matches nothing and reports zero links, which is indistinguishable from
+    # "no release was related to anything" -- and the event types are free text
+    # in this file but a closed vocabulary in config/scoring.yaml.
+    events = pairing.get("announcement_events")
+    if not isinstance(events, list) or not events:
+        errors.append(
+            f"dedupe.yaml: pairing.announcement_events={events!r} must be a non-empty "
+            "list -- with nothing in it every release pairs with nothing and the run "
+            "still reports success"
+        )
+    else:
+        weights = yaml.safe_load(
+            (ROOT / "scoring.yaml").read_text(encoding="utf-8"))["event_weight"]
+        unknown = sorted(set(events) - set(weights))
+        if unknown:
+            errors.append(
+                f"dedupe.yaml: pairing.announcement_events names {unknown}, which are "
+                "not event types in scoring.yaml -- a typo here removes a gate rather "
+                "than raising"
+            )
 
     # Both model names are checked against the price table, because `_cost`
     # indexes `PRICES[model]` *after* the provider has billed the call. An

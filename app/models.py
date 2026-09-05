@@ -779,6 +779,46 @@ class ArticleGroup(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
+class ArticleLink(Base):
+    """One article is *related to* another, without either being folded away.
+
+    The deliberate counterpart to :class:`ArticleGroup`. A group says "these are
+    one event, show one of them"; a link says "these are different documents
+    about the same thing, show both". A GitHub release announcing that a model
+    reached a model picker is not the launch post for that model, and collapsing
+    it into one would delete a claim — but leaving the two unconnected is what
+    put both in one AI digest with nothing joining them.
+
+    Directional: `from_article` is the release, `to_article` the announcement.
+    The direction records which side the evidence was read from rather than any
+    ranking, and the read path renders links from both ends.
+
+    Silver, like `article_groups`: a pure function of the articles, their
+    classifications and `config/dedupe.yaml`, so it is rebuilt wholesale each
+    run and is deliberately NOT in `OPS_TABLES`. A changed threshold takes
+    effect without a migration.
+
+    `evidence` is required for the same reason a tag carries a `quote`: a claim
+    the product puts in front of a reader has to say why it is there. Here it is
+    the shared model identifier, which is checkable against both documents.
+    """
+
+    __tablename__ = "article_links"
+    __table_args__ = (
+        sa.UniqueConstraint("from_article_id", "to_article_id", "relation", "evidence"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    from_article_id: Mapped[int] = mapped_column(sa.ForeignKey("articles.id"), index=True)
+    to_article_id: Mapped[int] = mapped_column(sa.ForeignKey("articles.id"), index=True)
+    # Only `names_model` today. A column rather than an implied constant because
+    # the next relation (an arXiv-identity pass, D60) would otherwise need a
+    # migration to become expressible.
+    relation: Mapped[str]
+    evidence: Mapped[str]
+    run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
+
+
 class Connection(Base):
     """One article-to-holding link, denormalized so a row explains itself.
 

@@ -143,3 +143,79 @@ releases:
   # `window_days` above, so both paths agree about how far apart two things can
   # be and still be one event.
   max_span_days: 14
+
+# --- Release <-> announcement pairing ---------------------------------------
+#
+# A LINK, NOT A MERGE, and that distinction is the whole design.
+#
+# Releases are excluded from the similarity gates above — `_apply_gated` starts
+# by keeping only rows with no repo — so a release and the announcement about
+# the same launch have always been two unconnected rows. `openai/codex`
+# rust-v0.153.3 shipped "Added GPT-6-Astra to the Amazon Bedrock model picker"
+# into the same AI digest as "GPT-6 Astra: A new generation of intelligence",
+# with nothing joining them.
+#
+# The obvious fix — feed releases into the union-find — is wrong, and measured.
+# One codex release reaches six announcements, and union-find is transitive, so
+# the launch post, the safety overview and two customer stories ("Legora
+# reviewed 41 documents…", "Playco cut manual fixes 50%…") all become one group.
+# This file already states the cost of that above: a false merge deletes a claim
+# from the product. A missed merge leaves a visible duplicate row; a false one
+# silently removes a document, and only one of those is recoverable by a reader.
+#
+# So pairing writes `article_links` and never touches `article_groups`. Both
+# rows stay in the feed, each keeps its own score, band and anchor, and the card
+# says what it is related to and why. That is an assertion a reader can check
+# and dismiss, which a merge is not.
+#
+# It also sidesteps the hazard D60 recorded: fold a row behind an anchor of a
+# different `docType` and selecting that type makes the group vanish. Links
+# cannot do that, because they fold nothing.
+#
+# COST: none. Regex and set intersection over rows already in the database. No
+# embedding, no adjudication, no API call.
+pairing:
+  # Off switches the pass off entirely. Existing links then disappear on the
+  # next run, because the table is rebuilt wholesale like `article_groups`
+  # rather than accumulated.
+  enabled: true
+
+  # Days between a release and an announcement for them to be about one event.
+  # Matches `window_days` above so both paths agree how far apart two things can
+  # be and still be related. Measured: the real Astra pairs sit within 2 days.
+  window_days: 14
+
+  # Above this many model identifiers in one release body, the release yields
+  # none: a changelog listing a model catalogue is not about any one entry in
+  # it. 2 of 380 releases exceed 3, so this is cheap insurance rather than a
+  # tuned number — it is here so it can be argued without a deploy.
+  max_identifiers: 3
+
+  # WHICH ANNOUNCEMENTS CAN BE THE OTHER END. This is the gate that does the
+  # work, and it is here because it is a judgement rather than a measurement.
+  #
+  # Both sides of the join are stemmed, because the identifier pattern does not
+  # span a space: "GPT-6 Astra" yields `gpt-6` and "GPT-6-Astra" yields
+  # `gpt-6-astra`, and `stem()` exists to reconcile exactly that. But on
+  # identifiers alone the launch post and "Legora reviewed 41 documents in
+  # minutes with GPT-6 Astra" are INDISTINGUISHABLE — both yield precisely
+  # `{gpt-6}` — so no threshold over identifiers could ever separate them.
+  # Their event types can: `frontier_model_release` against
+  # `enterprise_partnership`. Gate 2 above already trusts `event_type` as a
+  # hard separator, so this reuses an axis the pipeline has rather than
+  # inventing one.
+  #
+  # The question a link answers is "this release ships support for a model —
+  # where was that model announced". The answer must therefore be an
+  # announcement that releases a model. A customer story that merely uses one
+  # is a true statement about the model and not an answer to that question.
+  #
+  # `safety_policy` is deliberately absent even though "Safety overview: GPT-6
+  # Astra" is genuinely about Astra: gate 2's own note records that the safety
+  # overview reports a crossed Preparedness threshold the launch post never
+  # mentions. It is a different claim, and pointing the release at it would say
+  # the model was announced there.
+  announcement_events:
+    - frontier_model_release
+    - incremental_model_release
+    - open_weights

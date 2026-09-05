@@ -6299,3 +6299,182 @@ Papers stay ungrouped and unlinked. The corpus carries one uncollapsed duplicate
 pair, both rows scoring 0.0 / 5.6, and no known false merges. If a lab ships a
 technical report alongside its launch post the two will take separate rows, which
 is the cost of this decision and the trigger for reversing it.
+
+---
+
+## D61 — Releases are tagged, windowed, and linked rather than merged (2026-09-05)
+
+The releases leg (D52) put 380 GitHub release notes in the corpus and D56 scored
+all of them. Three things were wrong with how they reached a reader, and all
+three were found by querying the live database rather than by reading the code.
+
+### They were labelled as announcements
+
+`api/queries.py` mapped every non-paper row to `announcement`, so
+`github_releases` fell into the `else`. Harmless while nothing read the field --
+until D59 added the Source dropdown. Selecting **Announcements** then returned
+267 announcements *plus* 380 release notes, and the count looked plausible, so
+nothing about the surface said it was lying. A filter that makes a false claim is
+worse than no filter, because it is trusted.
+
+Fixed with `RELEASES_CORPUS` and a three-way map. An unknown `source_file` still
+falls back to `announcement`: a new leg should appear in the feed rather than
+disappear from every filter until someone remembers to add it.
+
+### Half the release corpus predated the product's horizon
+
+`releases_backfill: 5` takes the five most recent releases of every watched
+repository. For a repository dormant since 2019 those five are from 2019.
+Measured: **186 of 380 releases predate 90 days, the oldest 2019-06-26**, against
+announcements where 260 of 267 already sat inside it. So the window is in
+practice a releases-and-papers cut; the announcements leg never needed one.
+
+`display.corpus_window_days: 90` is a **read** cut and nothing else. The digest
+already windows to 48 hours and is untouched. Grouping and pairing still run over
+the whole corpus, because an out-of-window document is still evidence about an
+in-window one.
+
+`research/corpus/first_mention.py` is deliberately not windowed, and
+`tests/test_first_mention.py::TestTheDisplayWindowNeverReachesHere` pins it.
+Firstness is a claim about the entire archive: window the input and a name whose
+earliest document fell outside it is reported as **new when it is not**. That is
+a confidently wrong answer rather than a narrower one, nothing raises, and the
+report looks richer rather than broken. The module's own `new_within_days` bounds
+what is reported, not what is read -- two things that are easy to confuse, which
+is why the guard is a test and not a comment.
+
+### A release and its launch post were two unconnected rows
+
+`_apply_gated` opens by keeping only rows with no repo, so releases have never
+reached the similarity gates. `openai/codex rust-v0.153.3` ("Added GPT-6-Astra to
+the Amazon Bedrock model picker") and "GPT-6 Astra: A new generation of
+intelligence" took two of eight slots in one AI digest with nothing joining them.
+
+**A link, not a merge.** Feeding releases into the union-find was tried first and
+rejected on measurement: union-find is transitive, so one codex release pulls the
+launch post, the safety overview **and two customer stories** ("Legora reviewed
+41 documents...", "Playco cut manual fixes 50%...") into a single group.
+`config/dedupe.yaml` already states the cost -- a false merge deletes a claim from
+the product. A missed merge leaves a visible duplicate row a reader can see; a
+false one silently removes a document. Only one of those is recoverable by the
+reader.
+
+So pairing writes `article_links` and never touches `article_groups`. Both rows
+stay in the feed with their own scores, bands and anchors, and the card says what
+it is related to and why. Verified on the live corpus: after pairing, `by_method`
+is byte-identical -- release_train 55, singleton 479, exact 2, llm 6, embedding 5.
+
+It also sidesteps the hazard D60 recorded and could not fix: fold a row behind an
+anchor of a different `docType` and selecting that type makes the group vanish.
+Links cannot do that, because they fold nothing.
+
+### The release side reads the body; the announcement side reads the title
+
+`subjects()` is title-only by design (D59), and a release's title is built by
+`fetch_releases.as_announcement` as `{org}/{repo} {tag}` -- our string, not
+GitHub's. So `subjects()` returns the empty set for **every** release, which is
+why releases had never paired with anything. Measured: 1 release title yields an
+identifier against 24 bodies.
+
+The asymmetry is not an inconsistency and it already had a precedent --
+`first_mention.text_fields()` returns `("text",)` for a release and
+`("title", "text")` for everything else, for exactly this reason.
+
+### What the review caught: the flagship pair did not link
+
+The first implementation stemmed only the announcement side, reasoning that
+keeping an exact identifier on the release end bounds the join. It produced 20
+links and they all looked right, which is why this survived to review.
+
+It was wrong, and wrong in the way that matters -- **silently, in the direction of
+doing nothing**. The identifier pattern does not span a space, so "GPT-6 Astra: A
+new generation of intelligence" -- the launch post, scoring 100, the example this
+entire feature was written for -- yields only `gpt-6`, while the release body's
+"GPT-6-Astra" yields only `gpt-6-astra`. They never intersect. The only
+announcements that linked were the ones that happened to hyphenate. `stem()`
+exists precisely to reconcile those two spellings (D59), and refusing it re-opened
+the problem it was written for.
+
+**Both sides are now stemmed, and `event_type` is what bounds the join instead.**
+That change is forced rather than chosen: on identifiers alone the launch post and
+"Legora reviewed 41 documents in minutes with GPT-6 Astra" are *indistinguishable*
+-- both yield exactly `{gpt-6}` -- so no threshold over identifiers could ever have
+separated them. Their event types can, and do:
+
+| title | subjects | event_type |
+|---|---|---|
+| GPT-6 Astra: A new generation of intelligence | `{gpt-6}` | frontier_model_release |
+| GPT-6 Astra | `{gpt-6}` | frontier_model_release |
+| Introducing GPT-6-Astra: ... | `{gpt-6, gpt-6-astra}` | frontier_model_release |
+| Legora reviewed 41 documents ... with GPT-6 Astra | `{gpt-6}` | enterprise_partnership |
+| Playco cut manual fixes 50% ... with GPT-6 Astra | `{gpt-6}` | enterprise_partnership |
+| Safety overview: GPT-6 Astra | `{gpt-6}` | safety_policy |
+
+Gate 2 already trusts `event_type` as a hard separator, so this reuses an axis the
+pipeline has rather than inventing one. `pairing.announcement_events` is the list,
+in config because it is a judgement rather than a measurement.
+
+The result is better on both axes at once -- the flagship pair links, and precision
+goes up:
+
+| | links | releases | announcements | customer stories |
+|---|---:|---:|---:|---:|
+| exact release side (shipped to review) | 20 | 10 | 11 | 2 |
+| both stemmed + event gate | **25** | 11 | **5** | **0** |
+
+`safety_policy` is excluded deliberately even though the safety overview is
+genuinely about Astra: gate 2's own note records that it reports a crossed
+Preparedness threshold the launch post never mentions. It is a different claim,
+and pointing a release at it would assert the model was announced there.
+
+### Two smaller things the review caught
+
+**17 of 25 links pointed at a folded member**, so they were written, counted in
+`stats["links"]`, and never rendered: the card only draws the anchor. Links are
+now resolved through `anchorFor` and keyed by group, which also collapses the
+three Astra posts into the one related row they are -- a release related to one
+launch, not to three descriptions of it. Done in the frontend rather than the API
+because the anchor is decided *per audience* (D59d); `is_anchor` is a single
+corpus-wide flag and would name the wrong row on one of the two tabs.
+
+**A test that could not fail.** `test_the_denied_collision_never_extracts` used
+"Sonnet v2.0.1 release notes", which the pattern does not match with or without
+the denylist -- so it passed for the wrong reason and would have kept passing if
+the `sonnet-2` entry were deleted. It now asserts the raw pattern *does* extract
+`sonnet-2` before asserting the denylist removes it. Same class of fault as the
+one D54 fixed in CI, found the same way.
+
+### A name collision, caught before it shipped
+
+`google-deepmind/sonnet` v2.0.0-v2.0.2 name `sonnet-2` in their release bodies,
+which reads as a Claude Sonnet release. This is the entity-resolution collision
+CLAUDE.md names as an expected failure mode, and the version shape genuinely
+cannot separate the two: "Sonnet 2" is a well-formed model identifier. Denied by
+exact key in `config/entities.yaml`, which costs nothing real -- Anthropic never
+shipped a Sonnet 2, so the key has no true positives to lose.
+
+### Consequence
+
+**Cost: none.** Regex and set intersection over rows already in the database. No
+embedding, no adjudication, no API call, so `docs/cost.md` gets no entry.
+
+The recall bound is now the `announcement_events` list, **and it has no detector.**
+Say that plainly rather than implying otherwise: `stats["links"]`/`["paired"]` are
+reported, but no alert rule reads them, so they are diagnostics a person reads and
+not the equivalent of `coverage`. An earlier draft of this entry claimed the
+`coverage` precedent for them, which was wrong -- that number is a detector
+precisely because `alerts.dedupe_unavailable` reads it.
+
+The realistic way this goes silently to zero is not a config edit but classifier
+drift: the gate reads an LLM-assigned label, and `product_launch`,
+`capability_result` and `research_result` are all excluded and all plausible
+mislabels for a model announcement. A prompt bump that starts calling launches
+`product_launch` takes links to zero with a green dashboard.
+
+An alert arm was considered and not built, because zero links is the normal state
+of most windows and there is no labelled set from which to derive what a healthy
+link count looks like. This repo does not choose thresholds by eye
+(`config/dedupe.yaml` on `cosine_high`), and an uncalibrated one here would train
+somebody to mute the channel. Recorded as the open gap, not queued: the honest
+prerequisite is a labelled set, which is the cost of the detector rather than a
+detail of it.

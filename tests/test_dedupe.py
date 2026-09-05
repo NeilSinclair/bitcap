@@ -43,12 +43,18 @@ MODEL = dedupe.settings()["embedding"]["model"]
 FEATURES = ROOT / "research" / "docs" / "dedupe_features.json"
 
 
-def article(article_id, title, lab="openai", day=1, score=0.0, ai_score=0.0, repo=None):
-    """Build the row shape the grouping functions consume."""
+def article(article_id, title, lab="openai", day=1, score=0.0, ai_score=0.0, repo=None,
+            body="", event_type="frontier_model_release"):
+    """Build the row shape the grouping functions consume.
+
+    `body` is populated for releases only, matching `_rows`: an announcement's
+    body is the largest thing in the payload and no gate reads it.
+    """
     return {
         "id": article_id, "title": title, "lab": lab,
         "published_on": date(2026, 9, day), "score": score,
-        "ai_score": ai_score, "repo": repo,
+        "ai_score": ai_score, "repo": repo, "body": body,
+        "event_type": event_type,
         "url": f"https://example.test/{article_id}",
     }
 
@@ -201,6 +207,170 @@ class TestReleaseTrains:
         rows = [article(i, f"v{i}", day=i, repo="deepseek-ai/deepseek-harness")
                 for i in (1, 2, 3, 4, 5)]
         assert [len(g) for g in dedupe.release_trains(rows, 48)] == [5]
+
+
+LAUNCH = "frontier_model_release"
+PAIRING = {
+    "window_days": 14,
+    "pairing": {"enabled": True, "window_days": 14, "max_identifiers": 3,
+                "announcement_events": [LAUNCH, "incremental_model_release",
+                                        "open_weights"]},
+}
+
+
+class TestReleaseSubjects:
+    """The release side of the pairing gate, which reads the body and not the title.
+
+    The silent failures here:
+
+    * **Reading the title.** It returns nothing and always will — the title is
+      built by this pipeline as "{org}/{repo} {tag}" — so pairing degrades to
+      zero links and looks exactly like "no release was related to anything".
+    * **The cap going away.** A changelog naming a model catalogue would then be
+      treated as being about every entry in it.
+
+    Note what is deliberately *not* on that list: stemming. `release_links` adds
+    the stems on purpose (D61) — an earlier version refused to, which silently
+    lost the spaced spelling of the launch post. What stops the widening is the
+    event-type gate, tested in `TestReleasePairing`, not an exact-match rule
+    here.
+    """
+
+    def test_a_release_title_yields_nothing_so_the_body_is_the_only_source(self):
+        """`subjects` over a release title is empty. That is the reason this exists."""
+        assert dedupe.subjects("openai/codex rust-v0.153.3") == set()
+        assert dedupe.release_subjects("Added GPT-6-Astra to the model picker", 3)
+
+    def test_a_release_naming_a_catalogue_names_nothing(self):
+        """Above the cap the release is about a list, not about any entry in it."""
+        catalogue = "Supports GPT-6-Astra, Grok-4.6, Gemma-4 and Opus-4.7"
+        assert dedupe.release_subjects(catalogue, 3) == set()
+        assert len(dedupe.release_subjects(catalogue, 10)) == 4
+
+    def test_the_denied_collision_never_extracts(self):
+        """`sonnet-2` is DeepMind's library, not a Claude model (config/entities.yaml).
+
+        The input has to be one the pattern would otherwise match, or the test
+        passes whether or not the denylist entry exists. "Sonnet v2.0.1" —
+        the shape the real release titles use — extracts nothing either way and
+        proved nothing; the release *bodies* are where `sonnet-2` was found.
+        """
+        import first_mention as fm
+
+        cfg = fm.load_config()
+        pattern = fm.model_pattern(cfg["model_families"], cfg["max_version_parts"])
+        assert set(fm.identifiers("Sonnet 2 is released", pattern, set())) == {"sonnet-2"}
+        assert dedupe.release_subjects("Sonnet 2 is released", 3) == set()
+
+
+class TestReleasePairing:
+    """Links relate; they never merge. The distinction is the whole design."""
+
+    def _corpus(self):
+        return [
+            article(1, "openai/codex rust-v0.153.3", day=3, event_type="developer_tooling",
+                    repo="openai/codex", body="Added GPT-6-Astra to the picker"),
+            article(2, "Introducing GPT-6-Astra", day=2),
+            # The SPACED spelling, which is what the real launch post uses. The
+            # identifier pattern does not span a space, so this yields `gpt-6`
+            # where the release body yields `gpt-6-astra` — the two only meet
+            # through `stem`.
+            article(3, "GPT-6 Astra: A new generation of intelligence", day=2),
+            # Same identifier, different kind of event. Indistinguishable from
+            # the launch posts on identifiers alone: both are exactly {gpt-6}.
+            article(4, "Legora reviewed 41 documents with GPT-6 Astra", day=2,
+                    event_type="enterprise_partnership"),
+        ]
+
+    def test_a_release_links_to_the_launch_that_names_the_same_model(self):
+        links = dedupe.release_links(self._corpus(), PAIRING)
+        assert (1, 2, "gpt-6-astra") in links
+
+    def test_the_spaced_spelling_of_the_launch_post_links(self):
+        """The regression this feature shipped broken once.
+
+        "GPT-6 Astra: A new generation of intelligence" is the highest-scoring
+        announcement in the corpus and the example the whole feature was written
+        for. With the release side unstemmed it yielded `gpt-6`, the release
+        yielded `gpt-6-astra`, and the flagship pair silently did not link —
+        only the announcements that happened to hyphenate did.
+        """
+        links = dedupe.release_links(self._corpus(), PAIRING)
+        assert (1, 3, "gpt-6") in links
+
+    def test_a_customer_story_is_excluded_by_its_event_type(self):
+        """Article 4 shares `gpt-6` with article 3 and must still not link.
+
+        Nothing about the identifiers separates them — this is entirely the
+        `announcement_events` gate, and if that gate goes the customer stories
+        come back.
+        """
+        links = dedupe.release_links(self._corpus(), PAIRING)
+        assert 4 not in {to_id for _, to_id, _ in links}
+
+    def test_one_edge_per_pair_on_the_most_specific_identifier(self):
+        """`gpt-6` and `gpt-6-astra` are one fact, not two rows."""
+        links = [link for link in dedupe.release_links(self._corpus(), PAIRING)
+                 if link[1] == 2]
+        assert links == [(1, 2, "gpt-6-astra")]
+
+    def test_the_evidence_is_stable_when_two_identifiers_tie_on_length(self):
+        """A wholesale-rebuilt table has to converge on the same rows.
+
+        `max` over a set breaks ties in iteration order, which follows string
+        hash randomisation, so this pair stored `deepseek-r2` under one
+        PYTHONHASHSEED and `deepseek-v4` under another — same input, different
+        row, and the rendered citation flipping between runs.
+        """
+        rows = [
+            article(1, "deepseek-ai/x v1", day=2, lab="deepseek",
+                    event_type="developer_tooling", repo="deepseek-ai/x",
+                    body="Adds DeepSeek-V4 and DeepSeek-R2 to the picker"),
+            article(2, "DeepSeek-V4 and DeepSeek-R2 are now available", day=2,
+                    lab="deepseek"),
+        ]
+        assert dedupe.release_links(rows, PAIRING) == [(1, 2, "deepseek-r2")]
+
+    def test_a_link_is_directional_release_first(self):
+        """`from` is the release: it records which side the evidence was read from."""
+        links = dedupe.release_links(self._corpus(), PAIRING)
+        assert links and all(from_id == 1 for from_id, _, _ in links)
+
+    def test_different_labs_never_pair(self):
+        rows = [
+            article(1, "anthropics/x v1", day=2, lab="anthropic",
+                    repo="anthropics/x", body="Added GPT-6-Astra"),
+            article(2, "Introducing GPT-6-Astra", day=2, lab="openai"),
+        ]
+        assert dedupe.release_links(rows, PAIRING) == []
+
+    def test_the_window_bounds_the_join(self):
+        rows = [
+            article(1, "openai/codex v1", day=1, repo="openai/codex",
+                    body="Added GPT-6-Astra"),
+            article(2, "Introducing GPT-6-Astra", day=1),
+        ]
+        rows[1]["published_on"] = date(2026, 10, 1)
+        assert dedupe.release_links(rows, PAIRING) == []
+
+    def test_two_releases_never_link_to_each_other(self):
+        """Release-to-release is `release_trains`' job, and it groups rather than links.
+
+        Without this, a repo's own train would be described twice in two
+        different vocabularies and the card would say both.
+        """
+        rows = [
+            article(1, "openai/codex v1", day=1, repo="openai/codex",
+                    body="Added GPT-6-Astra"),
+            article(2, "openai/openai-python v3", day=2, repo="openai/openai-python",
+                    body="Added GPT-6-Astra"),
+        ]
+        assert dedupe.release_links(rows, PAIRING) == []
+
+    def test_the_kill_switch_stops_the_pass(self):
+        config = {"window_days": 14,
+                  "pairing": {"enabled": False, "window_days": 14, "max_identifiers": 3}}
+        assert dedupe.release_links(self._corpus(), config) == []
 
 
 class TestEmbeddingCache:
@@ -638,6 +808,60 @@ class TestAssignWritesTheGrouping:
 
         assert stats["adjudicated"] == 0
         assert stats["usd"] == 0.0
+
+    def test_pairing_writes_links_and_moves_no_group(self, session):
+        """The load-bearing guarantee: a link relates, it never folds.
+
+        If pairing ever reaches the union-find, a release and a launch post
+        become one card and one of them stops being rendered — the false merge
+        `config/dedupe.yaml` exists to prevent. This test fails the moment that
+        happens, because the group count changes.
+        """
+        self._article(session, "u1", "Introducing GPT-6-Astra", 2,
+                      event_type="frontier_model_release")
+        self._article(
+            session, "u2", "openai/codex rust-v0.153.3", 3,
+            event_type="developer_tooling", source="github_release",
+            payload={"org": "openai", "repo": "codex",
+                     "text": "Added GPT-6-Astra to the picker"})
+
+        stats = dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        links = session.scalars(select(m.ArticleLink)).all()
+        assert [(link.relation, link.evidence) for link in links] == [
+            ("names_model", "gpt-6-astra")]
+        assert stats["links"] == 1 and stats["paired"] == 1
+        # Two articles, two groups, nothing collapsed.
+        assert stats["groups"] == 2 and stats["collapsed"] == 0
+        assert all(r.group_size == 1 for r in session.scalars(select(m.ArticleGroup)))
+
+    def test_links_are_rebuilt_wholesale_rather_than_accumulated(self, session):
+        """Silver, like `article_groups`: a re-run must not double the rows."""
+        self._article(session, "u1", "Introducing GPT-6-Astra", 2,
+                      event_type="frontier_model_release")
+        self._article(
+            session, "u2", "openai/codex rust-v0.153.3", 3,
+            event_type="developer_tooling", source="github_release",
+            payload={"org": "openai", "repo": "codex",
+                     "text": "Added GPT-6-Astra to the picker"})
+
+        dedupe.assign(session, "v9", adjudicate_pairs=False)
+        dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        assert len(session.scalars(select(m.ArticleLink)).all()) == 1
+
+    def test_a_corpus_with_no_releases_reports_zero_rather_than_nothing(self, session):
+        """Zero links and a pass that never ran must not look identical.
+
+        The same reasoning as `coverage` on the gated pass: a stat that is only
+        present when it is non-zero cannot distinguish "looked and found none"
+        from "never looked".
+        """
+        self._article(session, "u1", "Introducing GPT-6-Astra", 2)
+
+        stats = dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        assert stats["links"] == 0 and stats["paired"] == 0
 
 class TestAdjudicationIsCached:
     """A verdict is bought once, and the same run twice gives the same answer.
