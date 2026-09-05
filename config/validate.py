@@ -462,6 +462,50 @@ def check_pipeline(root: Path) -> list[str]:
         errors.append("pipeline.yaml/classification: no 'model'")
     if not isinstance(classification.get("workers", 1), int) or classification.get("workers", 1) < 1:
         errors.append("pipeline.yaml/classification: workers must be an integer >= 1")
+
+    # `fetch:` fails silently in the way this whole function exists to catch.
+    # `min_interval_seconds` is keyed by *registrable domain* and matched with
+    # `host == key or host.endswith("." + key)`, so writing `arxiv` instead of
+    # `arxiv.org` matches nothing, falls through to `default_min_interval_seconds`,
+    # and hits arXiv three times faster than its published guidance -- which is
+    # what caused the 2026-09-04 outage (D53). Validation would report clean.
+    fetch = doc.get("fetch") or {}
+    if not fetch:
+        errors.append("pipeline.yaml: no 'fetch' block -- the papers harvesters "
+                      "would fall back to hardcoded defaults with nothing saying so")
+    intervals = fetch.get("min_interval_seconds")
+    if not isinstance(intervals, dict) or not intervals:
+        errors.append("pipeline.yaml/fetch: min_interval_seconds must be a non-empty "
+                      "mapping of host -> seconds")
+    else:
+        for host, seconds in intervals.items():
+            if "." not in str(host):
+                errors.append(
+                    f"pipeline.yaml/fetch/min_interval_seconds: {host!r} is not a domain "
+                    "(host matching is exact-or-subdomain, so a bare name never matches "
+                    "and the host silently drops to default_min_interval_seconds)"
+                )
+            if not isinstance(seconds, (int, float)) or seconds <= 0:
+                errors.append(
+                    f"pipeline.yaml/fetch/min_interval_seconds/{host}: must be a positive number"
+                )
+        if "arxiv.org" not in intervals:
+            errors.append(
+                "pipeline.yaml/fetch/min_interval_seconds: no 'arxiv.org' entry -- five "
+                "harvesters fetch arXiv and it is the host that rate-limited us (D53)"
+            )
+    for key, kind in (("default_min_interval_seconds", (int, float)),
+                      ("discovery_ttl_hours", (int, float)),
+                      ("max_backoff_seconds", (int, float)),
+                      ("retries", int)):
+        value = fetch.get(key)
+        if not isinstance(value, kind) or isinstance(value, bool) or value <= 0:
+            errors.append(f"pipeline.yaml/fetch: '{key}' must be a positive number")
+    if isinstance(fetch.get("retries"), int) and fetch["retries"] > 10:
+        errors.append(
+            "pipeline.yaml/fetch: retries above 10 means a rate-limited host is hammered "
+            "for minutes; a lost source is a partial run, not a dead one (D27)"
+        )
     return errors
 
 
