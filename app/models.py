@@ -223,15 +223,43 @@ class Digest(Base):
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))
 
 
+class FetchCache(Base):
+    """One HTTP response body, keyed by URL, so a re-run does not re-fetch it.
+
+    The papers harvesters each cached to disk under `research/docs/*_cache/`.
+    That works on a laptop and does nothing in the deployment, which has no
+    disk: every cron firing started cold and replayed ~70 requests at arXiv,
+    which is what got the egress IP rate-limited (docs/decisions.md D53).
+    Postgres is the only thing that persists there, so the cache lives here.
+
+    `expires_at` is the part that is not optional. A permanent cache of a
+    *discovery* URL — `au:"DeepSeek-AI"`, a paginated listing — would freeze
+    the register at whatever it knew on the first run and report success
+    forever after. Immutable content (a versioned arXiv id) stores NULL and is
+    never re-fetched; everything else carries a TTL. See
+    `research/papers/fetch_cache.py` for which is which and why.
+    """
+
+    __tablename__ = "fetch_cache"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(sa.Text, unique=True)
+    body: Mapped[str] = mapped_column(sa.Text)
+    fetched_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    # NULL means immutable: no expiry, never re-fetched.
+    expires_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+
+
 # Tables that survive a rebuild. Everything else in this schema is a pure
-# function of committed files, so dropping it loses nothing; these six are not
-# — run history, per-source failure counts, raised alerts, drift snapshots and
-# published digests are only ever produced by a run that actually happened.
-# `rebuild` dropping `pipeline_runs` was a real (if quiet) loss of history
-# before this existed.
+# function of committed files, so dropping it loses nothing; these seven are not
+# — run history, per-source failure counts, raised alerts, drift snapshots,
+# published digests and the fetch cache are only ever produced by a run that
+# actually happened. `rebuild` dropping `pipeline_runs` was a real (if quiet)
+# loss of history before this existed, and dropping `fetch_cache` would send
+# the next run back to arXiv for everything it already has.
 OPS_TABLES = frozenset(
     {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts",
-     "digests"}
+     "digests", "fetch_cache"}
 )
 
 

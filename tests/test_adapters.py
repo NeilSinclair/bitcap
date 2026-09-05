@@ -12,7 +12,14 @@ proven separately by running them; what these pin down is the translation.
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
+# The stats dict `new_releases` really returns. Faking a subset of it is how
+# a field the adapter newly reads becomes a KeyError in production that no
+# test saw.
+STATS = {"seen": 0, "kept": 0, "truncated": 0, "empty": 0,
+         "drafts": 0, "reached_cursor": True}
+
 import pytest
+from sqlalchemy import select
 
 from app.pipeline import adapters
 from app.pipeline.registry import Source
@@ -651,3 +658,385 @@ class TestArticlesAreNotDownloadedTwice:
 
         assert "https://x.test/news260830" not in requested, "skipped page was downloaded"
         assert "https://x.test/news260831" in requested, "new page was not downloaded"
+
+
+class TestReleasesAdapter:
+    """The releases leg's seam.
+
+    Three things it must get right, none of which fails loudly: the ranking it
+    is gated on, the cursor it carries between firings, and the isolation
+    between repositories inside one org.
+    """
+
+    def release_source(self, org="xai-org", lab="xai"):
+        return Source(leg="releases", id=org, label=org, stage=4, enabled=True,
+                      config={"org": org, "lab": lab})
+
+    def stored(self, session, repo, stars=10, commits=None, org="xai-org"):
+        from app import models as m
+
+        session.add(m.RawGithubRepo(
+            org=org, repo=repo, pushed_at="2026-08-01T00:00:00Z",
+            payload={"total": 0, "commits": commits or [], "stars": stars},
+            content_hash="h"))
+        session.flush()
+
+    def listing(self, monkeypatch, entries):
+        """Stand in for the live REST listing the leg overlays onto bronze."""
+        import harvest_github
+
+        monkeypatch.setattr(harvest_github, "load_token", lambda: "token")
+        monkeypatch.setattr(harvest_github, "repos",
+                            lambda org, token, since: entries)
+
+    def listed_repo(self, name, stars, created_at="2020-01-01T00:00:00Z"):
+        return {"name": name, "pushed_at": "2026-08-01T00:00:00Z",
+                "stargazers_count": stars, "description": None,
+                "created_at": created_at, "language": "Python",
+                "topics": [], "archived": False}
+
+    def released(self, monkeypatch, fn):
+        import fetch_releases as fr
+
+        monkeypatch.setattr(fr, "new_releases", fn)
+
+    def item(self, repo, published="2026-09-03T00:00:00Z", lab="xai"):
+        return {"url": f"https://github.com/xai-org/{repo}/releases/tag/v1",
+                "lab": lab, "date": published[:10], "tag": "v1",
+                "published_at": published}
+
+    def test_an_empty_bronze_raises_rather_than_reporting_no_releases(
+            self, session, monkeypatch):
+        """Nothing downstream can tell "the github leg has not run" from "this
+        org ships nothing" -- both are an empty leg."""
+        self.listing(monkeypatch, [])
+        with pytest.raises(RuntimeError, match="raw_github_repos"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_the_watch_list_is_ranked_by_live_stars_not_bronze(self, session,
+                                                               monkeypatch):
+        """Bronze's star count is only as fresh as the last history walk, and
+        the github leg runs at cadence 3. A repository that stops being
+        committed to would rank for ever on a frozen number."""
+        self.stored(session, "quiet", stars=1)
+        self.stored(session, "loud", stars=999)
+        self.listing(monkeypatch, [self.listed_repo("quiet", 500_000),
+                                   self.listed_repo("loud", 2)])
+        seen = []
+        self.released(monkeypatch,
+                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert seen == ["quiet", "loud"]
+
+    def test_a_repo_absent_from_the_live_listing_is_not_watched(self, session,
+                                                                monkeypatch):
+        """Deleted, renamed, or pushed outside the window: bronze still holds
+        the row, and fetching releases for it would 404 every firing."""
+        self.stored(session, "gone", stars=999)
+        self.stored(session, "here", stars=1)
+        self.listing(monkeypatch, [self.listed_repo("here", 1)])
+        seen = []
+        self.released(monkeypatch,
+                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert seen == ["here"]
+
+    def test_an_empty_listing_against_non_empty_bronze_fails_the_source(
+            self, session, monkeypatch):
+        """The API failing to answer and an org going quiet produce the same
+        empty result. Bronze knowing about repositories is what separates
+        them, and a failed source is recorded and escalated where a quiet week
+        is not."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [])
+        with pytest.raises(RuntimeError, match="listing came back empty"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_the_cursor_comes_from_the_watermark(self, session, monkeypatch):
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        seen = {}
+
+        def fake(org, repo, token, lab, cursor, *a):
+            seen["cursor"] = cursor
+            return [], STATS
+
+        self.released(monkeypatch, fake)
+        state = SimpleNamespace(watermark={"cursors": {"grok": "2026-08-01T00:00:00Z"}})
+        adapters.fetch_releases(self.release_source(), state=state, session=session)
+        assert seen["cursor"] == "2026-08-01T00:00:00Z"
+
+    def test_the_advanced_cursor_comes_back_as_the_watermark(self, session,
+                                                             monkeypatch):
+        """The orchestrator persists this. On a container with no disk it is
+        the only thing that stops every firing re-fetching the same backfill
+        for ever while looking healthy."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["cursors"]["grok"] == "2026-09-03T00:00:00Z"
+
+    def test_an_untouched_repo_keeps_its_existing_cursor(self, session,
+                                                         monkeypatch):
+        """The watermark replaces the stored one wholesale, so a repository
+        with nothing new this run must still appear in it or its cursor is
+        lost and it re-backfills."""
+        self.stored(session, "a", stars=20)
+        self.stored(session, "b", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("a", 20),
+                                   self.listed_repo("b", 10)])
+        self.released(monkeypatch, lambda org, repo, token, lab, cursor, *a: (
+            ([self.item("a")], STATS) if repo == "a"
+            else ([], STATS)))
+
+        state = SimpleNamespace(watermark={"cursors": {"b": "2026-01-01T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert result.watermark["cursors"]["b"] == "2026-01-01T00:00:00Z"
+
+    def test_one_dead_repo_does_not_take_out_the_org(self, session, monkeypatch):
+        """A repository renamed since bronze last saw it raises a 404 that
+        `_call` does not retry. Letting it propagate discards every release
+        already fetched, advances no cursor, and repeats every firing."""
+        self.stored(session, "dead", stars=20)
+        self.stored(session, "live", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("dead", 20),
+                                   self.listed_repo("live", 10)])
+
+        def fake(org, repo, token, lab, *a):
+            if repo == "dead":
+                raise RuntimeError("HTTP Error 404: Not Found")
+            return [self.item("live")], STATS
+
+        self.released(monkeypatch, fake)
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert len(result.items) == 1
+        assert any("404" in f for f in result.watermark["repo_failures"])
+
+    def test_items_carry_the_lab_id_not_the_org_login(self, session, monkeypatch):
+        self.stored(session, "grok", stars=10, org="anthropics")
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda org, repo, token, lab, *a: (
+            [self.item("grok", lab=lab)], STATS))
+
+        result = adapters.fetch_releases(
+            self.release_source("anthropics", "anthropic"), session=session)
+        assert result.items[0]["lab"] == "anthropic"
+
+    def test_truncation_is_surfaced_on_the_watermark(self, session, monkeypatch):
+        """A cap that drops documents quietly reads as full coverage; the
+        watermark is where the ops view can see it."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([], {**STATS, "truncated": 7}))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["truncated"] == 7
+
+    def test_nothing_is_written_to_disk(self, session, monkeypatch, tmp_path):
+        """The whole reason for the port: the deployed container has no disk,
+        and state kept there resets to the image copy every firing."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], STATS))
+
+        before = set(adapters.DOCS.glob("release*"))
+        adapters.fetch_releases(self.release_source(), session=session)
+        assert set(adapters.DOCS.glob("release*")) == before
+
+    def test_the_documents_land_in_the_same_call_that_advances_the_cursor(
+            self, session, monkeypatch):
+        """The cursor gates every future fetch and `run_source` commits it as
+        soon as the adapter returns. Landing the rows a phase later means a
+        failure in between -- the register load, a redeploy, an OOM kill during
+        a 9-30 minute firing -- rolls the rows back while the cursor stays
+        advanced, and those releases are filtered out as already-seen for ever.
+        """
+        from app import models as m
+
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([self.item("grok")], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+
+        landed = session.scalars(select(m.RawArticle)).all()
+        assert [r.url for r in landed] == [result.items[0]["url"]]
+        assert landed[0].source_file == "github_releases"
+
+    def test_relanding_the_same_release_does_not_duplicate_it(self, session,
+                                                              monkeypatch):
+        """A firing that landed rows and then failed leaves the cursor alone,
+        so the next one refetches. The url-keyed upsert has to absorb that."""
+        from app import models as m
+
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
+
+        adapters.fetch_releases(self.release_source(), session=session)
+        adapters.fetch_releases(self.release_source(), session=session)
+
+        assert len(session.scalars(select(m.RawArticle)).all()) == 1
+
+    def test_every_repo_failing_fails_the_source(self, session, monkeypatch):
+        """A token rotated to one without the right scope 404s on all of them.
+        Reported as a success it would reset `consecutive_failures` to zero
+        every firing, so `source_down` could never fire and the leg would stay
+        dead behind a green row."""
+        self.stored(session, "a", stars=20)
+        self.stored(session, "b", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("a", 20),
+                                   self.listed_repo("b", 10)])
+        self.released(monkeypatch, lambda *a: (_ for _ in ()).throw(
+            RuntimeError("HTTP Error 404: Not Found")))
+
+        with pytest.raises(RuntimeError, match="all 2 watched repositories failed"):
+            adapters.fetch_releases(self.release_source(), session=session)
+
+    def test_some_repos_failing_does_not_fail_the_source(self, session,
+                                                         monkeypatch):
+        self.stored(session, "dead", stars=20)
+        self.stored(session, "live", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("dead", 20),
+                                   self.listed_repo("live", 10)])
+
+        def fake(org, repo, token, lab, *a):
+            if repo == "dead":
+                raise RuntimeError("404")
+            return [self.item("live")], STATS
+
+        self.released(monkeypatch, fake)
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert len(result.items) == 1
+
+    def test_an_unreached_cursor_reaches_the_watermark(self, session,
+                                                       monkeypatch):
+        """A walk that never found the cursor left releases above it unfetched
+        and uncounted -- `truncated` only counts what this call saw and
+        dropped. Discarding the flag made that indistinguishable from a clean
+        run."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch,
+                      lambda *a: ([], {**STATS, "reached_cursor": False}))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert result.watermark["reached_cursor"] is False
+
+
+class TestTheBackfillRunsInThePipeline:
+    """The path that actually runs nightly, which is the one that never ran it.
+
+    `backfill_openai.py` was a script a person ran by hand against a file. The
+    deployed pipeline does not run scripts and has no file: it calls the
+    discovery methods directly and writes to `raw_articles`. So recovery was
+    absent from production entirely, and OpenAI reached the classifier as
+    ~200-character feed blurbs every single night while the corpus file --
+    briefly, once -- looked fine.
+
+    `tests/test_announcements.py` covers `enrich_wayback` itself. These cover
+    the wiring, because the wiring is what was missing.
+    """
+
+    def _source(self, **extra):
+        config = {
+            "id": "openai", "method": "rss", "window_months": 3,
+            "backfill": "wayback", "text_source": "rss_summary",
+            **extra,
+        }
+        return Source(leg="announcements", id="openai", label="OpenAI", stage=1,
+                      enabled=True, config=config)
+
+    def _summary(self, url="https://openai.com/index/x"):
+        return {"lab": "openai", "url": url, "date": "2026-09-01",
+                "title": "X", "text": "X. A one-sentence summary.",
+                "text_source": "rss_summary"}
+
+    def test_recovered_text_reaches_the_items_the_pipeline_stores(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+
+        def fake_enrich(lab, articles, cutoff):
+            for a in articles:
+                a["text"] = "the recovered article body " * 200
+                a["text_source"] = "full_text_archived"
+                a["archive_snapshot"] = "http://web.archive.org/web/2026id_/x"
+            return []
+
+        monkeypatch.setattr(fa, "enrich_wayback", fake_enrich)
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert [a["text_source"] for a in result.items] == ["full_text_archived"]
+        assert len(result.items[0]["text"]) > 3000
+
+    def test_a_lab_without_the_key_is_not_walked(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+        called = []
+        monkeypatch.setattr(fa, "enrich_wayback",
+                            lambda *a, **k: called.append(1) or [])
+
+        adapters.fetch_announcements(self._source(backfill=None))
+
+        assert called == []
+
+    def test_an_unrecovered_article_is_reported_as_unresolved(self, monkeypatch):
+        """A lab stuck on summaries has to be visible somewhere. `unresolved`
+        is the channel this pipeline already uses for a known gap."""
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+        monkeypatch.setattr(fa, "enrich_wayback", lambda lab, articles, cutoff: [
+            {"kind": "backfill", "name": articles[0]["url"],
+             "reason": "no archive snapshot in window; still on the RSS summary"}])
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert len(result.unresolved) == 1
+        assert result.unresolved[0]["kind"] == "backfill"
+
+    def test_a_failing_archive_does_not_lose_the_articles(self, monkeypatch):
+        """Discovery already succeeded. The archive being down means worse
+        text, not a dead source -- failing here would throw away a good fetch
+        and mark OpenAI down for a reason that has nothing to do with OpenAI."""
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+
+        def boom(lab, articles, cutoff):
+            raise RuntimeError("wayback fetch failed: 503")
+
+        monkeypatch.setattr(fa, "enrich_wayback", boom)
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert len(result.items) == 1
+        assert result.items[0]["text_source"] == "rss_summary"
+        assert any("backfill failed" in u["reason"] for u in result.unresolved)
+
+    def test_no_articles_means_no_archive_query(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [])
+        called = []
+        monkeypatch.setattr(fa, "enrich_wayback",
+                            lambda *a, **k: called.append(1) or [])
+
+        adapters.fetch_announcements(self._source())
+
+        assert called == []

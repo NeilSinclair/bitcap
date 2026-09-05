@@ -74,16 +74,16 @@ class TestCadence:
     def test_the_first_firing_runs_every_leg(self):
         """A fresh deployment gets a full sweep, not six days of partial ones."""
         config = {"cadence": {"announcements": 1, "papers": 3, "github": 7}}
-        assert worker.due_legs(1, config) == ("announcements", "papers", "github")
+        assert worker.due_legs(1, config) == ("announcements", "papers", "github", "releases")
 
     def test_a_slow_leg_is_skipped_between_its_turns(self):
         config = {"cadence": {"announcements": 1, "papers": 3, "github": 7}}
-        assert worker.due_legs(2, config) == ("announcements",)
+        assert worker.due_legs(2, config) == ("announcements", "releases")
         # papers every 3rd firing: 1, 4, 7, 10...  github every 7th: 1, 8, 15...
-        assert worker.due_legs(4, config) == ("announcements", "papers")
-        assert worker.due_legs(7, config) == ("announcements", "papers")
-        assert worker.due_legs(8, config) == ("announcements", "github")
-        assert worker.due_legs(22, config) == ("announcements", "papers", "github")
+        assert worker.due_legs(4, config) == ("announcements", "papers", "releases")
+        assert worker.due_legs(7, config) == ("announcements", "papers", "releases")
+        assert worker.due_legs(8, config) == ("announcements", "github", "releases")
+        assert worker.due_legs(22, config) == ("announcements", "papers", "github", "releases")
 
     def test_an_explicit_override_ignores_cadence(self):
         config = {"cadence": {"github": 7}}
@@ -98,10 +98,10 @@ class TestCadence:
         """
         config = {"cadence": {"announcements": 1, "papers": 1, "github": 1}}
         assert worker.due_legs(1, config, ()) == ()
-        assert worker.due_legs(1, config, None) == ("announcements", "papers", "github")
+        assert worker.due_legs(1, config, None) == ("announcements", "papers", "github", "releases")
 
     def test_a_missing_cadence_entry_means_every_firing(self):
-        assert worker.due_legs(5, {"cadence": {}}) == ("announcements", "papers", "github")
+        assert worker.due_legs(5, {"cadence": {}}) == ("announcements", "papers", "github", "releases")
 
     def test_the_real_config_names_only_real_legs(self):
         cadence = worker.load_config()["cadence"]
@@ -337,7 +337,8 @@ class TestAnArticleIsScoredTheFiringItIsFound:
 
         saw = {}
 
-        def spy(s, prompt_version, budget=None, config_path=None):
+        def spy(s, prompt_version, budget=None, config_path=None,
+                exclude_source_files=()):
             saw["pending"] = pending_urls(s, prompt_version)
             return {"pending": len(saw["pending"]), "classified": 0,
                     "skipped_for_budget": 0, "failures": [], "cost_usd": 0.0,
@@ -400,3 +401,81 @@ class TestPhaseSixPublishesTheDigest:
 
         assert sorted(d.id for d in session.scalars(select(m.Digest))) == ids
         assert len(ids) == len(digest_mod.KINDS)
+
+
+class TestTheKillSwitch:
+    """`enabled: false` has to mean off, however the worker is invoked.
+
+    The reason to reach for this switch is that a leg is producing something
+    wrong, so any route that quietly keeps it running makes the switch a
+    suggestion. Firing 1's full sweep and the manual trigger's explicit leg
+    selection are both such routes, and both are pinned here.
+    """
+
+    def test_a_disabled_leg_does_not_run(self):
+        assert "papers" not in worker.due_legs(
+            1, {"enabled": {"papers": False}, "cadence": {}})
+
+    def test_a_disabled_leg_is_not_revived_by_an_explicit_selection(self):
+        """The manual trigger sends an explicit leg list. It must not be able
+        to start a leg the config says is off."""
+        assert worker.due_legs(
+            2, {"enabled": {"papers": False}, "cadence": {}},
+            only=("papers",)) == ()
+
+    def test_a_disabled_leg_is_not_revived_by_the_first_firing_sweep(self):
+        assert "github" not in worker.due_legs(
+            1, {"enabled": {"github": False}, "cadence": {"github": 7}})
+
+    def test_a_leg_absent_from_the_map_stays_on(self):
+        """Adding the switch must not silently disable the legs predating it."""
+        assert worker.due_legs(
+            1, {"enabled": {"releases": False}, "cadence": {}}) == (
+                "announcements", "papers", "github")
+
+    def test_the_committed_config_names_only_real_legs(self):
+        enabled = worker.load_config().get("enabled", {})
+        assert set(enabled) <= set(worker.LEGS)
+        assert all(isinstance(v, bool) for v in enabled.values())
+
+
+class TestTheKillSwitchStopsSpendNotJustFetching:
+    """A leg's rows outlive the firing that fetched them.
+
+    Stopping the fetch alone leaves the previously-ingested corpus in bronze to
+    be classified and paid for on the next firing -- which is exactly what the
+    operator who looked at the output and switched the leg off was trying to
+    prevent.
+    """
+
+    def test_a_disabled_leg_s_corpus_is_named_for_exclusion(self):
+        assert worker.dead_corpora({"enabled": {"releases": False}}) == (
+            "github_releases",)
+
+    def test_an_enabled_leg_excludes_nothing(self):
+        assert worker.dead_corpora({"enabled": {"releases": True}}) == ()
+
+    def test_the_committed_config_excludes_nothing(self):
+        assert worker.dead_corpora(worker.load_config()) == ()
+
+    def test_cadence_alone_never_excludes_a_corpus(self):
+        """A leg not due this firing still has rows that must be classified as
+        usual -- `enabled` and `cadence` answer different questions."""
+        assert worker.dead_corpora({"cadence": {"releases": 7}}) == ()
+
+    def test_a_disabled_leg_s_rows_are_not_classified(self, session):
+        from app.pipeline import classify
+
+        session.add_all([
+            m.RawArticle(url="https://openai.com/a", payload={}, content_hash="h1",
+                         source_file="research/docs/announcements.json"),
+            m.RawArticle(url="https://github.com/o/r/releases/tag/v1", payload={},
+                         content_hash="h2", source_file="github_releases"),
+        ])
+        session.commit()
+
+        assert len(classify.pending_urls(session, "v7")) == 2
+        assert classify.pending_urls(
+            session, "v7",
+            worker.dead_corpora({"enabled": {"releases": False}}),
+        ) == ["https://openai.com/a"]

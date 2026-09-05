@@ -14,6 +14,7 @@ publication date read from the page or the slug.
 from __future__ import annotations
 
 import gzip
+import hashlib
 import io
 import json
 import html
@@ -560,8 +561,12 @@ def fetch_wayback(url: str, retries: int = 4,
         RuntimeError: If every attempt fails.
     """
     CACHE.mkdir(parents=True, exist_ok=True)
-    key = "wb_" + re.sub(r"[^a-zA-Z0-9]+", "_", url)[:140]
-    cached = CACHE / f"{key}.html"
+    # The readable part is truncated and collapses punctuation, so two distinct
+    # queries can land on one file: `...&limit=5` and `...&limit=-5` both
+    # render as `_limit_5`. That is not hypothetical -- it silently served the
+    # stale response while this module's snapshot ordering was being fixed. The
+    # digest makes the key faithful; the prefix keeps the directory readable.
+    cached = _wayback_cache_path(url)
     if cached.exists() and _cache_is_fresh(cached, max_age_hours):
         return cached.read_text(errors="replace")
 
@@ -580,6 +585,30 @@ def fetch_wayback(url: str, retries: int = 4,
                 raise RuntimeError(f"wayback fetch failed: {url}: {exc}") from exc
             time.sleep(WAYBACK_DELAY_SECONDS * (2**attempt))
     raise RuntimeError(f"wayback fetch failed: {url}")
+
+
+def _wayback_cache_path(url: str) -> Path:
+    """The cache file `fetch_wayback` uses for a URL.
+
+    Args:
+        url: The fetched URL.
+
+    Returns:
+        Path to the cache file, which may not exist.
+    """
+    key = ("wb_" + re.sub(r"[^a-zA-Z0-9]+", "_", url)[:120]
+           + "_" + hashlib.sha1(url.encode()).hexdigest()[:10])
+    return CACHE / f"{key}.html"
+
+
+def _forget_wayback(url: str) -> None:
+    """Drop a cached response that turned out to be unusable.
+
+    Args:
+        url: The fetched URL.
+    """
+    _wayback_cache_path(url).unlink(missing_ok=True)
+
 
 
 def from_wayback_cdx(
@@ -686,6 +715,263 @@ def from_wayback_cdx(
             }
         )
     return out
+
+
+# Recovery, not discovery. `from_wayback_cdx` above finds articles a blocked
+# site never listed anywhere; this upgrades articles we *did* find but hold only
+# a summary of. Selected per lab by `backfill: wayback` in sources.yaml.
+#
+# It runs inside the fetch because that is the only place it survives. It used
+# to live in `backfill_openai.py`, a separate script editing announcements.json
+# after the fact, and `collect()` rewrites that file from scratch: the recovery
+# landed on 2026-09-02 (141 of 152 OpenAI articles, mean 9,105 characters) and
+# the next fetch, one day later, overwrote every one of them back to a
+# 200-character RSS blurb. Nothing failed and nothing said anything. The whole
+# OpenAI corpus -- 59% of the register, and the lab whose announcements move
+# the most tickers -- was scored on its own meta descriptions for two days.
+#
+# `skip` removes already-settled articles before they reach here, which keeps
+# the steady-state cost near zero -- and is also this leg's real limitation.
+# An article is classified in the same firing that discovers it, so it settles
+# that night. If the archive has not crawled it yet -- routine for anything
+# published in the last few days -- it is scored on its blurb and never
+# revisited, because it never appears in `items` again. Enrichment gets exactly
+# one attempt per article, inside a 48-hour discovery window. The unrecovered
+# ones are returned for the caller to record, which is the only reason this is
+# visible at all; closing it means either Save Page Now or not settling a
+# summary-only article, and the second implies a re-score (decisions.md D55).
+
+
+# CDX caps what one query may return. Named because it is compared against,
+# not just sent: a response of exactly this many rows was truncated, and
+# truncation is indistinguishable from absence at the API.
+#
+# Raised from 6,000 after measuring the real shape: `openai.com/index*` over a
+# 3-month window returns ~5,100 rows for ~870 distinct URLs -- 5.9 snapshots
+# per article, and 85% of the old ceiling. A modest rise in crawl density, or
+# `window_months` going from 3 to 4, would have truncated at the SURT-sorted
+# tail, silently dropping every slug from roughly `t` onward. Headroom is the
+# cheap half of the fix; the warning is the half that matters.
+CDX_ROW_LIMIT = 20000
+
+
+def _cdx_json(query: str) -> list[list[str]] | None:
+    """Fetch a CDX query and parse it, tolerating a partial response.
+
+    The archive intermittently closes the connection mid-array: observed live
+    on `openai.com/index*`, a 114,899-byte body ending `...","20260625092811"],`
+    with no closing bracket, where the same query a minute later returned
+    141,565 bytes and parsed. `json.loads` raises on that, which in
+    `collect()` would abort a whole seven-lab fetch over one flaky read.
+
+    The truncated body is **removed from the cache** before returning. Without
+    that, `fetch_wayback` replays it for the whole discovery TTL and one bad
+    read becomes hours of them -- a poisoned cache being strictly worse than a
+    cold one.
+
+    Args:
+        query: A CDX API URL.
+
+    Returns:
+        Rows including the header row, or None if the response was unusable.
+    """
+    try:
+        return json.loads(fetch_wayback(query, max_age_hours=DISCOVERY_MAX_AGE_HOURS))
+    except ValueError:
+        _forget_wayback(query)
+        print(f"    WARN CDX returned an unparseable body: {query[:110]}",
+              flush=True)
+        return None
+    except RuntimeError as exc:
+        print(f"    WARN CDX fetch failed: {exc}", flush=True)
+        return None
+
+
+def _archive_key(url: str) -> str:
+    """Normalise a URL for comparison against a CDX row.
+
+    The archive's `original` column varies in scheme, `www.` and trailing
+    slash against the same page in our register, so neither side is compared
+    raw. The host is kept, unlike the OpenAI-only version this replaces, so
+    two labs cannot collide on a shared path.
+
+    Args:
+        url: Article or CDX URL.
+
+    Returns:
+        Lowercased `host/path`, without scheme, `www.`, query or trailing slash.
+    """
+    bare = re.sub(r"^https?://(www\.)?", "", url.split("?", 1)[0])
+    return bare.strip("/").lower()
+
+
+def _cdx_prefixes(urls: list[str]) -> list[str]:
+    """The smallest set of CDX wildcard patterns covering these URLs.
+
+    Derived from the URLs themselves rather than configured, so a lab that
+    publishes under a second path is covered without a config edit. OpenAI is
+    the live case: the script this replaces queried `openai.com/index*` alone
+    and could never have recovered an `openai.com/academy/*` article.
+
+    Args:
+        urls: Article URLs needing recovery.
+
+    Returns:
+        Sorted `host/segment*` patterns, one bulk query each.
+    """
+    prefixes = set()
+    for url in urls:
+        parts = _archive_key(url).split("/")
+        prefixes.add(f"{parts[0]}/{parts[1]}*" if len(parts) > 1 else f"{parts[0]}*")
+    return sorted(prefixes)
+
+
+def _exact_snapshot(url: str) -> str | None:
+    """Look one URL up in CDX directly, for the misses of the bulk query.
+
+    The wildcard index lags the exact one. Measured on the 18 OpenAI articles
+    the bulk `openai.com/index*` query reported unarchived: `path-to-astra`
+    has a snapshot from 2026-09-03 that the wildcard query does not return at
+    any date bound or row limit, while an exact lookup finds it immediately.
+    The other 17 really are unarchived, so this is one extra request per
+    genuine miss, not per article -- and a miss is a handful a night once the
+    corpus is caught up.
+
+    Trusting the bulk query alone would have left the substantive half of a
+    frontier launch on a 221-character blurb while reporting it as simply not
+    archived yet, which is a wrong answer that looks like a correct one.
+
+    Args:
+        url: Article URL.
+
+    The limit is **negative on purpose**. CDX returns rows oldest-first, so a
+    positive `limit` returns the *first* N snapshots ever taken, not the last:
+    measured on `openai.com/index/introducing-gpt-5` (309 snapshots),
+    `limit=5` returns August 2025 crawls and `limit=-5` returns August 2026
+    ones. Taking the oldest is not merely stale -- an article's earliest crawls
+    are the ones most likely to have caught a consent wall or a pre-render
+    shell, and such a page clears the "longer than the summary" guard easily,
+    so chrome would be stored as `full_text_archived` and quoted from. The bulk
+    path takes the newest of what it is given; this must agree with it.
+
+    Args:
+        url: Article URL.
+
+    Returns:
+        Newest snapshot timestamp, or None if the archive has none.
+    """
+    query = (
+        f"{WAYBACK_CDX}?url={urllib.parse.quote(_archive_key(url))}"
+        "&output=json&filter=statuscode:200&fl=original,timestamp&limit=-5"
+    )
+    body = _cdx_json(query)
+    if body is None:
+        return None
+    return max((r[1] for r in body[1:]), default=None)
+
+
+def enrich_wayback(lab: dict, articles: list[dict], cutoff: datetime) -> list[dict]:
+    """Upgrade a lab's summary-only articles to archived full text, in place.
+
+    A snapshot shorter than the summary we already hold is a redirect stub or
+    an error page, never an improvement, and is refused — the same guard the
+    OpenAI script applied, kept because it fires on real snapshots.
+
+    Args:
+        lab: Lab entry from sources.yaml.
+        articles: The lab's fetched articles. Modified in place; entries that
+            are upgraded gain `archive_snapshot` and `text_source:
+            full_text_archived`.
+        cutoff: Earliest publication date this fetch covers; bounds the CDX
+            query, since no snapshot older than the window can belong to an
+            article inside it.
+
+    Returns:
+        One entry per article left on its summary, for the caller to record.
+        Not an error: the archive lags publication by days, so the newest
+        articles are routinely absent. Returned rather than logged because a
+        lab silently stuck on summaries is exactly the failure this exists to
+        end.
+    """
+    targets = [a for a in articles if a.get("text_source") == "rss_summary"]
+    if not targets:
+        return []
+
+    index: dict[str, str] = {}
+    for prefix in _cdx_prefixes([a["url"] for a in targets]):
+        # Deliberately NOT `collapse=urlkey`. It would cut the response from
+        # ~5,100 rows to ~870 and remove any truncation worry -- and it keeps
+        # the *first* row of each group, which, since CDX returns rows
+        # oldest-first, is the OLDEST snapshot of every article. That is the
+        # same defect `_exact_snapshot` carries a negative limit to avoid, and
+        # it is worse here because it would apply to every article rather than
+        # to the handful the bulk query misses. Confirmed live: with collapse,
+        # jalapeno-first-results resolved to a 2026-08-25 snapshot instead of
+        # the 2026-08-29 one.
+        #
+        # So all snapshots come back and `max()` below picks the newest. The
+        # cost is a row count that must be watched rather than assumed, which
+        # is what CDX_ROW_LIMIT and the warning under it are for.
+        query = (
+            f"{WAYBACK_CDX}?url={urllib.parse.quote(prefix)}"
+            f"&output=json&filter=statuscode:200"
+            f"&from={cutoff.strftime('%Y%m%d')}"
+            f"&fl=original,timestamp&limit={CDX_ROW_LIMIT}"
+        )
+        body = _cdx_json(query)
+        if body is None:
+            # Not fatal, and not silent: every article for this prefix falls
+            # through to its own exact lookup below, which is slower and
+            # correct rather than fast and absent.
+            continue
+        rows = body[1:]
+        if len(rows) >= CDX_ROW_LIMIT:
+            # Truncation is silent at the API. Saying so is the difference
+            # between "the archive lacks these" and "we stopped asking".
+            print(f"    WARN {prefix}: CDX returned the full {CDX_ROW_LIMIT} "
+                  f"rows; results are truncated and some articles will fall "
+                  f"through to an exact lookup", flush=True)
+        for original, timestamp in rows:
+            key = _archive_key(original)
+            if key not in index or timestamp > index[key]:
+                index[key] = timestamp
+
+    unresolved = []
+    for article in targets:
+        timestamp = index.get(_archive_key(article["url"]))
+        if timestamp is None:
+            timestamp = _exact_snapshot(article["url"])
+        if timestamp is None:
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": "no archive snapshot; still on the RSS summary",
+            })
+            continue
+
+        snapshot = f"http://web.archive.org/web/{timestamp}id_/{article['url']}"
+        try:
+            text = strip_html(fetch_wayback(snapshot))
+        except RuntimeError as exc:
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": f"archive fetch failed: {exc}",
+            })
+            continue
+
+        if len(text) <= len(article["text"]):
+            unresolved.append({
+                "kind": "backfill",
+                "name": article["url"],
+                "reason": "archived page is no longer than the summary",
+            })
+            continue
+
+        article["text"] = text[:24000]
+        article["text_source"] = "full_text_archived"
+        article["archive_snapshot"] = snapshot
+    return unresolved
 
 
 # A model's spec page carries no publication date -- only a knowledge cutoff,
@@ -991,13 +1277,27 @@ def collect() -> list[dict]:
 
     articles = []
     for lab in config["labs"]:
+        found_for_lab = []
         for channel in channels(lab):
             method = METHODS.get(channel["method"])
             if not method:
                 sys.exit(f"{lab['id']}: unknown method {channel['method']!r}")
             found = method(channel, cutoff)
             print(f"{lab['label']:<12} {channel['method']:<18} {len(found)} announcements")
-            articles.extend(found)
+            found_for_lab.extend(found)
+
+        # Recovery runs before the articles leave the loop, so the file this
+        # function overwrites is written with the full text already in it.
+        # Anything done to announcements.json afterwards does not survive the
+        # next fetch -- which is exactly how the OpenAI corpus regressed.
+        if lab.get("backfill") == "wayback":
+            missed = enrich_wayback(lab, found_for_lab, cutoff)
+            recovered = sum(
+                1 for a in found_for_lab if a["text_source"] == "full_text_archived"
+            )
+            print(f"{lab['label']:<12} {'backfill:wayback':<18} "
+                  f"{recovered} recovered, {len(missed)} left on summaries")
+        articles.extend(found_for_lab)
 
     articles.sort(key=lambda a: a["date"], reverse=True)
     return articles

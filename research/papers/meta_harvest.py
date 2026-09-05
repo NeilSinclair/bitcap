@@ -44,14 +44,12 @@ import argparse
 import html as html_mod
 import json
 import re
-import time
-import urllib.error
-import urllib.request
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pathlib import Path
 
+import fetch_cache
 from arxiv_resolve import resolve_title
 
 ROOT = Path(__file__).parent.parent.parent
@@ -117,13 +115,17 @@ class Paper:
     truncated: bool = False
 
 
-def fetch(url: str, pause: float = 1.5, retries: int = 3, user_agent: str | None = UA) -> str:
-    """Fetch a URL, caching to disk so re-runs are free and idempotent.
+def fetch(url: str, retries: int | None = None, user_agent: str | None = UA) -> str:
+    """Fetch a URL through the shared cache, throttle and retry policy.
+
+    This harvester fetches `arxiv.org/html/` as well as `ai.meta.com`, so its
+    private 1.5s pause was undercutting arXiv's 3s guidance whenever it went
+    for a paper. The throttle is now shared and keyed on host
+    (`fetch_cache.py`, docs/decisions.md D53).
 
     Args:
         url: Absolute URL.
-        pause: Seconds to wait after a live fetch.
-        retries: Attempts before giving up.
+        retries: Attempts before giving up. None takes the configured value.
         user_agent: UA string to send. `None` sends no override -- confirmed
             live (and already relied on by `fetch_announcements.py`) that
             `ai.meta.com` blocks any browser-style UA with a 400 and accepts
@@ -136,25 +138,9 @@ def fetch(url: str, pause: float = 1.5, retries: int = 3, user_agent: str | None
         RuntimeError: If every attempt fails. The caller decides whether one
             dead source aborts the whole run (it does not, here).
     """
-    CACHE.mkdir(parents=True, exist_ok=True)
-    key = re.sub(r"[^A-Za-z0-9]+", "_", url).strip("_")[:150] + ".html"
-    path = CACHE / key
-    if path.exists():
-        return path.read_text(encoding="utf-8")
-
-    headers = {"User-Agent": user_agent} if user_agent else {}
-    for attempt in range(retries):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            body = urllib.request.urlopen(req, timeout=60).read().decode("utf-8", "replace")
-            path.write_text(body, encoding="utf-8")
-            time.sleep(pause)
-            return body
-        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
-            if attempt == retries - 1:
-                raise RuntimeError(f"fetch failed: {url}: {exc}") from exc
-            time.sleep(2**attempt)
-    raise RuntimeError(f"fetch failed: {url}")
+    return fetch_cache.fetch(
+        url, cache_dir=CACHE, suffix=".html", user_agent=user_agent, retries=retries
+    )
 
 
 def list_paper_candidates(years: list[int], max_pages: int = 20) -> list[tuple[str, str]]:

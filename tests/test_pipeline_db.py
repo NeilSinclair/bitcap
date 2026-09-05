@@ -46,16 +46,62 @@ def session():
 
 
 def test_corpus_fully_loaded(session):
-    # Every corpus article loads, and every loaded article is classified. The
-    # second half is the one that catches something: scoring was once
-    # deactivated for every lab added after the original three (D10), and their
-    # articles loaded with no Classification row at all. The per-run and
+    # Every corpus article loads, and every article the score cache covers is
+    # classified. The second half is the one that catches something: scoring was
+    # once deactivated for every lab added after the original three (D10), and
+    # their articles loaded with no Classification row at all. The per-run and
     # per-month ceilings in config/pipeline.yaml replaced that switch, so every
     # lab is scored now, and an unclassified article means a real gap -- either
     # a classifier failure or an article ingested but never sent to one.
+    #
+    # This asserted `== expected` on both counts until 2026-09-05, which made a
+    # frozen artifact responsible for tracking a moving one. `announcements.json`
+    # rolls forward on every fetch; `announcement_scores/v7/` is a committed
+    # snapshot that by definition cannot contain an article discovered after it
+    # was written. The discourse channel (D47) found the GPT-6 Astra forum post
+    # the day after, and the suite went red for a pipeline that was working --
+    # the same failure mode `corpus_size()` was introduced to kill, one layer up.
+    # `test_scores_reconcile_with_register` already reasons this way about the
+    # register; this test now does too.
     expected = corpus_size()
     assert session.scalar(select(func.count()).select_from(m.Article)) == expected
-    assert session.scalar(select(func.count()).select_from(m.Classification)) == expected
+
+    # `load_classifications` counts the corpus URLs it found no cache file for.
+    # Using the loader's own number keeps the assertion exact: every article the
+    # cache covers must reach a Classification row, and a drop between the two
+    # is still a hard failure.
+    run = session.scalars(
+        select(m.PipelineRun).where(m.PipelineRun.kind == "load")
+        .order_by(m.PipelineRun.id.desc())
+    ).first()
+    uncached = run.stats["classifications"]["missing"]
+    assert session.scalar(select(func.count()).select_from(m.Classification)) == (
+        expected - uncached
+    )
+
+    # And the gap must stay small. Without this bound the assertion above moves
+    # down in lockstep with any number of unscored articles and reports success
+    # while the corpus rots: `budget.per_run_usd` trips mid-firing, sixty new
+    # articles never get a cache file, `missing` counts all sixty, and the suite
+    # stays green on a pipeline that stopped scoring a quarter of the register.
+    # Measured 2026-09-05: exactly 1 (the GPT-6 Astra forum post, D47), so 5
+    # leaves room for a normal week's discovery without tolerating a stall.
+    assert uncached <= 5, (
+        f"{uncached} corpus articles have no v7 classification; the score cache "
+        "has fallen behind the corpus by more than ordinary discovery explains"
+    )
+
+    # The bite the count assertion used to carry, kept explicitly rather than
+    # left implicit in an equality: D10 was a whole lab silently unscored, which
+    # a tolerated gap would now hide. Every lab in the corpus must be scored.
+    labs_loaded = set(session.scalars(select(m.Article.lab).distinct()))
+    labs_scored = set(
+        session.scalars(
+            select(m.Article.lab).join(m.Classification).distinct()
+        )
+    )
+    assert labs_loaded == labs_scored, f"labs loaded but never scored: {labs_loaded - labs_scored}"
+
     assert session.scalar(select(func.count()).select_from(m.Holding)) == 26
 
 

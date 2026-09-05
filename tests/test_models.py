@@ -115,6 +115,11 @@ def test_every_table_round_trips(session):
         m.Connection(article_id=art.id, isin="US1", route="mechanism", via="mech",
                      direction="positive", strength=1.0, article_sign="positive",
                      holding_sign="positive", holding_why="w"),
+        # expires_at NULL is the meaningful case: an immutable arXiv id, cached
+        # forever. The nullable column has to survive a round trip, because
+        # "never expires" and "expired" are one typo apart (D53).
+        m.FetchCache(url="https://arxiv.org/html/2501.00001v1", body="<html/>",
+                     expires_at=None),
     ])
     session.commit()
 

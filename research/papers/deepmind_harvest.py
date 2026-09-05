@@ -26,12 +26,12 @@ import json
 import re
 import sys
 import time
-import urllib.error
-import urllib.request
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
+
+import fetch_cache
 
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(ROOT / "research" / "announcements"))
@@ -102,20 +102,19 @@ class Paper:
     truncated: bool = False
 
 
-def fetch(url: str, pause: float = 1.5, retries: int = 3) -> str:
-    """Fetch a URL, caching to disk so re-runs are free and idempotent.
+def fetch(url: str, retries: int | None = None) -> str:
+    """Fetch a URL through the shared cache, throttle and retry policy.
 
-    Retries with exponential backoff on transport failure, same shape as
-    `fetch_announcements.py::fetch` -- a live run against arXiv's `/html/`
-    endpoint hit a 403 mid-batch (a rate-limit response, not a real 404;
-    DeepSeek's own arXiv harvester paces requests at 3s apiece for the same
-    reason), which previously crashed the whole run instead of being one
-    paper's problem.
+    The 403-mid-batch this used to guard against was arXiv rate-limiting us,
+    which is the same failure that took out four papers sources on 2026-09-04.
+    The retry that was added here is now shared, along with the throttle that
+    should have prevented needing it -- this harvester's private 1.5s pause
+    applied to `arxiv.org/html/` fetches too (`fetch_cache.py`,
+    docs/decisions.md D53).
 
     Args:
         url: Absolute URL.
-        pause: Seconds to wait after a live fetch.
-        retries: Attempts before giving up.
+        retries: Attempts before giving up. None takes the configured value.
 
     Returns:
         Decoded response body.
@@ -124,24 +123,9 @@ def fetch(url: str, pause: float = 1.5, retries: int = 3) -> str:
         RuntimeError: If every attempt fails. The caller decides whether one
             dead source aborts the whole run (it does not, here).
     """
-    CACHE.mkdir(parents=True, exist_ok=True)
-    key = re.sub(r"[^A-Za-z0-9]+", "_", url).strip("_")[:150] + ".html"
-    path = CACHE / key
-    if path.exists():
-        return path.read_text(encoding="utf-8")
-
-    for attempt in range(retries):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            body = urllib.request.urlopen(req, timeout=60).read().decode("utf-8", "replace")
-            path.write_text(body, encoding="utf-8")
-            time.sleep(pause)
-            return body
-        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
-            if attempt == retries - 1:
-                raise RuntimeError(f"fetch failed: {url}: {exc}") from exc
-            time.sleep(2**attempt)
-    raise RuntimeError(f"fetch failed: {url}")
+    return fetch_cache.fetch(
+        url, cache_dir=CACHE, suffix=".html", user_agent=UA, retries=retries
+    )
 
 
 def list_publication_urls(months: int) -> list[tuple[str, str]]:

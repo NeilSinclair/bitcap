@@ -17,11 +17,10 @@ from __future__ import annotations
 
 import html as html_mod
 import re
-import time
-import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
+
+import fetch_cache
 
 ROOT = Path(__file__).parent.parent.parent
 CACHE = ROOT / "research" / "docs" / "arxiv_cache"
@@ -42,15 +41,18 @@ _STOPWORDS = {
 }
 
 
-def fetch(url: str, pause: float = 3.0, retries: int = 3) -> str:
-    """Fetch a URL, caching to disk so re-runs are free and idempotent.
+def fetch(url: str, retries: int | None = None) -> str:
+    """Fetch a URL through the shared cache, throttle and retry policy.
+
+    The pacing used to live here as a 3.0s pause with a 1s/2s backoff, which
+    meant a 429 was retried *faster* than the rate this module had already
+    decided was polite, and four other harvesters each held their own
+    uncoordinated copy of the same limit. Both now live in
+    `fetch_cache.py` (docs/decisions.md D53).
 
     Args:
         url: Absolute URL.
-        pause: Seconds to wait after a live fetch -- defaults to arXiv's own
-            rate guidance, since every caller of this function is an arXiv
-            URL.
-        retries: Attempts before giving up.
+        retries: Attempts before giving up. None takes the configured value.
 
     Returns:
         Decoded response body.
@@ -59,24 +61,9 @@ def fetch(url: str, pause: float = 3.0, retries: int = 3) -> str:
         RuntimeError: If every attempt fails. The caller decides whether one
             dead source aborts the whole run.
     """
-    CACHE.mkdir(parents=True, exist_ok=True)
-    key = re.sub(r"[^A-Za-z0-9]+", "_", url).strip("_")[:150] + ".xml"
-    path = CACHE / key
-    if path.exists():
-        return path.read_text(encoding="utf-8")
-
-    for attempt in range(retries):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            body = urllib.request.urlopen(req, timeout=60).read().decode("utf-8", "replace")
-            path.write_text(body, encoding="utf-8")
-            time.sleep(pause)
-            return body
-        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
-            if attempt == retries - 1:
-                raise RuntimeError(f"fetch failed: {url}: {exc}") from exc
-            time.sleep(2**attempt)
-    raise RuntimeError(f"fetch failed: {url}")
+    return fetch_cache.fetch(
+        url, cache_dir=CACHE, suffix=".xml", user_agent=UA, retries=retries
+    )
 
 
 def arxiv_query(query_expr: str, max_results: int = 5) -> list[dict]:

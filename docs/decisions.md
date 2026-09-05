@@ -4412,6 +4412,206 @@ onto the uncommitted digests work, while that work is in flight. Held as a
 coordination call, not an oversight — until it lands, the canonical link is
 recorded but reaches no reader.
 
+---
+
+## D52 — Release notes as a fourth leg, and first mentions as a pass over bronze (2026-09-04)
+
+**Decision.** `releases` is a leg: one source per GitHub org, stage 4, ranked on
+stars, cursor in `source_state.watermark`, documents in `raw_articles` with
+`source_file: github_releases`. `research/corpus/first_mention.py` is a
+deterministic pass over the same table. Both switchable off with one line.
+
+**Why the source earns its place.** `openai/codex` `rust-v0.153.1` announced
+*"support for configuring GPT-6-Astra through the API without changing the
+default model or showing it in the model picker"*, and `openai-python` v3.8.0
+shipped `gpt-6-astra` the same day. The announcements corpus carried one bare
+"Astra" mention in an August safety post -- no model name, no catalog fact. A
+model deliberately hidden from the picker is not something a lab blogs about,
+so the announcements leg structurally cannot see it. On the first real firing
+the same pass also found `gpt-5.6-luna` (the Agents SDK's new default model)
+and, from Google DeepMind, `gemma-3` and `gemma-4` -- *"Add Gemma 4."* in
+`google-deepmind/gemma` v4.0.0, 2026-05-13, and nowhere in any announcement.
+
+**Ranking is stars and nothing else.** Commit volume was tried first and the
+data rejected it: a lab's most newsworthy repositories can be its least
+committed, because a code dump pushed by CI looks dead and is news.
+`x-algorithm` (32,610 stars) carries 19 commits, all from a CI account; a
+commit ranking puts `xai-sdk-python` (565 stars) above it. Commits survive as
+displayed evidence only.
+
+**The ranking reads bronze, and the star count comes from a live listing.**
+`raw_github_repos` already holds every repository's history, description and
+stars, so the ranking needs no file and no separate metadata fetch. But
+bronze's star count is only as fresh as the last history walk -- which happens
+when `pushed_at` moves, on a leg running at cadence 3 -- so a repository that
+stops being committed to would rank for ever on a frozen number, and
+`deepseek-harness` gained 200,000 stars in the weeks this was built. The
+releases leg therefore lists each org itself, one cheap REST chain, and
+overlays `stars` and `created_at` onto the stored payload. The github leg is
+untouched.
+
+**`created_at` cannot be inferred.** "No commit before X" means only "dormant
+until X", so first-commit-in-window reports `openai/whisper` (2022) and
+`openai/CLIP` (2020) as created in 2026. The error is not noise: it lands on
+exactly the famous quiet repositories a star ranking floats to the top. A
+repository whose payload predates the listing overlay reports `age: unknown`
+rather than a guess.
+
+**The cursor is the watermark, not a file.** `openai/codex` cut 240 releases in
+90 days, so the unit is "releases since the last run". An earlier version of
+this work kept that cursor in `release_cursors.json` beside a flock file. On
+this deployment that is not a stylistic difference -- the container has no disk
+(D31), so the file resets to the image copy every firing, the cursor never
+advances past the first backfill, and the leg re-fetches the same few releases
+for ever while reporting success. Moving it into `source_state` also removed
+the lock, the atomic-write helpers and the two-writer problem they existed to
+solve: one writer, one store.
+
+**Watched per org, not globally.** Sources are per org so they fail
+independently, which means each ranks only its own repositories. That is also
+the better cut: a single global top-N is dominated by OpenAI and Anthropic, and
+xAI (8 repositories in the window) and meta-llama (8) would never appear at
+all. The first firing ran at 40 per org and ingested 380 documents -- roughly
+$10 to classify against a $3 per-run ceiling. The budget guard handled it
+correctly, but `releases_watch` is now 10, which is ~80 repositories.
+
+**First mention is a corpus pass, not a releases feature.** The GPT-6-Astra
+release was scored `integration`, low impact, `is_signal: false` -- correct as
+a reading of the document, which announces a configuration option. Its
+significance is that the string had never appeared before, and firstness is a
+property of the corpus rather than of any document, so no per-document prompt
+can recover it however it is worded. One query over `raw_articles`, no LLM
+call, and it gets stricter as sources are added rather than noisier.
+
+**What it honestly measures.** "First" means first *in our corpus*, not in the
+world -- the archive reaches back six months, so a retrospective reference to
+an old model reads as new. `lab` is whose document mentioned it, not who owns
+it: `gemini-3.5` first appears on an Anthropic page because Anthropic
+benchmarked against it. And the regex catches a new version of a family we
+know; a wholly novel product name with no version number is invisible to it.
+That gap is where an LLM would earn its place later.
+
+**Kill switch.** `enabled:` in `pipeline.yaml` outranks cadence and an explicit
+`--legs`, including the manual trigger and firing 1's full sweep. It also
+excludes a disabled leg's already-ingested rows from the classification work
+list: a leg's rows outlive the firing that fetched them, so stopping the fetch
+alone would leave the operator who switched the leg off still paying to
+classify the output they switched it off over.
+
+---
+
+## D53 — Classification reads bronze, not a corpus file (2026-09-04)
+
+**Decision.** `classify_new` takes its article text from `raw_articles`, and
+`load_classifications` takes its URL list from there too. Both previously read
+`research/docs/announcements.json`.
+
+**Two failures, one cause.** `raw_articles` now carries more than one source
+file, and filtering a single file against a work list built from the whole
+table silently drops every row from any other file. Those rows stay pending,
+are re-listed every firing, never cost anything and never produce a
+classification -- while the leg reports a healthy ingest. Downstream,
+`load_classifications` had the same shape: releases would be scored, paid for
+and cached on disk but never loaded, `transform` would count them under
+`no_classification`, and the next firing would serve every one from cache for
+free and report `classified: N, cost_usd: 0.0`. Indistinguishable from a
+healthy incremental run, for ever.
+
+**It also closes an acknowledged hole.** `adapters._settled_urls` documents
+that `classify_new` read text from a file which "on a container with no disk
+resets to the image copy every firing", and works around it by refetching pages
+that are stored but unclassified. Reading the payload removes the hazard rather
+than routing around it.
+
+**And the work list is ordered.** `pending_urls` had no `ORDER BY`, so under a
+budget ceiling *which* articles were paid for was whatever the engine returned
+-- and differently arbitrary on the sqlite the tests use and the Postgres that
+runs.
+
+---
+
+## D54 — What the review of the port changed (2026-09-04)
+
+Ten findings on the releases leg, four major, all fixed. Three of them share a
+shape worth naming: the leg introduced the system's **first watermark that
+gates future fetches**, and every existing habit around watermarks was built for
+ones that do not.
+
+**The cursor was durable a phase before the documents it described.**
+`orchestrator._record` commits after each source, which makes the advanced
+`cursors` dict permanent as soon as the adapter returns; the release rows were
+landed in the worker's phase 2 and committed later. A failure in between -- the
+register load, a redeploy, an OOM kill during a 9-30 minute firing -- rolls the
+rows back and leaves the cursor advanced, and `new_releases` then filters those
+releases out for ever as already-seen. They would not appear in `truncated`, no
+alert would name them, and a missing release is indistinguishable from a quiet
+week.
+
+The github leg is immune because it is not cursor-gated: it re-derives from
+`pushed_at` against bronze and is self-healing. Fixed by landing the documents
+inside `fetch_releases`, in the session the orchestrator is about to commit, so
+rows and cursor become durable together. The failure direction is safe too --
+raising after landing leaves the watermark alone, and the url-keyed upsert
+absorbs the refetch.
+
+**An org whose every repository failed reported success.** Per-repository
+`try/except` is right, but the org-level result was then an empty success:
+`record_success` reset `consecutive_failures` to zero, no alert rule reads
+`repo_failures`, and `source_down` keys only on the streak. A token rotated to
+one without the right scope 404s on all of them, so the leg would sit
+permanently dead behind eight green rows. All-failed now raises, which is the
+same reasoning the `if not listing` guard already applied one level up.
+
+**The change that actually spends money had no test.** `classify_new` reading
+payloads from bronze -- the whole of D53 -- was exercised by nothing: one test
+passed `articles_path` (the legacy file branch), one returned at the `pending:
+0` short-circuit, and the worker tests monkeypatch `classify_new` away. Revert
+it and the suite stayed green while every release row sat pending for ever.
+Three tests now put `raw_articles` rows in front of it and assert the payloads
+reach the scorer.
+
+**The `ORDER BY` was on the wrong list.** `pending_urls` was ordered, but the
+articles handed to the scorer were rebuilt with an unordered
+`select(...).where(url.in_(pending))` -- and that is the list the scorer slices
+when the budget binds. The ordering claim in D53 was not delivered until the
+rebuild followed `pending` order.
+
+**A deterministic quote could splice two fields together.** `load_corpus`
+joined title and body for non-release documents, and `quote_for` took a
+±140-character window around the identifier in the joined string -- so a name
+near the end of a title produced a quote running past the join into the body, a
+string appearing in neither field. This repository already has
+`research/announcements/verbatim.py` because that splice was seen once from the
+model; the deterministic path must not reproduce it. Fields are now kept apart
+and a quote is cut from the single field the identifier is in. The test that
+claimed to check this asserted the quote was a substring of the joined string it
+had just been cut from -- true by construction, green either way.
+
+**Dead weight removed rather than kept for later.** `config/entities.yaml`
+still carried a `corpora:` block from the pre-port file design, naming a file
+this port deliberately stopped producing, and nothing read it -- while the rule
+it documented had moved into `first_mention.text_fields`. An operator following
+the file's own instruction would have changed nothing. `rank_repos.row` computed
+twelve fields for three consumers; the activity evidence is gone until there is
+a page that shows it, and the null-login rule it needed still lives in
+`aggregate_github`, which the people register uses. `config/validate.py` gained
+`check_entities`, so a typo in a key the code indexes directly is an error
+rather than a KeyError deep into a run.
+
+**Two comments were asserting things that had stopped being true.** The stage
+comment claimed the ordering makes the ranking non-empty on firing 1; it does
+not -- `raw_github_repos` is written in the landing phase, after ingest, so
+against a freshly rebuilt database every releases source fails once and
+self-heals on firing 2. And `_settled_urls` still explained itself by saying
+`classify_new` reads text from a corpus file, which D53 had just stopped being
+true. Both now say what the code does.
+
+**Also surfaced:** `reached_cursor` was computed, tested at the fetch level and
+discarded by the adapter, so a walk that never found the cursor -- more than
+`releases_max_pages x 100` releases since the last run -- was indistinguishable
+from a clean one. It reaches the watermark now, alongside the new/established
+split of what is being watched, which is the number that says whether the leg
+is looking at archives.
 ## D52 — The AI-team score was wrong because the prompt never described what it was reading (2026-09-04)
 
 **Decision.** Prompt `v8`: describe `model_spec` and `forum_post` in the
@@ -4702,3 +4902,370 @@ than showing a date.
 instead. Formatted in UTC: boundaries are UTC and `published_on` is a bare date,
 so local formatting shifted the label a day west of Greenwich, which is
 invisible from CET.
+## D53 — The papers cache never existed where it mattered (2026-09-05)
+
+**What happened.** The cron firing of 2026-09-04 lost four of six papers
+sources at once, all to arXiv `429`s:
+
+| Source | Error shape |
+|---|---|
+| papers/openai | `HTTP Error 429: Unknown Error` |
+| papers/deepseek | `HTTP Error 429: Unknown Error` |
+| papers/meta-ai | `fetch failed: <arXiv API url>: HTTP Error 429` |
+| papers/mistral | `fetch failed: <arXiv API url>: HTTP Error 429` |
+
+The two error shapes are the two fetch implementations. `deepseek_harvest.fetch`
+(which `openai_harvest` imports) raised the bare `HTTPError` because **it had no
+retry at all**; `arxiv_resolve.fetch` wrapped it in a `RuntimeError` after three
+attempts. Probed from a laptop the same day, the exact failing Mistral query
+returned `200` in 0.27s — arXiv was healthy and rate-limiting our address.
+
+**Root cause, and it is a deployment-shape bug, not a code bug.**
+`research/docs/*_cache/` is in `.gitignore` (line 156) *and* `.dockerignore`
+(line 7), and the Render cron has no disk. The disk cache every harvester was
+built around **has never existed on the deployment**. Locally there are 46 files
+in `arxiv_cache` and 24 in `deepseek_cache`, so a laptop run makes almost no
+live requests; the deployment started cold every night and replayed the lot.
+
+Volume on a cold run, roughly 70 serialised arXiv requests:
+
+| Lab | Requests | Window |
+|---|---|---|
+| openai | 7 `ti:` queries + 7 paper pages | none — re-harvests all history nightly |
+| deepseek | 2 queries + ~15 paper pages | none — same |
+| meta-ai | 1–2 queries per candidate title | 1 month |
+| mistral | 1–2 queries per candidate title | 1 month |
+
+Five of the six harvesters fetch `arxiv.org/html/` as well as their own lab's
+site, and each held a private opinion about the rate limit (1.5s in three of
+them, 3.0s in two). Each looked polite alone; none of them was in aggregate.
+`0e8ca97` ("Deployment branch: the tree, without 242 MB of cache history") is
+where the caches left the image — a reasonable call for image size that
+silently moved these sources from *mostly cached* to *fully cold*, and nothing
+registered the change.
+
+**Three defects in the retry layer**, all real, all small:
+
+1. `deepseek_harvest.fetch`: no retry, no backoff. One 429 killed the source.
+2. `arxiv_resolve.fetch`: backoff `2**attempt` = 1s, 2s against its own 3.0s
+   polite pause. **It retried a 429 faster than the rate it had already decided
+   was courteous** — turning one 429 into three.
+3. Nothing read `Retry-After`, which arXiv sends.
+
+Every harvester also slept *after* a successful fetch, so the first request of
+a process fired with no spacing at all — precisely the request that fails when
+the previous firing left the address hot.
+
+**Decision.** One shared fetch layer (`research/papers/fetch_cache.py`) behind
+all five arXiv-touching harvesters, whose own `fetch()` becomes a delegation
+that keeps its signature. The cache moves to Postgres (`fetch_cache`, migration
+`0008`), which is the only store that survives a firing on Render. One token
+bucket covers every `arxiv.org` host, backoff is never shorter than the polite
+interval, and `Retry-After` is honoured up to a cap. The numbers live under
+`fetch:` in `config/pipeline.yaml`.
+
+**The trap this nearly walked into, which is the interesting part.** A
+permanent URL-keyed cache would have *frozen discovery*. `meta_harvest` caches
+its paginated listing pages and `deepseek_harvest` caches the
+`au:"DeepSeek-AI"` query — the two URLs whose entire purpose is to return
+something different the day a new paper appears. Caching those forever would
+have stopped the register finding papers while every run went on reporting
+success: a worse failure than the 429s, and one nothing would have surfaced.
+So the cache has two classes. A versioned arXiv id (`arxiv.org/html/2501.12948v2`)
+is immutable and stored with `expires_at = NULL`, never re-fetched — and that
+is where nearly all the volume was. Everything else carries a TTL,
+`discovery_ttl_hours: 336`.
+
+**Rejected: baking the caches into the Docker image.** They are small enough
+(1.4 MB + 11 MB) and it was the first thing considered. It fixes the ~70
+requests already known about and does nothing for new papers, which is the case
+that matters; it goes stale silently; and it is the same shape as the bug that
+stranded eight articles the day before — state on ephemeral disk that quietly
+resets. A frozen snapshot with an expiry date, in place of a store that
+self-heals.
+
+**Rejected: a seed command to pre-load the deployment's cache.** Drafted, then
+cut. The disk cache's filenames are lossy (punctuation collapsed, truncated to
+150 chars), so a URL cannot be recovered from a filename, and reconstructing
+the URL list meant re-implementing discovery. It was fragile machinery to save
+exactly one cold run. Seeding is instead an operational step needing no code:
+point `DATABASE_URL` at the deployment and run the papers leg locally — every
+disk hit is promoted into Postgres having made no request at all, which is a
+path `fetch()` takes anyway rather than a special case. Verified with the
+network hard-blocked: 6/6 URLs served from disk and written to Postgres.
+
+**Consequence.** Steady state drops from ~70 live arXiv requests a night to
+roughly 8: discovery queries re-run on staggered expiry, paper pages never
+again. Night one is still cold, and that is now survivable — 70 requests spaced
+3s apart is inside arXiv's own guidance, which the previous uncoordinated
+1.5s-and-bursts pacing was not. If night one does fail, the run is partial
+rather than dead (D27) and whatever succeeded is permanent, so it converges
+across firings instead of repeating the same cold start forever.
+
+Measured: 4.2 MB of paper HTML stores as 912 kB (Postgres TOAST compresses it),
+so the full papers cache is ~6 MB. `fetch_cache` is in `OPS_TABLES` — `rebuild`
+dropping it would send the next run back to arXiv for everything it already has.
+
+**Not fixed, deliberately.** OpenAI's and DeepSeek's harvesters still take no
+window argument and re-harvest their entire history every firing. With the cache
+permanent that is now free, so it stops being a cost problem; it stays a wart.
+Meta's and Mistral's own lab sites, and DeepMind's sitemap, go through the same
+layer and get the same benefit — that was not the goal, but they share the
+function.
+
+**Regression tests.** `tests/test_fetch_cache.py`, 32 cases, written against
+this incident: a single 429 no longer kills a source; backoff never dips below
+the polite interval (asserts the exact `[3.0, 6.0]` sequence); `Retry-After` is
+read in both header forms and capped; `export.arxiv.org` and `arxiv.org` share
+one bucket; the first request does not sleep. The load-bearing ones are the
+`_expiry` cases — a discovery query *must* expire, an immutable paper id *must
+not* — and `test_no_harvester_keeps_a_private_fetch_loop`, which greps the five
+harvesters for a reintroduced `urllib.request.urlopen` so a future edit cannot
+quietly stop sharing the throttle.
+
+## D53a — A frozen artifact cannot track a moving one (2026-09-05)
+
+`test_corpus_fully_loaded` had been red since the discourse channel landed, and
+it was the test that was wrong, not the pipeline.
+
+It asserted `Article count == corpus_size()` **and** `Classification count ==
+corpus_size()`. The first is fine. The second made
+`research/docs/announcement_scores/v7/` — a committed snapshot — responsible for
+tracking `announcements.json`, which rolls forward on every fetch. The GPT-6
+Astra forum post arrived via the discourse channel (D47) after v7 was written,
+so no v7 cache file for it can exist. The suite went red for a pipeline that had
+just worked, which is the exact failure `corpus_size()` was introduced to kill
+one layer up when these assertions carried a literal `236`.
+
+**Rejected: classifying the article at v7 to close the gap.** ~$0.03, and it
+would have worked. But v7's prompt has no description of `forum_post` — that was
+added in v8 (D52) — so it means paying to generate a score we already know is
+under-informed, purely to make a count match. Filling a gap with a bad number is
+worse than reporting the gap.
+
+**Decision.** Assert against what the cache actually covers, using the loader's
+own recorded stat: `load_classifications` already counts the corpus URLs it
+found no cache file for, and `cmd_load` records it on the run row. So the test
+now asserts `Classification count == corpus_size() - missing`. Every article the
+cache covers must still reach a Classification row, so a silent drop between
+load and transform is still a hard failure. `test_scores_reconcile_with_register`
+already reasons this way about register/corpus drift; this test now matches it.
+
+**The bite that equality was carrying is now explicit.** D10 was a whole lab
+silently unscored, and a tolerated gap would hide exactly that, so the test also
+asserts every lab present in `articles` has at least one classification.
+Verified by deliberate breakage rather than assumed: dropping all nine Mistral
+classifications fails the test, and so does dropping a single classification for
+an article that does have a cache file. Both cases were red before the change
+and are red after it — the tolerance admits only articles the frozen cache
+cannot cover, and nothing else.
+
+## D53b — What an independent review found in the fix (2026-09-05)
+
+`bitcap-reviewer` was run against the D53 work before it was committed. It
+returned twelve findings. Nine were acted on; the reasoning for the rest is
+below, because "we saw it and declined" and "we missed it" must not look the
+same later.
+
+**Two were serious, and both were in the part of the fix that was supposed to
+be the careful part.**
+
+*The disk-cache path never consulted the TTL.* `fetch()` checked expiry on the
+database row and then, three lines later, returned a disk file without checking
+anything — and promoted it into Postgres stamped `now + 336h`. A year-old
+`au:"DeepSeek-AI"` answer was therefore served as a hit *and laundered into a
+fresh one*. That is precisely the frozen-discovery failure D53 says the module
+exists to prevent, reached by the one path that skipped the check. The TTL is
+now measured from the file's mtime, and promotion carries the file's real age.
+
+*`_IMMUTABLE` matched unversioned arXiv ids.* `arxiv.org/abs/2501.12948` with no
+`v` suffix resolves to the *latest* version, so it is mutable by definition, and
+it was being stored permanently. Not theoretical: `deepmind_harvest.py:66`
+strips the version deliberately and line 189 builds `arxiv.org/html/<bare id>`
+from it, so a DeepMind paper going v1→v2 with a changed author list — routine
+between preprint and camera-ready — would have kept the v1 byline forever, on
+the harvester whose entire output is bylines. **And the test suite asserted the
+defect**, which is the part worth remembering: a test written from the same
+misunderstanding as the code confirms it rather than catching it. The version
+suffix is now required.
+
+**Three more that would have bitten.** `email.utils.parsedate_to_datetime`
+*raises* on unparseable input rather than returning None, so the `is None` guard
+was dead code and a `Retry-After: soon` would have escaped `fetch()` as a
+`ValueError` — which the harvesters do not catch, killing a whole harvest
+instead of one paper. `_engine()` created the `fetch_cache` table out of band;
+`app/db.py:181-186` documents exactly why that is fatal (`op.create_table` has
+no `checkfirst`, so pre-creating a table a pending migration will add kills that
+migration every firing until a human intervenes). It now probes and never
+creates. And `_DB_CHECKED` was set *before* the engine resolved, so a second
+thread arriving mid-init concluded there was no cache and fetched live in
+silence.
+
+**One review finding was itself wrong, and the test suite caught it.** Gating
+retries on status code — correct in general, since retrying a 404 spent four
+arXiv requests per missing paper — initially dropped 403. That re-broke
+`test_deepmind_harvest.py::TestFetchRetry`, which exists because a live run
+observed arXiv returning **403 as a rate-limit response**, not a real refusal.
+403 is retryable here on evidence, and the constant says so.
+
+**Not taken: pruning expired rows to bound table growth.** The finding assumed
+nightly re-harvesting accumulates rows. It does not — `db_put` updates the row
+for an existing URL, so growth is bounded by *distinct URLs ever seen*, not by
+time. `DELETE WHERE expires_at < now()` would also delete precisely the rows
+about to be re-fetched, and would not touch the real growth vector, which is
+permanent paper rows. Measured: 4.2 MB of paper HTML stores as 912 kB. At a few
+hundred papers over the project's life this is tens of megabytes. Revisit if
+`pg_total_relation_size('fetch_cache')` passes ~500 MB; not before.
+
+**Also fixed: the config was unvalidated.** `check_pipeline` covered budget,
+cadence, alerts and classification but not the new `fetch:` block. Writing
+`arxiv` instead of `arxiv.org` matches no host (matching is exact-or-subdomain),
+falls through to `default_min_interval_seconds: 1.0`, hits arXiv three times
+faster than its guidance, and validates clean — reproducing D53 exactly.
+Verified by mutation: six malformed variants, six caught, control clean.
+
+**And the D53a bound.** `test_corpus_fully_loaded` tolerated an *unbounded*
+`missing`, so a `budget.per_run_usd` breach that stopped classification partway
+would move the expected count down in lockstep and report success on a corpus a
+quarter unscored. Now bounded at 5 (measured: 1). The per-lab assertion added in
+D53a is kept but is the cheap half — it needs only one classified article per
+lab, so the largest lab could lose 149 of 151 and pass. Both halves are needed.
+
+---
+
+## D55 — Enrichment that runs after the fetch does not survive the next one (2026-09-05)
+
+`backfill_openai.py` recovered 141 OpenAI articles from the Internet Archive on
+2026-09-02, mean 9,105 characters against a 201-character RSS summary. The next
+corpus commit, one day later (`4c67d32`, the seven-lab expansion), put every one
+of them back to a blurb. `collect()` builds the register from scratch and
+`OUT.write_text`s it; the backfill was a separate script editing that same file
+afterwards. Nothing failed, the register still held its full article count, every
+citation still resolved, and the suite stayed green.
+
+The cost was not cosmetic. OpenAI is 59% of the corpus and the lab whose
+announcements move the most tickers, and for two days it was scored on its own
+meta descriptions. The Jalapeño inference-chip results -- OpenAI displacing
+merchant accelerators, the single most NVDA-relevant article in the register --
+reached the classifier as two sentences and scored `medium`. The gold set labels
+it `high` by hand, and v7 scored it `high` off the archived text before the
+regression.
+
+**Recovery moved inside the fetch.** `enrich_wayback` upgrades summary-only
+articles in place before they leave the lab's loop, so the file `collect()`
+writes already contains the full text. It reuses `fetch_wayback` and
+`strip_html`, already in the module for xAI's discovery, rather than adding a
+second copy of the archive machinery.
+
+**Wired into both paths, because they deliberately do not share a loop.** The
+adapter is the one that mattered: the deployed cron runs no scripts and has no
+file, so recovery had never run in production at all. That asymmetry is the
+whole bug -- xAI's archived text comes from `wayback_cdx`, a discovery method
+*inside* the fetcher, and survives every rebuild; OpenAI's came from a script
+bolted on outside it.
+
+**`backfill: wayback` was config read by nothing.** Twenty lines documenting a
+step no code path executed, which reads as wired up. Now read in both paths and
+validated, including a misspelt key -- the only thing that can see `backfil:`
+is this validator.
+
+**The wildcard CDX index lags the exact one.** Trusting the bulk query alone
+reported `path-to-astra` -- the substantive half of the GPT-6 Astra launch -- as
+unarchived, when an exact lookup finds a 2026-09-03 snapshot immediately
+(221 -> 15,366 characters). Not truncation: 5,290 rows against a 6,000 limit.
+An exact fallback now runs per genuine miss.
+
+**Rejected: gating tag confidence on text length.** Measured on the v8 register
+first: articles under 500 characters produced 15 mechanism tags, **zero** of
+them high-confidence, and **zero** high bands. The prompt already rates how
+plainly the text states a thing, so a length gate would be machinery that
+changes no output. The check was worth running -- v7 read three high/high tags
+off the same two sentences, and the difference is the v8 prompt, not a rule
+anyone added.
+
+**Still open.** 17 articles the archive has genuinely never crawled -- 11
+customer stories, 4 policy posts, 2 academy pages, plus
+`safety-overview-gpt-6-astra`, the only substantive one. They are settled after
+their first run and never retried, so archive lag becomes permanent. Closing it
+means either Save Page Now (an API call, in the pipeline) or not settling a
+summary-only article -- and the second implies a re-score, since a
+classification already exists at this prompt version.
+
+---
+
+## D55a — What the review of the fetch-time backfill found (2026-09-05)
+
+Eight findings, one major. All actioned except the deployed-cache one, which is
+a decision rather than a fix.
+
+**The exact-lookup fallback returned the OLDEST snapshot.** CDX returns rows
+oldest-first, so `limit=5` asks for the first five snapshots ever taken, not
+the last. Measured on `openai.com/index/introducing-gpt-5` (309 snapshots):
+`limit=5` returns August 2025 crawls, `limit=-5` returns August 2026. This is
+not merely staleness -- an article's earliest crawls are the ones most likely
+to have caught a consent wall or a pre-render shell, and such a page clears the
+"longer than the summary" guard easily, so chrome would be stored as
+`full_text_archived` and quoted from. Now `limit=-5`.
+
+**And the obvious fix for the row count would have reintroduced it.** The
+review proposed `collapse=urlkey`, which cuts ~5,100 rows to ~870 and removes
+any truncation worry. It also keeps the *first* row of each group -- the oldest
+snapshot of every article, applied to all of them rather than to the handful
+the bulk query misses. Confirmed live: with collapse, `jalapeno-first-results`
+resolved to a 2026-08-25 snapshot instead of the 2026-08-29 one. Rejected;
+`CDX_ROW_LIMIT` went 6,000 -> 20,000 with a warning when a response comes back
+at exactly the ceiling, since truncation is indistinguishable from absence at
+the API.
+
+**The disk cache could serve one query's response to another.** The cache key
+collapses punctuation and truncates, so `...&limit=5` and `...&limit=-5` both
+render as `_limit_5`. Not hypothetical: it silently served the stale response
+while the ordering fix above was being verified, and the fix appeared to do
+nothing. A SHA-1 suffix now makes the key faithful. No collision exists among
+the real query shapes -- checked -- but the failure is invisible when it does.
+
+**The archive returns partial bodies.** Observed live on `openai.com/index*`:
+a 114,899-byte response ending `...","20260625092811"],` with no closing
+bracket, where the same query a minute later returned 141,565 bytes and parsed.
+`json.loads` raises, which in `collect()` would abort a seven-lab fetch over one
+flaky read on one lab. Worse, `fetch_wayback` caches before anything validates,
+so the partial body would be replayed for the whole discovery TTL -- one bad
+second becoming six bad hours. `_cdx_json` now tolerates it, drops the poisoned
+cache entry, and lets every article fall through to its own exact lookup:
+slower and correct rather than fast and absent.
+
+**The near-miss key check did not catch the example its own comment cited.**
+`backfil` is not recoverable by collapsing case and underscores -- a dropped
+letter is not a near miss by that measure -- so `backfil: wayback` validated
+clean, exactly the scenario the comment claimed was now impossible. Replaced
+with an allowlist of permitted lab keys, which has no such gap and which
+immediately found two keys nobody had enumerated (`page_param`, `user_agent`,
+both genuinely read by `from_listing_pagination`). The validator branches had
+also shipped with no test at all: deleting the whole block left the suite green.
+
+**The gold set was still recovering text through the old implementation.**
+`refresh_gold_text.py` imported `recover` and `slug_of` from
+`backfill_openai.py`, which normalises URLs differently and indexes
+`openai.com/index*` alone. Two recovery paths mean gold and production can hold
+different bytes for the same article -- which is not hypothetical, it is the
+exact blind spot that hid this bug for two days. It now calls the pipeline's
+own functions.
+
+**`config/sources.yaml` still documented the design this change deleted**,
+sending an operator to the redundant script and calling recovery something that
+happens "afterwards" -- the bug, stated as the design. Rewritten, including the
+settle-once limitation.
+
+**Not fixed: the disk cache the deployed container does not have.**
+`fetch_wayback` caches to `research/docs/announcement_cache/`, which is in both
+`.gitignore` and `.dockerignore`, on a Render cron with no disk. This is
+verbatim what D53 found for arXiv and solved by moving to Postgres
+`fetch_cache`. Steady state here is a handful of articles a night, so it is a
+first-firing and re-backfill cost rather than a nightly one -- but the module
+docstring's claim that re-runs cost no requests is false in the deployed shape.
+Migrating this leg onto `fetch_cache` is the obvious follow-on and is not in
+this change.
+
+**Still open, unchanged:** an article settles the night it is discovered, so
+enrichment gets one attempt and archive lag becomes permanent.
+
