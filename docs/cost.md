@@ -480,8 +480,13 @@ $0.025/article rate was measured when OpenAI — 59% of the corpus — was
 200-character summaries. Recovering that text made the corpus 2.3x larger in
 characters, so the old rate understated this run by about 15%.
 
-Not spent: ~$10 that a v9 re-score of the 380 release documents would have
-cost. v9 is byte-identical to v8 and the release text was unchanged, so the
-rows were carried forward with a `_carried_forward` provenance marker instead
-(D56).
+Not spent **against the local database**: ~$10 that a v9 re-score of the 380
+release documents would have cost. The rows were carried forward with a
+`_carried_forward` provenance marker instead (D56, D56a).
+
+Read that as local-only. `carry_forward_releases.py` writes to whichever
+database it is pointed at and is wired into no deploy path, so any environment
+whose Postgres has not had it run — and any `bitcap-db rebuild`, which drops the
+carried rows — pays the ~$10 on its first firing. The saving is real and it is
+not yet portable.
 

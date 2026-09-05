@@ -2407,3 +2407,102 @@ class TestAPartialArchiveResponse:
             self._lab(), [self._summary()], datetime(2026, 6, 1))
 
         assert len(missed) == 1
+
+
+class TestThePromptFileIsNotTheSystemPrompt:
+    """A prompt file has two audiences and only one should see all of it.
+
+    v9 was written as a copy of v8 plus a fifteen-line comment explaining why
+    the version existed. `build_prompt` sent the file verbatim, so all 259 v9
+    calls were told "OpenAI's articles were ~200-character RSS summaries and
+    are now archived full text" -- a leading claim about the input, pointing in
+    exactly the direction the scores then moved. Nothing caught it: the tests
+    checked that a prompt file *existed* and that the version matched, never
+    what the model was actually handed.
+    """
+
+    def test_a_comment_never_reaches_the_model(self):
+        from score_announcements import strip_comments
+
+        raw = "# Title\n\n<!--\na note for the reader\n-->\nReal instructions.\n"
+        out = strip_comments(raw)
+        assert "a note for the reader" not in out
+        assert "Real instructions." in out
+
+    def test_several_comments_are_all_removed(self):
+        from score_announcements import strip_comments
+
+        raw = "A\n<!-- one -->\nB\n<!-- two -->\nC"
+        out = strip_comments(raw)
+        assert "one" not in out and "two" not in out
+        assert "A" in out and "B" in out and "C" in out
+
+    def test_v9_sends_the_same_body_as_v8(self):
+        """The claim D56 rests on, checked where it is actually true -- on what
+        is sent, not on the files. The two files differ by 686 characters."""
+        from score_announcements import strip_comments
+
+        d = ROOT / "prompts" / "announcement_scoring"
+        v8 = strip_comments(d.joinpath("v8.md").read_text()).split("\n", 1)[1]
+        v9 = strip_comments(d.joinpath("v9.md").read_text()).split("\n", 1)[1]
+        assert v8 == v9, "v9 must ask v8's question; only the title may differ"
+
+    def test_build_prompt_itself_does_not_ship_the_comment(self):
+        """The wiring, not the helper. `strip_comments` passing its own unit
+        test proves nothing if `build_prompt` never calls it -- which is
+        precisely the shape of the original defect, where the file was read
+        verbatim one line away from a function that would have cleaned it."""
+        from score_announcements import build_prompt
+
+        system, _user = build_prompt({
+            "lab": "openai", "date": "2026-09-01",
+            "url": "https://openai.com/index/x", "title": "X",
+            "text": "Some article text.", "text_source": "full_text",
+        })
+        assert "PROVENANCE WARNING" not in system
+        assert "archived full text" not in system
+        assert "<!--" not in system
+        # Still the real prompt, not an empty string.
+        assert "transmission mechanisms" in system
+
+    def test_the_files_themselves_are_not_identical(self):
+        """Guards the guard. If someone deletes v9's rationale to make the
+        check above pass trivially, the check stops proving anything -- and
+        v9.md carries the provenance warning about the contaminated run, which
+        must not quietly disappear."""
+        d = ROOT / "prompts" / "announcement_scoring"
+        assert d.joinpath("v8.md").read_text() != d.joinpath("v9.md").read_text()
+        assert "PROVENANCE WARNING" in d.joinpath("v9.md").read_text()
+
+
+class TestOnePromptVersionConstant:
+    """Two constants that had to agree by hand. The drift is silent and
+    recurring: the scorer writes into its own cache directory, the app looks in
+    a different one, finds nothing, writes no classifications, `connect` then
+    deletes every connection row and rebuilds none -- and the next firing pays
+    for the identical pending set again."""
+
+    def test_the_scorer_takes_the_app_s_version(self):
+        import score_announcements
+        from app.cli import PROMPT_VERSION
+
+        assert score_announcements.PROMPT_VERSION == PROMPT_VERSION
+
+    def test_the_scorer_does_not_declare_its_own(self):
+        """Equality today is not the property; being unable to disagree is."""
+        import re as _re
+
+        src = (ROOT / "research" / "announcements"
+               / "score_announcements.py").read_text()
+        # Line-anchored: the module legitimately contains the string
+        # `PROMPT_VERSION = "` inside the regex it uses to read app/cli.py.
+        assert not _re.search(r'^PROMPT_VERSION = "', src, _re.M), (
+            "a literal assignment reintroduces the two-constant drift")
+
+    def test_the_prompt_file_for_the_current_version_exists(self):
+        from app.cli import PROMPT_VERSION
+
+        path = ROOT / "prompts" / "announcement_scoring" / f"{PROMPT_VERSION}.md"
+        assert path.exists(), (
+            f"PROMPT_VERSION is {PROMPT_VERSION} but {path.name} is missing -- "
+            "every call would fail at read time")
