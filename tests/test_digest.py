@@ -509,3 +509,92 @@ class TestGuards:
         path.write_text(_yaml.safe_dump({**CONFIG, **mutation}))
 
         assert check_digest(path), f"accepted a config that {reason}"
+
+class TestNearDuplicatesDoNotFillTheEdition:
+    """An edition carries eight items; two of them saying one thing is a waste.
+
+    The silent failures here:
+
+    * **Publishing a duplicate.** Half the point of the collapse. If folding
+      stops, the launch post and its forum restatement both take a slot and the
+      cut looks like it worked.
+    * **Publishing nothing instead.** The opposite, and worse, because it reads
+      as "nothing happened". Both cases below come from trusting
+      `ArticleGroup.is_anchor`, which is chosen once over the whole corpus on a
+      single score — while an edition is one window and one audience.
+    """
+
+    def _group(self, session, group_id, articles, anchor):
+        for art in articles:
+            session.add(m.ArticleGroup(
+                article_id=art.id, group_id=group_id, is_anchor=art is anchor,
+                group_size=len(articles), method="embedding", reason="cosine 0.91",
+            ))
+        session.flush()
+
+    def test_only_one_member_of_a_group_is_published(self, session):
+        _holding(session, "US1", "NVIDIA")
+        launch, _ = _article(session, published=date(2026, 9, 3), title="Launch",
+                             score=90.0, band="high")
+        echo, _ = _article(session, published=date(2026, 9, 3), title="Launch echo",
+                           score=90.0, band="high")
+        _connect(session, launch, "US1", 0.9)
+        _connect(session, echo, "US1", 0.9)
+        self._group(session, "g1", [launch, echo], launch)
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert [i["title"] for i in out["items"]] == ["Launch"]
+        assert out["stats"]["collapsed"] == 1
+
+    def test_a_group_whose_corpus_anchor_is_out_of_window_still_surfaces(self, session):
+        """The release-train shape, and it publishes an empty section if wrong.
+
+        A train spans days, so its corpus-wide anchor can sit outside this
+        window. Folding everything against it drops every release that actually
+        shipped in the window and the reader sees nothing for a repo that
+        shipped twice.
+        """
+        _holding(session, "US1", "NVIDIA")
+        old, _ = _article(session, published=date(2026, 8, 20), title="v1",
+                          score=95.0, band="high")
+        recent, _ = _article(session, published=date(2026, 9, 3), title="v2",
+                             score=60.0, band="high")
+        _connect(session, recent, "US1", 0.9)
+        self._group(session, "g1", [old, recent], old)   # anchor is out of window
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert [i["title"] for i in out["items"]] == ["v2"]
+
+    def test_each_audience_picks_its_own_member(self, session):
+        """One anchor for two cuts can delete an item from one of them.
+
+        `event_type` is a multiplicative term in the investment score and absent
+        from the AI score, so the member that ranks highest overall can score
+        zero on the axis being published — while the member carrying that axis'
+        signal is the one folded away. The item then vanishes from that edition
+        and is counted as collapsed, so the loss reads as intentional.
+        """
+        _holding(session, "US1", "NVIDIA")
+        investment_side, _ = _article(
+            session, published=date(2026, 9, 3), title="Investment side",
+            score=90.0, band="high", ai_score=0.0, ai_band="none")
+        ai_side, _ = _article(
+            session, published=date(2026, 9, 3), title="AI side",
+            score=0.0, band="none", ai_score=90.0, ai_band="high")
+        _connect(session, investment_side, "US1", 0.9)
+        session.add(m.ArticlePractice(
+            classification_id=session.scalars(
+                select(m.Classification).where(m.Classification.article_id == ai_side.id)
+            ).one().id,
+            practice_id="evals", action="adopt", impact="high", confidence="high",
+            dimensions=[], reason="r", quote="q", ordinal=0))
+        self._group(session, "g1", [investment_side, ai_side], investment_side)
+
+        investment = digest.build(session, "investment", V, END, CONFIG)
+        ai = digest.build(session, "ai", V, END, CONFIG)
+
+        assert [i["title"] for i in investment["items"]] == ["Investment side"]
+        assert [i["title"] for i in ai["items"]] == ["AI side"]
+

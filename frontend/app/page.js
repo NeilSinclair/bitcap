@@ -206,20 +206,25 @@ function Dashboard() {
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
   // it before the reader spends a click finding out.
+  //
+  // Counted over anchors only, matching what a click actually reveals. Counting
+  // folded members too made "OpenAI 23" open 19 cards.
   const labOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (audience === "investment" ? it.score <= 0 : it.aiScore <= 0) continue;
       const seen = counts.get(it.lab) || { lab: it.lab, label: it.labLabel, n: 0 };
       seen.n += 1;
       counts.set(it.lab, seen);
     }
     return [...counts.values()].sort((a, b) => b.n - a.n);
-  }, [decorated, audience]);
+  }, [decorated, anchorFor, audience]);
 
   const holdingOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (it.score <= 0) continue;
       // One count per article, not per connection: an article linked to a
       // holding by three routes is still one thing that happened to it.
@@ -230,7 +235,7 @@ function Dashboard() {
     return [...counts.entries()]
       .map(([holding, n]) => ({ holding, n }))
       .sort((a, b) => b.n - a.n || a.holding.localeCompare(b.holding));
-  }, [decorated]);
+  }, [decorated, anchorFor]);
 
   // A holding filter has no meaning on the AI side — those items carry
   // practices, not connections — so it is dropped rather than left set and
@@ -251,21 +256,36 @@ function Dashboard() {
     setSelectedId(null);
   }
 
-  // Folded members of a near-duplicate group, by their anchor's group id. They
-  // stay in `decorated` so a reader can expand a card and check the merge —
-  // dropping them here would make a collapse look like an article we never had.
-  const foldedByGroup = useMemo(() => {
-    const out = {};
+  // Which member of a near-duplicate group speaks for it, decided per audience
+  // rather than read from `isAnchor`. That flag is picked once over the whole
+  // corpus on a single score; event_type is a multiplicative term in the
+  // investment score and absent from the AI score, so the member ranking
+  // highest overall can score zero on the axis being displayed — and the member
+  // carrying the signal for this audience is the one that got folded.
+  //
+  // Folded members stay in `decorated` so a reader can expand a card and check
+  // the merge. Dropping them would make a collapse look like an article we
+  // never had.
+  const [anchorFor, foldedByGroup] = useMemo(() => {
+    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
+    const best = {};
     for (const it of decorated) {
-      if (it.isAnchor) continue;
-      (out[it.groupId] = out[it.groupId] || []).push(it);
+      const cur = best[it.groupId];
+      if (!cur || value(it) > value(cur) || (value(it) === value(cur) && it.date < cur.date)) {
+        best[it.groupId] = it;
+      }
     }
-    for (const list of Object.values(out)) list.sort((a, b) => b.date.localeCompare(a.date));
-    return out;
-  }, [decorated]);
+    const folded = {};
+    for (const it of decorated) {
+      if (best[it.groupId] === it) continue;
+      (folded[it.groupId] = folded[it.groupId] || []).push(it);
+    }
+    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
+    return [best, folded];
+  }, [decorated, audience]);
 
   const visible = useMemo(() => {
-    const anchors = decorated.filter((it) => it.isAnchor !== false);
+    const anchors = decorated.filter((it) => anchorFor[it.groupId] === it);
     const relevant = anchors.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
     const byBand = bandFilter === "all"
       ? relevant
@@ -298,7 +318,7 @@ function Dashboard() {
         showImpactRow: true,
       };
     });
-  }, [decorated, audience, bandFilter, labFilter, holdingFilter, holdingActive, sortBy]);
+  }, [decorated, anchorFor, audience, bandFilter, labFilter, holdingFilter, holdingActive, sortBy]);
 
   const selected = decorated.find((it) => it.id === selectedId) || null;
 

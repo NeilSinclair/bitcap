@@ -772,7 +772,8 @@ class ArticleGroup(Base):
     group_id: Mapped[str] = mapped_column(index=True)
     is_anchor: Mapped[bool] = mapped_column(default=False)
     group_size: Mapped[int] = mapped_column(default=1)
-    # identifier | embedding | llm | release_train | singleton
+    # exact | release_train | llm | embedding | singleton — in that order of
+    # trust, which is how `_evidence` picks one when several gates contributed.
     method: Mapped[str]
     reason: Mapped[str]
     run_id: Mapped[int | None] = mapped_column(sa.ForeignKey("pipeline_runs.id"))

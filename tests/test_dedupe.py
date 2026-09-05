@@ -38,6 +38,8 @@ from app.pipeline import dedupe
 
 ROOT = Path(__file__).parent.parent
 LABELS = ROOT / "research" / "docs" / "dedupe_labels.json"
+# The configured model is part of the cache key, so fixtures must use it.
+MODEL = dedupe.settings()["embedding"]["model"]
 FEATURES = ROOT / "research" / "docs" / "dedupe_features.json"
 
 
@@ -241,7 +243,7 @@ class TestEmbeddingCache:
         self._article(session, "u1", "GPT-6 Astra", "OpenAI announced GPT-6 Astra.")
         text = dedupe.embedded_text("GPT-6 Astra", "OpenAI announced GPT-6 Astra.")
         session.add(m.RawArticleEmbedding(
-            url="u1", content_hash=dedupe.text_hash(text), model="m", dim=3,
+            url="u1", content_hash=dedupe.text_hash(text), model=MODEL, dim=3,
             vector=dedupe.pack([1.0, 0.0, 0.0]),
         ))
         session.commit()
@@ -257,7 +259,7 @@ class TestEmbeddingCache:
         row = self._article(session, "u1", "GPT-6 Astra", "First summary.")
         stale = dedupe.embedded_text("GPT-6 Astra", "First summary.")
         session.add(m.RawArticleEmbedding(
-            url="u1", content_hash=dedupe.text_hash(stale), model="m", dim=3,
+            url="u1", content_hash=dedupe.text_hash(stale), model=MODEL, dim=3,
             vector=dedupe.pack([1.0, 0.0, 0.0]),
         ))
         session.commit()
@@ -269,6 +271,36 @@ class TestEmbeddingCache:
         session.commit()
 
         assert [u for u, _ in dedupe.pending(session, "v9")] == ["u1"]
+
+    def test_a_vector_from_another_model_is_pending_again(self, session):
+        """A model swap must re-embed, and the text hash alone will not say so.
+
+        Two embedding models of the same width produce vectors in unrelated
+        spaces. Keyed on the text alone, a swap re-embeds nothing: only new
+        articles get the new model, the matrix silently mixes two spaces, and
+        `matrix`'s width guard never fires because the width did not change.
+        Cosines between the two spaces are still numbers in [0, 1], so pairs
+        cross the auto-merge threshold on noise with every test green.
+        """
+        self._article(session, "u1", "GPT-6 Astra", "OpenAI announced GPT-6 Astra.")
+        text = dedupe.embedded_text("GPT-6 Astra", "OpenAI announced GPT-6 Astra.")
+        session.add(m.RawArticleEmbedding(
+            url="u1", content_hash=dedupe.text_hash(text),
+            model="some-other-model-of-the-same-width", dim=3,
+            vector=dedupe.pack([1.0, 0.0, 0.0]),
+        ))
+        session.commit()
+        assert [u for u, _ in dedupe.pending(session, "v9")] == ["u1"]
+
+    def test_a_vector_from_another_model_is_not_loaded_into_the_matrix(self, session):
+        """Belt to the braces above: a half-migrated cache must not be compared."""
+        session.add(m.RawArticleEmbedding(
+            url="u1", content_hash="h", model="some-other-model", dim=3,
+            vector=dedupe.pack([1.0, 0.0, 0.0]),
+        ))
+        session.commit()
+        urls, _ = dedupe.matrix(session, ["u1"])
+        assert urls == []
 
     def test_an_untitled_unsummarised_article_is_skipped(self, session):
         """Embedding an empty string buys a vector that means nothing."""
@@ -282,7 +314,7 @@ class TestEmbeddingCache:
     def test_the_matrix_is_l2_normalised(self, session):
         """Cosine is then one matmul rather than a divide per pair."""
         session.add(m.RawArticleEmbedding(
-            url="u1", content_hash="h", model="m", dim=3,
+            url="u1", content_hash="h", model=MODEL, dim=3,
             vector=dedupe.pack([3.0, 4.0, 0.0]),
         ))
         session.commit()
@@ -297,11 +329,11 @@ class TestEmbeddingCache:
         that looks entirely plausible.
         """
         session.add(m.RawArticleEmbedding(
-            url="u1", content_hash="h", model="small", dim=3,
+            url="u1", content_hash="h", model=MODEL, dim=3,
             vector=dedupe.pack([1.0, 0.0, 0.0]),
         ))
         session.add(m.RawArticleEmbedding(
-            url="u2", content_hash="h", model="large", dim=4,
+            url="u2", content_hash="h", model=MODEL, dim=4,
             vector=dedupe.pack([1.0, 0.0, 0.0, 0.0]),
         ))
         session.commit()
@@ -310,7 +342,7 @@ class TestEmbeddingCache:
 
     def test_a_zero_vector_does_not_divide_by_zero(self, session):
         session.add(m.RawArticleEmbedding(
-            url="u1", content_hash="h", model="m", dim=3,
+            url="u1", content_hash="h", model=MODEL, dim=3,
             vector=dedupe.pack([0.0, 0.0, 0.0]),
         ))
         session.commit()
@@ -401,8 +433,8 @@ class TestThresholdsAgainstTheLabelledSet:
         features, labels = labelled
         positives = [f for f in self._pool(features, labels)
                      if labels[f["pair"]]["label"] == "same"]
-        assert len(positives) == 5, (
-            f"{len(positives)} positives now, not 5 — re-run "
+        assert len(positives) == 7, (
+            f"{len(positives)} positives now, not 7 — re-run "
             "research/dedupe/calibrate.py and update the caveat"
         )
 
@@ -469,3 +501,132 @@ class TestEvidence:
         reasons = {(1, 2): ("embedding", "cosine 0.9"), (2, 3): ("exact", "same title")}
         method, reason = dedupe._evidence([{"id": 1}, {"id": 2}, {"id": 3}], reasons)
         assert method == "exact" and reason == "same title"
+
+class TestAssignWritesTheGrouping:
+    """The function that actually writes, which nothing else here exercises.
+
+    Every test above checks a helper in isolation. `assign` is where they
+    compose, where the unique constraint on `article_groups.article_id` can turn
+    a logic error into a run failure, and where the "a re-run produces the same
+    assignment" claim either holds or does not.
+    """
+
+    @pytest.fixture()
+    def session(self):
+        engine = create_engine("sqlite://")
+        create_all(engine)
+        with Session(engine) as session:
+            session.add(m.RefLab(id="openai", label="OpenAI", config_version=1))
+            session.flush()
+            yield session
+
+    def _article(self, session, url, title, day, *, event_type="product_launch",
+                 score=0.0, ai_score=0.0, payload=None, source="full_text"):
+        raw = m.RawArticle(url=url, payload=payload or {}, content_hash=url,
+                           source_file="a.json")
+        session.add(raw)
+        session.flush()
+        art = m.Article(url=url, raw_article_id=raw.id, lab="openai", title=title,
+                        published_on=date(2026, 9, day), text="body",
+                        text_source=source)
+        session.add(art)
+        session.flush()
+        session.add(m.Classification(
+            article_id=art.id, prompt_version="v9", scoring_version=4,
+            event_type=event_type, summary="s", is_signal=True, notable=False,
+            notable_reason="", dropped_tags=[], score=score, band="none",
+            ai_score=ai_score, ai_band="none"))
+        session.commit()
+        return art
+
+    def test_every_article_gets_exactly_one_row(self, session):
+        """The unique constraint makes a double-write a crash, not a bad group."""
+        for index in range(4):
+            self._article(session, f"u{index}", f"Title {index}", 1 + index)
+
+        stats = dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        rows = session.scalars(select(m.ArticleGroup)).all()
+        assert len(rows) == 4 == stats["articles"]
+        assert len({r.article_id for r in rows}) == 4
+
+    def test_a_singleton_is_a_group_of_one_with_a_reason(self, session):
+        """"Considered and left alone" has to be distinguishable from "not seen"."""
+        self._article(session, "u1", "A one-off post", 1)
+
+        dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        row = session.scalars(select(m.ArticleGroup)).one()
+        assert row.group_size == 1 and row.is_anchor and row.reason
+
+    def test_one_article_at_two_urls_is_merged_across_disagreeing_event_types(self, session):
+        """The live case, and the reason the exact pass runs before gate 2.
+
+        The classifier gave two copies of "Introducing Intelligence Age" the
+        labels `other` and `safety_policy`. Ordered the other way round, the
+        event-type gate refuses to merge two copies of one text.
+        """
+        self._article(session, "u1", "Introducing Intelligence Age", 3,
+                      event_type="other")
+        self._article(session, "u2", "Introducing Intelligence Age!", 3,
+                      event_type="safety_policy")
+
+        stats = dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        rows = session.scalars(select(m.ArticleGroup)).all()
+        assert len({r.group_id for r in rows}) == 1
+        assert stats["by_method"] == {"exact": 1}
+
+    def test_a_release_train_collapses_and_anchors_on_the_latest(self, session):
+        payload = {"org": "anthropics", "repo": "claude-code"}
+        for index, day in enumerate((1, 2, 3)):
+            self._article(session, f"r{index}", f"anthropics/claude-code v2.1.{index}",
+                          day, payload=payload, source="github_release",
+                          ai_score=50.0)
+
+        dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        rows = session.scalars(select(m.ArticleGroup)).all()
+        assert len({r.group_id for r in rows}) == 1
+        anchor = [r for r in rows if r.is_anchor]
+        assert len(anchor) == 1
+        art = session.get(m.Article, anchor[0].article_id)
+        assert art.published_on == date(2026, 9, 3)
+
+    def test_a_rerun_produces_the_same_assignment(self, session):
+        """Claimed in the docstring, and the table is wiped and rebuilt each run.
+
+        A grouping that shifts between runs would move items in and out of the
+        digest with no change in the world to explain it.
+        """
+        self._article(session, "u1", "Introducing Intelligence Age", 3)
+        self._article(session, "u2", "Introducing Intelligence Age!", 3)
+        self._article(session, "u3", "Something else entirely", 3)
+
+        first = dedupe.assign(session, "v9", adjudicate_pairs=False)
+        before = {r.article_id: (r.group_size, r.is_anchor, r.method)
+                  for r in session.scalars(select(m.ArticleGroup))}
+        second = dedupe.assign(session, "v9", adjudicate_pairs=False)
+        after = {r.article_id: (r.group_size, r.is_anchor, r.method)
+                 for r in session.scalars(select(m.ArticleGroup))}
+
+        assert before == after
+        assert first["groups"] == second["groups"]
+
+    def test_the_band_is_deferred_rather_than_adjudicated_when_told_not_to_spend(
+        self, session
+    ):
+        """`--dry-run` must exercise the shape without calling a provider.
+
+        `budget=None` does not express this: to `adjudicate` that means
+        unlimited, not "do not call". Without the separate flag a dry run made
+        real OpenAI and Anthropic calls.
+        """
+        self._article(session, "u1", "Introducing Intelligence Age", 3)
+        self._article(session, "u2", "Introducing Intelligence Age!", 3)
+
+        stats = dedupe.assign(session, "v9", adjudicate_pairs=False)
+
+        assert stats["adjudicated"] == 0
+        assert stats["usd"] == 0.0
+

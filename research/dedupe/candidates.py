@@ -7,9 +7,10 @@ get labelled, and `config/dedupe.yaml` takes its numbers from the labels.
 Two files come out, and the split is the point:
 
 * ``dedupe_candidates.json`` — what the labeller sees. Lab, dates, titles,
-  summaries and event types. **No cosine.** Showing a labeller the number it is
-  being used to calibrate would make the labels agree with the threshold by
-  construction, and the resulting curve would measure nothing.
+  summaries and event types. **No cosine, and no cosine order.** Showing a
+  labeller the number it is being used to calibrate would make the labels agree
+  with the threshold by construction; sorting the file by that number leaks the
+  same thing one transform away, which the first version of this script did.
 * ``dedupe_features.json`` — cosine, shared identifiers and event-type match,
   keyed by pair id. Joined to the labels afterwards.
 
@@ -146,7 +147,12 @@ def sample(pairs: list[dict], below: int, seed: int) -> list[dict]:
     census = [p for p in pairs if p["cosine"] >= CENSUS_ABOVE]
     rest = [p for p in pairs if p["cosine"] < CENSUS_ABOVE]
     picked = census + generator.sample(rest, min(below, len(rest)))
-    return sorted(picked, key=lambda p: -p["cosine"])
+    # Shuffled, not sorted by cosine. Rank is a monotone transform of the very
+    # number the blind file exists to withhold: ordered by similarity, the file
+    # tells a labeller reading top to bottom that the last rows are the
+    # negatives, which is most of the signal the ordering was hiding.
+    generator.shuffle(picked)
+    return picked
 
 
 def main() -> None:

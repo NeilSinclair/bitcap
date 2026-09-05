@@ -15488,5 +15488,105 @@
     "seconds": 2.47,
     "at": "2026-09-05T13:18:35.963139+00:00",
     "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7447-7639",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1430,
+    "output_tokens": 51,
+    "usd": 0.00337,
+    "seconds": 3.42,
+    "at": "2026-09-05T13:49:19.710200+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7310-7634",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1380,
+    "output_tokens": 76,
+    "usd": 0.00352,
+    "seconds": 2.73,
+    "at": "2026-09-05T13:49:22.452097+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7270-7632",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1338,
+    "output_tokens": 57,
+    "usd": 0.003246,
+    "seconds": 2.37,
+    "at": "2026-09-05T13:49:24.841242+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7203-7618",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1378,
+    "output_tokens": 62,
+    "usd": 0.003376,
+    "seconds": 2.37,
+    "at": "2026-09-05T13:49:27.226354+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7105-7228",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1414,
+    "output_tokens": 54,
+    "usd": 0.003368,
+    "seconds": 2.42,
+    "at": "2026-09-05T13:49:29.660314+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7017-7047",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1332,
+    "output_tokens": 63,
+    "usd": 0.003294,
+    "seconds": 2.81,
+    "at": "2026-09-05T13:49:32.482096+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7606-7608",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1360,
+    "output_tokens": 295,
+    "usd": 0.00567,
+    "seconds": 5.03,
+    "at": "2026-09-05T13:49:37.526812+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7610-7655",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1378,
+    "output_tokens": 58,
+    "usd": 0.003336,
+    "seconds": 2.33,
+    "at": "2026-09-05T13:49:39.887947+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7574-7649",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1344,
+    "output_tokens": 46,
+    "usd": 0.003148,
+    "seconds": 2.35,
+    "at": "2026-09-05T13:49:42.255652+00:00",
+    "workflow": "dedupe"
+  },
+  {
+    "url": "dedupe:7572-7575",
+    "model": "claude-sonnet-5",
+    "input_tokens": 1326,
+    "output_tokens": 68,
+    "usd": 0.003332,
+    "seconds": 2.34,
+    "at": "2026-09-05T13:49:44.608815+00:00",
+    "workflow": "dedupe"
   }
 ]

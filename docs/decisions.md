@@ -5460,9 +5460,9 @@ The labeller is not the adjudicator (gate 3 runs on `claude-sonnet-5`), or the
 eval would be marking its own homework. 7 same, 75 different.
 
 **Cosine does not separate the classes.** Positives run 0.763 to 0.966 and
-negatives reach 0.869. Full recall lands at precision 0.38; full precision lands
-at recall 0.20. There is no single cut. That is the argument for a band —
-`>= 0.87` merge unasked, `< 0.76` separate unasked, and ask a model in between —
+negatives reach 0.834. Full recall lands at precision 0.54; full precision lands
+at recall 0.43. There is no single cut. That is the argument for a band —
+`>= 0.84` merge unasked, `< 0.76` separate unasked, and ask a model in between —
 rather than a threshold, and it is a finding about the corpus, not a defect in
 the embedding.
 
@@ -5496,12 +5496,31 @@ the full identifier.
 
 ### Honest limits
 
-**Five positives.** After the exact pass the curve rests on five labelled
-duplicates. One wrong label moves recall by 0.2. The thresholds are the best
+**Seven positives.** After the exact pass the curve rests on seven labelled
+duplicates. One wrong label moves recall by 0.14. The thresholds are the best
 available estimate, not a measurement, and the sample is small because the
 corpus genuinely contains few near-duplicates — 10 of 4,412 candidate pairs
 reach cosine 0.80. `tests/test_dedupe.py` pins the count so the caveat cannot
 quietly stop being true.
+
+**The blind file was not blind, and it moved the threshold.** The first pass
+wrote the labelling file sorted by cosine descending. The number was withheld
+and its rank was not, which is the same information one transform away: a
+labeller reading top to bottom is being told that the last rows are the
+negatives. Caught in review.
+
+Re-labelled from a shuffled file — same 82 pairs, same labeller, same prompt.
+**Two labels changed, and they were the top two negatives**: the GPT-6 Astra
+model-spec page against the launch post (0.831) and against the forum
+restatement (0.869), both `different` under the leak and `same` without it.
+Agreement between the two passes was 80/82, which sounds like a rounding error
+and was not — the high edge is set by exactly those pairs. `cosine_high` was
+0.87 on the leaked labels and is 0.84 on the clean ones, and precision-1.0
+recall went from 0.20 to 0.43. The leaked labelling had been suppressing the
+auto-merge threshold.
+
+Kept as `research/docs/dedupe_labels_ordered.json` rather than deleted, because
+the difference between the two files is the evidence for the paragraph above.
 
 **The labels are a proxy.** They are machine-generated. Neil marks a stratified
 sample of 20 and the agreement rate is recorded here; until that lands, the
@@ -5521,8 +5540,8 @@ comes first, so v2.1.259 (66.7) anchors over v2.1.260 (22.2).
 
 ### Consequence
 
-647 articles become 555 groups; 92 rows collapse. 12 pairs reach the
-adjudicator on a full backfill and 4 of them merge. `app/pipeline/dedupe.py`,
+647 articles become 554 groups; 93 rows collapse. 10 pairs reach the
+adjudicator on a full backfill and 3 of them merge. `app/pipeline/dedupe.py`,
 `config/dedupe.yaml`, `prompts/duplicate_adjudication/v1.md`, migrations 0010
 and 0011, a phase between the ETL and the digest, `research/dedupe/`, and 41
 tests. Spend: $0.000682 to embed 647 articles, $0.057 on adjudication.
@@ -5532,3 +5551,59 @@ safety and customer-story rows as one thing. Its value in that case was
 rescuing the safety row from a scoring bug being fixed separately, so it is
 recorded in `next_steps_0309.md` and revisited only if that row still fails to
 surface once scored right.
+
+## D57a — What the review of the duplicate collapse found (2026-09-05)
+
+Fourteen findings on `feature/disambiguation`. The grouping algorithm itself
+survived — the reviewer could not construct a duplicate-row or transitive-merge
+failure — and every finding was around it. Four are worth recording because
+each is a class of mistake rather than a typo.
+
+**The phase spent money on `--dry-run`.** Every other LLM stage is gated on
+`spend`; this one was not, so a dry run against a fresh deployment would have
+made seven OpenAI calls and a dozen Anthropic ones. `budget=None` does not fix
+it — to `embed` and `adjudicate` that reads as *unlimited*, not *do not call* —
+so `assign` takes an explicit `adjudicate_pairs` flag and the band is counted as
+`deferred` instead of resolved.
+
+**The cost landed on the wrong run.** `_etl`'s `load_costs` is the single place
+a firing's spend is totalled and it had already run, so records written by this
+phase sat in the log until the *next* firing claimed them. The run that spent
+the money reported zero. Fixed by sweeping the log a second time after the
+phase; `load_costs` upserts on `(url, at)`, so the second sweep costs nothing
+and inserts only what was just written. The first attempt at this fix charged a
+dry run $31 of unrelated history, which `TestDryRun::test_no_llm_stage_runs`
+caught — the run total now takes the phase's own measured figure and the sweep
+only moves records into the ledger.
+
+**A comment described degradation the code did not do.** The phase claimed that
+if embedding failed the exact pass and release trains would still run. They are
+inside `assign`, which was in the same `try` as `embed` and therefore never
+reached. The two halves now fail independently, and `dedupe_unavailable` raises
+a system alert — the phase swallows its own exceptions by design, which is
+exactly how `drift_unavailable`'s outage went unnoticed for days (D45).
+
+**One anchor cannot serve two audiences or two windows.** `is_anchor` is chosen
+once over the whole corpus on a single significance score; a digest is one
+window and one audience. Two consequences, both silent: a release train's
+corpus-wide anchor can sit outside the window, so every release that *did* ship
+in it folds against an absent row and the section renders empty; and
+`event_type` is a multiplicative term in the investment score and absent from
+the AI score, so the member ranking highest overall can score zero on the axis
+being published while the member carrying that axis' signal is the one folded
+away. Membership is the durable fact and stays in the table; **which member
+speaks for a group is now decided by each surface**, per window and per
+audience. Confirmed as a code path; it does not fire on today's data.
+
+Also fixed: the embedding cache ignored which model produced a vector, so a
+same-width model swap re-embedded nothing and silently mixed two vector spaces;
+release trains chained without bound, so a daily-release repo became one
+permanent group; `check_dedupe` did not validate the model names it would spend
+money on, and `_cost` indexes `PRICES[model]` only *after* the call is billed;
+two config keys were read by nothing; and `assign`, the function that writes,
+had no test at all — 41 green tests, none of them calling it.
+
+Not changed: the reviewer suggested using the adjudicator's `more_complete`
+field as an anchor hint. Per-surface anchoring removed the need, so the field
+was dropped from the schema and the prompt instead. An output that is bought and
+discarded is a cost with no reader.

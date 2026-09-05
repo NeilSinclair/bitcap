@@ -169,6 +169,30 @@ def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> 
     )
 
 
+def _sweep_dedupe_cost(session: Session, run_id: int) -> float:
+    """Carry the dedupe phase's cost records into `raw_costs` for *this* run.
+
+    `_etl`'s `load_costs` is the single place a firing's spend is totalled, and
+    it has already run by the time this phase spends anything. Left alone, the
+    records sit in the append-only log until the *next* firing loads them —
+    which reports the money under a run that did not spend it, and leaves the
+    run that did reporting zero.
+
+    So the log is swept a second time. `load_costs` upserts on `(url, at)`, so
+    the second sweep inserts only what this phase just wrote and re-reading the
+    earlier records costs nothing. One ledger, one place cost is counted, and
+    the attribution follows the money.
+
+    Args:
+        session: Open session; the caller commits.
+        run_id: Run to attribute the newly-loaded records to.
+
+    Returns:
+        USD newly loaded, to add to the run total.
+    """
+    return float(load_costs(session, run_id=run_id).get("new_usd") or 0.0)
+
+
 def ingest_cost(session: Session, run_id: int) -> float:
     """LLM spend recorded against this run's sources.
 
@@ -399,19 +423,53 @@ def _phases(
     #     transaction and this phase calls two external APIs, so an OpenAI
     #     timeout there would roll back the whole rebuild.
     #
-    #     Degrades rather than fails. If embedding is unavailable the exact pass
-    #     and the release trains still run, which is most of the collapse by
-    #     volume; the run records the failure and carries on, because a feed
-    #     with duplicate rows is a worse product, not a broken one.
+    #     The two halves fail independently, and that is the whole point of
+    #     splitting them. `embed` is the only part that needs a provider; the
+    #     exact pass and the release trains inside `assign` are deterministic
+    #     and account for most of the collapse by volume, so a dead OpenAI key
+    #     degrades the feature rather than switching it off. Running them under
+    #     one `try` made that claim false — `assign` was never reached.
+    #
+    #     Spend is recorded against `run_sources`, not `raw_costs`. `_etl`'s
+    #     `load_costs` has already run by this point, so a record appended to
+    #     the shared log now would be picked up by the *next* firing and
+    #     attributed to it. Same problem the papers leg has, same fix.
     note("dedupe")
+    dedupe_stats: dict = {}
+    if spend:
+        try:
+            embedded = dedupe_mod.embed(session, prompt_version, budget=budget)
+            dedupe_stats.update(embedded=embedded["embedded"], usd=embedded["usd"])
+        except Exception as error:  # noqa: BLE001 - a provider outage is not a failed run
+            session.rollback()
+            dedupe_stats["embed_error"] = str(error)[:500]
+    else:
+        # --dry-run exercises the shape for free. Passing `budget=None` would
+        # not do it: to `embed` and `adjudicate` that means *unlimited*, not
+        # *do not call*.
+        dedupe_stats["embedded"] = 0
+
     try:
-        embedded = dedupe_mod.embed(session, prompt_version, budget=budget)
-        grouped = dedupe_mod.assign(session, prompt_version, run_id=run.id, budget=budget)
-        stats["dedupe"] = {**grouped, "embedded": embedded["embedded"],
-                           "embedding_usd": embedded["usd"]}
+        grouped = dedupe_mod.assign(
+            session, prompt_version, run_id=run.id,
+            budget=budget if spend else None, adjudicate_pairs=spend,
+        )
+        dedupe_stats.update(grouped)
+        dedupe_stats["usd"] = dedupe_stats.get("usd", 0.0) + grouped.get("usd", 0.0)
     except Exception as error:  # noqa: BLE001 - a duplicate row must not fail a run
         session.rollback()
-        stats["dedupe"] = {"error": str(error)[:500]}
+        dedupe_stats["error"] = str(error)[:500]
+
+    stats["dedupe"] = dedupe_stats
+    spent = float(dedupe_stats.get("usd") or 0.0)
+    if spent:
+        # The sweep carries the records into `raw_costs`; the run total takes
+        # the phase's own measured figure rather than the sweep's return. They
+        # differ whenever the log holds records an earlier firing never loaded,
+        # and attributing those here charged a dry run $31 of somebody else's
+        # history.
+        _sweep_dedupe_cost(session, run.id)
+        run.cost_usd = (run.cost_usd or 0.0) + spent
     session.commit()
 
     # 6. Publish both audiences' digests for the window this firing closes.
@@ -439,6 +497,10 @@ def _phases(
         "drift": drift_metrics,
         "snapshot_id": snapshot_id,
         "skipped_for_budget": stats.get("classify", {}).get("skipped_for_budget"),
+        # `dedupe_unavailable` reads the phase's own stats: it swallows its
+        # exceptions so a provider outage does not fail the firing, which means
+        # this is the only path by which the failure is ever reported.
+        "stats": stats,
     }
     stats["alerts"] = alerts_mod.dispatch(
         session,

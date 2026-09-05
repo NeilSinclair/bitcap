@@ -250,20 +250,48 @@ def build(
 
     # Folded near-duplicates never reach the cut. An edition carries at most
     # eight items, so publishing a launch post and its forum restatement as two
-    # of them spends a quarter of the space saying one thing twice. The anchor
-    # carries the group; `folded` reports the rest so the suppression is stated
-    # rather than silent.
-    folded = {
-        g.article_id: g.group_size
-        for g in session.scalars(select(m.ArticleGroup)) if not g.is_anchor
-    }
+    # of them spends a quarter of the space saying one thing twice.
+    #
+    # **The anchor is chosen here, not read from the table.** `is_anchor` is
+    # picked once over the whole corpus on a single significance score, and this
+    # edition is neither. Two ways that goes wrong if trusted:
+    #
+    # * *Out of window.* A release train spans days; its corpus-wide anchor can
+    #   sit outside this window entirely, so every member that did ship inside it
+    #   folds against an absent row and the section renders empty for a repo that
+    #   shipped four versions.
+    # * *Wrong audience.* One anchor serves both cuts. `event_type` is a
+    #   multiplicative term in the investment score and absent from the AI score,
+    #   so the member that ranks highest overall can score zero on this axis —
+    #   and the member carrying the investment signal is already folded. The item
+    #   disappears from the investment digest and the loss reads as intentional.
+    #
+    # Membership is the durable fact and lives in the table; which member speaks
+    # for the group is a property of the view, so each view decides it.
+    axis = "score" if kind == INVESTMENT else "ai_score"
+    groups = {g.article_id: g.group_id for g in session.scalars(select(m.ArticleGroup))}
+
+    in_window = [
+        art for art in session.scalars(select(m.Article))
+        if classifications.get(art.id) is not None and _in_window(art, start, end)
+    ]
+
+    def rank(art) -> tuple:
+        """Highest score on this edition's axis, earliest on a tie."""
+        return (getattr(classifications[art.id], axis) or 0.0,
+                -art.published_on.toordinal(), -art.id)
+
+    speaks_for: dict[str, object] = {}
+    for art in in_window:
+        group_id = groups.get(art.id, f"g{art.id}")
+        best = speaks_for.get(group_id)
+        if best is None or rank(art) > rank(best):
+            speaks_for[group_id] = art
 
     considered, selected, collapsed = 0, [], 0
-    for art in session.scalars(select(m.Article)):
-        cls = classifications.get(art.id)
-        if cls is None or not _in_window(art, start, end):
-            continue
-        if art.id in folded:
+    for art in in_window:
+        cls = classifications[art.id]
+        if speaks_for.get(groups.get(art.id, f"g{art.id}")) is not art:
             collapsed += 1
             continue
         considered += 1

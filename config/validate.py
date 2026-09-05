@@ -705,6 +705,39 @@ def check_dedupe(path: Path | None = None) -> list[str]:
     if not isinstance(embedding, int) or embedding < 1:
         errors.append(f"dedupe.yaml: embedding.batch_size={embedding!r} must be positive")
 
+    span = (doc.get("releases") or {}).get("max_span_days")
+    if not isinstance(span, int) or span < 1:
+        errors.append(
+            f"dedupe.yaml: releases.max_span_days={span!r} must be a positive integer — "
+            "without a ceiling a daily-release repo chains into one permanent group"
+        )
+
+    # Both model names are checked against the price table, because `_cost`
+    # indexes `PRICES[model]` *after* the provider has billed the call. An
+    # unpriced model therefore spends real money and then raises a KeyError,
+    # which the dedupe phase swallows: money gone, no cost record, no groups.
+    # Failing here is the difference between a typo caught in CI and a typo
+    # found in the ledger.
+    import sys as _sys
+    _sys.path.insert(0, str(ROOT.parent / "research" / "announcements"))
+    try:
+        from providers import PRICES, PROVIDERS
+    except ImportError:  # pragma: no cover - only if the shim moves
+        return errors + ["dedupe.yaml: cannot import providers to check model names"]
+
+    for key, model in (("embedding.model", (doc.get("embedding") or {}).get("model")),
+                       ("adjudication.model", adjudication.get("model"))):
+        if model not in PRICES:
+            errors.append(
+                f"dedupe.yaml: {key}={model!r} is not in providers.PRICES — the call "
+                "would be billed and then fail when its cost is computed"
+            )
+    provider = adjudication.get("provider")
+    if provider not in PROVIDERS:
+        errors.append(
+            f"dedupe.yaml: adjudication.provider={provider!r} not in {sorted(PROVIDERS)}"
+        )
+
     return errors
 
 

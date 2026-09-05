@@ -27,8 +27,11 @@ version: 1
 #
 # It is also the honest reading of that disagreement: it is classifier noise on
 # identical input, not evidence the articles differ.
-exact:
-  match_on: [lab, published_on, title]
+#
+# It has no settings. What counts as "the same article" — same lab, same day,
+# same title — is the definition of the pass rather than a choice about it, so
+# it lives in `dedupe._apply_exact` and not here. A `match_on` key would read as
+# a knob and change nothing when turned.
 
 # Gate 1 — subject. Two items are about the same thing if they share a
 # normalised model identifier (research/corpus/first_mention.py) and a lab,
@@ -50,7 +53,9 @@ window_days: 14
 # Log in Try ChatGPT" opens two different Astra articles) which lifts the
 # similarity between any two pages from one lab regardless of content.
 embedding:
-  provider: openai        # Anthropic has no embeddings API
+  # No `provider` key: Anthropic has no embeddings API, so there is exactly one
+  # and a key naming it would be a knob that does nothing. The dispatch lives in
+  # `dedupe.embed`, which calls `providers.embed_openai` directly.
   model: text-embedding-3-small
   # Texts per API call. The whole corpus is ~700 items, so this is 8 calls.
   batch_size: 96
@@ -63,11 +68,11 @@ embedding:
 # chosen by eye. Re-run it after any change to the labels or the embedded text.
 #
 # THE REASON THIS IS A BAND AND NOT A THRESHOLD: cosine does not separate the
-# classes. Labelled positives run 0.763 to 0.966 and negatives reach 0.869, so
-# every single cut is a bad trade — full recall lands at precision 0.38, full
-# precision at recall 0.20. The band is drawn where the number stops deciding.
+# classes. Labelled positives run 0.763 to 0.966 and negatives reach 0.834, so
+# every single cut is a bad trade — full recall lands at precision 0.54, full
+# precision at recall 0.43. The band is drawn where the number stops deciding.
 #
-#   >= 0.87   no false merge in the labelled set — merge unasked
+#   >= 0.84   no false merge in the labelled set — merge unasked
 #   <  0.76   no true duplicate lost — separate unasked
 #   between   the number genuinely does not know; ask the model
 #
@@ -76,11 +81,18 @@ embedding:
 # chosen on precision and the low edge on recall, rather than both on some
 # blended score that would trade the two as if they cost the same.
 #
-# Sample caveat: 5 positives after the exact pass. One wrong label moves recall
-# by 0.2. Indicative, not precise — the corpus genuinely contains few
-# near-duplicates. See docs/decisions.md.
+# These numbers moved once already, and for a reason worth remembering: the
+# first labelling pass read a file sorted by cosine. Rank is that number one
+# transform away, so the labeller could see where it sat in the ordering. Two of
+# 82 labels changed when the file was shuffled — and they were the top two
+# negatives, which is exactly where the high edge is set. `cosine_high` was 0.87
+# on the leaked labels and is 0.84 on the clean ones. See docs/decisions.md D57.
+#
+# Sample caveat: 7 positives after the exact pass. One wrong label moves recall
+# by 0.14. Indicative, not precise — the corpus genuinely contains few
+# near-duplicates.
 thresholds:
-  cosine_high: 0.87
+  cosine_high: 0.84
   cosine_low: 0.76
 
 adjudication:
@@ -100,3 +112,11 @@ adjudication:
 # about what one release event is.
 releases:
   window_hours: 48
+
+  # A ceiling on how long one train can run. Chaining alone is unbounded: a repo
+  # that ships daily for a month becomes one group of thirty anchored weeks in
+  # the past, and every later digest window then folds the releases that
+  # actually shipped in it against an anchor outside the window. 14 days matches
+  # `window_days` above, so both paths agree about how far apart two things can
+  # be and still be one event.
+  max_span_days: 14

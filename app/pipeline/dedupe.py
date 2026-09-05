@@ -7,18 +7,28 @@ launch post, a forum restatement, an API docs page, a safety overview, a
 precursor and two customer stories — each independently scored, each its own
 line.
 
-Three gates decide a merge, in order, and only the last one costs money:
+Four passes, and only the last one costs money:
 
-1. **Subject** — which thing. Deterministic, free: two items share a normalised
-   model identifier (`research/corpus/first_mention.py`) and a lab, inside
-   `window_days`.
-2. **Event type** — what kind of happening. Deterministic, free, and the
-   *separator* rather than a joiner: `classifications.event_type` must match.
-   This is what keeps "Safety overview: GPT-6 Astra" — which reports a crossed
-   Preparedness threshold nothing else in the cluster mentions — out of the
-   release card it would otherwise vanish into.
+0. **Exact** — one article that reached us at two URLs. Same lab, same day, same
+   title. Runs first because the classifier gives identical text different event
+   types, so the gate below would otherwise refuse to merge two copies of one
+   article.
+1. **Release trains** — consecutive releases from one repo, chained on the gap
+   between them and capped by `max_span_days`. Deterministic; no similarity
+   check, because a train is identified by its repo.
+2. **Event type** — the *separator* rather than a joiner:
+   `classifications.event_type` must match. This is what keeps "Safety overview:
+   GPT-6 Astra" — which reports a crossed Preparedness threshold nothing else in
+   the cluster mentions — out of the release card it would otherwise vanish into.
 3. **Redundancy** — does it add anything. Cosine decides the clear cases; only
    the band between the two thresholds reaches an LLM.
+
+**Subject identification is not a pass.** `subjects()` extracts the model
+identifier and it is shown in the reason, but it routes nothing: only 38 of 314
+non-release articles carry an identifier in the title, and no labelled duplicate
+sits below `cosine_low`, so a subject-only route would need a threshold the
+labelled set gives no evidence for. Kept as evidence rather than shipped as a
+gate that never fires.
 
 **Mechanism overlap is not a gate.** It was tested and rejected: over the 267
 non-release articles, 23 same-lab/same-event pairs clear Jaccard 0.5 and most
@@ -140,12 +150,14 @@ def unpack(blob: str):
     return np.frombuffer(base64.b64decode(blob), dtype="<f4")
 
 
-def pending(session: Session, prompt_version: str) -> list[tuple[str, str]]:
-    """Find the articles whose embedding is missing or stale.
+def pending(session: Session, prompt_version: str,
+            path: Path = CONFIG) -> list[tuple[str, str]]:
+    """Find the articles whose embedding is missing, stale, or from another model.
 
-    An article is pending if it has no cached vector, or if the vector it has
-    was built from different text. That is what makes a second run of an
-    unchanged corpus spend nothing.
+    An article is pending if it has no cached vector, if the vector it has was
+    built from different text, or if it was built by a different model. That is
+    what makes a second run of an unchanged corpus spend nothing while a genuine
+    change still re-embeds.
 
     Ordered by url so a budget cut lands in a reproducible place, matching
     `classify.pending_urls`.
@@ -153,6 +165,7 @@ def pending(session: Session, prompt_version: str) -> list[tuple[str, str]]:
     Args:
         session: Open session.
         prompt_version: Classification version whose summaries to embed.
+        path: Config file, for the model name that forms half the cache key.
 
     Returns:
         List of (url, text) pairs needing an embedding call.
@@ -164,10 +177,12 @@ def pending(session: Session, prompt_version: str) -> list[tuple[str, str]]:
         .order_by(m.Article.url)
     ).all()
 
+    model = settings(path)["embedding"]["model"]
     cached = {
-        url: digest
-        for url, digest in session.execute(
-            sa.select(m.RawArticleEmbedding.url, m.RawArticleEmbedding.content_hash)
+        url: (digest, cached_model)
+        for url, digest, cached_model in session.execute(
+            sa.select(m.RawArticleEmbedding.url, m.RawArticleEmbedding.content_hash,
+                      m.RawArticleEmbedding.model)
         ).all()
     }
 
@@ -176,7 +191,12 @@ def pending(session: Session, prompt_version: str) -> list[tuple[str, str]]:
         text = embedded_text(title or "", summary or "")
         if not text:
             continue
-        if cached.get(url) != text_hash(text):
+        # The model is part of the cache key, not just the text. Two models of
+        # the same width produce vectors in unrelated spaces, and comparing
+        # across them still yields a number in [0, 1] — so a model swap without
+        # this re-embeds nothing, the matrix silently mixes two spaces, and the
+        # width guard in `matrix` never fires because the width did not change.
+        if cached.get(url) != (text_hash(text), model):
             out.append((url, text))
     return out
 
@@ -441,7 +461,7 @@ def exact_groups(rows: list[dict]) -> dict[int, str]:
     }
 
 
-def adjudicate(left: dict, right: dict, config: dict, budget=None) -> dict | None:
+def adjudicate(left: dict, right: dict, config: dict, budget=None) -> tuple[dict | None, float]:
     """Ask the model whether two articles are the same event — gate 3.
 
     Reached only inside the threshold band, which is roughly 12 of 4,412
@@ -458,10 +478,12 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> dict | Non
             run.
 
     Returns:
-        `{"same": bool, "reason": str, "more_complete": "a"|"b"}`, or None if
-        the call was refused, failed, or came back malformed. None means "not
-        adjudicated", which the caller treats as not merged — the conservative
-        direction, since a false merge deletes a claim.
+        Tuple of (verdict, usd). The verdict is `{"same": bool, "reason": str}`,
+        or None if the call was refused, failed, or came back malformed. None
+        means "not adjudicated", which the caller treats as not merged — the
+        conservative direction, since a false merge deletes a claim. The cost is
+        returned even when the verdict is None, because a call that failed
+        after the provider billed it still spent money.
     """
     from research.announcements import providers
 
@@ -484,7 +506,7 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> dict | Non
         prompt = prompt.replace(key, str(value))
 
     if budget is not None and not budget.begin_call():
-        return None
+        return None, 0.0
     try:
         result, cost = providers.classify(
             adjudication["provider"], adjudication["model"],
@@ -492,7 +514,7 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> dict | Non
             f"dedupe:{left['id']}-{right['id']}",
         )
     except Exception:
-        return None
+        return None, 0.0
     finally:
         if budget is not None:
             budget.end_call(0.0)
@@ -502,23 +524,28 @@ def adjudicate(left: dict, right: dict, config: dict, budget=None) -> dict | Non
     _record_cost(cost)
 
     if not isinstance(result, dict) or "same" not in result:
-        return None
-    return result
+        return None, float(cost["usd"])
+    return result, float(cost["usd"])
 
 
+# `more_complete` was specified and then read by nothing: the anchor is chosen
+# by score, per surface, so a model's opinion on which member is fuller had no
+# consumer. Removed rather than left in the schema — an output that is bought
+# and discarded is a cost with no reader, and it invites a future change to
+# start trusting a field nothing validates.
 ADJUDICATION_SCHEMA = {
     "type": "object",
     "properties": {
         "same": {"type": "boolean"},
         "reason": {"type": "string"},
-        "more_complete": {"type": "string", "enum": ["a", "b"]},
     },
-    "required": ["same", "reason", "more_complete"],
+    "required": ["same", "reason"],
     "additionalProperties": False,
 }
 
 
-def release_trains(rows: list[dict], window_hours: int) -> list[list[dict]]:
+def release_trains(rows: list[dict], window_hours: int,
+                   max_span_days: int = 14) -> list[list[dict]]:
     """Group a repo's consecutive releases into one event each.
 
     GitHub releases are 380 of 647 articles, and they never need a similarity
@@ -533,6 +560,13 @@ def release_trains(rows: list[dict], window_hours: int) -> list[list[dict]]:
     which is the same question a reader is asking: is this still the same burst
     of activity.
 
+    Chaining alone is unbounded, which is wrong in the other direction: a repo
+    that ships daily for a month chains into one group of thirty, anchored on
+    whichever day scored highest. Every later digest window then folds the
+    releases that actually shipped in it against an anchor from weeks earlier.
+    `max_span_days` caps the run so a long-lived cadence becomes a series of
+    groups rather than one permanent one.
+
     Dates are day-granular (`articles.published_on` is a Date), so the window is
     applied in whole days. At the 48-hour default that is the intended
     behaviour; a sub-day window is not expressible and would need the timestamp
@@ -541,6 +575,7 @@ def release_trains(rows: list[dict], window_hours: int) -> list[list[dict]]:
     Args:
         rows: Release articles as dicts with `repo`, `published_on` and `id`.
         window_hours: Maximum gap between consecutive releases in one train.
+        max_span_days: Maximum first-to-last span of a single train.
 
     Returns:
         Groups, each a list of the input dicts, ordered by date.
@@ -554,6 +589,7 @@ def release_trains(rows: list[dict], window_hours: int) -> list[list[dict]]:
             current
             and current[-1]["repo"] == row["repo"]
             and (row["published_on"] - current[-1]["published_on"]).days <= window_days
+            and (row["published_on"] - current[0]["published_on"]).days <= max_span_days
         ):
             current.append(row)
         else:
@@ -625,11 +661,17 @@ def matrix(session: Session, urls: list[str]):
     """
     import numpy as np
 
+    # Filtered to the configured model, so a swap degrades to "not yet
+    # embedded" rather than to a matrix mixing two vector spaces. `pending`
+    # re-embeds them on the same run; this is the belt to its braces, and it is
+    # what makes a half-migrated cache safe rather than silently wrong.
+    model = settings()["embedding"]["model"]
     cached = {
         url: blob
         for url, blob in session.execute(
             sa.select(m.RawArticleEmbedding.url, m.RawArticleEmbedding.vector)
             .where(m.RawArticleEmbedding.url.in_(urls))
+            .where(m.RawArticleEmbedding.model == model)
         ).all()
     }
     present = [u for u in urls if u in cached]
@@ -685,7 +727,7 @@ METHOD_RANK = ["exact", "release_train", "llm", "embedding", "singleton"]
 
 
 def assign(session: Session, prompt_version: str, run_id: int | None = None,
-           budget=None, path: Path = CONFIG) -> dict:
+           budget=None, path: Path = CONFIG, adjudicate_pairs: bool = True) -> dict:
     """Group every article, and write the result to `article_groups`.
 
     Runs three paths and unions their verdicts:
@@ -707,9 +749,14 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
         run_id: Run to attribute the rows to.
         budget: Optional budget for the adjudication calls.
         path: Config file.
+        adjudicate_pairs: False leaves the band unresolved instead of calling
+            the model. The deterministic passes still run, so `--dry-run`
+            exercises the whole shape without spending. `budget=None` will not
+            do this — to `adjudicate` that means *unlimited*, not *do not call*.
 
     Returns:
-        Stats: articles, groups, collapsed, adjudicated, by_method.
+        Stats: articles, groups, collapsed, adjudicated, deferred, usd,
+        by_method.
     """
     config = settings(path)
     rows = _rows(session, prompt_version)
@@ -718,7 +765,9 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
 
     _apply_exact(rows, union, reasons)
     _apply_release_trains(rows, union, reasons, config)
-    adjudicated = _apply_gated(session, rows, union, reasons, config, budget)
+    adjudicated, deferred, usd = _apply_gated(
+        session, rows, union, reasons, config, budget, adjudicate_pairs
+    )
 
     session.execute(sa.delete(m.ArticleGroup))
     members: dict[int, list[dict]] = {}
@@ -726,7 +775,8 @@ def assign(session: Session, prompt_version: str, run_id: int | None = None,
         members.setdefault(union.find(row["id"]), []).append(row)
 
     stats = {"articles": len(rows), "groups": len(members), "collapsed": 0,
-             "adjudicated": adjudicated, "by_method": {}}
+             "adjudicated": adjudicated, "deferred": deferred, "usd": usd,
+             "by_method": {}}
     for root, group in members.items():
         prefer = "latest" if all(r["repo"] for r in group) else "earliest"
         anchor = anchor_of(group, "significance", prefer=prefer)
@@ -816,7 +866,8 @@ def _apply_release_trains(rows: list[dict], union: _Union, reasons: dict,
     """Union consecutive releases from one repo."""
     releases = [r for r in rows if r["repo"]]
     window = int(config["releases"]["window_hours"])
-    for train in release_trains(releases, window):
+    span = int(config["releases"]["max_span_days"])
+    for train in release_trains(releases, window, span):
         if len(train) < 2:
             continue
         for other in train[1:]:
@@ -829,7 +880,7 @@ def _apply_release_trains(rows: list[dict], union: _Union, reasons: dict,
 
 
 def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dict,
-                 config: dict, budget) -> int:
+                 config: dict, budget, adjudicate_pairs: bool = True) -> tuple[int, int, float]:
     """Run the event-type gate and the cosine band over the non-release articles.
 
     Gate 1's identifier match is computed and carried into the reason, but it is
@@ -845,13 +896,15 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
         reasons: Accumulating evidence.
         config: Parsed config.
         budget: Optional budget.
+        adjudicate_pairs: False leaves band pairs unmerged and counts them as
+            deferred, for a run that must not spend.
 
     Returns:
-        How many pairs reached the adjudicator.
+        Tuple of (pairs adjudicated, pairs deferred unspent, usd spent).
     """
     articles = [r for r in rows if not r["repo"]]
     if not articles:
-        return 0
+        return 0, 0, 0.0
 
     high = float(config["thresholds"]["cosine_high"])
     low = float(config["thresholds"]["cosine_low"])
@@ -859,7 +912,7 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
     position = {url: index for index, url in enumerate(urls)}
     subject = {r["id"]: subjects(r["title"]) for r in articles}
 
-    adjudicated = 0
+    adjudicated, deferred, usd = 0, 0, 0.0
     for left, right in candidate_pairs(articles, int(config["window_days"])):
         a, b = articles[left], articles[right]
 
@@ -883,14 +936,18 @@ def _apply_gated(session: Session, rows: list[dict], union: _Union, reasons: dic
                 f"at or above {high}",
             )
         elif cosine >= low:
+            if not adjudicate_pairs:
+                deferred += 1
+                continue
             adjudicated += 1
-            verdict = adjudicate(a, b, config, budget)
+            verdict, cost = adjudicate(a, b, config, budget)
+            usd += cost
             if verdict and verdict.get("same"):
                 union.union(a["id"], b["id"])
                 reasons[_key(a["id"], b["id"])] = (
                     "llm", f"{verdict['reason'][:180]} (similarity {cosine:.2f})"
                 )
-    return adjudicated
+    return adjudicated, deferred, usd
 
 
 def _key(left: int, right: int) -> tuple[int, int]:

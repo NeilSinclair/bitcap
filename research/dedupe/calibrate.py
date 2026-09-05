@@ -66,28 +66,56 @@ def load() -> tuple[list[dict], dict]:
     return features, labels
 
 
-def exact_pairs(features: list[dict], labels: dict) -> set[str]:
+def exact_pairs(features: list[dict], articles: dict) -> set[str]:
     """Identify pairs the exact pass handles, which the curve must exclude.
 
-    A pair whose two members disagree on event type but which a labeller called
-    the same article is, in this corpus, always one article at two URLs. Those
-    merge for free and never meet a threshold, so leaving them in would flatter
-    the curve at the top end.
+    Asks `dedupe.exact_groups` — the code that actually runs — rather than
+    inferring it from the labels. An earlier version defined these as "event
+    types disagree and a labeller said same", which happened to be correct on
+    this data and was wrong in principle: being defined in terms of the label,
+    it excluded any cross-event-type duplicate whether or not the pipeline could
+    merge it. A syndicated copy with a reworded headline would drop out of the
+    pool, the real exact pass would miss it (the titles differ), gate 2 would
+    refuse it, and the recall check would still report clean.
 
     Args:
         features: Feature rows.
-        labels: Labels by pair id.
+        articles: Article id to `{lab, published_on, title}`.
 
     Returns:
-        Pair ids to exclude.
+        Pair ids the exact pass merges without reaching a threshold.
     """
+    from app.pipeline import dedupe
+
+    rows = [{"id": k, **v, "repo": None} for k, v in articles.items()]
+    grouped = dedupe.exact_groups(rows)
     return {
         f["pair"] for f in features
-        if not f["same_event_type"] and labels[f["pair"]]["label"] == "same"
+        if grouped.get(f["a"]) is not None and grouped.get(f["a"]) == grouped.get(f["b"])
     }
 
 
-def curve(features: list[dict], labels: dict) -> list[dict]:
+def articles() -> dict:
+    """Read the fields the exact pass needs, keyed by article id.
+
+    Args:
+        None.
+
+    Returns:
+        Article id to `{lab, published_on, title}`.
+    """
+    from app.db import get_engine, get_session, load_env
+    from research.dedupe.candidates import rows as read_rows
+
+    load_env()
+    return {
+        row["id"]: {"lab": row["lab"], "published_on": row["published_on"],
+                    "title": row["title"]}
+        for row in read_rows(get_session(get_engine()))
+    }
+
+
+def curve(features: list[dict], labels: dict, exact: set[str]) -> list[dict]:
     """Precision and recall at each candidate threshold.
 
     Computed only over pairs that reach the threshold at all: the exact pass
@@ -97,12 +125,12 @@ def curve(features: list[dict], labels: dict) -> list[dict]:
     Args:
         features: Feature rows.
         labels: Labels by pair id.
+        exact: Pair ids the exact pass already merges.
 
     Returns:
         One row per threshold.
     """
-    skip = exact_pairs(features, labels)
-    pool = [f for f in features if f["pair"] not in skip and f["same_event_type"]]
+    pool = [f for f in features if f["pair"] not in exact and f["same_event_type"]]
     positives = [f for f in pool if labels[f["pair"]]["label"] == "same"]
     negatives = [f for f in pool if labels[f["pair"]]["label"] == "different"]
 
@@ -151,8 +179,8 @@ def recommend(rows: list[dict]) -> tuple[float, float]:
 def main() -> None:
     """Print the curve and the resulting band."""
     features, labels = load()
-    skip = exact_pairs(features, labels)
-    rows = curve(features, labels)
+    skip = exact_pairs(features, articles())
+    rows = curve(features, labels, skip)
     high, low = recommend(rows)
 
     same = sum(1 for f in features if labels[f["pair"]]["label"] == "same")

@@ -495,8 +495,12 @@ not yet portable.
 | Workflow | Model | Calls | Tokens | USD |
 |---|---|---:|---:|---:|
 | Embedding the corpus | `text-embedding-3-small` | 7 batches | 34,115 | $0.000682 |
-| Duplicate adjudication | `claude-sonnet-5` | 12 | 19,867 | $0.057142 |
-| **Total** | | | | **$0.0578** |
+| Duplicate adjudication | `claude-sonnet-5` | 22 | 34,377 | $0.0928 |
+| **Total** | | | | **$0.0935** |
+
+Adjudication was billed twice: once at `cosine_high = 0.87`, then again after
+the labelling leak was fixed and the threshold moved to 0.84 (D57a). A
+production run pays the lower figure once — the band holds 10 pairs, not 22.
 
 647 articles embedded for **under a tenth of a cent**, because what is embedded
 is title + classifier summary rather than the article body — 37k tokens against
