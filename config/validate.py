@@ -219,6 +219,16 @@ def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], lis
     return errors, warnings
 
 
+# Every key a lab entry may carry. An allowlist rather than a spell-check:
+# `backfil: wayback` is not a near miss of anything by string distance, it is
+# simply a key no code reads, and the lab silently keeps its feed summaries.
+# Add a key here when you add one to sources.yaml -- that is the point.
+SOURCE_LAB_KEYS = {
+    "id", "label", "method", "index_url", "text_source", "date_from",
+    "url_contains", "notes", "also", "enabled", "backfill", "window_months",
+    "baseline", "date_basis", "category", "page_param", "user_agent",
+}
+
 # Text-recovery strategies a lab may declare with `backfill:`. Read by
 # `fetch_announcements.collect` and `adapters.fetch_announcements`; listed here
 # so an unknown value is an error rather than a silent no-op.
@@ -271,23 +281,30 @@ def check_sources(root: Path) -> list[str]:
                         f"'{key}', missing"
                     )
 
-        # `backfill` selects text recovery for a lab whose site blocks us. It
-        # is matched by equality in two places, so a typo does not raise --
-        # it silently leaves the lab on feed summaries, which is precisely how
-        # OpenAI came to be scored on 200-character blurbs while every check
-        # stayed green. A misspelt *key* is caught too: this file is the only
-        # thing that can see `backfil: wayback`.
+        # `backfill` selects text recovery for a lab whose site blocks us, and
+        # is matched by equality in two places, so a wrong value does not raise
+        # -- it silently leaves the lab on feed summaries, which is how OpenAI
+        # came to be scored on 200-character blurbs while every check stayed
+        # green.
         backfill = lab.get("backfill")
         if backfill is not None and backfill not in BACKFILL_METHODS:
             errors.append(
                 f"sources.yaml/{lab_id}: unknown backfill '{backfill}' "
                 f"(known: {', '.join(sorted(BACKFILL_METHODS))})"
             )
+
+        # A misspelt *key* is the same failure and nothing else can see it: no
+        # code reads `backfil`, so the lab quietly keeps its summaries. This
+        # replaces a near-miss test that did not catch `backfil` -- the very
+        # example its own comment cited -- because collapsing case and
+        # underscores cannot recover a dropped letter. An allowlist has no such
+        # gap: anything not named here is either a typo or a key someone added
+        # without telling this file.
         for key in lab:
-            if key != "backfill" and key.lower().replace("_", "") == "backfill":
+            if key not in SOURCE_LAB_KEYS:
                 errors.append(
-                    f"sources.yaml/{lab_id}: '{key}' is not read; "
-                    f"the key is 'backfill'"
+                    f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
+                    f"reads it (known: {', '.join(sorted(SOURCE_LAB_KEYS))})"
                 )
     return errors
 

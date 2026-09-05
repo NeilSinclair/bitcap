@@ -4982,3 +4982,81 @@ means either Save Page Now (an API call, in the pipeline) or not settling a
 summary-only article -- and the second implies a re-score, since a
 classification already exists at this prompt version.
 
+---
+
+## D55a — What the review of the fetch-time backfill found (2026-09-05)
+
+Eight findings, one major. All actioned except the deployed-cache one, which is
+a decision rather than a fix.
+
+**The exact-lookup fallback returned the OLDEST snapshot.** CDX returns rows
+oldest-first, so `limit=5` asks for the first five snapshots ever taken, not
+the last. Measured on `openai.com/index/introducing-gpt-5` (309 snapshots):
+`limit=5` returns August 2025 crawls, `limit=-5` returns August 2026. This is
+not merely staleness -- an article's earliest crawls are the ones most likely
+to have caught a consent wall or a pre-render shell, and such a page clears the
+"longer than the summary" guard easily, so chrome would be stored as
+`full_text_archived` and quoted from. Now `limit=-5`.
+
+**And the obvious fix for the row count would have reintroduced it.** The
+review proposed `collapse=urlkey`, which cuts ~5,100 rows to ~870 and removes
+any truncation worry. It also keeps the *first* row of each group -- the oldest
+snapshot of every article, applied to all of them rather than to the handful
+the bulk query misses. Confirmed live: with collapse, `jalapeno-first-results`
+resolved to a 2026-08-25 snapshot instead of the 2026-08-29 one. Rejected;
+`CDX_ROW_LIMIT` went 6,000 -> 20,000 with a warning when a response comes back
+at exactly the ceiling, since truncation is indistinguishable from absence at
+the API.
+
+**The disk cache could serve one query's response to another.** The cache key
+collapses punctuation and truncates, so `...&limit=5` and `...&limit=-5` both
+render as `_limit_5`. Not hypothetical: it silently served the stale response
+while the ordering fix above was being verified, and the fix appeared to do
+nothing. A SHA-1 suffix now makes the key faithful. No collision exists among
+the real query shapes -- checked -- but the failure is invisible when it does.
+
+**The archive returns partial bodies.** Observed live on `openai.com/index*`:
+a 114,899-byte response ending `...","20260625092811"],` with no closing
+bracket, where the same query a minute later returned 141,565 bytes and parsed.
+`json.loads` raises, which in `collect()` would abort a seven-lab fetch over one
+flaky read on one lab. Worse, `fetch_wayback` caches before anything validates,
+so the partial body would be replayed for the whole discovery TTL -- one bad
+second becoming six bad hours. `_cdx_json` now tolerates it, drops the poisoned
+cache entry, and lets every article fall through to its own exact lookup:
+slower and correct rather than fast and absent.
+
+**The near-miss key check did not catch the example its own comment cited.**
+`backfil` is not recoverable by collapsing case and underscores -- a dropped
+letter is not a near miss by that measure -- so `backfil: wayback` validated
+clean, exactly the scenario the comment claimed was now impossible. Replaced
+with an allowlist of permitted lab keys, which has no such gap and which
+immediately found two keys nobody had enumerated (`page_param`, `user_agent`,
+both genuinely read by `from_listing_pagination`). The validator branches had
+also shipped with no test at all: deleting the whole block left the suite green.
+
+**The gold set was still recovering text through the old implementation.**
+`refresh_gold_text.py` imported `recover` and `slug_of` from
+`backfill_openai.py`, which normalises URLs differently and indexes
+`openai.com/index*` alone. Two recovery paths mean gold and production can hold
+different bytes for the same article -- which is not hypothetical, it is the
+exact blind spot that hid this bug for two days. It now calls the pipeline's
+own functions.
+
+**`config/sources.yaml` still documented the design this change deleted**,
+sending an operator to the redundant script and calling recovery something that
+happens "afterwards" -- the bug, stated as the design. Rewritten, including the
+settle-once limitation.
+
+**Not fixed: the disk cache the deployed container does not have.**
+`fetch_wayback` caches to `research/docs/announcement_cache/`, which is in both
+`.gitignore` and `.dockerignore`, on a Render cron with no disk. This is
+verbatim what D53 found for arXiv and solved by moving to Postgres
+`fetch_cache`. Steady state here is a handful of articles a night, so it is a
+first-firing and re-backfill cost rather than a nightly one -- but the module
+docstring's claim that re-runs cost no requests is false in the deployed shape.
+Migrating this leg onto `fetch_cache` is the obvious follow-on and is not in
+this change.
+
+**Still open, unchanged:** an article settles the night it is discovered, so
+enrichment gets one attempt and archive lag becomes permanent.
+

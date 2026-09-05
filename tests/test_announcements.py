@@ -2185,8 +2185,9 @@ class TestTheConfigKeyIsRead:
                    "date": "2026-08-01", "title": "X",
                    "text": "X. A summary.", "text_source": "rss_summary"}
 
-        monkeypatch.setattr(fetch_announcements, "CONFIG_CACHE", None, raising=False)
-        monkeypatch.setattr("fetch_announcements.yaml.safe_load",
+        # Patched on the module under test, not on the shared `yaml` object,
+        # which would swap safe_load for every importer for the test's duration.
+        monkeypatch.setattr(fetch_announcements.yaml, "safe_load",
                             lambda *_a, **_k: {"window_months": 3, "labs": [lab]})
         monkeypatch.setattr("fetch_announcements.METHODS",
                             {"rss": lambda ch, cutoff, skip=None: [dict(summary)]})
@@ -2213,7 +2214,9 @@ class TestTheConfigKeyIsRead:
                    "date": "2026-08-01", "title": "A", "text": "x" * 9000,
                    "text_source": "full_text"}
 
-        monkeypatch.setattr("fetch_announcements.yaml.safe_load",
+        # Patched on the module under test, not on the shared `yaml` object,
+        # which would swap safe_load for every importer for the test's duration.
+        monkeypatch.setattr(fetch_announcements.yaml, "safe_load",
                             lambda *_a, **_k: {"window_months": 3, "labs": [lab]})
         monkeypatch.setattr("fetch_announcements.METHODS",
                             {"rss": lambda ch, cutoff, skip=None: [dict(article)]})
@@ -2225,3 +2228,182 @@ class TestTheConfigKeyIsRead:
         fetch_announcements.collect()
 
         assert called == []
+
+
+class TestTheArchiveIsQueriedCorrectly:
+    """Three ways to ask the archive a question and get a confidently wrong
+    answer back. None of them raises, and all three were live in the first
+    version of this leg."""
+
+    def _lab(self):
+        return {"id": "openai", "label": "OpenAI", "method": "rss",
+                "index_url": "https://openai.com/blog/rss.xml",
+                "text_source": "rss_summary", "backfill": "wayback"}
+
+    def _summary(self, url="https://openai.com/index/x"):
+        return {"lab": "openai", "url": url, "date": "2026-08-01",
+                "title": "X", "text": "X. A summary.", "text_source": "rss_summary"}
+
+    def test_the_exact_lookup_asks_for_the_newest_snapshots(self, monkeypatch):
+        """CDX returns rows oldest-first, so `limit=5` is the first five
+        snapshots ever taken, not the last. Measured on
+        `openai.com/index/introducing-gpt-5` (309 snapshots): `limit=5`
+        returns August 2025, `limit=-5` returns August 2026. Taking the oldest
+        is not just stale -- the earliest crawls are the ones most likely to
+        have caught a consent wall, and a nav shell clears the
+        longer-than-the-summary guard easily, so chrome gets stored as
+        `full_text_archived` and quoted from."""
+        seen = []
+
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    return _cdx_rows()
+                seen.append(url)
+                return _cdx_rows(("https://openai.com/index/x", "20260101000000"))
+            return "<p>" + "q " * 500 + "</p>"
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        fetch_announcements.enrich_wayback(
+            self._lab(), [self._summary()], datetime(2026, 6, 1))
+
+        assert seen, "no exact lookup was made"
+        assert "limit=-5" in seen[0], f"asked for the oldest snapshots: {seen[0]}"
+
+    def test_the_bulk_query_takes_the_newest_snapshot_of_each_article(self, monkeypatch):
+        """`collapse=urlkey` is the obvious way to stop the row count growing
+        and it is wrong here: it keeps the FIRST row of each group, and CDX
+        returns rows oldest-first, so every article would resolve to its
+        earliest crawl. Confirmed live -- with collapse,
+        jalapeno-first-results resolved to a 2026-08-25 snapshot instead of
+        the 2026-08-29 one. The bulk path must agree with `_exact_snapshot`,
+        which asks for the newest explicitly."""
+        article = self._summary("https://openai.com/index/x")
+
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    assert "collapse=urlkey" not in url, (
+                        "collapse keeps the oldest snapshot of each article")
+                    return _cdx_rows(
+                        ("https://openai.com/index/x", "20260825000000"),
+                        ("https://openai.com/index/x", "20260829000000"),
+                        ("https://openai.com/index/x", "20260101000000"),
+                    )
+                return _cdx_rows()
+            return "<p>" + "s " * 500 + "</p>"
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        fetch_announcements.enrich_wayback(
+            self._lab(), [article], datetime(2026, 6, 1))
+
+        assert article["archive_snapshot"].startswith(
+            "http://web.archive.org/web/20260829000000id_/")
+
+    def test_a_truncated_bulk_response_says_so(self, monkeypatch, capsys):
+        """Truncation is indistinguishable from absence at the API. Silence
+        here reads as "the archive does not have these"."""
+        rows = [("https://openai.com/index/a%d" % i, "20260801000000")
+                for i in range(fetch_announcements.CDX_ROW_LIMIT)]
+
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                return _cdx_rows(*rows) if ("%2A" in url or "*" in url) else _cdx_rows()
+            return ""
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        fetch_announcements.enrich_wayback(
+            self._lab(), [self._summary()], datetime(2026, 6, 1))
+
+        assert "truncated" in capsys.readouterr().out
+
+    def test_two_queries_differing_only_in_punctuation_do_not_share_a_cache_file(self):
+        """The readable cache key collapses punctuation and truncates, so
+        `...&limit=5` and `...&limit=-5` both render as `_limit_5`. That
+        silently served the stale response while the snapshot ordering above
+        was being fixed -- the fix appeared to do nothing."""
+        import re as _re
+
+        def key(url):
+            return ("wb_" + _re.sub(r"[^a-zA-Z0-9]+", "_", url)[:120]
+                    + "_" + __import__("hashlib").sha1(url.encode()).hexdigest()[:10])
+
+        a = "http://web.archive.org/cdx/search/cdx?url=x&limit=5"
+        b = "http://web.archive.org/cdx/search/cdx?url=x&limit=-5"
+        assert key(a) != key(b)
+
+
+class TestAPartialArchiveResponse:
+    """Observed live, not imagined: the archive closed the connection mid-array
+    on `openai.com/index*` -- a 114,899-byte body ending `...],` with no
+    closing bracket, where the same query a minute later returned 141,565 bytes
+    and parsed cleanly. `json.loads` raises on that."""
+
+    def _lab(self):
+        return {"id": "openai", "label": "OpenAI", "method": "rss",
+                "index_url": "https://openai.com/blog/rss.xml",
+                "text_source": "rss_summary", "backfill": "wayback"}
+
+    def _summary(self, url="https://openai.com/index/x"):
+        return {"lab": "openai", "url": url, "date": "2026-08-01",
+                "title": "X", "text": "X. A summary.", "text_source": "rss_summary"}
+
+    def test_a_truncated_bulk_body_does_not_abort_the_fetch(self, monkeypatch):
+        """In `collect()` an uncaught raise here loses all seven labs' articles
+        over one flaky read on one of them."""
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    return '[["original","timestamp"],\n["https://a/","2026"],'
+                return _cdx_rows()
+            return ""
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        missed = fetch_announcements.enrich_wayback(
+            self._lab(), [self._summary()], datetime(2026, 6, 1))
+
+        assert len(missed) == 1  # reported, not raised
+
+    def test_articles_fall_through_to_an_exact_lookup(self, monkeypatch):
+        """A dead bulk query must degrade to slower-and-correct, not to
+        absent. Otherwise one partial response reads as "the archive has
+        nothing" for every article in that prefix."""
+        def fake_fetch(url, **kw):
+            if "cdx/search/cdx" in url:
+                if "%2A" in url or "*" in url:
+                    return "not json at all"
+                return _cdx_rows(("https://openai.com/index/x", "20260902120000"))
+            return "<p>" + "r " * 500 + "</p>"
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", fake_fetch)
+        article = self._summary()
+        missed = fetch_announcements.enrich_wayback(
+            self._lab(), [article], datetime(2026, 6, 1))
+
+        assert missed == []
+        assert article["text_source"] == "full_text_archived"
+
+    def test_the_unusable_body_is_dropped_from_the_cache(self, monkeypatch, tmp_path):
+        """`fetch_wayback` caches before anything validates the body, so a
+        partial read would otherwise be replayed for the whole discovery TTL.
+        One bad second becomes six bad hours."""
+        monkeypatch.setattr(fetch_announcements, "CACHE", tmp_path)
+        query = "http://web.archive.org/cdx/search/cdx?url=x&output=json"
+        path = fetch_announcements._wayback_cache_path(query)
+        path.write_text('[["original","timestamp"],')
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback",
+                            lambda url, **kw: path.read_text())
+
+        assert fetch_announcements._cdx_json(query) is None
+        assert not path.exists()
+
+    def test_an_archive_outage_is_reported_not_raised(self, monkeypatch):
+        def boom(url, **kw):
+            raise RuntimeError("wayback fetch failed: 503")
+
+        monkeypatch.setattr("fetch_announcements.fetch_wayback", boom)
+        missed = fetch_announcements.enrich_wayback(
+            self._lab(), [self._summary()], datetime(2026, 6, 1))
+
+        assert len(missed) == 1

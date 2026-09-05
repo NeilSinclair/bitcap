@@ -117,3 +117,51 @@ class TestCheckGithubSources:
     def test_missing_file_is_an_error_not_a_crash(self, tmp_path):
         errors = check_github_sources(tmp_path, {"anthropic"})
         assert any("missing" in e for e in errors)
+
+
+class TestTheBackfillKeyIsValidated:
+    """`backfill: wayback` is matched by equality in two places, so anything
+    wrong about it fails silently and the lab keeps its feed summaries -- the
+    exact shape of the two-day OpenAI regression (decisions.md D55). These
+    branches shipped untested once: deleting the whole block left the suite
+    green.
+    """
+
+    def _sources(self, lab_extra):
+        lab = {"id": "openai", "label": "OpenAI", "method": "rss",
+               "index_url": "https://openai.com/blog/rss.xml",
+               "text_source": "rss_summary", **lab_extra}
+        return {"version": 1, "window_months": 3, "labs": [lab]}
+
+    def _check(self, tmp_path, doc):
+        _write(tmp_path / "sources.yaml", doc)
+        return check_sources(tmp_path)
+
+    def test_a_known_backfill_passes(self, tmp_path):
+        assert self._check(tmp_path, self._sources({"backfill": "wayback"})) == []
+
+    def test_no_backfill_at_all_passes(self, tmp_path):
+        assert self._check(tmp_path, self._sources({})) == []
+
+    def test_an_unknown_backfill_value_is_an_error(self, tmp_path):
+        errors = self._check(tmp_path, self._sources({"backfill": "waybck"}))
+        assert any("unknown backfill" in e for e in errors)
+
+    def test_a_dropped_letter_in_the_key_is_caught(self, tmp_path):
+        """`backfil` is precisely the case a near-miss check cannot catch:
+        collapsing case and underscores does not recover a dropped letter, so
+        the first version of this check passed the very example its own comment
+        cited. An allowlist has no such gap."""
+        errors = self._check(tmp_path, self._sources({"backfil": "wayback"}))
+        assert any("backfil" in e and "unknown key" in e for e in errors)
+
+    def test_an_underscored_variant_is_caught(self, tmp_path):
+        errors = self._check(tmp_path, self._sources({"back_fill": "wayback"}))
+        assert any("unknown key" in e for e in errors)
+
+    def test_the_committed_file_has_no_unknown_keys(self):
+        """The allowlist must be maintained. Adding a key to sources.yaml
+        without adding it here fails loudly, rather than the key being quietly
+        declared dead -- which is the direction that costs nothing to get
+        wrong and everything to leave wrong."""
+        assert check_sources(ROOT / "config") == []

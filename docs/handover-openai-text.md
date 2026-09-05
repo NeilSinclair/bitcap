@@ -3,6 +3,7 @@
 Written 2026-09-05, on branch `fix/openai-fulltext` (off `deployment-dev`).
 Rationale lives in [`decisions.md`](decisions.md) §D55; this is the operational
 picture — what is done, what is not, and what to be careful of.
+The review that followed is §D55a.
 
 ---
 
@@ -19,8 +20,8 @@ costs money.
 
 | | |
 |---|---|
-| branch | `fix/openai-fulltext`, 3 commits, pushed |
-| tests | 1,211 pass, 1 skipped, config clean |
+| branch | `fix/openai-fulltext`, 5 commits, pushed |
+| tests | 1,225 pass, 1 skipped, config clean |
 | corpus | **not yet re-fetched** — still 149 articles on `rss_summary` |
 | register | `scored_announcements_v8.json`, scored against the *degraded* text |
 | `PROMPT_VERSION` | `v8` |
@@ -74,6 +75,18 @@ wiring is removed — both were checked by removing them.
 of this and is not redundant belt-and-braces. Removing it silently loses
 articles the archive does hold, reported as "not archived yet".
 
+**Do not add `collapse=urlkey` to the bulk CDX query.** It is the obvious way
+to cut the row count and it keeps the *oldest* snapshot of every article, since
+CDX returns rows oldest-first. Confirmed live: with collapse,
+`jalapeno-first-results` resolves to a 2026-08-25 snapshot instead of the
+2026-08-29 one. `CDX_ROW_LIMIT` plus the truncation warning is the intended
+guard instead. Same reason `_exact_snapshot` uses a *negative* limit.
+
+**The archive returns partial bodies.** `_cdx_json` tolerates them and drops
+the cached copy. Do not simplify it back to a bare `json.loads` -- a truncated
+response is cached before anything validates it, so one bad read becomes hours
+of them.
+
 ## 5. Known-open
 
 **17 articles the archive has never crawled** — 11 customer stories, 4 policy
@@ -103,4 +116,16 @@ blurb for ever. Two ways to close it, neither taken:
 - `research/announcements/backfill_openai.py` — **now redundant**. Left in place
   rather than deleted; it still works standalone, but it writes to a file the
   next fetch overwrites, which is exactly the trap. Retiring it is a judgement
-  call nobody has made.
+  call nobody has made. Its last live importer was `refresh_gold_text.py`,
+  which now uses the pipeline's own recovery instead — so gold and production
+  read a page the same way.
+
+## 7. The follow-on nobody has decided
+
+`fetch_wayback` caches to `research/docs/announcement_cache/`, which is in
+`.gitignore` and `.dockerignore`, on a Render cron with no disk — the same
+shape D53 found in the papers leg and fixed by moving to Postgres
+`fetch_cache`. Steady state here is a handful of articles a night, so this is a
+first-firing and re-backfill cost, not a nightly one. But the module docstring
+still claims re-runs cost no requests, which is false in the deployed shape.
+Migrating this leg onto `fetch_cache` is the obvious next piece of work.
