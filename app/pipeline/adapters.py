@@ -278,6 +278,27 @@ def fetch_announcements(source, state=None, session=None) -> FetchResult:
             })
     if errors and len(errors) == len(channels):
         raise errors[-1]
+
+    # Recovery, in the same call as discovery. A lab whose site blocks us
+    # (`backfill: wayback` in sources.yaml) yields a title and a one-sentence
+    # summary from its feed; the archive has the page. This used to be a
+    # separate script run by hand against announcements.json, which meant the
+    # deployed pipeline never ran it at all and every OpenAI article reached
+    # the classifier as a ~200-character blurb.
+    #
+    # Failures here are recorded, never raised: articles found is the source's
+    # job and it has already done it. An article the archive has not crawled
+    # yet is the ordinary case for anything published in the last few days.
+    if lab.get("backfill") == "wayback" and items:
+        try:
+            unresolved.extend(fa.enrich_wayback(lab, items, since))
+        except Exception as exc:  # noqa: BLE001
+            unresolved.append({
+                "kind": "backfill",
+                "name": f"{lab['id']}:wayback",
+                "reason": f"backfill failed, articles kept on summaries: {exc}",
+            })
+
     newest = max((a["date"] for a in items), default=None)
     return FetchResult(
         items=items,

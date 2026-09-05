@@ -930,3 +930,113 @@ class TestReleasesAdapter:
 
         result = adapters.fetch_releases(self.release_source(), session=session)
         assert result.watermark["reached_cursor"] is False
+
+
+class TestTheBackfillRunsInThePipeline:
+    """The path that actually runs nightly, which is the one that never ran it.
+
+    `backfill_openai.py` was a script a person ran by hand against a file. The
+    deployed pipeline does not run scripts and has no file: it calls the
+    discovery methods directly and writes to `raw_articles`. So recovery was
+    absent from production entirely, and OpenAI reached the classifier as
+    ~200-character feed blurbs every single night while the corpus file --
+    briefly, once -- looked fine.
+
+    `tests/test_announcements.py` covers `enrich_wayback` itself. These cover
+    the wiring, because the wiring is what was missing.
+    """
+
+    def _source(self, **extra):
+        config = {
+            "id": "openai", "method": "rss", "window_months": 3,
+            "backfill": "wayback", "text_source": "rss_summary",
+            **extra,
+        }
+        return Source(leg="announcements", id="openai", label="OpenAI", stage=1,
+                      enabled=True, config=config)
+
+    def _summary(self, url="https://openai.com/index/x"):
+        return {"lab": "openai", "url": url, "date": "2026-09-01",
+                "title": "X", "text": "X. A one-sentence summary.",
+                "text_source": "rss_summary"}
+
+    def test_recovered_text_reaches_the_items_the_pipeline_stores(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+
+        def fake_enrich(lab, articles, cutoff):
+            for a in articles:
+                a["text"] = "the recovered article body " * 200
+                a["text_source"] = "full_text_archived"
+                a["archive_snapshot"] = "http://web.archive.org/web/2026id_/x"
+            return []
+
+        monkeypatch.setattr(fa, "enrich_wayback", fake_enrich)
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert [a["text_source"] for a in result.items] == ["full_text_archived"]
+        assert len(result.items[0]["text"]) > 3000
+
+    def test_a_lab_without_the_key_is_not_walked(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+        called = []
+        monkeypatch.setattr(fa, "enrich_wayback",
+                            lambda *a, **k: called.append(1) or [])
+
+        adapters.fetch_announcements(self._source(backfill=None))
+
+        assert called == []
+
+    def test_an_unrecovered_article_is_reported_as_unresolved(self, monkeypatch):
+        """A lab stuck on summaries has to be visible somewhere. `unresolved`
+        is the channel this pipeline already uses for a known gap."""
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+        monkeypatch.setattr(fa, "enrich_wayback", lambda lab, articles, cutoff: [
+            {"kind": "backfill", "name": articles[0]["url"],
+             "reason": "no archive snapshot in window; still on the RSS summary"}])
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert len(result.unresolved) == 1
+        assert result.unresolved[0]["kind"] == "backfill"
+
+    def test_a_failing_archive_does_not_lose_the_articles(self, monkeypatch):
+        """Discovery already succeeded. The archive being down means worse
+        text, not a dead source -- failing here would throw away a good fetch
+        and mark OpenAI down for a reason that has nothing to do with OpenAI."""
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss",
+                            lambda lab, cutoff, skip=None: [self._summary()])
+
+        def boom(lab, articles, cutoff):
+            raise RuntimeError("wayback fetch failed: 503")
+
+        monkeypatch.setattr(fa, "enrich_wayback", boom)
+
+        result = adapters.fetch_announcements(self._source())
+
+        assert len(result.items) == 1
+        assert result.items[0]["text_source"] == "rss_summary"
+        assert any("backfill failed" in u["reason"] for u in result.unresolved)
+
+    def test_no_articles_means_no_archive_query(self, monkeypatch):
+        import fetch_announcements as fa
+
+        monkeypatch.setitem(fa.METHODS, "rss", lambda lab, cutoff, skip=None: [])
+        called = []
+        monkeypatch.setattr(fa, "enrich_wayback",
+                            lambda *a, **k: called.append(1) or [])
+
+        adapters.fetch_announcements(self._source())
+
+        assert called == []

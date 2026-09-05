@@ -132,6 +132,48 @@ empty-tag runs went 39% → 47%, slightly *worse*. Recorded because an agent tha
 `decisions.md` was disciplined; nothing here is *new* information, but reconstructing it
 took an hour that writing it as it happened would not have.
 
+
+---
+
+## 2026-09-05 — The corpus that quietly stopped being the corpus
+
+**Where the loop broke, and it was not the model.** A backfill recovered 141
+OpenAI articles from the Internet Archive on 09-02. The next fetch, one day
+later, overwrote every one of them — the fetcher rebuilds its output file from
+scratch, and the backfill was a separate script editing that same file
+afterwards. Nothing raised, nothing logged, 1,194 tests stayed green, and the
+lab that is 59% of the corpus was scored on its own meta descriptions for two
+days. **No agent did anything wrong; the two scripts were each correct alone.**
+
+**The tell was in the wrong direction.** The investigation started from "the v8
+prompt halved our alert volume, v8 is a regression". Checking rather than
+accepting it inverted the finding twice: first that v7's quotes did not resolve
+against the corpus (50% of them), which looked like mass hallucination; then
+that they *did* resolve against the archived text, so v7 was right and the
+corpus had degraded under it. Two wrong conclusions were stated to Neil before
+the third one held. Both were wrong in the confident direction.
+
+**The eval could not have caught it.** The gold set carries its own copy of each
+document, and 11 of the 20 were 2×–98× richer than what the pipeline actually
+scored — 13,283 characters against 249 on the same article. Gold agreement was
+measured on text production never sees, so the drift check would have kept
+reporting health indefinitely. **An eval that reads different bytes than the
+product is not an eval**, and nothing in the design said so out loud.
+
+**A defect introduced and caught inside the same session.** The first version of
+the fix trusted the archive's wildcard index. It missed `path-to-astra` — the
+substantive half of a frontier launch — which an exact lookup finds instantly.
+It surfaced only because Neil asked a question about a *different* thing (which
+channel the Astra articles arrive on) and checking it properly meant querying
+each URL directly. Nothing in the test suite would have found it: the fix was
+green, live-verified at n=1 on two articles, and wrong on a third.
+
+**What that says about verification at n=1.** Two articles recovered, both
+correct, was taken as proof the mechanism worked. It proved the mechanism worked
+*for articles the bulk query already found*. The n=1 rule catches "does this work
+at all" and not "does this work for the cases I did not sample" — and the second
+is where this project's failures have actually lived.
+
 ---
 
 ## `[NEIL]` — only you can answer these

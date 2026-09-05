@@ -219,6 +219,12 @@ def check_practices(root: Path, mechanism_ids: set[str]) -> tuple[list[str], lis
     return errors, warnings
 
 
+# Text-recovery strategies a lab may declare with `backfill:`. Read by
+# `fetch_announcements.collect` and `adapters.fetch_announcements`; listed here
+# so an unknown value is an error rather than a silent no-op.
+BACKFILL_METHODS = {"wayback"}
+
+
 def check_sources(root: Path) -> list[str]:
     """Validate sources.yaml: every lab carries the keys its method needs.
 
@@ -264,6 +270,25 @@ def check_sources(root: Path) -> list[str]:
                         f"sources.yaml/{lab_id}: method '{method}' requires "
                         f"'{key}', missing"
                     )
+
+        # `backfill` selects text recovery for a lab whose site blocks us. It
+        # is matched by equality in two places, so a typo does not raise --
+        # it silently leaves the lab on feed summaries, which is precisely how
+        # OpenAI came to be scored on 200-character blurbs while every check
+        # stayed green. A misspelt *key* is caught too: this file is the only
+        # thing that can see `backfil: wayback`.
+        backfill = lab.get("backfill")
+        if backfill is not None and backfill not in BACKFILL_METHODS:
+            errors.append(
+                f"sources.yaml/{lab_id}: unknown backfill '{backfill}' "
+                f"(known: {', '.join(sorted(BACKFILL_METHODS))})"
+            )
+        for key in lab:
+            if key != "backfill" and key.lower().replace("_", "") == "backfill":
+                errors.append(
+                    f"sources.yaml/{lab_id}: '{key}' is not read; "
+                    f"the key is 'backfill'"
+                )
     return errors
 
 
