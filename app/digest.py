@@ -252,20 +252,91 @@ def build(
     ):
         pracs[t.classification_id].append(t)
 
-    considered, selected = 0, []
-    for art in session.scalars(select(m.Article)):
-        cls = classifications.get(art.id)
-        if cls is None or not _in_window(art, start, end):
-            continue
-        considered += 1
-        item = (
+    # Folded near-duplicates never reach the cut. An edition carries at most
+    # eight items, so publishing a launch post and its forum restatement as two
+    # of them spends a quarter of the space saying one thing twice.
+    #
+    # **The anchor is chosen here, not read from the table.** `is_anchor` is
+    # picked once over the whole corpus on a single significance score, and this
+    # edition is neither. Two ways that goes wrong if trusted:
+    #
+    # * *Out of window.* A release train spans days; its corpus-wide anchor can
+    #   sit outside this window entirely, so every member that did ship inside it
+    #   folds against an absent row and the section renders empty for a repo that
+    #   shipped four versions.
+    # * *Wrong audience.* One anchor serves both cuts. `event_type` is a
+    #   multiplicative term in the investment score and absent from the AI score,
+    #   so the member that ranks highest overall can score zero on this axis —
+    #   and the member carrying the investment signal is already folded. The item
+    #   disappears from the investment digest and the loss reads as intentional.
+    #
+    # Membership is the durable fact and lives in the table; which member speaks
+    # for the group is a property of the view, so each view decides it.
+    axis = "score" if kind == INVESTMENT else "ai_score"
+    grouping = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
+    groups = {article_id: g.group_id for article_id, g in grouping.items()}
+    methods = {g.group_id: g.method for g in grouping.values()}
+
+    in_window = [
+        art for art in session.scalars(select(m.Article))
+        if classifications.get(art.id) is not None and _in_window(art, start, end)
+    ]
+
+    def rank(art) -> tuple:
+        """Highest score on this edition's axis, then by date.
+
+        The date tie-break flips for release trains, and it decides every one of
+        them: within a train each release usually carries the same score, so the
+        secondary key is the whole decision. A repo's card must name the version
+        it is on — anchoring earliest published `claude-code v2.1.258` while
+        v2.1.260 sat folded inside it, which states the opposite of what the
+        group means. Elsewhere earliest wins, because being early is the
+        product's claim.
+        """
+        latest = methods.get(groups.get(art.id, f"g{art.id}")) == "release_train"
+        direction = 1 if latest else -1
+        return (getattr(classifications[art.id], axis) or 0.0,
+                direction * art.published_on.toordinal(), direction * art.id)
+
+    def item_for(art):
+        """Render `art` under this edition's rule, or None if it does not pass."""
+        cls = classifications[art.id]
+        return (
             _investment_item(art, cls, conns_by_article[art.id], mechs[cls.id],
                              labs, names, mech_labels, rules, config)
             if kind == INVESTMENT
             else _ai_item(art, cls, pracs[cls.id], labs, prac_labels, rules)
         )
-        if item is not None:
-            selected.append(item)
+
+    # Ranked candidates per group, best first. The whole list is kept rather
+    # than just the winner because the top-ranked member is not necessarily the
+    # one that *passes*: `_investment_item` gates on connection strength and
+    # band, and `rank` orders on score. A group whose highest scorer carries no
+    # holding link would emit nothing at all while a folded member with a 0.9
+    # NVIDIA connection sat behind it — the link never reaching a reader, and
+    # `collapsed` claiming another row already said it when no row did.
+    #
+    # So the group is represented by its best member that the audience's own
+    # rule accepts, and only genuinely says nothing when none of them do.
+    candidates: dict[str, list] = {}
+    for art in in_window:
+        candidates.setdefault(groups.get(art.id, f"g{art.id}"), []).append(art)
+
+    considered, selected, collapsed = 0, [], 0
+    for members in candidates.values():
+        members.sort(key=rank, reverse=True)
+        considered += 1
+        for index, art in enumerate(members):
+            item = item_for(art)
+            if item is not None:
+                selected.append(item)
+                collapsed += len(members) - 1
+                break
+        else:
+            # Nobody passed. The group is suppressed on merit, not collapsed —
+            # counting it as collapsed would report a merge as the reason a
+            # reader saw nothing.
+            collapsed += len(members) - 1
 
     selected.sort(key=lambda i: i["rank"], reverse=True)
     items = selected[: rules["max_items"]]
@@ -284,6 +355,11 @@ def build(
             # a reader asking "what did you not tell me" does not care which.
             "suppressed": considered - len(items),
             "matched_rule": len(selected),
+            # Kept separate from `suppressed`: those items lost on merit or to
+            # the cap, these were never candidates because another row in the
+            # edition already says the same thing. Conflating them would make a
+            # collapse read as a rejection.
+            "collapsed": collapsed,
         },
         "items": items,
     }

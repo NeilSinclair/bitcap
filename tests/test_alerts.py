@@ -697,3 +697,82 @@ class TestDriftMeasuringNothingIsAnIncident:
     def test_the_rule_is_registered(self):
         """A rule absent from RULES never runs, however well it is written."""
         assert "drift_unavailable" in alerts.RULES
+
+class TestDedupeUnavailable:
+    """The collapse swallows its own failures, so this is the only path out.
+
+    The silent failure: a dead `OPENAI_API_KEY` means the phase raises every
+    night, the exception is caught so the firing still reports `succeeded` and
+    exits 0, and the digest keeps folding against a grouping nobody is updating.
+    Every surface looks healthy. This is the shape `drift_unavailable` was built
+    for after the same thing went unnoticed for days (D45).
+    """
+
+    def test_a_healthy_phase_raises_nothing(self, session):
+        context = {"stats": {"dedupe": {"groups": 555, "collapsed": 92,
+                                        "articles": 647, "coverage": 1.0}}}
+        assert alerts.dedupe_unavailable(session, CONFIG, context) == []
+
+    def test_a_collapse_with_no_embeddings_is_reported(self, session):
+        """The failure with no other symptom, and the reason `coverage` exists.
+
+        An empty or model-mismatched vector cache makes gate 3 a no-op. Nothing
+        raises: every pair is skipped, the phase returns cleanly, and
+        `collapsed` is merely lower than it should be. Reproduced directly —
+        `assign` over two true duplicates with an empty cache returns two
+        groups, zero collapsed, and no error. Without this rule, swapping the
+        embedding model in config silently switches off half the feature and
+        every surface still looks healthy.
+        """
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.0,
+                                        "groups": 647, "collapsed": 0}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert found[0].kind == alerts.SYSTEM
+        assert "no-op" in found[0].subject
+
+    def test_partial_coverage_is_not_reported(self, session):
+        """A budget cut mid-embed leaves some vectors, which still works."""
+        context = {"stats": {"dedupe": {"articles": 647, "coverage": 0.4,
+                                        "groups": 600, "collapsed": 47}}}
+        assert alerts.dedupe_unavailable(session, CONFIG, context) == []
+
+    def test_a_phase_that_did_not_run_raises_nothing(self, session):
+        """Absent is not failed — a dry run does not alert."""
+        assert alerts.dedupe_unavailable(session, CONFIG, {"stats": {}}) == []
+
+    def test_a_failed_grouping_is_a_system_alert(self, session):
+        context = {"stats": {"dedupe": {"error": "connection refused"}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert found[0].kind == alerts.SYSTEM
+        assert "connection refused" in found[0].body
+
+    def test_an_embedding_outage_reports_itself_as_partial(self, session):
+        """The deterministic passes still ran, and the alert has to say so.
+
+        Reporting a degraded collapse the same way as a dead one sends somebody
+        looking for a broken feed when most of the volume is still being
+        collapsed correctly.
+        """
+        context = {"stats": {"dedupe": {"embed_error": "no api key", "groups": 500}}}
+
+        found = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert len(found) == 1
+        assert "still ran" in found[0].body
+        assert found[0].dedupe_key.endswith("embed")
+
+    def test_one_outage_is_one_alert_not_one_a_night(self, session):
+        """Keyed on the failure kind, so a week of failures is a single row."""
+        context = {"stats": {"dedupe": {"error": "boom"}}}
+
+        first = alerts.dedupe_unavailable(session, CONFIG, context)
+        second = alerts.dedupe_unavailable(session, CONFIG, context)
+
+        assert first[0].dedupe_key == second[0].dedupe_key
+

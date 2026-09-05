@@ -5423,9 +5423,6 @@ one check that would make a carried-forward row verifiable after the fact —
 pointed at directly by this whole exercise having begun with text changing
 underneath a stored classification.
 
-
----
-
 ## D57 — Papers become a scored corpus, not a second pipeline (2026-09-05)
 
 **This supersedes D25.** That entry rejected scoring papers, and its reasoning
@@ -5778,3 +5775,412 @@ signal**. That is a real hole and it is accepted knowingly: if `p1` or
 `classification.model` changes, re-run `research/papers/grade_paper_gold.py` and
 compare against the table above. The trigger is a code change, not a calendar —
 which is honest about what the check can actually detect at this sample size.
+
+## D59 — The duplicate collapse, and what the labels said about it (2026-09-05)
+
+D48 rejected cross-article deduplication and deferred the embedding approach to
+`docs/next_steps_0309.md`. This reverses it. The case that forced it: GPT-6
+Astra reached the feed as seven rows over five days, and 380 of 647 articles are
+GitHub releases where one repo ships four in five days.
+
+**Mechanism overlap was the first idea and it is wrong.** It reads as the
+natural signal — the extraction already says what each article claims — so it
+was measured rather than assumed. Over the 267 non-release articles, 52 pairs
+share a lab, a fortnight and an event type with tags on both sides; 23 clear
+Jaccard 0.5, and most of those are false. "TCS and Anthropic bring Claude to
+regulated industries" against "DXC integrates Claude into systems" scores a
+perfect 1.0 and they are two different partnerships; so do "Grok on Amazon
+Bedrock" and "Grok Becomes the Voice of Vapi". The vocabulary encodes what
+*kind* of event an item is, not *which* event. It is an input to gate 3 now,
+never a gate.
+
+**What separates the true pairs is the subject, and the separator is the event
+type.** Three gates, and only the last costs money: subject (identifier match,
+free), event type (must agree, free), redundancy (cosine, then an LLM only
+inside the band).
+
+**Gate 2 is what protects the product.** "Safety overview: GPT-6 Astra" reports
+the model reached the Critical cybersecurity level under the Preparedness
+Framework — a claim no other item in the cluster carries. It scores 10.0 and
+sits far down a score-sorted feed, so the tempting move is to fold it into the
+100-scoring launch card. That would delete the claim. It stays its own row.
+
+### What the labelled set changed
+
+82 pairs were labelled blind by a Fable 5 subagent — lab, dates, titles,
+summaries, event types, and deliberately **not** the cosine it was calibrating.
+The labeller is not the adjudicator (gate 3 runs on `claude-sonnet-5`), or the
+eval would be marking its own homework. 7 same, 75 different.
+
+**Cosine does not separate the classes.** Positives run 0.763 to 0.966 and
+negatives reach 0.834. Full recall lands at precision 0.54; full precision lands
+at recall 0.43. There is no single cut. That is the argument for a band —
+`>= 0.84` merge unasked, `< 0.76` separate unasked, and ask a model in between —
+rather than a threshold, and it is a finding about the corpus, not a defect in
+the embedding.
+
+**Two `same` pairs disagreed on event type**, which gate 2 would have refused.
+Both turned out to be one article at two URLs: "Expanding Daybreak as the Cyber
+Defense Window Narrows" on openai.com and community.openai.com the same day,
+classified `incremental_model_release` and `product_launch`; "Introducing
+Intelligence Age" at two openai.com URLs, classified `other` and
+`safety_policy`. **The classifier assigns different event types to identical
+text.** So the exact pass runs first, before gate 2, and merges on lab + date +
+title whatever else disagrees. Without the labelling this would have shipped as
+a silent refusal to merge byte-identical rows.
+
+**Gate 1 fires on 12% of the corpus and adds no merge cosine does not.** Only 38
+of 314 non-release articles carry a model identifier in the title, and no
+labelled duplicate sits below `cosine_low`, so a subject-only route would need a
+threshold the labels give no evidence for. The identifier is computed and shown
+in the reason; it is not a separate route. Recorded rather than shipped as a
+gate that never fires.
+
+**Reading the body over-generates.** Subject extraction is title-only because
+the Astra launch post is 24,000 characters and its body yields `gemini-3.8`,
+`opus-5` and `gpt-5.6-sol` from a comparison table — pairing on those joins the
+Astra launch to the GPT-5.6 launch.
+
+**One model was two keys.** "GPT-6 Astra" extracts as `gpt-6` and
+"GPT-6-Astra" as `gpt-6-astra`, because the identifier pattern only absorbs a
+suffix across a hyphen. Those two rows are the clearest true duplicate in the
+corpus and they did not match. `stem()` emits the family-and-version alongside
+the full identifier.
+
+### Honest limits
+
+**Seven positives.** After the exact pass the curve rests on seven labelled
+duplicates. One wrong label moves recall by 0.14. The thresholds are the best
+available estimate, not a measurement, and the sample is small because the
+corpus genuinely contains few near-duplicates — 10 of 4,412 candidate pairs
+reach cosine 0.80. `tests/test_dedupe.py` pins the count so the caveat cannot
+quietly stop being true.
+
+**The blind file was not blind, and it moved the threshold.** The first pass
+wrote the labelling file sorted by cosine descending. The number was withheld
+and its rank was not, which is the same information one transform away: a
+labeller reading top to bottom is being told that the last rows are the
+negatives. Caught in review.
+
+Re-labelled from a shuffled file — same 82 pairs, same labeller, same prompt.
+**Two labels changed, and they were the top two negatives**: the GPT-6 Astra
+model-spec page against the launch post (0.831) and against the forum
+restatement (0.869), both `different` under the leak and `same` without it.
+Agreement between the two passes was 80/82, which sounds like a rounding error
+and was not — the high edge is set by exactly those pairs. `cosine_high` was
+0.87 on the leaked labels and is 0.84 on the clean ones, and precision-1.0
+recall went from 0.20 to 0.43. The leaked labelling had been suppressing the
+auto-merge threshold.
+
+Kept as `research/docs/dedupe_labels_ordered.json` rather than deleted, because
+the difference between the two files is the evidence for the paragraph above.
+
+**The labels are a proxy.** They are machine-generated. Neil marks a stratified
+sample of 20 and the agreement rate is recorded here; until that lands, the
+eval is unvalidated and this paragraph says so rather than implying otherwise.
+
+**Human-checked agreement: 15/20 = 0.75**, on a blind stratified sample of 20. All five disagreements ran one way, which is the finding rather than the rate — see D59b.
+
+### Anchoring, and the two tie-breaks
+
+Highest score, and the tie-break differs by path because within a release train
+every member usually scores the same, so the tie-break decides every group.
+Articles break towards the earliest — the Astra launch and the API docs page
+both score 100, two days apart, and "most recent" would put a reference page at
+the top of the feed with the launch folded under it. Releases break towards the
+latest: a `claude-code` card should name the version the repo is on. Score still
+comes first, so v2.1.259 (66.7) anchors over v2.1.260 (22.2).
+
+### Consequence
+
+647 articles become 554 groups; 93 rows collapse. 10 pairs reach the
+adjudicator on a full backfill and 3 of them merge. `app/pipeline/dedupe.py`,
+`config/dedupe.yaml`, `prompts/duplicate_adjudication/v1.md`, migrations 0010
+and 0011, a phase between the ETL and the digest, `research/dedupe/`, and 41
+tests. Spend: $0.000682 to embed 647 articles, $0.057 on adjudication.
+
+Not built: the cross-event-type "story" link that would group the Astra release,
+safety and customer-story rows as one thing. Its value in that case was
+rescuing the safety row from a scoring bug being fixed separately, so it is
+recorded in `next_steps_0309.md` and revisited only if that row still fails to
+surface once scored right.
+
+## D59a — What the review of the duplicate collapse found (2026-09-05)
+
+Fourteen findings on `feature/disambiguation`. The grouping algorithm itself
+survived — the reviewer could not construct a duplicate-row or transitive-merge
+failure — and every finding was around it. Four are worth recording because
+each is a class of mistake rather than a typo.
+
+**The phase spent money on `--dry-run`.** Every other LLM stage is gated on
+`spend`; this one was not, so a dry run against a fresh deployment would have
+made seven OpenAI calls and a dozen Anthropic ones. `budget=None` does not fix
+it — to `embed` and `adjudicate` that reads as *unlimited*, not *do not call* —
+so `assign` takes an explicit `adjudicate_pairs` flag and the band is counted as
+`deferred` instead of resolved.
+
+**The cost landed on the wrong run.** `_etl`'s `load_costs` is the single place
+a firing's spend is totalled and it had already run, so records written by this
+phase sat in the log until the *next* firing claimed them. The run that spent
+the money reported zero. Fixed by sweeping the log a second time after the
+phase; `load_costs` upserts on `(url, at)`, so the second sweep costs nothing
+and inserts only what was just written. The first attempt at this fix charged a
+dry run $31 of unrelated history, which `TestDryRun::test_no_llm_stage_runs`
+caught — the run total now takes the phase's own measured figure and the sweep
+only moves records into the ledger.
+
+**A comment described degradation the code did not do.** The phase claimed that
+if embedding failed the exact pass and release trains would still run. They are
+inside `assign`, which was in the same `try` as `embed` and therefore never
+reached. The two halves now fail independently, and `dedupe_unavailable` raises
+a system alert — the phase swallows its own exceptions by design, which is
+exactly how `drift_unavailable`'s outage went unnoticed for days (D45).
+
+**One anchor cannot serve two audiences or two windows.** `is_anchor` is chosen
+once over the whole corpus on a single significance score; a digest is one
+window and one audience. Two consequences, both silent: a release train's
+corpus-wide anchor can sit outside the window, so every release that *did* ship
+in it folds against an absent row and the section renders empty; and
+`event_type` is a multiplicative term in the investment score and absent from
+the AI score, so the member ranking highest overall can score zero on the axis
+being published while the member carrying that axis' signal is the one folded
+away. Membership is the durable fact and stays in the table; **which member
+speaks for a group is now decided by each surface**, per window and per
+audience. Confirmed as a code path; it does not fire on today's data.
+
+Also fixed: the embedding cache ignored which model produced a vector, so a
+same-width model swap re-embedded nothing and silently mixed two vector spaces;
+release trains chained without bound, so a daily-release repo became one
+permanent group; `check_dedupe` did not validate the model names it would spend
+money on, and `_cost` indexes `PRICES[model]` only *after* the call is billed;
+two config keys were read by nothing; and `assign`, the function that writes,
+had no test at all — 41 green tests, none of them calling it.
+
+Not changed: the reviewer suggested using the adjudicator's `more_complete`
+field as an anchor hint. Per-surface anchoring removed the need, so the field
+was dropped from the schema and the prompt instead. An output that is bought and
+discarded is a cost with no reader.
+
+## D59b — The spot-check found a bias, and it pointed the right way (2026-09-05)
+
+D57 shipped with "Human-checked agreement: pending". This is that number, and it
+did more than validate a proxy.
+
+**15/20 = 0.75.** Twenty pairs, stratified across the cosine range and weighted
+towards the ones the labeller itself flagged low-confidence, marked blind — the
+sheet did not show the machine's label, so agreement measures judgement rather
+than anchoring.
+
+**Every one of the five disagreements ran the same way**: the model said
+`different`, the human said `same`. A one-directional error on every miss is a
+calibration fault, not sampling noise, and 0.75 alone would have hidden it — the
+rate reads like ordinary disagreement until you look at the signs.
+
+**The bias is narrower than "too conservative".** The model and the human agree
+that a safety disclosure is distinct from the launch it accompanies — the case
+the event-type gate exists for. They diverge on **companion pieces**: an
+umbrella announcement and its named sub-initiative (Daybreak / Patch the
+Planet), an introduction and its deep-dive (GeneBench-Pro), one rollout
+staggered across apps (Grok for Word / for PowerPoint), two safety documents
+about one model (Path to Astra / Safety overview). v1 carried no worked example
+of that shape; every example in it was about telling things apart, so that is
+what it kept doing.
+
+Fixed in `prompts/duplicate_adjudication/v2.md`, which names the shape as a
+category and uses all five failures as examples, then re-labelled and
+re-derived. The asymmetry warning is unchanged: v2 widens what counts as one
+event, it does not licence merging a distinct claim away.
+
+### Two things the spot-check confirmed rather than found
+
+**Gate 2 is right, and a human said so independently.** Neil marked `7606-7610`
+— the Astra launch against the safety overview carrying the Critical
+cybersecurity claim — as `different`, and split `7606-7656` the same way. The
+gate's justification in D57 was my argument from one example. It is now a
+human's judgement on a blind sample.
+
+**The ordering-leak fix was right.** The two labels that flipped when the blind
+file was shuffled were `7610-7655` and `7655-7656`. Neil marked both `same`,
+agreeing with the corrected pass rather than the leaked one. `cosine_high`
+belongs at 0.84.
+
+### What it says about the method
+
+The spot-check cost about ten minutes and changed a prompt, a threshold, and a
+recommendation about a $7.50 spending decision elsewhere
+(docs/next_steps_0309.md). Reported as a rate alone — "0.75, acceptable" — none
+of that would have surfaced. **The direction of the errors carried more than the
+count did**, which is the argument for examining disagreements rather than
+averaging them, made in CLAUDE.md and here demonstrated on a set of five.
+
+Honest limit: 20 pairs, 9 of them positives by the human's reading. The
+agreement rate has a wide interval. It is a sanity check on the labelling, not a
+measurement of the product.
+
+## D59c — Fixing the labeller's bias, and the error that replaced it (2026-09-05)
+
+D59b measured the labeller at 0.75 against a human and found every miss running
+one way. `prompts/duplicate_adjudication/v2.md` is the fix: it names **companion
+pieces** as a category — an umbrella announcement and its named strand, an
+introduction and its deep-dive, one rollout staggered across surfaces, a
+restatement on a second channel, a precursor carrying no claim of its own — and
+uses all five of the human's corrections as worked examples. Everything else in
+v1 is unchanged, including the asymmetry warning, which is the part that stops a
+widening becoming a licence.
+
+Re-labelled the same 82 pairs. `same` went from 9 to 26.
+
+**The headline was 0.75 → 0.90, and that number is a training score.** Caught in
+review (D59d), and it is the most important correction in this branch.
+
+Seven of the human's 20 marked pairs are worked examples *in v2's own prompt*,
+with the answer supplied. Splitting the sheet on that:
+
+| | in-prompt (7) | **out-of-sample (13)** |
+|---|---:|---:|
+| v1 rubric | 3/7 | **12/13** |
+| v2 rubric | 6/7 | **12/13** |
+
+**Out of sample, v2 is not better than v1.** Every point of the apparent gain
+sits on pairs the prompt was shown the answers to. The only out-of-sample
+movement is a *regression*: `7235-7236`, the Jalapeño CFO strategy piece against
+the Jalapeño results post, which v2 merges and the human keeps apart — a false
+merge, the expensive direction by this system's own asymmetry.
+
+The direction of the error did genuinely flip: v1 was too conservative 5 times
+and never over-merged, v2 over-merges twice and never under-merges. That is a
+real change in behaviour. What is *not* established is that it is an
+improvement on anything the prompt was not shown.
+
+**Kept anyway, and the reasoning matters more than the verdict.** The five
+corrections v2 encodes are real fixes to real misclassifications — those pairs
+were wrong, and now they are right, which is worth having even if it
+demonstrates nothing about the sixth case. The threshold band is also a second
+filter the labels are not: a pair the labeller calls `same` still has to clear
+`cosine_high` or convince the adjudicator before anything merges.
+
+But no claim of generalisation is supported, and the honest next step is a
+fresh 20-pair blind check on pairs the prompt has never seen. Until that runs,
+**the defensible statement is "v2 corrects the errors it was shown, and its
+behaviour on unseen pairs is unmeasured"** — not 0.90.
+
+**And the thresholds rest on these labels.** `cosine_high` moved 0.84 → 0.80 on
+a set produced by a rubric fitted to five human answers. That is a weaker
+foundation than D59b's, and it is why the caveat in `config/dedupe.yaml` now
+says so.
+
+**A transitivity wrinkle, noted not fixed.** The human marked `7565-7616` as
+`same` and `7098-7565` as `different`, while `7098-7616` is an exact-pass merge
+(one article at two URLs). Union-find makes grouping transitive; human judgement
+of "is this the same story" evidently is not. The system will group all three.
+That is defensible — they are all the same Daybreak announcement — but it is a
+case where the data model is more certain than the person it is modelling.
+
+### Consequence
+
+Band moves from [0.76, 0.84) to **[0.70, 0.80)**. 19 adjudications on a full
+backfill against 10, so about six cents, and near zero incrementally.
+
+647 classified articles become **547 groups**; 100 rows collapse, up from 93.
+The GPT-6 Astra cluster is now four rows rather than five: the launch, its forum
+restatement and the API docs page as one; the two safety documents about the
+same Preparedness assessment as another; and the two customer stories on their
+own. The safety row still does not fold into the launch — which both the gate
+and the human independently insist on.
+
+**The low edge is now at the edge of the evidence.** `cosine_low` is 0.70 and
+the census floor in `research/dedupe/candidates.py` is also 0.70: every pair at
+or above it was labelled, and below it only 30 of 4,360 were sampled. Lowering
+it further would need a wider census first, and the config says so.
+
+**Not grouped: the 47 paper rows** another branch landed in the shared database
+mid-build. They carry no `v9` classification yet, so `_rows` does not see them —
+correct behaviour, and they group on the first run after they are classified.
+
+---
+
+## D59d — Reviewing the fixes, which is where the real bugs were (2026-09-05)
+
+The first review (D59a) covered the original commit. Its *fixes* went unreviewed
+until Neil asked whether they had been. They had not, and they contained the
+worst defect in the branch.
+
+**The dashboard did not render at all.** The per-audience anchoring fix added
+`anchorFor` to two `useMemo` dependency arrays about fifty lines above the
+`const` that declares it. A dependency array is evaluated during render, so
+`Dashboard()` threw `ReferenceError: Cannot access 'anchorFor' before
+initialization` on first paint. Every authenticated user would have got a blank
+page. It was committed and pushed.
+
+**`next build` passed the whole time**, and I offered that as evidence the page
+worked. It is not evidence of that: building bundles the component, it never
+calls it. CI runs `pytest` and two node smoke scripts and had no frontend step
+at all. `tests/smoke_dashboard_render.js` now evaluates the hook section with
+stubbed hooks — verified to fail on the bug and pass on the fix — and CI runs
+both it and `next build`, because neither catches the other's class.
+
+### Two losses the anchoring rewrite introduced
+
+Both reproduced by the reviewer, neither caught by the tests written alongside
+the rewrite.
+
+**A holding link could vanish from the investment digest.** The rewrite chose a
+group's speaker by the audience's *score*. But `_investment_item` gates on
+connection strength or band and ranks on `(peak_strength, score)` — so the
+speaker was picked on the secondary criterion. A group whose top scorer carried
+no holding link emitted nothing at all while a member with a 0.9 NVIDIA
+connection sat folded behind it, and `collapsed` reported it as "another row
+already says this" when no row said it. The group is now represented by its best
+member *that the audience's rule accepts*, and only counts as collapsed when
+something actually surfaced.
+
+**Every release train anchored on its earliest release.** `rank()` broke ties
+towards the earliest unconditionally, and since neither the digest nor the feed
+reads `is_anchor` any more, `anchor_of(prefer="latest")` had quietly become dead
+code — the exact bug it was written in D57 to prevent, reintroduced one layer
+up. 380 of 647 articles are releases and within a train they usually score
+identically, so the tie-break decided all of them: the AI digest published
+`claude-code v2.1.258` with v2.1.260 folded inside it.
+
+**And the test could not see it**, because it asserted on `ArticleGroup.is_anchor`
+— a column no consumer reads any more. It tested the table, not the product. The
+replacement asserts on what the digest publishes.
+
+### The recalibration number was a training score
+
+D59c reported v2 at 0.90 against Neil's 20 marks. Seven of those 20 are worked
+examples *inside v2's prompt*, with the answers supplied. Split:
+
+| | in-prompt (7) | out-of-sample (13) |
+|---|---:|---:|
+| v1 | 3/7 | **12/13** |
+| v2 | 6/7 | **12/13** |
+
+**Out of sample v2 is exactly as good as v1**, and it adds one false merge v1
+did not make. Every point of the headline gain was in-sample. D59c and
+`config/dedupe.yaml` are corrected; the defensible claim is "v2 corrects the
+errors it was shown, and its behaviour on unseen pairs is unmeasured".
+
+That matters beyond the number, because the thresholds moved 0.84 → 0.80 on
+labels this rubric produced. Outstanding work, recorded rather than done: a
+fresh 20-pair blind check on pairs the prompt has never seen.
+
+### And a prompt was edited in place
+
+`more_complete` was deleted from `v1.md` when the schema dropped it — but
+`dedupe_labels_v1rubric.json` was produced by the original text, so the file
+named `v1` no longer described what made those labels. Restored verbatim, and
+all three label sets now carry a `prompt_version` stamp instead of being
+identified by filename.
+
+### Why this entry exists
+
+Four of this branch's defects have now been the same shape: **a failure that
+reports success.** A comment describing degradation the code did not do; a
+`--dry-run` that spent money; a grouping that changed between identical runs; a
+similarity check that never ran and looked like a corpus with no duplicates. The
+grouping algorithm itself has survived two reviews without a correctness finding.
+
+The lesson is not "review the code" — it is that the fixes deserved the same
+suspicion as the original, and got less of it because they were written against
+a checklist under time pressure.

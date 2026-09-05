@@ -1,0 +1,658 @@
+[
+  {
+    "pair": "7098-7616",
+    "label": "same",
+    "reason": "Identical title and date; one Daybreak expansion article via two channels.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7610-7656",
+    "label": "same",
+    "reason": "One GPT-6 Astra launch; forum restatement adds nothing material.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7028-7030",
+    "label": "same",
+    "reason": "Identical title and date; same Intelligence Age blog announcement twice.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7655-7656",
+    "label": "different",
+    "reason": "Launch post vs later model spec; spec adds reasoning-effort settings and tooling detail.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7198-7617",
+    "label": "same",
+    "reason": "Same-day restatement of one GPT-5.6 price-cut and Fast mode announcement.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7574-7649",
+    "label": "different",
+    "reason": "Preview release vs later GA with new features; two distinct release events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7310-7634",
+    "label": "same",
+    "reason": "Same ChatGPT Work launch; b is a thinner restatement adding nothing material.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7610-7655",
+    "label": "different",
+    "reason": "Launch announcement vs model spec publication; spec carries distinct new facts.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7447-7639",
+    "label": "same",
+    "reason": "Same-day announcements of the same GPT-5.6 preview; b only adds launch date.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7332-7447",
+    "label": "different",
+    "reason": "GA announcement vs earlier limited preview; distinct events with different facts.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7572-7575",
+    "label": "different",
+    "reason": "Separate per-app add-in releases two days apart; PowerPoint post has distinct specifics.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7270-7632",
+    "label": "different",
+    "reason": "Same template, different guides: sales vs data science workflows.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7405-7406",
+    "label": "different",
+    "reason": "Benchmark announcement vs companion deep-dive with distinct case-study content.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7606-7608",
+    "label": "different",
+    "reason": "Pre-release safeguards post vs launch safety overview; deployment claim is new.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7017-7047",
+    "label": "different",
+    "reason": "$1B run-rate milestone vs earlier Europe expansion; different facts and dates.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7332-7639",
+    "label": "different",
+    "reason": "GA announcement vs preview announcement two weeks earlier; distinct events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7105-7228",
+    "label": "different",
+    "reason": "Eval disclosure vs later training slowdown; related storyline, distinct claims.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7606-7655",
+    "label": "different",
+    "reason": "Safety overview vs model spec; entirely different material.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7203-7618",
+    "label": "same",
+    "reason": "Same-day restatement of one researcher-access program launch; b adds nothing.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7606-7656",
+    "label": "different",
+    "reason": "Launch vs safety overview; Critical cybersecurity claim only in the overview.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7606-7610",
+    "label": "different",
+    "reason": "Worked-example standard: launch vs safety overview with distinct Critical claim.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7217-7631",
+    "label": "different",
+    "reason": "Grok 4.5 launch vs later GitHub Copilot availability; two events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7310-7630",
+    "label": "different",
+    "reason": "ChatGPT Work launch vs separate Voice desktop announcement.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7039-7047",
+    "label": "different",
+    "reason": "Initial ads testing vs later Europe expansion; different stages and facts.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7146-7616",
+    "label": "different",
+    "reason": "AWS availability announcement vs prior program expansion; distinct events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7405-7642",
+    "label": "different",
+    "reason": "Two different benchmarks: GeneBench-Pro vs LifeSciBench.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7248-7634",
+    "label": "different",
+    "reason": "Small-business program vs the ChatGPT Work launch itself.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7256-7619",
+    "label": "different",
+    "reason": "Different add-ins: Excel vs Outlook; separate releases.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7562-7638",
+    "label": "different",
+    "reason": "Umbrella Daybreak post vs dedicated Patch the Planet post with new partner detail.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7565-7616",
+    "label": "different",
+    "reason": "Same-day companions: partner-program expansion vs tiers/new model; each has distinct facts.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7235-7236",
+    "label": "different",
+    "reason": "CFO strategy piece vs dedicated Jalapeno results; each carries material the other lacks.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7241-7578",
+    "label": "different",
+    "reason": "Grok 4.6 release vs later Copilot availability; two events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7064-7249",
+    "label": "different",
+    "reason": "Different incidents: third-party evaluator issues vs Hugging Face breach.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7165-7578",
+    "label": "different",
+    "reason": "Grok Bot product launch vs Grok 4.6 model release.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7098-7565",
+    "label": "different",
+    "reason": "Same-day companions: Daybreak tiers/model vs partner-program expansion; distinct facts.",
+    "confidence": "low",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7248-7310",
+    "label": "different",
+    "reason": "Small-business program vs ChatGPT Work launch; distinct announcements.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7563-7567",
+    "label": "different",
+    "reason": "ChatGPT for Teens vs earlier education plugins; different products.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7079-7198",
+    "label": "different",
+    "reason": "Ultrafast preview vs earlier price cuts; different events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7234-7640",
+    "label": "different",
+    "reason": "Funding call vs internal AI Control Roadmap; different announcements.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7216-7578",
+    "label": "different",
+    "reason": "Grok 4.6 release vs later Bedrock availability; two events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7098-7146",
+    "label": "different",
+    "reason": "Daybreak expansion vs next-day AWS availability; distinct events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7216-7241",
+    "label": "different",
+    "reason": "Two distribution deals: Bedrock vs GitHub Copilot.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7582-7586",
+    "label": "different",
+    "reason": "Worked-example standard: two partnerships, two companies, two deals.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7201-7251",
+    "label": "different",
+    "reason": "Different models: Gemini Robotics 2 vs Gemini 3.5 Flash Cyber.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7056-7563",
+    "label": "different",
+    "reason": "CodeAI education partnership vs the Teens product launch it accompanies.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7173-7617",
+    "label": "different",
+    "reason": "ChatGPT model updates vs earlier API price changes; different facts.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7228-7608",
+    "label": "different",
+    "reason": "'May cross' slowdown post vs 'has crossed' announcement; materially different claims.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7590-7591",
+    "label": "different",
+    "reason": "Customer stories about different customers: Nextdoor vs Notion.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7350-7595",
+    "label": "different",
+    "reason": "Different models: Muse Spark 1.1 vs Muse Image/Video.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7632-7634",
+    "label": "different",
+    "reason": "Academy workflow guide vs the ChatGPT Work launch itself.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7021-7555",
+    "label": "different",
+    "reason": "Games research partnership vs double-blind evaluation pilot.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7218-7256",
+    "label": "different",
+    "reason": "Google Workspace add-on vs Excel add-in; separate releases.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7310-7403",
+    "label": "different",
+    "reason": "ChatGPT Work launch vs usage-data report.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7621-7625",
+    "label": "different",
+    "reason": "Case studies about different customers: BBVA vs LSEG.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7568-7590",
+    "label": "different",
+    "reason": "Whitepaper on Codex strategies vs Nextdoor customer story.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7568-7591",
+    "label": "different",
+    "reason": "Whitepaper on Codex strategies vs Notion customer story.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7080-7231",
+    "label": "different",
+    "reason": "Field report on scientific software vs DOE Genesis Mission commitments.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7200-7230",
+    "label": "different",
+    "reason": "avatarin case study vs news-organizations roundup.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7135-7177",
+    "label": "different",
+    "reason": "Scam-network disruption vs usage-data report.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7078-7616",
+    "label": "different",
+    "reason": "Developer guide vs Daybreak expansion; unrelated content.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7061-7607",
+    "label": "different",
+    "reason": "Asana case study vs separate AI-native companies piece.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7230-7351",
+    "label": "different",
+    "reason": "News-org case studies vs national-security principles.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7038-7227",
+    "label": "different",
+    "reason": "Zero Data Retention preview vs democratic-oversight initiative.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7296-7635",
+    "label": "different",
+    "reason": "Deutsche Telekom case study vs Realtime model releases.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7639-7642",
+    "label": "different",
+    "reason": "GPT-5.6 preview vs LifeSciBench benchmark; unrelated events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7174-7229",
+    "label": "different",
+    "reason": "APA partnership vs NVIDIA case study.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7414-7570",
+    "label": "different",
+    "reason": "HP partnership vs ChatGPT health improvements.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7085-7166",
+    "label": "different",
+    "reason": "Workforce research vs letter to Governor Abbott.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7028-7615",
+    "label": "different",
+    "reason": "Intelligence Age blog vs DevDay global events.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7062-7237",
+    "label": "different",
+    "reason": "Cyber-defense strategy essay vs Russian influence-op disruption.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7158-7228",
+    "label": "different",
+    "reason": "Learning usage report vs model-development pacing post.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7587-7622",
+    "label": "different",
+    "reason": "Astrophysicist usage story vs Ona acquisition.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7271-7642",
+    "label": "different",
+    "reason": "Mission statement vs LifeSciBench benchmark.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7061-7062",
+    "label": "different",
+    "reason": "Asana case study vs cyber-defense essay.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7648-7651",
+    "label": "different",
+    "reason": "$1B Frontline Defenders commitment vs law-firm customer story.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7562-7624",
+    "label": "different",
+    "reason": "Daybreak expansion vs PRC influence-operation report.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7583-7591",
+    "label": "different",
+    "reason": "Academy courses launch vs Notion customer story.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7570-7583",
+    "label": "different",
+    "reason": "Health improvements vs Academy courses; unrelated launches.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7212-7603",
+    "label": "different",
+    "reason": "DevDay applications vs Samsung enterprise deployment.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7641-7644",
+    "label": "different",
+    "reason": "AI chemistry research vs EU Code of Practice statement.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7184-7231",
+    "label": "different",
+    "reason": "SWE-Bench Pro audit vs DOE Genesis Mission commitments.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  },
+  {
+    "pair": "7200-7250",
+    "label": "different",
+    "reason": "avatarin case study vs board appointments.",
+    "confidence": "high",
+    "labeller": "fable",
+    "prompt_version": "v1"
+  }
+]

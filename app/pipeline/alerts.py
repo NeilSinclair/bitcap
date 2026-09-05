@@ -377,6 +377,82 @@ def holding_impact(session: Session, config: dict, context: dict) -> list[Candid
     ]
 
 
+def dedupe_unavailable(session: Session, config: dict, context: dict) -> list[Candidate]:
+    """The duplicate collapse failed, and nothing else would ever say so.
+
+    The phase swallows its exceptions on purpose — a feed with duplicate rows is
+    a worse product, not a broken run, so a dead embeddings provider must not
+    fail the firing. But swallowed and unreported is how `drift_unavailable`'s
+    outage went unnoticed for days (D45): the run reports `succeeded`, exits 0,
+    and the digest keeps folding against a grouping that is no longer being
+    updated. New articles are never grouped and every surface still looks
+    healthy.
+
+    A **system** alert, because it is the pipeline that is broken and not the
+    world that is interesting.
+
+    `warning` rather than `critical`, and the distinction is the blast radius.
+    `drift_unavailable` means the classifier is running unverified — every later
+    firing is unchecked. This means duplicates reach the feed, which a reader
+    can see and work around. Raising both at `critical` would flatten a real
+    difference in how fast somebody needs to get up.
+    """
+    stats = (context.get("stats") or {}).get("dedupe")
+    if not stats:
+        # The phase did not run this firing. Not a failure.
+        return []
+
+    # Zero vector coverage raises nothing and looks exactly like zero
+    # duplicates: gate 3 skips every pair, the phase returns cleanly, and
+    # `collapsed` is merely lower than it should be. That happens whenever the
+    # cache is empty or holds vectors from a model the config no longer names —
+    # a config edit, not a crash, so no exception exists to catch. Reported
+    # before the error branch because it is the case with no other symptom.
+    coverage = stats.get("coverage")
+    articles = stats.get("articles") or 0
+    if coverage is not None and articles and coverage == 0 and "error" not in stats:
+        return [Candidate(
+            kind=SYSTEM, rule="dedupe_unavailable", severity=WARNING,
+            subject="Duplicate collapse ran with no embeddings — similarity matching is a no-op",
+            body=(
+                f"Grouping completed over {articles} articles with zero cached "
+                "vectors, so every similarity comparison was skipped. Exact "
+                "matches and release trains still grouped. Most likely the "
+                "embedding model in config/dedupe.yaml changed without a "
+                "re-embed, or the embedding step never ran."
+            ),
+            dedupe_key="dedupe_unavailable:no_coverage",
+            payload=stats,
+            run_id=context.get("run_id"),
+        )]
+
+    errors = {k: v for k, v in stats.items() if k in ("error", "embed_error")}
+    if not errors:
+        return []
+
+    # An embedding outage alone still leaves the exact pass and the release
+    # trains running, which is most of the collapse by volume. Say which it was
+    # rather than reporting both the same way.
+    partial = "error" not in errors
+    first = errors.get("error") or errors.get("embed_error") or "no reason recorded"
+    scope = "similarity matching" if partial else "the whole collapse"
+    return [Candidate(
+        kind=SYSTEM, rule="dedupe_unavailable", severity=WARNING,
+        subject=f"Duplicate collapse degraded — {scope} is not running",
+        body=(
+            f"The dedupe phase reported: {str(first)[:300]}. "
+            + ("Exact-match and release-train grouping still ran; only the "
+               "embedding-based pass is missing."
+               if partial else
+               "No grouping was written this firing, so the digest and feed are "
+               "folding against whatever the last successful run left behind.")
+        ),
+        # Keyed on the failure kind, not the run: one outage is one alert rather
+        # than one a night, and it reopens if the other half starts failing too.
+        dedupe_key=f"dedupe_unavailable:{'embed' if partial else 'assign'}",
+        payload=stats,
+        run_id=context.get("run_id"),
+    )]
 def extraction_downgraded(session: Session, config: dict, context: dict) -> list[Candidate]:
     """A lab's abstracts stopped coming from the element config names.
 
@@ -427,6 +503,7 @@ RULES = {
     "budget_exceeded": budget_exceeded,
     "drift": drift,
     "drift_unavailable": drift_unavailable,
+    "dedupe_unavailable": dedupe_unavailable,
     "high_band_item": high_band_items,
     "holding_impact": holding_impact,
 }

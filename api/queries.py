@@ -118,11 +118,19 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...]) -> list
     for row in session.scalars(select(m.Connection).order_by(m.Connection.strength.desc())):
         conns_by_article[row.article_id].append(row)
 
+    # Near-duplicate grouping. Every row still ships, including the folded ones:
+    # the frontend hides them behind their anchor's expander, and a reader who
+    # wants to check a merge has to be able to see what was merged. Filtering
+    # them out server-side would make a collapse indistinguishable from an
+    # article that was never ingested.
+    groups = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
+
     items = []
     for art in session.scalars(select(m.Article).order_by(m.Article.published_on.desc())):
         cls = classifications.get(art.id)
         if cls is None:
             continue
+        group = groups.get(art.id)
         items.append({
             "id": art.id,
             "docType": doc_types.get(art.raw_article_id, "announcement"),
@@ -130,6 +138,11 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...]) -> list
             "labLabel": labs.get(art.lab, art.lab),
             "date": str(art.published_on),
             "title": art.title,
+            "groupId": group.group_id if group else f"g{art.id}",
+            "groupSize": group.group_size if group else 1,
+            "isAnchor": group.is_anchor if group else True,
+            "groupMethod": group.method if group else "singleton",
+            "groupReason": group.reason if group else "",
             "summary": cls.summary,
             "notableReason": cls.notable_reason,
             "sourceUrl": art.url,

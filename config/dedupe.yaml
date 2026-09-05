@@ -1,0 +1,145 @@
+# Near-duplicate collapse.
+#
+# The corpus surfaces one event several times. GPT-6 Astra arrived as seven rows
+# between 2026-09-01 and 09-05 — a launch post, a forum restatement of it, an
+# API docs page, a safety overview, a precursor and two customer stories — and a
+# single repo ships four releases in five days. Each was scored independently
+# and each took its own line in the feed.
+#
+# Three gates decide a merge, and only the third costs money. See
+# docs/decisions.md for why mechanism overlap is not one of them: it encodes
+# what *kind* of event an item is, not *which* event, so "TCS brings Claude to
+# regulated industries" and "DXC integrates Claude" score a perfect 1.0 while
+# being two entirely different partnerships.
+
+version: 1
+
+# Gate 0 — the exact pass. Same lab, same day, same title after punctuation is
+# stripped, and the two rows merge free of charge whatever else disagrees.
+#
+# This is not an optimisation, it is a correctness fix. One article reaches us
+# at two URLs — "Expanding Daybreak as the Cyber Defense Window Narrows" on
+# openai.com and on community.openai.com, same day — and the classifier gave
+# the two copies DIFFERENT event types (`incremental_model_release` and
+# `product_launch`; "Introducing Intelligence Age" got `other` and
+# `safety_policy`). The event-type gate below would therefore refuse to merge
+# two copies of one text. Running exact first is what stops that.
+#
+# It is also the honest reading of that disagreement: it is classifier noise on
+# identical input, not evidence the articles differ.
+#
+# It has no settings. What counts as "the same article" — same lab, same day,
+# same title — is the definition of the pass rather than a choice about it, so
+# it lives in `dedupe._apply_exact` and not here. A `match_on` key would read as
+# a knob and change nothing when turned.
+
+# Gate 1 — subject. Two items are about the same thing if they share a
+# normalised model identifier (research/corpus/first_mention.py) and a lab,
+# within this many days of each other.
+#
+# 14 days is wider than the 48h digest window on purpose: a precursor post and
+# the launch it precedes are the case worth catching, and Astra's spanned four
+# days. Widening it further mostly adds unrelated pairs from the same lab —
+# measured at 4,412 candidate pairs across the 267 non-release articles at 14
+# days, which is already far more than the LLM should ever see.
+window_days: 14
+
+# Gate 1b — the recall net. config/entities.yaml records its own gap: the
+# identifier pattern "does NOT catch a genuinely novel product name carrying no
+# version number". Cosine over the embedding matrix covers that case.
+#
+# What is embedded is title + classifier summary, never the body: bodies carry
+# site chrome ("OpenAI Research Products Business Developers Company Foundation
+# Log in Try ChatGPT" opens two different Astra articles) which lifts the
+# similarity between any two pages from one lab regardless of content.
+embedding:
+  # No `provider` key: Anthropic has no embeddings API, so there is exactly one
+  # and a key naming it would be a knob that does nothing. The dispatch lives in
+  # `dedupe.embed`, which calls `providers.embed_openai` directly.
+  model: text-embedding-3-small
+  # Texts per API call. The whole corpus is ~700 items, so this is 8 calls.
+  batch_size: 96
+
+# Gate 3 — redundancy. Pairs at or above `cosine_high` merge without asking;
+# below `cosine_low` they stay separate; only the band between them reaches the
+# adjudicator, which is the only part that spends money per pair.
+#
+# From research/dedupe/calibrate.py over research/docs/dedupe_labels.json, not
+# chosen by eye. Re-run it after any change to the labels or the embedded text.
+#
+# THE REASON THIS IS A BAND AND NOT A THRESHOLD: cosine does not separate the
+# classes. Labelled positives run 0.70 to 0.966 and negatives reach 0.79, so
+# every single cut is a bad trade. The band is drawn where the number stops
+# deciding, and the model is asked only there.
+#
+#   >= 0.80   no false merge in the labelled set — merge unasked
+#   <  0.70   no true duplicate lost — separate unasked
+#   between   the number genuinely does not know; ask the model
+#
+# The edges are asymmetric on purpose. A false merge deletes a claim from the
+# product; a missed merge leaves a visible duplicate row. So the high edge is
+# chosen on precision and the low edge on recall, rather than both on some
+# blended score that would trade the two as if they cost the same.
+#
+# THESE NUMBERS HAVE MOVED TWICE, AND BOTH TIMES FOR A REASON WORTH KEEPING:
+#
+# 1. The first labelling pass read a file sorted by cosine. The number was
+#    withheld and its rank was not, which is the same information one transform
+#    away. Two of 82 labels changed when the file was shuffled — and they were
+#    the top two negatives, which is exactly where the high edge sits.
+#    (0.87 -> 0.84, D59a.)
+# 2. The labeller was then measured against a human on 20 blind pairs: 0.75,
+#    with all five misses in one direction. It was splitting companion pieces —
+#    an umbrella post and its named strand, a launch and its deep-dive, one
+#    rollout staggered across apps. Prompt v2 names that shape, and the band
+#    widened on the re-labelled set. (D59b, D59c.)
+#
+#    READ THAT SECOND ONE CAREFULLY BEFORE TRUSTING THESE NUMBERS. v2's prompt
+#    contains seven of those 20 pairs as worked examples with the answers
+#    supplied, so the "0.90" that first appeared here was a training score. Out
+#    of sample v2 scores 12/13, exactly what v1 scored, and it introduces one
+#    false merge v1 did not make. The five corrections v2 encodes are real, but
+#    nothing here demonstrates it generalises — and these thresholds are derived
+#    from labels that rubric produced. A fresh 20-pair blind check on unseen
+#    pairs is the outstanding work.
+#
+# Cost of the wider band: 19 adjudications on a full backfill against 10 before,
+# so about six cents. Near zero incrementally, since only new pairs are asked.
+#
+# CAVEAT ON THE LOW EDGE. `cosine_low` now sits at 0.70, which is exactly the
+# census floor in research/dedupe/candidates.py — every pair at or above it was
+# labelled, and below it only 30 were sampled. So the low edge is bounded by
+# where the evidence stops, not by where the data does. Lowering it further
+# would need a wider census first.
+#
+# Sample caveat: 16 positives after the exact pass, up from 7 under the old
+# rubric. Still small. Indicative, not precise.
+thresholds:
+  cosine_high: 0.80
+  cosine_low: 0.70
+
+adjudication:
+  provider: anthropic
+  # Deliberately the same model the rest of the pipeline classifies with, and
+  # deliberately NOT the model that labelled the calibration set: one model on
+  # both sides would be marking its own homework and the regression floor in
+  # tests/test_dedupe.py would mean nothing.
+  model: claude-sonnet-5
+  prompt_version: v2
+
+# GitHub releases are 380 of 647 articles and never need a similarity check —
+# a release train is identified by its repo. All releases from one repo inside
+# this window collapse to one card, anchored on the highest ai_score.
+#
+# 48 hours matches config/digest.yaml's window so the feed and the digest agree
+# about what one release event is.
+releases:
+  window_hours: 48
+
+  # A ceiling on how long one train can run. Chaining alone is unbounded: a repo
+  # that ships daily for a month becomes one group of thirty anchored weeks in
+  # the past, and every later digest window then folds the releases that
+  # actually shipped in it against an anchor outside the window. 14 days matches
+  # `window_days` above, so both paths agree about how far apart two things can
+  # be and still be one event.
+  max_span_days: 14

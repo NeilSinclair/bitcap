@@ -682,6 +682,104 @@ def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
 
 
 
+def check_dedupe(path: Path | None = None) -> list[str]:
+    """Check dedupe.yaml.
+
+    The band is what this guards. `cosine_high` below `cosine_low` inverts the
+    logic silently — every pair falls through to "auto-merge" and the collapse
+    starts deleting claims with no error anywhere. A null threshold does the
+    same by crashing the phase mid-run instead of at startup.
+
+    Args:
+        path: dedupe.yaml to check. Defaults to the shipped one; tests override.
+
+    Returns:
+        Error message list.
+    """
+    path = path or ROOT / "dedupe.yaml"
+    if not path.exists():
+        return [f"{path.name}: missing"]
+    doc = yaml.safe_load(path.read_text()) or {}
+    errors = []
+
+    thresholds = doc.get("thresholds") or {}
+    high, low = thresholds.get("cosine_high"), thresholds.get("cosine_low")
+    for name, value in (("cosine_high", high), ("cosine_low", low)):
+        if not isinstance(value, (int, float)) or not 0.0 <= value <= 1.0:
+            errors.append(
+                f"dedupe.yaml: {name}={value!r} must be a number in [0, 1] — "
+                "run research/dedupe/calibrate.py to derive it from the labels"
+            )
+    if isinstance(high, (int, float)) and isinstance(low, (int, float)) and high < low:
+        errors.append(
+            f"dedupe.yaml: cosine_high={high} is below cosine_low={low}, which "
+            "inverts the band — every pair would auto-merge"
+        )
+
+    window = doc.get("window_days")
+    if not isinstance(window, int) or window < 1:
+        errors.append(f"dedupe.yaml: window_days={window!r} must be a positive integer")
+
+    releases = (doc.get("releases") or {}).get("window_hours")
+    if not isinstance(releases, int) or releases < 24:
+        errors.append(
+            f"dedupe.yaml: releases.window_hours={releases!r} must be an integer "
+            ">= 24 — published_on is a date, so a shorter window collapses to zero"
+        )
+
+    adjudication = doc.get("adjudication") or {}
+    version = adjudication.get("prompt_version")
+    prompt = ROOT.parent / "prompts" / "duplicate_adjudication" / f"{version}.md"
+    if not version or not prompt.exists():
+        errors.append(
+            f"dedupe.yaml: adjudication.prompt_version={version!r} has no file at "
+            f"prompts/duplicate_adjudication/{version}.md"
+        )
+
+    embedding = (doc.get("embedding") or {}).get("batch_size")
+    if not isinstance(embedding, int) or embedding < 1:
+        errors.append(f"dedupe.yaml: embedding.batch_size={embedding!r} must be positive")
+
+    span = (doc.get("releases") or {}).get("max_span_days")
+    if not isinstance(span, int) or span < 1:
+        errors.append(
+            f"dedupe.yaml: releases.max_span_days={span!r} must be a positive integer — "
+            "without a ceiling a daily-release repo chains into one permanent group"
+        )
+
+    # Both model names are checked against the price table, because `_cost`
+    # indexes `PRICES[model]` *after* the provider has billed the call. An
+    # unpriced model therefore spends real money and then raises a KeyError,
+    # which the dedupe phase swallows: money gone, no cost record, no groups.
+    # Failing here is the difference between a typo caught in CI and a typo
+    # found in the ledger.
+    import sys as _sys
+    # Guarded: unguarded, repeated validation in one process prepends this path
+    # again each time and permanently shadows any same-named installed module.
+    _shim = str(ROOT.parent / "research" / "announcements")
+    if _shim not in _sys.path:
+        _sys.path.insert(0, _shim)
+    try:
+        from providers import PRICES, PROVIDERS
+    except ImportError:  # pragma: no cover - only if the shim moves
+        return errors + ["dedupe.yaml: cannot import providers to check model names"]
+
+    for key, model in (("embedding.model", (doc.get("embedding") or {}).get("model")),
+                       ("adjudication.model", adjudication.get("model"))):
+        if model not in PRICES:
+            errors.append(
+                f"dedupe.yaml: {key}={model!r} is not in providers.PRICES — the call "
+                "would be billed and then fail when its cost is computed"
+            )
+    provider = adjudication.get("provider")
+    if provider not in PROVIDERS:
+        errors.append(
+            f"dedupe.yaml: adjudication.provider={provider!r} not in {sorted(PROVIDERS)}"
+        )
+
+    return errors
+
+
 def check_digest(path: Path | None = None) -> list[str]:
     """Validate digest.yaml — every value here fails by emptying the digest.
 
@@ -875,11 +973,12 @@ def main() -> int:
     papers_errors = check_papers_sources(ROOT, tracked_labs)
     people_errors = check_people(ROOT, tracked_labs)
     digest_errors = check_digest()
+    dedupe_errors = check_dedupe()
     signal_errors = check_repo_signals(ROOT)
     entity_errors = check_entities(ROOT)
     new_errors = (reg_errors + prac_errors + src_errors + gh_errors
                   + pipe_errors + papers_errors + people_errors
-                  + digest_errors + signal_errors
+                  + digest_errors + signal_errors + dedupe_errors
                   + entity_errors)
     for e in new_errors:
         print(f"ERROR   {e}")

@@ -55,6 +55,7 @@ from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
                           load_classifications, load_costs)
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
+from app.pipeline import dedupe as dedupe_mod
 from app.pipeline import drift as drift_mod
 from app.pipeline import register as register_mod
 from app.pipeline.budget import Budget
@@ -168,6 +169,34 @@ def due_legs(firing: int, config: dict, only: tuple[str, ...] | None = None) -> 
     return tuple(
         leg for leg in live if (firing - 1) % max(1, int(cadence.get(leg, 1))) == 0
     )
+
+
+def _sweep_dedupe_cost(session: Session, run_id: int) -> float:
+    """Carry the dedupe phase's cost records into `raw_costs` for *this* run.
+
+    `_etl`'s `load_costs` is the single place a firing's spend is totalled, and
+    it has already run by the time this phase spends anything. Left alone, the
+    records sit in the append-only log until the *next* firing loads them —
+    which reports the money under a run that did not spend it, and leaves the
+    run that did reporting zero.
+
+    So the log is swept a second time. `load_costs` upserts on `(url, at)`, so
+    the second sweep inserts only what this phase just wrote and re-reading the
+    earlier records costs nothing. One ledger, one place cost is counted, and
+    the attribution follows the money.
+
+    Args:
+        session: Open session; the caller commits.
+        run_id: Run to attribute the newly-loaded records to.
+
+    Returns:
+        USD newly loaded. **The caller discards this and adds the phase's own
+        measured figure instead**, and must keep doing so: the sweep also picks
+        up any record an earlier firing left unloaded, which charged a dry run
+        $31 of unrelated history the first time this was written. The return is
+        here for logging, not for arithmetic.
+    """
+    return float(load_costs(session, run_id=run_id).get("new_usd") or 0.0)
 
 
 def ingest_cost(session: Session, run_id: int) -> float:
@@ -446,6 +475,70 @@ def _phases(
         snapshot_id = drift_mod.record(session, drift_metrics, prompt_version, run.id).id
         session.commit()
 
+    # 5b. Collapse near-duplicates into one row per event.
+    #
+    #     Between the ETL and the digest because it needs `event_type` and
+    #     `summary` (so after `transform`) and the digest selects what surfaces
+    #     (so before it). Deliberately NOT inside `_etl`: that is one
+    #     transaction and this phase calls two external APIs, so an OpenAI
+    #     timeout there would roll back the whole rebuild.
+    #
+    #     The two halves fail independently, and that is the whole point of
+    #     splitting them. `embed` is the only part that needs a provider; the
+    #     exact pass and the release trains inside `assign` are deterministic
+    #     and account for most of the collapse by volume, so a dead OpenAI key
+    #     degrades the feature rather than switching it off. Running them under
+    #     one `try` made that claim false — `assign` was never reached.
+    #
+    #     `_etl`'s `load_costs` has already run by this point, so a record this
+    #     phase appends to the shared log would otherwise be picked up by the
+    #     *next* firing and charged to a run that did not spend it. The log is
+    #     therefore swept a second time here, into `raw_costs` under this run.
+    #     Nothing is written to `run_sources` — `budget.month_to_date` sums both
+    #     and relies on them being disjoint.
+    note("dedupe")
+    dedupe_stats: dict = {}
+    if spend:
+        try:
+            embedded = dedupe_mod.embed(session, prompt_version, budget=budget)
+            dedupe_stats.update(embedded=embedded["embedded"], usd=embedded["usd"])
+        except Exception as error:  # noqa: BLE001 - a provider outage is not a failed run
+            session.rollback()
+            dedupe_stats["embed_error"] = str(error)[:500]
+    else:
+        # --dry-run exercises the shape for free. Passing `budget=None` would
+        # not do it: to `embed` and `adjudicate` that means *unlimited*, not
+        # *do not call*.
+        dedupe_stats["embedded"] = 0
+
+    try:
+        grouped = dedupe_mod.assign(
+            session, prompt_version, run_id=run.id,
+            budget=budget if spend else None, adjudicate_pairs=spend,
+        )
+        dedupe_stats.update(grouped)
+        dedupe_stats["usd"] = dedupe_stats.get("usd", 0.0) + grouped.get("usd", 0.0)
+    except Exception as error:  # noqa: BLE001 - a duplicate row must not fail a run
+        session.rollback()
+        dedupe_stats["error"] = str(error)[:500]
+
+    stats["dedupe"] = dedupe_stats
+    if spend:
+        # Swept whenever the phase was *allowed* to spend, not only when it
+        # reported spending. `embed` and `assign` return their usd figure on the
+        # success path only, so a batch that was billed and then timed out
+        # leaves money in the log with no figure attached — and gating the sweep
+        # on that figure sent exactly those records to the next firing, which is
+        # the misattribution this function exists to prevent.
+        #
+        # The run total still takes the phase's own measured figure rather than
+        # the sweep's return, because the sweep also picks up anything an
+        # earlier firing left unloaded. Charging that here cost a dry run $31 of
+        # somebody else's history.
+        _sweep_dedupe_cost(session, run.id)
+        run.cost_usd = (run.cost_usd or 0.0) + float(dedupe_stats.get("usd") or 0.0)
+    session.commit()
+
     # 6. Publish both audiences' digests for the window this firing closes.
     #    After the ETL because the investment cut reads `connections`, which the
     #    ETL rebuilds; free and deterministic, so it runs on every firing
@@ -472,6 +565,10 @@ def _phases(
         "drift": drift_metrics,
         "snapshot_id": snapshot_id,
         "skipped_for_budget": stats.get("classify", {}).get("skipped_for_budget"),
+        # `dedupe_unavailable` reads the phase's own stats: it swallows its
+        # exceptions so a provider outage does not fail the firing, which means
+        # this is the only path by which the failure is ever reported.
+        "stats": stats,
         "paper_extraction": stats.get("paper_corpus", {}).get("extraction"),
     }
     stats["alerts"] = alerts_mod.dispatch(

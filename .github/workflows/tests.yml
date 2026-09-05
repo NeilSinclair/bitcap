@@ -79,3 +79,17 @@ jobs:
       # local-time format that shifted both ends a day west of Greenwich.
       - name: Smoke-test the digest window label
         run: node tests/smoke_digest_window.js
+
+      # The dashboard was pushed in a state where it threw on first render:
+      # `anchorFor` was named in two dependency arrays fifty lines above its own
+      # declaration, so every authenticated user got a blank page. `next build`
+      # passed throughout — it bundles the component, it never calls it — and
+      # "the frontend builds" was offered as evidence the page worked.
+      - name: Smoke-test that the dashboard renders
+        run: node tests/smoke_dashboard_render.js
+
+      # Catches the class the smoke test cannot: a syntax or import error that
+      # stops the bundle being produced at all. Neither check subsumes the
+      # other, which is why both are here.
+      - name: Build the frontend
+        run: npm ci --prefix frontend && npm run build --prefix frontend

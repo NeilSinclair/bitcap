@@ -47,6 +47,41 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
   );
 }
 
+function FoldedGroup({ members, reason, onOpen }) {
+  const [open, setOpen] = useState(false);
+  const span = members.length === 1 ? "1 more" : `${members.length} more`;
+  return (
+    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        style={{
+          background: "none", border: "none", padding: 0, cursor: "pointer",
+          font: "inherit", fontSize: 12, color: "var(--muted-2)",
+        }}
+      >
+        {open ? "▾" : "▸"} {span} on this — same event
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+          {/* Why they were merged, in the model's or the rule's own words. A
+              collapse the reader cannot interrogate is a collapse they have to
+              take on trust. */}
+          <div style={{ fontSize: 11, color: "var(--muted-2)", fontStyle: "italic" }}>{reason}</div>
+          {members.map((f) => (
+            <div
+              key={f.id}
+              onClick={(e) => { e.stopPropagation(); onOpen(f.id); }}
+              style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
+            >
+              <span style={{ color: "var(--muted-2)" }}>{f.date}</span> · {f.title}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Dashboard() {
   const [audience, setAudience] = useState("investment");
   const [bandFilter, setBandFilter] = useState("all");
@@ -169,23 +204,68 @@ function Dashboard() {
     });
   }, [items, audience]);
 
+  // Which member of a near-duplicate group speaks for it, decided per audience
+  // rather than read from `isAnchor`. That flag is picked once over the whole
+  // corpus on a single score; event_type is a multiplicative term in the
+  // investment score and absent from the AI score, so the member ranking
+  // highest overall can score zero on the axis being displayed — and the member
+  // carrying the signal for this audience is the one that got folded.
+  //
+  // Folded members stay in `decorated` so a reader can expand a card and check
+  // the merge. Dropping them would make a collapse look like an article we
+  // never had.
+  const [anchorFor, foldedByGroup] = useMemo(() => {
+    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
+    // Score first, then by date — and the date direction flips for release
+    // trains, where every member usually scores the same so this decides every
+    // one of them. A repo's card must name the version it is on, not the one it
+    // has left. Everywhere else earliest wins, because being early is the
+    // claim. Same rule as app/digest.py `rank`; the two must agree or the feed
+    // and the digest name different articles as the same event.
+    const better = (a, b) => {
+      if (value(a) !== value(b)) return value(a) > value(b);
+      const latest = a.groupMethod === "release_train";
+      if (a.date !== b.date) return latest ? a.date > b.date : a.date < b.date;
+      // Ids break a full tie, or the winner depends on the order the API
+      // happened to return rows in — which has no secondary sort within a day.
+      return latest ? a.id > b.id : a.id < b.id;
+    };
+    const best = {};
+    for (const it of decorated) {
+      const cur = best[it.groupId];
+      if (!cur || better(it, cur)) best[it.groupId] = it;
+    }
+    const folded = {};
+    for (const it of decorated) {
+      if (best[it.groupId] === it) continue;
+      (folded[it.groupId] = folded[it.groupId] || []).push(it);
+    }
+    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
+    return [best, folded];
+  }, [decorated, audience]);
+
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
   // it before the reader spends a click finding out.
+  //
+  // Counted over anchors only, matching what a click actually reveals. Counting
+  // folded members too made "OpenAI 23" open 19 cards.
   const labOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (audience === "investment" ? it.score <= 0 : it.aiScore <= 0) continue;
       const seen = counts.get(it.lab) || { lab: it.lab, label: it.labLabel, n: 0 };
       seen.n += 1;
       counts.set(it.lab, seen);
     }
     return [...counts.values()].sort((a, b) => b.n - a.n);
-  }, [decorated, audience]);
+  }, [decorated, anchorFor, audience]);
 
   const holdingOptions = useMemo(() => {
     const counts = new Map();
     for (const it of decorated) {
+      if (anchorFor[it.groupId] !== it) continue;
       if (it.score <= 0) continue;
       // One count per article, not per connection: an article linked to a
       // holding by three routes is still one thing that happened to it.
@@ -196,7 +276,7 @@ function Dashboard() {
     return [...counts.entries()]
       .map(([holding, n]) => ({ holding, n }))
       .sort((a, b) => b.n - a.n || a.holding.localeCompare(b.holding));
-  }, [decorated]);
+  }, [decorated, anchorFor]);
 
   // A holding filter has no meaning on the AI side — those items carry
   // practices, not connections — so it is dropped rather than left set and
@@ -218,7 +298,8 @@ function Dashboard() {
   }
 
   const visible = useMemo(() => {
-    const relevant = decorated.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
+    const anchors = decorated.filter((it) => anchorFor[it.groupId] === it);
+    const relevant = anchors.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
     const byBand = bandFilter === "all"
       ? relevant
       : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
@@ -254,7 +335,7 @@ function Dashboard() {
         showImpactRow: true,
       };
     });
-  }, [decorated, audience, bandFilter, labFilter, docFilter, holdingFilter, holdingActive, sortBy]);
+  }, [decorated, anchorFor, audience, bandFilter, labFilter, docFilter, holdingFilter, holdingActive, sortBy]);
 
   const selected = decorated.find((it) => it.id === selectedId) || null;
 
@@ -447,6 +528,13 @@ function Dashboard() {
                       <span key={i} className="conn-pill" style={{ color: p.color, borderColor: p.color }}>→ {p.label}</span>
                     ))}
                   </div>
+                )}
+                {(foldedByGroup[item.groupId] || []).length > 0 && (
+                  <FoldedGroup
+                    members={foldedByGroup[item.groupId]}
+                    reason={item.groupReason}
+                    onOpen={setSelectedId}
+                  />
                 )}
               </div>
             ))}

@@ -11,6 +11,10 @@ dependencies = [
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.2",
     "alembic>=1.14",
+    # Cosine over the embedding matrix in the duplicate collapse. ~700 rows of
+    # 1,536 floats is one matmul; pgvector and faiss would both be machinery
+    # for a scale this corpus does not have.
+    "numpy>=2.0",
 ]
 
 [dependency-groups]
