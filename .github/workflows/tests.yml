@@ -88,6 +88,13 @@ jobs:
       - name: Smoke-test that the dashboard renders
         run: node tests/smoke_dashboard_render.js
 
+      # The same fault class at a second site. Alerts now chains five hooks —
+      # decorated -> anchorFor -> relatedForGroup -> [byUrl, byId] -> selected —
+      # each reading the one before it in its dependency array, so reordering any
+      # two is a blank page and a green build.
+      - name: Smoke-test that the alerts page renders
+        run: node tests/smoke_digest_render.js
+
       # Catches the class the smoke test cannot: a syntax or import error that
       # stops the bundle being produced at all. Neither check subsumes the
       # other, which is why both are here.

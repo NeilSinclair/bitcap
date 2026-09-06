@@ -7,6 +7,7 @@ says so before anything downstream trusts either.
 """
 
 import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -319,3 +320,241 @@ def session_counts(s) -> dict:
         "connections": s.scalar(select(func.count()).select_from(m.Connection)),
         "holdings": s.scalar(select(func.count()).select_from(m.Holding)),
     }
+
+
+class TestARebuiltDatabaseHasItsGrouping:
+    """`bitcap-db rebuild` must leave the feed grouped, not flat. D74.
+
+    THE FAILURE THIS REPRODUCES, observed on the live database. A `bitcap-db
+    load` at 14:01 left `article_groups` and `article_links` at zero rows, and
+    every surface silently lost its grouping: no "5 more on this" on the
+    dashboard, no fold badge in the digest, no related-document pills anywhere.
+    Nothing errored and no alert fired, because from the pipeline's point of view
+    nothing had gone wrong.
+
+    `load_refs` deletes `ArticleGroup` and `ArticleLink` by name — it must,
+    because both carry a plain foreign key to `articles` with no cascade, so
+    leaving them would make its own `DELETE FROM articles` raise. Nothing
+    afterwards rebuilt them. `cmd_load` chains `connect` for exactly this reason — its own docstring says a load stopping
+    before the join "would leave the table empty and looking like a finding" —
+    and grouping was never added to the same chain.
+
+    Why this is the README's problem and not only an operator's: `bitcap-db
+    rebuild` is `drop_all` + `ensure_schema` + this same `cmd_load`, and
+    README.md makes it the first command a new reader runs. Without this they
+    clone the repo, follow the instructions, open the dashboard, and see an
+    ungrouped feed with no way to tell it is not the finished product.
+
+    WHAT A REBUILT DATABASE STILL DOES NOT HAVE, stated because the fix looks
+    more complete than it is. Two of the four grouping passes need data no
+    committed artifact carries:
+
+    * **The cosine gate is a no-op.** `raw_article_embeddings` is an ops table
+      and survives a rebuild, but a *fresh* database has none, so `coverage` is
+      0.0 and every similarity pair is skipped. Only the exact pass and the
+      release trains fire — on this corpus, one collapse rather than the 57 the
+      live database carries.
+    * **Pairing has nothing to pair.** `article_links` needs a GitHub release
+      naming a model an announcement also names, and releases are live-fetched
+      bronze with no committed artifact. The corpus here holds none, so the
+      correct result is zero links, and asserting otherwise would be asserting
+      the fixture rather than the behaviour.
+
+    Both resolve on the first worker firing. The claim being made here is
+    narrower and is the one that broke: a load leaves the grouping tables
+    populated and consistent, rather than empty.
+    """
+
+    def _dedupe_stats(self, session):
+        run = session.scalars(
+            select(m.PipelineRun).order_by(m.PipelineRun.id)).first()
+        return (run.stats or {}).get("dedupe") or {}
+
+    def test_a_load_leaves_the_announcement_corpus_grouped(self, session):
+        """The regression itself: zero rows here is the whole bug."""
+        groups = session.scalar(select(func.count()).select_from(m.ArticleGroup))
+        assert groups > 0, (
+            "cmd_load left article_groups empty; the feed renders flat and "
+            "`bitcap-db rebuild` ships a database that looks unfinished")
+
+        # One row per classified announcement — a singleton is a group of one,
+        # so coverage is total by construction and a short count would mean
+        # grouping ran against a stale article set.
+        #
+        # Announcements only, matching the worker: `assign` takes one prompt
+        # version and papers and posts are not grouped by either path. The
+        # read side falls back to a per-article singleton for them, so they
+        # render correctly ungrouped rather than not at all.
+        announcements = session.scalar(
+            select(func.count()).select_from(m.Classification)
+            .where(m.Classification.prompt_version == PROMPT_VERSION))
+        assert groups == announcements
+
+    def test_the_deterministic_passes_actually_collapsed_something(self, session):
+        """Non-empty is not enough: 292 groups of one is also "grouped".
+
+        One collapse, from the exact pass — the same article reaching us at two
+        URLs. That is all this corpus can produce without an embedding cache,
+        and it is enough to prove the pass ran rather than merely wrote a row
+        per article.
+        """
+        sizes = [g.group_size for g in session.scalars(select(m.ArticleGroup))]
+        assert max(sizes) > 1, "every article is its own group; nothing folded"
+        assert self._dedupe_stats(session)["collapsed"] >= 1
+
+    def test_every_folded_group_says_why_it_merged(self, session):
+        """A fold the reader cannot interrogate is one they must take on trust,
+        and both surfaces render this string."""
+        folded = session.scalars(
+            select(m.ArticleGroup).where(m.ArticleGroup.group_size > 1)).all()
+        assert folded
+        assert all(g.reason for g in folded)
+        assert all(g.method in ("exact", "release_train", "llm", "embedding")
+                   for g in folded)
+
+    def test_exactly_one_anchor_per_group(self, session):
+        """Two anchors renders one event twice; none renders it not at all."""
+        anchors = Counter(
+            g.group_id for g in session.scalars(
+                select(m.ArticleGroup).where(m.ArticleGroup.is_anchor)))
+        every = {g.group_id for g in session.scalars(select(m.ArticleGroup))}
+        assert set(anchors) == every
+        assert set(anchors.values()) == {1}
+
+    def test_the_pairing_pass_runs_even_where_it_finds_nothing(self, session):
+        """`article_links` was equally empty and is rebuilt by the same call.
+
+        Asserted on the pass having *run*, not on it having found something.
+        Links need a release naming a model an announcement also names, and this
+        corpus carries no releases at all — so zero is the correct answer here
+        and a non-empty assertion would be testing the fixture. What must not
+        happen is the pass silently ceasing to be called, which is exactly what
+        the missing key would say.
+        """
+        stats = self._dedupe_stats(session)
+        assert "links" in stats and "paired" in stats
+
+    def test_grouping_costs_nothing_so_rebuild_stays_keyless(self, session):
+        """The whole reason this can live in `cmd_load` at all.
+
+        A rebuild is documented as reproducing the database from committed
+        artifacts with no API key. If the load's grouping could call a provider,
+        that claim would be false and `bitcap-db rebuild` would fail — or worse,
+        quietly bill — on a fresh clone. The adjudicator is the only paid call in
+        the path, and `budget=None` means *unlimited* to it rather than *do not
+        call*, so the flag is the only thing standing between a rebuild and a
+        bill.
+        """
+        import inspect
+
+        import app.cli as cli
+
+        assert "adjudicate_pairs=False" in inspect.getsource(cli._group), (
+            "the load's grouping may not reach a paid adjudication")
+        # And the outcome, not only the flag: the source check alone would pass
+        # against a call that never ran.
+        assert self._dedupe_stats(session)["usd"] == 0.0
+        assert self._dedupe_stats(session)["adjudicated"] == 0
+
+
+class TestAGroupingFaultCostsTheGroupingAndNothingElse:
+    """Chaining dedupe into the load added a new way for the load to fail. D74.
+
+    Caught in review, and it was worse than the bug being fixed. `dedupe.assign`
+    COMMITS internally, and `tracked` owns the single commit precisely so that
+    "a failure anywhere downstream would leave the database empty rather than
+    stale, and empty is the worse of the two" — its own words. Calling `assign`
+    inside the tracked body made the ref wipe durable partway through, so a
+    later failure no longer rolled back to the previous good state.
+
+    On a first-ever `bitcap-db rebuild` there IS no previous good state, and the
+    measured result was `articles 577 -> 0`: a new reader following README.md
+    would have got an empty database and a non-zero exit, where before this
+    branch they got a merely ungrouped one. Trading a cosmetic fault for a
+    total one.
+
+    So grouping runs after the block, and is guarded for the reason
+    `worker._phases` gives at its own call — "a duplicate row must not fail a
+    run". These pin both halves.
+    """
+
+    def _fresh(self):
+        engine = create_engine("sqlite:///:memory:")
+        create_all(engine)
+        return Session(engine)
+
+    def _explode(self, monkeypatch):
+        import app.cli as cli
+
+        def boom(*a, **kw):
+            raise RuntimeError("dedupe exploded")
+
+        monkeypatch.setattr(cli.dedupe_mod, "assign", boom)
+
+    def test_a_first_rebuild_still_produces_a_usable_database(self, monkeypatch):
+        """The README path, with no previous state to fall back to."""
+        self._explode(monkeypatch)
+        s = self._fresh()
+
+        cmd_load(s, PROMPT_VERSION, kind="rebuild")   # must not raise
+
+        assert s.scalar(select(func.count()).select_from(m.Article)) == corpus_size()
+        assert s.scalar(select(func.count()).select_from(m.Connection)) > 0
+        assert s.scalar(select(func.count()).select_from(m.ArticleGroup)) == 0
+        s.close()
+
+    def test_the_failure_is_recorded_rather_than_swallowed(self, monkeypatch):
+        """Swallowed and unreported is how D45's outage went unnoticed for days.
+
+        `alerts.dedupe_unavailable` reads exactly this key and raises a system
+        alert on it, so recording it is what makes the degradation visible.
+        """
+        self._explode(monkeypatch)
+        s = self._fresh()
+        cmd_load(s, PROMPT_VERSION)
+
+        run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
+        assert run.status == "succeeded", "grouping is not the load's success criterion"
+        assert "dedupe exploded" in run.stats["dedupe"]["error"]
+        s.close()
+
+    def test_a_load_that_fails_after_grouping_still_rolls_back(self, monkeypatch):
+        """The invariant `assign`'s internal commit was quietly voiding.
+
+        `TestFailureLeavesTheDatabaseUsable` patches `cli.transform`, which
+        raises BEFORE grouping — so nothing there would have noticed. This
+        injects the failure on the far side of it.
+        """
+        s = self._fresh()
+        cmd_load(s, PROMPT_VERSION)
+        before = session_counts(s)
+        assert before["articles"] == corpus_size()
+
+        import app.cli as cli
+
+        # `watermarks` is the last thing the tracked body touches, so raising
+        # here is as late as a failure can be while still inside the block.
+        monkeypatch.setattr(cli, "watermarks", lambda *a, **kw: 1 / 0)
+        with pytest.raises(ZeroDivisionError):
+            cmd_load(s, PROMPT_VERSION)
+
+        assert session_counts(s) == before
+        s.close()
+
+    def test_grouping_is_not_inside_the_tracked_block(self):
+        """Structural, because the runtime tests above cannot see placement.
+
+        Moving the call back inside would reintroduce a commit into a body
+        documented as one transaction, and every test above would still pass
+        until the day something raised after it.
+        """
+        import inspect
+
+        source = inspect.getsource(cmd_load)
+        body, _, tail = source.partition("_group(session, prompt_version")
+        assert "with tracked(" in body
+        # Nothing between the end of the `with` block and the grouping call may
+        # be indented into it.
+        after_block = body[body.rindex("run.watermarks"):]
+        assert "\n        " not in after_block.split("\n", 1)[1], (
+            "the grouping call appears to be inside the tracked block")

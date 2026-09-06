@@ -56,9 +56,10 @@ version: 1
 # editions (docs/decisions.md D51). The rows above count *periods*, which is
 # what an edition is, so they describe the archive under any cron frequency.
 #
-# WIDENED TO 168h (7 days), 2026-09-06. The table above measures how often an
-# edition is empty across the whole 90-day corpus; it does not measure what a
-# reader sees on one particular day, which is what the 48h setting got wrong.
+# WIDENED TO 168h (7 days), 2026-09-06 -- docs/decisions.md D73. The table above
+# measures how often an edition is empty across the whole 90-day corpus; it does
+# not measure what a reader sees on one particular day, which is what the 48h
+# setting got wrong.
 # Replayed against the live database, 48h publishes ONE item -- the two days it
 # covers happen to be quiet ones, and every corpus except announcements is
 # invisible in it.
@@ -121,7 +122,13 @@ investment:
   always_band: high
 
   # Hard cap on rows. A digest nobody finishes reading has suppressed nothing.
-  max_items: 8
+  #
+  # RAISED 8 -> 16 (2026-09-06), and on this audience it is a no-op TODAY. The
+  # investment rule (`min_strength` + `always_band`) admits 2 items of the 58
+  # considered, so the cap has never been what bounds this digest -- measured,
+  # 8 and 1000 produce the identical edition. Raised anyway so the two audiences
+  # do not silently differ; the number that governs this one is the rule above.
+  max_items: 16
 
 ai:
   # An item reaches the AI team only if it carries a practice tagged `adopt` or
@@ -129,8 +136,74 @@ ai:
   # surfacing it would pad the digest with items whose own classification says
   # to do nothing.
   actions: [adopt, investigate]
-  min_band: medium
-  max_items: 8
+
+  # RAISED medium -> high (2026-09-06). `high` is ai_score >= 60
+  # (config/scoring.yaml `bands`), and this is the merit cut D77 named as the
+  # right lever when an edition reads as too long.
+  #
+  # Asked for as "scores above 0.5". There is no 0-1 score on this axis --
+  # `ai_score` is 0-100, and the 0.5 in the investment block above is a
+  # *connection strength*, which the AI rule does not use at all. Read as half
+  # of the scale, and on the deployed corpus the two readings are the same
+  # edition: the scores are quantised and nothing sits between 44.4 and 66.7,
+  # so `>= 50` and `>= 60` both admit exactly these 8 items.
+  #
+  #   100.0  high    doc   GPT-6 Astra: A new generation of intelligence
+  #   100.0  high    doc   Improving our alignment and security practices
+  #    66.7  high    doc   anthropics/claude-code v2.1.260
+  #    66.7  high    doc   deepseek-ai/deepseek-harness dsh-v0.1.2-rc.1
+  #    66.7  high    doc   Introducing agentic video understanding with Gemini
+  #    66.7  high    doc   Developing Enterprise Frontier Safeguards
+  #    66.7  high    doc   Our decision on Cursor following its acquisition
+  #    66.7  high    POST  1/ muse image is live on the meta model api
+  #   -- cut here --
+  #    44.4  medium  x4    (2 posts, 2 documents)
+  #    33.3  medium  x3    (3 posts)
+  #
+  # THEY ARE NOT THE SAME RULE, and only the corpus makes them agree today. An
+  # item scoring 55 exists in principle and would pass `>= 50` and fail this.
+  # `min_band` is used rather than a new `min_score` key deliberately: two
+  # numeric levers for one cut is the two-places-that-must-agree shape this
+  # codebase keeps getting caught by, and `alerts.content_band` already
+  # expresses the same threshold the same way.
+  #
+  # WHAT IT COSTS. 6 X posts become 1. That is the point -- but it also means
+  # the AI digest is again almost entirely documents, and the posts leg going
+  # nightly (D76) buys this audience one row. The 7 items cut are real
+  # `investigate` recommendations, not noise; they are cut for ranking below a
+  # line, and `suppressed` in the edition's stats records that they were.
+  min_band: high
+
+  # RAISED 8 -> 16 (2026-09-06). The cap WAS binding at the time: 15 items
+  # passed the rule and 8 were shown, so 7 were dropped by the cap rather than
+  # on merit.
+  #
+  # It no longer binds. `min_band: high` above now cuts on merit and admits 8,
+  # so this is back to being what it should always have been -- a length limit
+  # for a reader, not a filter. Left at 16 deliberately: lowering it to 8 would
+  # make the two cuts agree by coincidence and hide which one is doing the work
+  # the next time the corpus moves.
+  #
+  # What the cut was actually doing, measured on the deployed corpus before the
+  # change -- and it is not what it looks like from the outside:
+  #
+  #   dropped by the cap:  7, EVERY ONE of them `medium` band
+  #   of those 7:          5 are X posts, 2 are documents
+  #   high-band items:     0 dropped -- the ranking already had all of them
+  #                        inside the top 8
+  #
+  # So posts were not crowding out announcements. They rank below them, which
+  # is the ranking working. The cap was cutting the medium tail, and the medium
+  # tail is mostly posts.
+  #
+  # THE COST, STATED. At 16 this audience's edition goes from 8 rows to 15, and
+  # 6 of those 15 are X posts -- from one in eight to roughly two in five. That
+  # is a bigger change to what the AI digest FEELS like than the number
+  # suggests, and it is the direct consequence of the posts leg going nightly
+  # (D76): posts now reliably reach the window they belong to. If an edition
+  # reads as noisy, `min_band: medium` is the honest lever, not this one --
+  # raising it to `high` cuts on merit where this cuts on position.
+  max_items: 16
 
 # Per event, how many affected holdings to name before collapsing to a count.
 #

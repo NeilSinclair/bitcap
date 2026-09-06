@@ -592,6 +592,40 @@ class TestGuards:
         """
         assert digest.settings()["window_hours"] == 168
 
+    def test_the_shipped_item_caps_are_pinned(self):
+        """The same tripwire, for the same reason, on the other shipped number.
+
+        `CONFIG` at the top of this file carries its own `max_items`, so nothing
+        here reads the deployed one. It was raised from 8 to 16 with the whole
+        suite green, which means it can be lowered again just as quietly -- and
+        on the `ai` audience the cap is what actually bounds the edition (15
+        items passed the rule, 8 were shown), so a silent revert halves it.
+
+        Asserts nothing about 16 being right. `config/digest.yaml` records what
+        the old cut was measured to be dropping -- seven items, every one of
+        them `medium`, five of them X posts -- and says which lever to reach for
+        if an edition reads as noisy. This asserts only that the number moves
+        deliberately, next to that reasoning.
+        """
+        settings = digest.settings()
+        assert settings["investment"]["max_items"] == 16
+        assert settings["ai"]["max_items"] == 16
+
+    def test_the_shipped_ai_merit_cut_is_pinned(self):
+        """`min_band` is what actually bounds the AI edition now.
+
+        It was raised to `high` because the edition read as too long, and it is
+        the lever that cuts on merit -- `max_items` cuts on position. Measured
+        when it was set: `medium` admitted 15 items, `high` admits 8, and the 7
+        it removes are the 44.4 and 33.3 scorers, five of them X posts.
+
+        Pinned for the same reason as the window and the caps: nothing else in
+        this suite reads the deployed value, so it can be lowered by a revert or
+        a merge with everything green, and a digest that quietly doubles is not
+        a failure anything would report.
+        """
+        assert digest.settings()["ai"]["min_band"] == "high"
+
     @pytest.mark.parametrize("mutation,reason", [
         ({"ai": {**CONFIG["ai"], "actions": []}}, "no action can ever match"),
         ({"ai": {**CONFIG["ai"], "min_band": "med"}}, "typo rejects every band"),
@@ -958,3 +992,234 @@ class TestEverySurfaceReadsTheSameCorpora:
         assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
             "posts entered the digest; keeping them muted for alerts is the "
             "separate decision D69 deliberately did not take")
+
+
+class TestTheDigestOpensTheSameRecordAsTheDashboard:
+    """One panel, imported twice — not two renderings of one article. D72.
+
+    The digest is the surface a reader is meant to live in, and its cards are
+    summaries. Before this, the *thinner* view was the one they spent their time
+    in, and the full record was a page away. Reproducing the panel inside
+    `digest/page.js` would have fixed that by creating two copies to keep in
+    step, which is the same failure one step later.
+
+    These read the frontend source, as `tests/test_posts_spine.py` already does
+    for the dashboard's doc-type filter. They are contract tests, not render
+    tests: what they check is that the wiring exists and that the duplication
+    has not come back.
+
+    **They are not the only guard, and an earlier version of this docstring
+    wrongly said they were.** `tests/smoke_dashboard_render.js` and
+    `tests/smoke_digest_render.js` evaluate both component bodies with the hooks
+    stubbed, load `frontend/app/detail.js` for real, and run the decoration over
+    a synthetic article — so the extracted logic is executed, not merely
+    grepped. Both are required CI steps. The first of them caught this branch:
+    the extraction left `decorateItems` undefined in its sandbox and it went red
+    while everything here stayed green.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _read(self, *parts):
+        return (self.FRONTEND.joinpath(*parts)).read_text(encoding="utf-8")
+
+    def test_the_panel_lives_in_one_file_and_both_pages_import_it(self):
+        shared = self._read("detail.js")
+        assert "export function DetailPanel(" in shared
+
+        for page in (("page.js",), ("digest", "page.js")):
+            source = self._read(*page)
+            assert "DetailPanel" in source, f"{page} does not use the shared panel"
+            assert "function DetailPanel(" not in source, (
+                f"{page} defines its own panel; the two will drift")
+
+    def test_no_page_reimplements_the_panel_body(self):
+        """The headings are the cheapest fingerprint of a copied panel."""
+        for heading in ("Portfolio impact", "What to do", "Why flagged"):
+            hits = [p for p in self.FRONTEND.rglob("*.js")
+                    if heading in p.read_text(encoding="utf-8")]
+            assert [p.name for p in hits] == ["detail.js"], (
+                f'"{heading}" is rendered in {[p.name for p in hits]}, not only detail.js')
+
+    def test_a_digest_card_opens_the_record(self):
+        source = self._read("digest", "page.js")
+        # Both card types take the opener, and the page fetches the corpus the
+        # panel needs — a card wired to a handler with no data behind it is the
+        # failure this pair catches.
+        assert source.count("onOpen") >= 4
+        assert '"/api/items"' in source
+        assert "decorateItems(" in source
+
+    def test_a_card_whose_article_left_the_corpus_is_not_clickable(self):
+        """Published payloads are frozen; the corpus is not. Measured on the
+        live database: 4 of 65 published items name a document that has gone,
+        so the guard is load-bearing rather than defensive."""
+        source = self._read("digest", "page.js")
+        assert "const live = resolve(item);" in source
+        assert "live ? () => setSelectedId(live.id) : null" in source
+
+    def test_a_card_resolves_by_url_before_id(self):
+        """The id is the stale half of the payload.
+
+        `articles.id` is a surrogate autoincrement key reassigned on every
+        rebuild; `articles.url` is unique and is what the document *is*. Both
+        are already in the payload. Measured across all 30 published editions,
+        65 items: 9 resolve by id (13%), 61 by url (93%) — and editions
+        published the same day already resolved zero by id, because another
+        session had rebuilt in between.
+
+        Order matters, so this pins it rather than merely checking both are
+        mentioned: id-first would silently return the wrong article whenever an
+        id had been recycled onto a different document.
+        """
+        source = self._read("digest", "page.js")
+        assert "byUrl[item.sourceUrl] || (isLiveEdition ? byId[item.id] : null)" in source, (
+            "url must be tried first; an id-first lookup can hit a recycled id")
+
+    def test_the_id_fallback_is_confined_to_the_live_preview(self):
+        """An archived payload's ids are not merely stale, they are *recycled*.
+
+        The autoincrement counter is reused across rebuilds, so id 4454 today may
+        be a different document than the one an old card names. Falling back to
+        the id there would open the wrong article while looking like it worked —
+        strictly worse than the dead card the url lookup set out to fix. A
+        preview is built by the process now serving the corpus, so its ids
+        cannot be stale and the fallback is safe there.
+        """
+        source = self._read("digest", "page.js")
+        assert 'const isLiveEdition = editionId === "current";' in source
+
+    def test_the_digest_payload_carries_the_url_the_lookup_needs(self, session):
+        """The frontend fix is only free while the backend keeps sending it."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        item = digest.build(session, "investment", V, END, CONFIG)["items"][0]
+
+        assert item["sourceUrl"] == art.url
+
+    def test_the_shared_palette_is_the_dashboards_not_the_digests(self):
+        """The bug this nearly shipped.
+
+        `digest/page.js` carries a three-branch `bandStyle` that folds `low` and
+        `none` into one style, which is fine where nothing below medium renders.
+        The dashboard shows the whole corpus and distinguishes four. Moving the
+        digest's version into the shared file would have silently restyled every
+        low and unbanded row on the dashboard.
+        """
+        shared = self._read("detail.js")
+        band = shared[shared.index("export function bandStyle"):]
+        band = band[:band.index("\n}")]
+        assert 'band === "low"' in band, "the four-band dashboard palette was lost"
+
+        action = shared[shared.index("export function actionStyle"):]
+        action = action[:action.index("\n}")]
+        assert 'action === "investigate"' in action, "the three-action palette was lost"
+
+
+class TestAlertsSaysWhenItCannotOpenACard:
+    """A card that will not open must say why. D75.
+
+    THE FAILURE, and it was mine. The corpus behind the detail panel is fetched
+    separately and was caught with `.catch(() => setCorpus([]))`. When that fetch
+    fails — an expired session, a restarted API, a 500 — the corpus is empty, so
+    `resolve` returns null for every card, every card loses its opener, and the
+    page renders perfectly while nothing on it can be clicked.
+
+    No error, no console line, and no visible difference from the legitimate
+    state where a document has genuinely left the corpus. To a reader it looks
+    exactly like the feature having been broken by whatever changed most
+    recently, which is precisely how it was reported.
+
+    Still failure-tolerant: a digest that cannot open its panels is worth more
+    than an error page, so the fetch failure is recorded rather than raised. The
+    difference is that the page now says which of the two states it is in.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _read(self, *parts):
+        return (self.FRONTEND.joinpath(*parts)).read_text(encoding="utf-8")
+
+    def _code(self, *parts):
+        """The file with its comments stripped.
+
+        The first version of this test asserted the old silent catch was absent
+        and failed against the comment that *quotes* it while explaining why it
+        was removed — a test that read the prose instead of the code, and would
+        have gone red on an accurate docstring. The fix and the explanation both
+        belong in the file, so the test stops reading the explanation.
+        """
+        out = []
+        for line in self._read(*parts).splitlines():
+            stripped = line.strip()
+            if stripped.startswith("//") or stripped.startswith("*") \
+                    or stripped.startswith("/*"):
+                continue
+            out.append(line)
+        return "\n".join(out)
+
+    def test_the_corpus_fetch_failure_is_captured_not_discarded(self):
+        code = self._code("digest", "page.js")
+        assert "setCorpusError" in code, (
+            "the corpus fetch swallows its error; a failed load is "
+            "indistinguishable from a document that has left the corpus")
+        # The catch must do something with it, not merely have the setter in
+        # scope: the fetch chain itself has to reference it.
+        chain = code[code.index('apiFetch("/api/items")'):]
+        chain = chain[:chain.index("}, []);")]
+        assert "setCorpusError" in chain, "the catch still discards the reason"
+
+    def test_the_failure_is_rendered_where_the_reader_will_see_it(self):
+        """Captured and not shown is the same outcome one variable later."""
+        source = self._read("digest", "page.js")
+        assert "corpusError ?" in source
+        assert "Cards cannot be opened." in source
+
+    def test_the_error_state_is_distinct_from_still_loading(self):
+        """`null` while loading and once loaded, a string only on failure — or
+        the banner flashes on every page load."""
+        source = self._read("digest", "page.js")
+        assert "useState(null)" in source
+        # Cleared on success, so a recovered fetch does not leave the banner up.
+        assert "setCorpusError(null)" in source
+
+    def test_the_digest_itself_still_renders_without_the_corpus(self):
+        """The tolerance half. The cards carry their own summary, quote and
+        source URL — a published digest resolves on its own by design — so
+        losing the panel data must not cost the reader the edition."""
+        source = self._read("digest", "page.js")
+        # The items list is gated on `loading`/`items.length`, never on corpus.
+        assert "items.length ? (" in source
+        assert "corpus.length ? (" not in source
+
+    def test_a_clickable_card_looks_clickable(self):
+        """D75. Behaviour without affordance reads as a broken feature.
+
+        The dashboard's rows have carried `className="card"` all along — the
+        class holds `cursor: pointer`, a transition, and the hover highlight in
+        globals.css. D72 made the Alerts cards open a panel and left them a bare
+        `<article>` with inline styles, so they opened when clicked and gave no
+        sign they would. Reported as "nothing happens when I mouse over them,
+        like the cards do on the dashboard", which is exactly right.
+
+        Conditional on `onOpen`, and that is not decoration: the class promises
+        a click unconditionally, so a card whose document has left the corpus
+        must not wear it.
+        """
+        code = self._code("digest", "page.js")
+        assert code.count('className={onOpen ? "card" : undefined}') == 2, (
+            "both card types must take the shared card class, and only when "
+            "they actually open")
+        # The class supplies the cursor; an inline one would fight it and mask
+        # a missing class.
+        assert 'cursor: onOpen ? "pointer" : "default"' not in code
+
+    def test_the_card_class_still_carries_the_hover_state(self):
+        """The other half of the pair: the class has to be worth applying."""
+        css = (self.FRONTEND / "globals.css").read_text(encoding="utf-8")
+        assert ".card:hover" in css
+        block = css[css.index(".card:hover"):]
+        assert "border-color" in block[:120] and "background" in block[:120]

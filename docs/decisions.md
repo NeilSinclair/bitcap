@@ -7943,3 +7943,556 @@ for the caching behaviour bypassed the instrumentation silently. The totals are
 in `docs/cost.md`; the per-call receipts existed only in memory and are gone.
 They are not being backfilled — a total divided 216 ways is a fabrication in the
 shape of evidence — and the gap is recorded there instead.
+
+## D72 — The digest showed a thinner record than the dashboard, and its links pointed at ids that no longer existed (2026-09-06)
+
+Two faults on the surface the product is meant to be read from. Neither is a bug
+in the sense of something throwing; both are the digest quietly being worse than
+the page next to it.
+
+**1. The full record was a page away.** The digest rendered summary cards; the
+whole thing — evidence quotes, portfolio impact, related documents, practices —
+existed only in the dashboard's detail panel. That is backwards. The dashboard is
+the corpus, for someone going looking; the digest is the claim that a handful of
+things matter, and it is where a reader is meant to live. The *less* complete
+view was the one they would spend their time in.
+
+**Rejected: reproduce the panel in `digest/page.js`.** It fixes the symptom by
+creating two renderings of one record to keep in step, which is the same failure
+one step later, and the thin copy would drift first for exactly the reason above.
+
+**Rejected: deep-link to `/?id=…` and let the dashboard open it.** ~20 lines,
+near-zero risk, and genuinely the same information. Not taken because it
+navigates away from Alerts, which contradicts what the surface is for. The cost
+of the alternative is a real refactor of working code, and that trade was made
+deliberately rather than by default.
+
+So the panel, the decoration it needs, the per-audience anchoring and the link
+resolution moved to `frontend/app/detail.js` and both pages import them.
+`page.js` lost 380 lines. Nothing about the rules changed.
+
+**2. `articles.id` is not a stable reference, and the digest was storing it.**
+It is a surrogate autoincrement key, reassigned on every rebuild. A published
+payload is frozen by design — a digest records what the product *said*, so
+recomputing one would rewrite history — which means a stored id goes stale the
+first time anyone rebuilds. On this project, with several agents running, that is
+constantly.
+
+Measured across all 30 published editions, 65 items:
+
+    resolvable by id :  9  (13%)
+    resolvable by url: 61  (93%)
+
+Editions 99 and 100 are the sharpest case. Both were published hours before the
+measurement and both already resolved zero items by id, because another session
+rebuilt in between.
+
+`articles.url` is unique (746 of 746) and is what the document actually is. It
+was already in the payload, so this is a lookup change and nothing else.
+
+**The id fallback is confined to the live preview, and that restriction is the
+whole safety argument.** On an archived edition an id is not merely stale but
+*recycled* — the counter is reused, so id 4454 today may name a different
+document than the card does. Falling back there would open the wrong article
+while looking like it worked, which is strictly worse than the dead card the
+change set out to fix. A preview is built by the process now serving the corpus,
+so its ids cannot be stale.
+
+Four of the 65 resolve by neither. Those documents are genuinely gone and their
+cards stay unclickable, which is the correct answer rather than a gap.
+
+**What review caught, and what it says about the evidence used here.** Three
+findings, all real. The one that matters: this branch broke
+`tests/smoke_dashboard_render.js`, a required CI step, because moving the
+decoration left `decorateItems` undefined in that file's sandbox — green on base,
+red on HEAD, while 1,649 pytest tests and `next build` all passed. The test class
+added on this branch asserted in its own docstring that "there is no JS test
+runner in this repo". There are three, all in CI, and one of them was the only
+thing that caught this. The claim is what stopped the check being made, so it is
+corrected in place rather than deleted.
+
+Fixed by loading `detail.js` for real in that smoke test rather than stubbing it.
+Stubbing turns the step green while removing ~100 lines of moved logic from the
+only thing that executes it, which is the blank-page failure that file exists
+for. `tests/smoke_digest_render.js` was added for the same fault class at the new
+site: `DigestView` now chains five hooks each reading the one before it in a
+dependency array, so reordering any two is a blank Alerts page and a green build.
+
+**The near-miss worth recording.** The two pages carry *different* palettes —
+`digest/page.js` folds `low`/`none` into one band style and `investigate`/`watch`
+into one action style, which is fine where nothing below medium renders, while
+the dashboard distinguishes four bands and three actions. The first version of
+`detail.js` carried the digest's versions. That would have silently restyled
+every low and unbanded row on the dashboard: no error, no test failure, just a
+different-looking page. Caught by reading both definitions before merging them,
+and now pinned by a test.
+
+## D73 — The digest window was widened to 7 days on evidence that does not support it, and the ordering was split in two (2026-09-06)
+
+Recorded after the fact. The change is commit `98c395a`, already on
+`deployment-dev`; this entry was owed at the time and was not written because
+the result was still being looked at. That is the wrong order and the reason it
+nearly went unrecorded.
+
+**The defect was real and is the only part of this that needs no argument.** The
+deployed 48-hour digest published ONE item. Not a fault — the two days it covered
+were quiet ones — but the consequence was that every corpus except announcements
+was invisible in it, and no post or paper had ever appeared in a published
+edition despite 39 of them being digest-eligible. A reader opening the link would
+have concluded the system found one thing.
+
+**168h is NOT a measured optimum, and the first version of the config comment
+claimed otherwise.** That comment carried a day-by-day replay showing 120h
+"cliffing" to one item on Wednesday while 168h held, and read it as *wider is
+steadier*. `bitcap-reviewer` caught that the cliff is not a property of the
+width: it is the moment each grid crosses 05 Sep, which is where the corpus stops
+because ingestion has not run since. Recomputed independently:
+
+    120h  crosses on Wed 09   (window becomes 04..09 Sep)
+    168h  crosses on Thu 10   (window becomes 03..10 Sep)
+    240h  crosses on Mon 14   (window becomes 04..14 Sep)
+
+Every width has the same cliff and they differ only in the weekday it lands on.
+The claim that 240h had "no cliff" was true only of the five days that were
+looked at. Against live ingestion none of those rows means anything.
+
+What the change is actually justified by is narrower: 48h publishes one item on
+the deployed database, measured and independent of any replay; a wider window
+spans more days so is likelier to contain an active one; and 168h is the widest
+window that still reports a period a reader would call recent. The choice between
+120 and 168 came down to which grid still held data during the week it shipped in
+— a fact about one frozen corpus, not a property of the setting. `window_hours`
+says all of this in the file, including that the first draft got it wrong.
+
+**Rejected: per-audience windows.** The two cuts want different periods. The
+investment digest is gated on holding connections at `min_strength: 0.5`, so it
+is starved of *linked* items rather than recent ones and does not fill until ~14
+days; at 14 days the AI digest loses every post and all but one release, because
+`max_items: 8` binds and the high-scoring announcements crowd them out. Making
+`window_hours` per-kind is ~3 lines, since `config/digest.yaml` already has
+per-kind blocks. Not taken: the investment reader is the one who has to act on
+the day, and a fortnight-old edition serves them worse than a short one with a
+single genuine item in it. One item there is the filter working, not starvation.
+
+**Ordering is now two sorts either side of the `max_items` cut, not one.** The
+request was "sort by date, then score". Implemented as one sort that is wrong:
+the cut happens between selection and display, so a date-first sort fills the
+edition with whatever is most recent and drops a higher-scoring launch from
+earlier in the window. Across two days those sets were nearly identical; across
+a week they are not. So selection stays on `rank` and display is date-then-rank.
+The test for it fails as `['Minor patch'] == ['Astra']`.
+
+**Nothing read the shipped `window_hours`, so it moved 48 -> 168 with the whole
+suite green.** Every test in `test_digest.py` uses its own `CONFIG` fixture,
+which means the deployed number could be reverted just as silently. There is now
+a tripwire asserting it, and its docstring says plainly that it pins the value
+rather than endorsing it.
+
+**Not a fix, and worth stating.** All of this changes which quiet window gets
+published. The corpus ending on 05 Sep is the actual problem, and every window
+eventually rolls past it. Re-derive this if ingestion resumes.
+
+## D74 — `bitcap-db load` rebuilt the connections and not the grouping, and a rebuilt database ships flat (2026-09-06)
+
+Found in production use rather than by a test: the dashboard stopped showing
+grouped articles and the digest stopped showing related documents, both at once.
+`article_groups` and `article_links` were at **zero rows**.
+
+The cause was run 52, a `bitcap-db load` at 14:01. `load_refs` deletes
+`ArticleGroup` and `ArticleLink` **by name**, and has to: both carry a plain
+foreign key to `articles` with no cascade, so leaving them in place would make
+its own `DELETE FROM articles` raise. Its comment says exactly that. Nothing
+afterwards rebuilt them. `cmd_load` chains `connect` precisely because the same
+thing happens to connections — its docstring says a load stopping before
+the join "would leave the table empty and looking like a finding" — and grouping
+was never added to the same chain. Run 50 at 10:34 was the last to produce it
+(395 groups, 12 links); nothing between them was a worker firing.
+
+**The first version of this entry blamed the wrong mechanism, and review
+caught it.** It said `transform` deletes and re-inserts `articles`, reassigning
+their primary keys, and that the grouping tables were orphaned by id churn.
+`transform` upserts by URL and deletes no article; the ids did change, but only
+because `load_refs` had already emptied the table. The tables were deleted
+explicitly, not orphaned. The conclusion is unaffected — grouping still has to
+be chained — but the reasoning was wrong and the wrong reasoning would have sent
+the next reader to the wrong file.
+
+**This is D67, D68 and D72 for the fourth time: a derived table that one command
+rebuilds and its neighbour does not.** D67 was `source_state` outliving
+`raw_articles`; D68 was `rebuild` deleting the people register; D72 was a frozen
+payload pointing at reassigned ids. Each was found by reading a table rather than
+by anything reporting a fault, and this one is no different — no exception, no
+alert, every run green.
+
+**It is not a production risk, and that was checked rather than assumed.**
+`render.yaml` runs exactly two commands: `bitcap-worker` on a 03:00 cron and the
+read-only API. `bitcap-db load` is not among them. The worker's phase order is
+`ingest → landing → classify → drift → etl → dedupe → digest`, so it rebuilds
+grouping every firing, immediately after the etl that clears it — and if that
+phase throws, `alerts.dedupe_unavailable` raises a system alert whose body reads
+"No grouping was written this firing". That path was already covered.
+
+**What made it worth fixing anyway is the README.** `bitcap-db rebuild` is
+`drop_all` + `ensure_schema` + `cmd_load`, and README.md line 48 makes it the
+first command a new reader runs. Anyone cloning the repo and following the
+instructions got a database with zero groups and zero links, opened the
+dashboard, and saw an ungrouped feed with nothing to say it was not the finished
+product. "Clone-to-running in a few commands, with schema and real data
+included" is a graded requirement, and it was quietly not being met.
+
+One call after `connect`, with `adjudicate_pairs=False`. That flag is the whole
+reason this can live in `cmd_load`: it runs the exact pass, the release trains
+and the cached-cosine gate and skips the only call that costs money, so a
+rebuild stays reproducible from committed artifacts with no API key. Verified by
+running the real thing against a throwaway database with `ANTHROPIC_API_KEY` and
+`OPENAI_API_KEY` unset — 292 groups, `usd 0.0`, `adjudicated 0`.
+
+**Rejected: call `assign` once per prompt version.** It rebuilds both tables
+wholesale on every call, so looping would leave only the last version's rows —
+the identical trap `connect` already carries, one table over, and the reason
+`connect` takes a tuple instead. Announcements are the version the worker groups
+and the only corpus with release trains and near-duplicates; papers and posts
+have never been grouped by either path, and the read side falls back to a
+per-article singleton for them.
+
+**What a rebuilt database still does not have, stated because the fix looks more
+complete than it is.** Two of the four passes need data no committed artifact
+carries. The cosine gate is a no-op on a fresh database — `raw_article_embeddings`
+survives a rebuild but a new one has none, so `coverage` is 0.0 and one collapse
+is found where the live database carries 57. Pairing has nothing to pair, because
+`article_links` needs a GitHub release naming a model an announcement also names
+and releases are live-fetched bronze with no committed artifact. Both resolve on
+the first worker firing. The claim being made is narrower and is the one that
+broke: a load leaves the grouping tables populated rather than empty.
+
+**Review also caught that the fix was, briefly, worse than the bug.** The call
+went inside the `tracked` block, and `dedupe.assign` commits internally —
+against a context manager whose docstring exists to say "the body's stages flush
+rather than commit... a failure anywhere downstream would leave the database
+empty rather than stale, and empty is the worse of the two." That commit made
+the ref wipe durable mid-load. On a first-ever `bitcap-db rebuild`, where there
+is no previous state to roll back to, an injected grouping fault took the new
+reader from 577 articles to **zero** — trading a cosmetic fault for a total one,
+in the exact command the README opens with.
+
+Grouping now runs after the block and is guarded the way `worker._phases` guards
+its own call, for the reason stated there: "a duplicate row must not fail a run".
+The failure is recorded on the run row, where `alerts.dedupe_unavailable` already
+knows how to read it. Four tests pin both halves, including one that injects a
+failure *after* grouping — `TestFailureLeavesTheDatabaseUsable` patches
+`transform`, which raises before it, so nothing existing would have noticed.
+
+The residual, unfixed: a worker that dies between `etl` and `dedupe` leaves them
+empty until 03:00 the next day. The run records `failed`, so it is visible, and
+the next firing self-heals. Closing that would need one transaction spanning both
+phases, which is a larger change than this one and is not being made in passing.
+
+## D75 — Alerts stopped opening its cards and said nothing, because the failure was caught and discarded (2026-09-06)
+
+Reported as "the alerts cards are no longer clickable", immediately after two
+unrelated merges — which is how a silent failure always reads: as damage from
+whatever changed most recently.
+
+D72 added a second fetch to the digest page. The cards summarise; the panel
+needs the whole record, so `/api/items` is fetched separately and the click
+target is resolved against it. That fetch was written:
+
+    apiFetch("/api/items").then(setCorpus).catch(() => setCorpus([]));
+
+The catch was deliberate — a digest that cannot open its panels is worth more
+than an error page, so a failure here must not take down the edition. What was
+not deliberate is that it discards the reason. With an empty corpus, `resolve`
+returns null for every card, every card loses its opener, and the page renders
+*perfectly*: correct items, correct scores, correct evidence, and nothing
+clickable. There is no error, no console line, and no visible difference from
+the legitimate state where a document has genuinely left the corpus.
+
+**Everything measurable was healthy while the symptom was real.** 643 rows
+returned, all 643 decorating cleanly under both audiences, every preview item
+resolving, both servers restarted after the merges, the render smoke tests
+green. That is the diagnostic cost of swallowing an error: the failure lives in
+one branch that leaves no trace, so every check from outside the browser says
+the system is fine.
+
+The fetch stays tolerant and stops being silent: the reason is captured and the
+page renders a line saying the cards will not open and everything else is
+unaffected. Four tests pin it, two of which go red against the old catch.
+
+**And that was not the reported fault.** With the banner shipped, the answer
+came back "no banner, and nothing happens when I mouse over them, like the cards
+do on the dashboard" — which located it exactly. The dashboard's rows have
+carried `className="card"` since they were written: the class holds
+`cursor: pointer`, a 120ms transition and `.card:hover { border-color:
+var(--muted); background: var(--bg-3); }`. D72 made the Alerts cards open a
+detail panel and left them a bare `<article>` with inline styles and no class.
+They opened when clicked and gave no sign they would.
+
+So the cards were working the whole time. Behaviour with no affordance is
+indistinguishable from no behaviour, and worse than leaving them plainly inert:
+before D72 nothing suggested a card was interactive, so nothing was missing.
+The class is applied only when `onOpen` is set — it promises a click
+unconditionally, so a card whose document has left the corpus must not wear it.
+
+Two lessons, and the second is the one worth keeping. The first is that adding
+an interaction means adding its affordance. The second is diagnostic: three
+rounds of measurement said the system was healthy — 643 rows, every item
+resolving, both smoke tests green — because every check ran on the side of the
+browser where the fault was not. The question that resolved it was asking the
+person looking at the screen what they actually saw.
+
+**The first version of one of those tests read the prose instead of the code.**
+It asserted the old silent catch was absent from the file — and failed, against
+the comment that quotes it while explaining why it was removed. An accurate
+docstring would have kept it red forever. It now strips comments before
+matching, and checks the fetch chain itself references the setter rather than
+merely having it in scope.
+
+**The general rule this is the second instance of.** `worker._phases` swallows
+the dedupe phase's exceptions for the same good reason and is *not* silent:
+`alerts.dedupe_unavailable` exists precisely to report what was caught, and its
+docstring says why — "swallowed and unreported is how `drift_unavailable`'s
+outage went unnoticed for days (D45)". The digest page repeated the swallow
+without the reporting half. Catching an exception to protect a surface is
+correct; discarding it is a decision to make the next failure undiagnosable.
+
+## D76 — The posts leg goes nightly, because the reason it could not was removed a day earlier (2026-09-06)
+
+`cadence.posts: 7 → 1`. The X posts leg now runs on every scheduled firing,
+like every other leg except GitHub.
+
+**The old cadence was a cost control standing in for a missing feature.** Its
+comment argued that "a daily firing would multiply the bill sevenfold", and
+against the code as it then stood that was correct: `fetch_posts` wrote
+`source_state.watermark["max_published"]` on every firing and never read it
+back, so each firing bought the entire 90-day window regardless of how recently
+the last one had run. Cost was a function of *how often* the leg ran and not of
+how much was new. With that shape, 7 was the only defensible number.
+
+D69 made the leg incremental — the stored mark is passed to X as `start_time`,
+X bills per post *returned*, and `start_time` is applied server-side. A firing
+now buys the days since the last one. That severed cost from cadence, and the
+sevenfold argument went with it. Nothing else changed; the number was simply
+never revisited after the thing it was compensating for was fixed.
+
+**What nightly actually costs.** The first version of this entry said ~$0.37 a
+week, from 473 posts ÷ 90 days = ~5.3 a day. That is wrong, and wrong in a way
+worth recording because the artifact invites it: the pull is capped per handle
+(`per_handle_ceiling: 100`), and four handles hit their cap, so their history
+stops well short of the window's floor — `alexandr_wang` returned 100 posts
+reaching back only to 28 July, `gdb` 96 back to 24 July. Dividing a truncated
+pull by the full span it never reached understates the rate by a third.
+
+The recent days *are* covered for every handle, and those are the days a nightly
+firing buys. Counting per calendar day over the last 30 (230 posts, ~7.7/day,
+stable at 7.4–7.8 across 21/30/45-day windows):
+
+| | firings/wk | days bought each | posts/wk | $/wk |
+|---|---:|---:|---:|---:|
+| weekly (old) | 1 | 7 + 1 overlap | ~62 | ~$0.31 |
+| nightly (new) | 7 | 1 + 1 overlap | ~108 | ~$0.54 |
+
+~$0.23 a week — about a euro a month — to take the worst-case lag on a post from
+seven days to one. Classification does not move at all: the overlap day's posts
+are already in `raw_articles` and are dropped on the URL match before any model
+sees them, so the same posts are classified, just sooner.
+
+The conclusion survived the correction, which is the only reason the decision
+did. Had the true rate been the one that made nightly unaffordable, the honest
+outcome would have been to leave the cadence alone.
+
+**The overlap is why it is 1.75x rather than 1x, and it is deliberate.** The
+mark is a date, not an instant, because `to_record` stores `created_at[:10]`. So
+every firing re-reads the day it stopped on. Seven firings re-read seven days;
+one firing re-reads one. An exact instant would remove that 0.75x and silently
+drop any post published later on the same day as the last one stored — a hole
+nothing downstream could detect, traded for fifteen cents a week.
+
+**This is now the second number that depends on the watermark being read, and
+they live in different files.** Nothing in `config/pipeline.yaml` reaches
+`fetch_posts` and nothing in `fetch_posts` mentions the cadence. Remove the read
+and the corpus stays correct, nothing fails, nothing alerts, and the bill goes
+from ~$0.37 a week to ~$16.60 — seven full-window pulls instead of one.
+`TestANightlyPostsCadenceRestsOnTheWatermark` pins the pairing: one test asserts
+the shipped cadence is 1, the other asserts the stored mark reaches the provider
+as `start_time`. Mutation-checked by replacing `since=_post_since(mark)` with
+`since=None`, which turns the second red.
+
+**The risk this creates, which the first draft of this entry missed entirely.**
+A frozen watermark, and nightly makes it seven times more expensive.
+
+`fetch_posts` returns an empty watermark on any firing where a handle errored or
+was skipped for budget, and `record_success` then leaves the stored mark alone.
+Both halves are right: the mark is one date for the whole leg, so advancing it
+past a handle that returned nothing would move that handle's floor over posts it
+never published, permanently, with nothing downstream able to tell those from
+posts that were never written.
+
+What nothing reported is the consequence. The mark is what bounds the pull, so
+while it is stuck **every firing buys a window one day wider than the last**. And
+the leg records *success* each time — the handle-level error goes to
+`unresolved_items`, `consecutive_failures` resets to zero, and `source_down`
+cannot fire because nothing failed. A single handle erroring every night is
+enough. The ceiling is `budget.max_posts_total` (900 posts, $4.50 a firing), not
+anything that raises an alarm.
+
+At weekly that was one widening pull a week and easy to miss. At nightly it is
+seven. Making a system seven times more sensitive to a state that has no report
+on it is precisely the swallowed-and-unreported pattern D45 and D75 both name,
+so the report ships with the cadence rather than after it:
+`alerts.posts_watermark_stalled` fires when the stored mark stands still for
+`posts_watermark_stale_days` (7) while the leg keeps succeeding.
+
+**7 rather than 3, because a stuck mark is ambiguous.** `newest` is taken over
+*kept* records, so a stretch in which every post read was dropped by the
+prefilter also fails to advance it — and that is harmless. At ~2.6 posts a day
+surviving the prefilter, three quiet days is possible and seven is not, so seven
+is where the benign reading stops being available. Waiting that long costs ~$0.27
+of extra pull, which is the right thing to trade against a false page. Both
+causes are covered deliberately: from durable state they are indistinguishable,
+and the alert body says so instead of asserting which one it is.
+
+Keyed on the mark rather than on the date, so one ongoing stall is one alert
+rather than one a night — the correction `drift` and `repo_filter_unavailable`
+both needed. `warning`, not `critical`: the corpus is correct and no reader sees
+anything false. It is a bill that grows quietly.
+
+**The product consequence is larger than "fresher", and it cuts both ways.** The
+digest windows on *publication* date over a quantised 168-hour grid (D73), so a
+post ingested a week after it was written can land in an edition that has
+already closed and never appear in one at all. Weekly ingestion made that the
+normal case for posts; nightly is what makes a post reliably eligible for the
+edition it belongs to. That is the benefit — and it is also the risk, because
+the digest's selection thresholds were tuned before posts could realistically
+reach it. Whether posts crowd out announcements in an edition is a question to
+answer from a published edition, not from here.
+
+**What this does not do.** Posts still cannot raise a content alert —
+`alerts.content_mute_prompt_versions` holds `t1` and `t2`, which is an
+independent guard and a separate decision (D69 declined to take it). A nightly
+posts leg means the noisiest corpus in the system is refreshed nightly into the
+dashboard and the digest; it does not mean anyone gets paged about it.
+
+**Also in this change, and unrelated except by surface: the run picker could not
+name two of its own legs.** `releases` and `posts` had no entry in the
+frontend's `LEG_LABEL` and none in the API's `_LEG_NOTES`, so they rendered as
+lowercase `releases` and `posts` beside `Announcements` and `Papers`, with a
+blank line where every other leg carries a one-line description. The checkboxes
+worked. The two newest and least self-explanatory legs were simply the two with
+nothing explaining them — which is the failure mode config-not-code is supposed
+to prevent, arriving one layer up: a leg is *declared* in `registry.LEGS`, and
+described in two other files that adding one does not touch.
+
+Fixed by adding both, and by asserting the coverage from the endpoint the page
+actually calls rather than from a list someone remembers to extend — the same
+approach `TestEveryRouteIsGated` already takes to the route table. The first
+version of the test iterated `registry.LEGS` instead, which needed `"drift"`
+appended by hand because it is a checkbox without being an ingestion leg; that
+put the remember-to-extend list back, one line further down. Three tests: every
+leg the API offers has a non-empty note; every leg it offers has a label in the
+picker; and no label is lowercase, which catches the case where the raw id is
+copied in as the "fix". All three mutation-checked against the state they
+replaced, and the parse asserts it found something, so a refactor cannot make
+three emptiness checks pass vacuously.
+
+## D77 — The digest cap was raised to 16, and measuring what it had been cutting reversed the reason for doing it (2026-09-06)
+
+`max_items: 8 → 16` on both audiences (`config/digest.yaml`).
+
+The prompt for this was the open question D76 left: posts now reliably reach the
+window they belong to, an edition has a fixed number of slots, and nobody had
+looked at whether posts were pushing announcements out of them.
+
+**They were not.** Measured on the deployed corpus before the change:
+
+| audience | passed the rule | shown at 8 | dropped by the cap |
+|---|---:|---:|---:|
+| investment | 2 | 2 | 0 |
+| ai | 15 | 8 | 7 |
+
+Two findings, and the first one makes the second one smaller than it looks.
+
+**On the investment digest the cap has never done anything.** Two items of 58
+considered clear `min_strength` + `always_band`; 8 and 1000 produce the identical
+edition. The number that bounds this audience is the rule, not the cap, and the
+worry that posts crowd it out was misplaced — nothing is being crowded out of a
+list with six empty slots. It is raised anyway, only so the two audiences do not
+silently differ.
+
+**On the AI digest the cap was binding, and every one of the 7 items it dropped
+was `medium`.** Not one high-band item was lost to it: the ranking already had
+all of them inside the top 8. Five of the seven were X posts. So posts were not
+displacing announcements — they rank *below* them, which is the ranking working
+as designed. The cap was cutting the medium tail, and the medium tail is mostly
+posts.
+
+**What raising it actually does, stated because it is the real consequence.**
+The AI edition goes from 8 rows to 15, and 6 of those 15 are X posts — from one
+in eight to roughly two in five. That is a larger change to how that digest reads
+than "8 → 16" suggests, and it follows directly from D76: nightly ingestion is
+what put those posts inside their own window in the first place.
+
+**If it reads as noisy, this is the wrong lever to reach back for.** `max_items`
+cuts on *position* — it drops whatever fell below a line, regardless of merit,
+and reports it as `suppressed` next to items suppressed on merit. `min_band:
+medium → high` cuts on merit and says so. The cap is a length limit for a reader,
+not a quality filter, and using it as one is how a genuinely important item ends
+up dropped for being ninth.
+
+**Neither number was pinned by anything before this.** Every test in
+`tests/test_digest.py` runs against a `CONFIG` fixture carrying its own
+`max_items`, so both shipped values could be changed — or reverted by a merge —
+with the whole suite green. `test_the_shipped_item_caps_are_pinned` is the
+tripwire, on the same reasoning as `test_the_shipped_window_is_pinned` (D73): it
+asserts the number moves deliberately, not that 16 is correct.
+
+## D78 — The AI digest cuts on merit at `high`, and "above 0.5" had to be interpreted before it could be applied (2026-09-06)
+
+`ai.min_band: medium → high` (`config/digest.yaml`). The AI edition goes back to
+8 rows from 15.
+
+D77 raised `max_items` to 16 and said in as many words that if the result read as
+noisy, the cap was the wrong lever to reach back for. It did read as noisy, and
+this is that lever.
+
+**The request was "scores above 0.5", and there is no 0-1 score on this axis.**
+`ai_score` runs 0-100; the `0.5` visible in the investment block is
+`min_strength`, a *connection strength*, which the AI rule does not use at all —
+it gates on an actionable practice tag and a band, and nothing else. So the
+number had to be read as half the scale rather than applied literally, and the
+reading is recorded here rather than silently absorbed.
+
+**On the deployed corpus both readings are the same edition.** The scores are
+quantised — 100.0, 66.7, 44.4, 33.3 — and nothing sits between 44.4 and 66.7, so
+`>= 50` and `>= 60` admit exactly the same 8 items:
+
+| | kept | posts | documents |
+|---|---:|---:|---:|
+| `>= 30` (medium, before) | 15 | 6 | 9 |
+| `>= 40` | 12 | 3 | 9 |
+| **`>= 50`** | **8** | **1** | **7** |
+| **`>= 60` (high, shipped)** | **8** | **1** | **7** |
+| `>= 70` | 2 | 0 | 2 |
+
+**They are not the same rule, and only this corpus makes them agree.** An item
+scoring 55 is reachable and would pass one and fail the other. `min_band` was
+used rather than a new `min_score` key deliberately: two numeric levers for one
+cut is the two-places-that-must-agree shape that has caused four separate faults
+in this repo already (D72, D74, D75, D76), and `alerts.content_band` already
+expresses this exact threshold this exact way.
+
+**What it costs, and it is not nothing.** Six X posts become one. The AI digest
+is again almost entirely documents, which means the posts leg going nightly (D76)
+now buys this audience a single row. The 7 items removed are real `investigate`
+recommendations rather than noise — they are removed for scoring below a line,
+and the edition's `suppressed` count records that honestly.
+
+**`max_items` stays at 16 even though it no longer binds.** Lowering it back to
+8 would make the two cuts agree by coincidence and hide which one is doing the
+work the next time the corpus moves. It is a length limit for a reader again,
+which is what it should always have been.
+
+**Three shipped numbers now have tripwires and none had one before this week.**
+`window_hours` (D73), both `max_items` (D77) and now `ai.min_band`. Every test in
+`tests/test_digest.py` runs against a fixture carrying its own values, so each of
+these could be reverted by a merge with the whole suite green — and a digest that
+quietly doubles or halves is not a failure anything else would report.
