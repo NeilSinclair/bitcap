@@ -329,6 +329,26 @@ def build(
         for index, art in enumerate(members):
             item = item_for(art)
             if item is not None:
+                if len(members) > 1:
+                    # A card that stands for several documents has to say so.
+                    # The merge is a decision the product made on the reader's
+                    # behalf, and until now the only trace of it was the
+                    # edition-level `collapsed` count: a reader could see that
+                    # eleven rows were folded somewhere, but not which card ate
+                    # what, or why. The dashboard has carried `groupReason`
+                    # since grouping shipped; this is the same string.
+                    #
+                    # `len(members)`, NOT `ArticleGroup.group_size`. The stored
+                    # size counts the whole corpus-wide group, which can include
+                    # documents published outside this window that were never
+                    # candidates here. Reporting it would tell a reader the card
+                    # speaks for three documents when this edition only folded
+                    # two. `len(members)` is what was actually collapsed, and it
+                    # is the same number `collapsed` is accumulated from below.
+                    group = grouping.get(art.id)
+                    item["groupSize"] = len(members)
+                    item["groupMethod"] = group.method if group else "singleton"
+                    item["groupReason"] = group.reason if group else ""
                 selected.append(item)
                 collapsed += len(members) - 1
                 break
