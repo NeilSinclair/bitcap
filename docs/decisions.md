@@ -8091,3 +8091,98 @@ rather than endorsing it.
 **Not a fix, and worth stating.** All of this changes which quiet window gets
 published. The corpus ending on 05 Sep is the actual problem, and every window
 eventually rolls past it. Re-derive this if ingestion resumes.
+
+## D74 — `bitcap-db load` rebuilt the connections and not the grouping, and a rebuilt database ships flat (2026-09-06)
+
+Found in production use rather than by a test: the dashboard stopped showing
+grouped articles and the digest stopped showing related documents, both at once.
+`article_groups` and `article_links` were at **zero rows**.
+
+The cause was run 52, a `bitcap-db load` at 14:01. `load_refs` deletes
+`ArticleGroup` and `ArticleLink` **by name**, and has to: both carry a plain
+foreign key to `articles` with no cascade, so leaving them in place would make
+its own `DELETE FROM articles` raise. Its comment says exactly that. Nothing
+afterwards rebuilt them. `cmd_load` chains `connect` precisely because the same
+thing happens to connections — its docstring says a load stopping before
+the join "would leave the table empty and looking like a finding" — and grouping
+was never added to the same chain. Run 50 at 10:34 was the last to produce it
+(395 groups, 12 links); nothing between them was a worker firing.
+
+**The first version of this entry blamed the wrong mechanism, and review
+caught it.** It said `transform` deletes and re-inserts `articles`, reassigning
+their primary keys, and that the grouping tables were orphaned by id churn.
+`transform` upserts by URL and deletes no article; the ids did change, but only
+because `load_refs` had already emptied the table. The tables were deleted
+explicitly, not orphaned. The conclusion is unaffected — grouping still has to
+be chained — but the reasoning was wrong and the wrong reasoning would have sent
+the next reader to the wrong file.
+
+**This is D67, D68 and D72 for the fourth time: a derived table that one command
+rebuilds and its neighbour does not.** D67 was `source_state` outliving
+`raw_articles`; D68 was `rebuild` deleting the people register; D72 was a frozen
+payload pointing at reassigned ids. Each was found by reading a table rather than
+by anything reporting a fault, and this one is no different — no exception, no
+alert, every run green.
+
+**It is not a production risk, and that was checked rather than assumed.**
+`render.yaml` runs exactly two commands: `bitcap-worker` on a 03:00 cron and the
+read-only API. `bitcap-db load` is not among them. The worker's phase order is
+`ingest → landing → classify → drift → etl → dedupe → digest`, so it rebuilds
+grouping every firing, immediately after the etl that clears it — and if that
+phase throws, `alerts.dedupe_unavailable` raises a system alert whose body reads
+"No grouping was written this firing". That path was already covered.
+
+**What made it worth fixing anyway is the README.** `bitcap-db rebuild` is
+`drop_all` + `ensure_schema` + `cmd_load`, and README.md line 48 makes it the
+first command a new reader runs. Anyone cloning the repo and following the
+instructions got a database with zero groups and zero links, opened the
+dashboard, and saw an ungrouped feed with nothing to say it was not the finished
+product. "Clone-to-running in a few commands, with schema and real data
+included" is a graded requirement, and it was quietly not being met.
+
+One call after `connect`, with `adjudicate_pairs=False`. That flag is the whole
+reason this can live in `cmd_load`: it runs the exact pass, the release trains
+and the cached-cosine gate and skips the only call that costs money, so a
+rebuild stays reproducible from committed artifacts with no API key. Verified by
+running the real thing against a throwaway database with `ANTHROPIC_API_KEY` and
+`OPENAI_API_KEY` unset — 292 groups, `usd 0.0`, `adjudicated 0`.
+
+**Rejected: call `assign` once per prompt version.** It rebuilds both tables
+wholesale on every call, so looping would leave only the last version's rows —
+the identical trap `connect` already carries, one table over, and the reason
+`connect` takes a tuple instead. Announcements are the version the worker groups
+and the only corpus with release trains and near-duplicates; papers and posts
+have never been grouped by either path, and the read side falls back to a
+per-article singleton for them.
+
+**What a rebuilt database still does not have, stated because the fix looks more
+complete than it is.** Two of the four passes need data no committed artifact
+carries. The cosine gate is a no-op on a fresh database — `raw_article_embeddings`
+survives a rebuild but a new one has none, so `coverage` is 0.0 and one collapse
+is found where the live database carries 57. Pairing has nothing to pair, because
+`article_links` needs a GitHub release naming a model an announcement also names
+and releases are live-fetched bronze with no committed artifact. Both resolve on
+the first worker firing. The claim being made is narrower and is the one that
+broke: a load leaves the grouping tables populated rather than empty.
+
+**Review also caught that the fix was, briefly, worse than the bug.** The call
+went inside the `tracked` block, and `dedupe.assign` commits internally —
+against a context manager whose docstring exists to say "the body's stages flush
+rather than commit... a failure anywhere downstream would leave the database
+empty rather than stale, and empty is the worse of the two." That commit made
+the ref wipe durable mid-load. On a first-ever `bitcap-db rebuild`, where there
+is no previous state to roll back to, an injected grouping fault took the new
+reader from 577 articles to **zero** — trading a cosmetic fault for a total one,
+in the exact command the README opens with.
+
+Grouping now runs after the block and is guarded the way `worker._phases` guards
+its own call, for the reason stated there: "a duplicate row must not fail a run".
+The failure is recorded on the run row, where `alerts.dedupe_unavailable` already
+knows how to read it. Four tests pin both halves, including one that injects a
+failure *after* grouping — `TestFailureLeavesTheDatabaseUsable` patches
+`transform`, which raises before it, so nothing existing would have noticed.
+
+The residual, unfixed: a worker that dies between `etl` and `dedupe` leaves them
+empty until 03:00 the next day. The run records `failed`, so it is visible, and
+the next firing self-heals. Closing that would need one transaction spanning both
+phases, which is a larger change than this one and is not being made in passing.
