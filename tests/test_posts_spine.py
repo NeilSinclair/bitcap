@@ -120,12 +120,21 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
 
 
 class TestPostsAreSeenButNotPushed:
-    """Scored and browsable, deliberately not in the digest or the alerts."""
+    """Scored, browsable, digestible -- deliberately still not alertable.
 
-    def test_the_digest_reads_fewer_versions_than_the_dashboard(self):
+    D63 held posts out of both the digest and the alerts while the corpus was
+    unproven. D69 admitted them to the digest and left the alert mute in place,
+    so this class now pins the *remaining* half of that decision. The two are
+    separate switches on purpose: a digest is something a reader chooses to
+    open, an alert is something that pages them.
+    """
+
+    def test_the_digest_now_covers_every_scored_corpus(self):
+        """D69. If this reverts, posts silently stop reaching the digest while
+        still rendering on the dashboard -- the surfaces disagree and neither
+        says so."""
         assert POST_PROMPT_VERSION in PROMPT_VERSIONS
-        assert POST_PROMPT_VERSION not in DIGEST_VERSIONS
-        assert set(DIGEST_VERSIONS) < set(PROMPT_VERSIONS)
+        assert set(DIGEST_VERSIONS) == set(PROMPT_VERSIONS)
 
     def test_content_alerts_are_muted_for_posts_in_the_committed_config(self):
         config = yaml.safe_load((ROOT / "config" / "pipeline.yaml").read_text())

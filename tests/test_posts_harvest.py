@@ -312,3 +312,79 @@ class TestTheConfigTheCodeReadsIsReal:
         pipeline = yaml.safe_load((ROOT / "config" / "pipeline.yaml").read_text())
         assert "api.x.com" in pipeline["fetch"]["min_interval_seconds"]
         assert xc.interval("api.x.com") > 0
+
+
+class TestTheWindowIsBoundedByWhatWeAlreadyHave:
+    """The leg re-bought its whole window every firing.
+
+    `start_time` is server-side and X bills per post *returned*, so the window
+    is the bill. `fetch_posts` wrote `max_published` on every firing and never
+    read it back, which at a weekly cadence meant paying for the same 90 days
+    of posts once a week for ever. These pin the read, not the write.
+    """
+
+    def test_a_watermark_narrows_the_window_it_does_not_widen_it(self, cfg, monkeypatch):
+        seen = {}
+
+        def _capture(user_id, token, spend, *, max_results, start_time, **kw):
+            seen["start"] = start_time
+            return []
+
+        monkeypatch.setattr(xc, "user_posts", _capture)
+        spend = xc.Spend(max_posts=100, max_users=40)
+        hx.pull([PERSON | {"user_id": "1"}], {"sama": 10}, "t", spend, cfg,
+                now=NOW, since=_ago(3))
+        assert seen["start"] == _ago(3), "the watermark must bound the pull"
+
+    def test_a_stale_watermark_cannot_widen_the_window(self, cfg, monkeypatch):
+        """A mark older than the window would re-buy more than config allows."""
+        seen = {}
+
+        def _capture(user_id, token, spend, *, max_results, start_time, **kw):
+            seen["start"] = start_time
+            return []
+
+        monkeypatch.setattr(xc, "user_posts", _capture)
+        spend = xc.Spend(max_posts=100, max_users=40)
+        hx.pull([PERSON | {"user_id": "1"}], {"sama": 10}, "t", spend, cfg,
+                now=NOW, since=_ago(9999))
+        assert seen["start"] == xc.window_start(cfg["window_days"], NOW)
+
+    def test_no_watermark_reads_the_whole_window(self, cfg, monkeypatch):
+        """First firing, or a leg whose state was lost, must still backfill."""
+        seen = {}
+
+        def _capture(user_id, token, spend, *, max_results, start_time, **kw):
+            seen["start"] = start_time
+            return []
+
+        monkeypatch.setattr(xc, "user_posts", _capture)
+        spend = xc.Spend(max_posts=100, max_users=40)
+        hx.pull([PERSON | {"user_id": "1"}], {"sama": 10}, "t", spend, cfg, now=NOW)
+        assert seen["start"] == xc.window_start(cfg["window_days"], NOW)
+
+    def test_a_narrower_window_actually_costs_less(self, cfg, monkeypatch):
+        """The whole point. Billing is per post returned, so fewer posts is less money."""
+        def _server_side(user_id, token, spend, *, max_results, start_time, **kw):
+            # Emulate X: `start_time` is applied before the page is assembled.
+            everything = [_post(f"p{d}", created=_ago(d).strftime("%Y-%m-%dT%H:%M:%S.000Z"))
+                          for d in (1, 10, 40, 80)]
+            posts = [p for p in everything
+                     if datetime.strptime(p["created_at"], "%Y-%m-%dT%H:%M:%S.000Z")
+                     .replace(tzinfo=timezone.utc) >= start_time][:max_results]
+            spend.reserve_posts(max_results)
+            spend.bill_posts(len(posts))
+            return posts
+
+        monkeypatch.setattr(xc, "user_posts", _server_side)
+        people, caps = [PERSON | {"user_id": "1"}], {"sama": 100}
+
+        full = xc.Spend(max_posts=1000, max_users=40)
+        hx.pull(people, caps, "t", full, cfg, now=NOW)
+
+        incremental = xc.Spend(max_posts=1000, max_users=40)
+        hx.pull(people, caps, "t", incremental, cfg, now=NOW, since=_ago(5))
+
+        assert full.posts == 4
+        assert incremental.posts == 1
+        assert incremental.usd < full.usd, "a bounded window must cost less"

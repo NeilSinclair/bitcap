@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "other", "summary": "Meta released a minor version update to ProgramBench fixing an orphaned process timeout bug in the container execution environment, stated to only affect stability and not evaluation results.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": []}

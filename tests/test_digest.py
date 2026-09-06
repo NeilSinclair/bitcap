@@ -688,3 +688,57 @@ class TestTheGroupIsRepresentedByAMemberThatPasses:
         assert out["items"] == []
         assert out["stats"]["suppressed"] == 1
 
+
+
+class TestEverySurfaceReadsTheSameCorpora:
+    """The digest's version list exists in two places, and they can disagree.
+
+    `api/main.py:277` reads `DIGEST_VERSIONS`; `app/pipeline/worker.py` builds
+    its own tuple, because it honours a `--prompt` override. D69 widened both to
+    admit posts. Widening only one would have shown posts in
+    `/api/digests/preview` while the published digest omitted them -- two
+    surfaces disagreeing while each looks correct, which is the failure D67 and
+    D69 are both about.
+    """
+
+    def test_the_worker_publishes_the_versions_the_api_previews(self):
+        """Drift between the two lists is invisible until someone compares the
+        preview with what was actually sent."""
+        import inspect
+
+        from app import cli
+        from app.pipeline import worker
+
+        call = inspect.getsource(worker._phases).split(
+            "digest_mod.publish(")[1].split("run.started_at")[0]
+        # The worker names the constants rather than the values, and passes
+        # `prompt_version` for the announcements one so `--prompt` still works.
+        expected = {cli.PROMPT_VERSION: "prompt_version",
+                    cli.PAPER_PROMPT_VERSION: "PAPER_PROMPT_VERSION",
+                    cli.POST_PROMPT_VERSION: "POST_PROMPT_VERSION"}
+        for version in cli.DIGEST_VERSIONS:
+            assert expected[version] in call, (
+                f"{version!r} is in DIGEST_VERSIONS but the worker does not "
+                f"publish it -- the preview and the published digest disagree")
+
+    def test_posts_are_admitted_to_the_digest(self):
+        """D63 held `t1` out while the corpus was unproven; D69 admits it. If
+        this reverts, posts silently stop reaching the digest."""
+        from app.cli import DIGEST_VERSIONS, POST_PROMPT_VERSION
+
+        assert POST_PROMPT_VERSION in DIGEST_VERSIONS
+
+    def test_posts_still_cannot_raise_a_content_alert(self):
+        """Two surfaces, two switches. Reaching a digest a reader chooses to
+        open is not the same permission as paging them, and D69 granted only
+        the first."""
+        import yaml
+
+        from app.cli import POST_PROMPT_VERSION
+
+        config = yaml.safe_load(
+            (Path(__file__).parent.parent / "config" / "pipeline.yaml")
+            .read_text(encoding="utf-8"))
+        assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
+            "posts entered the digest; keeping them muted for alerts is the "
+            "separate decision D69 deliberately did not take")

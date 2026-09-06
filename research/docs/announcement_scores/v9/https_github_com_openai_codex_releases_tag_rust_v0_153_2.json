@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "OpenAI's Codex CLI patch release fixes a mislabeled description of the GPT-6-Astra Fast tier, correcting displayed text without changing request behavior.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": []}

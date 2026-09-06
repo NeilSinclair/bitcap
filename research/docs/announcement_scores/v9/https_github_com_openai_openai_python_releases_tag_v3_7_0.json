@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "OpenAI released version 3.7.0 of its Python SDK, updating usage APIs and documentation and fixing a repeated numpy check bug in embeddings.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": ["practices:integration:quote not in document"]}
