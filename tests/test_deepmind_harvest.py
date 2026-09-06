@@ -33,7 +33,7 @@ class TestListPublicationUrls:
         monkeypatch.setattr(
             dh,
             "fetch",
-            lambda url, pause=1.5: _sitemap(
+            lambda url, **kw: _sitemap(
                 [
                     ("https://deepmind.google/research/publications/1/", "2026-08-20"),
                     ("https://deepmind.google/research/publications/2/", "2025-01-01"),  # too old
@@ -48,7 +48,7 @@ class TestListPublicationUrls:
         monkeypatch.setattr(
             dh,
             "fetch",
-            lambda url, pause=1.5: _sitemap(
+            lambda url, **kw: _sitemap(
                 [
                     ("https://deepmind.google/research/publications/1/", "2026-07-01"),
                     ("https://deepmind.google/research/publications/2/", "2026-08-01"),

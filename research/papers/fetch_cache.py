@@ -42,6 +42,7 @@ when the server sends it, and no backoff is ever shorter than the interval.
 from __future__ import annotations
 
 import email.utils
+import hashlib
 import re
 import sys
 import threading
@@ -62,6 +63,18 @@ UA = "bitcap-case-study research spike (contact: neilaf4@gmail.com)"
 # expires". `None` already means the second, so it cannot also mean the first.
 AUTO = object()
 
+# "This URL is how we learn a paper EXISTS" — an author search, a sitemap, a
+# paginated index. Passed by the caller, because it is a property of the
+# question being asked and not of the URL's shape: `deepseek_harvest.arxiv_query`
+# issues both `au:"DeepSeek-AI"` (a listing) and `ti:"..."` (a lookup of one
+# known paper) against the same endpoint, and only the first is discovery in
+# this sense.
+#
+# These are few, and they are the only URLs whose staleness delays a *finding*.
+# Under the single discovery TTL a new DeepSeek paper could go unseen for a
+# fortnight, because DeepSeek's paper list has no other source.
+LISTING = object()
+
 # Fallback values, used when config/pipeline.yaml is unreadable — a standalone
 # research script must not die because a config file moved. The real values,
 # and the reasoning, live under `fetch:` in that file.
@@ -69,6 +82,8 @@ _DEFAULTS = {
     "min_interval_seconds": {"arxiv.org": 3.0},
     "default_min_interval_seconds": 1.0,
     "discovery_ttl_hours": 336,
+    "listing_ttl_hours": 24,
+    "discovery_ttl_jitter": 0.25,
     "retries": 4,
     "max_backoff_seconds": 120.0,
 }
@@ -252,6 +267,32 @@ def _retry_after(exc: urllib.error.HTTPError) -> float | None:
     return max(0.0, (parsed - datetime.now(timezone.utc)).total_seconds())
 
 
+def _jitter(url: str) -> float:
+    """A stable fraction in [0, 1) for one URL, used to stagger its expiry.
+
+    **Why this exists.** Every discovery URL is first fetched in the same
+    firing, so a single flat TTL means every one of them lapses in the same
+    firing too — and that firing replays the whole discovery set at arXiv in one
+    burst and gets rate-limited. D53 assumed these would "re-run on staggered
+    expiry"; nothing staggered them. Measured on 2026-09-06: 35 cached rows,
+    every one expiring on the same date.
+
+    `hashlib`, not the built-in `hash()`, and that is the whole point: `hash()`
+    is salted per process, so the same URL would land on a different expiry
+    every run and a body could be re-stamped further into the future each time
+    it was touched. This has to be a property of the URL, not of the process
+    that happened to ask.
+
+    Args:
+        url: Absolute URL.
+
+    Returns:
+        A deterministic fraction in [0, 1).
+    """
+    digest = hashlib.blake2b(url.encode("utf-8"), digest_size=8).digest()
+    return int.from_bytes(digest, "big") / 2**64
+
+
 def _ttl(url: str, ttl_hours) -> timedelta | None:
     """How long this URL's body stays trustworthy. None means forever.
 
@@ -260,15 +301,33 @@ def _ttl(url: str, ttl_hours) -> timedelta | None:
     those are the URLs whose whole purpose is to return something different
     once a new paper exists.
 
+    Three cases, in the order they are decided:
+
+    * an explicit `ttl_hours` (including `None` for permanent) is obeyed;
+    * :data:`LISTING` takes the short window, undithered — these are the URLs
+      that decide how fast a *new* paper is found, there are only a handful of
+      them, and asking daily is what makes the answer worth trusting;
+    * everything else takes the discovery window, spread per URL by
+      :func:`_jitter` so the set stops coming due together.
+
     Separate from :func:`_expiry` because the disk-cache path needs the
     *duration* to measure a file's age against, not an absolute instant
     computed from now: a stale file measured from now is never stale.
     """
+    cfg = settings()
+    if ttl_hours is LISTING:
+        return timedelta(hours=float(cfg["listing_ttl_hours"]))
     if ttl_hours is not AUTO:
         return None if ttl_hours is None else timedelta(hours=ttl_hours)
     if _IMMUTABLE.match(url):
         return None
-    return timedelta(hours=float(settings()["discovery_ttl_hours"]))
+    # Only ever *extends*, never shortens: the configured value stays the floor
+    # it reads as, and the spread is the tail above it. Dithering downwards
+    # would quietly make every URL fresher than the number in the config file
+    # says, which is the wrong direction to be surprising in.
+    hours = float(cfg["discovery_ttl_hours"])
+    spread = float(cfg["discovery_ttl_jitter"])
+    return timedelta(hours=hours * (1.0 + spread * _jitter(url)))
 
 
 def _expiry(url: str, ttl_hours, *, since: datetime | None = None) -> datetime | None:
@@ -276,7 +335,8 @@ def _expiry(url: str, ttl_hours, *, since: datetime | None = None) -> datetime |
 
     Args:
         url: The URL being cached.
-        ttl_hours: AUTO to decide from the URL, None for permanent, or hours.
+        ttl_hours: AUTO to decide from the URL, LISTING for the short
+            discovery window, None for permanent, or an explicit hour count.
         since: When the body was actually fetched. Defaults to now. The disk
             path passes the file's mtime so a promoted file keeps its real age
             instead of being laundered into a fresh one.
@@ -459,8 +519,9 @@ def fetch(
         user_agent: UA to send. None sends no override — `ai.meta.com` rejects
             any browser-style UA with a 400 and accepts urllib's own default.
         retries: Attempts before giving up. None takes the configured value.
-        ttl_hours: AUTO decides from the URL (see :func:`_expiry`); None stores
-            permanently; a number sets an explicit TTL.
+        ttl_hours: AUTO decides from the URL (see :func:`_expiry`); LISTING
+            marks a URL that is how we learn a paper exists and takes the short
+            window; None stores permanently; a number sets an explicit TTL.
 
     Returns:
         Decoded response body.

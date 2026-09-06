@@ -656,6 +656,7 @@ def check_pipeline(root: Path) -> list[str]:
             )
     for key, kind in (("default_min_interval_seconds", (int, float)),
                       ("discovery_ttl_hours", (int, float)),
+                      ("listing_ttl_hours", (int, float)),
                       ("max_backoff_seconds", (int, float)),
                       ("retries", int)):
         value = fetch.get(key)
@@ -665,6 +666,28 @@ def check_pipeline(root: Path) -> list[str]:
         errors.append(
             "pipeline.yaml/fetch: retries above 10 means a rate-limited host is hammered "
             "for minutes; a lost source is a partial run, not a dead one (D27)"
+        )
+    # A listing window at or above the discovery window is the whole point
+    # thrown away: listings are the URLs that decide how fast a *new* paper is
+    # found, and they were split out of `discovery_ttl_hours` precisely because
+    # sharing it left DeepSeek's only route to its own papers on a fortnight's
+    # lag. Legal YAML, no error anywhere, and the register quietly goes stale.
+    if all(isinstance(fetch.get(k), (int, float)) and not isinstance(fetch.get(k), bool)
+           for k in ("listing_ttl_hours", "discovery_ttl_hours")):
+        if fetch["listing_ttl_hours"] >= fetch["discovery_ttl_hours"]:
+            errors.append(
+                "pipeline.yaml/fetch: listing_ttl_hours is not below discovery_ttl_hours, "
+                "so a listing is trusted as long as a lookup -- a new paper would be found "
+                "no faster than before the two were split"
+            )
+    # Jitter only ever extends the discovery TTL, so it has to be a fraction: 1.0
+    # would double the window nobody asked to double, and a negative value would
+    # dither *below* the configured floor.
+    spread = fetch.get("discovery_ttl_jitter")
+    if not isinstance(spread, (int, float)) or isinstance(spread, bool) or not 0 <= spread < 1:
+        errors.append(
+            "pipeline.yaml/fetch: 'discovery_ttl_jitter' must be a fraction in [0, 1) -- "
+            "it extends discovery_ttl_hours by up to that much, per URL"
         )
 
     # The dashboard's horizon. Silent when wrong in the way that matters most:

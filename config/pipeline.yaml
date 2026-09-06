@@ -187,12 +187,44 @@ fetch:
   # where nearly all the request volume was.
   #
   # This number is the trade between cost and lag, and it is the one value here
-  # worth arguing about. 336 hours (14 days) means a paper that reaches arXiv
-  # after we first looked for it is found within a fortnight, and the ~36
-  # title-resolution queries re-run on staggered expiry rather than all at once
-  # -- roughly 8 live requests a night in the steady state against 70 before.
-  # Lower it if the register starts looking stale; the cost is linear.
+  # worth arguing about. 336 hours (14 days) applies to the ~36 title-resolution
+  # queries -- "which arXiv paper is called X", asked about a title we already
+  # have. Re-asking is what lets a byline change: the answer carries a versioned
+  # id, so a paper that gains an author in v2 is only noticed when the lookup is
+  # run again. Lower it if bylines start looking stale; the cost is linear.
+  #
+  # It no longer governs how fast a NEW paper is found -- see listing_ttl_hours.
   discovery_ttl_hours: 336
+
+  # How long a *listing* is trusted: the URLs that are how we learn a paper
+  # exists at all. Marked at the call site with `fetch_cache.LISTING`, because
+  # it is the question that makes a URL a listing and not the URL's shape --
+  # DeepSeek's `au:"DeepSeek-AI"` search and OpenAI's `ti:"..."` lookup hit the
+  # same endpoint and only the first is discovery in this sense.
+  #
+  # 24 hours because the alternative was measured and is indefensible: DeepSeek
+  # has no papers page, so `au:"DeepSeek-AI"` is the only route by which one of
+  # its papers is ever found, and under the shared 336h it could go unseen for a
+  # fortnight. There are only three of these URLs (DeepSeek's search, DeepMind's
+  # sitemap, Meta's paginated index), so asking daily costs three requests a
+  # night -- less than one percent of what the leg already spends.
+  listing_ttl_hours: 24
+
+  # Spread on the discovery TTL, as a fraction: 0.25 turns 336h into 336-420h,
+  # picked per URL from a stable hash of it.
+  #
+  # This exists because the comment above used to claim these queries "re-run on
+  # staggered expiry rather than all at once", and nothing staggered them. Every
+  # discovery URL is first fetched in the same firing, so all ~36 lapsed in the
+  # same firing, which replayed the whole set at arXiv in one burst and got the
+  # egress IP rate-limited. Measured 2026-09-06: 35 cached rows, one expiry
+  # date. Four papers sources then failed every night, because a failed fetch
+  # caches nothing and so re-opens the same uncached query on the next firing.
+  #
+  # Only ever extends, never shortens, so the number above stays the floor it
+  # reads as. The cost is stated plainly: a title lookup can now be up to 17.5
+  # days stale rather than 14. Set to 0 to disable and get the old behaviour.
+  discovery_ttl_jitter: 0.25
 
   # Attempts before a source is recorded as failed. A lost source is a partial
   # run, not a dead one (D27), so this is deliberately small: sitting in a

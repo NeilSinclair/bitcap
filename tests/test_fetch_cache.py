@@ -14,6 +14,15 @@ the fix could introduce:
     on whatever it knew the first night and go on reporting success. That last
     one is the reason `_expiry` exists and is the failure nothing else would
     surface.
+
+Two more were added after the 2026-09-06 recurrence, when the same four sources
+failed again for a different reason:
+
+  * every discovery URL expiring on the *same* night, so the whole set replays
+    at arXiv in one burst -- the D53 comment claimed these were staggered and
+    nothing staggered them (`TestDiscoveryJitter`);
+  * a listing sharing the fortnight-long lookup TTL, which put DeepSeek's only
+    route to its own papers on a fortnight's lag (`TestListingWindow`).
 """
 
 import sys
@@ -101,6 +110,95 @@ class TestExpiry:
         expires = fc._expiry("https://arxiv.org/html/2501.12948v2", 1)
         assert expires is not None
         assert expires < datetime.now(timezone.utc) + timedelta(hours=2)
+
+
+class TestListingWindow:
+    """`LISTING` is the difference between finding a paper today and in a fortnight."""
+
+    DEEPSEEK = ('https://export.arxiv.org/api/query?search_query=au%3A"DeepSeek-AI"'
+                "&max_results=60")
+
+    def test_listing_expires_within_a_day(self):
+        expires = fc._expiry(self.DEEPSEEK, fc.LISTING)
+        assert expires is not None
+        assert expires <= datetime.now(timezone.utc) + timedelta(hours=25)
+
+    def test_listing_is_far_shorter_than_a_lookup(self):
+        # The whole point of splitting them. DeepSeek publishes no papers page,
+        # so `au:"DeepSeek-AI"` is the only route by which one of its papers is
+        # ever found; on the shared discovery window a new paper went unseen for
+        # up to a fortnight.
+        listing = fc._ttl(self.DEEPSEEK, fc.LISTING)
+        lookup = fc._ttl('https://export.arxiv.org/api/query?search_query=ti%3A"Some+Paper"',
+                         fc.AUTO)
+        assert listing < lookup / 7
+
+    def test_listing_is_not_jittered(self):
+        # A day is already short enough that spreading it buys nothing, and an
+        # undithered window is one fewer thing to reason about at 2am.
+        a = fc._ttl("https://deepmind.google/sitemap.xml", fc.LISTING)
+        b = fc._ttl("https://ai.meta.com/results/?page=2", fc.LISTING)
+        assert a == b
+
+    def test_listing_does_not_leak_into_the_default(self):
+        # `AUTO` must keep meaning "decide from the URL". If LISTING ever became
+        # the default for anything API-shaped, OpenAI's ~36 title lookups would
+        # go daily and put the burst back by another route.
+        assert fc._ttl(self.DEEPSEEK, fc.AUTO) > fc._ttl(self.DEEPSEEK, fc.LISTING)
+
+
+class TestDiscoveryJitter:
+    """Why the fix is a spread and not a shorter number."""
+
+    URLS = [
+        f'https://export.arxiv.org/api/query?search_query=ti%3A"Paper {i}"&max_results=3'
+        for i in range(36)
+    ]
+
+    def test_the_set_no_longer_comes_due_together(self):
+        # THE one. 35 rows sharing one expiry date is what was measured in
+        # production on 2026-09-06, and that night replayed the whole discovery
+        # set at arXiv and got the egress IP rate-limited.
+        days = {fc._expiry(u, fc.AUTO).date() for u in self.URLS}
+        assert len(days) > 2, f"still bunched onto {len(days)} date(s)"
+
+    def test_a_url_keeps_its_place_across_calls(self):
+        # `hash()` is salted per process, so using it would move a URL's expiry
+        # every run -- and a body re-stamped further into the future each time
+        # it is touched never expires at all.
+        url = self.URLS[0]
+        assert fc._ttl(url, fc.AUTO) == fc._ttl(url, fc.AUTO)
+
+    def test_a_url_keeps_its_place_across_processes(self):
+        # The same assertion the previous test makes, but proved where it
+        # actually matters: the value must not depend on PYTHONHASHSEED.
+        import subprocess
+
+        script = (
+            "import sys; sys.path.insert(0, %r); import fetch_cache; "
+            "print(fetch_cache._jitter(%r))" % (str(ROOT / "research" / "papers"), self.URLS[0])
+        )
+        runs = {
+            subprocess.run([sys.executable, "-c", script], capture_output=True,
+                           text=True, check=True).stdout.strip()
+            for _ in range(2)
+        }
+        assert len(runs) == 1
+        assert runs == {str(fc._jitter(self.URLS[0]))}
+
+    def test_jitter_only_ever_extends(self):
+        # The configured number stays the floor it reads as. Dithering downwards
+        # would make every URL quietly fresher than config/pipeline.yaml says.
+        base = timedelta(hours=float(fc.settings()["discovery_ttl_hours"]))
+        spread = float(fc.settings()["discovery_ttl_jitter"])
+        for url in self.URLS:
+            ttl = fc._ttl(url, fc.AUTO)
+            assert base <= ttl <= base * (1 + spread)
+
+    def test_immutable_urls_are_untouched(self):
+        # Jitter must not turn a permanent row into an expiring one: these are
+        # the ~1 MB paper fetches that are most of the request volume.
+        assert fc._expiry("https://arxiv.org/html/2501.12948v2", fc.AUTO) is None
 
 
 class TestThrottleFamily:
@@ -381,6 +479,84 @@ class TestConfigIsReal:
         assert cfg["fetch"]["min_interval_seconds"]["arxiv.org"] >= 3.0
         assert cfg["fetch"]["discovery_ttl_hours"] > 0
         assert cfg["fetch"]["retries"] >= 2
+        # A listing at or above the lookup window is the split thrown away, and
+        # nothing downstream would report it: DeepSeek would silently go back to
+        # a fortnight's lag on finding its own papers.
+        assert 0 < cfg["fetch"]["listing_ttl_hours"] < cfg["fetch"]["discovery_ttl_hours"]
+        assert 0 <= cfg["fetch"]["discovery_ttl_jitter"] < 1
+
+
+class TestListingsAreMarkedAtTheCallSite:
+    """The three URLs that decide how fast a new paper is found.
+
+    Behavioural, not a source grep: each harvester's real listing function is
+    called with `fetch_cache.fetch` stubbed, and the test asserts the policy
+    that actually reaches the cache layer. A grep would pass on a call site that
+    named LISTING and dropped it on the way through a wrapper.
+    """
+
+    def _capture(self, monkeypatch):
+        seen = {}
+
+        def fake_fetch(url, **kw):
+            seen[url] = kw.get("ttl_hours", fc.AUTO)
+            return ""
+
+        monkeypatch.setattr(fc, "fetch", fake_fetch)
+        return seen
+
+    def test_deepseek_author_search_is_a_listing(self, monkeypatch):
+        # DeepSeek's only route to its own papers: it publishes no papers page,
+        # so losing this marking puts a 17-day lag back with nothing failing.
+        #
+        # Drives `collect()` rather than `arxiv_query()` directly, and that is
+        # the whole value of the test: passing LISTING in by hand proves the
+        # wrapper forwards a kwarg, which is not the thing that can regress.
+        # What can regress is the *call site* dropping it, and only calling
+        # `collect` catches that.
+        import deepseek_harvest
+
+        seen = self._capture(monkeypatch)
+        deepseek_harvest.collect()
+        listing = [url for url in seen if "au%3A" in url]
+        assert listing, f"collect() issued no author search: {list(seen)}"
+        assert all(seen[url] is fc.LISTING for url in listing)
+
+    def test_a_title_lookup_is_not_a_listing(self, monkeypatch):
+        # `openai_harvest` imports this same function for `ti:` lookups of papers
+        # it already has titles for. Marking those LISTING would take ~36 queries
+        # daily and rebuild the burst by another route.
+        import deepseek_harvest
+
+        seen = self._capture(monkeypatch)
+        deepseek_harvest.arxiv_query('ti:"GPT-4 Technical Report"', 6)
+        assert set(seen.values()) == {fc.AUTO}
+
+    def test_deepmind_sitemap_is_a_listing(self, monkeypatch):
+        import deepmind_harvest
+
+        seen = self._capture(monkeypatch)
+        deepmind_harvest.list_publication_urls(months=3)
+        assert seen[deepmind_harvest.SITEMAP] is fc.LISTING
+
+    def test_meta_publication_index_is_a_listing(self, monkeypatch):
+        import meta_harvest
+
+        seen = self._capture(monkeypatch)
+        meta_harvest.list_paper_candidates([2026], max_pages=1)
+        assert seen, "no listing URL was fetched at all"
+        assert set(seen.values()) == {fc.LISTING}
+
+    def test_a_paper_fetch_stays_permanent(self, monkeypatch):
+        # The counterweight: marking things LISTING must not leak onto the ~1 MB
+        # versioned paper fetches, which are most of the request volume and are
+        # correctly cached forever.
+        import deepmind_harvest
+
+        seen = self._capture(monkeypatch)
+        deepmind_harvest.fetch("https://arxiv.org/html/2501.12948v2")
+        assert seen["https://arxiv.org/html/2501.12948v2"] is fc.AUTO
+        assert fc._expiry("https://arxiv.org/html/2501.12948v2", fc.AUTO) is None
 
 
 class TestEveryArxivHarvesterUsesTheSharedLayer:
@@ -450,9 +626,15 @@ class TestReviewFindings:
         written = []
         monkeypatch.setattr(fc, "db_put", lambda u, b, e: written.append(e) or True)
         fc.fetch(url, cache_dir=tmp_path, suffix=".xml")
-        # 336h TTL minus 8 days already elapsed leaves ~6 days, not ~14.
+        # This URL's TTL minus the 8 days already elapsed. Expressed against
+        # `_ttl` rather than a literal ~6 days because the discovery window is
+        # now spread per URL, and a test that hardcodes one URL's spread breaks
+        # on the next change to the jitter fraction while testing nothing about
+        # promotion, which is what this is here for.
         remaining = written[0] - datetime.now(timezone.utc)
-        assert timedelta(days=5) < remaining < timedelta(days=7)
+        expected = fc._ttl(url, fc.AUTO) - timedelta(days=8)
+        assert abs(remaining - expected) < timedelta(minutes=1)
+        assert remaining < fc._ttl(url, fc.AUTO), "the clock was reset on promotion"
 
     def test_immutable_disk_file_never_goes_stale(self, tmp_path, monkeypatch):
         import os
@@ -587,3 +769,121 @@ class TestThrottleConcurrency:
         fc._wait_turn("arxiv.org", 3.0)
         second = fc._LAST_REQUEST["arxiv.org"]
         assert second >= first + 3.0, "second caller must be spaced from the first"
+
+
+class TestSpreadCacheExpiry:
+    """The one-off that fixes rows already written under the flat TTL.
+
+    Jitter only applies as a row is *written*, so the production rows that
+    caused the incident keep their old flat expiry until something rewrites
+    them. That is what this script is for, and it is worth a test because it is
+    run once, against production, by someone who cannot easily undo it.
+    """
+
+    WINDOW = timedelta(hours=336)
+    NOW = datetime(2026, 9, 6, 3, 0, tzinfo=timezone.utc)
+
+    def _script(self):
+        import importlib
+
+        return importlib.import_module("spread_cache_expiry")
+
+    def _urls(self, n=35):
+        return [f"https://export.arxiv.org/api/query?search_query=ti%3A%22P{i}%22"
+                for i in range(n)]
+
+    def test_a_bunched_set_comes_apart(self):
+        s = self._script()
+        fetched, expires = self.NOW - timedelta(days=16), self.NOW - timedelta(days=2)
+        days = {s.spread(fetched, expires, u, self.NOW, self.WINDOW).date()
+                for u in self._urls()}
+        assert len(days) > 10, f"still bunched onto {len(days)} date(s)"
+
+    def test_nothing_is_left_in_the_past(self):
+        # Rows whose expiry has already passed are the ones that would refetch
+        # on the very next firing. Spreading them forward is what stops the
+        # burst happening one last time.
+        s = self._script()
+        fetched, expires = self.NOW - timedelta(days=16), self.NOW - timedelta(days=2)
+        for u in self._urls():
+            assert s.spread(fetched, expires, u, self.NOW, self.WINDOW) >= self.NOW
+
+    def test_a_row_not_yet_due_is_never_pushed_further_out(self):
+        # This script breaks a herd; it does not grant rows a longer life.
+        s = self._script()
+        fetched = self.NOW - timedelta(hours=1)
+        expires = fetched + self.WINDOW
+        for u in self._urls():
+            assert s.spread(fetched, expires, u, self.NOW, self.WINDOW) <= expires
+
+    def test_a_short_lived_row_is_not_stretched_to_the_full_window(self):
+        # The bug an independent review caught in the first version: spreading
+        # every row across the 336h discovery window pushed a 24h row out by up
+        # to a fortnight, quietly undoing the listing policy shipped alongside.
+        s = self._script()
+        fetched = self.NOW - timedelta(hours=30)
+        expires = fetched + timedelta(hours=24)  # already due, short-lived
+        for u in self._urls():
+            assert s.spread(fetched, expires, u, self.NOW, self.WINDOW) <= self.NOW + timedelta(hours=24)
+
+    def test_running_it_twice_never_extends(self):
+        # Real re-run behaviour, not just a deterministic function: the second
+        # run sees the expiry the first one wrote. Without the "never push out"
+        # rule this added another slice every time it was run.
+        #
+        # Monotonicity, deliberately, and not a fixed point -- a row with a small
+        # jitter fraction keeps being pulled in a little. That is harmless (it
+        # never lands in the past) and this is run once, which is the assumption
+        # the whole script rests on.
+        s = self._script()
+        fetched, expires = self.NOW - timedelta(days=16), self.NOW - timedelta(days=2)
+        for u in self._urls():
+            once = s.spread(fetched, expires, u, self.NOW, self.WINDOW)
+            twice = s.spread(fetched, once, u, self.NOW, self.WINDOW)
+            assert twice <= once
+
+    def test_a_row_with_a_nonsense_ttl_is_left_alone(self):
+        # An expiry at or before its own fetch. `db_put` cannot write one, so
+        # this is unreachable today -- but the fallback matters, because the
+        # obvious one (use the full discovery window) stretches a row nothing
+        # here understands, which is the one direction this must never move.
+        s = self._script()
+        fetched = self.NOW - timedelta(days=2)
+        expires = fetched - timedelta(hours=1)
+        assert s.spread(fetched, expires, self._urls(1)[0], self.NOW, self.WINDOW) == expires
+
+    def test_listing_rows_are_left_alone(self):
+        # They are past due in production, and refetching them on the next
+        # firing is exactly right: they come back under the 24h policy. Spreading
+        # them would put the three URLs that decide how fast a new paper is found
+        # back on a multi-day lag.
+        s = self._script()
+        assert s.is_listing(
+            'https://export.arxiv.org/api/query?search_query=au%3A%22DeepSeek-AI%22&max_results=60')
+        assert s.is_listing("https://deepmind.google/sitemap.xml")
+        assert s.is_listing("https://ai.meta.com/results/?content_types%5B0%5D=publication")
+        assert not s.is_listing(
+            'https://export.arxiv.org/api/query?search_query=ti%3A%22GPT-4%22')
+
+    def test_the_listing_markers_still_match_the_call_sites(self):
+        """The duplication guard.
+
+        `LISTING_MARKERS` restates what the harvesters mark, because the database
+        records a URL and not the policy that produced it. If a call site's URL
+        shape changes, this fails rather than the script silently spreading a
+        listing row.
+        """
+        s = self._script()
+        import deepseek_harvest
+        import urllib.parse
+
+        built = deepseek_harvest.ARXIV + "?" + urllib.parse.urlencode(
+            {"search_query": 'au:"DeepSeek-AI"', "max_results": 60,
+             "sortBy": "submittedDate", "sortOrder": "descending"})
+        assert s.is_listing(built), built
+
+        import deepmind_harvest
+        assert s.is_listing(deepmind_harvest.SITEMAP)
+
+        import meta_harvest
+        assert s.is_listing(meta_harvest.SEARCH_URL + "?content_types%5B0%5D=publication")

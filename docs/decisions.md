@@ -7397,3 +7397,108 @@ not, and it is not read by URL glob so nothing broke — but it left a 12-file
 discrepancy for the next person auditing cache coverage. Register, cache and
 scored register are now 1:1 at 292 with zero orphans in either direction, which
 is asserted rather than claimed.
+
+---
+
+## D67 — Two production failures whose common shape is "success recorded in one place, data in another" (2026-09-06)
+
+The 2026-09-05 firing reported eight `releases/*` sources down and four
+`papers/*` sources down. They are unrelated faults with one thing in common:
+in both, the indicator that says a thing worked and the thing itself are
+written at different times, so they can disagree without anyone noticing.
+
+### 1. `rebuild` dropped the GitHub bronze and kept the state that vouches for it
+
+Every `releases/*` source failed with "no repositories in raw_github_repos --
+the github leg has not run", while `github/*` read *last success 2d ago, 0
+failures*. Both were true.
+
+`raw_github_repos` was not in `models.OPS_TABLES`, so `bitcap-db rebuild`
+dropped it. `source_state` **is** in that set, so the row asserting the github
+leg had succeeded survived the rebuild that deleted everything that leg
+produced. `releases` reads the table and runs at cadence 1 against github's 3,
+so all eight failed on every firing until github's next turn came round.
+
+The table was excluded on the reasoning that guards the whole set — everything
+outside `OPS_TABLES` is a pure function of committed files. `raw_github_repos`
+is not: it is live-fetched bronze, `load_raw` never restores it, and rebuilding
+it costs a 14-minute walk of 2,000+ repositories. It belongs in the set on
+exactly the argument that already put `fetch_cache` and `raw_article_embeddings`
+there. One line, plus the test that would have caught it.
+
+**Not fixed, and worth naming.** The same disagreement is reachable without a
+rebuild at all. The github source's success is committed inside the *ingest*
+phase (`orchestrator._record`), while the rows it produced are written in the
+*landing* phase — so an OOM or a timeout in between leaves the identical state.
+The `releases` leg already avoids this (D52: it lands inside its own adapter, in
+the transaction that advances its cursor); the github leg does not. Left alone
+because it is a real change to phase boundaries and this was a one-line fix to
+an eight-source outage.
+
+### 2. The arXiv cache expired as a herd, and a failed fetch cannot re-cache
+
+Four papers sources failed on `export.arxiv.org` 429s, and the split was exact:
+every source that queries the arXiv *API* failed, and the two that do not
+(`anthropic`, which never touches arXiv, and `google-deepmind`, whose fetches
+are permanently-cached `arxiv.org/html/`) were fine.
+
+D53 put discovery URLs on a 14-day TTL and its comment claimed they would
+"re-run on staggered expiry rather than all at once". Nothing staggered them.
+Every discovery URL is first fetched in the same firing, so all of them lapse in
+the same firing — measured 2026-09-06: **35 cached rows, one expiry date**. That
+firing replays the whole set at arXiv, and once a source is throttled it stays
+throttled, because a failed fetch caches nothing: the next firing re-opens the
+same uncached query and fails identically. Self-perpetuating, and it was.
+
+Three changes, and one deliberate non-change:
+
+**Listings are marked at the call site and refresh daily** (`fetch_cache.LISTING`,
+`listing_ttl_hours: 24`). The distinction is between "how we learn a paper
+exists" — DeepSeek's `au:"DeepSeek-AI"` search, DeepMind's sitemap, Meta's
+paginated index — and "which arXiv paper is called X", asked about a title we
+already have. It cannot be derived from the URL: `deepseek_harvest.arxiv_query`
+issues both against the same endpoint, and `openai_harvest` imports it for the
+second. There are three listing URLs, so asking daily costs three requests a
+night. This also fixes a product problem found while diagnosing: DeepSeek
+publishes no papers page, so that search is the *only* route by which one of its
+papers is ever found, and it was on a fortnight's lag.
+
+**The discovery TTL is spread per URL** (`discovery_ttl_jitter: 0.25`), from a
+`hashlib` digest of the URL — not the built-in `hash()`, which is salted per
+process and would move a URL's expiry every run, so a row re-stamped further
+into the future each time it was touched would never expire at all. Only ever
+extends, so the configured number stays the floor it reads as. Measured on the
+35 real cached URLs: one expiry date becomes four, busiest night 35 → 14.
+
+**Rows already written are rewritten once** (`spread_cache_expiry.py`). Jitter
+applies as a row is written, so the rows that caused the incident keep their
+flat expiry until something rewrites them. Anchored on *now* rather than on
+`fetched_at`, because the production rows are already past due and re-deriving
+from the fetch time would leave them all due on the next firing — the burst, one
+more time. Measured: 35 rows on one date become 13 dates, busiest 5.
+
+**Rejected: caching a successful title lookup permanently.** It is the obvious
+fix — we found the paper, why ask again — and it is wrong. `resolve_title`
+returns a *versioned* arXiv id and `meta_harvest.py:251` builds
+`arxiv.org/html/<that id>`, which is cached forever and correctly so. Re-running
+the lookup is therefore the only mechanism by which a byline is ever updated: a
+paper that gains an author in v2 is invisible until the lookup runs again and
+returns the v2 id. Caching it permanently would freeze bylines at v1, silently,
+on the harvesters whose entire output is bylines — the failure `_IMMUTABLE`
+already exists to prevent for DeepMind. Jitter buys the same burst reduction
+with no freshness cost.
+
+**Uncertainty, stated.** 35 requests at the 3-second spacing already enforced is
+under two minutes of traffic, which should not trip arXiv's published guidance
+on its own. The herd is demonstrated and the fix is right, but a shared Render
+egress IP, or a tighter limit on the API host than on `arxiv.org`, may be doing
+part of the work. If 429s recur against a spread cache, that is where to look
+next, and the 429 backoff ceiling (currently ~21s against an IP-level penalty
+measured in minutes) is the next thing to raise.
+
+**Flagged, not touched:** `harvest_contributors.py` (the Anthropic harvester)
+never reaches `fetch_cache` at all. It keeps a private `urlopen` loop with a
+`time.sleep(1.0)` and an on-disk cache that does not exist on Render, so it
+re-fetches Anthropic's index and every article page on every firing, with no
+retry and outside the shared throttle. It survived this incident only because it
+never touches arXiv.

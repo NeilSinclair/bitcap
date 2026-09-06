@@ -115,7 +115,8 @@ class Paper:
     truncated: bool = False
 
 
-def fetch(url: str, retries: int | None = None, user_agent: str | None = UA) -> str:
+def fetch(url: str, retries: int | None = None, user_agent: str | None = UA,
+          ttl_hours=fetch_cache.AUTO) -> str:
     """Fetch a URL through the shared cache, throttle and retry policy.
 
     This harvester fetches `arxiv.org/html/` as well as `ai.meta.com`, so its
@@ -130,6 +131,8 @@ def fetch(url: str, retries: int | None = None, user_agent: str | None = UA) -> 
             live (and already relied on by `fetch_announcements.py`) that
             `ai.meta.com` blocks any browser-style UA with a 400 and accepts
             urllib's own bare default.
+        ttl_hours: How long the body stays trustworthy; passed straight through.
+            `fetch_cache.LISTING` for a URL that is how we learn a paper exists.
 
     Returns:
         Decoded response body.
@@ -139,7 +142,8 @@ def fetch(url: str, retries: int | None = None, user_agent: str | None = UA) -> 
             dead source aborts the whole run (it does not, here).
     """
     return fetch_cache.fetch(
-        url, cache_dir=CACHE, suffix=".html", user_agent=user_agent, retries=retries
+        url, cache_dir=CACHE, suffix=".html", user_agent=user_agent, retries=retries,
+        ttl_hours=ttl_hours,
     )
 
 
@@ -172,7 +176,9 @@ def list_paper_candidates(years: list[int], max_pages: int = 20) -> list[tuple[s
                 f"{SEARCH_URL}?content_types%5B0%5D=publication"
                 f"&years%5B0%5D={year}&page={page}"
             )
-            body = fetch(url, user_agent=None)
+            # The index is how a new Meta paper is found at all, so it takes the
+            # short window rather than the fortnight a title lookup takes.
+            body = fetch(url, user_agent=None, ttl_hours=fetch_cache.LISTING)
             slugs = sorted(set(DETAIL_LINK.findall(body)))
             new = [s for s in slugs if s not in seen]
             if not slugs or not new:
