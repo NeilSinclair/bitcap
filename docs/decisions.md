@@ -7502,3 +7502,40 @@ never reaches `fetch_cache` at all. It keeps a private `urlopen` loop with a
 re-fetches Anthropic's index and every article page on every firing, with no
 retry and outside the shared throttle. It survived this incident only because it
 never touches arXiv.
+
+## D68 — The people register is bronze, not derived, and `rebuild` was deleting it (2026-09-06)
+
+The dashboard's register read zero people. Not a query fault: `people`,
+`person_identity`, `person_evidence`, `raw_papers` and `raw_github_people` were
+all empty in the local database.
+
+Run 38 was a `rebuild` (2026-09-05 20:08 UTC). None of those five tables were in
+`models.OPS_TABLES`, so `drop_all` took them, and nothing put them back: the
+register is only ever written by `register.load_report`, which runs in the
+worker's landing phase. `cmd_load` loads refs, articles, the papers and posts
+corpora, classifications, costs and repo verdicts — it has no register step at
+all. The three `load` runs after the rebuild (39, 40, 41) therefore could not
+repair it, and the last firing to carry the `papers` and `github` legs was run 16
+on 2026-09-04. At cadence 2 and 3 those legs are not the next night's problem, so
+the register would have read empty for days.
+
+This is D67's fault one table over. The exclusion looked right because `people`
+*is* derived — but it is derived from `raw_papers` and `raw_github_people`, which
+are live-fetched bronze with no committed artifact. Derived-from-bronze is not
+the same as derived-from-files, and `OPS_TABLES` only ever meant the second.
+
+**Rejected: teach `cmd_load` to restore the register from `research/docs/`.** The
+`github_people_*.json` and `<lab>_contributors.json` artifacts are committed, so
+a loader is buildable. It is the wrong fix for two reasons. It would put a second
+writer on tables `register.load_report` owns, with its own entity-resolution path
+to keep in step — and D67 had just established the opposite principle for
+`raw_github_repos`: bronze that a run produced is kept, not re-derived. A rebuild
+should stop destroying the register before anything is taught to reconstruct it.
+
+**One difference from D67, and it is the worse one.** There, `source_state`
+survived and actively asserted the github leg had succeeded — two indicators
+disagreeing. Here nothing lied. The register simply went quiet, and an empty
+people page looks exactly like a lab that has not shipped. No alert covers it;
+it was found by reading the table.
+
+Five names added to `OPS_TABLES`, plus the test that would have caught it.
