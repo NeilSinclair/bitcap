@@ -133,9 +133,12 @@ class TestTheCutIsTheProduct:
         assert out["stats"]["suppressed"] == 2
 
     def test_editions_partition_the_timeline_under_the_deployed_cadence(self, session):
-        """The cron is daily (render.yaml) and the window is 48h. Spacing the
-        two editions exactly one window apart tests a cadence nobody runs; over
-        the real one, an unquantised window made every article appear twice."""
+        """The cron is daily (render.yaml) and this fixture's window is 48h --
+        narrower than the shipped one, which is deliberate: the property under
+        test is that consecutive editions never share an article, and it has to
+        hold at every width. Spacing the two editions exactly one window apart
+        tests a cadence nobody runs; over the real one, an unquantised window
+        made every article appear twice."""
         _holding(session, "US1", "NVIDIA")
         for d in (date(2026, 9, 1), date(2026, 9, 2), date(2026, 9, 3), date(2026, 9, 4)):
             art, _ = _article(session, published=d, title=f"On {d}")
@@ -329,6 +332,84 @@ class TestAiSelection:
         assert "practices" in ai and "holdings" not in ai
 
 
+class TestTheEditionIsChosenOnMeritAndReadByDate:
+    """Two sorts either side of `max_items`, and merging them loses items.
+
+    Display is newest-first so a reader opening the digest sees the latest day
+    at the top. Selection stays on `rank`, because the cut happens between the
+    two: sort by date before it and the edition fills with whatever is most
+    recent, silently dropping a higher-scoring launch from earlier in the
+    window. At 48h those were nearly the same set; at 168h they are not.
+    """
+
+    def _ai_article(self, session, *, published, title, ai_score):
+        art, cls = _article(session, published=published, title=title,
+                            ai_score=ai_score, ai_band="high")
+        session.add(m.ArticlePractice(
+            classification_id=cls.id, practice_id="evals", action="adopt",
+            impact="high", confidence="high", dimensions=["evals"], reason="r",
+            quote="a verbatim sentence", ordinal=0))
+        session.flush()
+        return art
+
+    def test_the_latest_day_is_read_first_even_when_it_scores_lower(self, session):
+        self._ai_article(session, published=date(2026, 9, 3), title="Older louder",
+                         ai_score=90.0)
+        self._ai_article(session, published=date(2026, 9, 4), title="Newer quieter",
+                         ai_score=60.0)
+
+        items = digest.build(session, "ai", V, END, CONFIG)["items"]
+
+        assert [i["title"] for i in items] == ["Newer quieter", "Older louder"]
+
+    def test_score_still_orders_within_one_day(self, session):
+        self._ai_article(session, published=date(2026, 9, 4), title="Quiet",
+                         ai_score=55.0)
+        self._ai_article(session, published=date(2026, 9, 4), title="Loud",
+                         ai_score=95.0)
+
+        items = digest.build(session, "ai", V, END, CONFIG)["items"]
+
+        assert [i["title"] for i in items] == ["Loud", "Quiet"]
+
+    def test_the_cap_keeps_the_best_item_not_the_most_recent(self, session):
+        """The regression a single date-first sort would introduce."""
+        self._ai_article(session, published=date(2026, 9, 3), title="Astra",
+                         ai_score=100.0)
+        self._ai_article(session, published=date(2026, 9, 4), title="Minor patch",
+                         ai_score=30.0)
+        config = {**CONFIG, "ai": {**CONFIG["ai"], "max_items": 1}}
+
+        out = digest.build(session, "ai", V, END, config)
+
+        assert [i["title"] for i in out["items"]] == ["Astra"]
+        assert out["stats"]["suppressed"] == 1
+
+    def test_the_investment_edition_reads_by_date_too(self, session):
+        _holding(session, "US1", "NVIDIA")
+        older, _ = _article(session, published=date(2026, 9, 3), title="Older",
+                            score=95.0)
+        _connect(session, older, "US1", 0.95)
+        newer, _ = _article(session, published=date(2026, 9, 4), title="Newer",
+                            score=61.0)
+        _connect(session, newer, "US1", 0.55)
+        session.flush()
+
+        items = digest.build(session, "investment", V, END, CONFIG)["items"]
+
+        assert [i["title"] for i in items] == ["Newer", "Older"]
+
+    def test_no_item_leaks_its_private_rank_key(self, session):
+        # The second sort reads `rank`, so it has to run before the key is
+        # deleted; reordering those two lines would ship it to the client.
+        self._ai_article(session, published=date(2026, 9, 4), title="One",
+                         ai_score=70.0)
+
+        items = digest.build(session, "ai", V, END, CONFIG)["items"]
+
+        assert items and all("rank" not in i for i in items)
+
+
 class TestAPublishedDigestResolvesOnItsOwn:
     """Non-negotiable #1, applied to the report rather than to the insight."""
 
@@ -493,6 +574,23 @@ class TestGuards:
         window). Vocabulary is now checked by `config/validate.py`.
         """
         assert check_digest() == []
+
+    def test_the_shipped_window_is_pinned(self):
+        """A tripwire, and the only thing that reads the deployed number.
+
+        Every other test in this file runs against the `CONFIG` fixture at the
+        top, which carries its own `window_hours`. So the shipped value had no
+        guard at all: it was moved from 48 to 168 and the entire suite stayed
+        green — which means it can be moved back, by a revert or a merge, with
+        nothing going red either.
+
+        This asserts nothing about 168 being *correct*. `config/digest.yaml`
+        says plainly that it is not a measured optimum and explains what it is
+        actually justified by. This asserts only that the number changes
+        deliberately, alongside this line and the reasoning beside it, rather
+        than drifting.
+        """
+        assert digest.settings()["window_hours"] == 168
 
     @pytest.mark.parametrize("mutation,reason", [
         ({"ai": {**CONFIG["ai"], "actions": []}}, "no action can ever match"),

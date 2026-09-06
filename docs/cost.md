@@ -850,3 +850,61 @@ window and the saving starts from the second. At 238 posts and $0.005 a post the
 arithmetic is $1.19, but no invoice has confirmed it.
 
 **Running total across all workflows: ~$36.22** ($33.62 before this, plus $2.59).
+
+## Post scoring, t1 → t2 (D70) — 2026-09-06
+
+Three spends, one of which recurs.
+
+| Workflow | Model | Calls | In (tok) | Out (tok) | USD |
+|---|---|---:|---:|---:|---:|
+| Prompt rewrite, t1 → t2 | `claude-fable-5` | 1 | 7,476 | 6,871 | $0.4183 |
+| Spot-check, 22 posts | `claude-sonnet-5` | 22 | — | — | $0.3765 |
+| Full re-score, 238 posts | `claude-sonnet-5` | 216 | — | — | $2.5571 |
+| **Total** | | **239** | | | **$3.3519** |
+
+The re-score shows 216 calls for 238 posts: the 22 already bought by the
+spot-check were seeded into the t2 cache rather than re-purchased. 2,421,720
+cache-read tokens across the run — 11,212 per call against an assembled system
+prompt of 32,082 characters (~8k tokens), at 0.1x. Every call carries that
+prompt, so caching is most of what keeps this leg affordable.
+
+### The per-call receipts for this run were not captured, and cannot be
+
+**This table is the only record of the $2.93 of scoring spend.** There are no
+rows in `research/docs/announcement_cost.json` for the 22-post spot-check or the
+216-call re-score, and there is no way to add honest ones: the totals above are
+real, but per-URL attribution existed only in memory and was never written.
+
+The cause is worth naming, because it is a process fault rather than a one-off.
+Both runs went through `classify_one` directly from an ad-hoc script rather than
+through `scorer.run`, and it is `scorer.run` — not `classify_one` — that appends
+each returned cost record to `announcement_cost.json`. Bypassing the runner to
+reach the caching and cache-seeding behaviour also bypassed the instrumentation,
+silently. Nothing failed; the receipts simply were not written.
+
+Two consequences, stated rather than papered over. A `bitcap-db rebuild` builds
+`raw_costs` from that file, so a rebuilt database reports the posts leg as having
+cost $2.6053 (t1's spend) and the t2 corpus as free. And `bitcap-db status` will
+report a load cost $2.93 short of what was actually spent.
+
+Per-call receipts are a non-negotiable in `.claude/CLAUDE.md` precisely because
+they cannot be reconstructed later, and this run proves the point at the cost of
+violating it. The fix is not to backfill invented rows — a total divided 216 ways
+is a fabrication wearing the shape of evidence — but to route any future one-off
+re-score through `scorer.run`, or to have it write its own cost records before it
+writes its register.
+
+The `claude-fable-5` line has a second gap: that model is absent from the `PRICES`
+table in `research/papers/llm_byline.py`, so the $0.4183 cannot be checked against
+the repo's own rate card. It is computed from the published $10/$50 per MTok.
+
+**One call to Fable 5, and only for the prompt.** Scoring stayed on
+`claude-sonnet-5`, the model t1 used. Changing the prompt and the model in one
+step would have produced a number that could not be attributed to either.
+
+**Recurring cost: none.** t2 is a one-time re-score of a fixed corpus. New posts
+are classified incrementally at the same per-item rate as before (~$0.011),
+because the work list is a LEFT JOIN against `raw_llm_responses` and t2 changes
+the prompt, not the volume.
+
+**Running total across all workflows: ~$39.57** ($36.22 before this, plus $3.35).
