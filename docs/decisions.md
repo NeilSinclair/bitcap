@@ -7943,3 +7943,151 @@ for the caching behaviour bypassed the instrumentation silently. The totals are
 in `docs/cost.md`; the per-call receipts existed only in memory and are gone.
 They are not being backfilled — a total divided 216 ways is a fabrication in the
 shape of evidence — and the gap is recorded there instead.
+
+## D72 — The digest showed a thinner record than the dashboard, and its links pointed at ids that no longer existed (2026-09-06)
+
+Two faults on the surface the product is meant to be read from. Neither is a bug
+in the sense of something throwing; both are the digest quietly being worse than
+the page next to it.
+
+**1. The full record was a page away.** The digest rendered summary cards; the
+whole thing — evidence quotes, portfolio impact, related documents, practices —
+existed only in the dashboard's detail panel. That is backwards. The dashboard is
+the corpus, for someone going looking; the digest is the claim that a handful of
+things matter, and it is where a reader is meant to live. The *less* complete
+view was the one they would spend their time in.
+
+**Rejected: reproduce the panel in `digest/page.js`.** It fixes the symptom by
+creating two renderings of one record to keep in step, which is the same failure
+one step later, and the thin copy would drift first for exactly the reason above.
+
+**Rejected: deep-link to `/?id=…` and let the dashboard open it.** ~20 lines,
+near-zero risk, and genuinely the same information. Not taken because it
+navigates away from Alerts, which contradicts what the surface is for. The cost
+of the alternative is a real refactor of working code, and that trade was made
+deliberately rather than by default.
+
+So the panel, the decoration it needs, the per-audience anchoring and the link
+resolution moved to `frontend/app/detail.js` and both pages import them.
+`page.js` lost 380 lines. Nothing about the rules changed.
+
+**2. `articles.id` is not a stable reference, and the digest was storing it.**
+It is a surrogate autoincrement key, reassigned on every rebuild. A published
+payload is frozen by design — a digest records what the product *said*, so
+recomputing one would rewrite history — which means a stored id goes stale the
+first time anyone rebuilds. On this project, with several agents running, that is
+constantly.
+
+Measured across all 30 published editions, 65 items:
+
+    resolvable by id :  9  (13%)
+    resolvable by url: 61  (93%)
+
+Editions 99 and 100 are the sharpest case. Both were published hours before the
+measurement and both already resolved zero items by id, because another session
+rebuilt in between.
+
+`articles.url` is unique (746 of 746) and is what the document actually is. It
+was already in the payload, so this is a lookup change and nothing else.
+
+**The id fallback is confined to the live preview, and that restriction is the
+whole safety argument.** On an archived edition an id is not merely stale but
+*recycled* — the counter is reused, so id 4454 today may name a different
+document than the card does. Falling back there would open the wrong article
+while looking like it worked, which is strictly worse than the dead card the
+change set out to fix. A preview is built by the process now serving the corpus,
+so its ids cannot be stale.
+
+Four of the 65 resolve by neither. Those documents are genuinely gone and their
+cards stay unclickable, which is the correct answer rather than a gap.
+
+**What review caught, and what it says about the evidence used here.** Three
+findings, all real. The one that matters: this branch broke
+`tests/smoke_dashboard_render.js`, a required CI step, because moving the
+decoration left `decorateItems` undefined in that file's sandbox — green on base,
+red on HEAD, while 1,649 pytest tests and `next build` all passed. The test class
+added on this branch asserted in its own docstring that "there is no JS test
+runner in this repo". There are three, all in CI, and one of them was the only
+thing that caught this. The claim is what stopped the check being made, so it is
+corrected in place rather than deleted.
+
+Fixed by loading `detail.js` for real in that smoke test rather than stubbing it.
+Stubbing turns the step green while removing ~100 lines of moved logic from the
+only thing that executes it, which is the blank-page failure that file exists
+for. `tests/smoke_digest_render.js` was added for the same fault class at the new
+site: `DigestView` now chains five hooks each reading the one before it in a
+dependency array, so reordering any two is a blank Alerts page and a green build.
+
+**The near-miss worth recording.** The two pages carry *different* palettes —
+`digest/page.js` folds `low`/`none` into one band style and `investigate`/`watch`
+into one action style, which is fine where nothing below medium renders, while
+the dashboard distinguishes four bands and three actions. The first version of
+`detail.js` carried the digest's versions. That would have silently restyled
+every low and unbanded row on the dashboard: no error, no test failure, just a
+different-looking page. Caught by reading both definitions before merging them,
+and now pinned by a test.
+
+## D73 — The digest window was widened to 7 days on evidence that does not support it, and the ordering was split in two (2026-09-06)
+
+Recorded after the fact. The change is commit `98c395a`, already on
+`deployment-dev`; this entry was owed at the time and was not written because
+the result was still being looked at. That is the wrong order and the reason it
+nearly went unrecorded.
+
+**The defect was real and is the only part of this that needs no argument.** The
+deployed 48-hour digest published ONE item. Not a fault — the two days it covered
+were quiet ones — but the consequence was that every corpus except announcements
+was invisible in it, and no post or paper had ever appeared in a published
+edition despite 39 of them being digest-eligible. A reader opening the link would
+have concluded the system found one thing.
+
+**168h is NOT a measured optimum, and the first version of the config comment
+claimed otherwise.** That comment carried a day-by-day replay showing 120h
+"cliffing" to one item on Wednesday while 168h held, and read it as *wider is
+steadier*. `bitcap-reviewer` caught that the cliff is not a property of the
+width: it is the moment each grid crosses 05 Sep, which is where the corpus stops
+because ingestion has not run since. Recomputed independently:
+
+    120h  crosses on Wed 09   (window becomes 04..09 Sep)
+    168h  crosses on Thu 10   (window becomes 03..10 Sep)
+    240h  crosses on Mon 14   (window becomes 04..14 Sep)
+
+Every width has the same cliff and they differ only in the weekday it lands on.
+The claim that 240h had "no cliff" was true only of the five days that were
+looked at. Against live ingestion none of those rows means anything.
+
+What the change is actually justified by is narrower: 48h publishes one item on
+the deployed database, measured and independent of any replay; a wider window
+spans more days so is likelier to contain an active one; and 168h is the widest
+window that still reports a period a reader would call recent. The choice between
+120 and 168 came down to which grid still held data during the week it shipped in
+— a fact about one frozen corpus, not a property of the setting. `window_hours`
+says all of this in the file, including that the first draft got it wrong.
+
+**Rejected: per-audience windows.** The two cuts want different periods. The
+investment digest is gated on holding connections at `min_strength: 0.5`, so it
+is starved of *linked* items rather than recent ones and does not fill until ~14
+days; at 14 days the AI digest loses every post and all but one release, because
+`max_items: 8` binds and the high-scoring announcements crowd them out. Making
+`window_hours` per-kind is ~3 lines, since `config/digest.yaml` already has
+per-kind blocks. Not taken: the investment reader is the one who has to act on
+the day, and a fortnight-old edition serves them worse than a short one with a
+single genuine item in it. One item there is the filter working, not starvation.
+
+**Ordering is now two sorts either side of the `max_items` cut, not one.** The
+request was "sort by date, then score". Implemented as one sort that is wrong:
+the cut happens between selection and display, so a date-first sort fills the
+edition with whatever is most recent and drops a higher-scoring launch from
+earlier in the window. Across two days those sets were nearly identical; across
+a week they are not. So selection stays on `rank` and display is date-then-rank.
+The test for it fails as `['Minor patch'] == ['Astra']`.
+
+**Nothing read the shipped `window_hours`, so it moved 48 -> 168 with the whole
+suite green.** Every test in `test_digest.py` uses its own `CONFIG` fixture,
+which means the deployed number could be reverted just as silently. There is now
+a tripwire asserting it, and its docstring says plainly that it pins the value
+rather than endorsing it.
+
+**Not a fix, and worth stating.** All of this changes which quiet window gets
+published. The corpus ending on 05 Sep is the actual problem, and every window
+eventually rolls past it. Re-derive this if ingestion resumes.

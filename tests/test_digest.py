@@ -840,3 +840,128 @@ class TestEverySurfaceReadsTheSameCorpora:
         assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
             "posts entered the digest; keeping them muted for alerts is the "
             "separate decision D69 deliberately did not take")
+
+
+class TestTheDigestOpensTheSameRecordAsTheDashboard:
+    """One panel, imported twice — not two renderings of one article. D72.
+
+    The digest is the surface a reader is meant to live in, and its cards are
+    summaries. Before this, the *thinner* view was the one they spent their time
+    in, and the full record was a page away. Reproducing the panel inside
+    `digest/page.js` would have fixed that by creating two copies to keep in
+    step, which is the same failure one step later.
+
+    These read the frontend source, as `tests/test_posts_spine.py` already does
+    for the dashboard's doc-type filter. They are contract tests, not render
+    tests: what they check is that the wiring exists and that the duplication
+    has not come back.
+
+    **They are not the only guard, and an earlier version of this docstring
+    wrongly said they were.** `tests/smoke_dashboard_render.js` and
+    `tests/smoke_digest_render.js` evaluate both component bodies with the hooks
+    stubbed, load `frontend/app/detail.js` for real, and run the decoration over
+    a synthetic article — so the extracted logic is executed, not merely
+    grepped. Both are required CI steps. The first of them caught this branch:
+    the extraction left `decorateItems` undefined in its sandbox and it went red
+    while everything here stayed green.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _read(self, *parts):
+        return (self.FRONTEND.joinpath(*parts)).read_text(encoding="utf-8")
+
+    def test_the_panel_lives_in_one_file_and_both_pages_import_it(self):
+        shared = self._read("detail.js")
+        assert "export function DetailPanel(" in shared
+
+        for page in (("page.js",), ("digest", "page.js")):
+            source = self._read(*page)
+            assert "DetailPanel" in source, f"{page} does not use the shared panel"
+            assert "function DetailPanel(" not in source, (
+                f"{page} defines its own panel; the two will drift")
+
+    def test_no_page_reimplements_the_panel_body(self):
+        """The headings are the cheapest fingerprint of a copied panel."""
+        for heading in ("Portfolio impact", "What to do", "Why flagged"):
+            hits = [p for p in self.FRONTEND.rglob("*.js")
+                    if heading in p.read_text(encoding="utf-8")]
+            assert [p.name for p in hits] == ["detail.js"], (
+                f'"{heading}" is rendered in {[p.name for p in hits]}, not only detail.js')
+
+    def test_a_digest_card_opens_the_record(self):
+        source = self._read("digest", "page.js")
+        # Both card types take the opener, and the page fetches the corpus the
+        # panel needs — a card wired to a handler with no data behind it is the
+        # failure this pair catches.
+        assert source.count("onOpen") >= 4
+        assert '"/api/items"' in source
+        assert "decorateItems(" in source
+
+    def test_a_card_whose_article_left_the_corpus_is_not_clickable(self):
+        """Published payloads are frozen; the corpus is not. Measured on the
+        live database: 4 of 65 published items name a document that has gone,
+        so the guard is load-bearing rather than defensive."""
+        source = self._read("digest", "page.js")
+        assert "const live = resolve(item);" in source
+        assert "live ? () => setSelectedId(live.id) : null" in source
+
+    def test_a_card_resolves_by_url_before_id(self):
+        """The id is the stale half of the payload.
+
+        `articles.id` is a surrogate autoincrement key reassigned on every
+        rebuild; `articles.url` is unique and is what the document *is*. Both
+        are already in the payload. Measured across all 30 published editions,
+        65 items: 9 resolve by id (13%), 61 by url (93%) — and editions
+        published the same day already resolved zero by id, because another
+        session had rebuilt in between.
+
+        Order matters, so this pins it rather than merely checking both are
+        mentioned: id-first would silently return the wrong article whenever an
+        id had been recycled onto a different document.
+        """
+        source = self._read("digest", "page.js")
+        assert "byUrl[item.sourceUrl] || (isLiveEdition ? byId[item.id] : null)" in source, (
+            "url must be tried first; an id-first lookup can hit a recycled id")
+
+    def test_the_id_fallback_is_confined_to_the_live_preview(self):
+        """An archived payload's ids are not merely stale, they are *recycled*.
+
+        The autoincrement counter is reused across rebuilds, so id 4454 today may
+        be a different document than the one an old card names. Falling back to
+        the id there would open the wrong article while looking like it worked —
+        strictly worse than the dead card the url lookup set out to fix. A
+        preview is built by the process now serving the corpus, so its ids
+        cannot be stale and the fallback is safe there.
+        """
+        source = self._read("digest", "page.js")
+        assert 'const isLiveEdition = editionId === "current";' in source
+
+    def test_the_digest_payload_carries_the_url_the_lookup_needs(self, session):
+        """The frontend fix is only free while the backend keeps sending it."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        item = digest.build(session, "investment", V, END, CONFIG)["items"][0]
+
+        assert item["sourceUrl"] == art.url
+
+    def test_the_shared_palette_is_the_dashboards_not_the_digests(self):
+        """The bug this nearly shipped.
+
+        `digest/page.js` carries a three-branch `bandStyle` that folds `low` and
+        `none` into one style, which is fine where nothing below medium renders.
+        The dashboard shows the whole corpus and distinguishes four. Moving the
+        digest's version into the shared file would have silently restyled every
+        low and unbanded row on the dashboard.
+        """
+        shared = self._read("detail.js")
+        band = shared[shared.index("export function bandStyle"):]
+        band = band[:band.index("\n}")]
+        assert 'band === "low"' in band, "the four-band dashboard palette was lost"
+
+        action = shared[shared.index("export function actionStyle"):]
+        action = action[:action.index("\n}")]
+        assert 'action === "investigate"' in action, "the three-action palette was lost"

@@ -11,9 +11,13 @@
 // thing on the page that says the taste is real: a digest that cannot state what
 // it discarded is just a shorter list.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Gate, apiFetch, signOut } from "../auth";
+// The same record the dashboard opens, not a second rendering of it. A digest
+// card is a summary by design; the reader who wants the whole thing should not
+// have to leave the page they live in to get it.
+import { DetailPanel, decorateItems, groupAnchors, relatedByGroup } from "../detail";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -109,10 +113,17 @@ function TheCut({ stats, windowStart, windowEnd }) {
 // One event. Never one connection: an article that fires against fourteen
 // holdings is one thing that happened, and rendering it fourteen times is the
 // noise this page exists to remove.
-function InvestmentItem({ item }) {
+function InvestmentItem({ item, onOpen }) {
   const h = item.holdings || { named: [], more: 0, total: 0 };
   return (
-    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+    <article
+      onClick={onOpen || undefined}
+      style={{
+        border: "1px solid var(--border)", background: "var(--bg-2)",
+        padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
+        cursor: onOpen ? "pointer" : "default",
+      }}
+    >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
@@ -160,16 +171,27 @@ function InvestmentItem({ item }) {
         ) : null}
       </div>
 
-      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+      <a
+        href={item.sourceUrl} target="_blank" rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        style={{ fontSize: 12, color: ACCENT, alignSelf: "flex-start" }}
+      >
         Primary source ↗
       </a>
     </article>
   );
 }
 
-function AiItem({ item }) {
+function AiItem({ item, onOpen }) {
   return (
-    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+    <article
+      onClick={onOpen || undefined}
+      style={{
+        border: "1px solid var(--border)", background: "var(--bg-2)",
+        padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
+        cursor: onOpen ? "pointer" : "default",
+      }}
+    >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
@@ -193,7 +215,11 @@ function AiItem({ item }) {
         </div>
       ))}
 
-      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+      <a
+        href={item.sourceUrl} target="_blank" rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        style={{ fontSize: 12, color: ACCENT, alignSelf: "flex-start" }}
+      >
         Primary source ↗
       </a>
     </article>
@@ -210,6 +236,14 @@ function DigestView() {
   const [past, setPast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // The whole corpus, for the detail panel. Fetched once and independently of
+  // the digest itself: a published edition stores only what the card shows, so
+  // the full record for an item has to come from `/api/items` either way. Kept
+  // out of the `[kind]` effect because it does not vary by audience — only the
+  // decoration does — and out of the loading gate because a digest that renders
+  // without its panel data is still a digest.
+  const [corpus, setCorpus] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -227,6 +261,65 @@ function DigestView() {
         setLoading(false);
       });
   }, [kind]);
+
+  useEffect(() => {
+    // Failure-tolerant on purpose: if this cannot load, the cards simply do not
+    // open. Letting it take down the digest would trade the whole page for a
+    // panel.
+    apiFetch("/api/items").then(setCorpus).catch(() => setCorpus([]));
+  }, []);
+
+  // `kind` and the dashboard's `audience` are the same two values, so the
+  // decoration is the identical call — which is the point: the panel leads with
+  // whichever axis this edition is for.
+  const decorated = useMemo(() => decorateItems(corpus, kind), [corpus, kind]);
+  const [anchorFor] = useMemo(() => groupAnchors(decorated, kind), [decorated, kind]);
+  const relatedForGroup = useMemo(
+    () => relatedByGroup(decorated, anchorFor), [decorated, anchorFor]);
+  // RESOLVED BY URL, WITH THE ID ONLY AS A FALLBACK, and the order is the point.
+  // docs/decisions.md D72.
+  //
+  // `articles.id` is a surrogate autoincrement key. Every rebuild reassigns it,
+  // and a published payload is frozen at the moment it was written — so a stored
+  // id goes stale the first time anyone rebuilds, which on this project is
+  // constantly. `articles.url` is unique (746 of 746 on the live corpus) and is
+  // what the document actually *is*.
+  //
+  // Measured across all 30 published editions, 65 items:
+  //
+  //     resolvable by id :  9  (13%)
+  //     resolvable by url: 61  (93%)
+  //
+  // Editions 99 and 100 are the sharpest case: published hours ago, both already
+  // resolve zero items by id and all of theirs by url. Matching on id first
+  // would have made the archive almost entirely dead while looking deliberate.
+  //
+  // The id fallback is allowed ONLY on the live preview, and that restriction is
+  // the whole safety argument. A preview is built by the process now serving the
+  // corpus, so its ids cannot be stale. An archived payload's ids can not only
+  // be stale but *recycled* — the counter is reused, so id 4454 today may be a
+  // different document than the one the card names. Falling back there would
+  // open the wrong article while looking like it worked, which is strictly worse
+  // than the dead card this commit set out to fix.
+  const [byUrl, byId] = useMemo(() => {
+    const urls = {};
+    const ids = {};
+    for (const it of decorated) {
+      urls[it.sourceUrl] = it;
+      ids[it.id] = it;
+    }
+    return [urls, ids];
+  }, [decorated]);
+
+  // What a card resolves to, or null if the document has genuinely left the
+  // corpus — 4 of the 65 published items, which stay unclickable, correctly.
+  const isLiveEdition = editionId === "current";
+  const resolve = (item) =>
+    byUrl[item.sourceUrl] || (isLiveEdition ? byId[item.id] : null) || null;
+
+  // `selectedId` is whatever `resolve` returned an id for, so it is always a
+  // live id from the current corpus rather than one read out of a payload.
+  const selected = selectedId ? byId[selectedId] : null;
 
   const edition =
     editionId === "current"
@@ -290,11 +383,22 @@ function DigestView() {
             <div style={{ fontSize: 13, color: "var(--muted-2)" }}>Loading…</div>
           ) : items.length ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {items.map((item) =>
-                kind === "investment"
-                  ? <InvestmentItem key={item.id} item={item} />
-                  : <AiItem key={item.id} item={item} />
-              )}
+              {/* `onOpen` only where the document is still in the corpus. A
+                  published edition can outlive the article it names — the
+                  payload is frozen, the corpus is not — and a card that looks
+                  clickable and opens nothing is worse than one that does not
+                  invite the click.
+
+                  The opener is handed the id `resolve` found, NOT the id stored
+                  in the payload: the whole point of matching on url is that the
+                  stored id is the stale one. */}
+              {items.map((item) => {
+                const live = resolve(item);
+                const open = live ? () => setSelectedId(live.id) : null;
+                return kind === "investment"
+                  ? <InvestmentItem key={item.id} item={item} onOpen={open} />
+                  : <AiItem key={item.id} item={item} onOpen={open} />;
+              })}
             </div>
           ) : (
             // An empty digest is a real answer, not a failure state. Saying so
@@ -308,6 +412,22 @@ function DigestView() {
           )}
         </div>
       </div>
+
+      {/* Wrapped in a fixed, viewport-sized box because the panel positions
+          itself absolutely and this page — unlike the dashboard — is as tall as
+          its content. Anchored to `.app` directly, `bottom: 0` would stretch the
+          panel to the whole scroll height. */}
+      {selected && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 50 }}>
+          <DetailPanel
+            item={selected}
+            related={relatedForGroup[selected.groupId]}
+            audience={kind}
+            onOpen={setSelectedId}
+            onClose={() => setSelectedId(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }

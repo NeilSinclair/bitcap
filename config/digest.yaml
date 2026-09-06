@@ -56,9 +56,10 @@ version: 1
 # editions (docs/decisions.md D51). The rows above count *periods*, which is
 # what an edition is, so they describe the archive under any cron frequency.
 #
-# WIDENED TO 168h (7 days), 2026-09-06. The table above measures how often an
-# edition is empty across the whole 90-day corpus; it does not measure what a
-# reader sees on one particular day, which is what the 48h setting got wrong.
+# WIDENED TO 168h (7 days), 2026-09-06 -- docs/decisions.md D73. The table above
+# measures how often an edition is empty across the whole 90-day corpus; it does
+# not measure what a reader sees on one particular day, which is what the 48h
+# setting got wrong.
 # Replayed against the live database, 48h publishes ONE item -- the two days it
 # covers happen to be quiet ones, and every corpus except announcements is
 # invisible in it.
