@@ -6,8 +6,8 @@ import { Gate, apiFetch, signOut } from "./auth";
 // The record, the decoration it needs, and the palette are shared with the
 // digest now — see the header of ./detail for why they stopped living here.
 import {
-  ACCENT, DetailPanel, FoldedGroup, MUTED, NEGATIVE, RelatedItems, actionStyle,
-  bandStyle, decorateItems, groupAnchors, relatedByGroup, signArrow, signColor,
+  ACCENT, DetailPanel, FoldedGroup, NEGATIVE, RelatedItems, decorateItems,
+  groupAnchors, relatedByGroup,
 } from "./detail";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";

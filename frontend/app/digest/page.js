@@ -293,9 +293,13 @@ function DigestView() {
   // resolve zero items by id and all of theirs by url. Matching on id first
   // would have made the archive almost entirely dead while looking deliberate.
   //
-  // The id fallback is kept for the live preview, which is built from the same
-  // process that is serving the corpus and so cannot be stale — and it costs a
-  // dictionary.
+  // The id fallback is allowed ONLY on the live preview, and that restriction is
+  // the whole safety argument. A preview is built by the process now serving the
+  // corpus, so its ids cannot be stale. An archived payload's ids can not only
+  // be stale but *recycled* — the counter is reused, so id 4454 today may be a
+  // different document than the one the card names. Falling back there would
+  // open the wrong article while looking like it worked, which is strictly worse
+  // than the dead card this commit set out to fix.
   const [byUrl, byId] = useMemo(() => {
     const urls = {};
     const ids = {};
@@ -308,7 +312,9 @@ function DigestView() {
 
   // What a card resolves to, or null if the document has genuinely left the
   // corpus — 4 of the 65 published items, which stay unclickable, correctly.
-  const resolve = (item) => byUrl[item.sourceUrl] || byId[item.id] || null;
+  const isLiveEdition = editionId === "current";
+  const resolve = (item) =>
+    byUrl[item.sourceUrl] || (isLiveEdition ? byId[item.id] : null) || null;
 
   // `selectedId` is whatever `resolve` returned an id for, so it is always a
   // live id from the current corpus rather than one read out of a payload.

@@ -853,8 +853,17 @@ class TestTheDigestOpensTheSameRecordAsTheDashboard:
 
     These read the frontend source, as `tests/test_posts_spine.py` already does
     for the dashboard's doc-type filter. They are contract tests, not render
-    tests: there is no JS test runner in this repo, so what they can check is
-    that the wiring exists and that the duplication has not come back.
+    tests: what they check is that the wiring exists and that the duplication
+    has not come back.
+
+    **They are not the only guard, and an earlier version of this docstring
+    wrongly said they were.** `tests/smoke_dashboard_render.js` and
+    `tests/smoke_digest_render.js` evaluate both component bodies with the hooks
+    stubbed, load `frontend/app/detail.js` for real, and run the decoration over
+    a synthetic article — so the extracted logic is executed, not merely
+    grepped. Both are required CI steps. The first of them caught this branch:
+    the extraction left `decorateItems` undefined in its sandbox and it went red
+    while everything here stayed green.
     """
 
     FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
@@ -912,8 +921,21 @@ class TestTheDigestOpensTheSameRecordAsTheDashboard:
         id had been recycled onto a different document.
         """
         source = self._read("digest", "page.js")
-        assert "byUrl[item.sourceUrl] || byId[item.id]" in source, (
+        assert "byUrl[item.sourceUrl] || (isLiveEdition ? byId[item.id] : null)" in source, (
             "url must be tried first; an id-first lookup can hit a recycled id")
+
+    def test_the_id_fallback_is_confined_to_the_live_preview(self):
+        """An archived payload's ids are not merely stale, they are *recycled*.
+
+        The autoincrement counter is reused across rebuilds, so id 4454 today may
+        be a different document than the one an old card names. Falling back to
+        the id there would open the wrong article while looking like it worked —
+        strictly worse than the dead card the url lookup set out to fix. A
+        preview is built by the process now serving the corpus, so its ids
+        cannot be stale and the fallback is safe there.
+        """
+        source = self._read("digest", "page.js")
+        assert 'const isLiveEdition = editionId === "current";' in source
 
     def test_the_digest_payload_carries_the_url_the_lookup_needs(self, session):
         """The frontend fix is only free while the backend keeps sending it."""
