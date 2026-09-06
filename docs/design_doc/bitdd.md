@@ -9,13 +9,13 @@ The first design principle for the app was to link announcements to BitCap posit
 When a source is scored, it links back to a BitCap position through a linked Mechanism (see Scoring below). The user can then see a rated impact of the source on the investment, whether positive, negative or mixed.  
 
 
-### Scoring mechanism
+### Scoring
 
 The scoring was fit into a series of categories which were linked with BitCap's current holdings.
 
 The event types mechanism answers what kind of event happened. Events have a score ranging from 5 to 0 and include categories like frontier_model_release (5), corporate_finance (4), developer_tooling (2).
 
-The Mechanism category answers how the event transmits to BitCap’s holdings. For the *Mechanism* category, these were grouped into Compute and Infrastructure Demand, Efficiency and Displacement, Capability and Demand Shape and Structural, with individual categories under each. These were developed collaboratively with Sonnet, with each mechanism linking to a company and with a sign. For example, *custom_silicon_substitution* is positive for Micron as their product goes into all accelerators, but negative for Nvidia
+The Mechanism category answers how the event transmits to BitCap’s holdings. For the *Mechanism* category, these were grouped into Compute and Infrastructure Demand, Efficiency and Displacement, Capability and Demand Shape and Structural, with individual categories under each. These were developed collaboratively with Sonnet, with each mechanism linking to a company and with a sign. For example, *custom_silicon_substitution* is positive for Micron as their product goes into all accelerators, but negative for Nvidia who would likely loose out from an AI Lab making their own accelerators.
 
 To get an investment team score we take the event score multiplied the magnitude and confidence of the highest scoring mechanism and normalise.
 
@@ -23,11 +23,11 @@ Practices are specifically for the AI Team and answer what would we do different
 
 To get an AI Team score we take the action score and multiply it by the practices score times the confidence and normalise.
 
-The model was asked to grant a confidence score to the rating which it gave. The confidence was based on the evidence found in the document. For every document it scored, the LLM had to support the evidence with a quote. The quotes were then checked by a deterministic process to ensure that the model was not hallucinating a quote. The check requires the quote to appear verbatim in the article text, and a tag whose quote is not there is dropped rather than downgraded, so it cannot contribute to a score at all. This was not a theoretical concern. One run produced a quote spliced together from the first word of one sentence and the body of another, which stated a true fact in words the document never actually used. Near misses, such as a stray space left by the HTML extraction or a curly apostrophe, are snapped to the exact substring in the source instead of being dropped, so every quote that gets stored is a literal substring of the article. The quote is shown next to the tag on the item detail page and in the digest, so a reader can search for it in the original and find it.
+The model was asked to grant a confidence score to the rating which it gave. The confidence was based on the evidence found in the document. For every document it scored, the LLM had to support the evidence with a quote. The quotes were then checked by a deterministic process to ensure that the model was not hallucinating a quote. The check requires the quote to appear verbatim in the article text, and a tag whose quote is not there is dropped rather than downgraded, so it cannot contribute to a score at all. The quote is shown next to the tag on the item detail page and in the digest, so a reader can search for it in the original and find it.
 
 The confidence scores were multiplied into the overall score, such that low = 0, medium = 0.5, high = 1.0. The multiplier for low was selected empirically based on looking at scored articles where the quoted evidence was weak. Medium was selected as 0.5 to indicate uncertainty and high a 1.0 to indicate certainty.
 
-There are separate scoring prompts for the announcements/articles, papers and posts (GH?). Each prompt is versioned. Prompts were written by Fable 5. In the case of the announcements, the prompts are compared against a gold-test. This serves to test the prompt's agreement, but also to measure variance in the results over time. This second point is discussed further in the
+There are separate scoring prompts for the sources. The announcements (articles) and GitHub releases share a scoring prompt (they share the same shape), papers and X posts each have their own. Each prompt is versioned. Prompts were written by Fable 5. In the case of the announcements, the prompts are compared against a gold-test. This serves to test the prompt's agreement, but also to measure variance in the results over time. This second point is discussed further in the *System Health* section.
 
 All sources are re-scored when a prompt relevant to that source type changes.
 
@@ -72,7 +72,7 @@ Papers have no shared discovery method each lab's harvester is genuinely differe
 
 ### Github
 
-The GutHub pages of the selected labs were found by research with Claude and included in the GitHub sourcing config file. Relevant repos were then selected based on... Of the remaining 770 repos we ranked them by the number of stars on them and chose the Top 10 from each lab. These were then passed to a classifier to pick which ones were relevant for our project (see Model Selection below). Releases from the only the selected repos were then scored using the LLM classifier in the same manner as lab announcements are scores.  
+The GutHub pages of the selected labs were found by research with Claude and included in the GitHub sourcing config file. Relevant repos were then selected such that forks, archived repos and anything not pushed to in the window were dropped first. Of the remaining 770 repos we ranked them by the number of stars on them and chose the Top 10 from each lab. These were then passed to a classifier to pick which ones were relevant for our project (see Model Selection below). Releases from the only the selected repos were then scored using the LLM classifier in the same manner as lab announcements are scores.  
 
 The GitHub data collected also includes all of the people who made commits during the time period. The initial idea was to use these people lists to explore the person blogs and X accounts of these people. This was abandoned for now due to the sparsity of X accounts and personal blogs for the contributors as well as costs of the X API (see below). Given the data is available, this could be explored in a second stage of the project.
 
@@ -95,12 +95,22 @@ The pipeline runs in eight phases in a fixed order. There’s also a per source 
 ![](media/image1.png)
 *Figure 1The stages of the ETL Ingestion Pipeline*
 
-The data is also processed in a medallion archicture. The Bronze layer is updated whenever new data is added to the pipeline when the pipeline is run for one or more of the parts. The Silver layer is then processed deterministically. For example, the scoring algorithm (but not the LLM labels) can be adjusted and the Silver Layer rerun without having to reprocesses the Bronze layer. The Gold layer brings together the company (BitCap) holding data with the data from the Silver layer to create the objects on the UI.
+The data is processed in a medallion archicture. The Bronze layer is updated whenever new data is added to the pipeline when the pipeline is run for one or more of the parts. The Silver layer is then processed deterministically. For example, the scoring algorithm (but not the LLM labels) can be adjusted and the Silver Layer rerun without having to reprocesses the Bronze layer. The Gold layer brings together the company (BitCap) holding data with the data from the Silver layer to create the objects on the UI.
 
 ![](media/image2.png)
 *Figure 2 The Medallion architecture*
 
-### Production concerns
+## Grouping
+
+Articles covering the same event are grouped so the feed shows one row per event rather than one row per source. Three deterministic passes run first: exact matches on lab, date and title, release trains from a single repo, and a requirement that the event type matches before anything can merge at all. The remaining pairs are compared by embedding, and only those in a narrow cosine band are sent to an LLM to decide, because on the pairs I labelled the cosine score does not separate duplicates from near misses cleanly enough to cut at one threshold. Pairs at or above 0.80 merge unasked, pairs below 0.70 stay separate, and the model is only asked in between.
+
+
+## Digest
+
+The digest is a daily edition of the highest scoring items from the previous 24 hours, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day.
+
+
+### Pipeline alerts and failures
 
 The pipeline runs unattended overnight, so it is built to fail in a way I can see.
 
@@ -134,9 +144,10 @@ For choosing which Frontier AI Lab repos might be relevant to the AI team, the r
 
 ## Development cycle
 
-I started off with a planning document based on the case-study and sketched out the high-level steps for the project. I clearly stated in the planning document that every decision needs to be recorded in a decisions document. I also indicated that unit tests must be written for everything the agents do.
+I started off with a planning document based on the case-study and sketched out the high-level steps for the project. I clearly stated in the planning document that every decision needs to be recorded in a decisions
+ document. The key points from this document were included in the CLAUDE.md file governing the sessions. I also indicated that unit tests must be written for everything the agents do.
 
-Each part of the pipeline started with an interactive research session with a Claude agent. Sources,
+Each part of the pipeline started with an interactive research session with a Claude agent. Sources were discovered and scripts built for extracting them. These were then built into a pipeline once they had been validated.
 
 I ran different agents in different work-trees simultaneously to work on different features. Along with tracking all key decisions in the decisions document, the agents also wrote short handover documents for other agents once a larger feature was complete. This helped the agents to maintain context throughout the project as it developed.
 
@@ -150,16 +161,22 @@ The app is deployed to Render. Whenever a merge happens on the `deployment` bran
 
 A security analysis of the code base was conducted using GPT-6 Astra in Codex. Three vulnerabilities were found, as listed in Codex:
 
-- High: When the local Docker Compose database is running, someone who can reach your computer over the network on port 5432 — subject to firewall rules — could use the committed superuser password to read, modify or delete the database; they would not need physical access or a login to your computer.
-
 - Medium: The unauthenticated /api/health endpoint exposes internal operational details, including pipeline errors, source information and processing state.
 
 - Medium: A race condition in login rate limiting allows concurrent requests to exceed the intended attempt limit increasing password guessing and potentially exhausting server resources.
 
-These concerns are acknowledged, but were not fixed due to time limits. 
+- Low: When the local Docker Compose database is running, someone who can reach your computer over the network on port 5432 — subject to firewall rules — could use the committed superuser password to read, modify or delete the database.
+
+These concerns are acknowledged, however the risk appears to be low given all of the information is public and the database on could be reconstructed easily in the third risk identified.
+
+## Insights
+
+- 
 
 ## Next Steps and Improvements
 
 - Incorporate additional labs into the data. I would start off with incorporating additional labs from China into the sample.
 
 - Update the scoring LLM to do three scorings of each source and choose the most often occuring label. In the event of a tie, take the median of the three runs' event weights, rounding down. Do the same reduction applied to a mechanism's magnitude and confidence. Flag the item as contested rather than resolving it silently. 
+
+- The grouping of articles together is not currently functioning on the alerts digest as it functions on the dashboard. With additional time, I would include this feature. 
