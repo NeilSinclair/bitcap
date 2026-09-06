@@ -8635,3 +8635,92 @@ Three widths, deliberately: 38× 48h, 2× 168h, and 24h from here on. They
 interleave in the dropdown, which sorts by `window_end` — a 48h edition ending
 06 Sep sits above a 168h one ending 03 Sep and looks newer than a report
 published after it, which is why the width is now labelled.
+
+## D80 — The daily edition was about the day that had just started, not the one that had just finished (2026-09-06)
+
+`window_for` now publishes the newest period whose days have all *finished*,
+which is one period further back than the newest period whose clock has run out.
+Those are not the same thing, and D79 shipped the second believing it was the
+first.
+
+**The mechanism.** `_in_window` compares at date resolution with an **exclusive
+start**, so a window `[A, B]` selects the days `A+1 .. B` — the end date is in,
+the start date is not. The period ending at the most recent grid boundary
+therefore has *today* as its last day, and at a 24-hour width today is its only
+day:
+
+| firing | window published | selects |
+|---|---|---|
+| Wed 09 Sep 03:00 | `08 Sep → 09 Sep` | **Wed 09 Sep** — three hours old |
+
+And three hours old is the worst possible day to ask about, because it is also
+the day this firing's own ingestion has barely reached. `render.yaml` fires at
+03:00 UTC deliberately, *"after the US-hours announcement window has closed, so
+a day's publications land in one run"* — and those publications are dated
+**yesterday**. So every daily edition excluded precisely what the firing that
+wrote it had just harvested. Near-empty by construction, not because the day was
+quiet.
+
+After the shift, the Wednesday firing publishes `07 → 08 Sep`, covering Tuesday:
+complete, and the day the run ingested. Verified on the live database — the same
+firing that produced an empty edition before produces one with an item after.
+
+**Why 48h and 168h never showed it.** A 48-hour window covers two days, so it
+carried one whole day plus the sliver of today; the whole day did the work. At
+24h there is no whole day left, only the sliver. This is latent damage from
+narrowing the window in D79 rather than a fault the wider settings ever had —
+the third defect that change has surfaced, all of them from the same place: a
+grid designed when the width was measured in days, narrowed to one day.
+
+**Why not simply "the last 24 hours from when the pipeline ran", which is what
+was asked for.** `Article.published_on` is a `date`, not a timestamp — most labs
+publish without a time and the ones that do are not comparable across timezones.
+A window from 03:00 to 03:00 cannot mean twenty-four hours; compared at date
+resolution it collapses to whole days, which is exactly how the off-by-one
+arises. The only faithful reading of "the last 24 hours" this data supports is
+"the day that just finished", and that is what this implements. Keeping the grid
+also keeps idempotence: a wall-clock `window_end` is unique to the microsecond,
+so every firing would publish a *new* edition rather than update one, and a
+dry-run rehearsal would enter the permanent record (D51).
+
+Shifting both edges by the same amount preserves everything the grid is for.
+Consecutive editions still partition the timeline; firings inside one period
+still resolve to one edition. `test_editions_partition_the_timeline_under_the_deployed_cadence`
+and the D51 idempotence tests pass unchanged.
+
+**The backfill had to move with it, and that was a real second bug.**
+`_unpublished_periods` returned each missing period's own boundary, and `publish`
+hands those to `window_for` — which now resolves them *backwards* one period. The
+backfill filled the period before each gap and left every gap exactly where it
+was. It now returns the moment that resolves forward to the gap, and the
+docstring says why, because the coupling is invisible from either side.
+
+Caught by two tests written for D79 that turned out to cover this too. **One of
+them barely did, and review found that as well.** It asserted `date(9, 4) in
+ends` — the period the second firing publishes anyway, so it held whether or not
+the backfill ran — leaving only a `len(ends) == 3` count doing any work. A
+backfill that filled the *wrong* day would have passed both. It now pins the
+ordered set `[2 Sep, 3 Sep, 4 Sep]`, and mutation-checking it against the old
+boundary shows exactly which day goes missing.
+
+**The test fixture moved, and the data did not.** `tests/test_digest.py` pinned
+`END = 4 Sep` against articles dated the 3rd and 4th — a pairing that encoded the
+old relationship between firing time and covered days. It is now `END = 6 Sep`,
+which under the new code reproduces the identical window `[02 Sep, 04 Sep]`, so
+every assertion in that file still tests what it tested. Verified before changing
+it rather than after, and no assertion was touched.
+
+**The first version of this paragraph said "35 tests failed and shifting the
+firing time made all 35 pass again", and that was wrong** — caught in review and
+measured rather than argued. The fixture shift alone fixes **33**. The other two,
+`test_a_missed_firing_does_not_leave_a_permanent_hole` and
+`test_a_backfill_never_rewrites_an_edition_that_exists`, stayed red until the
+backfill compensation below, which is the whole point: they were reporting a
+second real bug, and rolling them into a fixture-change tally would have buried
+it. Re-checked by reverting the backfill line and running the file: exactly those
+two fail.
+
+Three new tests, mutation-checked against the old offset: the Wednesday firing
+covers Tuesday; no published window at any width ever includes an unfinished day;
+and, end to end on the corpus rather than the calendar, an article ingested
+overnight reaches that night's edition.

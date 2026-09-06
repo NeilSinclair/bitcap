@@ -75,7 +75,7 @@ EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
 def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
-    """The period one digest covers: the last complete slot of the fixed grid.
+    """The period one digest covers: the newest slot of the grid that is over.
 
     **Quantised, and this is the whole point.** Taking the window as
     `[run.started_at - 48h, run.started_at]` looked right and was wrong twice
@@ -110,20 +110,50 @@ def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
     page opens on it — the live window is the default view, and the published
     editions are the archive.
 
+    **The last period whose DAYS are all complete, which is one period further
+    back than the last period whose clock has run out.** Those are not the same
+    thing, and treating them as one made every daily edition near-empty.
+
+    `_in_window` compares at date resolution with an exclusive start, so a
+    window `[A, B]` selects the days `A+1 .. B` — the end date is *included* and
+    the start date is not. The period ending at the most recent grid boundary
+    therefore has today as its last day, and at a 24-hour width today is its
+    ONLY day. The 03:00 cron would publish an edition about a day three hours
+    old, which is also the day its own ingestion has barely reached: render.yaml
+    fires at 03:00 UTC "after the US-hours announcement window has closed", and
+    the articles that lands are dated *yesterday*. The edition systematically
+    excluded what the firing had just harvested.
+
+    Stepping back one more period makes the newest day in the window
+    yesterday — complete, and the day the run just ingested. At 48h it was
+    survivable and so went unnoticed: a 48-hour window covers two days, so it
+    still carried one whole day plus a sliver of today. At 24h there is no whole
+    day left, only the sliver. This is latent damage from narrowing the window
+    (D79), not a fault the wider settings ever had.
+
+    Shifting both edges by the same amount preserves everything the grid is
+    for: consecutive editions still partition the timeline, and any number of
+    firings inside one period still resolve to one edition.
+
     Args:
         at: A moment inside or after the period to publish, normally the run's
             start time. Naive datetimes are read as UTC.
         config: Parsed `config/digest.yaml`.
 
     Returns:
-        Start and end of the last complete period, timezone-aware in UTC.
+        Start and end of the newest period every day of which has finished,
+        timezone-aware in UTC.
     """
     if at.tzinfo is None:
         at = at.replace(tzinfo=timezone.utc)
     at = at.astimezone(timezone.utc)
     width = timedelta(hours=config["window_hours"])
     boundary = EPOCH + ((at - EPOCH) // width) * width
-    return boundary - width, boundary
+    # `boundary` is the start of the period `at` sits in, so `boundary - width`
+    # ends where today began -- and because the start is exclusive, that window
+    # runs up to yesterday and stops. See the docstring for why "last complete
+    # period" was the wrong reading of complete.
+    return boundary - 2 * width, boundary - width
 
 
 def _in_window(article: m.Article, start: datetime, end: datetime) -> bool:
@@ -544,14 +574,22 @@ def _unpublished_periods(session: Session, config: dict, end: datetime,
     Args:
         session: Open session.
         config: Parsed config; `window_hours` sets the grid.
-        end: The moment being published for.
+        end: The moment being published for. `window_for` resolves it back to
+            the newest period whose days have all finished, so this is the
+            firing time, not the window's own end.
         label: `prompt_version` the editions are keyed under.
 
     Returns:
-        A moment inside each missing period, oldest first, at most
-        `MAX_BACKFILL_PERIODS` of them. Empty on a database with no editions —
-        a first run backfills nothing, because "never published" and "missed"
-        are different states and only the second is a fault.
+        A moment to pass to `build`/`window_for` for each missing period, oldest
+        first, at most `MAX_BACKFILL_PERIODS` of them. **Not the period's own
+        boundary** — `window_for` publishes the period *before* the one its
+        argument sits in (D80), so a moment must be handed back that resolves
+        forward to the gap. Returning the boundary itself filled the period
+        before each gap and left every gap exactly where it was.
+
+        Empty on a database with no editions — a first run backfills nothing,
+        because "never published" and "missed" are different states and only the
+        second is a fault.
     """
     newest = session.scalar(
         select(sa_func.max(m.Digest.window_end)).where(
@@ -564,7 +602,7 @@ def _unpublished_periods(session: Session, config: dict, end: datetime,
     width = timedelta(hours=config["window_hours"])
     _, current = window_for(end, config)
     # Walk the grid forward from the newest edition to the period this firing
-    # closes, keeping the boundaries with nothing published at them.
+    # publishes, keeping the ends with nothing published at them.
     boundary = EPOCH + ((newest - EPOCH) // width) * width
     missing = []
     while boundary < current:
@@ -578,7 +616,10 @@ def _unpublished_periods(session: Session, config: dict, end: datetime,
                 m.Digest.prompt_version == label,
             ))
         if exists is None:
-            missing.append(boundary)
+            # `window_for(at)` returns the period ENDING one width before the
+            # boundary `at` sits in, so to publish the period ending at
+            # `boundary` the caller has to ask for a moment one width later.
+            missing.append(boundary + width)
     return missing[-MAX_BACKFILL_PERIODS:]
 
 

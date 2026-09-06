@@ -38,7 +38,16 @@ from app.db import create_all
 sys.path.insert(0, str(Path(__file__).parent.parent / "config"))
 from validate import check_digest  # noqa: E402
 
-END = datetime(2026, 9, 4, tzinfo=timezone.utc)
+# WHEN THE FIRING HAPPENS, not the end of the window it publishes.
+#
+# `window_for` publishes the newest period whose days have all FINISHED, which
+# is one period behind the firing (D80). So a firing at 06 Sep publishes the
+# 48-hour window [02 Sep, 04 Sep], covering the 3rd and the 4th -- exactly the
+# window this file's articles are dated into.
+#
+# It read `datetime(2026, 9, 4)` before D80, when a firing published the period
+# it had just left. The articles did not move; the moment the cron runs did.
+END = datetime(2026, 9, 6, tzinfo=timezone.utc)
 V = "v7"
 
 CONFIG = {
@@ -162,6 +171,61 @@ class TestTheCutIsTheProduct:
             assert len(set(window_ends)) == 1, (
                 f"article {article_id} appeared in {len(set(window_ends))} editions"
             )
+
+    def test_the_daily_edition_covers_the_day_that_just_finished(self, session):
+        """You arrive Wednesday morning and read Tuesday's edition. D80.
+
+        This is the property the whole daily archive exists for, and it was
+        wrong as shipped in D79. `_in_window` is half-open at date resolution
+        with an EXCLUSIVE start, so the window `[Tue, Wed]` selects Wednesday,
+        not Tuesday. Publishing "the last period whose clock has run out" at
+        03:00 therefore produced an edition about a day three hours old — and
+        about the day its own ingestion had barely reached, since render.yaml
+        fires at 03:00 UTC after the US publication window closes and the
+        articles that lands are dated *yesterday*.
+
+        So every daily edition excluded exactly what the firing had harvested.
+        Near-empty by construction rather than because the day was quiet.
+        """
+        cfg = {**CONFIG, "window_hours": 24}
+        wednesday_cron = datetime(2026, 9, 9, 3, 0, tzinfo=timezone.utc)
+
+        start, end = digest.window_for(wednesday_cron, cfg)
+
+        # Half-open at date resolution: selects start.date() + 1 .. end.date().
+        assert end.date() == date(2026, 9, 8), (
+            f"the Wednesday firing publishes a window ending {end.date()}; "
+            "an edition read on Wednesday must be about Tuesday")
+        assert start.date() == date(2026, 9, 7)
+
+    def test_a_published_window_never_includes_an_unfinished_day(self, session):
+        """The general form, at every width. A window whose last day is today
+        is a report on a day still happening — it will be written once, at
+        03:00, and never revisited, so whatever arrives after breakfast is lost
+        to it for ever."""
+        for hours in (24, 48, 168):
+            cfg = {**CONFIG, "window_hours": hours}
+            for hour in (0, 3, 12, 23):
+                at = datetime(2026, 9, 9, hour, tzinfo=timezone.utc)
+                _, end = digest.window_for(at, cfg)
+                assert end.date() < at.date(), (
+                    f"at width {hours}h a firing at {at:%H:%M} publishes a "
+                    f"window ending {end.date()}, which is not yet over")
+
+    def test_an_article_ingested_overnight_reaches_that_night_s_edition(self, session):
+        """End to end, on the corpus rather than the calendar: the article a
+        firing ingests is in the edition that firing publishes. That round trip
+        is the point of the whole daily archive and nothing else asserts it."""
+        cfg = {**CONFIG, "window_hours": 24}
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 8), title="Tuesday's news")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        out = digest.build(session, "investment", V,
+                           datetime(2026, 9, 9, 3, 0, tzinfo=timezone.utc), cfg)
+
+        assert [i["title"] for i in out["items"]] == ["Tuesday's news"]
 
     def test_firings_inside_one_period_resolve_to_the_same_edition(self, session):
         """Two firings a day apart share a 48h period, so they are one edition."""
@@ -570,11 +634,16 @@ class TestPublishing:
                        config=cfg)
         session.commit()
 
+        # The ORDERED SET, not a count and not one membership check. An earlier
+        # version asserted `date(2026, 9, 4) in ends` -- which is the period the
+        # second firing publishes anyway, so it held whether or not the backfill
+        # ran, and only `len(ends) == 3` was doing any work. A backfill that
+        # filled the wrong day would have passed both.
+        #
         # sqlite hands back naive datetimes; the dates are what matter here.
         ends = sorted({r.window_end.date() for r in session.scalars(select(m.Digest))})
-        assert date(2026, 9, 4) in ends, (
-            f"the period ending 4 Sep was never published; ends are {ends}")
-        assert len(ends) == 3, "expected 2, 3 and 4 Sep"
+        assert ends == [date(2026, 9, 2), date(2026, 9, 3), date(2026, 9, 4)], (
+            f"expected the 3rd to be backfilled between the two firings; got {ends}")
 
     def test_a_backfill_never_rewrites_an_edition_that_exists(self, session):
         """The delicate half. A digest is a frozen record of what the product
