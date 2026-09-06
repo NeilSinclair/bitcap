@@ -52,6 +52,21 @@ function Pill({ children, style }) {
 // formatting locally shifts the label off the days the digest actually selected
 // — west of Greenwich a 4–5 Sep edition renders "3 Sep — 4 Sep", and a digest is
 // a dated claim. The offset is invisible in CET, which is where it was written.
+// How wide a published edition is, in words. The archive holds three widths at
+// once -- 48h editions from before D73, two 168h ones from between D73 and D79,
+// and 24h ones from now on -- and the list sorts by window_end, so they
+// interleave: a 48h edition ending 6 Sep sits above a 168h one ending 3 Sep and
+// looks newer than a report published after it. Labelling the width is what
+// makes that legible rather than a puzzle.
+function width(startIso, endIso) {
+  if (!startIso || !endIso) return null;
+  const hours = Math.round(
+    (new Date(endIso) - new Date(startIso)) / 3600000,
+  );
+  if (!Number.isFinite(hours) || hours <= 0) return null;
+  return hours % 24 === 0 && hours >= 24 ? `${hours / 24}d` : `${hours}h`;
+}
+
 function day(iso) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString(undefined, {
@@ -297,7 +312,9 @@ function DigestView() {
     setLoading(true);
     Promise.all([
       apiFetch(`/api/digests/preview?kind=${kind}`),
-      apiFetch(`/api/digests?kind=${kind}&limit=20`),
+      // 30, not 20: editions are daily since D79, so a fixed count buys half
+      // the calendar depth it used to.
+      apiFetch(`/api/digests?kind=${kind}&limit=30`),
     ])
       .then(([p, h]) => {
         setPreview(p);
@@ -432,7 +449,9 @@ function DigestView() {
               <option value="current">Current window (unpublished)</option>
               {past.map((d) => (
                 <option key={d.id} value={d.id}>
-                  Published {day(d.windowEnd)} · {d.stats?.surfaced ?? 0} of {d.stats?.considered ?? 0}
+                  Published {day(d.windowEnd)}
+                  {width(d.windowStart, d.windowEnd) ? ` · ${width(d.windowStart, d.windowEnd)}` : ""}
+                  {" · "}{d.stats?.surfaced ?? 0} of {d.stats?.considered ?? 0}
                 </option>
               ))}
             </select>

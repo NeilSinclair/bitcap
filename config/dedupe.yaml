@@ -37,7 +37,7 @@ version: 1
 # normalised model identifier (research/corpus/first_mention.py) and a lab,
 # within this many days of each other.
 #
-# 14 days is wider than the 48h digest window on purpose: a precursor post and
+# 14 days is wider than any digest window on purpose: a precursor post and
 # the launch it precedes are the case worth catching, and Astra's spanned four
 # days. Widening it further mostly adds unrelated pairs from the same lab —
 # measured at 4,412 candidate pairs across the 267 non-release articles at 14
@@ -131,8 +131,12 @@ adjudication:
 # a release train is identified by its repo. All releases from one repo inside
 # this window collapse to one card, anchored on the highest ai_score.
 #
-# 48 hours matches config/digest.yaml's window so the feed and the digest agree
-# about what one release event is.
+# 48 hours USED to match config/digest.yaml's window, and that was the stated
+# reason for it. It no longer does -- the digest publishes 24-hour editions and
+# previews 7 days (D79) -- so the coincidence is gone and the value is left
+# where it is on its own merits: it is the gap below which consecutive releases
+# from one repo are one shipping event rather than two, which is a fact about
+# how repos release and not about how often a digest is cut.
 releases:
   window_hours: 48
 

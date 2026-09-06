@@ -195,6 +195,12 @@ def build(
             instead: quantised, the preview's newest day is always the one that
             closed, so on the 5th it read "up to the 3rd" and looked stale.
 
+            **This flag also selects which width is read.** True reads
+            `window_hours`, False reads `preview_window_hours`, and they are
+            deliberately different numbers (D79) — a daily published archive
+            behind a rolling week. They were one setting until then and the
+            same width by accident.
+
     Returns:
         ``{"kind", "window_start", "window_end", "stats", "items"}``. `stats`
         carries `considered` / `surfaced` / `suppressed` / `matched_rule` —
@@ -214,7 +220,12 @@ def build(
         if end.tzinfo is None:
             end = end.replace(tzinfo=timezone.utc)
         end = end.astimezone(timezone.utc)
-        start = end - timedelta(hours=config["window_hours"])
+        # `preview_window_hours`, NOT `window_hours`. The two surfaces are
+        # deliberately different widths (D79): the archive is a daily grid, the
+        # live view is a rolling week. They were one value and the same width by
+        # accident, which made the 48-hour editions in the archive fossils of an
+        # older setting rather than a thing the product keeps producing.
+        start = end - timedelta(hours=config["preview_window_hours"])
     rules = config[kind]
 
     labs = {r.id: r.label for r in session.scalars(select(m.RefLab))}
@@ -366,8 +377,10 @@ def build(
     #
     # They cannot be one sort, because `max_items` cuts between them. Sorting
     # by date before the cut fills the edition with whatever is most recent and
-    # drops a higher-scoring launch from earlier in the window — at 168h that
-    # is a real loss, since the window now spans a week rather than two days.
+    # drops a higher-scoring launch from earlier in the window. That is a real
+    # loss on the live view, whose `preview_window_hours` spans a week; on a
+    # 24-hour published edition the two sorts nearly agree, and the ordering
+    # still has to be right there because both read this one function.
     # So the edition is chosen on merit and then read in the order a reader
     # expects: latest at the top, most important first within a day.
     selected.sort(key=lambda i: i["rank"], reverse=True)
@@ -509,9 +522,14 @@ def publish(
 ) -> list[m.Digest]:
     """Build and persist both audiences' digests for one window.
 
-    Idempotent on `(kind, window_end, prompt_version)`: re-running a firing
-    updates the edition it already published rather than issuing a second,
-    subtly different one for the same period.
+    Idempotent on `(kind, window_start, window_end, prompt_version)`: re-running
+    a firing updates the edition it already published rather than issuing a
+    second, subtly different one for the same period.
+
+    **The span, not just its end.** Two editions can end at the same midnight
+    over different periods — a 48-hour report and a 24-hour one, which is
+    exactly what changing `window_hours` produces. Keying on the end alone made
+    those one row and overwrote the older edition in place (migration 0013).
 
     A digest may read several classification versions (announcements and papers
     carry their own), but the uniqueness key is one column. The *first* version
@@ -535,9 +553,15 @@ def publish(
     rows = []
     for kind in KINDS:
         built = build(session, kind, prompt_version, end, config)
+        # Matched on the WHOLE span. Keying on `window_end` alone let an
+        # edition of a different width claim an existing row and overwrite it,
+        # keeping the old `window_start` because the start is only assigned on
+        # creation -- a published record claiming 48 hours while holding 24.
+        # See migration 0013; measured on the live database, it emptied two.
         row = session.scalar(
             select(m.Digest).where(
                 m.Digest.kind == kind,
+                m.Digest.window_start == built["window_start"],
                 m.Digest.window_end == built["window_end"],
                 m.Digest.prompt_version == label,
             )

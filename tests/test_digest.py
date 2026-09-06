@@ -44,6 +44,9 @@ V = "v7"
 CONFIG = {
     "version": 1,
     "window_hours": 48,
+    # Deliberately not 48. The two windows are independent (D79), and a fixture
+    # where they agree lets a test read the wrong key and still pass.
+    "preview_window_hours": 72,
     "investment": {"min_strength": 0.5, "always_band": "high", "max_items": 8},
     "ai": {"actions": ["adopt", "investigate"], "min_band": "medium", "max_items": 8},
     "max_holdings_shown": 4,
@@ -134,11 +137,13 @@ class TestTheCutIsTheProduct:
 
     def test_editions_partition_the_timeline_under_the_deployed_cadence(self, session):
         """The cron is daily (render.yaml) and this fixture's window is 48h --
-        narrower than the shipped one, which is deliberate: the property under
-        test is that consecutive editions never share an article, and it has to
-        hold at every width. Spacing the two editions exactly one window apart
-        tests a cadence nobody runs; over the real one, an unquantised window
-        made every article appear twice."""
+        WIDER than the shipped 24h, which is deliberate: the property under test
+        is that consecutive editions never share an article, and it has to hold
+        at every width. It is the harder case, too. At the shipped 24h the grid
+        and the cron coincide, so a firing closes exactly one period and an
+        overlap bug has nowhere to show; at 48h a daily cron fires twice inside
+        one period, which is what made every article appear twice before the
+        window was quantised."""
         _holding(session, "US1", "NVIDIA")
         for d in (date(2026, 9, 1), date(2026, 9, 2), date(2026, 9, 3), date(2026, 9, 4)):
             art, _ = _article(session, published=d, title=f"On {d}")
@@ -475,6 +480,68 @@ class TestPublishing:
         investment = next(r for r in again if r.kind == "investment")
         assert investment.stats["considered"] == 2
 
+    def test_a_narrower_window_ending_the_same_midnight_is_a_NEW_edition(self, session):
+        """The defect migration 0013 exists for, and it destroyed real data.
+
+        A 48-hour edition covering 04->06 Sep and a 24-hour one covering
+        05->06 Sep are different reports over different periods. The idempotence
+        key was `(kind, window_end, prompt_version)` — width-blind — so they were
+        the same row. Changing `window_hours` from 48 to 24 (D79) therefore did
+        not start a new series alongside the archive; it walked *through* it.
+
+        What made it silent rather than merely wrong: `publish` assigns
+        `window_start` only when it CREATES a row. Matching an existing one, it
+        rewrote the payload and left the old start in place, so the edition went
+        on claiming 48 hours while holding 24 hours of content. Measured on the
+        live database before the fix, editions 97 and 98 went from 1 item each
+        to 0 — a published record quietly restated, which is the one thing the
+        frozen-payload design exists to prevent.
+
+        Not an edge case at a 24-hour grid: every 48-hour edition ends on a
+        midnight that is also a 24-hour boundary, so a daily cron collides with
+        the archive once per old edition, indefinitely.
+        """
+        _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        session.flush()
+
+        wide = digest.publish(session, V, END, config={**CONFIG, "window_hours": 48})
+        session.commit()
+        wide_ids = sorted(r.id for r in wide)
+        wide_spans = {r.kind: (r.window_start, r.window_end) for r in wide}
+
+        narrow = digest.publish(session, V, END, config={**CONFIG, "window_hours": 24})
+        session.commit()
+
+        assert sorted(r.id for r in narrow) != wide_ids, (
+            "the 24-hour edition claimed the 48-hour edition's row")
+        assert len(session.scalars(select(m.Digest)).all()) == 2 * len(digest.KINDS)
+
+        # And the older edition is untouched — same span, same payload.
+        for row in session.scalars(select(m.Digest).where(m.Digest.id.in_(wide_ids))):
+            assert (row.window_start, row.window_end) == wide_spans[row.kind]
+            assert row.window_end - row.window_start == timedelta(hours=48)
+
+    def test_every_published_edition_spans_the_width_it_claims(self, session):
+        """The property the overwrite broke, stated directly.
+
+        A row whose `window_end - window_start` disagrees with the window it was
+        built for is a report labelled with a period it does not cover. Nothing
+        else looks at that, and the digest page renders it without complaint.
+        """
+        _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        session.flush()
+        for hours in (24, 48, 168):
+            digest.publish(session, V, END, config={**CONFIG, "window_hours": hours})
+        session.commit()
+
+        widths = sorted({
+            round((r.window_end - r.window_start).total_seconds() / 3600)
+            for r in session.scalars(select(m.Digest))
+        })
+        assert widths == [24, 48, 168], (
+            f"three widths were published, {widths} survive — editions are "
+            "overwriting each other across window changes")
+
     def test_a_different_prompt_version_is_a_new_edition_not_a_correction(self, session):
         """Two classifier versions are not comparable, so they are not one report."""
         _article(session, published=date(2026, 9, 3), score=90.0, band="high")
@@ -507,6 +574,9 @@ class TestTheLiveWindowEndsNow:
     the last one that closed — so a reader opening the page on the 5th read
     "the 48 hours to the 3rd" and reasonably concluded the pipeline had stalled.
     Nothing errored; the page just quietly described yesterday's yesterday.
+
+    Since D79 they are also different *widths*, read from different keys, which
+    is what `test_the_two_windows_do_not_read_each_others_setting` pins.
     """
 
     def test_the_rolling_window_ends_at_the_moment_asked_for(self, session):
@@ -515,7 +585,49 @@ class TestTheLiveWindowEndsNow:
         out = digest.build(session, "investment", V, at, CONFIG, quantise=False)
 
         assert out["window_end"] == at
-        assert out["window_start"] == at - timedelta(hours=48)
+        assert out["window_start"] == at - timedelta(
+            hours=CONFIG["preview_window_hours"])
+
+    def test_the_two_windows_do_not_read_each_others_setting(self, session):
+        """THE POINT OF D79, and the one thing no other test in this file can
+        catch.
+
+        `window_hours` and `preview_window_hours` are two keys in one dict read
+        by two branches of one function. Swapping them produces a published
+        edition and a preview that are both perfectly well-formed, both
+        correctly windowed, both rendering without complaint — just the wrong
+        way round. Every other test here passes against that swap, because the
+        fixture used to carry one width and both branches read it.
+
+        So the widths are deliberately different in `CONFIG` (48 published, 72
+        preview) and each branch is asserted against its own.
+        """
+        at = datetime(2026, 9, 5, 11, 30, tzinfo=timezone.utc)
+
+        published = digest.build(session, "investment", V, at, CONFIG)
+        preview = digest.build(session, "investment", V, at, CONFIG,
+                               quantise=False)
+
+        assert published["window_end"] - published["window_start"] == timedelta(
+            hours=CONFIG["window_hours"]), "the published edition read the preview's width"
+        assert preview["window_end"] - preview["window_start"] == timedelta(
+            hours=CONFIG["preview_window_hours"]), "the preview read the grid's width"
+
+    def test_the_preview_ignores_the_published_grid_entirely(self, session):
+        """Not merely a different number — a different *mechanism*.
+
+        A preview built with an absurd grid width must be unaffected: it does
+        not snap, so `window_hours` has no way to reach it. If this fails,
+        something is still calling `window_for` on the live path.
+        """
+        at = datetime(2026, 9, 5, 11, 30, tzinfo=timezone.utc)
+        absurd = {**CONFIG, "window_hours": 24 * 30}
+
+        out = digest.build(session, "investment", V, at, absurd, quantise=False)
+
+        assert out["window_end"] == at
+        assert out["window_start"] == at - timedelta(
+            hours=CONFIG["preview_window_hours"])
 
     def test_it_includes_something_published_today(self, session):
         """The whole point. Quantised, today's article is in no window yet."""
@@ -575,22 +687,36 @@ class TestGuards:
         """
         assert check_digest() == []
 
-    def test_the_shipped_window_is_pinned(self):
-        """A tripwire, and the only thing that reads the deployed number.
+    def test_the_shipped_windows_are_pinned(self):
+        """A tripwire, and the only thing that reads the deployed numbers.
 
         Every other test in this file runs against the `CONFIG` fixture at the
-        top, which carries its own `window_hours`. So the shipped value had no
-        guard at all: it was moved from 48 to 168 and the entire suite stayed
-        green — which means it can be moved back, by a revert or a merge, with
-        nothing going red either.
+        top, which carries its own widths. So the shipped values have no guard
+        at all: `window_hours` was moved 48 -> 168 -> 24 across three changes
+        and the entire suite stayed green each time — which means either can be
+        moved back, by a revert or a merge, with nothing going red either.
 
-        This asserts nothing about 168 being *correct*. `config/digest.yaml`
-        says plainly that it is not a measured optimum and explains what it is
-        actually justified by. This asserts only that the number changes
-        deliberately, alongside this line and the reasoning beside it, rather
-        than drifting.
+        This asserts nothing about 24 or 168 being *correct*.
+        `config/digest.yaml` says plainly that 168 is not a measured optimum and
+        that 24 empties nearly half of all investment editions. It asserts only
+        that the numbers change deliberately, alongside these lines and the
+        reasoning beside them, rather than drifting.
         """
-        assert digest.settings()["window_hours"] == 168
+        settings = digest.settings()
+        assert settings["window_hours"] == 24
+        assert settings["preview_window_hours"] == 168
+
+    def test_the_two_windows_are_not_the_same_setting(self):
+        """The archive being narrower than the live view is the whole point.
+
+        If they are ever equal again the product silently loses the shape D79
+        built: a daily dated archive read behind a rolling week. Nothing else
+        would report that — both surfaces would keep rendering perfectly.
+        """
+        settings = digest.settings()
+        assert settings["preview_window_hours"] > settings["window_hours"], (
+            "the live view must be wider than one published edition, or the "
+            "archive and the landing view are the same report twice")
 
     def test_the_shipped_item_caps_are_pinned(self):
         """The same tripwire, for the same reason, on the other shipped number.
@@ -992,6 +1118,47 @@ class TestEverySurfaceReadsTheSameCorpora:
         assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
             "posts entered the digest; keeping them muted for alerts is the "
             "separate decision D69 deliberately did not take")
+
+
+class TestTheDigestPageOpensOnTheLiveWindow:
+    """The landing view is the rolling week, not the newest published edition.
+
+    This was true before D79 and untested, which made it a default rather than
+    a requirement — and D79 turns it into load-bearing behaviour. The published
+    archive is now daily 24-hour editions, which `config/digest.yaml` records as
+    empty on ~48% of days for the investment audience. That is an acceptable
+    archive and an unacceptable landing page. If the page ever opens on the
+    newest *edition* instead, roughly every other visit shows a blank digest,
+    the pipeline looks broken, and nothing anywhere reports a fault.
+
+    Read from the frontend source, as the class below does. A contract test:
+    it checks the wiring exists, not that React honours it.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _source(self):
+        return (self.FRONTEND / "digest" / "page.js").read_text(encoding="utf-8")
+
+    def test_the_initial_edition_is_the_unpublished_window(self):
+        source = self._source()
+        assert 'useState("current")' in source, (
+            "the digest page no longer opens on the live window; with a daily "
+            "archive that lands a reader on an empty edition every other day")
+
+    def test_switching_audience_returns_to_the_live_window(self):
+        """Otherwise a reader who picked an old edition, then switched audience,
+        stays on an id belonging to the audience they left."""
+        source = self._source()
+        assert 'setEditionId("current")' in source
+
+    def test_the_archive_is_read_deep_enough_to_be_an_archive(self):
+        """Daily editions halve the calendar depth a fixed row count buys. This
+        is not a correctness bound, it is the difference between a dropdown
+        covering a month and one covering three weeks -- pinned because the
+        number silently means something different since D79."""
+        source = self._source()
+        assert "limit=30" in source
 
 
 class TestTheDigestOpensTheSameRecordAsTheDashboard:

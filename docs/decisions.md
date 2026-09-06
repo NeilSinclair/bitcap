@@ -8496,3 +8496,95 @@ which is what it should always have been.
 `tests/test_digest.py` runs against a fixture carrying its own values, so each of
 these could be reverted by a merge with the whole suite green — and a digest that
 quietly doubles or halves is not a failure anything else would report.
+
+## D79 — The digest gets two windows, and splitting them uncovered a key that was quietly eating the archive (2026-09-06)
+
+`window_hours: 168 → 24`, new `preview_window_hours: 168`, and migration 0013.
+
+The digest page has two surfaces and they answer different questions. It had one
+setting, so they were the same width — and the arrangement a reader liked was an
+*accident*: the 48-hour editions in the archive were fossils published when the
+single value read 48, and every future edition would have been a week wide until
+the distinction disappeared entirely.
+
+| surface | width | grid | key |
+|---|---|---|---|
+| published editions | 24h | quantised, daily | `window_hours` |
+| the landing view | 168h, rolling, ends now | none | `preview_window_hours` |
+
+The value is read in exactly two places, and they were already the two surfaces:
+`window_for` (the grid, used by `publish`) and `build`'s `quantise=False` branch
+(the rolling preview). Splitting them is one line in each.
+
+**The page already opened on the live view** — `editionId` starts at `"current"`
+— but nothing tested it, so it was a default rather than a requirement. It is
+now load-bearing and pinned: a 24-hour archive is empty on ~48% of days for the
+investment audience, which is fine for an archive and unacceptable for a landing
+page. If the page ever opens on the newest *edition* instead, every other visit
+shows a blank digest and nothing anywhere reports a fault.
+
+**The cost, stated.** From the replay in `config/digest.yaml`: at 24h the
+investment digest is empty on 48% of days and the AI digest on 33%, against
+31%/13% at 48h. That was the wrong trade when this value also drove the landing
+page — it is why D51 chose 48h and D73 widened to 168h — and it is the right one
+now that it does not.
+
+---
+
+### The defect this uncovered, which cost live data
+
+Running the verification step — publish one edition and read it back — published
+a **48-hour** edition on a 24-hour grid and **overwrote editions 97 and 98**,
+taking both from 1 item to 0.
+
+The idempotence key was `(kind, window_end, prompt_version)`. **Width-blind.** A
+48-hour edition covering 04→06 Sep and a 24-hour one covering 05→06 Sep are
+different reports over different periods, and under that key they were the same
+row. `publish` matched on the end alone, found the older edition, and rewrote its
+payload — while leaving `window_start` alone, because the start is only assigned
+when a row is *created*. The result was a published record claiming 48 hours and
+holding 24 hours of content, and since the corpus ends 05 Sep, that content was
+nothing.
+
+**Not an edge case at this grid width.** Every 48-hour edition ends on a midnight
+that is also a 24-hour boundary, so a daily cron walking forward collides with
+the archive it is meant to sit beside — once per old edition, indefinitely. The
+same exposure existed latently when D73 moved 48 → 168 and simply never fired.
+
+Migration 0013 puts `window_start` in the key, which is what an edition always
+was: a span, not an end. Any future change of window width now creates editions
+*alongside* the old ones instead of through them. Batch mode, because the tests
+and the documented clone-to-running path build the schema on SQLite, which has
+no `ALTER` for constraints at all.
+
+Two tests, both mutation-checked against the narrow key: a narrower window
+ending the same midnight must be a new edition, and every published edition must
+span the width it claims.
+
+### Editions 97 and 98 are reconstructions, and are marked as such
+
+Their original payloads are unrecoverable. A digest is never recomputed — that is
+the whole design — so there is no source to restore *from*. They were rebuilt
+over the same 04→06 Sep span from the corpus as it now stands, and each carries
+`stats["reconstructed"]` saying so.
+
+**They are not the editions published on 06 Sep**, and the note says that
+plainly: scoring config has moved since (D77 raised the item caps, D78 raised
+`ai.min_band` to `high`), so a rebuild restates that window in today's terms —
+precisely the history-rewriting the frozen-payload design exists to prevent. The
+item counts happen to match the originals at 1 apiece; the `considered` and
+`suppressed` figures do not.
+
+Recorded rather than quietly fixed because the lesson is the general one: the
+verification step that destroyed the data is also the only reason the defect was
+found before the nightly cron found it on its own, forty times over.
+
+### What the archive looks like now
+
+Three widths, deliberately: 38× 48h, 2× 168h, and 24h from here on. They
+interleave in the dropdown, which sorts by `window_end` — a 48h edition ending
+06 Sep sits above a 168h one ending 03 Sep and looks newer than a report
+published after it. The dropdown now labels each edition's width, which is the
+cheap fix for a genuine confusion rather than a cosmetic one, and the archive is
+read 30 deep instead of 20 because daily editions halve the calendar depth a
+fixed row count buys.

@@ -171,8 +171,9 @@ alerts:
   #
   # The cost, stated: a genuinely important paper published four months ago and
   # discovered tonight does not alert. It is still scored, still in the UI and
-  # still joined to holdings -- and the digest window (48h) would have excluded
-  # it anyway. An alert is for what is new, and it is not.
+  # still joined to holdings -- and no digest window would have carried it
+  # anyway: the widest is the 7-day live view (config/digest.yaml
+  # `preview_window_hours`). An alert is for what is new, and it is not.
   content_max_age_days: 120
 
   # Corpora that are scored and shown in the dashboard but may not raise a
@@ -313,8 +314,9 @@ fetch:
 #
 # WHAT IT DOES NOT TOUCH, DELIBERATELY:
 #
-# * `app/digest.py` already windows to 48 hours (config/digest.yaml), so an
-#   edition is unaffected by this number.
+# * `app/digest.py` windows far more narrowly than this (config/digest.yaml:
+#   24 hours published, 7 days for the live view), so an edition is unaffected
+#   by this number.
 # * `research/corpus/first_mention.py` reads `raw_articles` directly and keeps
 #   the whole archive. Firstness is a claim about the entire corpus, so
 #   truncating its input would make it WRONG rather than merely narrower: a name

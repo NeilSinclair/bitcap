@@ -377,7 +377,53 @@ class TestEndpoints:
             f"preview window ends {end}, not ~now — the grid is back"
         )
         # And it is still the configured width, not an unbounded lookback.
-        assert (end - start) == timedelta(hours=digest_mod.settings()["window_hours"])
+        # `preview_window_hours`, not `window_hours` — since D79 the live view
+        # and the published archive are deliberately different widths, and this
+        # endpoint serves the live one.
+        assert (end - start) == timedelta(
+            hours=digest_mod.settings()["preview_window_hours"])
+
+    def test_the_preview_is_wider_than_a_published_edition(self, client, session):
+        """The shape D79 exists to make permanent, asserted end to end.
+
+        The archive is a daily grid and the landing view is a rolling week. If
+        this ever comes back equal, the two surfaces are the same report twice
+        and the dropdown has stopped being an archive of anything narrower.
+        """
+        body = client.get("/api/digests/preview?kind=investment").json()
+        span = (datetime.fromisoformat(body["window_end"])
+                - datetime.fromisoformat(body["window_start"]))
+
+        assert span > timedelta(hours=digest_mod.settings()["window_hours"])
+
+    def test_the_hours_override_widens_the_preview(self, client, session):
+        """`?hours=` is how a reader asks for a different span without changing
+        anything published — the one route to "what mattered in the last 48
+        hours" while the default view is a week.
+
+        It writes into the config dict the builder reads, so it is exactly the
+        kind of thing that survives a key rename as a silent no-op: the endpoint
+        would keep returning 200 with the default width and nothing would say
+        the parameter had stopped working. Nothing covered it before D79.
+        """
+        body = client.get("/api/digests/preview?kind=investment&hours=48").json()
+        span = (datetime.fromisoformat(body["window_end"])
+                - datetime.fromisoformat(body["window_start"]))
+
+        assert span == timedelta(hours=48), (
+            "the hours override did not reach the rolling window — check it "
+            "writes preview_window_hours, not window_hours")
+
+    def test_the_hours_override_is_clamped_not_trusted(self, client, session):
+        """A query parameter is user input. The clamp bounds it to [1h, 90d] so
+        a hand-typed `hours=0` cannot produce an empty window and a huge one
+        cannot walk the whole corpus."""
+        for asked, expected in ((0, 1), (24 * 400, 24 * 90)):
+            body = client.get(
+                f"/api/digests/preview?kind=investment&hours={asked}").json()
+            span = (datetime.fromisoformat(body["window_end"])
+                    - datetime.fromisoformat(body["window_start"]))
+            assert span == timedelta(hours=expected)
 
     def test_drift_endpoint(self, client, session):
         # The endpoint defaults to the current prompt version, so the snapshot
