@@ -15,11 +15,6 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 </style>
 <h1>Overview of BIT Capital Frontier Lab Intelligence App</h1>
 <p>The BIT Capital Frontier Lab Intelligence app pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) portfolio, indicating how these signals could impact BIT Capital positions as well as the strength of these impacts.</p>
-<h3>What it surfaced</h3>
-<ul>
-<li>Mark Chen of OpenAI on X, 17 August: &quot;We&#x27;re excited to go big with NVIDIA and sign up for 4+ GW of capacity&quot;, scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.</li>
-<li>Meta&#x27;s venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta&#x27;s AI blog at all.</li>
-</ul>
 <h3>Discussion of the principles of Design</h3>
 <p>The first design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across portfolios and settled on the positions within the Technology Leaders portfolio. These positions represent roughly 1.4B € or 47% of BitCap&#x27;s holdings and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across portfolios.</p>
 <p>When a source is scored, it links back to a BitCap position through a linked Mechanism (see Scoring below). The user can then see a rated impact of the source on the investment, whether positive, negative or mixed.  </p>
@@ -34,6 +29,7 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <p>The confidence scores were multiplied into the overall score, such that low = 0, medium = 0.5, high = 1.0. The multiplier for low was selected empirically based on looking at scored articles where the quoted evidence was weak. Medium was selected as 0.5 to indicate uncertainty and high a 1.0 to indicate certainty.</p>
 <p>There are separate scoring prompts for the sources. The announcements (articles) and GitHub releases share a scoring prompt (they share the same shape), papers and X posts each have their own. Each prompt is versioned. Prompts were written by Fable 5. In the case of the announcements, the prompts are compared against a gold-test. This serves to test the prompt&#x27;s agreement, but also to measure variance in the results over time. This second point is discussed further in the <em>System Health</em> section.</p>
 <p>All sources are re-scored when a prompt relevant to that source type changes.</p>
+<p>Most of what is collected scores zero: 348 of 447 announcements and releases, 33 of 47 papers and 210 of 238 X posts. That is the filter doing its job rather than a gap in the data.</p>
 <h2>Sources</h2>
 <h3>Labs selected</h3>
 <p>From an intial list of 21 labs 7 were selected. This initial list was created through AI research where the labs were placed into four buckets, Closed Frontier, China, Western Challengers, and Stealth/New Modality. Meta AI entered Closed Frontier due to their move away from open weights models recently. </p>
@@ -115,13 +111,15 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <li>Low: When the local Docker Compose database is running, someone who can reach your computer over the network on port 5432 — subject to firewall rules — could use the committed superuser password to read, modify or delete the database.</li>
 </ul>
 <p>These concerns are acknowledged, however the risk appears to be low given all of the information is public and the database on could be reconstructed easily in the third risk identified.</p>
-<h2>Insights</h2>
+<h3>Insights</h3>
 <ul>
-<li></li>
+<li>Mark Chen of OpenAI on X, 17 August: &quot;We&#x27;re excited to go big with NVIDIA and sign up for 4+ GW of capacity&quot;, scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.</li>
+<li>Meta&#x27;s venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta&#x27;s AI blog at all.</li>
 </ul>
 <h2>Next Steps and Improvements</h2>
 <ul>
 <li>Incorporate additional labs into the data. I would start off with incorporating additional labs from China into the sample.</li>
 <li>Update the scoring LLM to do three scorings of each source and choose the most often occuring label. In the event of a tie, take the median of the three runs&#x27; event weights, rounding down. Do the same reduction applied to a mechanism&#x27;s magnitude and confidence. Flag the item as contested rather than resolving it silently. </li>
 <li>The grouping of articles together is not currently functioning on the alerts digest as it functions on the dashboard. With additional time, I would include this feature. </li>
+<li>The tweets are currently not being grouped either and there is some overlap. I would apply the grouping process to these too in a future release.</li>
 </ul>

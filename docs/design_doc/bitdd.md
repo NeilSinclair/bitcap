@@ -2,12 +2,6 @@
 
 The BIT Capital Frontier Lab Intelligence app pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) portfolio, indicating how these signals could impact BIT Capital positions as well as the strength of these impacts.
 
-### What it surfaced
-
-- Mark Chen of OpenAI on X, 17 August: "We're excited to go big with NVIDIA and sign up for 4+ GW of capacity", scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.
-
-- Meta's venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta's AI blog at all.
-
 ### Discussion of the principles of Design
 
 The first design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across portfolios and settled on the positions within the Technology Leaders portfolio. These positions represent roughly 1.4B € or 47% of BitCap's holdings and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across portfolios.
@@ -36,6 +30,8 @@ The confidence scores were multiplied into the overall score, such that low = 0,
 There are separate scoring prompts for the sources. The announcements (articles) and GitHub releases share a scoring prompt (they share the same shape), papers and X posts each have their own. Each prompt is versioned. Prompts were written by Fable 5. In the case of the announcements, the prompts are compared against a gold-test. This serves to test the prompt's agreement, but also to measure variance in the results over time. This second point is discussed further in the *System Health* section.
 
 All sources are re-scored when a prompt relevant to that source type changes.
+
+Most of what is collected scores zero: 348 of 447 announcements and releases, 33 of 47 papers and 210 of 238 X posts. That is the filter doing its job rather than a gap in the data.
 
 ## Sources
 
@@ -175,9 +171,12 @@ A security analysis of the code base was conducted using GPT-6 Astra in Codex. T
 
 These concerns are acknowledged, however the risk appears to be low given all of the information is public and the database on could be reconstructed easily in the third risk identified.
 
-## Insights
+### Insights
 
-- 
+- Mark Chen of OpenAI on X, 17 August: "We're excited to go big with NVIDIA and sign up for 4+ GW of capacity", scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.
+
+- Meta's venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta's AI blog at all.
+
 
 ## Next Steps and Improvements
 
@@ -186,3 +185,5 @@ These concerns are acknowledged, however the risk appears to be low given all of
 - Update the scoring LLM to do three scorings of each source and choose the most often occuring label. In the event of a tie, take the median of the three runs' event weights, rounding down. Do the same reduction applied to a mechanism's magnitude and confidence. Flag the item as contested rather than resolving it silently. 
 
 - The grouping of articles together is not currently functioning on the alerts digest as it functions on the dashboard. With additional time, I would include this feature. 
+
+- The tweets are currently not being grouped either and there is some overlap. I would apply the grouping process to these too in a future release.
