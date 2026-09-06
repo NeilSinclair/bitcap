@@ -8254,3 +8254,193 @@ docstring says why — "swallowed and unreported is how `drift_unavailable`'s
 outage went unnoticed for days (D45)". The digest page repeated the swallow
 without the reporting half. Catching an exception to protect a surface is
 correct; discarding it is a decision to make the next failure undiagnosable.
+
+## D76 — The posts leg goes nightly, because the reason it could not was removed a day earlier (2026-09-06)
+
+`cadence.posts: 7 → 1`. The X posts leg now runs on every scheduled firing,
+like every other leg except GitHub.
+
+**The old cadence was a cost control standing in for a missing feature.** Its
+comment argued that "a daily firing would multiply the bill sevenfold", and
+against the code as it then stood that was correct: `fetch_posts` wrote
+`source_state.watermark["max_published"]` on every firing and never read it
+back, so each firing bought the entire 90-day window regardless of how recently
+the last one had run. Cost was a function of *how often* the leg ran and not of
+how much was new. With that shape, 7 was the only defensible number.
+
+D69 made the leg incremental — the stored mark is passed to X as `start_time`,
+X bills per post *returned*, and `start_time` is applied server-side. A firing
+now buys the days since the last one. That severed cost from cadence, and the
+sevenfold argument went with it. Nothing else changed; the number was simply
+never revisited after the thing it was compensating for was fixed.
+
+**What nightly actually costs.** The first version of this entry said ~$0.37 a
+week, from 473 posts ÷ 90 days = ~5.3 a day. That is wrong, and wrong in a way
+worth recording because the artifact invites it: the pull is capped per handle
+(`per_handle_ceiling: 100`), and four handles hit their cap, so their history
+stops well short of the window's floor — `alexandr_wang` returned 100 posts
+reaching back only to 28 July, `gdb` 96 back to 24 July. Dividing a truncated
+pull by the full span it never reached understates the rate by a third.
+
+The recent days *are* covered for every handle, and those are the days a nightly
+firing buys. Counting per calendar day over the last 30 (230 posts, ~7.7/day,
+stable at 7.4–7.8 across 21/30/45-day windows):
+
+| | firings/wk | days bought each | posts/wk | $/wk |
+|---|---:|---:|---:|---:|
+| weekly (old) | 1 | 7 + 1 overlap | ~62 | ~$0.31 |
+| nightly (new) | 7 | 1 + 1 overlap | ~108 | ~$0.54 |
+
+~$0.23 a week — about a euro a month — to take the worst-case lag on a post from
+seven days to one. Classification does not move at all: the overlap day's posts
+are already in `raw_articles` and are dropped on the URL match before any model
+sees them, so the same posts are classified, just sooner.
+
+The conclusion survived the correction, which is the only reason the decision
+did. Had the true rate been the one that made nightly unaffordable, the honest
+outcome would have been to leave the cadence alone.
+
+**The overlap is why it is 1.75x rather than 1x, and it is deliberate.** The
+mark is a date, not an instant, because `to_record` stores `created_at[:10]`. So
+every firing re-reads the day it stopped on. Seven firings re-read seven days;
+one firing re-reads one. An exact instant would remove that 0.75x and silently
+drop any post published later on the same day as the last one stored — a hole
+nothing downstream could detect, traded for fifteen cents a week.
+
+**This is now the second number that depends on the watermark being read, and
+they live in different files.** Nothing in `config/pipeline.yaml` reaches
+`fetch_posts` and nothing in `fetch_posts` mentions the cadence. Remove the read
+and the corpus stays correct, nothing fails, nothing alerts, and the bill goes
+from ~$0.37 a week to ~$16.60 — seven full-window pulls instead of one.
+`TestANightlyPostsCadenceRestsOnTheWatermark` pins the pairing: one test asserts
+the shipped cadence is 1, the other asserts the stored mark reaches the provider
+as `start_time`. Mutation-checked by replacing `since=_post_since(mark)` with
+`since=None`, which turns the second red.
+
+**The risk this creates, which the first draft of this entry missed entirely.**
+A frozen watermark, and nightly makes it seven times more expensive.
+
+`fetch_posts` returns an empty watermark on any firing where a handle errored or
+was skipped for budget, and `record_success` then leaves the stored mark alone.
+Both halves are right: the mark is one date for the whole leg, so advancing it
+past a handle that returned nothing would move that handle's floor over posts it
+never published, permanently, with nothing downstream able to tell those from
+posts that were never written.
+
+What nothing reported is the consequence. The mark is what bounds the pull, so
+while it is stuck **every firing buys a window one day wider than the last**. And
+the leg records *success* each time — the handle-level error goes to
+`unresolved_items`, `consecutive_failures` resets to zero, and `source_down`
+cannot fire because nothing failed. A single handle erroring every night is
+enough. The ceiling is `budget.max_posts_total` (900 posts, $4.50 a firing), not
+anything that raises an alarm.
+
+At weekly that was one widening pull a week and easy to miss. At nightly it is
+seven. Making a system seven times more sensitive to a state that has no report
+on it is precisely the swallowed-and-unreported pattern D45 and D75 both name,
+so the report ships with the cadence rather than after it:
+`alerts.posts_watermark_stalled` fires when the stored mark stands still for
+`posts_watermark_stale_days` (7) while the leg keeps succeeding.
+
+**7 rather than 3, because a stuck mark is ambiguous.** `newest` is taken over
+*kept* records, so a stretch in which every post read was dropped by the
+prefilter also fails to advance it — and that is harmless. At ~2.6 posts a day
+surviving the prefilter, three quiet days is possible and seven is not, so seven
+is where the benign reading stops being available. Waiting that long costs ~$0.27
+of extra pull, which is the right thing to trade against a false page. Both
+causes are covered deliberately: from durable state they are indistinguishable,
+and the alert body says so instead of asserting which one it is.
+
+Keyed on the mark rather than on the date, so one ongoing stall is one alert
+rather than one a night — the correction `drift` and `repo_filter_unavailable`
+both needed. `warning`, not `critical`: the corpus is correct and no reader sees
+anything false. It is a bill that grows quietly.
+
+**The product consequence is larger than "fresher", and it cuts both ways.** The
+digest windows on *publication* date over a quantised 168-hour grid (D73), so a
+post ingested a week after it was written can land in an edition that has
+already closed and never appear in one at all. Weekly ingestion made that the
+normal case for posts; nightly is what makes a post reliably eligible for the
+edition it belongs to. That is the benefit — and it is also the risk, because
+the digest's selection thresholds were tuned before posts could realistically
+reach it. Whether posts crowd out announcements in an edition is a question to
+answer from a published edition, not from here.
+
+**What this does not do.** Posts still cannot raise a content alert —
+`alerts.content_mute_prompt_versions` holds `t1` and `t2`, which is an
+independent guard and a separate decision (D69 declined to take it). A nightly
+posts leg means the noisiest corpus in the system is refreshed nightly into the
+dashboard and the digest; it does not mean anyone gets paged about it.
+
+**Also in this change, and unrelated except by surface: the run picker could not
+name two of its own legs.** `releases` and `posts` had no entry in the
+frontend's `LEG_LABEL` and none in the API's `_LEG_NOTES`, so they rendered as
+lowercase `releases` and `posts` beside `Announcements` and `Papers`, with a
+blank line where every other leg carries a one-line description. The checkboxes
+worked. The two newest and least self-explanatory legs were simply the two with
+nothing explaining them — which is the failure mode config-not-code is supposed
+to prevent, arriving one layer up: a leg is *declared* in `registry.LEGS`, and
+described in two other files that adding one does not touch.
+
+Fixed by adding both, and by asserting the coverage from the endpoint the page
+actually calls rather than from a list someone remembers to extend — the same
+approach `TestEveryRouteIsGated` already takes to the route table. The first
+version of the test iterated `registry.LEGS` instead, which needed `"drift"`
+appended by hand because it is a checkbox without being an ingestion leg; that
+put the remember-to-extend list back, one line further down. Three tests: every
+leg the API offers has a non-empty note; every leg it offers has a label in the
+picker; and no label is lowercase, which catches the case where the raw id is
+copied in as the "fix". All three mutation-checked against the state they
+replaced, and the parse asserts it found something, so a refactor cannot make
+three emptiness checks pass vacuously.
+
+## D77 — The digest cap was raised to 16, and measuring what it had been cutting reversed the reason for doing it (2026-09-06)
+
+`max_items: 8 → 16` on both audiences (`config/digest.yaml`).
+
+The prompt for this was the open question D76 left: posts now reliably reach the
+window they belong to, an edition has a fixed number of slots, and nobody had
+looked at whether posts were pushing announcements out of them.
+
+**They were not.** Measured on the deployed corpus before the change:
+
+| audience | passed the rule | shown at 8 | dropped by the cap |
+|---|---:|---:|---:|
+| investment | 2 | 2 | 0 |
+| ai | 15 | 8 | 7 |
+
+Two findings, and the first one makes the second one smaller than it looks.
+
+**On the investment digest the cap has never done anything.** Two items of 58
+considered clear `min_strength` + `always_band`; 8 and 1000 produce the identical
+edition. The number that bounds this audience is the rule, not the cap, and the
+worry that posts crowd it out was misplaced — nothing is being crowded out of a
+list with six empty slots. It is raised anyway, only so the two audiences do not
+silently differ.
+
+**On the AI digest the cap was binding, and every one of the 7 items it dropped
+was `medium`.** Not one high-band item was lost to it: the ranking already had
+all of them inside the top 8. Five of the seven were X posts. So posts were not
+displacing announcements — they rank *below* them, which is the ranking working
+as designed. The cap was cutting the medium tail, and the medium tail is mostly
+posts.
+
+**What raising it actually does, stated because it is the real consequence.**
+The AI edition goes from 8 rows to 15, and 6 of those 15 are X posts — from one
+in eight to roughly two in five. That is a larger change to how that digest reads
+than "8 → 16" suggests, and it follows directly from D76: nightly ingestion is
+what put those posts inside their own window in the first place.
+
+**If it reads as noisy, this is the wrong lever to reach back for.** `max_items`
+cuts on *position* — it drops whatever fell below a line, regardless of merit,
+and reports it as `suppressed` next to items suppressed on merit. `min_band:
+medium → high` cuts on merit and says so. The cap is a length limit for a reader,
+not a quality filter, and using it as one is how a genuinely important item ends
+up dropped for being ninth.
+
+**Neither number was pinned by anything before this.** Every test in
+`tests/test_digest.py` runs against a `CONFIG` fixture carrying its own
+`max_items`, so both shipped values could be changed — or reverted by a merge —
+with the whole suite green. `test_the_shipped_item_caps_are_pinned` is the
+tripwire, on the same reasoning as `test_the_shipped_window_is_pinned` (D73): it
+asserts the number moves deliberately, not that 16 is correct.

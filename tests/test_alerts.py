@@ -31,6 +31,7 @@ from app.pipeline.budget import BudgetExceeded
 
 CONFIG = {
     "source_down_runs": 3,
+    "posts_watermark_stale_days": 7,
     "content_band": "high",
     "content_min_strength": 0.5,
     "drift_agreement_floor": 0.80,
@@ -775,6 +776,92 @@ class TestDedupeUnavailable:
         second = alerts.dedupe_unavailable(session, CONFIG, context)
 
         assert first[0].dedupe_key == second[0].dedupe_key
+
+
+class TestThePostsWatermarkStallIsReported:
+    """A stuck mark is a bill that grows quietly, and nothing else sees it.
+
+    `fetch_posts` returns an empty watermark whenever a handle errored or was
+    skipped for budget, and `record_success` then leaves the stored mark alone.
+    Both halves are correct: the mark is one date for the whole leg, so
+    advancing it past a handle that returned nothing would move that handle's
+    floor over posts it never published (D69).
+
+    What nothing reported is the consequence. The mark is what bounds the pull,
+    so while it is stuck every firing buys a window one day wider than the last.
+    The leg records SUCCESS each time, so `source_down` cannot fire; the
+    handle-level error goes to `unresolved_items`, where nothing escalates it.
+    At `cadence.posts: 1` (D76) that is seven widening pulls a week rather than
+    one, which is why the report ships with the cadence.
+    """
+
+    def _state(self, session, mark, last_success, source_id="posts"):
+        session.add(m.SourceState(
+            leg="posts", source_id=source_id,
+            watermark={"max_published": mark} if mark is not None else {},
+            last_success_at=last_success))
+        session.flush()
+
+    def test_a_mark_keeping_up_raises_nothing(self, session):
+        """One day behind is the healthy nightly state: the mark is the newest
+        stored post's date, and the firing that reads it runs the next day."""
+        self._state(session, "2026-09-02", NOW)
+
+        assert alerts.posts_watermark_stalled(session, CONFIG, {}) == []
+
+    def test_a_stuck_mark_is_reported_with_how_far_behind_it_is(self, session):
+        self._state(session, "2026-08-20", NOW)
+
+        found = alerts.posts_watermark_stalled(session, CONFIG, {})
+
+        assert len(found) == 1
+        assert found[0].rule == "posts_watermark_stalled"
+        assert found[0].severity == alerts.WARNING
+        assert found[0].payload["days_behind"] == 14
+        assert "14 days" in found[0].subject
+
+    def test_the_threshold_is_the_configured_one(self, session):
+        """6 days is not yet a stall at 7; the same state is at 5."""
+        self._state(session, "2026-08-28", NOW)
+
+        assert alerts.posts_watermark_stalled(session, CONFIG, {}) == []
+        assert len(alerts.posts_watermark_stalled(
+            session, {**CONFIG, "posts_watermark_stale_days": 5}, {})) == 1
+
+    def test_a_leg_that_has_never_run_is_not_a_stall(self, session):
+        """No mark is the first-firing state. It reads the full window once by
+        design, and there is nothing for it to be behind."""
+        self._state(session, None, NOW)
+        self._state(session, "2026-08-01", None, source_id="posts-never-ran")
+
+        assert alerts.posts_watermark_stalled(session, CONFIG, {}) == []
+
+    def test_one_ongoing_stall_is_one_alert_not_one_a_night(self, session):
+        """Keyed on the mark rather than on today. Keyed on the day, a stall
+        that runs for a fortnight pages fourteen times — the correction `drift`
+        and `repo_filter_unavailable` both needed."""
+        self._state(session, "2026-08-20", NOW)
+        first = alerts.posts_watermark_stalled(session, CONFIG, {})
+
+        session.query(m.SourceState).filter_by(leg="posts").one().last_success_at = (
+            NOW + timedelta(days=1))
+        session.flush()
+        second = alerts.posts_watermark_stalled(session, CONFIG, {})
+
+        assert first[0].dedupe_key == second[0].dedupe_key
+        assert second[0].payload["days_behind"] == 15, "still counts the real gap"
+
+    def test_a_corrupt_mark_is_not_an_alert(self, session):
+        """Fail quiet here on purpose: an unparseable mark is a different fault,
+        and `_post_since` already treats it as "read the whole window"."""
+        self._state(session, "never", NOW)
+
+        assert alerts.posts_watermark_stalled(session, CONFIG, {}) == []
+
+    def test_the_rule_is_registered(self):
+        """A rule absent from RULES is never evaluated, and every test above
+        would still pass."""
+        assert alerts.RULES["posts_watermark_stalled"] is alerts.posts_watermark_stalled
 
 
 class TestRepoFilterUnavailable:

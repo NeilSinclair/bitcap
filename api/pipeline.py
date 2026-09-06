@@ -55,6 +55,8 @@ _LEG_NOTES = {
     "announcements": "Lab blogs and newsrooms. The insight stream the digest is built from.",
     "papers": "arXiv and lab publications, with byline extraction for the people register.",
     "github": "Commit history across each lab's orgs. The slow one — around 14 minutes.",
+    "releases": "Release notes from each lab's watched repositories. Runs after GitHub, which supplies the repository list.",
+    "posts": "X posts from the handles in the people register. Billed per post read, so it asks only for what is new.",
     "drift": "Re-scores 20 gold articles and compares. Costs about $0.75 every time.",
 }
 

@@ -592,6 +592,25 @@ class TestGuards:
         """
         assert digest.settings()["window_hours"] == 168
 
+    def test_the_shipped_item_caps_are_pinned(self):
+        """The same tripwire, for the same reason, on the other shipped number.
+
+        `CONFIG` at the top of this file carries its own `max_items`, so nothing
+        here reads the deployed one. It was raised from 8 to 16 with the whole
+        suite green, which means it can be lowered again just as quietly -- and
+        on the `ai` audience the cap is what actually bounds the edition (15
+        items passed the rule, 8 were shown), so a silent revert halves it.
+
+        Asserts nothing about 16 being right. `config/digest.yaml` records what
+        the old cut was measured to be dropping -- seven items, every one of
+        them `medium`, five of them X posts -- and says which lever to reach for
+        if an edition reads as noisy. This asserts only that the number moves
+        deliberately, next to that reasoning.
+        """
+        settings = digest.settings()
+        assert settings["investment"]["max_items"] == 16
+        assert settings["ai"]["max_items"] == 16
+
     @pytest.mark.parametrize("mutation,reason", [
         ({"ai": {**CONFIG["ai"], "actions": []}}, "no action can ever match"),
         ({"ai": {**CONFIG["ai"], "min_band": "med"}}, "typo rejects every band"),

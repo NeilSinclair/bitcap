@@ -1442,9 +1442,12 @@ class TestRepoRelevanceGate:
 class TestThePostsWatermarkIsReadNotJustWritten:
     """`max_published` was written every firing and never read back.
 
-    The leg has a weekly cadence and a 90-day window, so the unread mark meant
-    re-buying ~89 days of posts every week. Nothing failed and nothing alerted:
-    the corpus was correct, it was just paid for again.
+    At the weekly cadence it shipped with, against a 90-day window, the unread
+    mark meant re-buying ~89 days of posts every week. Nothing failed and
+    nothing alerted: the corpus was correct, it was just paid for again.
+
+    The cadence is now nightly (D76), which is only affordable because the mark
+    is read -- see `TestANightlyPostsCadenceRestsOnTheWatermark` below.
     """
 
     def test_a_stored_date_becomes_the_start_of_that_day(self):
@@ -1462,6 +1465,63 @@ class TestThePostsWatermarkIsReadNotJustWritten:
         """Fail wide, not closed: a bad mark costs money, a silent hole costs coverage."""
         for bad in (None, "", "never", 20260904, {"max_published": "2026-09-04"}):
             assert adapters._post_since(bad) is None
+
+
+class TestANightlyPostsCadenceRestsOnTheWatermark:
+    """`cadence.posts: 1` is safe only while the mark bounds the pull.
+
+    These two facts live in different files and neither mentions the other:
+    the number is in `config/pipeline.yaml`, the read is in `fetch_posts`. Undo
+    the read and nothing breaks, nothing alerts, and the corpus stays correct --
+    the bill just goes from ~$0.37 a week to ~$16.60, because seven firings a
+    week each re-buy the full 90-day window at $0.005 a post.
+
+    That is the exact shape of silent degradation this repo tests for, so the
+    pairing is pinned rather than left to whoever reads both files at once.
+    """
+
+    def _config(self):
+        from pathlib import Path
+
+        import yaml
+        return yaml.safe_load(
+            (Path(__file__).parent.parent / "config" / "pipeline.yaml")
+            .read_text(encoding="utf-8"))
+
+    def test_the_shipped_cadence_is_nightly(self):
+        """Pins the value; it does not argue for it. The argument is in the
+        config comment, where a person changing the number will read it."""
+        assert self._config()["cadence"]["posts"] == 1
+
+    def test_the_stored_mark_reaches_the_provider_as_start_time(self, monkeypatch):
+        """The whole saving. `start_time` is applied server-side and X bills per
+        post *returned*, so this is a cut to the bill, not a local filter."""
+        from pathlib import Path
+
+        import harvest_x
+        import yaml
+
+        seen = {}
+
+        def capture(*args, **kwargs):
+            seen.update(kwargs)
+            return [], []
+
+        monkeypatch.setattr(harvest_x, "pull", capture)
+        monkeypatch.setattr("x_client.load_token", lambda env: "token")
+        config = yaml.safe_load(
+            (Path(__file__).parent.parent / "config" / "posts_sources.yaml")
+            .read_text(encoding="utf-8"))
+        source = Source(leg="posts", id="posts", label="posts", stage=5,
+                        enabled=True, config=config)
+
+        class _State:
+            watermark = {"max_published": "2026-09-04"}
+
+        adapters.fetch_posts(source, state=_State())
+        assert seen.get("since") == datetime(2026, 9, 4, tzinfo=timezone.utc), (
+            "fetch_posts did not pass the stored mark to the pull; at cadence 1 "
+            "that re-buys the whole window every night")
 
 
 class TestAPartialPostsPullDoesNotAdvanceTheMark:
