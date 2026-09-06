@@ -23,7 +23,7 @@ Practices are specifically for the AI Team and answer what would we do different
 
 To get an AI Team score we take the action score and multiply it by the practices score times the confidence and normalise.
 
-The model was asked to grant a confidence score to the rating which it gave. The confidence was based on the evidence found in the document. For every document it scored, the LLM had to support the evidence with a quote. The quotes were then checked by a deterministic process to ensure that the model was not hallucinating a quote.
+The model was asked to grant a confidence score to the rating which it gave. The confidence was based on the evidence found in the document. For every document it scored, the LLM had to support the evidence with a quote. The quotes were then checked by a deterministic process to ensure that the model was not hallucinating a quote. The check requires the quote to appear verbatim in the article text, and a tag whose quote is not there is dropped rather than downgraded, so it cannot contribute to a score at all. This was not a theoretical concern. One run produced a quote spliced together from the first word of one sentence and the body of another, which stated a true fact in words the document never actually used. Near misses, such as a stray space left by the HTML extraction or a curly apostrophe, are snapped to the exact substring in the source instead of being dropped, so every quote that gets stored is a literal substring of the article. The quote is shown next to the tag on the item detail page and in the digest, so a reader can search for it in the original and find it.
 
 The confidence scores were multiplied into the overall score, such that low = 0, medium = 0.5, high = 1.0. The multiplier for low was selected empirically based on looking at scored articles where the quoted evidence was weak. Medium was selected as 0.5 to indicate uncertainty and high a 1.0 to indicate certainty.
 
@@ -104,7 +104,7 @@ The data is also processed in a medallion archicture. The Bronze layer is update
 
 The pipeline runs unattended overnight, so it is built to fail in a way I can see.
 
-- Fetches retry four times with exponential backoff and are rate limited per host, with arXiv's three second guideline set in config rather than in code. Each source keeps its own watermark and failure count, so one source breaking does not reset or block the others.
+- Fetches retry four times with exponential backoff and are rate limited per host. Each source keeps its own watermark and failure count, so one source breaking does not reset or block the others.
 
 - Re-runs are safe and cheap. The work list is whatever the current prompt version has not scored yet, read from the database, so a second run in the same night does nothing. Cost ceilings per run and per month stop further calls and finish with what they have rather than failing and discarding an ingest that already happened. Only one run can happen at a time, enforced by the database rather than a flag.
 
