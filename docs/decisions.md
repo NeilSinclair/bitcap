@@ -8496,3 +8496,231 @@ which is what it should always have been.
 `tests/test_digest.py` runs against a fixture carrying its own values, so each of
 these could be reverted by a merge with the whole suite green — and a digest that
 quietly doubles or halves is not a failure anything else would report.
+
+## D79 — The digest gets two windows, and splitting them uncovered a key that was quietly eating the archive (2026-09-06)
+
+`window_hours: 168 → 24`, new `preview_window_hours: 168`, and migration 0013.
+
+The digest page has two surfaces and they answer different questions. It had one
+setting, so they were the same width — and the arrangement a reader liked was an
+*accident*: the 48-hour editions in the archive were fossils published when the
+single value read 48, and every future edition would have been a week wide until
+the distinction disappeared entirely.
+
+| surface | width | grid | key |
+|---|---|---|---|
+| published editions | 24h | quantised, daily | `window_hours` |
+| the landing view | 168h, rolling, ends now | none | `preview_window_hours` |
+
+The value is read in exactly two places, and they were already the two surfaces:
+`window_for` (the grid, used by `publish`) and `build`'s `quantise=False` branch
+(the rolling preview). Splitting them is one line in each.
+
+**The page already opened on the live view** — `editionId` starts at `"current"`
+— but nothing tested it, so it was a default rather than a requirement. It is
+now load-bearing and pinned: a 24-hour archive is empty on ~48% of days for the
+investment audience, which is fine for an archive and unacceptable for a landing
+page. If the page ever opens on the newest *edition* instead, every other visit
+shows a blank digest and nothing anywhere reports a fault.
+
+**The cost, stated, with its provenance.** The replay in `config/digest.yaml`
+puts the investment digest empty on 48% of days at 24h and the AI digest on 33%,
+against 31%/13% at 48h. **Those rows were measured for D51** — announcements
+only, `ai.min_band: medium`, `max_items: 8` — and three things have changed
+since: papers, releases and posts joined the digest (D57, D69, D76), the AI cut
+moved to `high` (D78) and the caps to 16 (D77). More corpora push the empty
+percentages down; a stricter AI band pushes them up.
+
+They have not been re-derived. A full replay is ~180 whole-corpus builds and was
+abandoned as too slow to block this change on, so the table is the *shape* of
+the trade rather than today's numbers. The decision does not turn on the exact
+figure: narrowing a window monotonically increases how often it catches nothing,
+and 24h is the narrowest this product publishes. That was the wrong trade when
+this value also drove the landing page — it is why D51 chose 48h and D73 widened
+to 168h — and it is the right one now that it does not.
+
+---
+
+### The defect this uncovered, which cost live data
+
+Running the verification step — publish one edition and read it back — published
+a **48-hour** edition on a 24-hour grid and **overwrote editions 97 and 98**,
+taking both from 1 item to 0.
+
+The idempotence key was `(kind, window_end, prompt_version)`. **Width-blind.** A
+48-hour edition covering 04→06 Sep and a 24-hour one covering 05→06 Sep are
+different reports over different periods, and under that key they were the same
+row. `publish` matched on the end alone, found the older edition, and rewrote its
+payload — while leaving `window_start` alone, because the start is only assigned
+when a row is *created*. The result was a published record claiming 48 hours and
+holding 24 hours of content, and since the corpus ends 05 Sep, that content was
+nothing.
+
+**Not an edge case at this grid width.** Every 48-hour edition ends on a midnight
+that is also a 24-hour boundary, so a daily cron walking forward collides with
+the archive it is meant to sit beside — once per old edition, indefinitely. The
+same exposure existed latently when D73 moved 48 → 168 and simply never fired.
+
+Migration 0013 puts `window_start` in the key, which is what an edition always
+was: a span, not an end. Any future change of window width now creates editions
+*alongside* the old ones instead of through them. Batch mode, because the tests
+and the documented clone-to-running path build the schema on SQLite, which has
+no `ALTER` for constraints at all.
+
+Two tests, both mutation-checked against the narrow key: a narrower window
+ending the same midnight must be a new edition, and every published edition must
+span the width it claims.
+
+### Editions 97 and 98 are reconstructions, and are marked as such
+
+Their original payloads are unrecoverable. A digest is never recomputed — that is
+the whole design — so there is no source to restore *from*. They were rebuilt
+over the same 04→06 Sep span from the corpus as it now stands, and each carries
+`stats["reconstructed"]` saying so.
+
+**They are not the editions published on 06 Sep**, and the note says that
+plainly: scoring config has moved since (D77 raised the item caps, D78 raised
+`ai.min_band` to `high`), so a rebuild restates that window in today's terms —
+precisely the history-rewriting the frozen-payload design exists to prevent. The
+item counts happen to match the originals at 1 apiece; the `considered` and
+`suppressed` figures do not.
+
+Recorded rather than quietly fixed because the lesson is the general one: the
+verification step that destroyed the data is also the only reason the defect was
+found before the nightly cron found it on its own, forty times over.
+
+### A second thing the change broke, found in review: missed firings
+
+`window_for`'s docstring claimed the grid "decouples the window from the cron",
+and at 48h it did — a daily cron fires *twice* inside every 48-hour period, so a
+missed night was covered by the next firing. **At 24h the grid and the cron
+coincide**, one period closed by exactly one firing, and a missed 03:00 run
+leaves that day with no edition for ever, because the next firing has moved on.
+
+Measured: seven daily firings with one skipped publishes 7 of 8 periods at 24h
+and 5 of 5 at 48h. An earlier draft of the config comment called the grid/cron
+match "convenient and NOT a thing anything depends on", which was exactly
+backwards — what it removed was redundancy the previous width had for free.
+
+`publish` now backfills complete periods with no edition, bounded by
+`MAX_BACKFILL_PERIODS` (7 — a realistic outage; beyond that a gap is an incident
+and papering over a fortnight would hide it). Two constraints on it, and both
+are the delicate part:
+
+- **A period that already has an edition is never rebuilt.** Catching up on a
+  *missed* period must not restate a *published* one under today's scoring —
+  the same history-rewriting that made the key defect above destructive rather
+  than merely wrong.
+- **A first run backfills nothing.** "Never published" and "missed" are
+  different states; only the second is a fault, and a fresh database must not
+  emit 90 days of editions.
+
+Four tests, mutation-checked by removing the backfill.
+
+### Two smaller review findings
+
+**`stats["reconstructed"]` was written and then destroyed on the next
+republish.** `publish` rebuilds `stats` wholesale, so the one marker
+distinguishing a rebuilt edition from an untouched one would have been erased by
+the next firing that touched that span. It is now preserved explicitly, and
+**rendered** — a marker stored and never shown is a note to the database, not to
+the reader, and the whole point is that someone comparing 97/98 against the rest
+of the archive can see they are not the same kind of record.
+
+**The dropdown labels each edition's width**, and reads 30 deep rather than 20.
+
+### What the archive looks like now
+
+Three widths, deliberately: 38× 48h, 2× 168h, and 24h from here on. They
+interleave in the dropdown, which sorts by `window_end` — a 48h edition ending
+06 Sep sits above a 168h one ending 03 Sep and looks newer than a report
+published after it, which is why the width is now labelled.
+
+## D80 — The daily edition was about the day that had just started, not the one that had just finished (2026-09-06)
+
+`window_for` now publishes the newest period whose days have all *finished*,
+which is one period further back than the newest period whose clock has run out.
+Those are not the same thing, and D79 shipped the second believing it was the
+first.
+
+**The mechanism.** `_in_window` compares at date resolution with an **exclusive
+start**, so a window `[A, B]` selects the days `A+1 .. B` — the end date is in,
+the start date is not. The period ending at the most recent grid boundary
+therefore has *today* as its last day, and at a 24-hour width today is its only
+day:
+
+| firing | window published | selects |
+|---|---|---|
+| Wed 09 Sep 03:00 | `08 Sep → 09 Sep` | **Wed 09 Sep** — three hours old |
+
+And three hours old is the worst possible day to ask about, because it is also
+the day this firing's own ingestion has barely reached. `render.yaml` fires at
+03:00 UTC deliberately, *"after the US-hours announcement window has closed, so
+a day's publications land in one run"* — and those publications are dated
+**yesterday**. So every daily edition excluded precisely what the firing that
+wrote it had just harvested. Near-empty by construction, not because the day was
+quiet.
+
+After the shift, the Wednesday firing publishes `07 → 08 Sep`, covering Tuesday:
+complete, and the day the run ingested. Verified on the live database — the same
+firing that produced an empty edition before produces one with an item after.
+
+**Why 48h and 168h never showed it.** A 48-hour window covers two days, so it
+carried one whole day plus the sliver of today; the whole day did the work. At
+24h there is no whole day left, only the sliver. This is latent damage from
+narrowing the window in D79 rather than a fault the wider settings ever had —
+the third defect that change has surfaced, all of them from the same place: a
+grid designed when the width was measured in days, narrowed to one day.
+
+**Why not simply "the last 24 hours from when the pipeline ran", which is what
+was asked for.** `Article.published_on` is a `date`, not a timestamp — most labs
+publish without a time and the ones that do are not comparable across timezones.
+A window from 03:00 to 03:00 cannot mean twenty-four hours; compared at date
+resolution it collapses to whole days, which is exactly how the off-by-one
+arises. The only faithful reading of "the last 24 hours" this data supports is
+"the day that just finished", and that is what this implements. Keeping the grid
+also keeps idempotence: a wall-clock `window_end` is unique to the microsecond,
+so every firing would publish a *new* edition rather than update one, and a
+dry-run rehearsal would enter the permanent record (D51).
+
+Shifting both edges by the same amount preserves everything the grid is for.
+Consecutive editions still partition the timeline; firings inside one period
+still resolve to one edition. `test_editions_partition_the_timeline_under_the_deployed_cadence`
+and the D51 idempotence tests pass unchanged.
+
+**The backfill had to move with it, and that was a real second bug.**
+`_unpublished_periods` returned each missing period's own boundary, and `publish`
+hands those to `window_for` — which now resolves them *backwards* one period. The
+backfill filled the period before each gap and left every gap exactly where it
+was. It now returns the moment that resolves forward to the gap, and the
+docstring says why, because the coupling is invisible from either side.
+
+Caught by two tests written for D79 that turned out to cover this too. **One of
+them barely did, and review found that as well.** It asserted `date(9, 4) in
+ends` — the period the second firing publishes anyway, so it held whether or not
+the backfill ran — leaving only a `len(ends) == 3` count doing any work. A
+backfill that filled the *wrong* day would have passed both. It now pins the
+ordered set `[2 Sep, 3 Sep, 4 Sep]`, and mutation-checking it against the old
+boundary shows exactly which day goes missing.
+
+**The test fixture moved, and the data did not.** `tests/test_digest.py` pinned
+`END = 4 Sep` against articles dated the 3rd and 4th — a pairing that encoded the
+old relationship between firing time and covered days. It is now `END = 6 Sep`,
+which under the new code reproduces the identical window `[02 Sep, 04 Sep]`, so
+every assertion in that file still tests what it tested. Verified before changing
+it rather than after, and no assertion was touched.
+
+**The first version of this paragraph said "35 tests failed and shifting the
+firing time made all 35 pass again", and that was wrong** — caught in review and
+measured rather than argued. The fixture shift alone fixes **33**. The other two,
+`test_a_missed_firing_does_not_leave_a_permanent_hole` and
+`test_a_backfill_never_rewrites_an_edition_that_exists`, stayed red until the
+backfill compensation below, which is the whole point: they were reporting a
+second real bug, and rolling them into a fixture-change tally would have buried
+it. Re-checked by reverting the backfill line and running the file: exactly those
+two fail.
+
+Three new tests, mutation-checked against the old offset: the Wednesday firing
+covers Tuesday; no published window at any width ever includes an unfinished day;
+and, end to end on the corpus rather than the calendar, an article ingested
+overnight reaches that night's edition.

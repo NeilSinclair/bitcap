@@ -589,7 +589,11 @@ def _phases(
         run.cost_usd = (run.cost_usd or 0.0) + float(dedupe_stats.get("usd") or 0.0)
     session.commit()
 
-    # 6. Publish both audiences' digests for the window this firing closes.
+    # 6. Publish both audiences' digests for the newest window that is OVER --
+    #    which is not the window this firing sits in. `window_for` resolves
+    #    `started_at` back to the last period whose days have all finished, so
+    #    the 03:00 run publishes yesterday: the day whose publications this very
+    #    firing has just ingested (D80).
     #    After the ETL because the investment cut reads `connections`, which the
     #    ETL rebuilds; free and deterministic, so it runs on every firing
     #    including a dry one. Idempotent on (kind, window_end, prompt_version) —

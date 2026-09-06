@@ -30,7 +30,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
-from sqlalchemy import select
+from sqlalchemy import func as sa_func, select
 from sqlalchemy.orm import Session
 
 from app import models as m
@@ -75,7 +75,7 @@ EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
 def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
-    """The period one digest covers: the last complete slot of the fixed grid.
+    """The period one digest covers: the newest slot of the grid that is over.
 
     **Quantised, and this is the whole point.** Taking the window as
     `[run.started_at - 48h, run.started_at]` looked right and was wrong twice
@@ -94,13 +94,46 @@ def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
 
     The grid also decouples the window from the cron. A daily cron over a
     48-hour period publishes each period once, on the first firing after it
-    closes, and harmlessly re-publishes it on the second; the two settings no
-    longer have to agree.
+    closes, and harmlessly re-publishes it on the second; the two settings do
+    not have to agree.
+
+    **That second firing was redundancy, and at the shipped 24h it is gone.**
+    One period, one firing that closes it: a missed 03:00 run leaves that day
+    with no edition, for ever, because the next firing has moved on to the next
+    period. Measured — seven daily firings with one skipped publishes 7 of 8
+    periods at 24h and 5 of 5 at 48h. `publish` therefore backfills complete
+    periods that have no edition (`MAX_BACKFILL_PERIODS`), which is what
+    restores the property this paragraph used to get for free.
 
     The cost is freshness: the newest *published* edition can be up to one
     period behind. That is why `/api/digests/preview` exists and why the digest
     page opens on it — the live window is the default view, and the published
     editions are the archive.
+
+    **The last period whose DAYS are all complete, which is one period further
+    back than the last period whose clock has run out.** Those are not the same
+    thing, and treating them as one made every daily edition near-empty.
+
+    `_in_window` compares at date resolution with an exclusive start, so a
+    window `[A, B]` selects the days `A+1 .. B` — the end date is *included* and
+    the start date is not. The period ending at the most recent grid boundary
+    therefore has today as its last day, and at a 24-hour width today is its
+    ONLY day. The 03:00 cron would publish an edition about a day three hours
+    old, which is also the day its own ingestion has barely reached: render.yaml
+    fires at 03:00 UTC "after the US-hours announcement window has closed", and
+    the articles that lands are dated *yesterday*. The edition systematically
+    excluded what the firing had just harvested.
+
+    Stepping back one more period makes the newest day in the window
+    yesterday — complete, and the day the run just ingested. At 48h it was
+    survivable and so went unnoticed: a 48-hour window covers two days, so it
+    still carried one whole day plus a sliver of today. At 24h there is no whole
+    day left, only the sliver. This is latent damage from narrowing the window
+    (D79), not a fault the wider settings ever had.
+
+    Shifting both edges by the same amount preserves everything the grid is
+    for: consecutive editions still partition the timeline, and any number of
+    firings inside one period still resolve to one edition.
 
     Args:
         at: A moment inside or after the period to publish, normally the run's
@@ -108,14 +141,19 @@ def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
         config: Parsed `config/digest.yaml`.
 
     Returns:
-        Start and end of the last complete period, timezone-aware in UTC.
+        Start and end of the newest period every day of which has finished,
+        timezone-aware in UTC.
     """
     if at.tzinfo is None:
         at = at.replace(tzinfo=timezone.utc)
     at = at.astimezone(timezone.utc)
     width = timedelta(hours=config["window_hours"])
     boundary = EPOCH + ((at - EPOCH) // width) * width
-    return boundary - width, boundary
+    # `boundary` is the start of the period `at` sits in, so `boundary - width`
+    # ends where today began -- and because the start is exclusive, that window
+    # runs up to yesterday and stops. See the docstring for why "last complete
+    # period" was the wrong reading of complete.
+    return boundary - 2 * width, boundary - width
 
 
 def _in_window(article: m.Article, start: datetime, end: datetime) -> bool:
@@ -195,6 +233,12 @@ def build(
             instead: quantised, the preview's newest day is always the one that
             closed, so on the 5th it read "up to the 3rd" and looked stale.
 
+            **This flag also selects which width is read.** True reads
+            `window_hours`, False reads `preview_window_hours`, and they are
+            deliberately different numbers (D79) — a daily published archive
+            behind a rolling week. They were one setting until then and the
+            same width by accident.
+
     Returns:
         ``{"kind", "window_start", "window_end", "stats", "items"}``. `stats`
         carries `considered` / `surfaced` / `suppressed` / `matched_rule` —
@@ -214,7 +258,12 @@ def build(
         if end.tzinfo is None:
             end = end.replace(tzinfo=timezone.utc)
         end = end.astimezone(timezone.utc)
-        start = end - timedelta(hours=config["window_hours"])
+        # `preview_window_hours`, NOT `window_hours`. The two surfaces are
+        # deliberately different widths (D79): the archive is a daily grid, the
+        # live view is a rolling week. They were one value and the same width by
+        # accident, which made the 48-hour editions in the archive fossils of an
+        # older setting rather than a thing the product keeps producing.
+        start = end - timedelta(hours=config["preview_window_hours"])
     rules = config[kind]
 
     labs = {r.id: r.label for r in session.scalars(select(m.RefLab))}
@@ -366,8 +415,10 @@ def build(
     #
     # They cannot be one sort, because `max_items` cuts between them. Sorting
     # by date before the cut fills the edition with whatever is most recent and
-    # drops a higher-scoring launch from earlier in the window — at 168h that
-    # is a real loss, since the window now spans a week rather than two days.
+    # drops a higher-scoring launch from earlier in the window. That is a real
+    # loss on the live view, whose `preview_window_hours` spans a week; on a
+    # 24-hour published edition the two sorts nearly agree, and the ordering
+    # still has to be right there because both read this one function.
     # So the edition is chosen on merit and then read in the order a reader
     # expects: latest at the top, most important first within a day.
     selected.sort(key=lambda i: i["rank"], reverse=True)
@@ -500,6 +551,78 @@ def _ai_item(art, cls, prac_tags, labs, prac_labels, rules):
     }
 
 
+# How many missed periods one firing will catch up on, newest first.
+#
+# The cron is daily and the grid is daily (config/digest.yaml), so every period
+# is closed by exactly one firing and a missed one leaves a permanent hole. A
+# week covers the realistic outage — a redeploy, a failed night, a weekend of
+# them. Beyond that the gap is an incident and quietly papering over a fortnight
+# of missing editions would hide it.
+MAX_BACKFILL_PERIODS = 7
+
+
+def _unpublished_periods(session: Session, config: dict, end: datetime,
+                         label: str) -> list[datetime]:
+    """Complete periods before `end`'s that were never published, oldest first.
+
+    Only ever *gaps*. A period that already has an edition is left exactly as it
+    is, and that is the whole delicacy here: a digest is a frozen record of what
+    the product said, so re-publishing an old period would restate it under
+    today's scoring — the history-rewriting `models.Digest` exists to prevent,
+    and the thing that made migration 0013's defect destructive.
+
+    Args:
+        session: Open session.
+        config: Parsed config; `window_hours` sets the grid.
+        end: The moment being published for. `window_for` resolves it back to
+            the newest period whose days have all finished, so this is the
+            firing time, not the window's own end.
+        label: `prompt_version` the editions are keyed under.
+
+    Returns:
+        A moment to pass to `build`/`window_for` for each missing period, oldest
+        first, at most `MAX_BACKFILL_PERIODS` of them. **Not the period's own
+        boundary** — `window_for` publishes the period *before* the one its
+        argument sits in (D80), so a moment must be handed back that resolves
+        forward to the gap. Returning the boundary itself filled the period
+        before each gap and left every gap exactly where it was.
+
+        Empty on a database with no editions — a first run backfills nothing,
+        because "never published" and "missed" are different states and only the
+        second is a fault.
+    """
+    newest = session.scalar(
+        select(sa_func.max(m.Digest.window_end)).where(
+            m.Digest.prompt_version == label))
+    if newest is None:
+        return []
+    if newest.tzinfo is None:
+        newest = newest.replace(tzinfo=timezone.utc)
+
+    width = timedelta(hours=config["window_hours"])
+    _, current = window_for(end, config)
+    # Walk the grid forward from the newest edition to the period this firing
+    # publishes, keeping the ends with nothing published at them.
+    boundary = EPOCH + ((newest - EPOCH) // width) * width
+    missing = []
+    while boundary < current:
+        boundary += width
+        if boundary >= current:
+            break
+        exists = session.scalar(
+            select(m.Digest.id).where(
+                m.Digest.window_start == boundary - width,
+                m.Digest.window_end == boundary,
+                m.Digest.prompt_version == label,
+            ))
+        if exists is None:
+            # `window_for(at)` returns the period ENDING one width before the
+            # boundary `at` sits in, so to publish the period ending at
+            # `boundary` the caller has to ask for a moment one width later.
+            missing.append(boundary + width)
+    return missing[-MAX_BACKFILL_PERIODS:]
+
+
 def publish(
     session: Session,
     prompt_version: str | tuple[str, ...],
@@ -509,9 +632,14 @@ def publish(
 ) -> list[m.Digest]:
     """Build and persist both audiences' digests for one window.
 
-    Idempotent on `(kind, window_end, prompt_version)`: re-running a firing
-    updates the edition it already published rather than issuing a second,
-    subtly different one for the same period.
+    Idempotent on `(kind, window_start, window_end, prompt_version)`: re-running
+    a firing updates the edition it already published rather than issuing a
+    second, subtly different one for the same period.
+
+    **The span, not just its end.** Two editions can end at the same midnight
+    over different periods — a 48-hour report and a 24-hour one, which is
+    exactly what changing `window_hours` produces. Keying on the end alone made
+    those one row and overwrote the older edition in place (migration 0013).
 
     A digest may read several classification versions (announcements and papers
     carry their own), but the uniqueness key is one column. The *first* version
@@ -533,11 +661,32 @@ def publish(
                 else tuple(prompt_version))
     label = versions[0]
     rows = []
+    # Gaps first, oldest first, then the period this firing actually closes --
+    # so `rows` ends with the current edition and the caller's `rows[0]`-style
+    # reads keep meaning what they meant. Each gap is a period with no edition
+    # at all; existing ones are never rebuilt. See `_unpublished_periods`.
+    for at in (*_unpublished_periods(session, config, end, label), end):
+        rows.extend(_publish_one(session, prompt_version, versions, label, at,
+                                 run_id, config))
+    session.flush()
+    return rows
+
+
+def _publish_one(session, prompt_version, versions, label, end, run_id,
+                 config) -> list[m.Digest]:
+    """Persist both audiences' editions for the single period `end` falls in."""
+    rows = []
     for kind in KINDS:
         built = build(session, kind, prompt_version, end, config)
+        # Matched on the WHOLE span. Keying on `window_end` alone let an
+        # edition of a different width claim an existing row and overwrite it,
+        # keeping the old `window_start` because the start is only assigned on
+        # creation -- a published record claiming 48 hours while holding 24.
+        # See migration 0013; measured on the live database, it emptied two.
         row = session.scalar(
             select(m.Digest).where(
                 m.Digest.kind == kind,
+                m.Digest.window_start == built["window_start"],
                 m.Digest.window_end == built["window_end"],
                 m.Digest.prompt_version == label,
             )
@@ -550,11 +699,16 @@ def publish(
                 prompt_version=label,
             )
             session.add(row)
-        row.stats = {**built["stats"], "versions": list(versions)}
+        # `reconstructed` is preserved across a republish. It is a permanent
+        # fact about how a row came to exist -- editions 97 and 98 were rebuilt
+        # after their originals were destroyed (D79) -- and rebuilding the stats
+        # dict wholesale would erase the one marker saying so on the next
+        # firing that touches that span.
+        keep = {k: v for k, v in (row.stats or {}).items() if k == "reconstructed"}
+        row.stats = {**built["stats"], "versions": list(versions), **keep}
         row.payload = {"items": built["items"]}
         row.run_id = run_id
         rows.append(row)
-    session.flush()
     return rows
 
 

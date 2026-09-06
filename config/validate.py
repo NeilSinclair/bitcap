@@ -981,7 +981,9 @@ def check_digest(path: Path | None = None) -> list[str]:
     * ``investment.always_band: higgh`` — same, killing the early-signal leg.
     * ``window_hours: 6`` — the window is compared at date resolution, so
       anything under 24 puts start and end on the same day and nothing is ever
-      in window.
+      in window. The same applies to ``preview_window_hours``, and a *missing*
+      one is an error rather than a fallback: the two are deliberately different
+      numbers (D79), so neither can stand in for the other.
 
     Args:
         path: digest.yaml to check. Defaults to the shipped one; tests override.
@@ -1002,16 +1004,25 @@ def check_digest(path: Path | None = None) -> list[str]:
     if not bands:
         errors.append("scoring.yaml: no bands — digest thresholds cannot be checked")
 
-    window = doc.get("window_hours")
-    if not isinstance(window, int) or window < 24:
+    # Two windows, and both are checked. `window_hours` drives the published
+    # grid, `preview_window_hours` the rolling live view; they are deliberately
+    # different numbers (D79), so neither can be inferred from the other and a
+    # missing one must not fall back to the other's value silently.
+    for key in ("window_hours", "preview_window_hours"):
+        window = doc.get(key)
+        if not isinstance(window, int) or window < 24:
+            errors.append(
+                f"digest.yaml: {key}={window!r} must be an integer >= 24 — "
+                "the window is compared at date resolution, so anything smaller "
+                "puts start and end on the same day and every digest is empty"
+            )
+    # Only the published window rides a grid, so only it has to land on day
+    # boundaries. The preview is rolling and ends now, so an odd width there is
+    # merely unusual rather than self-contradictory.
+    grid = doc.get("window_hours")
+    if isinstance(grid, int) and grid >= 24 and grid % 24:
         errors.append(
-            f"digest.yaml: window_hours={window!r} must be an integer >= 24 — "
-            "the window is compared at date resolution, so anything smaller "
-            "puts start and end on the same day and every digest is empty"
-        )
-    elif window % 24:
-        errors.append(
-            f"digest.yaml: window_hours={window} must be a multiple of 24, or "
+            f"digest.yaml: window_hours={grid} must be a multiple of 24, or "
             "the period grid and the date-resolution comparison disagree"
         )
 

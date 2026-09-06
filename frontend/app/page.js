@@ -215,7 +215,6 @@ function Dashboard() {
               {loading ? "Loading…" : lastRunLabel}
             </div>
             <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
-            <a className="btn btn-ghost" href="/register/" style={{ padding: "8px 14px", textDecoration: "none" }}>Register</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             {/* The health surface is a link rather than a tab: the dashboard
                 answers "what did we learn", /ops answers "can I trust it". */}

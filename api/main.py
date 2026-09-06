@@ -270,7 +270,11 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
         )
     config = digest_mod.settings()
     if hours is not None:
-        config = {**config, "window_hours": min(max(hours, 1), 24 * 90)}
+        # The PREVIEW's width, not the published one. Overriding `window_hours`
+        # here would move the grid this endpoint does not use and leave the
+        # rolling window untouched -- a no-op that raises nothing (D79).
+        config = {**config,
+                  "preview_window_hours": min(max(hours, 1), 24 * 90)}
     session = get_session(engine)
     try:
         built = digest_mod.build(

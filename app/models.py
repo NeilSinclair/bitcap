@@ -203,13 +203,21 @@ class Digest(Base):
 
     __tablename__ = "digests"
 
-    # One digest per audience per window. A re-run of the same firing must
-    # update the row it already wrote rather than publishing a second, subtly
-    # different edition of the same period — the same idempotence rule the
-    # rest of the pipeline follows.
+    # One digest per audience per window, where a window is its WHOLE SPAN and
+    # not just where it ends. A re-run of the same firing must update the row it
+    # already wrote rather than publishing a second, subtly different edition of
+    # the same period — the same idempotence rule the rest of the pipeline
+    # follows.
+    #
+    # `window_start` is in the key because leaving it out was destructive
+    # (migration 0013). Two editions can share an end and cover different
+    # periods — a 48-hour report to Saturday midnight and a 24-hour one to the
+    # same midnight — and under the narrower key they were one row: `publish`
+    # overwrote the older edition's payload while keeping its start, producing a
+    # published record that claimed 48 hours and held 24. Nothing failed.
     __table_args__ = (
-        sa.UniqueConstraint("kind", "window_end", "prompt_version",
-                            name="uq_digests_kind_window"),
+        sa.UniqueConstraint("kind", "window_start", "window_end",
+                            "prompt_version", name="uq_digests_kind_window"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
