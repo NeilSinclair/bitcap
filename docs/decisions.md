@@ -8026,3 +8026,68 @@ the dashboard distinguishes four bands and three actions. The first version of
 every low and unbanded row on the dashboard: no error, no test failure, just a
 different-looking page. Caught by reading both definitions before merging them,
 and now pinned by a test.
+
+## D73 — The digest window was widened to 7 days on evidence that does not support it, and the ordering was split in two (2026-09-06)
+
+Recorded after the fact. The change is commit `98c395a`, already on
+`deployment-dev`; this entry was owed at the time and was not written because
+the result was still being looked at. That is the wrong order and the reason it
+nearly went unrecorded.
+
+**The defect was real and is the only part of this that needs no argument.** The
+deployed 48-hour digest published ONE item. Not a fault — the two days it covered
+were quiet ones — but the consequence was that every corpus except announcements
+was invisible in it, and no post or paper had ever appeared in a published
+edition despite 39 of them being digest-eligible. A reader opening the link would
+have concluded the system found one thing.
+
+**168h is NOT a measured optimum, and the first version of the config comment
+claimed otherwise.** That comment carried a day-by-day replay showing 120h
+"cliffing" to one item on Wednesday while 168h held, and read it as *wider is
+steadier*. `bitcap-reviewer` caught that the cliff is not a property of the
+width: it is the moment each grid crosses 05 Sep, which is where the corpus stops
+because ingestion has not run since. Recomputed independently:
+
+    120h  crosses on Wed 09   (window becomes 04..09 Sep)
+    168h  crosses on Thu 10   (window becomes 03..10 Sep)
+    240h  crosses on Mon 14   (window becomes 04..14 Sep)
+
+Every width has the same cliff and they differ only in the weekday it lands on.
+The claim that 240h had "no cliff" was true only of the five days that were
+looked at. Against live ingestion none of those rows means anything.
+
+What the change is actually justified by is narrower: 48h publishes one item on
+the deployed database, measured and independent of any replay; a wider window
+spans more days so is likelier to contain an active one; and 168h is the widest
+window that still reports a period a reader would call recent. The choice between
+120 and 168 came down to which grid still held data during the week it shipped in
+— a fact about one frozen corpus, not a property of the setting. `window_hours`
+says all of this in the file, including that the first draft got it wrong.
+
+**Rejected: per-audience windows.** The two cuts want different periods. The
+investment digest is gated on holding connections at `min_strength: 0.5`, so it
+is starved of *linked* items rather than recent ones and does not fill until ~14
+days; at 14 days the AI digest loses every post and all but one release, because
+`max_items: 8` binds and the high-scoring announcements crowd them out. Making
+`window_hours` per-kind is ~3 lines, since `config/digest.yaml` already has
+per-kind blocks. Not taken: the investment reader is the one who has to act on
+the day, and a fortnight-old edition serves them worse than a short one with a
+single genuine item in it. One item there is the filter working, not starvation.
+
+**Ordering is now two sorts either side of the `max_items` cut, not one.** The
+request was "sort by date, then score". Implemented as one sort that is wrong:
+the cut happens between selection and display, so a date-first sort fills the
+edition with whatever is most recent and drops a higher-scoring launch from
+earlier in the window. Across two days those sets were nearly identical; across
+a week they are not. So selection stays on `rank` and display is date-then-rank.
+The test for it fails as `['Minor patch'] == ['Astra']`.
+
+**Nothing read the shipped `window_hours`, so it moved 48 -> 168 with the whole
+suite green.** Every test in `test_digest.py` uses its own `CONFIG` fixture,
+which means the deployed number could be reverted just as silently. There is now
+a tripwire asserting it, and its docstring says plainly that it pins the value
+rather than endorsing it.
+
+**Not a fix, and worth stating.** All of this changes which quiet window gets
+published. The corpus ending on 05 Sep is the actual problem, and every window
+eventually rolls past it. Re-derive this if ingestion resumes.
