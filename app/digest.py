@@ -30,7 +30,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
-from sqlalchemy import select
+from sqlalchemy import func as sa_func, select
 from sqlalchemy.orm import Session
 
 from app import models as m
@@ -94,8 +94,16 @@ def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
 
     The grid also decouples the window from the cron. A daily cron over a
     48-hour period publishes each period once, on the first firing after it
-    closes, and harmlessly re-publishes it on the second; the two settings no
-    longer have to agree.
+    closes, and harmlessly re-publishes it on the second; the two settings do
+    not have to agree.
+
+    **That second firing was redundancy, and at the shipped 24h it is gone.**
+    One period, one firing that closes it: a missed 03:00 run leaves that day
+    with no edition, for ever, because the next firing has moved on to the next
+    period. Measured — seven daily firings with one skipped publishes 7 of 8
+    periods at 24h and 5 of 5 at 48h. `publish` therefore backfills complete
+    periods that have no edition (`MAX_BACKFILL_PERIODS`), which is what
+    restores the property this paragraph used to get for free.
 
     The cost is freshness: the newest *published* edition can be up to one
     period behind. That is why `/api/digests/preview` exists and why the digest
@@ -513,6 +521,67 @@ def _ai_item(art, cls, prac_tags, labs, prac_labels, rules):
     }
 
 
+# How many missed periods one firing will catch up on, newest first.
+#
+# The cron is daily and the grid is daily (config/digest.yaml), so every period
+# is closed by exactly one firing and a missed one leaves a permanent hole. A
+# week covers the realistic outage — a redeploy, a failed night, a weekend of
+# them. Beyond that the gap is an incident and quietly papering over a fortnight
+# of missing editions would hide it.
+MAX_BACKFILL_PERIODS = 7
+
+
+def _unpublished_periods(session: Session, config: dict, end: datetime,
+                         label: str) -> list[datetime]:
+    """Complete periods before `end`'s that were never published, oldest first.
+
+    Only ever *gaps*. A period that already has an edition is left exactly as it
+    is, and that is the whole delicacy here: a digest is a frozen record of what
+    the product said, so re-publishing an old period would restate it under
+    today's scoring — the history-rewriting `models.Digest` exists to prevent,
+    and the thing that made migration 0013's defect destructive.
+
+    Args:
+        session: Open session.
+        config: Parsed config; `window_hours` sets the grid.
+        end: The moment being published for.
+        label: `prompt_version` the editions are keyed under.
+
+    Returns:
+        A moment inside each missing period, oldest first, at most
+        `MAX_BACKFILL_PERIODS` of them. Empty on a database with no editions —
+        a first run backfills nothing, because "never published" and "missed"
+        are different states and only the second is a fault.
+    """
+    newest = session.scalar(
+        select(sa_func.max(m.Digest.window_end)).where(
+            m.Digest.prompt_version == label))
+    if newest is None:
+        return []
+    if newest.tzinfo is None:
+        newest = newest.replace(tzinfo=timezone.utc)
+
+    width = timedelta(hours=config["window_hours"])
+    _, current = window_for(end, config)
+    # Walk the grid forward from the newest edition to the period this firing
+    # closes, keeping the boundaries with nothing published at them.
+    boundary = EPOCH + ((newest - EPOCH) // width) * width
+    missing = []
+    while boundary < current:
+        boundary += width
+        if boundary >= current:
+            break
+        exists = session.scalar(
+            select(m.Digest.id).where(
+                m.Digest.window_start == boundary - width,
+                m.Digest.window_end == boundary,
+                m.Digest.prompt_version == label,
+            ))
+        if exists is None:
+            missing.append(boundary)
+    return missing[-MAX_BACKFILL_PERIODS:]
+
+
 def publish(
     session: Session,
     prompt_version: str | tuple[str, ...],
@@ -551,6 +620,21 @@ def publish(
                 else tuple(prompt_version))
     label = versions[0]
     rows = []
+    # Gaps first, oldest first, then the period this firing actually closes --
+    # so `rows` ends with the current edition and the caller's `rows[0]`-style
+    # reads keep meaning what they meant. Each gap is a period with no edition
+    # at all; existing ones are never rebuilt. See `_unpublished_periods`.
+    for at in (*_unpublished_periods(session, config, end, label), end):
+        rows.extend(_publish_one(session, prompt_version, versions, label, at,
+                                 run_id, config))
+    session.flush()
+    return rows
+
+
+def _publish_one(session, prompt_version, versions, label, end, run_id,
+                 config) -> list[m.Digest]:
+    """Persist both audiences' editions for the single period `end` falls in."""
+    rows = []
     for kind in KINDS:
         built = build(session, kind, prompt_version, end, config)
         # Matched on the WHOLE span. Keying on `window_end` alone let an
@@ -574,11 +658,16 @@ def publish(
                 prompt_version=label,
             )
             session.add(row)
-        row.stats = {**built["stats"], "versions": list(versions)}
+        # `reconstructed` is preserved across a republish. It is a permanent
+        # fact about how a row came to exist -- editions 97 and 98 were rebuilt
+        # after their originals were destroyed (D79) -- and rebuilding the stats
+        # dict wholesale would erase the one marker saying so on the next
+        # firing that touches that span.
+        keep = {k: v for k, v in (row.stats or {}).items() if k == "reconstructed"}
+        row.stats = {**built["stats"], "versions": list(versions), **keep}
         row.payload = {"items": built["items"]}
         row.run_id = run_id
         rows.append(row)
-    session.flush()
     return rows
 
 

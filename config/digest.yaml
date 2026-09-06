@@ -38,9 +38,16 @@ version: 1
 # ---------------------------------------------------------------------------
 # window_hours: 24 -- one published edition a day, covering that day.
 #
-# The measurement this rests on, replayed over the full 90-day corpus, counting
-# how often an edition would have been empty and how many items it carried when
-# it was not:
+# The measurement this rests on -- AND ITS PROVENANCE, WHICH MATTERS. These rows
+# were replayed for D51, over the announcements corpus alone, under
+# `ai.min_band: medium` and `max_items: 8`. Three things have changed since:
+# papers, releases and posts joined the digest (D57, D69, D76), the AI cut moved
+# to `high` (D78) and the caps to 16 (D77). More corpora push the empty
+# percentages DOWN; a stricter AI band pushes them UP. They have NOT been
+# re-derived -- a full replay is ~180 whole-corpus builds and was abandoned as
+# too slow to be worth blocking this change on.
+#
+# So read the table as the shape of the trade, not as today's numbers:
 #
 #   window   audience      editions   empty   median items
 #     24h    investment          90     48%              1
@@ -52,9 +59,13 @@ version: 1
 #    168h    investment          12      0%              3
 #    168h    ai                  12      0%              6
 #
-# READ THE 24h ROW BEFORE CHANGING ANYTHING. Nearly half of all investment
-# editions are EMPTY at this width, and a third of AI ones. That is the cost of
-# a daily archive and it is being paid deliberately.
+# READ THE 24h ROW BEFORE CHANGING ANYTHING. On the corpus it was measured
+# against, nearly half of all investment editions were EMPTY at this width and a
+# third of AI ones. Today's figures will differ -- see the provenance note above
+# -- but not in a way that changes the decision: narrowing a window monotonically
+# increases how often it catches nothing, and 24h is the narrowest this product
+# publishes. That is the cost of a daily archive and it is being paid
+# deliberately.
 #
 # It was the wrong trade when this value also drove the page a reader lands on
 # -- an empty page on half of all days trains someone to stop opening it, which
@@ -67,13 +78,26 @@ version: 1
 # A multiple of 24, necessarily. `_in_window` compares at date resolution, so a
 # grid that does not land on day boundaries disagrees with its own selection.
 #
-# This value does NOT have to agree with the cron schedule in render.yaml.
+# This value does not have to DIVIDE the cron schedule in render.yaml.
 # `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
 # publishes each period once and re-publishes it harmlessly on any later firing
 # inside it. Before that quantisation existed the two settings silently
 # disagreed: a daily cron over a 48-hour lookback put every article in two
-# consecutive editions (docs/decisions.md D51). At 24h the grid and the cron now
-# happen to match, which is convenient and is NOT a thing anything depends on.
+# consecutive editions (docs/decisions.md D51).
+#
+# BUT THE RELATIONSHIP MATTERS MORE AT 24h THAN IT DID AT 48h, and an earlier
+# draft of this comment wrongly called the match "convenient and NOT a thing
+# anything depends on". At 48h the daily cron fired TWICE inside every period,
+# so a missed night was covered by the next firing. At 24h the grid and the cron
+# coincide -- one period, one firing that closes it -- and a missed 03:00 run
+# leaves that day with no edition at all, permanently, because the next firing
+# has moved on to the next period.
+#
+# Measured: seven daily firings with one skipped publishes 7 of 8 periods at
+# 24h and 5 of 5 at 48h. `digest.publish` therefore backfills complete periods
+# that have no edition, bounded by `MAX_BACKFILL_PERIODS` (7), and never
+# rebuilds a period that already has one. Narrowing this value further -- say to
+# 12h -- would put two periods inside one firing and needs that cap revisited.
 window_hours: 24
 
 # ---------------------------------------------------------------------------

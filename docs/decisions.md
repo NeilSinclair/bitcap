@@ -8523,11 +8523,21 @@ investment audience, which is fine for an archive and unacceptable for a landing
 page. If the page ever opens on the newest *edition* instead, every other visit
 shows a blank digest and nothing anywhere reports a fault.
 
-**The cost, stated.** From the replay in `config/digest.yaml`: at 24h the
-investment digest is empty on 48% of days and the AI digest on 33%, against
-31%/13% at 48h. That was the wrong trade when this value also drove the landing
-page — it is why D51 chose 48h and D73 widened to 168h — and it is the right one
-now that it does not.
+**The cost, stated, with its provenance.** The replay in `config/digest.yaml`
+puts the investment digest empty on 48% of days at 24h and the AI digest on 33%,
+against 31%/13% at 48h. **Those rows were measured for D51** — announcements
+only, `ai.min_band: medium`, `max_items: 8` — and three things have changed
+since: papers, releases and posts joined the digest (D57, D69, D76), the AI cut
+moved to `high` (D78) and the caps to 16 (D77). More corpora push the empty
+percentages down; a stricter AI band pushes them up.
+
+They have not been re-derived. A full replay is ~180 whole-corpus builds and was
+abandoned as too slow to block this change on, so the table is the *shape* of
+the trade rather than today's numbers. The decision does not turn on the exact
+figure: narrowing a window monotonically increases how often it catches nothing,
+and 24h is the narrowest this product publishes. That was the wrong trade when
+this value also drove the landing page — it is why D51 chose 48h and D73 widened
+to 168h — and it is the right one now that it does not.
 
 ---
 
@@ -8579,12 +8589,49 @@ Recorded rather than quietly fixed because the lesson is the general one: the
 verification step that destroyed the data is also the only reason the defect was
 found before the nightly cron found it on its own, forty times over.
 
+### A second thing the change broke, found in review: missed firings
+
+`window_for`'s docstring claimed the grid "decouples the window from the cron",
+and at 48h it did — a daily cron fires *twice* inside every 48-hour period, so a
+missed night was covered by the next firing. **At 24h the grid and the cron
+coincide**, one period closed by exactly one firing, and a missed 03:00 run
+leaves that day with no edition for ever, because the next firing has moved on.
+
+Measured: seven daily firings with one skipped publishes 7 of 8 periods at 24h
+and 5 of 5 at 48h. An earlier draft of the config comment called the grid/cron
+match "convenient and NOT a thing anything depends on", which was exactly
+backwards — what it removed was redundancy the previous width had for free.
+
+`publish` now backfills complete periods with no edition, bounded by
+`MAX_BACKFILL_PERIODS` (7 — a realistic outage; beyond that a gap is an incident
+and papering over a fortnight would hide it). Two constraints on it, and both
+are the delicate part:
+
+- **A period that already has an edition is never rebuilt.** Catching up on a
+  *missed* period must not restate a *published* one under today's scoring —
+  the same history-rewriting that made the key defect above destructive rather
+  than merely wrong.
+- **A first run backfills nothing.** "Never published" and "missed" are
+  different states; only the second is a fault, and a fresh database must not
+  emit 90 days of editions.
+
+Four tests, mutation-checked by removing the backfill.
+
+### Two smaller review findings
+
+**`stats["reconstructed"]` was written and then destroyed on the next
+republish.** `publish` rebuilds `stats` wholesale, so the one marker
+distinguishing a rebuilt edition from an untouched one would have been erased by
+the next firing that touched that span. It is now preserved explicitly, and
+**rendered** — a marker stored and never shown is a note to the database, not to
+the reader, and the whole point is that someone comparing 97/98 against the rest
+of the archive can see they are not the same kind of record.
+
+**The dropdown labels each edition's width**, and reads 30 deep rather than 20.
+
 ### What the archive looks like now
 
 Three widths, deliberately: 38× 48h, 2× 168h, and 24h from here on. They
 interleave in the dropdown, which sorts by `window_end` — a 48h edition ending
 06 Sep sits above a 168h one ending 03 Sep and looks newer than a report
-published after it. The dropdown now labels each edition's width, which is the
-cheap fix for a genuine confusion rather than a cosmetic one, and the archive is
-read 30 deep instead of 20 because daily editions halve the calendar depth a
-fixed row count buys.
+published after it, which is why the width is now labelled.

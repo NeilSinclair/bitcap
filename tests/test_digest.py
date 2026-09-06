@@ -542,6 +542,115 @@ class TestPublishing:
             f"three widths were published, {widths} survive — editions are "
             "overwriting each other across window changes")
 
+    def test_a_missed_firing_does_not_leave_a_permanent_hole(self, session):
+        """The redundancy a 24-hour grid silently removed.
+
+        `window_for`'s docstring used to say the grid decouples the window from
+        the cron, and at 48h it did: a daily cron fires twice inside each
+        period, so one skipped night is covered by the next firing. At the
+        shipped 24h the grid and the cron coincide — one period, one firing that
+        closes it — and a missed 03:00 run leaves that day with no edition for
+        ever, because the next firing has moved on.
+
+        Measured before the fix: seven daily firings with one skipped published
+        7 of 8 periods at 24h and 5 of 5 at 48h. Nothing failed. The hole is
+        only visible by reading the dropdown and noticing a date is absent.
+        """
+        cfg = {**CONFIG, "window_hours": 24}
+        for d in (2, 3, 4, 5):
+            _article(session, published=date(2026, 9, d), score=90.0,
+                     band="high", url=f"https://a/{d}")
+        session.flush()
+
+        # Day 3's firing publishes the period ending 3 Sep. Day 4's is missed.
+        digest.publish(session, V, datetime(2026, 9, 3, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+        digest.publish(session, V, datetime(2026, 9, 5, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+
+        # sqlite hands back naive datetimes; the dates are what matter here.
+        ends = sorted({r.window_end.date() for r in session.scalars(select(m.Digest))})
+        assert date(2026, 9, 4) in ends, (
+            f"the period ending 4 Sep was never published; ends are {ends}")
+        assert len(ends) == 3, "expected 2, 3 and 4 Sep"
+
+    def test_a_backfill_never_rewrites_an_edition_that_exists(self, session):
+        """The delicate half. A digest is a frozen record of what the product
+        said, so catching up on a MISSED period must not restate a published
+        one under today's scoring — which is the same history-rewriting that
+        made migration 0013's defect destructive rather than merely wrong."""
+        cfg = {**CONFIG, "window_hours": 24}
+        _article(session, published=date(2026, 9, 2), score=90.0, band="high")
+        session.flush()
+        digest.publish(session, V, datetime(2026, 9, 3, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+        before = {r.id: r.payload for r in session.scalars(select(m.Digest))}
+
+        # A later article, then a firing two days on: the gap fills, the
+        # already-published period keeps the payload it had.
+        _article(session, published=date(2026, 9, 2), title="Later", score=99.0,
+                 band="high", url="https://a/later")
+        session.flush()
+        digest.publish(session, V, datetime(2026, 9, 5, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+
+        for row_id, payload in before.items():
+            assert session.get(m.Digest, row_id).payload == payload, (
+                f"edition {row_id} was rewritten by a backfill")
+
+    def test_a_first_run_backfills_nothing(self, session):
+        """"Never published" and "missed" are different states, and only the
+        second is a fault. A fresh database must not emit 90 days of editions."""
+        _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        session.flush()
+
+        digest.publish(session, V, END, config={**CONFIG, "window_hours": 24})
+        session.commit()
+
+        assert len(session.scalars(select(m.Digest)).all()) == len(digest.KINDS)
+
+    def test_the_backfill_is_bounded(self, session):
+        """A long outage is an incident, not something to paper over silently.
+        Beyond the cap the gap stays visible in the archive."""
+        cfg = {**CONFIG, "window_hours": 24}
+        _article(session, published=date(2026, 8, 1), score=90.0, band="high")
+        session.flush()
+        digest.publish(session, V, datetime(2026, 8, 2, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+
+        digest.publish(session, V, datetime(2026, 9, 5, 3, tzinfo=timezone.utc),
+                       config=cfg)
+        session.commit()
+
+        per_kind = len(session.scalars(select(m.Digest)).all()) // len(digest.KINDS)
+        assert per_kind == 1 + digest.MAX_BACKFILL_PERIODS + 1, (
+            "expected the original, the capped backfill and the current period")
+
+    def test_a_reconstruction_marker_survives_a_republish(self, session):
+        """Editions 97 and 98 were rebuilt after their originals were destroyed
+        (D79), and carry `stats["reconstructed"]` saying they are not the record
+        they replace. `publish` rebuilds `stats` wholesale, so without this the
+        next firing that touches that span erases the only marker distinguishing
+        a reconstruction from an untouched edition."""
+        _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        session.flush()
+        rows = digest.publish(session, V, END, config=CONFIG)
+        for row in rows:
+            row.stats = {**row.stats, "reconstructed": "rebuilt 2026-09-06"}
+        session.commit()
+
+        again = digest.publish(session, V, END, config=CONFIG)
+        session.commit()
+
+        for row in again:
+            assert row.stats.get("reconstructed") == "rebuilt 2026-09-06"
+            assert "considered" in row.stats, "the rest of stats still rebuilds"
+
     def test_a_different_prompt_version_is_a_new_edition_not_a_correction(self, session):
         """Two classifier versions are not comparable, so they are not one report."""
         _article(session, published=date(2026, 9, 3), score=90.0, band="high")
@@ -1151,6 +1260,20 @@ class TestTheDigestPageOpensOnTheLiveWindow:
         stays on an id belonging to the audience they left."""
         source = self._source()
         assert 'setEditionId("current")' in source
+
+    def test_a_rebuilt_edition_says_so_on_the_page(self):
+        """A marker stored and never rendered is a note to the database.
+
+        Editions 97 and 98 are reconstructions -- their originals were destroyed
+        (D79) and cannot be recovered, because a digest is never recomputed. A
+        reader comparing them against the rest of the archive has no way to know
+        that unless the page says it, and a report that silently restates an old
+        window in today's terms is the exact failure the frozen payload exists
+        to prevent.
+        """
+        source = self._source()
+        assert "stats?.reconstructed" in source, (
+            "the reconstruction marker is stored but never shown to a reader")
 
     def test_the_archive_is_read_deep_enough_to_be_an_archive(self):
         """Daily editions halve the calendar depth a fixed row count buys. This

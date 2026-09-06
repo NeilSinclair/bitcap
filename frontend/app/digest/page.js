@@ -457,6 +457,13 @@ function DigestView() {
             </select>
           </div>
 
+          {stats?.reconstructed ? (
+            <div style={{ border: "1px solid var(--border)", borderLeft: `3px solid ${ACCENT}`, background: "var(--bg-2)", padding: "12px 16px", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.6 }}>
+              <span style={{ color: "var(--fg)" }}>This edition was rebuilt.</span>{" "}
+              {stats.reconstructed}
+            </div>
+          ) : null}
+
           <TheCut stats={stats} windowStart={windowStart} windowEnd={windowEnd} />
 
           {/* The cards are still correct and still worth reading — only the
