@@ -117,7 +117,7 @@ function InvestmentItem({ item, onOpen }) {
   const h = item.holdings || { named: [], more: 0, total: 0 };
   return (
     <article
-      onClick={onOpen ? () => onOpen(item.id) : undefined}
+      onClick={onOpen || undefined}
       style={{
         border: "1px solid var(--border)", background: "var(--bg-2)",
         padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
@@ -185,7 +185,7 @@ function InvestmentItem({ item, onOpen }) {
 function AiItem({ item, onOpen }) {
   return (
     <article
-      onClick={onOpen ? () => onOpen(item.id) : undefined}
+      onClick={onOpen || undefined}
       style={{
         border: "1px solid var(--border)", background: "var(--bg-2)",
         padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
@@ -276,11 +276,42 @@ function DigestView() {
   const [anchorFor] = useMemo(() => groupAnchors(decorated, kind), [decorated, kind]);
   const relatedForGroup = useMemo(
     () => relatedByGroup(decorated, anchorFor), [decorated, anchorFor]);
-  const byId = useMemo(() => {
-    const out = {};
-    for (const it of decorated) out[it.id] = it;
-    return out;
+  // RESOLVED BY URL, WITH THE ID ONLY AS A FALLBACK, and the order is the point.
+  //
+  // `articles.id` is a surrogate autoincrement key. Every rebuild reassigns it,
+  // and a published payload is frozen at the moment it was written — so a stored
+  // id goes stale the first time anyone rebuilds, which on this project is
+  // constantly. `articles.url` is unique (746 of 746 on the live corpus) and is
+  // what the document actually *is*.
+  //
+  // Measured across all 30 published editions, 65 items:
+  //
+  //     resolvable by id :  9  (13%)
+  //     resolvable by url: 61  (93%)
+  //
+  // Editions 99 and 100 are the sharpest case: published hours ago, both already
+  // resolve zero items by id and all of theirs by url. Matching on id first
+  // would have made the archive almost entirely dead while looking deliberate.
+  //
+  // The id fallback is kept for the live preview, which is built from the same
+  // process that is serving the corpus and so cannot be stale — and it costs a
+  // dictionary.
+  const [byUrl, byId] = useMemo(() => {
+    const urls = {};
+    const ids = {};
+    for (const it of decorated) {
+      urls[it.sourceUrl] = it;
+      ids[it.id] = it;
+    }
+    return [urls, ids];
   }, [decorated]);
+
+  // What a card resolves to, or null if the document has genuinely left the
+  // corpus — 4 of the 65 published items, which stay unclickable, correctly.
+  const resolve = (item) => byUrl[item.sourceUrl] || byId[item.id] || null;
+
+  // `selectedId` is whatever `resolve` returned an id for, so it is always a
+  // live id from the current corpus rather than one read out of a payload.
   const selected = selectedId ? byId[selectedId] : null;
 
   const edition =
@@ -345,16 +376,22 @@ function DigestView() {
             <div style={{ fontSize: 13, color: "var(--muted-2)" }}>Loading…</div>
           ) : items.length ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* `onOpen` only where the corpus actually has that id. A
+              {/* `onOpen` only where the document is still in the corpus. A
                   published edition can outlive the article it names — the
                   payload is frozen, the corpus is not — and a card that looks
                   clickable and opens nothing is worse than one that does not
-                  invite the click. */}
-              {items.map((item) =>
-                kind === "investment"
-                  ? <InvestmentItem key={item.id} item={item} onOpen={byId[item.id] ? setSelectedId : null} />
-                  : <AiItem key={item.id} item={item} onOpen={byId[item.id] ? setSelectedId : null} />
-              )}
+                  invite the click.
+
+                  The opener is handed the id `resolve` found, NOT the id stored
+                  in the payload: the whole point of matching on url is that the
+                  stored id is the stale one. */}
+              {items.map((item) => {
+                const live = resolve(item);
+                const open = live ? () => setSelectedId(live.id) : null;
+                return kind === "investment"
+                  ? <InvestmentItem key={item.id} item={item} onOpen={open} />
+                  : <AiItem key={item.id} item={item} onOpen={open} />;
+              })}
             </div>
           ) : (
             // An empty digest is a real answer, not a failure state. Saying so

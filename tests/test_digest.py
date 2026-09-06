@@ -890,11 +890,41 @@ class TestTheDigestOpensTheSameRecordAsTheDashboard:
         assert "decorateItems(" in source
 
     def test_a_card_whose_article_left_the_corpus_is_not_clickable(self):
-        """Published payloads are frozen; article ids are not. Measured on the
-        live database: every item in editions 94 and 96 points at an id that no
-        longer exists, so the guard is load-bearing rather than defensive."""
+        """Published payloads are frozen; the corpus is not. Measured on the
+        live database: 4 of 65 published items name a document that has gone,
+        so the guard is load-bearing rather than defensive."""
         source = self._read("digest", "page.js")
-        assert "byId[item.id] ? setSelectedId : null" in source
+        assert "const live = resolve(item);" in source
+        assert "live ? () => setSelectedId(live.id) : null" in source
+
+    def test_a_card_resolves_by_url_before_id(self):
+        """The id is the stale half of the payload.
+
+        `articles.id` is a surrogate autoincrement key reassigned on every
+        rebuild; `articles.url` is unique and is what the document *is*. Both
+        are already in the payload. Measured across all 30 published editions,
+        65 items: 9 resolve by id (13%), 61 by url (93%) — and editions
+        published the same day already resolved zero by id, because another
+        session had rebuilt in between.
+
+        Order matters, so this pins it rather than merely checking both are
+        mentioned: id-first would silently return the wrong article whenever an
+        id had been recycled onto a different document.
+        """
+        source = self._read("digest", "page.js")
+        assert "byUrl[item.sourceUrl] || byId[item.id]" in source, (
+            "url must be tried first; an id-first lookup can hit a recycled id")
+
+    def test_the_digest_payload_carries_the_url_the_lookup_needs(self, session):
+        """The frontend fix is only free while the backend keeps sending it."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=90.0, band="high")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        item = digest.build(session, "investment", V, END, CONFIG)["items"][0]
+
+        assert item["sourceUrl"] == art.url
 
     def test_the_shared_palette_is_the_dashboards_not_the_digests(self):
         """The bug this nearly shipped.
