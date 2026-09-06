@@ -694,11 +694,11 @@ class TestEverySurfaceReadsTheSameCorpora:
     """The digest's version list exists in two places, and they can disagree.
 
     `api/main.py:277` reads `DIGEST_VERSIONS`; `app/pipeline/worker.py` builds
-    its own tuple, because it honours a `--prompt` override. D68 widened both to
+    its own tuple, because it honours a `--prompt` override. D69 widened both to
     admit posts. Widening only one would have shown posts in
     `/api/digests/preview` while the published digest omitted them -- two
     surfaces disagreeing while each looks correct, which is the failure D67 and
-    D68 are both about.
+    D69 are both about.
     """
 
     def test_the_worker_publishes_the_versions_the_api_previews(self):
@@ -722,7 +722,7 @@ class TestEverySurfaceReadsTheSameCorpora:
                 f"publish it -- the preview and the published digest disagree")
 
     def test_posts_are_admitted_to_the_digest(self):
-        """D63 held `t1` out while the corpus was unproven; D68 admits it. If
+        """D63 held `t1` out while the corpus was unproven; D69 admits it. If
         this reverts, posts silently stop reaching the digest."""
         from app.cli import DIGEST_VERSIONS, POST_PROMPT_VERSION
 
@@ -730,7 +730,7 @@ class TestEverySurfaceReadsTheSameCorpora:
 
     def test_posts_still_cannot_raise_a_content_alert(self):
         """Two surfaces, two switches. Reaching a digest a reader chooses to
-        open is not the same permission as paging them, and D68 granted only
+        open is not the same permission as paging them, and D69 granted only
         the first."""
         import yaml
 
@@ -741,4 +741,4 @@ class TestEverySurfaceReadsTheSameCorpora:
             .read_text(encoding="utf-8"))
         assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
             "posts entered the digest; keeping them muted for alerts is the "
-            "separate decision D68 deliberately did not take")
+            "separate decision D69 deliberately did not take")

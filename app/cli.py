@@ -46,7 +46,7 @@ POST_PROMPT_VERSION = "t1"
 PROMPT_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION)
 
 # What the DIGEST and the content alerts read. Posts were held out of this while
-# the corpus was unproven (D63); D68 admits them, so all four corpora are now
+# the corpus was unproven (D63); D69 admits them, so all four corpora are now
 # eligible for a digest.
 #
 # Alerts are a separate decision and are still off: `content_mute_prompt_versions`
@@ -57,7 +57,7 @@ PROMPT_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION)
 # one, because it honours a `--prompt` override. The two must agree at the
 # default, and `test_digest.py` asserts it: a divergence would show posts in
 # `/api/digests/preview` while the published digest omitted them, which is the
-# same "two places disagree and both look right" failure D67 and D68 are about.
+# same "two places disagree and both look right" failure D67 and D69 are about.
 DIGEST_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION)
 
 

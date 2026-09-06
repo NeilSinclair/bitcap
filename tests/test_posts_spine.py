@@ -123,14 +123,14 @@ class TestPostsAreSeenButNotPushed:
     """Scored, browsable, digestible -- deliberately still not alertable.
 
     D63 held posts out of both the digest and the alerts while the corpus was
-    unproven. D68 admitted them to the digest and left the alert mute in place,
+    unproven. D69 admitted them to the digest and left the alert mute in place,
     so this class now pins the *remaining* half of that decision. The two are
     separate switches on purpose: a digest is something a reader chooses to
     open, an alert is something that pages them.
     """
 
     def test_the_digest_now_covers_every_scored_corpus(self):
-        """D68. If this reverts, posts silently stop reaching the digest while
+        """D69. If this reverts, posts silently stop reaching the digest while
         still rendering on the dashboard -- the surfaces disagree and neither
         says so."""
         assert POST_PROMPT_VERSION in PROMPT_VERSIONS

@@ -787,7 +787,7 @@ the stored text and its classification agree — **$0.0684**. Run total
 
 ---
 
-## Restoring the releases corpus, and the posts leg's recurring waste (D68, 2026-09-06)
+## Restoring the releases corpus, and the posts leg's recurring waste (D69, 2026-09-06)
 
 The releases corpus was gone from the database — dropped by a rebuild in another
 session, while the 87 cursors that vouch for it survived. Restoring it meant
@@ -832,7 +832,7 @@ on the first firing alone — more than the run cost. It was also free to comput
 
 The 31 new verdicts are now committed too (183 → 214). An uncommitted verdict is
 re-bought on the next rebuild, which is the same "the database knows something no
-committed file does" fault D68 is about, one layer up.
+committed file does" fault D69 is about, one layer up.
 
 ### The posts leg was spending ~$1.19 a week on posts it already had
 

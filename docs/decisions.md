@@ -7503,7 +7503,7 @@ re-fetches Anthropic's index and every article page on every firing, with no
 retry and outside the shared throttle. It survived this incident only because it
 never touches arXiv.
 
-## D68 — A watermark that was never read, a cursor that outlived its corpus, and a firing that could not finish (2026-09-06)
+## D69 — A watermark that was never read, a cursor that outlived its corpus, and a firing that could not finish (2026-09-06)
 
 Three faults with one shape: a fact recorded in one place, and the thing it
 describes in another, free to disagree. All three were found by running the
