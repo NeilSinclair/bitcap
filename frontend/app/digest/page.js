@@ -243,6 +243,10 @@ function DigestView() {
   // decoration does — and out of the loading gate because a digest that renders
   // without its panel data is still a digest.
   const [corpus, setCorpus] = useState([]);
+  // Why the cards cannot be opened, when they cannot. Null while loading and
+  // once loaded; a string only when the fetch above actually failed, so it can
+  // never be confused with "loaded, but this document is gone".
+  const [corpusError, setCorpusError] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
@@ -263,10 +267,23 @@ function DigestView() {
   }, [kind]);
 
   useEffect(() => {
-    // Failure-tolerant on purpose: if this cannot load, the cards simply do not
-    // open. Letting it take down the digest would trade the whole page for a
-    // panel.
-    apiFetch("/api/items").then(setCorpus).catch(() => setCorpus([]));
+    // Failure-tolerant, but NOT silent, and the first version was silent.
+    //
+    // `.catch(() => setCorpus([]))` swallowed everything. When this fetch fails
+    // — an expired session, a restarted API, a 500 — the corpus is empty, so
+    // `resolve` returns null for every card, every card loses its opener, and
+    // the page renders perfectly while nothing on it can be clicked. There is no
+    // error, no console line, and no visible difference from "these documents
+    // have left the corpus". That is the exact shape of silent degradation this
+    // project exists to avoid, and it reads to a user as the feature having been
+    // broken by whatever changed most recently.
+    //
+    // Still tolerant: a digest that cannot open its panels is worth more than an
+    // error page, so the failure is recorded rather than raised. The banner
+    // below says which of the two states the reader is in.
+    apiFetch("/api/items")
+      .then((rows) => { setCorpus(rows); setCorpusError(null); })
+      .catch((e) => { setCorpus([]); setCorpusError(String(e)); });
   }, []);
 
   // `kind` and the dashboard's `audience` are the same two values, so the
@@ -378,6 +395,22 @@ function DigestView() {
           </div>
 
           <TheCut stats={stats} windowStart={windowStart} windowEnd={windowEnd} />
+
+          {/* The cards are still correct and still worth reading — only the
+              click-through is gone. Saying so is the whole point: without this
+              line the page looks identical to a working one, and the reader is
+              left to guess whether the feature was removed. */}
+          {corpusError ? (
+            <div style={{ border: `1px solid ${NEGATIVE}`, background: "var(--bg-2)", padding: "12px 16px", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.6 }}>
+              <span style={{ color: NEGATIVE }}>Cards cannot be opened.</span>{" "}
+              The corpus behind the detail panel did not load, so the items below
+              still show their summary but will not expand. Everything else on
+              this page is unaffected.
+              <div style={{ marginTop: 6, color: "var(--muted-2)", fontSize: 11.5 }}>
+                {corpusError}
+              </div>
+            </div>
+          ) : null}
 
           {loading ? (
             <div style={{ fontSize: 13, color: "var(--muted-2)" }}>Loading…</div>

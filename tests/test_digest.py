@@ -965,3 +965,80 @@ class TestTheDigestOpensTheSameRecordAsTheDashboard:
         action = shared[shared.index("export function actionStyle"):]
         action = action[:action.index("\n}")]
         assert 'action === "investigate"' in action, "the three-action palette was lost"
+
+
+class TestAlertsSaysWhenItCannotOpenACard:
+    """A card that will not open must say why. D75.
+
+    THE FAILURE, and it was mine. The corpus behind the detail panel is fetched
+    separately and was caught with `.catch(() => setCorpus([]))`. When that fetch
+    fails — an expired session, a restarted API, a 500 — the corpus is empty, so
+    `resolve` returns null for every card, every card loses its opener, and the
+    page renders perfectly while nothing on it can be clicked.
+
+    No error, no console line, and no visible difference from the legitimate
+    state where a document has genuinely left the corpus. To a reader it looks
+    exactly like the feature having been broken by whatever changed most
+    recently, which is precisely how it was reported.
+
+    Still failure-tolerant: a digest that cannot open its panels is worth more
+    than an error page, so the fetch failure is recorded rather than raised. The
+    difference is that the page now says which of the two states it is in.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _read(self, *parts):
+        return (self.FRONTEND.joinpath(*parts)).read_text(encoding="utf-8")
+
+    def _code(self, *parts):
+        """The file with its comments stripped.
+
+        The first version of this test asserted the old silent catch was absent
+        and failed against the comment that *quotes* it while explaining why it
+        was removed — a test that read the prose instead of the code, and would
+        have gone red on an accurate docstring. The fix and the explanation both
+        belong in the file, so the test stops reading the explanation.
+        """
+        out = []
+        for line in self._read(*parts).splitlines():
+            stripped = line.strip()
+            if stripped.startswith("//") or stripped.startswith("*") \
+                    or stripped.startswith("/*"):
+                continue
+            out.append(line)
+        return "\n".join(out)
+
+    def test_the_corpus_fetch_failure_is_captured_not_discarded(self):
+        code = self._code("digest", "page.js")
+        assert "setCorpusError" in code, (
+            "the corpus fetch swallows its error; a failed load is "
+            "indistinguishable from a document that has left the corpus")
+        # The catch must do something with it, not merely have the setter in
+        # scope: the fetch chain itself has to reference it.
+        chain = code[code.index('apiFetch("/api/items")'):]
+        chain = chain[:chain.index("}, []);")]
+        assert "setCorpusError" in chain, "the catch still discards the reason"
+
+    def test_the_failure_is_rendered_where_the_reader_will_see_it(self):
+        """Captured and not shown is the same outcome one variable later."""
+        source = self._read("digest", "page.js")
+        assert "corpusError ?" in source
+        assert "Cards cannot be opened." in source
+
+    def test_the_error_state_is_distinct_from_still_loading(self):
+        """`null` while loading and once loaded, a string only on failure — or
+        the banner flashes on every page load."""
+        source = self._read("digest", "page.js")
+        assert "useState(null)" in source
+        # Cleared on success, so a recovered fetch does not leave the banner up.
+        assert "setCorpusError(null)" in source
+
+    def test_the_digest_itself_still_renders_without_the_corpus(self):
+        """The tolerance half. The cards carry their own summary, quote and
+        source URL — a published digest resolves on its own by design — so
+        losing the panel data must not cost the reader the edition."""
+        source = self._read("digest", "page.js")
+        # The items list is gated on `loading`/`items.length`, never on corpus.
+        assert "items.length ? (" in source
+        assert "corpus.length ? (" not in source
