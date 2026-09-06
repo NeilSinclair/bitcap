@@ -7842,7 +7842,16 @@ It is measured, reproduced across two corpora, and recorded here instead.
 `prompt_version` and listed only `t1`. Flipping the live version to `t2` would
 have switched posts alerts **on by omission** — the noisiest corpus in the
 system, muted since D63, unmuted by a change that never mentions alerts. Both
-versions are now listed.
+versions are now listed: t1 as well as t2, because t1's rows survive in
+`classifications` and `high_band_items` has no version filter of its own.
+
+**Corrected after review.** An earlier draft of this entry claimed nothing would
+have caught that. Wrong — `test_posts_spine.py` already asserts
+`POST_PROMPT_VERSION in content_mute_prompt_versions`, and it would have gone red
+on exactly this omission. The coupling is real and listing both versions is
+right; the guard was there and the claim that it was not is not a defensible
+thing to put in a decision log. What the suite did *not* have is any guard on the
+fault this entry is about, which is the next section.
 
 `tests/test_posts_spine.py` pinned `t1.md` by filename. Every assertion in it
 would have kept passing against a prompt no longer in use. It now reads the live
@@ -7850,3 +7859,28 @@ version through `POST_PROMPT_VERSION`.
 
 Both are the same shape as D67 and D69: a fact recorded in one place and the
 thing it describes in another, free to disagree without anything failing.
+
+### The guard that was missing, and now is not
+
+Every test this branch touched checks the prompt *file* — spine bytes, `x_post`,
+the confidence ceiling, event-type coverage. None checked the *register the
+prompt produced*, which is where the fault actually lived. A future `t3` could
+re-suppress prices exactly as t1 did and the whole suite would stay green.
+
+Two assertions now run over the committed register, needing no API key: no
+event type at the maximum event weight may appear in the corpus and carry a
+mechanism tag nowhere, and no `pricing_change` post may carry none. Verified red
+against `scored_posts_t1.json` (4 of 4 untagged) and green against
+`scored_posts_t2.json`. The first is deliberately the weaker claim — a post can
+name a pricing change and state nothing quotable, and an empty list is then
+correct; what cannot be correct is a whole top-weight class never once tagged.
+
+### What this run cost the cost record
+
+Both the spot-check and the re-score called `classify_one` directly from a
+one-off script rather than going through `scorer.run`, and it is the runner, not
+`classify_one`, that appends cost records to `announcement_cost.json`. Reaching
+for the caching behaviour bypassed the instrumentation silently. The totals are
+in `docs/cost.md`; the per-call receipts existed only in memory and are gone.
+They are not being backfilled — a total divided 216 ways is a fabrication in the
+shape of evidence — and the gap is recorded there instead.

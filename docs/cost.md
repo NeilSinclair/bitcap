@@ -864,8 +864,39 @@ Three spends, one of which recurs.
 
 The re-score shows 216 calls for 238 posts: the 22 already bought by the
 spot-check were seeded into the t2 cache rather than re-purchased. 2,421,720
-cache-read tokens across the run, at 0.1x — the prompt is ~4k tokens and every
-call carries it, so caching is most of what keeps this leg affordable.
+cache-read tokens across the run — 11,212 per call against an assembled system
+prompt of 32,082 characters (~8k tokens), at 0.1x. Every call carries that
+prompt, so caching is most of what keeps this leg affordable.
+
+### The per-call receipts for this run were not captured, and cannot be
+
+**This table is the only record of the $2.93 of scoring spend.** There are no
+rows in `research/docs/announcement_cost.json` for the 22-post spot-check or the
+216-call re-score, and there is no way to add honest ones: the totals above are
+real, but per-URL attribution existed only in memory and was never written.
+
+The cause is worth naming, because it is a process fault rather than a one-off.
+Both runs went through `classify_one` directly from an ad-hoc script rather than
+through `scorer.run`, and it is `scorer.run` — not `classify_one` — that appends
+each returned cost record to `announcement_cost.json`. Bypassing the runner to
+reach the caching and cache-seeding behaviour also bypassed the instrumentation,
+silently. Nothing failed; the receipts simply were not written.
+
+Two consequences, stated rather than papered over. A `bitcap-db rebuild` builds
+`raw_costs` from that file, so a rebuilt database reports the posts leg as having
+cost $2.6053 (t1's spend) and the t2 corpus as free. And `bitcap-db status` will
+report a load cost $2.93 short of what was actually spent.
+
+Per-call receipts are a non-negotiable in `.claude/CLAUDE.md` precisely because
+they cannot be reconstructed later, and this run proves the point at the cost of
+violating it. The fix is not to backfill invented rows — a total divided 216 ways
+is a fabrication wearing the shape of evidence — but to route any future one-off
+re-score through `scorer.run`, or to have it write its own cost records before it
+writes its register.
+
+The `claude-fable-5` line has a second gap: that model is absent from the `PRICES`
+table in `research/papers/llm_byline.py`, so the $0.4183 cannot be checked against
+the repo's own rate card. It is computed from the published $10/$50 per MTok.
 
 **One call to Fable 5, and only for the prompt.** Scoring stayed on
 `claude-sonnet-5`, the model t1 used. Changing the prompt and the model in one
