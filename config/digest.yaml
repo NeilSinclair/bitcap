@@ -18,12 +18,36 @@
 
 version: 1
 
-# Hours of publication history one digest covers.
+# TWO WINDOWS, AND THEY ARE DELIBERATELY DIFFERENT NUMBERS.
 #
-# 48h, decided on the corpus rather than assumed -- planning.md 7 listed this as
-# open and said it would be settled on evidence. Every window size was replayed
-# over the full 90-day corpus, counting how often an edition would have been
-# empty and how many items it carried when it was not:
+# The digest page has two surfaces and they answer different questions, so they
+# get different widths. Until D79 they shared one value and were the same width
+# by accident -- which meant the archive of 48-hour editions a reader could
+# still browse was a FOSSIL, published back when the single value read 48, and
+# every future edition would have been 7 days wide until the distinction
+# disappeared entirely.
+#
+#   window_hours          the PUBLISHED editions. Quantised to a fixed grid, one
+#                         edition per period, persisted for ever. The archive.
+#
+#   preview_window_hours  the CURRENT unpublished view. Rolling, ends now, never
+#                         stored, rebuilt on every page load. What a reader sees
+#                         when they open the page, because `editionId` starts on
+#                         "current" (frontend/app/digest/page.js).
+#
+# ---------------------------------------------------------------------------
+# window_hours: 24 -- one published edition a day, covering that day.
+#
+# The measurement this rests on -- AND ITS PROVENANCE, WHICH MATTERS. These rows
+# were replayed for D51, over the announcements corpus alone, under
+# `ai.min_band: medium` and `max_items: 8`. Three things have changed since:
+# papers, releases and posts joined the digest (D57, D69, D76), the AI cut moved
+# to `high` (D78) and the caps to 16 (D77). More corpora push the empty
+# percentages DOWN; a stricter AI band pushes them UP. They have NOT been
+# re-derived -- a full replay is ~180 whole-corpus builds and was abandoned as
+# too slow to be worth blocking this change on.
+#
+# So read the table as the shape of the trade, not as today's numbers:
 #
 #   window   audience      editions   empty   median items
 #     24h    investment          90     48%              1
@@ -35,77 +59,71 @@ version: 1
 #    168h    investment          12      0%              3
 #    168h    ai                  12      0%              6
 #
-# 24h is too tight: the investment digest is empty on half of all days, which
-# trains a reader to stop opening it. A week is never empty and carries a median
-# of six items to the AI team -- but a weekly report that reliably has something
-# in it has stopped being a filter, and a launch arrives up to seven days late
-# in a product whose whole claim is earliness.
+# READ THE 24h ROW BEFORE CHANGING ANYTHING. On the corpus it was measured
+# against, nearly half of all investment editions were EMPTY at this width and a
+# third of AI ones. Today's figures will differ -- see the provenance note above
+# -- but not in a way that changes the decision: narrowing a window monotonically
+# increases how often it catches nothing, and 24h is the narrowest this product
+# publishes. That is the cost of a daily archive and it is being paid
+# deliberately.
 #
-# 48h kept the brief's own default and had the measurement behind it: it fires
-# on roughly two of every three windows with a median of one item. The
-# empty third is the correct answer, not a fault -- the labs really are quiet on
-# a third of two-day windows -- and the digest page says so in words rather than
-# rendering a blank list.
+# It was the wrong trade when this value also drove the page a reader lands on
+# -- an empty page on half of all days trains someone to stop opening it, which
+# is why D51 chose 48h and D73 later widened to 168h. It is the right trade now
+# that it does not: the landing view is `preview_window_hours` below and is
+# never empty. What `window_hours` produces is an ARCHIVE, and an archive
+# faithfully recording that the labs published nothing on the 14th is doing its
+# job. The digest page says so in words rather than rendering a blank list.
 #
-# This value does NOT have to agree with the cron schedule in render.yaml.
+# A multiple of 24, necessarily. `_in_window` compares at date resolution, so a
+# grid that does not land on day boundaries disagrees with its own selection.
+#
+# This value does not have to DIVIDE the cron schedule in render.yaml.
 # `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
-# publishes each period once and re-publishes it harmlessly on every later
-# firing until the next boundary closes. Before that quantisation existed the
-# two settings silently disagreed:
-# a daily cron over a 48-hour lookback put every article in two consecutive
-# editions (docs/decisions.md D51). The rows above count *periods*, which is
-# what an edition is, so they describe the archive under any cron frequency.
+# publishes each period once and re-publishes it harmlessly on any later firing
+# inside it. Before that quantisation existed the two settings silently
+# disagreed: a daily cron over a 48-hour lookback put every article in two
+# consecutive editions (docs/decisions.md D51).
 #
-# WIDENED TO 168h (7 days), 2026-09-06 -- docs/decisions.md D73. The table above
-# measures how often an edition is empty across the whole 90-day corpus; it does
-# not measure what a reader sees on one particular day, which is what the 48h
-# setting got wrong.
-# Replayed against the live database, 48h publishes ONE item -- the two days it
-# covers happen to be quiet ones, and every corpus except announcements is
-# invisible in it.
+# BUT THE RELATIONSHIP MATTERS MORE AT 24h THAN IT DID AT 48h, and an earlier
+# draft of this comment wrongly called the match "convenient and NOT a thing
+# anything depends on". At 48h the daily cron fired TWICE inside every period,
+# so a missed night was covered by the next firing. At 24h the grid and the cron
+# coincide -- one period, one firing that closes it -- and a missed 03:00 run
+# leaves that day with no edition at all, permanently, because the next firing
+# has moved on to the next period.
 #
-# READ THIS BEFORE TREATING 168 AS A MEASURED OPTIMUM. IT IS NOT ONE.
+# Measured: seven daily firings with one skipped publishes 7 of 8 periods at
+# 24h and 5 of 5 at 48h. `digest.publish` therefore backfills complete periods
+# that have no edition, bounded by `MAX_BACKFILL_PERIODS` (7), and never
+# rebuilds a period that already has one. Narrowing this value further -- say to
+# 12h -- would put two periods inside one firing and needs that cap revisited.
+window_hours: 24
+
+# ---------------------------------------------------------------------------
+# preview_window_hours: 168 -- the last 7 days, ending now.
 #
-# `window_for` snaps to a fixed grid, so a window does not slide forward a day
-# at a time -- it jumps a whole period at once. Replayed day by day against the
-# local corpus, which ENDS ON 05 SEP because ingestion has not run since:
+# Rolling, not quantised. A published edition must snap to a grid so that re-runs
+# update one edition rather than issuing several; the preview writes nothing, so
+# it has no such constraint, and the grid cost it real freshness -- the newest day
+# in a quantised preview is always the last one that CLOSED, so on the 5th the
+# live view claimed "the 48 hours to the 3rd" (D73).
 #
-#   width   Mon 07   Tue 08   Wed 09   Thu 10   Fri 11
-#    120h    ai=8     ai=8     ai=1     ai=1     ai=1
-#    168h    ai=8     ai=8     ai=8     ai=5     ai=5
-#    240h    ai=8     ai=8     ai=8     ai=8     ai=8
+# 168 IS NOT A MEASURED OPTIMUM, and the row above showing 0% empty editions at
+# 168h is not the argument for it -- that row counts fixed weekly PERIODS, and
+# this window is not one. What it is justified by:
 #
-# The obvious reading -- "wider is steadier" -- is WRONG, and the first draft of
-# this comment made that mistake. What those rows actually show is *when each
-# grid crosses 05 Sep*, not how each width behaves. Every width has the same
-# cliff; they differ only in the weekday it lands on:
+#   * It is never empty in practice, which matters here and only here: this is
+#     the view a reader lands on.
+#   * A week is the widest span still describable as "recent". Ten days is a
+#     monthly report with extra steps.
+#   * It is wide enough that every corpus appears. At 48h the live view showed
+#     ONE item and neither papers, releases nor posts were visible in it at all.
 #
-#    120h  crosses on Wed 09  (window becomes 04..09 Sep)
-#    168h  crosses on Thu 10  (window becomes 03..10 Sep)
-#    240h  crosses on Mon 14  (window becomes 04..14 Sep)
-#
-# So 240h is not "flatter", it is the same shape further right, and the earlier
-# claim here that it had "no cliff" was true only of the five days that were
-# looked at. A frozen corpus is what produces the cliff. Against live ingestion
-# none of these three rows means anything.
-#
-# WHAT THE CHANGE IS ACTUALLY JUSTIFIED BY, and it is narrower than the table
-# above pretends:
-#
-#   * 48h publishes ONE item on the deployed database, measured, and every
-#     corpus except announcements is invisible in that edition. That is the
-#     defect being fixed and it does not depend on any replay.
-#   * A wider window spans more days, so it is likelier to contain a day the
-#     labs were active on. That is the whole mechanism.
-#   * 168h is the widest window that still reports a period a reader would call
-#     recent -- the note above about a weekly report is the argument against
-#     going further, and it applies harder at ten days.
-#
-# The choice between 120 and 168 was made on which grid still held data during
-# the specific week this was shipped in. That is a real reason, but it is a
-# fact about one frozen corpus, not a property of the setting. Re-derive it if
-# ingestion resumes.
-window_hours: 168
+# Re-derive it if ingestion resumes; the corpus it was chosen against ends
+# 05 Sep. `/api/digests/preview?hours=N` overrides it per request without
+# changing anything published, which is the cheap way to test another width.
+preview_window_hours: 168
 
 investment:
   # A connection at or above this strength is worth a PM's attention. Matches
