@@ -41,20 +41,70 @@ version: 1
 # in it has stopped being a filter, and a launch arrives up to seven days late
 # in a product whose whole claim is earliness.
 #
-# 48h keeps the brief's own default and now has the measurement behind it: it
-# fires on roughly two of every three windows with a median of one item. The
+# 48h kept the brief's own default and had the measurement behind it: it fires
+# on roughly two of every three windows with a median of one item. The
 # empty third is the correct answer, not a fault -- the labs really are quiet on
 # a third of two-day windows -- and the digest page says so in words rather than
 # rendering a blank list.
 #
 # This value does NOT have to agree with the cron schedule in render.yaml.
 # `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
-# publishes each 48-hour period once and re-publishes it harmlessly the next
-# night. Before that quantisation existed the two settings silently disagreed:
+# publishes each period once and re-publishes it harmlessly on every later
+# firing until the next boundary closes. Before that quantisation existed the
+# two settings silently disagreed:
 # a daily cron over a 48-hour lookback put every article in two consecutive
 # editions (docs/decisions.md D51). The rows above count *periods*, which is
 # what an edition is, so they describe the archive under any cron frequency.
-window_hours: 48
+#
+# WIDENED TO 168h (7 days), 2026-09-06. The table above measures how often an
+# edition is empty across the whole 90-day corpus; it does not measure what a
+# reader sees on one particular day, which is what the 48h setting got wrong.
+# Replayed against the live database, 48h publishes ONE item -- the two days it
+# covers happen to be quiet ones, and every corpus except announcements is
+# invisible in it.
+#
+# READ THIS BEFORE TREATING 168 AS A MEASURED OPTIMUM. IT IS NOT ONE.
+#
+# `window_for` snaps to a fixed grid, so a window does not slide forward a day
+# at a time -- it jumps a whole period at once. Replayed day by day against the
+# local corpus, which ENDS ON 05 SEP because ingestion has not run since:
+#
+#   width   Mon 07   Tue 08   Wed 09   Thu 10   Fri 11
+#    120h    ai=8     ai=8     ai=1     ai=1     ai=1
+#    168h    ai=8     ai=8     ai=8     ai=5     ai=5
+#    240h    ai=8     ai=8     ai=8     ai=8     ai=8
+#
+# The obvious reading -- "wider is steadier" -- is WRONG, and the first draft of
+# this comment made that mistake. What those rows actually show is *when each
+# grid crosses 05 Sep*, not how each width behaves. Every width has the same
+# cliff; they differ only in the weekday it lands on:
+#
+#    120h  crosses on Wed 09  (window becomes 04..09 Sep)
+#    168h  crosses on Thu 10  (window becomes 03..10 Sep)
+#    240h  crosses on Mon 14  (window becomes 04..14 Sep)
+#
+# So 240h is not "flatter", it is the same shape further right, and the earlier
+# claim here that it had "no cliff" was true only of the five days that were
+# looked at. A frozen corpus is what produces the cliff. Against live ingestion
+# none of these three rows means anything.
+#
+# WHAT THE CHANGE IS ACTUALLY JUSTIFIED BY, and it is narrower than the table
+# above pretends:
+#
+#   * 48h publishes ONE item on the deployed database, measured, and every
+#     corpus except announcements is invisible in that edition. That is the
+#     defect being fixed and it does not depend on any replay.
+#   * A wider window spans more days, so it is likelier to contain a day the
+#     labs were active on. That is the whole mechanism.
+#   * 168h is the widest window that still reports a period a reader would call
+#     recent -- the note above about a weekly report is the argument against
+#     going further, and it applies harder at ten days.
+#
+# The choice between 120 and 168 was made on which grid still held data during
+# the specific week this was shipped in. That is a real reason, but it is a
+# fact about one frozen corpus, not a property of the setting. Re-derive it if
+# ingestion resumes.
+window_hours: 168
 
 investment:
   # A connection at or above this strength is worth a PM's attention. Matches
