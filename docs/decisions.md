@@ -6995,6 +6995,62 @@ between `agent_or_tooling` and `vendor_sdk` — the exact field the vendor-SDK
 slice above is sliced on. So that slice carries roughly 4% label noise under it,
 and the figure should not be read to three decimal places.
 
+### The spot-check was marked, and the disagreements were all one disagreement
+
+Neil marked all 20 blind on 2026-09-06. **16/20 = 0.80** against Fable's labels —
+vendor SDKs 5/7, frontier 8/10.
+
+Four disagreements, and three of them share a cause:
+
+| repository | Neil (blind) | Fable | Fable's category |
+|---|---|---|---|
+| `openai/openai-dotnet` | off_topic | relevant | `vendor_sdk`, high |
+| `openai/transformer-debugger` | off_topic | relevant | `eval_or_safety`, high |
+| `deepseek-ai/LPLB` | off_topic | relevant | `training_or_serving`, high |
+| `anthropics/healthcare` | off_topic | relevant | `vendor_sdk`, low |
+
+The reason given for each of the first three, in Neil's words: *nobody here
+programs in .NET*; *I don't know if we're ever gonna do that*; *I don't know if
+these people are working at that level*. **None of those says the repository is
+not about language models.** All three say BIT would not act on it — which is
+the AI-team score's question, not this filter's. `r1.md` gets all three right on
+the rule as written: an official client library is always `true`, and
+interpretability and serving infrastructure are listed `true`.
+
+So the 0.80 measures **the human against the rubric**, not the model against the
+truth. That is worth more than a clean number, because it says the topic/score
+boundary is genuinely hard for the person who drew it — which is the argument
+for stating it explicitly rather than leaving it to feel.
+
+The boundary holds on the asymmetry already recorded above. A low score stays
+visible and arguable; an exclusion is silent and permanent, and nothing
+downstream distinguishes a filtered repository from one that shipped nothing.
+`openai-dotnet` is the sharpest case: whether anyone at BIT writes C# has no
+bearing on whether it is an LLM repository, and its releases are exactly where a
+new model identifier surfaces first — the pairing in D61 runs on them.
+
+**Run 2, after that discussion: 19/20 = 0.95** — SDKs 6/7, frontier 10/10, with
+the three revised to `relevant`. It is the weaker number of the two and is kept
+as the second one, not the headline: those marks were made having read Fable's
+labels and reasons, so they measure agreement after anchoring. Both sheets are
+committed (`repo_relevance_spotcheck_run1.json` beside
+`repo_relevance_spotcheck.json`), the same way both label runs are, and for the
+same reason — the difference between the files is the evidence.
+
+`anthropics/healthcare` survives as the one honest disagreement, and it is the
+one Fable itself flagged `low`. GitHub carries no description and no topics for
+it; its README describes a plugin of payer, provider and pharma skills. Whether
+a lab's domain-vertical repository belongs in an LLM tracker is unresolved, and
+it is the same boundary the two candidate models split on. `[NEIL]`
+
+**What this does not measure.** Eight of the 20 rows carry no GitHub description
+at all — verified against the live API on 2026-09-06, so this is a property of
+the source and not a capture bug. A `context` line drawn from each README was
+added to the sheet before marking, so the human judged on more evidence than the
+filter sees. Reading the README in production is a real option, once per
+repository and cached beside the verdict; it is recorded here as a next cut, not
+taken.
+
 ### Vendor SDKs are kept, deliberately
 
 An SDK bump is thin, routine, frequent, and looks exactly like the noise this
@@ -7097,12 +7153,13 @@ this duplicates nothing.
 
 ### Honest limits
 
-**The labels are a cross-model proxy, not ground truth.** `research/github/spotcheck_repos.py`
-writes a 20-repository blind sheet — 7 off-topic, 13 relevant, 7 vendor SDKs, 10
-frontier, and every low-confidence call — and **it has not been marked yet**.
-Until it is, every figure in this entry is agreement with Fable 5 rather than
-accuracy, and `gpt-5-mini` scoring higher may partly mean it resembles the
-labeller more than Haiku does. `[NEIL]`
+**The labels are a cross-model proxy, and the proxy is now measured.** The
+20-repository blind sheet was marked: **0.80 blind, 0.95 after review**, with the
+disagreements analysed above. That bounds the labels but does not make them
+ground truth — 20 marks over 183 repositories, and `gpt-5-mini` scoring higher
+than Haiku may still partly mean it resembles Fable more than Haiku does. The
+bake-off compares two models against a third model's labels; the spot-check says
+how far that third model can be trusted, not that it is right.
 
 **The winner still gets three watched repositories wrong**, and they are
 judgement calls rather than blunders: `google-deepmind/chex` (generic JAX testing
