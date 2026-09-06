@@ -312,3 +312,57 @@ re-measure against.
 - The "test written from intent, never watched fail" pattern has now produced
   three defects across three legs. Worth a standing rule that a new test must be
   demonstrated red before it counts?
+
+## 2026-09-05 — posts: the measurement that corrected the measurer
+
+The X leg is the first one where the agent's own estimates were checked against
+a cheap measurement before any money was spent at scale, and it is worth
+recording because the estimates lost.
+
+**Three of four priors were wrong.** Asked which handles to exclude on volume
+grounds, I named @karpathy as the top candidate ("high volume, general AI
+commentary"). Neil corrected two of them from his own reading — Wang posts a lot
+*and* it matters, Karpathy posts less than assumed — and predicted the DeepSeek
+pair would be dormant. The measured answer: Karpathy 5 posts a quarter, Wang the
+second-largest contributor, both DeepSeek handles silent. The $0.68 probe was
+worth more than the argument.
+
+**Then the probe itself was wrong, and the fix came from reading the raw
+output rather than the summary.** It reported @sama at 4 posts in 90 days. That
+number is absurd on its face for the CEO of OpenAI, and the only reason it was
+caught is that the printed table also carried the date of the oldest post —
+yesterday. X applies `exclude=replies,retweets` after assembling a page, so a
+page of five originals from a prolific replier is not five posts in the window.
+True figure ~223. **The design lesson is narrow and general: a count and a date
+disagreed, and the count was the one that looked like an answer.** The fix
+turned into two tests named after the bug, and a `None` return for "the probe
+saw nothing", because an empty first page is indistinguishable from silence.
+
+**A wrong diagnosis, corrected by the config.** When @sama's 80%-price-cut post
+scored 0.0 on the investment axis I called it a failure of the new prompt and
+started looking for the over-tuned sentence. It was not. Running the same post
+under all three prompts returned zero mechanisms from each, and
+`config/mechanisms.yaml` says why in a line written months earlier: *"Tag this
+only when the work per token falls, not whenever a price falls."* The system was
+right and I was about to loosen a prompt to break it. The check that saved it
+cost one extra classification call.
+
+**Two bugs found that were nobody's feature.** `bitcap-db load` was already
+failing on `deployment-dev` for everyone — `load_refs` deletes the silver layer
+and the recent dedupe work added two tables referencing `articles` without
+adding them to the list. I only found it because it blocked me, and only proved
+it was pre-existing by stashing the branch and reproducing. And
+`classify_new`'s corpus dispatch was a ternary that silently scored any unknown
+corpus under the announcement prompt: the kind of default that produces
+plausible output at full price and never raises.
+
+**Where the loop needed a human.** Twice. Neil's discomfort with twitterapi.io
+being "way cheaper" was the right instinct pointed at the wrong reason — the
+price gap is monopoly rent versus commodity cost, not a scam signal — but
+checking it properly surfaced that official access is self-serve, which removed
+the only argument for the mirror and changed the recommendation. And I asserted
+that Karpathy at Anthropic looked wrong from my own sense of it, against a
+sourced register entry with a fetched TechCrunch citation dated after my
+training cutoff. The register was right. That is exactly the failure
+`config/people.yaml` documents itself as guarding against, and I walked into it
+from the other side.

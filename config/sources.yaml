@@ -152,7 +152,7 @@ labs:
     text_source: full_text
     date_from: feed
     notes: >
-      Was `method: sitemap` on deepmind.google/sitemap.xml until D63, chosen
+      Was `method: sitemap` on deepmind.google/sitemap.xml until D66, chosen
       "for parity with Anthropic's proven path". That sitemap does not
       enumerate the blog and the register was silently missing most of it.
 
@@ -239,7 +239,7 @@ labs:
       tags, no JSON-LD) -- date is read from visible page text, same regex
       every page-sourced lab already uses.
 
-      This channel is not broken and was checked rather than assumed (D63).
+      This channel is not broken and was checked rather than assumed (D66).
       Crawled to exhaustion on 2026-09-05: 231 unique articles reaching back
       to 2019, of which exactly 5 are inside a 3-month window, and the
       register holds all 5. ai.meta.com/blog is simply quiet -- its newest

@@ -350,7 +350,7 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
     # therefore propagates -- `adapters.fetch_announcements` only records a
     # channel as failed when the method raises, and `alerts.source_down` keys
     # off that, so swallowing it would report "this lab published nothing"
-    # with every check green. That is the sentence D63 was written about.
+    # with every check green. That is the sentence D66 was written about.
     # A later page failing or running out is ordinary and only ends the paging.
     pages = []
     for page in range(1, lab.get("feed_pages", 1) + 1):

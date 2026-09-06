@@ -1,0 +1,198 @@
+[
+  {
+    "repo": "anthropics/financial-services",
+    "cohort": "frontier",
+    "stars": 34700,
+    "language": "Python",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "anthropics/healthcare",
+    "cohort": "watched",
+    "stars": 408,
+    "language": "JavaScript",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "anthropics/claude-plugins-official",
+    "cohort": "frontier",
+    "stars": 35937,
+    "language": "Python",
+    "topics": [
+      "claude-code",
+      "mcp",
+      "skills"
+    ],
+    "description": "Official, Anthropic-managed directory of high quality Claude Code Plugins.",
+    "neil": ""
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-python",
+    "cohort": "watched",
+    "stars": 8037,
+    "language": "Python",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "openai/openai-dotnet",
+    "cohort": "watched",
+    "stars": 2683,
+    "language": "C#",
+    "topics": [
+      "csharp",
+      "dotnet",
+      "openai"
+    ],
+    "description": "The official .NET library for the OpenAI API",
+    "neil": ""
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-typescript",
+    "cohort": "watched",
+    "stars": 1730,
+    "language": "Shell",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "anthropics/anthropic-cli",
+    "cohort": "watched",
+    "stars": 633,
+    "language": "Go",
+    "topics": [
+      "anthropic",
+      "api",
+      "claude",
+      "cli"
+    ],
+    "description": "The CLI for the Claude API",
+    "neil": ""
+  },
+  {
+    "repo": "google-deepmind/alphafold",
+    "cohort": "watched",
+    "stars": 14824,
+    "language": "Python",
+    "topics": [],
+    "description": "Open source code for AlphaFold 2.",
+    "neil": ""
+  },
+  {
+    "repo": "facebookresearch/dinov2",
+    "cohort": "frontier",
+    "stars": 13303,
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "description": "PyTorch code and models for the DINOv2 self-supervised learning method.",
+    "neil": ""
+  },
+  {
+    "repo": "google-deepmind/weathernext",
+    "cohort": "watched",
+    "stars": 7631,
+    "language": "Python",
+    "topics": [
+      "weather",
+      "weather-forecast"
+    ],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "facebookresearch/vjepa2",
+    "cohort": "frontier",
+    "stars": 4577,
+    "language": "Python",
+    "topics": [],
+    "description": "PyTorch code and models for VJEPA2 self-supervised learning from video.",
+    "neil": ""
+  },
+  {
+    "repo": "facebookresearch/sapiens",
+    "cohort": "frontier",
+    "stars": 5421,
+    "language": "Python",
+    "topics": [],
+    "description": "High-resolution models for human tasks.",
+    "neil": ""
+  },
+  {
+    "repo": "google-deepmind/rlax",
+    "cohort": "watched",
+    "stars": 1442,
+    "language": "Python",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "facebookresearch/pytorchvideo",
+    "cohort": "watched",
+    "stars": 3563,
+    "language": "Python",
+    "topics": [],
+    "description": "A deep learning library for video understanding research.",
+    "neil": ""
+  },
+  {
+    "repo": "xai-org/grok-build",
+    "cohort": "frontier",
+    "stars": 26493,
+    "language": "Rust",
+    "topics": [],
+    "description": "SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible.",
+    "neil": ""
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-OCR",
+    "cohort": "frontier",
+    "stars": 23872,
+    "language": "Python",
+    "topics": [],
+    "description": "Contexts Optical Compression",
+    "neil": ""
+  },
+  {
+    "repo": "meta-llama/llama-models",
+    "cohort": "watched",
+    "stars": 7688,
+    "language": "Python",
+    "topics": [],
+    "description": "Utilities intended for use with Llama models.",
+    "neil": ""
+  },
+  {
+    "repo": "openai/transformer-debugger",
+    "cohort": "frontier",
+    "stars": 4123,
+    "language": "Python",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  },
+  {
+    "repo": "deepseek-ai/LPLB",
+    "cohort": "frontier",
+    "stars": 531,
+    "language": "Python",
+    "topics": [],
+    "description": "An early research stage expert-parallel load balancer for MoE models based on linear programming.",
+    "neil": ""
+  },
+  {
+    "repo": "mistralai/mistral-evals",
+    "cohort": "frontier",
+    "stars": 92,
+    "language": "Python",
+    "topics": [],
+    "description": null,
+    "neil": ""
+  }
+]

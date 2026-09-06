@@ -153,7 +153,7 @@ matter.
 
 **Meta's most investment-relevant AI news is not on its AI blog, and the four
 highest-scoring items in the whole register came from a feed we were not
-reading.** D63 added `about.fb.com/news/tag/ai/feed/`. Four items band `high` at
+reading.** D66 added `about.fb.com/news/tag/ai/feed/`. Four items band `high` at
 a saturated 100.0, all of them compute buildout, none present on
 `ai.meta.com/blog` in any form:
 
@@ -177,7 +177,7 @@ top, and a fund reading this wants El Paso and Richland Parish ranked against
 each other, not tied. That is a scoring-calibration gap, not a data one.
 
 **The register said Google DeepMind shipped nothing but outreach for three
-months.** It was reading a sitemap that does not enumerate the blog (D63), and
+months.** It was reading a sitemap that does not enumerate the blog (D66), and
 what that sitemap carried was the education, policy and programme posts while
 omitting Gemini 3.6, 3.7 and 3.8 Flash, Gemma 4 12B and DiffusionGemma. The
 single most forward-looking sentence recovered by the fix is buried in the

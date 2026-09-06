@@ -137,7 +137,7 @@ class TestTheGateOnPipelineRoutes:
         response = client.get("/api/pipeline/legs", headers=bearer(token))
         assert response.status_code == 200
         assert {leg["id"] for leg in response.json()} == {
-            "announcements", "papers", "github", "releases", "drift"
+            "announcements", "papers", "github", "releases", "posts", "drift"
         }
 
 
