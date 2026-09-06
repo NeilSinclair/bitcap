@@ -53,7 +53,7 @@
       "openai"
     ],
     "description": "The official .NET library for the OpenAI API",
-    "neil": "relevant"
+    "neil": "off_topic"
   },
   {
     "repo": "anthropics/claude-agent-sdk-typescript",
@@ -182,7 +182,7 @@
     "topics": [],
     "description": null,
     "context": "README: Transformer Debugger, from OpenAI's Superalignment team, for investigating specific behaviours of small language models.",
-    "neil": "relevant"
+    "neil": "off_topic"
   },
   {
     "repo": "deepseek-ai/LPLB",
@@ -191,7 +191,7 @@
     "language": "Python",
     "topics": [],
     "description": "An early research stage expert-parallel load balancer for MoE models based on linear programming.",
-    "neil": "relevant"
+    "neil": "off_topic"
   },
   {
     "repo": "mistralai/mistral-evals",
