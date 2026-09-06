@@ -77,11 +77,22 @@ class TestThePostsCorpusIsScoredByItsOwnPrompt:
 
 
 class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
-    """Three corpora, one question wherever the question can be one."""
+    """Three corpora, one question wherever the question can be one.
+
+    Reads the *live* posts prompt via `POST_PROMPT_VERSION` rather than naming a
+    file. Pinning `t1.md` by name meant the D70 flip to t2 left every assertion
+    below still passing against a prompt no longer in use -- a guard that reports
+    itself as working and is not.
+    """
+
+    @staticmethod
+    def live_post_prompt() -> str:
+        return (ROOT / "prompts" / "post_scoring"
+                / f"{POST_PROMPT_VERSION}.md").read_text()
 
     def test_the_shared_sections_are_byte_identical_to_the_paper_prompt(self):
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         for section in ("## Mechanisms", "## Categories", "## Practices",
                         "## Event type"):
             a, b = p1[p1.index(section):], t1[t1.index(section):]
@@ -91,11 +102,11 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
 
     def test_the_output_schema_section_is_identical(self):
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert p1[p1.index("## Output"):] == t1[t1.index("## Output"):]
 
     def test_the_prompt_declares_the_text_source_the_corpus_emits(self):
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert "`x_post`" in t1
         corpus = json.loads((ROOT / "research" / "docs" / "posts_corpus.json").read_text())
         assert {r["text_source"] for r in corpus} == {"x_post"}
@@ -103,7 +114,7 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
     def test_the_confidence_ceiling_is_stated(self):
         # Score scales on magnitude x confidence, so this sentence is what
         # stops enthusiasm reaching the high band.
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert "Cap `confidence` at `medium`" in t1
 
     def test_the_prompt_introduces_no_event_type_the_scoring_config_lacks(self):
@@ -111,12 +122,76 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
         # in the prompt and absent from config scores zero with no error.
         rules = yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert p1[p1.index("## Event type"):p1.index("## Output")] == \
                t1[t1.index("## Event type"):t1.index("## Output")]
         for event in rules["event_weight"]:
             if event != "other":
                 assert event in t1
+
+
+class TestTheRegisterCarriesTagsWhereTheScoringRuleNeedsThem:
+    """The guard on the fault D70 fixed, over the committed register.
+
+    `score_of` multiplies event weight by the strongest mechanism tag, so a
+    document with no tag scores 0 however heavy its event type. Zero is then
+    indistinguishable from "correctly found nothing", which is exactly how t1
+    lost every stated price without anything failing: all four `pricing_change`
+    posts came back untagged, `dropped_tags` empty, and the four highest-weight
+    economic claims in the corpus scored bottom.
+
+    Deliberately asserted over the *register file*, not a synthetic fixture. The
+    fault was a property of what the model returned across a real corpus, and no
+    hand-built row would have exhibited it. Needs no API key: the committed
+    artifact is the evidence.
+    """
+
+    @staticmethod
+    def register() -> list[dict]:
+        path = ROOT / "research" / "docs" / f"scored_posts_{POST_PROMPT_VERSION}.json"
+        return json.loads(path.read_text())["scored"]
+
+    def test_the_heaviest_event_types_are_not_uniformly_untagged(self):
+        """No weight-5 event type may be present and tagged nowhere.
+
+        Not "every such post must be tagged" -- a post can name a pricing change
+        and state nothing quotable, and an empty list is then right. What cannot
+        be right is an entire top-weight event type appearing in the corpus and
+        never once carrying a tag: that is the shape of a prompt that has stopped
+        reading a whole class of claim.
+        """
+        rules = yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
+        heaviest = {e for e, w in rules["event_weight"].items()
+                    if w == rules["max_event_weight"]}
+        register = self.register()
+        for event in heaviest:
+            rows = [r for r in register if r["event_type"] == event]
+            if not rows:
+                continue
+            tagged = [r for r in rows if r["mechanisms"]]
+            assert tagged, (
+                f"{len(rows)} `{event}` posts in the register and not one carries "
+                f"a mechanism tag. Event weight {rules['max_event_weight']} times "
+                f"no tag is a score of 0, so this whole class is invisible "
+                f"downstream. This is the D70 fault; see docs/decisions.md."
+            )
+
+    def test_a_stated_price_is_not_silently_dropped(self):
+        """The specific regression, pinned to the posts that exhibited it.
+
+        t1 returned no mechanism tags for any of these, with `dropped_tags`
+        empty -- the quote validator did not reject them, the model never
+        emitted them.
+        """
+        register = {r["url"]: r for r in self.register()}
+        priced = [r for r in register.values()
+                  if r["event_type"] == "pricing_change"]
+        assert priced, "no pricing_change posts in the register to check"
+        untagged = [r["url"] for r in priced if not r["mechanisms"]]
+        assert not untagged, (
+            f"{len(untagged)} of {len(priced)} `pricing_change` posts carry no "
+            f"mechanism tag: {untagged}"
+        )
 
 
 class TestPostsAreSeenButNotPushed:

@@ -35,10 +35,16 @@ PROMPT_VERSION = "v9"
 # two corpora carry their own versions and the readers below take both.
 PAPER_PROMPT_VERSION = "p1"
 
-# Posts are scored under their own version against prompts/post_scoring/t1.md,
+# Posts are scored under their own version against prompts/post_scoring/t2.md,
 # for the same reason papers are: `classifications.prompt_version` is a plain
 # string, so a third corpus costs nothing to add and re-classifies nothing.
-POST_PROMPT_VERSION = "t1"
+#
+# t2 replaces t1 (D70). t1 measurably lost stated prices: all four posts it
+# classified `pricing_change` -- the joint-highest event weight -- returned zero
+# mechanism tags and scored 0.0, including "80% drop... now $0.20 per million
+# input tokens". Scoring requires one quote-backed mechanism, so no tag is no
+# score. Both versions' rows coexist in `classifications`; nothing re-classifies.
+POST_PROMPT_VERSION = "t2"
 
 # Every reader of `classifications` must span both, and `connect` especially:
 # it deletes the whole table before rebuilding, so running it once per version
