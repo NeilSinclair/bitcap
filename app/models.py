@@ -251,7 +251,7 @@ class FetchCache(Base):
 
 
 # Tables that survive a rebuild. Everything else in this schema is a pure
-# function of committed files, so dropping it loses nothing; these nine are not
+# function of committed files, so dropping it loses nothing; these fourteen are not
 # — run history, per-source failure counts, raised alerts, drift snapshots,
 # published digests, the fetch cache, the embedding cache and the GitHub commit
 # bronze are only ever produced by a run that actually happened. `rebuild`
@@ -269,9 +269,21 @@ class FetchCache(Base):
 # the table it fills was empty, and every `releases` source (which reads this
 # table, and runs at cadence 1 against github's 3) failed on every firing until
 # github's next turn came round.
+#
+# The people register is here on the same reasoning, found the same way. `people`,
+# `person_identity` and `person_evidence` are derived -- but derived from
+# `raw_papers` and `raw_github_people`, which are live-fetched bronze with no
+# committed artifact, so `cmd_load` has nothing to rebuild them from. A rebuild
+# emptied all five and the three `load` runs after it could not put them back:
+# the register read zero people until the next papers *and* github firing, which
+# at cadence 2 and 3 is not the next night. Nothing lied here the way
+# `source_state` did for `raw_github_repos` -- the register simply went quiet,
+# which is worse to notice.
 OPS_TABLES = frozenset(
     {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts",
-     "digests", "fetch_cache", "raw_article_embeddings", "raw_github_repos"}
+     "digests", "fetch_cache", "raw_article_embeddings", "raw_github_repos",
+     "raw_papers", "raw_github_people", "people", "person_identity",
+     "person_evidence"}
 )
 
 

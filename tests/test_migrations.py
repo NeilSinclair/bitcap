@@ -143,6 +143,40 @@ class TestRebuildPreservesOperationalHistory:
         with Session(engine) as after:
             assert after.scalar(select(func.count()).select_from(m.RawGithubRepo)) == 1
 
+    def test_drop_all_keeps_the_people_register(self, session):
+        """The register empties on a rebuild and no `load` can fill it again.
+
+        `people` is derived, but from `raw_papers` and `raw_github_people` --
+        live-fetched bronze with no committed artifact, so `cmd_load` has
+        nothing to rebuild it from. A rebuild on 2026-09-05 dropped all five and
+        the register read zero people through three subsequent `load` runs,
+        until the next papers *and* github firing. All five survive together or
+        none of them is worth keeping.
+        """
+        engine = session.get_bind()
+        person = m.Person(lab="anthropic", source_kind="github", canonical_name="Ada")
+        session.add(person)
+        session.flush()
+        session.add_all([
+            m.PersonIdentity(person_id=person.id, kind="github_login",
+                             value="ada", lab="anthropic"),
+            m.PersonEvidence(person_id=person.id, source_kind="github",
+                             ref_url="https://github.com/anthropics/x/commit/1",
+                             tier="confirmed", payload={}),
+            m.RawPaper(url="https://anthropic.com/research/p", lab="anthropic",
+                       payload={"authors": ["Ada"]}, content_hash="p1"),
+            m.RawGithubPerson(org="anthropics", login="ada", lab="anthropic",
+                              payload={"commits": 12}, content_hash="g1"),
+        ])
+        session.commit()
+
+        drop_all(engine)
+
+        with Session(engine) as after:
+            for model in (m.Person, m.PersonIdentity, m.PersonEvidence,
+                          m.RawPaper, m.RawGithubPerson):
+                assert after.scalar(select(func.count()).select_from(model)) == 1
+
     def test_drop_then_create_restores_a_full_schema(self, session):
         """A rebuild is still a rebuild: the derived tables come back."""
         engine = session.get_bind()
