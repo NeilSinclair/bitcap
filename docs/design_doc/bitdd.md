@@ -2,6 +2,12 @@
 
 The BIT Capital Frontier Lab Intelligence app pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) portfolio, indicating how these signals could impact BIT Capital positions as well as the strength of these impacts.
 
+### What it surfaced
+
+- Mark Chen of OpenAI on X, 17 August: "We're excited to go big with NVIDIA and sign up for 4+ GW of capacity", scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.
+
+- Meta's venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta's AI blog at all.
+
 ### Discussion of the principles of Design
 
 The first design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across portfolios and settled on the positions within the Technology Leaders portfolio. These positions represent roughly 1.4B € or 47% of BitCap's holdings and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across portfolios.
@@ -105,9 +111,9 @@ The data is processed in a medallion archicture. The Bronze layer is updated whe
 Articles covering the same event are grouped so the feed shows one row per event rather than one row per source. Three deterministic passes run first: exact matches on lab, date and title, release trains from a single repo, and a requirement that the event type matches before anything can merge at all. The remaining pairs are compared by embedding, and only those in a narrow cosine band are sent to an LLM to decide, because on the pairs I labelled the cosine score does not separate duplicates from near misses cleanly enough to cut at one threshold. Pairs at or above 0.80 merge unasked, pairs below 0.70 stay separate, and the model is only asked in between.
 
 
-## Digest
+## Alerts Digest
 
-The digest is a daily edition of the highest scoring items from the previous 24 hours, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day.
+The digest in the Alerts tab is a daily edition of the highest scoring items from the previous 24 hours, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day. When the pipeline runs each day, it creates a published set of articles from the past 24 hours which the user can then investigate by selecting it in the drop down menu at the top of the Alerts.
 
 
 ### Pipeline alerts and failures

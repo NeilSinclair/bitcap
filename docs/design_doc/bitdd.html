@@ -15,6 +15,11 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 </style>
 <h1>Overview of BIT Capital Frontier Lab Intelligence App</h1>
 <p>The BIT Capital Frontier Lab Intelligence app pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) portfolio, indicating how these signals could impact BIT Capital positions as well as the strength of these impacts.</p>
+<h3>What it surfaced</h3>
+<ul>
+<li>Mark Chen of OpenAI on X, 17 August: &quot;We&#x27;re excited to go big with NVIDIA and sign up for 4+ GW of capacity&quot;, scored 100 as a compute commitment, naming a holding and a gigawatt figure in a post with no press release behind it.</li>
+<li>Meta&#x27;s venture with BlackRock to build a 1 GW data centre in El Paso at roughly $14 billion in development costs, also scored 100, which came in on the Meta Newsroom feed and does not appear on Meta&#x27;s AI blog at all.</li>
+</ul>
 <h3>Discussion of the principles of Design</h3>
 <p>The first design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across portfolios and settled on the positions within the Technology Leaders portfolio. These positions represent roughly 1.4B € or 47% of BitCap&#x27;s holdings and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across portfolios.</p>
 <p>When a source is scored, it links back to a BitCap position through a linked Mechanism (see Scoring below). The user can then see a rated impact of the source on the investment, whether positive, negative or mixed.  </p>
@@ -74,8 +79,8 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <p><em>Figure 2 The Medallion architecture</em></p>
 <h2>Grouping</h2>
 <p>Articles covering the same event are grouped so the feed shows one row per event rather than one row per source. Three deterministic passes run first: exact matches on lab, date and title, release trains from a single repo, and a requirement that the event type matches before anything can merge at all. The remaining pairs are compared by embedding, and only those in a narrow cosine band are sent to an LLM to decide, because on the pairs I labelled the cosine score does not separate duplicates from near misses cleanly enough to cut at one threshold. Pairs at or above 0.80 merge unasked, pairs below 0.70 stay separate, and the model is only asked in between.</p>
-<h2>Digest</h2>
-<p>The digest is a daily edition of the highest scoring items from the previous 24 hours, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day.</p>
+<h2>Alerts Digest</h2>
+<p>The digest in the Alerts tab is a daily edition of the highest scoring items from the previous 24 hours, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day. When the pipeline runs each day, it creates a published set of articles from the past 24 hours which the user can then investigate by selecting it in the drop down menu at the top of the Alerts.</p>
 <h3>Pipeline alerts and failures</h3>
 <p>The pipeline runs unattended overnight, so it is built to fail in a way I can see.</p>
 <ul>
