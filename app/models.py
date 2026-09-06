@@ -251,17 +251,27 @@ class FetchCache(Base):
 
 
 # Tables that survive a rebuild. Everything else in this schema is a pure
-# function of committed files, so dropping it loses nothing; these eight are not
+# function of committed files, so dropping it loses nothing; these nine are not
 # — run history, per-source failure counts, raised alerts, drift snapshots,
-# published digests, the fetch cache and the embedding cache are only ever
-# produced by a run that actually happened. `rebuild` dropping `pipeline_runs`
-# was a real (if quiet) loss of history before this existed, and dropping
-# `fetch_cache` would send the next run back to arXiv for everything it already
-# has. `raw_article_embeddings` is here on exactly that reasoning: dropping it
-# sends the next run back to OpenAI for every article it has already embedded.
+# published digests, the fetch cache, the embedding cache and the GitHub commit
+# bronze are only ever produced by a run that actually happened. `rebuild`
+# dropping `pipeline_runs` was a real (if quiet) loss of history before this
+# existed, and dropping `fetch_cache` would send the next run back to arXiv for
+# everything it already has. `raw_article_embeddings` is here on exactly that
+# reasoning: dropping it sends the next run back to OpenAI for every article it
+# has already embedded.
+#
+# `raw_github_repos` is here on that reasoning *and* on a second one, learnt in
+# production. It is live-fetched bronze with no committed artifact — `load_raw`
+# never restores it — so a rebuild sent the next github firing back for a
+# 14-minute walk of 2,000+ repositories. Worse, `source_state` survives the same
+# rebuild, so the github leg went on reading "last success, 0 failures" while
+# the table it fills was empty, and every `releases` source (which reads this
+# table, and runs at cadence 1 against github's 3) failed on every firing until
+# github's next turn came round.
 OPS_TABLES = frozenset(
     {"pipeline_runs", "gold_snapshots", "run_sources", "source_state", "alerts",
-     "digests", "fetch_cache", "raw_article_embeddings"}
+     "digests", "fetch_cache", "raw_article_embeddings", "raw_github_repos"}
 )
 
 

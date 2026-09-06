@@ -202,6 +202,30 @@ class TestTheNewConfigFilesAreValidated:
         errors = validate.check_pipeline(self._config_dir(tmp_path, {"alerts": {"channel": "carrier"}}))
         assert any("channel" in e for e in errors)
 
+    def test_a_listing_window_above_the_lookup_window_is_rejected(self, tmp_path):
+        """Legal YAML that throws away the whole point of splitting the two.
+
+        A listing is how a new paper is found at all; a lookup asks about a
+        title we already have. Set them equal and DeepSeek is back to a
+        fortnight's lag on its own papers, with nothing failing.
+        """
+        errors = validate.check_pipeline(
+            self._config_dir(tmp_path, {"fetch": {"listing_ttl_hours": 336}}))
+        assert any("listing_ttl_hours" in e for e in errors)
+
+    def test_a_zero_listing_window_is_rejected(self, tmp_path):
+        errors = validate.check_pipeline(
+            self._config_dir(tmp_path, {"fetch": {"listing_ttl_hours": 0}}))
+        assert any("listing_ttl_hours" in e for e in errors)
+
+    def test_jitter_outside_a_fraction_is_rejected(self, tmp_path):
+        """1.0 doubles a window nobody asked to double; negative dithers below
+        the configured floor, making every URL quietly fresher than the file says."""
+        for bad in (1.0, -0.1):
+            errors = validate.check_pipeline(
+                self._config_dir(tmp_path, {"fetch": {"discovery_ttl_jitter": bad}}))
+            assert any("discovery_ttl_jitter" in e for e in errors), bad
+
     def test_a_mistyped_url_field_is_rejected(self, tmp_path):
         """Every paper would resolve to a null citation and be dropped, while
         the source still reported SUCCEEDED with a healthy items_seen."""

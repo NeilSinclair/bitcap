@@ -63,7 +63,7 @@ class Paper:
     order_meaningful: bool = False  # papers state the order is alphabetical
 
 
-def fetch(url: str, retries: int | None = None) -> str:
+def fetch(url: str, retries: int | None = None, ttl_hours=fetch_cache.AUTO) -> str:
     """Fetch a URL through the shared cache, throttle and retry policy.
 
     This function had no retry at all, which is why DeepSeek and OpenAI (which
@@ -75,6 +75,8 @@ def fetch(url: str, retries: int | None = None) -> str:
     Args:
         url: Absolute URL.
         retries: Attempts before giving up. None takes the configured value.
+        ttl_hours: How long the body stays trustworthy; passed straight through.
+            `fetch_cache.LISTING` for a URL that is how we learn a paper exists.
 
     Returns:
         Decoded response body.
@@ -84,16 +86,23 @@ def fetch(url: str, retries: int | None = None) -> str:
             not a dead one (D27).
     """
     return fetch_cache.fetch(
-        url, cache_dir=CACHE, suffix=".txt", user_agent=UA, retries=retries
+        url, cache_dir=CACHE, suffix=".txt", user_agent=UA, retries=retries,
+        ttl_hours=ttl_hours,
     )
 
 
-def arxiv_query(search: str, max_results: int = 60) -> list[dict]:
+def arxiv_query(search: str, max_results: int = 60,
+                ttl_hours=fetch_cache.AUTO) -> list[dict]:
     """Run an arXiv API query and return entry metadata.
 
     Args:
         search: arXiv search_query expression.
         max_results: Result cap.
+        ttl_hours: Cache policy for this query. The default suits a `ti:` lookup
+            of a paper we already know the title of. Pass
+            `fetch_cache.LISTING` for a query that is how we learn a paper
+            exists -- `openai_harvest` imports this function for the former, so
+            the distinction cannot live in the function itself.
 
     Returns:
         Entry dicts with id, title, date and metadata author names.
@@ -106,7 +115,7 @@ def arxiv_query(search: str, max_results: int = 60) -> list[dict]:
             "sortOrder": "descending",
         }
     )
-    xml = fetch(url)
+    xml = fetch(url, ttl_hours=ttl_hours)
     out = []
     for entry in re.findall(r"(?s)<entry>(.*?)</entry>", xml):
         aid = re.search(r"<id>(.*?)</id>", entry).group(1).rsplit("/", 1)[-1]
@@ -209,7 +218,10 @@ def collect() -> list[Paper]:
     Returns:
         Papers, oldest first.
     """
-    entries = arxiv_query('au:"DeepSeek-AI"')
+    # LISTING, not the default: DeepSeek publishes no papers page, so this
+    # search is the *only* route by which one of its papers is ever found. On
+    # the shared discovery TTL a new paper could go unseen for a fortnight.
+    entries = arxiv_query('au:"DeepSeek-AI"', ttl_hours=fetch_cache.LISTING)
     have = {e["arxiv_id"].split("v")[0] for e in entries}
     for title in EXTRA_TITLES:
         for e in arxiv_query(f'ti:"{title}"', 5):
