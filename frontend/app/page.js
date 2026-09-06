@@ -3,29 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Gate, apiFetch, signOut } from "./auth";
+// The record, the decoration it needs, and the palette are shared with the
+// digest now — see the header of ./detail for why they stopped living here.
+import {
+  ACCENT, DetailPanel, FoldedGroup, MUTED, NEGATIVE, RelatedItems, actionStyle,
+  bandStyle, decorateItems, groupAnchors, relatedByGroup, signArrow, signColor,
+} from "./detail";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const ACCENT = "#5ac3f0";
-const NEGATIVE = "#f2545b";
-const MUTED = "#9a9992";
-
-function signColor(sign) {
-  return sign === "positive" ? ACCENT : sign === "negative" ? NEGATIVE : MUTED;
-}
-function signArrow(sign) {
-  return sign === "positive" ? "↑" : sign === "negative" ? "↓" : "↔";
-}
-function bandStyle(band) {
-  if (band === "high") return { background: ACCENT, color: "#0d0d0d", borderColor: ACCENT, fontWeight: 600 };
-  if (band === "medium") return { background: "transparent", color: ACCENT, borderColor: ACCENT };
-  if (band === "low") return { background: "transparent", color: MUTED, borderColor: "#333331" };
-  return { background: "transparent", color: "#6f6e69", borderColor: "#333331" };
-}
-function actionStyle(action) {
-  if (action === "adopt") return { background: ACCENT, color: "#0d0d0d", borderColor: ACCENT, fontWeight: 600 };
-  if (action === "investigate") return { background: "transparent", color: ACCENT, borderColor: ACCENT };
-  return { background: "transparent", color: MUTED, borderColor: "#333331" };
-}
 
 function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
   return (
@@ -44,68 +29,6 @@ function LogoMark({ size = 72, fill = "#f5f4f1", accent = ACCENT }) {
       <path d="M47.6416 26.1975L48.5912 26.0314V19.3079L47.6416 19.1417V18.655L49.2912 18.3938L49.563 18.5013V26.0314L50.4886 26.1975V26.6843H47.6416V26.1975Z" fill={fill} />
       <path d="M36.4326 19.9231H35.46L38.6205 7.24438H39.5941L36.4326 19.9231Z" fill={accent} />
     </svg>
-  );
-}
-
-function FoldedGroup({ members, reason, onOpen }) {
-  const [open, setOpen] = useState(false);
-  const span = members.length === 1 ? "1 more" : `${members.length} more`;
-  return (
-    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
-      <button
-        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
-        style={{
-          background: "none", border: "none", padding: 0, cursor: "pointer",
-          font: "inherit", fontSize: 12, color: "var(--muted-2)",
-        }}
-      >
-        {open ? "▾" : "▸"} {span} on this — same event
-      </button>
-      {open && (
-        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
-          {/* Why they were merged, in the model's or the rule's own words. A
-              collapse the reader cannot interrogate is a collapse they have to
-              take on trust. */}
-          <div style={{ fontSize: 11, color: "var(--muted-2)", fontStyle: "italic" }}>{reason}</div>
-          {members.map((f) => (
-            <div
-              key={f.id}
-              onClick={(e) => { e.stopPropagation(); onOpen(f.id); }}
-              style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
-            >
-              <span style={{ color: "var(--muted-2)" }}>{f.date}</span> · {f.title}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Related-but-distinct articles, deliberately shaped unlike FoldedGroup above.
-// A fold says "this is the same event, I have hidden the rest"; this says "these
-// are different documents about the same model, both are in the feed". So it
-// opens by default and never implies anything was removed — the reader is being
-// offered a cross-reference, not shown the remains of a merge.
-function RelatedItems({ items, onOpen }) {
-  return (
-    <div style={{ borderTop: "1px solid var(--line)", paddingTop: 8, marginTop: 2 }}>
-      <div style={{ fontSize: 12, color: "var(--muted-2)", marginBottom: 6 }}>
-        Also mentions {[...new Set(items.map((r) => r.evidence))].join(", ")}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {items.map((r) => (
-          <div
-            key={`${r.id}-${r.evidence}`}
-            onClick={(e) => { e.stopPropagation(); onOpen(r.id); }}
-            style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)", lineHeight: 1.4 }}
-          >
-            <span className="tag-pill" style={{ color: "var(--muted-2)", marginRight: 6 }}>{r.docType}</span>
-            {r.title}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -161,153 +84,16 @@ function Dashboard() {
       .catch(() => setSystemAlerts(0));
   }, []);
 
-  const decorated = useMemo(() => {
-    return items.map((it) => {
-      const mechanisms = it.mechanisms.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
-      const categories = it.categories.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
-      const connections = it.connections.map((c) => ({
-        ...c,
-        color: signColor(c.direction),
-        arrow: signArrow(c.direction),
-        // `note` prefers the holding-specific "why" (app/connect.py) and
-        // only falls back to the article's own reason when there isn't one.
-        // Category rows never carry a holding-side why (membership has no
-        // company-specific evidence), so their note is always identical to
-        // what Evidence already shows for that same tag — hide only there.
-        // Every other route's note is genuinely distinct information.
-        showNote: c.route !== "category",
-        caption: c.magnitude && c.confidence
-          ? `${c.magnitude} magnitude · ${c.confidence} confidence`
-          : c.confidence
-          ? `${c.confidence} confidence`
-          : null,
-      }));
-      const practices = it.practices.map((p) => ({ ...p, actionStyleObj: actionStyle(p.action) }));
+  // Decoration, anchoring and link-resolution all moved to ./detail so the
+  // digest renders the identical record. The rules are unchanged and their
+  // reasoning travels with them; only the location differs.
+  const decorated = useMemo(() => decorateItems(items, audience), [items, audience]);
 
-      const evidencePills = audience === "investment"
-        ? [...mechanisms, ...categories].slice(0, 2).map((t) => ({ label: t.label, color: t.color, arrow: t.arrow }))
-        : practices.slice(0, 2).map((p) => ({ label: p.label, color: ACCENT, arrow: p.action === "adopt" ? "↑" : "→" }));
+  const [anchorFor, foldedByGroup] = useMemo(
+    () => groupAnchors(decorated, audience), [decorated, audience]);
 
-      const impactPills = audience === "investment"
-        ? connections.slice(0, 2).map((c) => ({ label: `${c.holding} ${c.strength.toFixed(2)}`, color: c.color }))
-        : [];
-
-      // Grouped by company for the detail panel: a big article can connect
-      // to a dozen holdings across several routes each, and a flat list of
-      // rows reading "mechanism / −0.33" over and over is unreadable —
-      // "which company, what specifically, how strong" is the layout below.
-      const byHolding = new Map();
-      for (const c of connections) {
-        if (!byHolding.has(c.holding)) byHolding.set(c.holding, []);
-        byHolding.get(c.holding).push(c);
-      }
-      const connectionGroups = [...byHolding.entries()]
-        .map(([holding, rows]) => ({
-          holding,
-          rows: [...rows].sort((a, b) => b.strength - a.strength),
-          maxStrength: Math.max(...rows.map((r) => r.strength)),
-        }))
-        .sort((a, b) => b.maxStrength - a.maxStrength);
-
-      const displayScore = (audience === "investment" ? it.score : it.aiScore).toFixed(1);
-      const displayBand = audience === "investment" ? it.band : it.aiBand;
-
-      return {
-        ...it,
-        mechanisms,
-        categories,
-        connections,
-        connectionGroups,
-        practices,
-        evidencePills,
-        impactPills,
-        showImpactRow: audience === "investment" && impactPills.length > 0,
-        displayScore,
-        displayBand,
-        displayStyle: bandStyle(displayBand),
-        chipScore: it.score.toFixed(1),
-        aiChipScore: it.aiScore.toFixed(1),
-      };
-    });
-  }, [items, audience]);
-
-  // Which member of a near-duplicate group speaks for it, decided per audience
-  // rather than read from `isAnchor`. That flag is picked once over the whole
-  // corpus on a single score; event_type is a multiplicative term in the
-  // investment score and absent from the AI score, so the member ranking
-  // highest overall can score zero on the axis being displayed — and the member
-  // carrying the signal for this audience is the one that got folded.
-  //
-  // Folded members stay in `decorated` so a reader can expand a card and check
-  // the merge. Dropping them would make a collapse look like an article we
-  // never had.
-  const [anchorFor, foldedByGroup] = useMemo(() => {
-    const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
-    // Score first, then by date — and the date direction flips for release
-    // trains, where every member usually scores the same so this decides every
-    // one of them. A repo's card must name the version it is on, not the one it
-    // has left. Everywhere else earliest wins, because being early is the
-    // claim. Same rule as app/digest.py `rank`; the two must agree or the feed
-    // and the digest name different articles as the same event.
-    const better = (a, b) => {
-      if (value(a) !== value(b)) return value(a) > value(b);
-      const latest = a.groupMethod === "release_train";
-      if (a.date !== b.date) return latest ? a.date > b.date : a.date < b.date;
-      // Ids break a full tie, or the winner depends on the order the API
-      // happened to return rows in — which has no secondary sort within a day.
-      return latest ? a.id > b.id : a.id < b.id;
-    };
-    const best = {};
-    for (const it of decorated) {
-      const cur = best[it.groupId];
-      if (!cur || better(it, cur)) best[it.groupId] = it;
-    }
-    const folded = {};
-    for (const it of decorated) {
-      if (best[it.groupId] === it) continue;
-      (folded[it.groupId] = folded[it.groupId] || []).push(it);
-    }
-    for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
-    return [best, folded];
-  }, [decorated, audience]);
-
-  // Related items, resolved through the group anchor rather than rendered as
-  // stored. Two things go wrong without this, and both were found in review:
-  //
-  // * 17 of 25 links on the live corpus point at a FOLDED member, so the link
-  //   was written, counted, and never displayed anywhere.
-  // * The three GPT-6 Astra posts are one group, so a release linked to all
-  //   three listed one launch three times.
-  //
-  // Resolving to `anchorFor` fixes both at once, and it must happen here rather
-  // than server-side because the anchor is decided per audience (see above) —
-  // `isAnchor` is a single corpus-wide flag and would name the wrong row on one
-  // of the two tabs.
-  // Keyed by GROUP, not by article, so a link carried by a folded member still
-  // reaches the card its reader is actually looking at. Both ends need that: on
-  // the live corpus the release links to all three Astra posts and only one of
-  // them is the anchor.
-  const relatedForGroup = useMemo(() => {
-    const byId = {};
-    for (const it of decorated) byId[it.id] = it;
-    const out = {};
-    for (const it of decorated) {
-      const seen = out[it.groupId] || (out[it.groupId] = new Map());
-      for (const rel of it.relatedTo || []) {
-        const target = byId[rel.id];
-        if (!target) continue;
-        const anchor = anchorFor[target.groupId] || target;
-        // A link inside one's own group is the grouping's story, not a
-        // cross-reference — FoldedGroup already says it, and better.
-        if (anchor.groupId === it.groupId) continue;
-        if (!seen.has(anchor.id)) {
-          seen.set(anchor.id, { ...rel, id: anchor.id, title: anchor.title, docType: anchor.docType });
-        }
-      }
-    }
-    return Object.fromEntries(
-      Object.entries(out).map(([groupId, seen]) => [groupId, [...seen.values()]]));
-  }, [decorated, anchorFor]);
+  const relatedForGroup = useMemo(
+    () => relatedByGroup(decorated, anchorFor), [decorated, anchorFor]);
 
   // Options come from the corpus, not from config: an option that matches
   // nothing is a dead end, and the count next to each one says what is behind
@@ -635,149 +421,14 @@ function Dashboard() {
         </div>
       </div>
 
-      {selected && (
-        <>
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)" }} onClick={() => setSelectedId(null)} />
-          <div className="detail-panel scroll-y" style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 620, background: "var(--bg-2)", borderLeft: "1px solid var(--border)", padding: "28px 32px 60px", display: "flex", flexDirection: "column", gap: 22 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span className="label-bracket">{selected.labLabel}</span>
-                <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{selected.date}</span>
-              </div>
-              <button className="close-btn" onClick={() => setSelectedId(null)}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="#f5f4f1" strokeWidth="1.3" /></svg>
-              </button>
-            </div>
-
-            <div className="serif" style={{ fontSize: 23, fontWeight: 500, lineHeight: 1.3 }}>{selected.title}</div>
-
-            <a href={selected.sourceUrl} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--muted-2)" }}>
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4H4a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2v-2M10 2h4v4M14 2L7 9" stroke="#6f6e69" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              {selected.sourceUrl}
-            </a>
-
-            <div style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text)" }}>{selected.summary}</div>
-
-            {/* Also here, not only on the card: the panel is reachable from a
-                folded row, whose own card the reader never saw. */}
-            {(relatedForGroup[selected.groupId] || []).length > 0 && (
-              <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 8 }}>
-                <span className="label-bracket">Related</span>
-                <RelatedItems items={relatedForGroup[selected.groupId]} onOpen={setSelectedId} />
-              </div>
-            )}
-
-            {selected.notableReason && (
-              <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 8 }}>
-                <span className="label-bracket">Why flagged</span>
-                <div className="quote-block" style={{ fontStyle: "normal", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "var(--text)", fontSize: 13.5 }}>
-                  {selected.notableReason}
-                </div>
-              </div>
-            )}
-
-            {audience === "investment" && (
-              <>
-                <div className="section-block" style={{ paddingTop: 18, display: "flex", alignItems: "center", gap: 16 }}>
-                  <div className="serif" style={{ fontSize: 34, fontWeight: 500 }}>{selected.chipScore}</div>
-                  <span className="tag-pill" style={bandStyle(selected.band)}>{selected.band}</span>
-                </div>
-
-                {(selected.mechanisms.length > 0 || selected.categories.length > 0) && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    <span className="label-bracket">Evidence</span>
-                    {selected.mechanisms.map((m, i) => (
-                      <div key={`m${i}`} style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          <span style={{ color: m.color }}>{m.arrow}</span>
-                          <span style={{ fontWeight: 600 }}>{m.label}</span>
-                          <span style={{ color: "var(--muted-2)" }}>· {m.magnitude} magnitude · {m.confidence} confidence</span>
-                        </div>
-                        <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{m.reason}</div>
-                        <div className="quote-block">&ldquo;{m.quote}&rdquo;</div>
-                      </div>
-                    ))}
-                    {selected.categories.map((c, i) => (
-                      <div key={`c${i}`} style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          <span style={{ color: c.color }}>{c.arrow}</span>
-                          <span style={{ fontWeight: 600 }}>{c.label}</span>
-                          <span style={{ color: "var(--muted-2)" }}>· {c.confidence} confidence</span>
-                        </div>
-                        <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{c.reason}</div>
-                        <div className="quote-block">&ldquo;{c.quote}&rdquo;</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {selected.connectionGroups.length > 0 && (
-                  <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 20 }}>
-                    <span className="label-bracket">Portfolio impact</span>
-                    {selected.connectionGroups.map((group) => (
-                      <div key={group.holding} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600 }}>{group.holding}</div>
-                        <div style={{ border: "1px solid var(--border)" }}>
-                          {group.rows.map((r, i) => (
-                            <div
-                              key={i}
-                              style={{
-                                display: "flex", flexDirection: "column", gap: 3,
-                                padding: "10px 14px",
-                                borderTop: i > 0 ? "1px solid var(--border)" : "none",
-                              }}
-                            >
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                                <span style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-                                  <span style={{ color: r.color }}>{r.arrow}</span>
-                                  {r.label}
-                                </span>
-                                <span style={{ color: r.color, fontSize: 13, fontWeight: 600, flexShrink: 0 }}>{r.strength.toFixed(2)}</span>
-                              </div>
-                              {r.caption && (
-                                <div style={{ fontSize: 11, color: "var(--muted-2)" }}>{r.caption}</div>
-                              )}
-                              {r.showNote && r.note && (
-                                <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5, marginTop: 2 }}>{r.note}</div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {audience === "ai" && (
-              <>
-                <div className="section-block" style={{ paddingTop: 18, display: "flex", alignItems: "center", gap: 16 }}>
-                  <div className="serif" style={{ fontSize: 34, fontWeight: 500 }}>{selected.aiChipScore}</div>
-                  <span className="tag-pill" style={bandStyle(selected.aiBand)}>{selected.aiBand}</span>
-                </div>
-
-                {selected.practices.length > 0 && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    <span className="label-bracket">What to do</span>
-                    {selected.practices.map((p, i) => (
-                      <div key={i} style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          <span className="tag-pill" style={p.actionStyleObj}>{p.action}</span>
-                          <span style={{ fontWeight: 600 }}>{p.label}</span>
-                          <span style={{ color: "var(--muted-2)" }}>· {p.impact} impact · {p.confidence} confidence</span>
-                        </div>
-                        <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{p.reason}</div>
-                        <div className="quote-block">&ldquo;{p.quote}&rdquo;</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </>
-      )}
+      {/* The full record, identical to the one the digest opens (./detail). */}
+      <DetailPanel
+        item={selected}
+        related={selected ? relatedForGroup[selected.groupId] : null}
+        audience={audience}
+        onOpen={setSelectedId}
+        onClose={() => setSelectedId(null)}
+      />
     </div>
   );
 }

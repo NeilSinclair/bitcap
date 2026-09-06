@@ -840,3 +840,76 @@ class TestEverySurfaceReadsTheSameCorpora:
         assert POST_PROMPT_VERSION in config["alerts"]["content_mute_prompt_versions"], (
             "posts entered the digest; keeping them muted for alerts is the "
             "separate decision D69 deliberately did not take")
+
+
+class TestTheDigestOpensTheSameRecordAsTheDashboard:
+    """One panel, imported twice — not two renderings of one article.
+
+    The digest is the surface a reader is meant to live in, and its cards are
+    summaries. Before this, the *thinner* view was the one they spent their time
+    in, and the full record was a page away. Reproducing the panel inside
+    `digest/page.js` would have fixed that by creating two copies to keep in
+    step, which is the same failure one step later.
+
+    These read the frontend source, as `tests/test_posts_spine.py` already does
+    for the dashboard's doc-type filter. They are contract tests, not render
+    tests: there is no JS test runner in this repo, so what they can check is
+    that the wiring exists and that the duplication has not come back.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def _read(self, *parts):
+        return (self.FRONTEND.joinpath(*parts)).read_text(encoding="utf-8")
+
+    def test_the_panel_lives_in_one_file_and_both_pages_import_it(self):
+        shared = self._read("detail.js")
+        assert "export function DetailPanel(" in shared
+
+        for page in (("page.js",), ("digest", "page.js")):
+            source = self._read(*page)
+            assert "DetailPanel" in source, f"{page} does not use the shared panel"
+            assert "function DetailPanel(" not in source, (
+                f"{page} defines its own panel; the two will drift")
+
+    def test_no_page_reimplements_the_panel_body(self):
+        """The headings are the cheapest fingerprint of a copied panel."""
+        for heading in ("Portfolio impact", "What to do", "Why flagged"):
+            hits = [p for p in self.FRONTEND.rglob("*.js")
+                    if heading in p.read_text(encoding="utf-8")]
+            assert [p.name for p in hits] == ["detail.js"], (
+                f'"{heading}" is rendered in {[p.name for p in hits]}, not only detail.js')
+
+    def test_a_digest_card_opens_the_record(self):
+        source = self._read("digest", "page.js")
+        # Both card types take the opener, and the page fetches the corpus the
+        # panel needs — a card wired to a handler with no data behind it is the
+        # failure this pair catches.
+        assert source.count("onOpen") >= 4
+        assert '"/api/items"' in source
+        assert "decorateItems(" in source
+
+    def test_a_card_whose_article_left_the_corpus_is_not_clickable(self):
+        """Published payloads are frozen; article ids are not. Measured on the
+        live database: every item in editions 94 and 96 points at an id that no
+        longer exists, so the guard is load-bearing rather than defensive."""
+        source = self._read("digest", "page.js")
+        assert "byId[item.id] ? setSelectedId : null" in source
+
+    def test_the_shared_palette_is_the_dashboards_not_the_digests(self):
+        """The bug this nearly shipped.
+
+        `digest/page.js` carries a three-branch `bandStyle` that folds `low` and
+        `none` into one style, which is fine where nothing below medium renders.
+        The dashboard shows the whole corpus and distinguishes four. Moving the
+        digest's version into the shared file would have silently restyled every
+        low and unbanded row on the dashboard.
+        """
+        shared = self._read("detail.js")
+        band = shared[shared.index("export function bandStyle"):]
+        band = band[:band.index("\n}")]
+        assert 'band === "low"' in band, "the four-band dashboard palette was lost"
+
+        action = shared[shared.index("export function actionStyle"):]
+        action = action[:action.index("\n}")]
+        assert 'action === "investigate"' in action, "the three-action palette was lost"

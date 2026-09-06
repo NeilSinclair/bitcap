@@ -11,9 +11,13 @@
 // thing on the page that says the taste is real: a digest that cannot state what
 // it discarded is just a shorter list.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Gate, apiFetch, signOut } from "../auth";
+// The same record the dashboard opens, not a second rendering of it. A digest
+// card is a summary by design; the reader who wants the whole thing should not
+// have to leave the page they live in to get it.
+import { DetailPanel, decorateItems, groupAnchors, relatedByGroup } from "../detail";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -109,10 +113,17 @@ function TheCut({ stats, windowStart, windowEnd }) {
 // One event. Never one connection: an article that fires against fourteen
 // holdings is one thing that happened, and rendering it fourteen times is the
 // noise this page exists to remove.
-function InvestmentItem({ item }) {
+function InvestmentItem({ item, onOpen }) {
   const h = item.holdings || { named: [], more: 0, total: 0 };
   return (
-    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+    <article
+      onClick={onOpen ? () => onOpen(item.id) : undefined}
+      style={{
+        border: "1px solid var(--border)", background: "var(--bg-2)",
+        padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
+        cursor: onOpen ? "pointer" : "default",
+      }}
+    >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
@@ -160,16 +171,27 @@ function InvestmentItem({ item }) {
         ) : null}
       </div>
 
-      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+      <a
+        href={item.sourceUrl} target="_blank" rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        style={{ fontSize: 12, color: ACCENT, alignSelf: "flex-start" }}
+      >
         Primary source ↗
       </a>
     </article>
   );
 }
 
-function AiItem({ item }) {
+function AiItem({ item, onOpen }) {
   return (
-    <article style={{ border: "1px solid var(--border)", background: "var(--bg-2)", padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+    <article
+      onClick={onOpen ? () => onOpen(item.id) : undefined}
+      style={{
+        border: "1px solid var(--border)", background: "var(--bg-2)",
+        padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
+        cursor: onOpen ? "pointer" : "default",
+      }}
+    >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
@@ -193,7 +215,11 @@ function AiItem({ item }) {
         </div>
       ))}
 
-      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>
+      <a
+        href={item.sourceUrl} target="_blank" rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        style={{ fontSize: 12, color: ACCENT, alignSelf: "flex-start" }}
+      >
         Primary source ↗
       </a>
     </article>
@@ -210,6 +236,14 @@ function DigestView() {
   const [past, setPast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // The whole corpus, for the detail panel. Fetched once and independently of
+  // the digest itself: a published edition stores only what the card shows, so
+  // the full record for an item has to come from `/api/items` either way. Kept
+  // out of the `[kind]` effect because it does not vary by audience — only the
+  // decoration does — and out of the loading gate because a digest that renders
+  // without its panel data is still a digest.
+  const [corpus, setCorpus] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -227,6 +261,27 @@ function DigestView() {
         setLoading(false);
       });
   }, [kind]);
+
+  useEffect(() => {
+    // Failure-tolerant on purpose: if this cannot load, the cards simply do not
+    // open. Letting it take down the digest would trade the whole page for a
+    // panel.
+    apiFetch("/api/items").then(setCorpus).catch(() => setCorpus([]));
+  }, []);
+
+  // `kind` and the dashboard's `audience` are the same two values, so the
+  // decoration is the identical call — which is the point: the panel leads with
+  // whichever axis this edition is for.
+  const decorated = useMemo(() => decorateItems(corpus, kind), [corpus, kind]);
+  const [anchorFor] = useMemo(() => groupAnchors(decorated, kind), [decorated, kind]);
+  const relatedForGroup = useMemo(
+    () => relatedByGroup(decorated, anchorFor), [decorated, anchorFor]);
+  const byId = useMemo(() => {
+    const out = {};
+    for (const it of decorated) out[it.id] = it;
+    return out;
+  }, [decorated]);
+  const selected = selectedId ? byId[selectedId] : null;
 
   const edition =
     editionId === "current"
@@ -290,10 +345,15 @@ function DigestView() {
             <div style={{ fontSize: 13, color: "var(--muted-2)" }}>Loading…</div>
           ) : items.length ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* `onOpen` only where the corpus actually has that id. A
+                  published edition can outlive the article it names — the
+                  payload is frozen, the corpus is not — and a card that looks
+                  clickable and opens nothing is worse than one that does not
+                  invite the click. */}
               {items.map((item) =>
                 kind === "investment"
-                  ? <InvestmentItem key={item.id} item={item} />
-                  : <AiItem key={item.id} item={item} />
+                  ? <InvestmentItem key={item.id} item={item} onOpen={byId[item.id] ? setSelectedId : null} />
+                  : <AiItem key={item.id} item={item} onOpen={byId[item.id] ? setSelectedId : null} />
               )}
             </div>
           ) : (
@@ -308,6 +368,22 @@ function DigestView() {
           )}
         </div>
       </div>
+
+      {/* Wrapped in a fixed, viewport-sized box because the panel positions
+          itself absolutely and this page — unlike the dashboard — is as tall as
+          its content. Anchored to `.app` directly, `bottom: 0` would stretch the
+          panel to the whole scroll height. */}
+      {selected && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 50 }}>
+          <DetailPanel
+            item={selected}
+            related={relatedForGroup[selected.groupId]}
+            audience={kind}
+            onOpen={setSelectedId}
+            onClose={() => setSelectedId(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }
