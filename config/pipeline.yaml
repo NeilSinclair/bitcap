@@ -121,12 +121,18 @@ alerts:
   content_max_age_days: 120
 
   # Corpora that are scored and shown in the dashboard but may not raise a
-  # content alert. `t1` is the X posts leg: it is new, it is the noisiest corpus
-  # in the system, and the cost of being wrong here is paging a reader about a
-  # CEO's enthusiasm. Remove `t1` from this list to turn posts alerts on -- that
-  # is the whole change.
+  # content alert. `t1` and `t2` are the X posts leg: it is new, it is the
+  # noisiest corpus in the system, and the cost of being wrong here is paging a
+  # reader about a CEO's enthusiasm. Remove both from this list to turn posts
+  # alerts on -- that is the whole change.
+  #
+  # BOTH versions, deliberately. The mute matches on `prompt_version`, so the
+  # D70 flip from t1 to t2 would have switched posts alerts ON by omission --
+  # a live version absent from this list is an unmuted one. t1's rows also
+  # remain in `classifications`, so dropping it would unmute those too.
   content_mute_prompt_versions:
     - t1
+    - t2
 
   # Gold-set agreement below this raises a *system* alert, not a content one:
   # a scorer quietly becoming less consistent is silent degradation, which is

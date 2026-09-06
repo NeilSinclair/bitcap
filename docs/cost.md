@@ -850,3 +850,30 @@ window and the saving starts from the second. At 238 posts and $0.005 a post the
 arithmetic is $1.19, but no invoice has confirmed it.
 
 **Running total across all workflows: ~$36.22** ($33.62 before this, plus $2.59).
+
+## Post scoring, t1 → t2 (D70) — 2026-09-06
+
+Three spends, one of which recurs.
+
+| Workflow | Model | Calls | In (tok) | Out (tok) | USD |
+|---|---|---:|---:|---:|---:|
+| Prompt rewrite, t1 → t2 | `claude-fable-5` | 1 | 7,476 | 6,871 | $0.4183 |
+| Spot-check, 22 posts | `claude-sonnet-5` | 22 | — | — | $0.3765 |
+| Full re-score, 238 posts | `claude-sonnet-5` | 216 | — | — | $2.5571 |
+| **Total** | | **239** | | | **$3.3519** |
+
+The re-score shows 216 calls for 238 posts: the 22 already bought by the
+spot-check were seeded into the t2 cache rather than re-purchased. 2,421,720
+cache-read tokens across the run, at 0.1x — the prompt is ~4k tokens and every
+call carries it, so caching is most of what keeps this leg affordable.
+
+**One call to Fable 5, and only for the prompt.** Scoring stayed on
+`claude-sonnet-5`, the model t1 used. Changing the prompt and the model in one
+step would have produced a number that could not be attributed to either.
+
+**Recurring cost: none.** t2 is a one-time re-score of a fixed corpus. New posts
+are classified incrementally at the same per-item rate as before (~$0.011),
+because the work list is a LEFT JOIN against `raw_llm_responses` and t2 changes
+the prompt, not the volume.
+
+**Running total across all workflows: ~$39.57** ($36.22 before this, plus $3.35).

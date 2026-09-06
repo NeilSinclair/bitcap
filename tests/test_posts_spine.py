@@ -77,11 +77,22 @@ class TestThePostsCorpusIsScoredByItsOwnPrompt:
 
 
 class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
-    """Three corpora, one question wherever the question can be one."""
+    """Three corpora, one question wherever the question can be one.
+
+    Reads the *live* posts prompt via `POST_PROMPT_VERSION` rather than naming a
+    file. Pinning `t1.md` by name meant the D70 flip to t2 left every assertion
+    below still passing against a prompt no longer in use -- a guard that reports
+    itself as working and is not.
+    """
+
+    @staticmethod
+    def live_post_prompt() -> str:
+        return (ROOT / "prompts" / "post_scoring"
+                / f"{POST_PROMPT_VERSION}.md").read_text()
 
     def test_the_shared_sections_are_byte_identical_to_the_paper_prompt(self):
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         for section in ("## Mechanisms", "## Categories", "## Practices",
                         "## Event type"):
             a, b = p1[p1.index(section):], t1[t1.index(section):]
@@ -91,11 +102,11 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
 
     def test_the_output_schema_section_is_identical(self):
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert p1[p1.index("## Output"):] == t1[t1.index("## Output"):]
 
     def test_the_prompt_declares_the_text_source_the_corpus_emits(self):
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert "`x_post`" in t1
         corpus = json.loads((ROOT / "research" / "docs" / "posts_corpus.json").read_text())
         assert {r["text_source"] for r in corpus} == {"x_post"}
@@ -103,7 +114,7 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
     def test_the_confidence_ceiling_is_stated(self):
         # Score scales on magnitude x confidence, so this sentence is what
         # stops enthusiasm reaching the high band.
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert "Cap `confidence` at `medium`" in t1
 
     def test_the_prompt_introduces_no_event_type_the_scoring_config_lacks(self):
@@ -111,7 +122,7 @@ class TestT1IsPromptedLikeP1WhereTheQuestionIsTheSame:
         # in the prompt and absent from config scores zero with no error.
         rules = yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
         p1 = (ROOT / "prompts" / "paper_scoring" / "p1.md").read_text()
-        t1 = (ROOT / "prompts" / "post_scoring" / "t1.md").read_text()
+        t1 = self.live_post_prompt()
         assert p1[p1.index("## Event type"):p1.index("## Output")] == \
                t1[t1.index("## Event type"):t1.index("## Output")]
         for event in rules["event_weight"]:

@@ -7756,3 +7756,97 @@ Files: `research/posts/harvest_x.py` (`pull(since=...)`),
 **13 new tests**, each mutation-checked against the fault it names.
 
 No migration.
+
+## D70 — The classifier was dropping stated prices, and the scoring rule turns a missing tag into a zero (2026-09-06)
+
+Neil flagged a Gemini security launch scoring 6.7 as implausible. It wasn't the
+scoring rule; the arithmetic was right. It was the tagging underneath, and the
+audit found something larger than the post that prompted it.
+
+### The measurement
+
+`score = 100 * (event_weight/5) * (strongest mechanism/3)`, strongest being
+`magnitude * confidence` — and there is no score at all without one quote-backed
+mechanism tag. A missing tag is therefore not a smaller score, it is zero, and
+zero is indistinguishable from "correctly found nothing".
+
+All four posts classified `pricing_change` — the joint-highest event weight (5),
+alongside `frontier_model_release` and `compute_commitment` — returned **no
+mechanism tags** and scored 0.0:
+
+| text | tags | score |
+|---|---|---|
+| "80% drop for GPT-5.6 Luna, now $0.20 per million input tokens" | none | 0.0 |
+| "we've cut prices on luna by 80%" | none | 0.0 |
+| "we've cut the price of cache reads 75% to $0.25/MTok" | none | 0.0 |
+| "decreased the price of terra by 20%" | none | 0.0 |
+
+`dropped_tags` was empty for all four, so the quote validator did not reject
+them — the model never emitted them. Meanwhile the *vaguest* price claim in the
+corpus ("half the price... in many cases") tagged correctly at 26.7. The most
+concrete inference-economics claims scored below the loosest one.
+
+The control makes it a t1 fault rather than a corpus property: on the
+announcements corpus, `v9` — t1's grandparent, same vocabulary, same scoring
+rule — tagged 3 of 4 `pricing_change` documents, averaging 37.5.
+
+### The fix, and who wrote it
+
+`claude-fable-5` rewrote the prompt as `t2` ($0.42, one call). It was given the
+measurement above, not a solution, and told the noise discipline was load-bearing
+and must survive. Its diagnosis: t1's price exception existed but sat as a single
+paragraph at the tail of a section whose every other paragraph argued for
+emptiness. The model was reading the section's weight, not its carve-out. It
+scoped the noise warning to posts that state nothing and promoted the exception
+to its own subsection.
+
+Scoring stayed on `claude-sonnet-5`, deliberately. Changing the prompt and the
+model together would have made the result unattributable.
+
+### What the re-score showed (238 posts, $2.56)
+
+**205 of 238 unchanged.** 17 newly scoring, 4 lost. Zeros fell 210 → 197. All
+four price posts now tag, with magnitudes tracking the size of the cut (80% →
+high, 20% → low) rather than firing uniformly.
+
+The noise guard held: of 119 posts t1 called `other`, exactly one now scores —
+6.7, quoting "Gemini can automate actions across 40+ popular apps". A stated
+figure and a mild score is the discipline working, not leaking.
+
+Two of the four losses look like t1 over-tagging, correctly undone: rhetorical
+progressions ("2023: LLMs struggle with 4th grade word problems / 2024: ...")
+carrying no figure.
+
+### The part not fixed, and why
+
+**The same fault is in `v9`, and there it is worse.** DeepMind's own Gemini 3.8
+Flash Cyber announcement — 12,081 characters of `full_text`, containing "$0.75
+per million input tokens and $3.75 per million output tokens", a 54.9% benchmark,
+a >70% success rate, and the phrase "offered at a significantly lower cost" —
+scored **0.0 with zero mechanism tags**. The July 3.5 Flash Cyber page, with
+*fewer* figures and no stated price, got three tags and 13.3.
+
+So the primary source scored below the tweet about it, and the richer document
+scored below the poorer one. Not a fetch failure: the text was checked and is
+intact and full-length.
+
+**Deliberately not fixed.** Re-scoring 459 announcements costs ~$5-6, but the
+real cost is blast radius: every score in the digest moves, the gold-set
+comparison shifts underneath, and the insights already written up stop matching
+what the system outputs. That is not a change to make hours before a deadline.
+It is measured, reproduced across two corpora, and recorded here instead.
+
+### Two couplings this flip exposed
+
+`config/pipeline.yaml`'s `content_mute_prompt_versions` matches on
+`prompt_version` and listed only `t1`. Flipping the live version to `t2` would
+have switched posts alerts **on by omission** — the noisiest corpus in the
+system, muted since D63, unmuted by a change that never mentions alerts. Both
+versions are now listed.
+
+`tests/test_posts_spine.py` pinned `t1.md` by filename. Every assertion in it
+would have kept passing against a prompt no longer in use. It now reads the live
+version through `POST_PROMPT_VERSION`.
+
+Both are the same shape as D67 and D69: a fact recorded in one place and the
+thing it describes in another, free to disagree without anything failing.
