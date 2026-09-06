@@ -51,8 +51,9 @@ from app import models as m
 from app.cli import PAPER_PROMPT_VERSION, POST_PROMPT_VERSION, PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
-from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
-                          load_classifications, load_costs, load_repo_verdicts)
+from app.load_raw import (PAPER_SCORES_DIR, POST_SCORES_DIR, load_article_records,
+                          load_articles, load_classifications, load_costs,
+                          load_repo_verdicts)
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import dedupe as dedupe_mod
@@ -584,7 +585,8 @@ def _phases(
     #    second one for the same period.
     note("digest")
     published = digest_mod.publish(
-        session, (prompt_version, PAPER_PROMPT_VERSION), run.started_at, run_id=run.id)
+        session, (prompt_version, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION),
+        run.started_at, run_id=run.id)
     stats["digest"] = {d.kind: d.stats for d in published}
     session.commit()
 

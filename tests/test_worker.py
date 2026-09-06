@@ -483,3 +483,32 @@ class TestTheKillSwitchStopsSpendNotJustFetching:
             session, "v7",
             worker.dead_corpora({"enabled": {"releases": False}}),
         ) == ["https://openai.com/a"]
+
+
+class TestTheEtlPhaseIsActuallyExecuted:
+    """`quiet` stubs `_etl` out, so nothing in this file ever ran it.
+
+    That is the right stub for testing phase *ordering* -- `_etl` needs a real
+    corpus -- but it meant the whole suite could stay green against a worker
+    that could not complete a single firing. It did: `d60df97` added a
+    `POST_SCORES_DIR` reference to `_etl` without adding it to the module's
+    imports, and every `bitcap-worker` firing from that commit on died with
+    `NameError` in the ETL phase, on `deployment-dev` and on `deployment`. 1,628
+    tests passed throughout.
+
+    A `NameError` on a module-level name fires only when the line executes, so
+    the only thing that catches it is executing the line. An empty database is
+    enough: every step is a no-op, and a missing import still raises.
+    """
+
+    def test_the_etl_phase_runs_against_an_empty_database(self, session):
+        run = m.PipelineRun(kind="scheduled", status="running")
+        session.add(run)
+        session.flush()
+
+        stats: dict = {}
+        worker._etl(session, run, "v9", stats)
+
+        # One transform per article-producing corpus. A leg added without its
+        # transform wired in here is the next version of this bug.
+        assert {"transform", "paper_transform", "post_transform"} <= set(stats)

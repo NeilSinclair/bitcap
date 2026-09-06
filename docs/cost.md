@@ -784,3 +784,69 @@ the stored text and its classification agree — **$0.0684**. Run total
 **$1.7229**.
 
 **Running total across all workflows: ~$33.62** ($31.90 before this, plus $1.72).
+
+---
+
+## Restoring the releases corpus, and the posts leg's recurring waste (D69, 2026-09-06)
+
+The releases corpus was gone from the database — dropped by a rebuild in another
+session, while the 87 cursors that vouch for it survived. Restoring it meant
+re-ingesting from GitHub (free) and classifying under `v9`, which it had never
+been: the committed `scored_announcements_v9.json` held 292 scored items and
+**zero** releases, because D56's rescore covered announcements only.
+
+| workflow | model | records | $ | $/doc |
+|---|---|---|---|---|
+| Classify restored releases | `claude-sonnet-5`, `v9` | 155 | **$1.7792** | $0.0115 |
+| Classify announcements this firing found unscored | `claude-sonnet-5`, `v9` | 40 | **$0.7938** | $0.0198 |
+| Relevance verdicts, repos beyond the labelled 183 | `gpt-5-mini` | 31 | **$0.0205** | $0.00066 |
+| Dedupe embeddings | `text-embedding-3-small` | 3 | **$0.0002** | |
+| Relevance verdicts, repos already committed | `gpt-5-mini` | 128 | **$0.0000** | cache |
+| **Ledger total** | | 229 | **$2.5937** | |
+
+**Only the first row is the restore.** The firing also picked up 40 announcements
+that had been sitting unclassified under `v9` — real spend, correctly attributed
+here rather than folded into the releases figure, which is what the first draft
+of this entry did.
+
+**$0.0115 a release, against the $0.028 the estimate used.** The estimate came
+from D52's 380-document figure, measured over a corpus with a heavier average
+body: release notes are short, and the relevance filter removed the long
+research-repository ones first.
+
+**The run reported `$2.6762` and the ledger holds `$2.5937` for it — a $0.0825
+gap, and it is a real one.** `raw_costs` attributes 198 records totalling
+`$2.5732` to run 46, `run_sources.cost_usd` is `$0.0000`, and
+`announcement_cost.json` holds 229 records at `$2.5937` for the day. The three
+counts differ because the cost sweep also picks up records an earlier firing left
+unloaded (worker.py's `_sweep_dedupe_cost` says so). Stated rather than
+reconciled: the figures are within a cent of each other per row, and the run
+total should not be read as a fourth independent measurement.
+
+**The filter's saving is the line that is not in the table.** 84 of 159 judged
+repositories were excluded, so this classified 155 documents rather than the 380
+the ungated leg ingested in D52. At $0.0173 that is roughly **$3.90 not spent**,
+on the first firing alone — more than the run cost. It was also free to compute:
+128 of the 159 verdicts were cache hits from
+`research/docs/repo_relevance_verdicts.json`, which is why that file is committed.
+
+The 31 new verdicts are now committed too (183 → 214). An uncommitted verdict is
+re-bought on the next rebuild, which is the same "the database knows something no
+committed file does" fault D69 is about, one layer up.
+
+### The posts leg was spending ~$1.19 a week on posts it already had
+
+Not a charge on this run — a recurring one, now stopped. `fetch_posts` wrote a
+watermark every firing and never read it, so at `posts: 7` (weekly) against
+`window_days: 90` it re-read and re-paid for ~89 days of posts already in
+`raw_articles`. X bills per post *returned* and `start_time` is applied
+server-side, so the fix is a direct cut to the bill rather than a filter over
+something already bought.
+
+**Stated as designed, not measured.** The posts leg has no `source_state` row in
+this database — the 238 posts were loaded from the committed corpus, never
+fetched through the orchestrator — so the first live firing still reads the full
+window and the saving starts from the second. At 238 posts and $0.005 a post the
+arithmetic is $1.19, but no invoice has confirmed it.
+
+**Running total across all workflows: ~$36.22** ($33.62 before this, plus $2.59).

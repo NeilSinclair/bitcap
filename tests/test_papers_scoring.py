@@ -600,7 +600,10 @@ class TestTheCliSpansBothVersions:
         from app.pipeline import worker
         source = inspect.getsource(worker)
         assert "run_connect(\n            session, (prompt_version, PAPER_PROMPT_VERSION)" in source
-        assert "session, (prompt_version, PAPER_PROMPT_VERSION), run.started_at" in source
+        # D69 added POST_PROMPT_VERSION to the published tuple. What this pins
+        # is unchanged: the *flag* reaches the digest, not the module constant.
+        assert ("session, (prompt_version, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION),"
+                in source)
 
 
 class TestAnExtractionDowngradeIsASystemAlert:
