@@ -8444,3 +8444,55 @@ up dropped for being ninth.
 with the whole suite green. `test_the_shipped_item_caps_are_pinned` is the
 tripwire, on the same reasoning as `test_the_shipped_window_is_pinned` (D73): it
 asserts the number moves deliberately, not that 16 is correct.
+
+## D78 — The AI digest cuts on merit at `high`, and "above 0.5" had to be interpreted before it could be applied (2026-09-06)
+
+`ai.min_band: medium → high` (`config/digest.yaml`). The AI edition goes back to
+8 rows from 15.
+
+D77 raised `max_items` to 16 and said in as many words that if the result read as
+noisy, the cap was the wrong lever to reach back for. It did read as noisy, and
+this is that lever.
+
+**The request was "scores above 0.5", and there is no 0-1 score on this axis.**
+`ai_score` runs 0-100; the `0.5` visible in the investment block is
+`min_strength`, a *connection strength*, which the AI rule does not use at all —
+it gates on an actionable practice tag and a band, and nothing else. So the
+number had to be read as half the scale rather than applied literally, and the
+reading is recorded here rather than silently absorbed.
+
+**On the deployed corpus both readings are the same edition.** The scores are
+quantised — 100.0, 66.7, 44.4, 33.3 — and nothing sits between 44.4 and 66.7, so
+`>= 50` and `>= 60` admit exactly the same 8 items:
+
+| | kept | posts | documents |
+|---|---:|---:|---:|
+| `>= 30` (medium, before) | 15 | 6 | 9 |
+| `>= 40` | 12 | 3 | 9 |
+| **`>= 50`** | **8** | **1** | **7** |
+| **`>= 60` (high, shipped)** | **8** | **1** | **7** |
+| `>= 70` | 2 | 0 | 2 |
+
+**They are not the same rule, and only this corpus makes them agree.** An item
+scoring 55 is reachable and would pass one and fail the other. `min_band` was
+used rather than a new `min_score` key deliberately: two numeric levers for one
+cut is the two-places-that-must-agree shape that has caused four separate faults
+in this repo already (D72, D74, D75, D76), and `alerts.content_band` already
+expresses this exact threshold this exact way.
+
+**What it costs, and it is not nothing.** Six X posts become one. The AI digest
+is again almost entirely documents, which means the posts leg going nightly (D76)
+now buys this audience a single row. The 7 items removed are real `investigate`
+recommendations rather than noise — they are removed for scoring below a line,
+and the edition's `suppressed` count records that honestly.
+
+**`max_items` stays at 16 even though it no longer binds.** Lowering it back to
+8 would make the two cuts agree by coincidence and hide which one is doing the
+work the next time the corpus moves. It is a length limit for a reader again,
+which is what it should always have been.
+
+**Three shipped numbers now have tripwires and none had one before this week.**
+`window_hours` (D73), both `max_items` (D77) and now `ai.min_band`. Every test in
+`tests/test_digest.py` runs against a fixture carrying its own values, so each of
+these could be reverted by a merge with the whole suite green — and a digest that
+quietly doubles or halves is not a failure anything else would report.

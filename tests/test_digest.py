@@ -611,6 +611,21 @@ class TestGuards:
         assert settings["investment"]["max_items"] == 16
         assert settings["ai"]["max_items"] == 16
 
+    def test_the_shipped_ai_merit_cut_is_pinned(self):
+        """`min_band` is what actually bounds the AI edition now.
+
+        It was raised to `high` because the edition read as too long, and it is
+        the lever that cuts on merit -- `max_items` cuts on position. Measured
+        when it was set: `medium` admitted 15 items, `high` admits 8, and the 7
+        it removes are the 44.4 and 33.3 scorers, five of them X posts.
+
+        Pinned for the same reason as the window and the caps: nothing else in
+        this suite reads the deployed value, so it can be lowered by a revert or
+        a merge with everything green, and a digest that quietly doubles is not
+        a failure anything would report.
+        """
+        assert digest.settings()["ai"]["min_band"] == "high"
+
     @pytest.mark.parametrize("mutation,reason", [
         ({"ai": {**CONFIG["ai"], "actions": []}}, "no action can ever match"),
         ({"ai": {**CONFIG["ai"], "min_band": "med"}}, "typo rejects every band"),
