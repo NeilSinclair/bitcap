@@ -3,7 +3,8 @@
 // The full record for one item, and the decoration it needs — shared by the
 // dashboard and the digest.
 //
-// WHY THIS FILE EXISTS. The dashboard grew a detail panel; the digest grew a
+// WHY THIS FILE EXISTS (docs/decisions.md D72). The dashboard grew a detail
+// panel; the digest grew a
 // card that summarised the same article more thinly. Two renderings of one
 // record drift, and the thin one is the problem: the digest is the surface a
 // reader is meant to live in, so the *less* complete view was the one they

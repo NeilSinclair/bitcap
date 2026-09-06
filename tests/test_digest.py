@@ -843,7 +843,7 @@ class TestEverySurfaceReadsTheSameCorpora:
 
 
 class TestTheDigestOpensTheSameRecordAsTheDashboard:
-    """One panel, imported twice — not two renderings of one article.
+    """One panel, imported twice — not two renderings of one article. D72.
 
     The digest is the surface a reader is meant to live in, and its cards are
     summaries. Before this, the *thinner* view was the one they spent their time

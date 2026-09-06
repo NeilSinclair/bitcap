@@ -7943,3 +7943,86 @@ for the caching behaviour bypassed the instrumentation silently. The totals are
 in `docs/cost.md`; the per-call receipts existed only in memory and are gone.
 They are not being backfilled — a total divided 216 ways is a fabrication in the
 shape of evidence — and the gap is recorded there instead.
+
+## D72 — The digest showed a thinner record than the dashboard, and its links pointed at ids that no longer existed (2026-09-06)
+
+Two faults on the surface the product is meant to be read from. Neither is a bug
+in the sense of something throwing; both are the digest quietly being worse than
+the page next to it.
+
+**1. The full record was a page away.** The digest rendered summary cards; the
+whole thing — evidence quotes, portfolio impact, related documents, practices —
+existed only in the dashboard's detail panel. That is backwards. The dashboard is
+the corpus, for someone going looking; the digest is the claim that a handful of
+things matter, and it is where a reader is meant to live. The *less* complete
+view was the one they would spend their time in.
+
+**Rejected: reproduce the panel in `digest/page.js`.** It fixes the symptom by
+creating two renderings of one record to keep in step, which is the same failure
+one step later, and the thin copy would drift first for exactly the reason above.
+
+**Rejected: deep-link to `/?id=…` and let the dashboard open it.** ~20 lines,
+near-zero risk, and genuinely the same information. Not taken because it
+navigates away from Alerts, which contradicts what the surface is for. The cost
+of the alternative is a real refactor of working code, and that trade was made
+deliberately rather than by default.
+
+So the panel, the decoration it needs, the per-audience anchoring and the link
+resolution moved to `frontend/app/detail.js` and both pages import them.
+`page.js` lost 380 lines. Nothing about the rules changed.
+
+**2. `articles.id` is not a stable reference, and the digest was storing it.**
+It is a surrogate autoincrement key, reassigned on every rebuild. A published
+payload is frozen by design — a digest records what the product *said*, so
+recomputing one would rewrite history — which means a stored id goes stale the
+first time anyone rebuilds. On this project, with several agents running, that is
+constantly.
+
+Measured across all 30 published editions, 65 items:
+
+    resolvable by id :  9  (13%)
+    resolvable by url: 61  (93%)
+
+Editions 99 and 100 are the sharpest case. Both were published hours before the
+measurement and both already resolved zero items by id, because another session
+rebuilt in between.
+
+`articles.url` is unique (746 of 746) and is what the document actually is. It
+was already in the payload, so this is a lookup change and nothing else.
+
+**The id fallback is confined to the live preview, and that restriction is the
+whole safety argument.** On an archived edition an id is not merely stale but
+*recycled* — the counter is reused, so id 4454 today may name a different
+document than the card does. Falling back there would open the wrong article
+while looking like it worked, which is strictly worse than the dead card the
+change set out to fix. A preview is built by the process now serving the corpus,
+so its ids cannot be stale.
+
+Four of the 65 resolve by neither. Those documents are genuinely gone and their
+cards stay unclickable, which is the correct answer rather than a gap.
+
+**What review caught, and what it says about the evidence used here.** Three
+findings, all real. The one that matters: this branch broke
+`tests/smoke_dashboard_render.js`, a required CI step, because moving the
+decoration left `decorateItems` undefined in that file's sandbox — green on base,
+red on HEAD, while 1,649 pytest tests and `next build` all passed. The test class
+added on this branch asserted in its own docstring that "there is no JS test
+runner in this repo". There are three, all in CI, and one of them was the only
+thing that caught this. The claim is what stopped the check being made, so it is
+corrected in place rather than deleted.
+
+Fixed by loading `detail.js` for real in that smoke test rather than stubbing it.
+Stubbing turns the step green while removing ~100 lines of moved logic from the
+only thing that executes it, which is the blank-page failure that file exists
+for. `tests/smoke_digest_render.js` was added for the same fault class at the new
+site: `DigestView` now chains five hooks each reading the one before it in a
+dependency array, so reordering any two is a blank Alerts page and a green build.
+
+**The near-miss worth recording.** The two pages carry *different* palettes —
+`digest/page.js` folds `low`/`none` into one band style and `investigate`/`watch`
+into one action style, which is fine where nothing below medium renders, while
+the dashboard distinguishes four bands and three actions. The first version of
+`detail.js` carried the digest's versions. That would have silently restyled
+every low and unbanded row on the dashboard: no error, no test failure, just a
+different-looking page. Caught by reading both definitions before merging them,
+and now pinned by a test.

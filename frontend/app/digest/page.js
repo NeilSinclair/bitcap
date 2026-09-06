@@ -277,6 +277,7 @@ function DigestView() {
   const relatedForGroup = useMemo(
     () => relatedByGroup(decorated, anchorFor), [decorated, anchorFor]);
   // RESOLVED BY URL, WITH THE ID ONLY AS A FALLBACK, and the order is the point.
+  // docs/decisions.md D72.
   //
   // `articles.id` is a surrogate autoincrement key. Every rebuild reassigns it,
   // and a published payload is frozen at the moment it was written — so a stored
