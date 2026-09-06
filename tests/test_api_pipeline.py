@@ -160,10 +160,20 @@ class TestEveryLegIsPresentableInTheUI:
 
     ROOT = Path(__file__).parent.parent
 
-    def _labels(self) -> str:
+    def _labels(self) -> dict[str, str]:
+        """Parse `LEG_LABEL` out of the page source.
+
+        Asserts it parsed to something, because every check below is an
+        emptiness test on a derived list -- a parse that silently returned "" on
+        a refactor would make all of them pass while proving nothing.
+        """
         source = (self.ROOT / "frontend" / "app" / "pipeline" / "page.js").read_text(
             encoding="utf-8")
-        return source.split("const LEG_LABEL = {", 1)[1].split("};", 1)[0]
+        body = source.split("const LEG_LABEL = {", 1)[1].split("};", 1)[0]
+        labels = dict(re.findall(r'(\w+):\s*"([^"]+)"', body))
+        assert len(labels) >= 4, (
+            f"LEG_LABEL parsed as {labels}; the test is reading the wrong thing")
+        return labels
 
     def test_every_leg_the_api_offers_has_a_description(self, client, token):
         rows = client.get("/api/pipeline/legs", headers=bearer(token)).json()
@@ -171,23 +181,28 @@ class TestEveryLegIsPresentableInTheUI:
         assert missing == [], (
             f"{missing} render with a blank description under the checkbox")
 
-    def test_every_leg_has_a_display_name_in_the_run_picker(self):
+    def test_every_leg_has_a_display_name_in_the_run_picker(self, client, token):
         """Read from the frontend source, as `tests/test_digest.py` does: the
         fallback is `LEG_LABEL[id] || id`, so a missing entry is invisible to
-        every server-side check and shows up only as a lowercase word."""
-        from app.pipeline.registry import LEGS
+        every server-side check and shows up only as a lowercase word.
 
+        The ids come from the endpoint the page actually calls, not from
+        `registry.LEGS`. `LEGS` omits `drift`, which is a checkbox here without
+        being an ingestion leg, so iterating it would need "drift" appended by
+        hand -- reintroducing the remember-to-extend list this class exists to
+        avoid, one line further down.
+        """
+        rows = client.get("/api/pipeline/legs", headers=bearer(token)).json()
         labels = self._labels()
-        missing = [leg for leg in (*LEGS, "drift") if f"{leg}:" not in labels]
+        missing = [r["id"] for r in rows if r["id"] not in labels]
         assert missing == [], (
             f"{missing} fall back to their raw lowercase id in the run picker")
 
     def test_the_names_are_capitalised_like_their_neighbours(self):
         """The fallback's tell. A label that is not capitalised is either a raw
         id leaking through or a new one typed to match the bug."""
-        names = re.findall(r':\s*"([^"]+)"', self._labels())
-        assert names, "LEG_LABEL parsed empty; the test is reading the wrong thing"
-        assert [n for n in names if not n[0].isupper()] == []
+        bad = [n for n in self._labels().values() if not n[0].isupper()]
+        assert bad == []
 
 
 class TestStartingARun:

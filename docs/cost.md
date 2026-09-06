@@ -618,12 +618,28 @@ changes, not per firing.
 
 **The cadence this was measured under is no longer the one that ships.** It was
 weekly then and is nightly now (D76), which is affordable only because the leg
-became incremental in between (D69). Sized from the numbers above — 473 posts
-across 90 days, ~5.3 a day at $0.005 — a nightly firing buys one new day plus
-the one-day overlap the date-granular mark re-reads: ~$0.37 a week against
-~$0.21 weekly. **Not yet invoiced**, for the reason given further down: this
-database has no `source_state` row for the leg, so the first live firing still
-reads the full window and the steady state starts from the second.
+became incremental in between (D69).
+
+**Do not size that from 473 ÷ 90.** The pull is capped per handle
+(`per_handle_ceiling: 100`, `config/posts_sources.yaml`), and four handles hit
+their cap — `alexandr_wang` returned 100 posts reaching back only to 28 July,
+`gdb` 96 reaching back to 24 July — so the old end of the window is systematically
+under-counted and 5.3/day is a third too low. The recent days are covered for
+every handle, and that is what a nightly firing actually buys:
+
+| span, ending 2026-09-05 | posts billed | per day |
+|---|---:|---:|
+| last 14 days | 127 | 9.07 |
+| last 21 days | 156 | 7.43 |
+| **last 30 days** | **230** | **7.67** |
+| last 45 days | 349 | 7.76 |
+
+At **~7.7/day** and $0.005 a post, a nightly firing buys one new day plus the
+one-day overlap the date-granular mark re-reads: **~$0.54 a week against ~$0.31
+weekly**, a difference of ~$0.23 a week. **Not yet invoiced**, for the reason
+given further down: this database has no `source_state` row for the leg, so the
+first live firing still reads the full window and the steady state starts from
+the second.
 
 **Running total across all workflows: ~$23.55.**
 ---
@@ -855,8 +871,14 @@ something already bought.
 **Stated as designed, not measured.** The posts leg has no `source_state` row in
 this database — the 238 posts were loaded from the committed corpus, never
 fetched through the orchestrator — so the first live firing still reads the full
-window and the saving starts from the second. At 238 posts and $0.005 a post the
-arithmetic is $1.19, but no invoice has confirmed it.
+window and the saving starts from the second.
+
+**The $1.19 first written here was wrong, by exactly the mistake the leg is
+about.** It multiplied 238 posts by $0.005 — but 238 is what survived the
+*prefilter*, and the prefilter runs on this side of the wire, after the bill.
+X charged for the 473 posts it returned, so the recurring waste being removed is
+**$2.37 a week**, not $1.19. Still designed rather than invoiced: no `source_state`
+row exists yet to confirm it.
 
 **Running total across all workflows: ~$36.22** ($33.62 before this, plus $2.59).
 

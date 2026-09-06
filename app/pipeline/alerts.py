@@ -559,6 +559,81 @@ def repo_filter_unavailable(session: Session, config: dict,
     return out
 
 
+def posts_watermark_stalled(session: Session, config: dict,
+                            context: dict) -> list[Candidate]:
+    """The posts leg keeps succeeding while its high-water mark stands still.
+
+    `fetch_posts` returns an empty watermark whenever any handle errored or was
+    skipped for budget, and `state.record_success` leaves the stored mark in
+    place when it is empty. That is correct and deliberate (D69): the mark is
+    one date for the whole leg, so advancing it past a handle that returned
+    nothing would move that handle's floor over posts it never published and
+    nothing downstream could tell those from posts that were never written.
+
+    The failure it hides is a cost one. The stored mark is what bounds the pull
+    -- it is sent to X as `start_time`, and X bills per post returned -- so a
+    mark that stops advancing means every subsequent firing buys a window one
+    day wider than the last. The leg reports success each time, the handle-level
+    error goes to `unresolved_items` where nothing escalates it, and
+    `source_down` never fires because the source did not fail.
+
+    **This is why the rule exists rather than the cadence being left alone.**
+    At the weekly cadence the leg shipped with, a frozen mark cost one widening
+    pull a week. At nightly (D76) it costs seven, and the ceiling is
+    `budget.max_posts_total` -- 900 posts, $4.50 a firing, $31.50 a week -- not
+    anything that fails. Making the leg seven times more sensitive to a state
+    with no report on it is the swallowed-and-unreported pattern D45 and D75
+    both name, so the report comes with the cadence change.
+
+    Both causes of a frozen mark are covered on purpose, because from durable
+    state they are indistinguishable and both cost the same money: a handle that
+    errors every firing, and a stretch where every post read was dropped by the
+    prefilter (`newest` is taken over kept records, so a fully filtered night
+    does not advance the mark either).
+
+    `warning`, not `critical`: nothing is wrong with the corpus and no reader
+    sees anything false. It is a bill that grows quietly.
+    """
+    days = int(config.get("posts_watermark_stale_days", 7))
+    out = []
+    for st in session.scalars(
+        select(m.SourceState).where(m.SourceState.leg == "posts")
+    ).all():
+        mark = (st.watermark or {}).get("max_published")
+        if not st.last_success_at or not isinstance(mark, str):
+            # No mark yet is the first-firing state, not a stall. It reads the
+            # full window once by design, and there is nothing to be behind.
+            continue
+        try:
+            marked = datetime.fromisoformat(mark[:10]).date()
+        except ValueError:
+            continue
+        behind = (st.last_success_at.date() - marked).days
+        if behind < days:
+            continue
+        out.append(Candidate(
+            kind=SYSTEM, rule="posts_watermark_stalled", severity=WARNING,
+            subject=f"Posts watermark has not advanced in {behind} days",
+            body=(
+                f"The leg last succeeded {st.last_success_at.date().isoformat()} "
+                f"and its mark still reads {marked.isoformat()}, so every firing "
+                f"is now buying a {behind}-day window instead of one day and the "
+                "bill grows by a day's posts every night. A handle erroring on "
+                "every firing is the usual cause -- check `unresolved_items` for "
+                "leg `posts`. A stretch in which every post read was prefiltered "
+                "away looks identical from here and is harmless."
+            ),
+            # Keyed on the mark, not on today, so one ongoing stall is one alert
+            # rather than one a night -- the correction `drift` and
+            # `repo_filter_unavailable` both needed.
+            dedupe_key=f"posts_watermark_stalled:{st.source_id}:{marked.isoformat()}",
+            payload={"source_id": st.source_id, "max_published": marked.isoformat(),
+                     "days_behind": behind},
+            run_id=context.get("run_id"),
+        ))
+    return out
+
+
 RULES = {
     "run_failed": run_failed,
     "extraction_downgraded": extraction_downgraded,
@@ -568,6 +643,7 @@ RULES = {
     "drift_unavailable": drift_unavailable,
     "dedupe_unavailable": dedupe_unavailable,
     "repo_filter_unavailable": repo_filter_unavailable,
+    "posts_watermark_stalled": posts_watermark_stalled,
     "high_band_item": high_band_items,
     "holding_impact": holding_impact,
 }

@@ -8274,18 +8274,31 @@ now buys the days since the last one. That severed cost from cadence, and the
 sevenfold argument went with it. Nothing else changed; the number was simply
 never revisited after the thing it was compensating for was fixed.
 
-**What nightly actually costs**, from the one measured pull (`docs/cost.md`,
-2026-09-05: 473 posts billed across a 90-day window, ~5.3 a day, $0.005 each):
+**What nightly actually costs.** The first version of this entry said ~$0.37 a
+week, from 473 posts ÷ 90 days = ~5.3 a day. That is wrong, and wrong in a way
+worth recording because the artifact invites it: the pull is capped per handle
+(`per_handle_ceiling: 100`), and four handles hit their cap, so their history
+stops well short of the window's floor — `alexandr_wang` returned 100 posts
+reaching back only to 28 July, `gdb` 96 back to 24 July. Dividing a truncated
+pull by the full span it never reached understates the rate by a third.
+
+The recent days *are* covered for every handle, and those are the days a nightly
+firing buys. Counting per calendar day over the last 30 (230 posts, ~7.7/day,
+stable at 7.4–7.8 across 21/30/45-day windows):
 
 | | firings/wk | days bought each | posts/wk | $/wk |
 |---|---:|---:|---:|---:|
-| weekly (old) | 1 | 7 + 1 overlap | ~42 | ~$0.21 |
-| nightly (new) | 7 | 1 + 1 overlap | ~74 | ~$0.37 |
+| weekly (old) | 1 | 7 + 1 overlap | ~62 | ~$0.31 |
+| nightly (new) | 7 | 1 + 1 overlap | ~108 | ~$0.54 |
 
-~$0.16 a week — under a euro a month — to take the worst-case lag on a post
-from seven days to one. Classification does not move at all: the overlap day's
-posts are already in `raw_articles` and are dropped on the URL match before any
-model sees them, so the same posts are classified, just sooner.
+~$0.23 a week — about a euro a month — to take the worst-case lag on a post from
+seven days to one. Classification does not move at all: the overlap day's posts
+are already in `raw_articles` and are dropped on the URL match before any model
+sees them, so the same posts are classified, just sooner.
+
+The conclusion survived the correction, which is the only reason the decision
+did. Had the true rate been the one that made nightly unaffordable, the honest
+outcome would have been to leave the cadence alone.
 
 **The overlap is why it is 1.75x rather than 1x, and it is deliberate.** The
 mark is a date, not an instant, because `to_record` stores `created_at[:10]`. So
@@ -8304,6 +8317,55 @@ the shipped cadence is 1, the other asserts the stored mark reaches the provider
 as `start_time`. Mutation-checked by replacing `since=_post_since(mark)` with
 `since=None`, which turns the second red.
 
+**The risk this creates, which the first draft of this entry missed entirely.**
+A frozen watermark, and nightly makes it seven times more expensive.
+
+`fetch_posts` returns an empty watermark on any firing where a handle errored or
+was skipped for budget, and `record_success` then leaves the stored mark alone.
+Both halves are right: the mark is one date for the whole leg, so advancing it
+past a handle that returned nothing would move that handle's floor over posts it
+never published, permanently, with nothing downstream able to tell those from
+posts that were never written.
+
+What nothing reported is the consequence. The mark is what bounds the pull, so
+while it is stuck **every firing buys a window one day wider than the last**. And
+the leg records *success* each time — the handle-level error goes to
+`unresolved_items`, `consecutive_failures` resets to zero, and `source_down`
+cannot fire because nothing failed. A single handle erroring every night is
+enough. The ceiling is `budget.max_posts_total` (900 posts, $4.50 a firing), not
+anything that raises an alarm.
+
+At weekly that was one widening pull a week and easy to miss. At nightly it is
+seven. Making a system seven times more sensitive to a state that has no report
+on it is precisely the swallowed-and-unreported pattern D45 and D75 both name,
+so the report ships with the cadence rather than after it:
+`alerts.posts_watermark_stalled` fires when the stored mark stands still for
+`posts_watermark_stale_days` (7) while the leg keeps succeeding.
+
+**7 rather than 3, because a stuck mark is ambiguous.** `newest` is taken over
+*kept* records, so a stretch in which every post read was dropped by the
+prefilter also fails to advance it — and that is harmless. At ~2.6 posts a day
+surviving the prefilter, three quiet days is possible and seven is not, so seven
+is where the benign reading stops being available. Waiting that long costs ~$0.27
+of extra pull, which is the right thing to trade against a false page. Both
+causes are covered deliberately: from durable state they are indistinguishable,
+and the alert body says so instead of asserting which one it is.
+
+Keyed on the mark rather than on the date, so one ongoing stall is one alert
+rather than one a night — the correction `drift` and `repo_filter_unavailable`
+both needed. `warning`, not `critical`: the corpus is correct and no reader sees
+anything false. It is a bill that grows quietly.
+
+**The product consequence is larger than "fresher", and it cuts both ways.** The
+digest windows on *publication* date over a quantised 168-hour grid (D73), so a
+post ingested a week after it was written can land in an edition that has
+already closed and never appear in one at all. Weekly ingestion made that the
+normal case for posts; nightly is what makes a post reliably eligible for the
+edition it belongs to. That is the benefit — and it is also the risk, because
+the digest's selection thresholds were tuned before posts could realistically
+reach it. Whether posts crowd out announcements in an edition is a question to
+answer from a published edition, not from here.
+
 **What this does not do.** Posts still cannot raise a content alert —
 `alerts.content_mute_prompt_versions` holds `t1` and `t2`, which is an
 independent guard and a separate decision (D69 declined to take it). A nightly
@@ -8320,9 +8382,14 @@ nothing explaining them — which is the failure mode config-not-code is suppose
 to prevent, arriving one layer up: a leg is *declared* in `registry.LEGS`, and
 described in two other files that adding one does not touch.
 
-Fixed by adding both, and by asserting the coverage from `LEGS` itself rather
-than from a list someone remembers to extend — the same approach
-`TestEveryRouteIsGated` already takes to the route table. Three tests: every leg
-the API offers has a non-empty note; every leg has a label in the picker; and no
-label is lowercase, which catches the case where the raw id is copied in as the
-"fix". All three mutation-checked against the state they replaced.
+Fixed by adding both, and by asserting the coverage from the endpoint the page
+actually calls rather than from a list someone remembers to extend — the same
+approach `TestEveryRouteIsGated` already takes to the route table. The first
+version of the test iterated `registry.LEGS` instead, which needed `"drift"`
+appended by hand because it is a checkbox without being an ingestion leg; that
+put the remember-to-extend list back, one line further down. Three tests: every
+leg the API offers has a non-empty note; every leg it offers has a label in the
+picker; and no label is lowercase, which catches the case where the raw id is
+copied in as the "fix". All three mutation-checked against the state they
+replaced, and the parse asserts it found something, so a refactor cannot make
+three emptiness checks pass vacuously.

@@ -95,26 +95,40 @@ cadence:
   # now buys the days since the last one, not the window. That severs cost from
   # cadence and the sevenfold argument with it.
   #
-  # What a daily firing actually costs, from the measured pull (docs/cost.md,
-  # 2026-09-05: 473 posts billed over 90 days = ~5.3/day at $0.005):
+  # What a daily firing actually costs. The rate is counted over the RECENT
+  # days of the measured pull, not over the whole window: `per_handle_ceiling`
+  # (config/posts_sources.yaml) truncated four handles' history, so 473/90 =
+  # 5.3/day -- the figure the first draft of this comment used -- divides a
+  # capped pull by a span it never reached and understates by a third. Recent
+  # days are covered for every handle, and 230 posts landed in the last 30:
   #
-  #   weekly   1 firing  x (7 days + 1 overlap) x 5.3 x $0.005  = ~$0.21/wk
-  #   nightly  7 firings x (1 day  + 1 overlap) x 5.3 x $0.005  = ~$0.37/wk
+  #   billed rate  7.7 posts/day  (230 / 30, stable over 21/30/45-day windows)
   #
-  # ~$0.16 a week, ~$0.70 a month, to cut the worst-case lag on a post from 7
-  # days to 1. Classification is unchanged: the overlap day's posts are already
-  # in `raw_articles` and dedupe by URL before any model sees them.
+  #   weekly   1 firing  x (7 days + 1 overlap) x 7.7 x $0.005  = ~$0.31/wk
+  #   nightly  7 firings x (1 day  + 1 overlap) x 7.7 x $0.005  = ~$0.54/wk
+  #
+  # ~$0.23 a week, ~$1 a month, to cut the worst-case lag on a post from 7 days
+  # to 1. Classification is unchanged: the overlap day's posts are already in
+  # `raw_articles` and dedupe by URL before any model sees them.
   #
   # The overlap is why nightly is 1.75x and not 1x. The mark is a DATE, not an
   # instant, so each firing re-reads the day it stopped on -- deliberately, to
   # avoid dropping posts published later on that day. Seven firings re-read
   # seven days; one firing re-reads one.
   #
-  # THIS NUMBER IS NOW LOAD-BEARING ON THAT WATERMARK. If the mark stops being
-  # read, nightly re-buys the full 90-day window every night: ~473 posts x
+  # THIS NUMBER IS LOAD-BEARING ON THE WATERMARK BEING READ. If the read is
+  # removed, nightly re-buys the full 90-day window every night: ~473 posts x
   # $0.005 x 7 = ~$16.60 a week. `TestANightlyPostsCadenceRestsOnTheWatermark`
   # (tests/test_adapters.py) pins both halves and fails if the read is removed
   # while this is 1.
+  #
+  # AND ON THE MARK STILL ADVANCING. It stops on any firing where a handle
+  # errored or was skipped for budget -- deliberately, so a partial run cannot
+  # move the whole leg's floor past posts it never read (D69). While it is
+  # stuck, every firing buys a window one day wider than the last, the leg
+  # reports success, and nothing escalates. Nightly makes that seven times more
+  # expensive than weekly did, so it is no longer only a comment: the
+  # `posts_watermark_stalled` alert below reports it.
   posts: 1
   drift: 1
 
@@ -123,6 +137,20 @@ alerts:
   # rather than noise (planning.md 4b). One firing down and back up is normal;
   # three in a row is not.
   source_down_runs: 3
+
+  # Days the posts leg's watermark may stand still while the leg keeps
+  # SUCCEEDING before it is reported. A stuck mark widens every subsequent
+  # pull, and at `cadence.posts: 1` that is seven widening pulls a week -- see
+  # the note on that value, and `alerts.posts_watermark_stalled`.
+  #
+  # 7, not 3, because a mark that has not moved is ambiguous: a handle erroring
+  # every firing looks exactly like a stretch where every post read was dropped
+  # by the prefilter, and the second is harmless. At ~2.6 posts a day surviving
+  # the prefilter, three quiet days is possible and seven is not, so this is
+  # the point where the benign reading stops being available. The cost of
+  # waiting that long is ~$0.27 of extra pull, which is the right thing to
+  # trade against a false page.
+  posts_watermark_stale_days: 7
 
   # Content alerts fire at or above this band. `high` is >= 60 on the
   # deterministic score (config/scoring.yaml).
