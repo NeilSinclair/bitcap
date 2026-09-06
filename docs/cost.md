@@ -582,3 +582,205 @@ classification model changes, not on a cadence. Had it run nightly it would have
 been ~$4.60/month on top of the announcement check's ~$22.
 
 **Running total across all workflows: ~$18.20.**
+
+
+---
+
+### X posts leg — first full run (2026-09-05)
+
+Two separate bills: X charges for the data, Anthropic for classifying it.
+
+**X API**, pay-per-use at the published rates ($0.005/post read, $0.010/user
+read, [pricing](https://docs.x.com/x-api/getting-started/pricing)):
+
+| stage | requests | resources billed | cost |
+|---|---:|---:|---:|
+| resolve + verify 27 handles | 1 | 27 users | $0.27 |
+| rate probe (`max_results=5`) | 27 | 74 posts | $0.10 |
+| the pull (caps from the probe) | 19 | 473 posts | $2.37 |
+| | | | **$2.74** |
+
+The probe billed 74 posts rather than the 135 requested, because X bills what
+*returns* — the asymmetry the allocator exploits (D63): asking a silent handle
+for a full page costs nothing, so the expensive mistake is asking too little of
+a prolific one, never too much of a quiet one.
+
+**Classification**, 238 posts under `t1`, `claude-sonnet-5`: **$2.6053**
+(~$0.011/post). Cheaper per item than the papers' $0.015 because a post is
+short, but not proportionally so — a ~3k-token prompt dwarfs a 280-character
+document, which is exactly why the deterministic prefilter runs first. Without
+it the 235 dropped posts would have added ~$2.60 to confirm that "check our
+model out!" is not an investment signal.
+
+**Leg total: $5.35.** Recurring cost at the configured weekly cadence is the
+pull plus classification only — the handle resolution and the rate probe are
+manual steps re-run when the register changes, not per firing.
+
+**Running total across all workflows: ~$23.55.**
+---
+
+## Repository relevance filter (D65) — 2026-09-05
+
+Two distinct spends, and only the second one recurs.
+
+### The labelled set — a build cost, paid twice
+
+| Workflow | Model | Calls | In (tok) | Out (tok) | USD |
+|---|---|---:|---:|---:|---:|
+| Repo labelling, run 1 (**discarded**) | `claude-fable-5` | 183 | ~281,700 | ~24,100 | ~$4.05 |
+| Repo labelling, run 2 | `claude-fable-5` | 183 | ~281,700 | ~24,100 | ~$3.99 |
+| **Total** | | **366** | **563,392** | **48,152** | **$8.0415** |
+
+Run 1 is discarded and recorded anyway, per the convention at the top of this
+file. It was thrown away for a self-inflicted reason: `label_v1.md` was edited
+while the run was in flight, so those 183 labels span two prompt texts while
+every record claims one `prompt_version`. A label set is the foundation every
+number downstream rests on, and one with an unrecorded split in it is not worth
+$4.
+
+Re-running bought something the mistake did not deserve — **a measured stability
+figure**, from comparing the two runs over the same 183 repositories:
+
+| | agreement |
+|---|---|
+| `relevant` / `off_topic` | **182/183 = 0.995** |
+| category | **175/183 = 0.956** |
+
+The binary verdict is very stable. The **category is not**, and that matters more
+than it looks: 5 of the 7 category changes are `agent_or_tooling ↔ vendor_sdk`,
+and the eval's vendor-SDK slice is defined on exactly that field. So the SDK
+figure carries roughly 4% labelling noise under it, which is stated in D65 rather
+than presented as precision it does not have. The one verdict flip was
+`facebookresearch/flow_matching` — a generative-modelling library spanning image
+and text, genuinely on the line.
+
+Fable 5 is the labeller and is **not** one of the two candidates being graded,
+for the reason `config/dedupe.yaml` records about its adjudicator: an eval whose
+labels come from a model under test is marking its own homework.
+
+### The bake-off — also a build cost
+
+Both candidates over all 183 repositories, using the production prompt and
+schema so what was measured is what ships.
+
+| Model | Calls | USD | median latency | recall(relevant) |
+|---|---:|---:|---:|---:|
+| `claude-haiku-4-5-20251001` | 183 | $0.2078 | 2.0s | 0.692 |
+| `gpt-5-mini` | 183 | $0.1197 | 3.4s | **0.875** |
+| **Total** | **366** | **$0.3275** | | |
+
+The winner being the cheaper one is a coincidence, not the reason — recall
+decided it (D65). Measured medians per call: Haiku **882 in / 48 out**,
+`gpt-5-mini` **705 in / 193 out**. It is cheaper *despite* emitting four times
+the output, because it prices input at a quarter of Haiku's and this prompt is
+input-heavy. Recorded so nobody later reads this table backwards, or sizes a
+prompt change against Haiku's output profile.
+
+### The filter itself — the part that runs nightly
+
+`gpt-5-mini`, one call per repository, **cached in `raw_llm_responses` for
+ever** on `repo:{org}/{name}` + `{version}:{model}`.
+
+| | |
+|---|---|
+| measured cost per repository | **~$0.00065** |
+| the whole 87-repo watched set | **~$0.06** |
+| a warm re-run | **$0.00** — verified live: three repositories judged, then re-judged for nothing |
+
+Those three live calls cost **$0.0033** and are *not* in this ledger: they ran
+during the n=1 proof, before `_record_cost` existed on this path. Noted rather
+than quietly omitted, and the reason the recorder now exists.
+
+A separate correction: 14 fabricated records reached this log and 3 of them
+reached a commit. `tests/test_repo_relevance.py` stubbed `providers.classify`,
+which sits *below* `_record_cost`, so the real recorder ran and wrote stub
+values (`"at": "now"`, invented token counts, $0.0139 of spend that never
+happened). They are removed, and the fixture now intercepts `_record_cost`
+itself. This is the trap `tests/test_drift.py::isolated_cost_log` documents,
+walked into a second time.
+
+Spend is recorded **with tokens, at the call site**, into this ledger's JSON log
+— the same `_record_cost` path dedupe and the drift check use — and `load_costs`
+carries it into `raw_costs` in the same firing.
+
+It is returned on `FetchResult.**metered_usd**`, not `cost_usd`, and the two are
+charged the same way and stored differently. Both are added to the run's
+`Budget`, so the per-run ceiling sees the spend on the firing that incurs it —
+`month_spent_before` is snapshotted at construction, so anything that only
+reaches `raw_costs` would otherwise be invisible until the *next* run. Only
+`cost_usd` is written to `run_sources`, because `budget.month_to_date` sums
+`raw_costs` *plus* `run_sources.cost_usd` on the stated assumption that the two
+never overlap. Charging the budget duplicates nothing: `Budget.run_spent` feeds
+the ceiling check and never reaches `run.cost_usd`.
+
+Recording at the call site rather than on the return value also survives a
+failure later in the adapter. `run_source` discards the `FetchResult` on an
+exception, so a token rotated to one without the right scope — every repository
+404ing after the gate has already bought its verdicts — would have left the
+money spent, the verdicts in the database, and nothing recorded anywhere.
+
+**Total for D65: $8.37** — $8.04 labelling (half of it discarded), $0.33
+bake-off, and the filter's own first live pass on top.
+
+**The filter reduces noise, not cost, and in the short run it raises spend.**
+Every repository promoted into a freed slot has no cursor and takes
+`releases_backfill: 5` on first sight. `releases_per_run: 20` is per-repository
+and does not bound that. `config/repo_signals.yaml` already records the same
+event happening once: *"The first firing at 40 ingested 380 documents, which is
+roughly $10 to classify against a $3 per-run ceiling."* The budget guard handles
+it correctly by spending the ceiling and reporting the rest as
+`skipped_for_budget`; the rollout is staged rather than done in one firing.
+
+EUR: *pending* — with the rest, at the card statement.
+
+**Running total across all workflows: ~$31.90** ($23.55 before this, plus
+$8.37). The recurring nightly share is unchanged: this feature costs ~$0.06 once
+and $0.00 on every firing after it.
+
+---
+
+### DeepMind and Meta coverage fix (2026-09-05)
+
+D66 switched DeepMind to its blog RSS feed and added Meta's newsroom AI feed,
+taking the corpus from 259 to 292 articles. 45 articles needed classifying under
+`v9`, `claude-sonnet-5`.
+
+| | |
+|---|---|
+| articles classified | 45 (30 DeepMind, 15 Meta) |
+| **cost** | **$1.6545** |
+| of which the retry | $0.0853 |
+| effective rate | ~$0.0368/article |
+
+Two things about that number are worth naming rather than averaging away.
+
+**It ran 43% over the $0.0258/article estimate** this file records elsewhere.
+The estimate was not wrong, the articles are longer: DeepMind blog posts run a
+median 11.2k characters against a corpus mean well under that, and the single
+largest Meta item ("The Future is for Everyone") is 47k. Per-article cost tracks
+input length, so a lab's cost per article is a property of that lab.
+
+**30 DeepMind articles were billed where 18 were new.** The feed's `<link>`
+carries a trailing slash the sitemap path stripped, so all 12 pre-existing
+DeepMind articles changed URL form, and URL is the score cache's key.
+**$0.3638 of this run — 22% of it — was re-asking an unchanged question of
+unchanged text under a new key**, against $1.2907 for the 33 genuinely new
+articles. Worth knowing before any future change to how a source's URLs are
+normalised: it is the same class of avoidable spend the version decision above
+was careful about, and unlike a version bump it buys nothing at all.
+
+One call failed mid-run on a transient `incomplete chunked read` and was retried
+individually, at $0.0853. **The failed attempt is not in the ledger, and that is
+a gap rather than a decision.** D17's convention covers a call the API billed
+whose output failed to parse; this is the other case — the response died in
+transport, so no usage was ever returned to record. Whether it was billed is not
+knowable from here. It is one call and the amount is immaterial, but the ledger
+should not be read as complete to the cent on a run that had a transport
+failure.
+
+One further call after review: the 47k `about.fb.com` row was truncated to the
+24000-character cap every other discovery path enforces, and re-classified so
+the stored text and its classification agree — **$0.0684**. Run total
+**$1.7229**.
+
+**Running total across all workflows: ~$33.62** ($31.90 before this, plus $1.72).

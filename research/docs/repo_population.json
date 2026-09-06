@@ -1,0 +1,2238 @@
+[
+  {
+    "org": "anthropics",
+    "repo": "skills",
+    "stars": 174494,
+    "description": "Public repository for Agent Skills",
+    "language": "Python",
+    "topics": [
+      "agent-skills"
+    ],
+    "rank": 1,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-code",
+    "stars": 144160,
+    "description": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
+    "language": "Python",
+    "topics": [],
+    "rank": 2,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-cookbooks",
+    "stars": 52451,
+    "description": "A collection of notebooks/recipes showcasing some fun and effective ways of using Claude.",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "prompt-eng-interactive-tutorial",
+    "stars": 38073,
+    "description": "Anthropic's Interactive Prompt Engineering Tutorial",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-plugins-official",
+    "stars": 35937,
+    "description": "Official, Anthropic-managed directory of high quality Claude Code Plugins.",
+    "language": "Python",
+    "topics": [
+      "claude-code",
+      "mcp",
+      "skills"
+    ],
+    "rank": 5,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "financial-services",
+    "stars": 34700,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 6,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "knowledge-work-plugins",
+    "stars": 23896,
+    "description": "Open source repository of plugins primarily intended for knowledge workers to use in Claude Cowork",
+    "language": "Python",
+    "topics": [],
+    "rank": 7,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "courses",
+    "stars": 22782,
+    "description": "Anthropic's educational courses",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 8,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-quickstarts",
+    "stars": 17610,
+    "description": "A collection of projects designed to help developers quickly get started with building deployable applications using the Claude API",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-for-legal",
+    "stars": 9372,
+    "description": "A suite of plugins for legal workflows",
+    "language": "Python",
+    "topics": [],
+    "rank": 10,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-code-action",
+    "stars": 8796,
+    "description": null,
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 11,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-agent-sdk-python",
+    "stars": 8037,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 12,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "defending-code-reference-harness",
+    "stars": 7409,
+    "description": "Skills for threat modeling, scanning, triage, patching, plus an autonomous scanning harness you can /customize",
+    "language": "Python",
+    "topics": [
+      "security"
+    ],
+    "rank": 13,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-code-security-review",
+    "stars": 6173,
+    "description": "An AI-powered security review GitHub Action using Claude to analyze code changes for security vulnerabilities.",
+    "language": "Python",
+    "topics": [],
+    "rank": 14,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "sandbox-runtime",
+    "stars": 5144,
+    "description": "A lightweight sandboxing tool for enforcing filesystem and network restrictions on arbitrary processes at the OS level, without requiring a container.",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 15,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "original_performance_takehome",
+    "stars": 4140,
+    "description": "Anthropic's original performance take-home, now open for you to try!",
+    "language": "Python",
+    "topics": [],
+    "rank": 16,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-python",
+    "stars": 3883,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 17,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-plugins-community",
+    "stars": 3463,
+    "description": "Community plugin marketplace for Claude Cowork and Claude Code. Read-only mirror \u2014 submit plugins at clau.de/plugin-directory-submission.",
+    "language": "Python",
+    "topics": [],
+    "rank": 18,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claudes-c-compiler",
+    "stars": 2783,
+    "description": "Claude Opus 4.6 wrote a dependency-free C compiler in Rust, with backends targeting x86 (64- and 32-bit), ARM, and RISC-V, capable of compiling a booting Linux kernel.",
+    "language": "Rust",
+    "topics": [],
+    "rank": 19,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-agent-sdk-demos",
+    "stars": 2731,
+    "description": "Claude Code SDK Demos",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 20,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-desktop-buddy",
+    "stars": 2572,
+    "description": "Reference and an example for the Bluetooth API for makers in Claude Cowork & Claude Code Desktop",
+    "language": "C++",
+    "topics": [],
+    "rank": 21,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-typescript",
+    "stars": 2106,
+    "description": "Access to Anthropic's safety-first language model APIs in TypeScript",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 22,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "cwc-workshops",
+    "stars": 2045,
+    "description": null,
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 23,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "commerce-agents",
+    "stars": 2037,
+    "description": "Reference blueprint for building shopping and merchant agents with Claude. Examples in retail, commerce, telecom, and entertainment included.",
+    "language": "Python",
+    "topics": [],
+    "rank": 24,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "jacobian-lens",
+    "stars": 1872,
+    "description": " Companion code for the global workspace interpretability paper",
+    "language": "Python",
+    "topics": [],
+    "rank": 25,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "claude-agent-sdk-typescript",
+    "stars": 1730,
+    "description": null,
+    "language": "Shell",
+    "topics": [],
+    "rank": 26,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-go",
+    "stars": 1185,
+    "description": "Access to Anthropic's safety-first language model APIs via Go",
+    "language": "Go",
+    "topics": [],
+    "rank": 27,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "launch-your-agent",
+    "stars": 981,
+    "description": "Claude Code skills that take a founder from idea to a live Claude Managed Agent: interview, scope a v0, launch in their own account, grade it, iterate, and schedule it",
+    "language": "HTML",
+    "topics": [],
+    "rank": 28,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "buffa",
+    "stars": 875,
+    "description": "Rust implementation of protobuf with editions support, JSON serialization, and zero-copy views",
+    "language": "Rust",
+    "topics": [],
+    "rank": 29,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "cwc-long-running-agents",
+    "stars": 674,
+    "description": null,
+    "language": "Shell",
+    "topics": [],
+    "rank": 30,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-cli",
+    "stars": 633,
+    "description": "The CLI for the Claude API",
+    "language": "Go",
+    "topics": [
+      "anthropic",
+      "api",
+      "claude",
+      "cli"
+    ],
+    "rank": 32,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "life-sciences",
+    "stars": 590,
+    "description": "Repo for the Claude Code Marketplace to use with the Claude for Life Sciences Launch. This will continue to host the marketplace.json long-term, but not the actual MCP servers.",
+    "language": "Python",
+    "topics": [],
+    "rank": 33,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "healthcare",
+    "stars": 408,
+    "description": null,
+    "language": "JavaScript",
+    "topics": [],
+    "rank": 36,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-ruby",
+    "stars": 366,
+    "description": null,
+    "language": "Ruby",
+    "topics": [],
+    "rank": 37,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-java",
+    "stars": 365,
+    "description": null,
+    "language": "Kotlin",
+    "topics": [],
+    "rank": 38,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "anthropics",
+    "repo": "anthropic-sdk-csharp",
+    "stars": 321,
+    "description": "Access to Anthropic's safety-first language model APIs in C#",
+    "language": "C#",
+    "topics": [],
+    "rank": 40,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "codex",
+    "stars": 121729,
+    "description": "Lightweight coding agent that runs in your terminal",
+    "language": "Rust",
+    "topics": [],
+    "rank": 1,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "whisper",
+    "stars": 108518,
+    "description": "Robust Speech Recognition via Large-Scale Weak Supervision",
+    "language": "Python",
+    "topics": [],
+    "rank": 2,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-cookbook",
+    "stars": 75762,
+    "description": "Examples and guides for using the OpenAI API",
+    "language": "Jupyter Notebook",
+    "topics": [
+      "chatgpt",
+      "gpt-4",
+      "openai",
+      "openai-api"
+    ],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "CLIP",
+    "stars": 34261,
+    "description": "CLIP (Contrastive Language-Image Pretraining),  Predict the most relevant text snippet given an image",
+    "language": "Jupyter Notebook",
+    "topics": [
+      "deep-learning",
+      "machine-learning"
+    ],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "codex-plugin-cc",
+    "stars": 32801,
+    "description": "Use Codex from Claude Code to review code or delegate tasks.",
+    "language": "JavaScript",
+    "topics": [],
+    "rank": 5,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-python",
+    "stars": 31553,
+    "description": "The official Python library for the OpenAI API",
+    "language": "Python",
+    "topics": [
+      "openai",
+      "python"
+    ],
+    "rank": 6,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-agents-python",
+    "stars": 29210,
+    "description": "A lightweight, powerful framework for multi-agent workflows",
+    "language": "Python",
+    "topics": [
+      "agents",
+      "ai",
+      "framework",
+      "harness",
+      "llm",
+      "openai",
+      "python"
+    ],
+    "rank": 7,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "symphony",
+    "stars": 27048,
+    "description": "Symphony turns project work into isolated, autonomous implementation runs, allowing teams to manage work instead of supervising coding agents.",
+    "language": "Elixir",
+    "topics": [],
+    "rank": 8,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "skills",
+    "stars": 25451,
+    "description": "Skills Catalog for Codex",
+    "language": "Python",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "swarm",
+    "stars": 21943,
+    "description": "Educational framework exploring ergonomic, lightweight multi-agent orchestration. Managed by OpenAI Solution team.",
+    "language": "Python",
+    "topics": [],
+    "rank": 10,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "gpt-oss",
+    "stars": 20373,
+    "description": "gpt-oss-120b and gpt-oss-20b are two open-weight language models by OpenAI",
+    "language": "Python",
+    "topics": [],
+    "rank": 11,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "evals",
+    "stars": 19388,
+    "description": "Evals is a framework for evaluating LLMs and LLM systems, and an open-source registry of benchmarks.",
+    "language": "Python",
+    "topics": [],
+    "rank": 12,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "tiktoken",
+    "stars": 19181,
+    "description": "tiktoken is a fast BPE tokeniser for use with OpenAI's models.",
+    "language": "Python",
+    "topics": [],
+    "rank": 13,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-node",
+    "stars": 11158,
+    "description": "Official JavaScript / TypeScript library for the OpenAI API",
+    "language": "TypeScript",
+    "topics": [
+      "nodejs",
+      "openai",
+      "typescript"
+    ],
+    "rank": 14,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "codex-security",
+    "stars": 10414,
+    "description": "OpenAI's Codex Security CLI and TypeScript SDK for finding, validating, and fixing security vulnerabilities. npm: https://www.npmjs.com/package/@openai/codex-security",
+    "language": "TypeScript",
+    "topics": [
+      "ai-security",
+      "application-security",
+      "cli",
+      "code-scanning",
+      "codex",
+      "codex-security",
+      "cybersecurity",
+      "devsecops",
+      "nodejs",
+      "npm",
+      "openai",
+      "sdk",
+      "security",
+      "typescript",
+      "vulnerability-scanning"
+    ],
+    "rank": 15,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-realtime-agents",
+    "stars": 6972,
+    "description": "This is a simple demonstration of more advanced, agentic patterns built on top of the Realtime API.",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 16,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "tart",
+    "stars": 6683,
+    "description": "macOS and Linux VMs on Apple Silicon to use in CI and other automations",
+    "language": "Swift",
+    "topics": [
+      "apple-silicon",
+      "automation",
+      "ci",
+      "fair-source",
+      "macos",
+      "tart",
+      "virtualization",
+      "virtualization-framework"
+    ],
+    "rank": 17,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-cs-agents-demo",
+    "stars": 6568,
+    "description": "Demo of a customer service use case implemented with the OpenAI Agents SDK",
+    "language": "Python",
+    "topics": [],
+    "rank": 18,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "plugins",
+    "stars": 5403,
+    "description": "OpenAI Plugins",
+    "language": "JavaScript",
+    "topics": [],
+    "rank": 19,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "parameter-golf",
+    "stars": 5178,
+    "description": "Train the smallest LM you can that fits in 16MB. Best model wins!",
+    "language": "Python",
+    "topics": [],
+    "rank": 20,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "simple-evals",
+    "stars": 4625,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 21,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "harmony",
+    "stars": 4500,
+    "description": "Renderer for the harmony response format to be used with gpt-oss",
+    "language": "Rust",
+    "topics": [],
+    "rank": 22,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "transformer-debugger",
+    "stars": 4123,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 23,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-agents-js",
+    "stars": 3756,
+    "description": "A lightweight, powerful framework for multi-agent workflows and voice agents",
+    "language": "TypeScript",
+    "topics": [
+      "agents",
+      "openai",
+      "openai-api",
+      "realtime-api",
+      "typescript"
+    ],
+    "rank": 24,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-go",
+    "stars": 3451,
+    "description": "The official Go library for the OpenAI API",
+    "language": "Go",
+    "topics": [],
+    "rank": 25,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-fm",
+    "stars": 2888,
+    "description": "Code for openai.fm, a demo for the OpenAI Speech API",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 26,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-dotnet",
+    "stars": 2683,
+    "description": "The official .NET library for the OpenAI API",
+    "language": "C#",
+    "topics": [
+      "csharp",
+      "dotnet",
+      "openai"
+    ],
+    "rank": 27,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "privacy-filter",
+    "stars": 2683,
+    "description": "OpenAI Privacy Filter",
+    "language": "Python",
+    "topics": [],
+    "rank": 28,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-quickstart-node",
+    "stars": 2644,
+    "description": "Node.js example app from the OpenAI API quickstart tutorial",
+    "language": "JavaScript",
+    "topics": [
+      "openai",
+      "openai-api"
+    ],
+    "rank": 29,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-openapi",
+    "stars": 2501,
+    "description": "OpenAPI specification for the OpenAI API",
+    "language": null,
+    "topics": [
+      "openai",
+      "openai-api"
+    ],
+    "rank": 30,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "chatkit-js",
+    "stars": 1955,
+    "description": null,
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 32,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "openai-java",
+    "stars": 1522,
+    "description": "The official Java library for the OpenAI API",
+    "language": "Kotlin",
+    "topics": [],
+    "rank": 36,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "openai",
+    "repo": "procgen",
+    "stars": 1187,
+    "description": "Procgen Benchmark: Procedurally-Generated Game-Like Gym-Environments",
+    "language": "C++",
+    "topics": [],
+    "rank": 39,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "deepmind-research",
+    "stars": 15181,
+    "description": "This repository contains implementations and illustrative code to accompany DeepMind publications",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 1,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mujoco",
+    "stars": 14937,
+    "description": "Multi-Joint dynamics with Contact. A general purpose physics simulator.",
+    "language": "C++",
+    "topics": [
+      "mujoco",
+      "physics",
+      "robotics"
+    ],
+    "rank": 2,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "alphafold",
+    "stars": 14824,
+    "description": "Open source code for AlphaFold 2.",
+    "language": "Python",
+    "topics": [],
+    "rank": 3,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "sonnet",
+    "stars": 9966,
+    "description": "TensorFlow-based neural network library",
+    "language": "Python",
+    "topics": [
+      "artificial-intelligence",
+      "deep-learning",
+      "machine-learning",
+      "neural-networks",
+      "tensorflow"
+    ],
+    "rank": 4,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "alphafold3",
+    "stars": 8520,
+    "description": "AlphaFold 3 inference pipeline.",
+    "language": "Python",
+    "topics": [],
+    "rank": 5,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "weathernext",
+    "stars": 7631,
+    "description": null,
+    "language": "Python",
+    "topics": [
+      "weather",
+      "weather-forecast"
+    ],
+    "rank": 6,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "gemma",
+    "stars": 5715,
+    "description": "Gemma open-weight LLM library, from Google DeepMind",
+    "language": "Python",
+    "topics": [],
+    "rank": 7,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "open_spiel",
+    "stars": 5460,
+    "description": "OpenSpiel is a collection of environments and algorithms for research in general reinforcement learning and search/planning in games.",
+    "language": "C++",
+    "topics": [
+      "cpp",
+      "games",
+      "multiagent",
+      "python",
+      "reinforcement-learning"
+    ],
+    "rank": 8,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "alphageometry",
+    "stars": 4881,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "dm_control",
+    "stars": 4681,
+    "description": "Google DeepMind's software stack for physics-based simulation and Reinforcement Learning environments, using MuJoCo.",
+    "language": "Python",
+    "topics": [
+      "artificial-intelligence",
+      "deep-learning",
+      "machine-learning",
+      "mujoco",
+      "neural-networks",
+      "physics-simulation",
+      "reinforcement-learning"
+    ],
+    "rank": 10,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "acme",
+    "stars": 4054,
+    "description": "A library of reinforcement learning components and agents",
+    "language": "Python",
+    "topics": [
+      "agents",
+      "reinforcement-learning",
+      "research"
+    ],
+    "rank": 11,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mujoco_menagerie",
+    "stars": 3923,
+    "description": "A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind.",
+    "language": "Python",
+    "topics": [
+      "mujoco",
+      "robotics"
+    ],
+    "rank": 12,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "dm-haiku",
+    "stars": 3278,
+    "description": "JAX-based neural network library",
+    "language": "Python",
+    "topics": [
+      "deep-learning",
+      "deep-neural-networks",
+      "jax",
+      "machine-learning",
+      "neural-networks"
+    ],
+    "rank": 13,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "science-skills",
+    "stars": 2844,
+    "description": "GDM Science Skills to speed up agentic scientific workflows with better grounding and higher token efficiency. Integrate insights from AlphaGenome, AFDB, UniProt and 30+ other databases and tools.",
+    "language": "Python",
+    "topics": [],
+    "rank": 14,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mctx",
+    "stars": 2657,
+    "description": "Monte Carlo tree search in JAX",
+    "language": "Python",
+    "topics": [
+      "jax",
+      "monte-carlo-tree-search",
+      "reinforcement-learning"
+    ],
+    "rank": 15,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "optax",
+    "stars": 2331,
+    "description": "Optax is a gradient processing and optimization library for JAX.",
+    "language": "Python",
+    "topics": [
+      "machine-learning",
+      "optimization"
+    ],
+    "rank": 16,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mujoco_playground",
+    "stars": 2183,
+    "description": "An open-source library for GPU-accelerated robot learning and sim-to-real transfer.",
+    "language": "Python",
+    "topics": [],
+    "rank": 17,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "open_x_embodiment",
+    "stars": 2022,
+    "description": null,
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 18,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "alphagenome",
+    "stars": 1986,
+    "description": "This API provides programmatic access to the AlphaGenome model developed by Google DeepMind.",
+    "language": "Python",
+    "topics": [],
+    "rank": 19,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "tapnet",
+    "stars": 1977,
+    "description": "Tracking Any Point (TAP)",
+    "language": "Jupyter Notebook",
+    "topics": [
+      "benchmark",
+      "computer-vision",
+      "deep-learning",
+      "point-tracking",
+      "robotics"
+    ],
+    "rank": 20,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mujoco_mpc",
+    "stars": 1716,
+    "description": "Real-time behaviour synthesis with MuJoCo, using Predictive Control",
+    "language": "C++",
+    "topics": [
+      "model-predictive-control",
+      "motor-control",
+      "mpc",
+      "mpc-control",
+      "mujoco",
+      "predictive-control"
+    ],
+    "rank": 21,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "concordia",
+    "stars": 1669,
+    "description": "A library for generative social simulation",
+    "language": "Python",
+    "topics": [
+      "agent-based-simulation",
+      "generative-agents",
+      "multi-agent",
+      "social-simulation"
+    ],
+    "rank": 22,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "bsuite",
+    "stars": 1556,
+    "description": "bsuite is a collection of carefully-designed experiments that investigate core capabilities of a reinforcement learning (RL) agent",
+    "language": "Python",
+    "topics": [],
+    "rank": 23,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "rlax",
+    "stars": 1442,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 24,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "mujoco_warp",
+    "stars": 1440,
+    "description": "GPU-optimized version of the MuJoCo physics simulator, designed for NVIDIA hardware.",
+    "language": "Python",
+    "topics": [
+      "mujoco-warp",
+      "nvidia-warp"
+    ],
+    "rank": 25,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "android_env",
+    "stars": 1240,
+    "description": "RL research on Android devices.",
+    "language": "Python",
+    "topics": [
+      "android",
+      "reinforcement-learning"
+    ],
+    "rank": 26,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "materials_discovery",
+    "stars": 1232,
+    "description": null,
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 27,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "formal-conjectures",
+    "stars": 1227,
+    "description": "A collection of formalized statements of conjectures in Lean.",
+    "language": "Lean",
+    "topics": [
+      "formal-mathematics",
+      "lean4"
+    ],
+    "rank": 28,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "synthid-text",
+    "stars": 1090,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 29,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "tree",
+    "stars": 1022,
+    "description": "tree is a library for working with nested data structures",
+    "language": "Python",
+    "topics": [],
+    "rank": 30,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "chex",
+    "stars": 955,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 31,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "meltingpot",
+    "stars": 867,
+    "description": "A suite of test scenarios for multi-agent reinforcement learning.",
+    "language": "Python",
+    "topics": [
+      "multiagent-reinforcement-learning"
+    ],
+    "rank": 33,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "alphagenome_research",
+    "stars": 815,
+    "description": "Research code accompanying AlphaGenome ",
+    "language": "Python",
+    "topics": [],
+    "rank": 35,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "google-deepmind",
+    "repo": "torax",
+    "stars": 718,
+    "description": "TORAX: Tokamak transport simulation in JAX",
+    "language": "Python",
+    "topics": [],
+    "rank": 39,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "mistral-vibe",
+    "stars": 4918,
+    "description": "Minimal CLI coding agent by Mistral",
+    "language": "Python",
+    "topics": [],
+    "rank": 1,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "cookbook",
+    "stars": 2320,
+    "description": null,
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 2,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "mistral-common",
+    "stars": 940,
+    "description": "Official inference library for pre-processing of Mistral models",
+    "language": "Python",
+    "topics": [],
+    "rank": 3,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "client-python",
+    "stars": 767,
+    "description": "Python client library for Mistral AI platform",
+    "language": "Python",
+    "topics": [],
+    "rank": 4,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "client-ts",
+    "stars": 157,
+    "description": " TS Client library for Mistral AI platform ",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 5,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "mistral-evals",
+    "stars": 92,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 6,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "platform-docs-public",
+    "stars": 72,
+    "description": null,
+    "language": "MDX",
+    "topics": [],
+    "rank": 7,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "LeanstralSafeVerify",
+    "stars": 40,
+    "description": "Leanstral's fork of SafeVerify, which we use for code agent training and as part of our evaluation stack.",
+    "language": "Lean",
+    "topics": [],
+    "rank": 8,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "search-starter-app",
+    "stars": 36,
+    "description": "Base template to build, manage and improve search engines",
+    "language": "Jinja",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "workflows-starter-app",
+    "stars": 33,
+    "description": "Base template to register and invoke workflows",
+    "language": "MDX",
+    "topics": [],
+    "rank": 10,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "mistralai",
+    "repo": "FLTEval",
+    "stars": 6,
+    "description": "Docker-only evaluation harness for FLT Lean tasks",
+    "language": "Python",
+    "topics": [],
+    "rank": 11,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "mistralai",
+    "repo": "cli",
+    "stars": 2,
+    "description": null,
+    "language": "Shell",
+    "topics": [],
+    "rank": 12,
+    "releases": 3,
+    "cohort": "watched"
+  },
+  {
+    "org": "xai-org",
+    "repo": "x-algorithm",
+    "stars": 32707,
+    "description": "Algorithm powering the For You feed on X",
+    "language": "Rust",
+    "topics": [],
+    "rank": 1,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "grok-build",
+    "stars": 26493,
+    "description": "SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible.",
+    "language": "Rust",
+    "topics": [],
+    "rank": 2,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "grok-prompts",
+    "stars": 4441,
+    "description": "Prompts for our Grok chat assistant and the `@grok` bot on X.",
+    "language": "Jinja",
+    "topics": [],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "xai-cookbook",
+    "stars": 569,
+    "description": "A collection of pragmatic, real-world examples guiding you from basic to advanced use of xAI's Grok APIs.",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "xai-sdk-python",
+    "stars": 567,
+    "description": "The official Python SDK for the xAI API",
+    "language": "Python",
+    "topics": [],
+    "rank": 5,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "xai-org",
+    "repo": "grok-build-plugin-cc",
+    "stars": 241,
+    "description": "Claude Code plugin that delegates reviews, rescue tasks, and session transfer to the Grok Build CLI",
+    "language": "JavaScript",
+    "topics": [],
+    "rank": 6,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "plugin-marketplace",
+    "stars": 219,
+    "description": "Official xAI plugin marketplace",
+    "language": "Python",
+    "topics": [],
+    "rank": 7,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "xai-org",
+    "repo": "xai-proto",
+    "stars": 151,
+    "description": "Public protobuf definitions for xAI's gRPC APIs",
+    "language": null,
+    "topics": [],
+    "rank": 8,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "faiss",
+    "stars": 40856,
+    "description": "A library for efficient similarity search and clustering of dense vectors.",
+    "language": "C++",
+    "topics": [],
+    "rank": 1,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "detectron2",
+    "stars": 34701,
+    "description": "Detectron2 is a platform for object detection, segmentation and other visual recognition tasks.",
+    "language": "Python",
+    "topics": [],
+    "rank": 2,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "audiocraft",
+    "stars": 23609,
+    "description": "Audiocraft is a library for audio processing and generation with deep learning. It features the state-of-the-art EnCodec audio compressor / tokenizer, along with MusicGen, a simple and controllable music generation LM with textual and melodic conditioning.",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "sam2",
+    "stars": 19810,
+    "description": "The repository provides code for running inference with the Meta Segment Anything Model 2 (SAM 2), links for downloading the trained model checkpoints, and example notebooks that show how to use the model.",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "vggt",
+    "stars": 14348,
+    "description": "[CVPR 2025 Best Paper Award] VGGT: Visual Geometry Grounded Transformer",
+    "language": "Python",
+    "topics": [],
+    "rank": 5,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "dinov2",
+    "stars": 13303,
+    "description": "PyTorch code and models for the DINOv2 self-supervised learning method.",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 6,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "seamless_communication",
+    "stars": 11850,
+    "description": "Foundational Models for State-of-the-Art Speech and Text Translation",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 7,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "sam3",
+    "stars": 11590,
+    "description": "The repository provides code for running inference and finetuning with the Meta Segment Anything Model 3 (SAM 3), links for downloading the trained model checkpoints, and example notebooks that show how to use the model.",
+    "language": "Python",
+    "topics": [],
+    "rank": 8,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "dinov3",
+    "stars": 11328,
+    "description": "Reference PyTorch implementation and models for DINOv3",
+    "language": "Jupyter Notebook",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "xformers",
+    "stars": 10547,
+    "description": "Hackable and optimized Transformers building blocks, supporting a composable construction.",
+    "language": "Python",
+    "topics": [],
+    "rank": 10,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "pytorch3d",
+    "stars": 9964,
+    "description": "PyTorch3D is FAIR's library of reusable components for deep learning with 3D data",
+    "language": "Python",
+    "topics": [],
+    "rank": 11,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "ImageBind",
+    "stars": 9067,
+    "description": "ImageBind One Embedding Space to Bind Them All",
+    "language": "Python",
+    "topics": [],
+    "rank": 12,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "SlowFast",
+    "stars": 7416,
+    "description": "PySlowFast: video understanding codebase from FAIR for reproducing state-of-the-art video models.",
+    "language": "Python",
+    "topics": [],
+    "rank": 13,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "sam-3d-objects",
+    "stars": 7367,
+    "description": "SAM 3D Objects",
+    "language": "Python",
+    "topics": [],
+    "rank": 14,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "Kats",
+    "stars": 6467,
+    "description": "Kats, a kit to analyze time series data, a lightweight, easy-to-use, generalizable, and extendable framework to perform time series analysis, from understanding the key statistics and characteristics, detecting change points and anomalies, to forecasting future trends. ",
+    "language": "Python",
+    "topics": [],
+    "rank": 15,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "mmf",
+    "stars": 5633,
+    "description": "A modular framework for vision & language multimodal research from Facebook AI Research (FAIR)",
+    "language": "Python",
+    "topics": [
+      "captioning",
+      "deep-learning",
+      "dialog",
+      "hateful-memes",
+      "multi-tasking",
+      "multimodal",
+      "pretrained-models",
+      "pytorch",
+      "textvqa",
+      "vqa"
+    ],
+    "rank": 16,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "sapiens",
+    "stars": 5421,
+    "description": "High-resolution models for human tasks.",
+    "language": "Python",
+    "topics": [],
+    "rank": 17,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "moco",
+    "stars": 5136,
+    "description": "PyTorch implementation of MoCo: https://arxiv.org/abs/1911.05722",
+    "language": null,
+    "topics": [],
+    "rank": 18,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "AugLy",
+    "stars": 5090,
+    "description": "A data augmentations library for audio, image, text, and video.",
+    "language": "Python",
+    "topics": [],
+    "rank": 19,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "co-tracker",
+    "stars": 5086,
+    "description": "CoTracker is a model for tracking any point (pixel) on a video.",
+    "language": "Jupyter Notebook",
+    "topics": [
+      "optical-flow",
+      "point-tracking",
+      "track-anything"
+    ],
+    "rank": 20,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "flow_matching",
+    "stars": 4723,
+    "description": "A PyTorch library for implementing flow matching algorithms, featuring continuous and discrete flow matching implementations. It includes practical examples for both text and image modalities.",
+    "language": "Python",
+    "topics": [],
+    "rank": 21,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "vjepa2",
+    "stars": 4577,
+    "description": "PyTorch code and models for VJEPA2 self-supervised learning from video.",
+    "language": "Python",
+    "topics": [],
+    "rank": 22,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "vggt-omega",
+    "stars": 4308,
+    "description": "[CVPR 2026 Oral] VGGT Omega",
+    "language": "Python",
+    "topics": [],
+    "rank": 23,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "nevergrad",
+    "stars": 4204,
+    "description": "A Python toolbox for performing gradient-free optimization",
+    "language": "Python",
+    "topics": [],
+    "rank": 24,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "dlrm",
+    "stars": 4069,
+    "description": "An implementation of a deep learning recommendation model (DLRM)",
+    "language": "Python",
+    "topics": [],
+    "rank": 25,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "habitat-sim",
+    "stars": 3811,
+    "description": "A flexible, high-performance 3D simulator for Embodied AI research.",
+    "language": "C++",
+    "topics": [
+      "ai",
+      "computer-vision",
+      "cplusplus",
+      "robotics",
+      "sim2real",
+      "simulator"
+    ],
+    "rank": 26,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "ReAgent",
+    "stars": 3713,
+    "description": "A platform for Reasoning systems (Reinforcement Learning, Contextual Bandits, etc.)",
+    "language": "Python",
+    "topics": [],
+    "rank": 27,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "map-anything",
+    "stars": 3711,
+    "description": "MapAnything: Universal Feed-Forward Metric 3D Reconstruction",
+    "language": "Python",
+    "topics": [
+      "3d-reconstruction",
+      "ai",
+      "calibration",
+      "depth-completion",
+      "depth-estimation",
+      "image-to-3d",
+      "multi-view-stereo",
+      "robotics",
+      "sfm"
+    ],
+    "rank": 28,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "sam-audio",
+    "stars": 3619,
+    "description": "The repository provides code for running inference with the Meta Segment Anything Audio Model (SAM-Audio), links for downloading the trained model checkpoints, and example notebooks that show how to use the model.",
+    "language": "Python",
+    "topics": [],
+    "rank": 29,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "pytorchvideo",
+    "stars": 3563,
+    "description": "A deep learning library for video understanding research.",
+    "language": "Python",
+    "topics": [],
+    "rank": 30,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "habitat-lab",
+    "stars": 3120,
+    "description": "A modular high-level library to train embodied AI agents across a variety of tasks and environments.",
+    "language": "Python",
+    "topics": [
+      "ai",
+      "computer-vision",
+      "deep-learning",
+      "deep-reinforcement-learning",
+      "python",
+      "reinforcement-learning",
+      "research",
+      "robotics",
+      "sim2real",
+      "simulator"
+    ],
+    "rank": 33,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "omnilingual-asr",
+    "stars": 2915,
+    "description": "Omnilingual ASR Open-Source Multilingual SpeechRecognition for 1600+ Languages",
+    "language": "Python",
+    "topics": [],
+    "rank": 35,
+    "releases": 1,
+    "cohort": "watched"
+  },
+  {
+    "org": "facebookresearch",
+    "repo": "fairchem",
+    "stars": 2237,
+    "description": "FAIR Chemistry's library of machine learning methods for chemistry ",
+    "language": "Python",
+    "topics": [],
+    "rank": 40,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-cookbook",
+    "stars": 18561,
+    "description": "Welcome to the Llama Cookbook! This is your go to guide for Building with Llama: Getting started with Inference, Fine-Tuning, RAG. We also show you how to solve end to end problems using Llama model family and using them on various provider services  ",
+    "language": "Jupyter Notebook",
+    "topics": [
+      "ai",
+      "finetuning",
+      "langchain",
+      "llama",
+      "llama2",
+      "llm",
+      "machine-learning",
+      "python",
+      "pytorch",
+      "vllm"
+    ],
+    "rank": 1,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-models",
+    "stars": 7688,
+    "description": "Utilities intended for use with Llama models.",
+    "language": "Python",
+    "topics": [],
+    "rank": 2,
+    "releases": 4,
+    "cohort": "watched"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "PurpleLlama",
+    "stars": 4381,
+    "description": "Set of tools to assess and improve LLM security.",
+    "language": "Python",
+    "topics": [],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "synthetic-data-kit",
+    "stars": 1633,
+    "description": "Tool for generating high quality Synthetic datasets",
+    "language": "Python",
+    "topics": [
+      "data",
+      "generation",
+      "llm",
+      "python",
+      "synthetic"
+    ],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "prompt-ops",
+    "stars": 1061,
+    "description": "An open-source tool for LLM prompt optimization.",
+    "language": "Python",
+    "topics": [],
+    "rank": 5,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-api-python",
+    "stars": 64,
+    "description": "The official Python library for the Llama API",
+    "language": "Python",
+    "topics": [],
+    "rank": 6,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-api-typescript",
+    "stars": 38,
+    "description": "The official Typescript library for the Llama API",
+    "language": "TypeScript",
+    "topics": [],
+    "rank": 7,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-verifications",
+    "stars": 27,
+    "description": "Functional tests and benchmarks for verifying Llama model providers.",
+    "language": "Python",
+    "topics": [],
+    "rank": 8,
+    "releases": 2,
+    "cohort": "watched"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "deepseek-harness",
+    "stars": 213057,
+    "description": "DeepSeek Harness: Everything is a Plugin.",
+    "language": "TypeScript",
+    "topics": [
+      "ai-agents",
+      "cordis",
+      "dsh",
+      "dsh-plugin"
+    ],
+    "rank": 1,
+    "releases": 5,
+    "cohort": "watched"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "awesome-deepseek-integration",
+    "stars": 39034,
+    "description": "Integrate the DeepSeek API into popular software",
+    "language": null,
+    "topics": [
+      "awesome",
+      "deepseek"
+    ],
+    "rank": 2,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-Coder",
+    "stars": 24235,
+    "description": "DeepSeek Coder: Let the Code Write Itself",
+    "language": "Python",
+    "topics": [],
+    "rank": 3,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-OCR",
+    "stars": 23872,
+    "description": "Contexts Optical Compression",
+    "language": "Python",
+    "topics": [],
+    "rank": 4,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "FlashMLA",
+    "stars": 12901,
+    "description": "FlashMLA: Efficient Multi-head Latent Attention Kernels",
+    "language": "C++",
+    "topics": [],
+    "rank": 5,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "3FS",
+    "stars": 10185,
+    "description": " A high-performance distributed file system designed to address the challenges of AI training and inference workloads. ",
+    "language": "C++",
+    "topics": [
+      "distributed-file-system"
+    ],
+    "rank": 6,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepEP",
+    "stars": 10106,
+    "description": "DeepEP: an efficient expert-parallel communication library",
+    "language": "Cuda",
+    "topics": [],
+    "rank": 7,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepGEMM",
+    "stars": 7778,
+    "description": "DeepGEMM: clean and efficient BLAS kernel library on GPU",
+    "language": "Cuda",
+    "topics": [],
+    "rank": 8,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSpec",
+    "stars": 7081,
+    "description": "DeepSpec: a full-stack codebase for training and evaluating speculative decoding algorithms",
+    "language": "Python",
+    "topics": [],
+    "rank": 9,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-Coder-V2",
+    "stars": 7005,
+    "description": "DeepSeek-Coder-V2: Breaking the Barrier of Closed-Source Models in Code Intelligence",
+    "language": null,
+    "topics": [],
+    "rank": 10,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "awesome-deepseek-agent",
+    "stars": 6038,
+    "description": null,
+    "language": null,
+    "topics": [],
+    "rank": 11,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "Engram",
+    "stars": 4640,
+    "description": "Conditional Memory via Scalable Lookup: A New Axis of Sparsity for Large Language Models",
+    "language": "Python",
+    "topics": [],
+    "rank": 12,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-OCR-2",
+    "stars": 3396,
+    "description": "Visual Causal Flow",
+    "language": "Python",
+    "topics": [],
+    "rank": 13,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DualPipe",
+    "stars": 3005,
+    "description": "A bidirectional pipeline parallelism algorithm for computation-communication overlap in DeepSeek V3/R1 training.",
+    "language": "Python",
+    "topics": [],
+    "rank": 14,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "TileKernels",
+    "stars": 1752,
+    "description": "A kernel library written in tilelang",
+    "language": "Python",
+    "topics": [],
+    "rank": 15,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-V3.2-Exp",
+    "stars": 1645,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 16,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "DeepSeek-Math-V2",
+    "stars": 1606,
+    "description": null,
+    "language": "Python",
+    "topics": [],
+    "rank": 17,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "awesome-deepseek-coder",
+    "stars": 821,
+    "description": "A curated list of open-source projects related to DeepSeek Coder",
+    "language": null,
+    "topics": [],
+    "rank": 18,
+    "releases": 0,
+    "cohort": "frontier"
+  },
+  {
+    "org": "deepseek-ai",
+    "repo": "LPLB",
+    "stars": 531,
+    "description": "An early research stage expert-parallel load balancer for MoE models based on linear programming.",
+    "language": "Python",
+    "topics": [],
+    "rank": 19,
+    "releases": 0,
+    "cohort": "frontier"
+  }
+]

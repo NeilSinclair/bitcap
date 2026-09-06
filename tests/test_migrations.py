@@ -120,6 +120,29 @@ class TestRebuildPreservesOperationalHistory:
             assert after.scalar(select(func.count()).select_from(m.SourceState)) == 1
             assert after.scalar(select(func.count()).select_from(m.Alert)) == 1
 
+    def test_drop_all_keeps_the_github_commit_bronze(self, session):
+        """The one that was actually wrong in production.
+
+        `raw_github_repos` is live-fetched bronze with no committed artifact, so
+        a rebuild that drops it cannot put it back -- but `source_state`
+        survives the same rebuild, so the github leg went on reading "last
+        success, 0 failures" while the table it fills was empty. Every
+        `releases` source reads that table and runs at cadence 1 against
+        github's 3, so all eight failed on every firing until github's next turn
+        came round. Two indicators, one truth, and they disagreed.
+        """
+        engine = session.get_bind()
+        session.add(m.RawGithubRepo(
+            org="anthropics", repo="claude-code", pushed_at="2026-09-04T12:00:00Z",
+            payload={"total": 12, "commits": []}, content_hash="abc123",
+        ))
+        session.commit()
+
+        drop_all(engine)
+
+        with Session(engine) as after:
+            assert after.scalar(select(func.count()).select_from(m.RawGithubRepo)) == 1
+
     def test_drop_then_create_restores_a_full_schema(self, session):
         """A rebuild is still a rebuild: the derived tables come back."""
         engine = session.get_bind()

@@ -227,6 +227,7 @@ SOURCE_LAB_KEYS = {
     "id", "label", "method", "index_url", "text_source", "date_from",
     "url_contains", "notes", "also", "enabled", "backfill", "window_months",
     "baseline", "date_basis", "category", "page_param", "user_agent",
+    "feed_pages", "feed_page_param",
 }
 
 # Text-recovery strategies a lab may declare with `backfill:`. Read by
@@ -300,12 +301,25 @@ def check_sources(root: Path) -> list[str]:
         # underscores cannot recover a dropped letter. An allowlist has no such
         # gap: anything not named here is either a typo or a key someone added
         # without telling this file.
-        for key in lab:
-            if key not in SOURCE_LAB_KEYS:
-                errors.append(
-                    f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
-                    f"reads it (known: {', '.join(sorted(SOURCE_LAB_KEYS))})"
-                )
+        #
+        # Over `[lab] + also`, matching the required-keys loop above, because
+        # the allowlist was walking only the primary entry and a typo inside a
+        # secondary channel passed silently -- the exact gap the paragraph
+        # above claims an allowlist does not have. `feed_pagees: 3` in the
+        # meta-ai newsroom channel validated clean, and `from_rss` then read
+        # page 1 only, which reaches back two months rather than three.
+        #
+        # `also` itself is not allowed inside a channel: `channels()` merges
+        # one level and never recurses, so a nested one is a silent no-op
+        # rather than a second tier of channels.
+        for channel in [lab] + list(lab.get("also", [])):
+            allowed = SOURCE_LAB_KEYS if channel is lab else SOURCE_LAB_KEYS - {"also"}
+            for key in channel:
+                if key not in allowed:
+                    errors.append(
+                        f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
+                        f"reads it (known: {', '.join(sorted(allowed))})"
+                    )
     return errors
 
 
@@ -412,6 +426,96 @@ def check_repo_signals(root: Path) -> list[str]:
             )
     if not isinstance(doc.get("min_stars"), int):
         errors.append("repo_signals.yaml: min_stars must be an integer")
+    errors.extend(_check_relevance(root, doc))
+    return errors
+
+
+def _check_relevance(root: Path, doc: dict) -> list[str]:
+    """Validate the `relevance` block inside repo_signals.yaml.
+
+    Three of these five checks exist because the failure they catch happens
+    *after* money is spent or *after* the watch list has already changed:
+
+    * An unpriced `model` works all the way through the provider call and then
+      raises KeyError in `providers._cost`, so the call is billed and no verdict
+      comes back. That is the whole reason this imports the price table rather
+      than pattern-matching the name.
+    * A missing prompt file raises on the first repository of the first org.
+    * `max_judged` below `releases_watch` can never fill the watch list, so the
+      leg quietly watches fewer repositories than it is configured to.
+
+    Args:
+        root: Directory holding the config files.
+        doc: The parsed repo_signals.yaml.
+
+    Returns:
+        Error message list.
+    """
+    block = doc.get("relevance")
+    if not isinstance(block, dict):
+        # Absent is an error rather than a default: the releases leg would keep
+        # watching what it watches today and nothing would say why.
+        return ["repo_signals.yaml: relevance must be a mapping"]
+
+    errors = []
+    if not isinstance(block.get("enabled"), bool):
+        errors.append(
+            "repo_signals.yaml: relevance.enabled must be true or false, not "
+            f"{block.get('enabled')!r} — a missing kill switch reads as on"
+        )
+
+    # Guarded, like the identical insert further down this file: unguarded,
+    # repeated validation in one process prepends the path again each time and
+    # permanently shadows any same-named installed module.
+    shim = str(root.parent / "research" / "announcements")
+    if shim not in sys.path:
+        sys.path.insert(0, shim)
+    try:
+        import providers
+    except ImportError:
+        # Reported, not raised. `check_dedupe` does the same: a moved shim must
+        # not take down the whole validator with a traceback when its other
+        # thirty checks would still have run.
+        errors.append("repo_signals.yaml: cannot import providers to check "
+                      "relevance.provider and relevance.model")
+        return errors
+
+    provider = block.get("provider")
+    if provider not in providers.PROVIDERS:
+        errors.append(
+            f"repo_signals.yaml: relevance.provider {provider!r} is not one of "
+            f"{sorted(providers.PROVIDERS)}"
+        )
+    model = block.get("model")
+    if model not in providers.PRICES:
+        errors.append(
+            f"repo_signals.yaml: relevance.model {model!r} has no entry in "
+            "providers.PRICES — the call would be billed and then raise while "
+            "building the cost record"
+        )
+
+    version = block.get("prompt_version")
+    if not isinstance(version, str) or not version:
+        errors.append("repo_signals.yaml: relevance.prompt_version must be a name")
+    elif not (root.parent / "prompts" / "repo_relevance" / f"{version}.md").exists():
+        errors.append(
+            f"repo_signals.yaml: prompts/repo_relevance/{version}.md is missing"
+        )
+
+    judged = block.get("max_judged")
+    watch = doc.get("releases_watch")
+    if not isinstance(judged, int) or isinstance(judged, bool) or judged < 1:
+        errors.append(
+            f"repo_signals.yaml: relevance.max_judged must be a positive integer, "
+            f"not {judged!r}"
+        )
+    elif isinstance(watch, int) and not isinstance(watch, bool) and judged < watch:
+        errors.append(
+            f"repo_signals.yaml: relevance.max_judged ({judged}) is below "
+            f"releases_watch ({watch}), so a cold walk can never fill the watch "
+            "list (cache hits do not count against the ceiling, so a warm one "
+            "still can)"
+        )
     return errors
 
 
@@ -552,6 +656,7 @@ def check_pipeline(root: Path) -> list[str]:
             )
     for key, kind in (("default_min_interval_seconds", (int, float)),
                       ("discovery_ttl_hours", (int, float)),
+                      ("listing_ttl_hours", (int, float)),
                       ("max_backoff_seconds", (int, float)),
                       ("retries", int)):
         value = fetch.get(key)
@@ -561,6 +666,28 @@ def check_pipeline(root: Path) -> list[str]:
         errors.append(
             "pipeline.yaml/fetch: retries above 10 means a rate-limited host is hammered "
             "for minutes; a lost source is a partial run, not a dead one (D27)"
+        )
+    # A listing window at or above the discovery window is the whole point
+    # thrown away: listings are the URLs that decide how fast a *new* paper is
+    # found, and they were split out of `discovery_ttl_hours` precisely because
+    # sharing it left DeepSeek's only route to its own papers on a fortnight's
+    # lag. Legal YAML, no error anywhere, and the register quietly goes stale.
+    if all(isinstance(fetch.get(k), (int, float)) and not isinstance(fetch.get(k), bool)
+           for k in ("listing_ttl_hours", "discovery_ttl_hours")):
+        if fetch["listing_ttl_hours"] >= fetch["discovery_ttl_hours"]:
+            errors.append(
+                "pipeline.yaml/fetch: listing_ttl_hours is not below discovery_ttl_hours, "
+                "so a listing is trusted as long as a lookup -- a new paper would be found "
+                "no faster than before the two were split"
+            )
+    # Jitter only ever extends the discovery TTL, so it has to be a fraction: 1.0
+    # would double the window nobody asked to double, and a negative value would
+    # dither *below* the configured floor.
+    spread = fetch.get("discovery_ttl_jitter")
+    if not isinstance(spread, (int, float)) or isinstance(spread, bool) or not 0 <= spread < 1:
+        errors.append(
+            "pipeline.yaml/fetch: 'discovery_ttl_jitter' must be a fraction in [0, 1) -- "
+            "it extends discovery_ttl_hours by up to that much, per URL"
         )
 
     # The dashboard's horizon. Silent when wrong in the way that matters most:
@@ -668,7 +795,9 @@ def check_people(root: Path, tracked_labs: set[str]) -> list[str]:
         return [f"{path.name}: missing"]
     doc = yaml.safe_load(path.read_text()) or {}
     errors = []
-    tiers = {"own_site", "self_post", "lab_post", "search_index"}
+    # Kept in step with the header of config/people.yaml, which documents what
+    # each tier means. `api_profile` was added in D64.
+    tiers = {"own_site", "self_post", "api_profile", "lab_post", "search_index"}
 
     for lab, entry in (doc.get("labs") or {}).items():
         if lab not in tracked_labs:

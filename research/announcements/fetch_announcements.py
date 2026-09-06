@@ -321,7 +321,11 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
     the full page.
 
     Args:
-        lab: Lab entry from sources.yaml.
+        lab: Lab entry from sources.yaml. May carry `feed_pages` (how many
+            pages of a paginated feed to read, default 1) and
+            `feed_page_param` (the query parameter that pages it, default
+            `paged`); `user_agent` behaves as in `fetch`, with an explicit
+            empty string meaning "send no override".
         cutoff: Earliest publication date to keep.
         skip: URLs already stored and already classified, which must not be
             downloaded again. The pipeline passes them in; running this as a
@@ -331,9 +335,47 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
         List of article dicts.
     """
     skip = skip or set()
-    xml = fetch(lab["index_url"], max_age_hours=DISCOVERY_MAX_AGE_HOURS)
+    # An explicit `user_agent: ""` means send no override -- ai.meta.com 400s
+    # on any browser-shaped agent, and its newsroom channel inherits the key.
+    # An absent key must keep the module default, which is what every RSS lab
+    # configured before this relied on.
+    ua = (lab["user_agent"] or None) if "user_agent" in lab else UA
+
+    # Most feeds hold enough history that one document covers the window.
+    # about.fb.com serves ten items per page and needs `feed_pages` to reach
+    # three months; paging stops on the first page that yields no items, so a
+    # feed shorter than its configured page count costs one wasted fetch rather
+    # than an error.
+    # Page 1 is the channel; pages 2+ are depth. A failure on the first page
+    # therefore propagates -- `adapters.fetch_announcements` only records a
+    # channel as failed when the method raises, and `alerts.source_down` keys
+    # off that, so swallowing it would report "this lab published nothing"
+    # with every check green. That is the sentence D66 was written about.
+    # A later page failing or running out is ordinary and only ends the paging.
+    pages = []
+    for page in range(1, lab.get("feed_pages", 1) + 1):
+        url = lab["index_url"] if page == 1 else (
+            f"{lab['index_url']}?{lab.get('feed_page_param', 'paged')}={page}")
+        try:
+            doc = fetch(url, user_agent=ua, max_age_hours=DISCOVERY_MAX_AGE_HOURS)
+        except RuntimeError:
+            if page == 1:
+                raise
+            print(f"    SKIP feed page {page}: unreachable", flush=True)
+            break
+        if "<item>" not in doc:
+            # Same reasoning as `from_model_index`'s "parsed 0 models": a feed
+            # that migrates to Atom (`<entry>`) or serves an error page with a
+            # 200 parses to nothing, and zero articles from a healthy-looking
+            # run is indistinguishable from a quiet lab.
+            if page == 1:
+                raise RuntimeError(f"feed parsed 0 items: {lab['index_url']}")
+            break
+        pages.append(doc)
+
     out = []
-    for item in re.findall(r"<item>(.*?)</item>", xml, re.S):
+    seen_urls: set[str] = set()
+    for item in [i for xml in pages for i in re.findall(r"<item>(.*?)</item>", xml, re.S)]:
 
         def field(name):
             m = re.search(
@@ -353,16 +395,36 @@ def from_rss(lab: dict, cutoff: datetime, skip: set[str] | None = None) -> list[
         if when < cutoff.replace(tzinfo=None):
             continue
 
-        title = field("title") or ""
+        # Feeds disagree about encoding: DeepMind's serves real UTF-8 while
+        # about.fb.com serves numeric entities, so an unescaped title stores
+        # `Meta&#8217;s AI` verbatim. That is not cosmetic -- the title is what
+        # dedupe's exact gate matches on and what it embeds, and it is what the
+        # card shows. Unescaped twice for the same reason strip_html is: some
+        # pages are double-encoded. A no-op on every feed configured before the
+        # about.fb.com channel, none of which emitted an entity in a title.
+        title = html.unescape(html.unescape(field("title") or ""))
         summary = field("description") or ""
         url = field("link")
         if url in skip:
             continue
+        # A paged feed repaginates as new posts land, so one item can appear on
+        # two pages of the same sweep. Without this the article is fetched and
+        # stored twice and `raw_articles` takes the second as an update to the
+        # first -- silent, but it spends a fetch and doubles the row in-memory.
+        if url in seen_urls:
+            continue
+        seen_urls.add(url)
         text, text_source = f"{title}. {summary}", "rss_summary"
 
         if lab.get("text_source") == "full_text" and url:
             try:
-                text = strip_html(fetch(url))
+                # Capped like every other discovery path. This was the one
+                # that was not, which stayed invisible while the feeds served
+                # short pages: DeepMind's longest article is 18.5k. The
+                # about.fb.com channel stored a 47k row, the first in the
+                # corpus over the cap, and nothing downstream bounds it --
+                # `build_prompt` interpolates the text verbatim.
+                text = strip_html(fetch(url, user_agent=ua))[:24000]
                 text_source = "full_text"
             except RuntimeError as exc:
                 print(f"    SKIP full text, using summary for {url}: {exc}", flush=True)

@@ -41,7 +41,7 @@ from api.queries import build_items
 from app import digest as digest_mod
 from app import people as people_mod
 from app import models as m
-from app.cli import PROMPT_VERSION, PROMPT_VERSIONS
+from app.cli import DIGEST_VERSIONS, PROMPT_VERSION, PROMPT_VERSIONS
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import drift as drift_mod
@@ -274,7 +274,7 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
     session = get_session(engine)
     try:
         built = digest_mod.build(
-            session, kind, PROMPT_VERSIONS, datetime.now(timezone.utc), config,
+            session, kind, DIGEST_VERSIONS, datetime.now(timezone.utc), config,
             quantise=False,
         )
         return {

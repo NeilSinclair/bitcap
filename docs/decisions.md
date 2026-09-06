@@ -6478,3 +6478,1027 @@ link count looks like. This repo does not choose thresholds by eye
 somebody to mute the channel. Recorded as the open gap, not queued: the honest
 prerequisite is a labelled set, which is the cost of the detector rather than a
 detail of it.
+
+## D62 — Three traps found by deploying, not by testing (2026-09-05)
+
+`deployment` was 42 commits behind `deployment-dev` and was brought forward in
+one merge. Every step of that failed in a different way, and none of the
+failures were reachable from a test suite that runs against a database the tests
+themselves create. Recorded because the recovery is not obvious from the error
+in any of the three cases, and because one of them is a false claim in the
+README rather than a bug.
+
+### 1. A prompt-version bump empties the UI without emptying the database
+
+Prod held 251 articles classified under `v8`. The deployed code asks for `v9`
+and `p1` (D57), and `api/queries.py:83` filters
+`Classification.prompt_version.in_(versions)`. Zero rows matched. The site
+rendered an empty feed against a full database, the API returned 200, and
+`/api/health` reported the last run as `succeeded`.
+
+**Nothing in the system notices this.** A version bump is a config change to the
+readers and a data migration to everything already stored, and only the first
+half ships in the diff. The recovery is a reload under the new version, which is
+free from committed artifacts — but knowing that requires knowing the cause, and
+the cause presents as "the frontend is broken".
+
+Worth considering, not built: `/api/health` reporting the classification
+versions actually present in the database beside the ones the code asks for.
+That single line would have named this in seconds.
+
+### 2. `rebuild` cannot survive a pending migration
+
+`cmd_load`'s rebuild path is `drop_all` → `ensure_schema` → load. `drop_all`
+drops the model tables; `alembic_version` is not a model table, so the stamp
+survives. `ensure_schema` then sees a stamp, takes the "stamped and behind"
+branch, and runs `upgrade head` — into `0012_article_links`, which creates a
+table with foreign keys to `articles`, dropped moments earlier.
+
+```
+psycopg.errors.UndefinedTable: relation "articles" does not exist
+```
+
+Re-running does not help: the stamp never advanced, so the next attempt repeats
+it exactly. Recovery is to drop `alembic_version` and let the "never migrated"
+branch rebuild at model shape and stamp head.
+
+**`ensure_schema`'s docstring asserts the thing that broke:** *"A rebuild is the
+one caller that needs tables put back, and it is at head by definition, so
+`upgrade` is a no-op for it."* At head by definition is true of a developer's
+own database and false of every other one — including production immediately
+after a deploy that adds a migration, which is precisely when a rebuild is most
+likely to be run. The assumption was correct when written and stopped being
+correct when `0012` landed from another branch.
+
+The fix is ordering, and it is not written here because this entry is a record
+rather than a change: `rebuild` should upgrade before it drops, or drop the
+stamp along with the tables it stamps for. Either makes the two halves agree
+about which schema exists.
+
+### 3. `rebuild` does not reproduce the whole database
+
+README:57 said `rebuild` loads the committed artifacts and derives the clean
+tables — offered as the clone-to-running path, and it is the first instruction
+a reviewer follows. Measured against the live rebuild on production:
+
+| | local | after `rebuild` on prod |
+|---|---:|---:|
+| announcements | 267 | 259 |
+| papers | 47 | 47 |
+| **GitHub releases** | **380** | **0** |
+| **article groups** | **647** | **0** |
+| total articles | 694 | 306 |
+
+Two independent gaps.
+
+**Releases are not a committed artifact.** `registry.py:55` labels them
+`github_releases` — a marker, not a path, unlike the two corpora beside it which
+are real files. They arrive from a live GitHub fetch in the worker's ingest
+phase, so a rebuild has nothing to load them from.
+
+**And `rebuild` never groups.** `cmd_load` runs refs, articles, papers,
+classifications, costs, `transform` twice and `connect` once. Near-duplicate
+collapse (D59) exists only as a phase in `worker.py`, so `article_groups` is
+empty after a rebuild and nothing folds in the UI.
+
+The two compound: 380 of the 647 grouped rows are releases, and release trains
+are where most of the visible folding happens. So a rebuilt database is missing
+both the corpus that folds most and the step that folds it — and looks, from the
+dashboard, like the collapse was never built.
+
+README is corrected to say what `rebuild` actually restores and what a worker
+run is still needed for. The claim was written when announcements were the only
+corpus and was true then.
+
+### And a fourth, already fixed
+
+`OPENAI_API_KEY` was declared on neither Render service, so the embedding gate
+would have failed on prod while the deploy went green — the dedupe phase catches
+the error, falls back to its free passes, and reports `coverage: 0`. Fixed in
+PR #21; the alert that would have said so (`dedupe_unavailable`) was already
+there and only needed the phase to be reachable.
+
+### The shape all four share
+
+Every one is a claim that was true when written and quietly stopped being true:
+a version filter that outran its data, a docstring's "by definition", a README
+sentence from a single-corpus era, a blueprint that predates the provider it
+needs. This is the same class D59d named — *a failure that reports success* —
+arriving through configuration rather than code, where there is no test to fail.
+
+**Consequence:** the recoveries above are recorded, README:57 is corrected, and
+the `rebuild`-versus-migration ordering is left as a known defect rather than
+patched under time pressure.
+
+## D63 — The people register becomes a corpus: X posts as a fourth leg (2026-09-05)
+
+`config/people.yaml` has held 36 senior people across seven labs since D30, 28
+of them with X handles, and **nothing read it**. Only `config/validate.py` and
+its tests. The register knew who speaks for each lab and had never listened to
+them.
+
+`docs/planning.md:183` deferred this on cost: *"Gated and expensive; the Basic
+tier is roughly the entire budget."* That was true and is no longer. X moved to
+pay-per-use in February 2026 and closed Basic to new signups: **$0.005 per post
+read, $0.010 per user read**, no subscription, no minimum
+([pricing](https://docs.x.com/x-api/getting-started/pricing), fetched
+2026-09-05). The question stopped being whether we can afford access and became
+how to spend a fixed number of post-reads well.
+
+### Two server-side levers decide the whole cost profile
+
+On `GET /2/users/:id/tweets`, both `start_time` and `exclude=[replies,retweets]`
+are applied by X before billing. A 90-day window and originals-only are
+therefore not filters we apply afterwards — they are a smaller invoice. And
+`max_results` caps a page at 100, so **refusing to paginate makes every call a
+charge known before it is made**. `research/posts/x_client.py` never follows
+`next_token`, and `Spend` re-checks the ceiling predictively on top.
+
+### Measuring first, because the estimates were wrong
+
+Rates were estimated by hand and then measured. The estimates were wrong in
+three of four cases: Karpathy was assumed prolific (he posts ~5 a quarter),
+@alexandr_wang was assumed low-value (he is the second-largest contributor), and
+the DeepSeek pair were assumed quiet (they are silent). One request to resolve
+handles ($0.27) plus five posts per handle ($0.10) replaced all of it.
+
+**The probe also caught a live measurement error.** Reading "returned fewer
+posts than we asked for" as "that is all there is" measured @sama at *4 posts in
+90 days*. X applies `exclude` after assembling a page, so a prolific replier
+returns few originals from a page of five; the true figure is ~223. The signal
+is the age of the oldest post, never the count. Pinned by
+`tests/test_posts_harvest.py::TestAPartialPageIsNotACompleteAnswer`.
+
+A second consequence: an empty probe is **unknown, not zero**. Eight handles
+returned nothing from a page of five, which is indistinguishable from a page
+that was all replies. Because X bills what returns, asking a silent account for
+a full page of 100 costs nothing — so they were asked generously rather than
+skipped. All eight returned nothing, which settles it.
+
+| stage | requests | posts billed | cost |
+|---|---:|---:|---:|
+| resolve + verify 27 handles | 1 | — | $0.27 |
+| rate probe | 27 | 74 | $0.10 |
+| the pull | 19 | 473 | $2.37 |
+| **X total** | | | **$2.74** |
+| classification under `t1` | 238 | — | $2.61 |
+
+### What the corpus is
+
+473 posts pulled, **238 surviving a deterministic prefilter** that drops
+anything under 100 characters of substance once links, @mentions and emoji are
+stripped. Classified: **1 high, 4 medium, 23 low, 210 none** — 88% correctly
+scoring zero, which is the filter working rather than failing.
+
+**Eight of twenty-seven lab leaders posted no original in 90 days**: Olah,
+Leike, Nick Joseph, Ben Mann, Daniela Amodei, McCandlish, and both DeepSeek
+researchers. Anthropic's leadership is nearly silent on X; OpenAI and Meta carry
+70% of the corpus. That corroborates D30's finding that "for DeepSeek the papers
+*are* the channel", from a second direction.
+
+### The finding that justifies the leg
+
+The top-scoring post is @markchen90 stating OpenAI has contracted **more than 4
+gigawatts of NVIDIA compute** — `compute_commitment`, score 100, and directly on
+the NVIDIA transmission the brief names as its calibration case.
+
+More usefully, the corpus **found a hole in the announcements leg**. Of 17 links
+to lab domains, OpenAI's 10 were all already in the register; these were not:
+
+```
+research.meta.ai/blog/introducing-muse-spark-1-3
+research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model
+research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2
+research.meta.ai/blog/introducing-muse-voice-transcribe
+blog.google/.../introducing-gemini-3-7-flash
+```
+
+`config/sources.yaml` watches `ai.meta.com/blog/` and `deepmind.google/blog/`.
+The register holds **0 rows from `research.meta.ai` and 0 from `blog.google`**,
+so Meta's entire Muse model line is invisible to it. Listening to the people
+found what watching the labs missed. **Not fixed here** — widening those two
+channels is an announcements-leg change with its own cost, and doing it inside
+this one would hide it.
+
+### What was rejected
+
+**twitterapi.io and the other unofficial mirrors.** 33x cheaper per post
+($0.00015 against $0.005), no OAuth, and richer data — it returns
+`conversationId`, which would have allowed self-threads to be reconstructed. It
+was rejected anyway. It is not an X product: it scrapes using proxies and login
+sessions, against X's terms, and its failure mode is the one this project is
+built to catch — a rate-limited or shape-changed scraper can return nine of a
+handle's twelve posts with a 200 OK, and that silent partial data would enter at
+the source layer where none of our guards can see it. The saving was $19.40
+against a budget with $80 free. Price was not the deciding factor; the
+deciding factor was that official access turned out to be self-serve, so the
+only thing the mirror bought — setup speed — was worth nothing.
+
+**Extending `research/papers/fetch_cache.py` to carry a bearer token.** It has
+no `headers=` parameter, is GET-only, and keys its Postgres cache on the URL
+alone (`app/models.py` `FetchCache.url` is unique), so two authenticated
+requests differing only by credential would collide and an authenticated body
+would be stored under a bare URL key. Adding credentials means changing the
+cache key of every existing entry. `research/posts/x_client.py` follows
+`research/github/harvest_github.py` instead, which is already this repo's shape
+for a token-authenticated JSON API. The duplication is real; it is recorded here
+rather than left to be discovered.
+
+**New event types for posts.** `config/scoring.yaml` pins `max_event_weight: 5`,
+so a type above that silently rescales every existing score, and
+`app/scoring.py` does `.get(event_type, 0)`, so a type in the prompt and absent
+from config scores zero with no error. `t1`'s event-type section is byte-identical
+to `p1`'s, pinned by a test.
+
+**Posts in the digest and the content alerts.** They are scored, joined to
+holdings and browsable in the dashboard, but `DIGEST_VERSIONS` excludes `t1` and
+`config/pipeline.yaml` mutes it under `alerts.content_mute_prompt_versions`. The
+corpus is new and the noisiest in the system, and the cost of being wrong on a
+surface a reader is *pushed* is higher than on one they browse. Turning both on
+is removing `t1` from two lists.
+
+**Reconstructing self-threads.** `exclude=replies` is server-side and truncates
+a threaded announcement to its opening post, which is usually the hook rather
+than the content. Keeping threads means paying for every conversational reply
+first to find the few that are self-replies — for a handle like @sama, several
+times the volume. Accepted as a known limitation and recorded here rather than
+discovered later from a corpus of decapitated threads.
+
+### A pre-existing break found on the way
+
+`bitcap-db load` was failing for everyone on `deployment-dev` before this work
+started, and had nothing to do with it. `app/load_refs.py` deletes the derived
+silver layer before reloading, and the D59/D61 dedupe work added `article_groups`
+and `article_links` — both carrying a plain foreign key to `articles` with no
+cascade — without adding them to that list. `DELETE FROM articles` therefore
+raised. Confirmed by stashing this branch's changes and reproducing. Fixed here
+because it blocked the load; the fix is two names in one tuple.
+
+### Consequence
+
+A fourth corpus, scored under `t1`, for $5.35 all in. The register is no longer
+inert config. The honest limits: threads are truncated to their opening post;
+the leg reads 27 people at one point in time rather than continuously; and the
+`duplicates_announcement` signal is weaker than it looks, because 352 of 409
+links in the corpus are quote-links to other posts rather than to lab documents
+— so "3% overlap" measures link behaviour, not novelty, and the defensible claim
+is the narrower one about the 17 lab-document links.
+
+Reversing this is deleting one config file and one leg name; the corpus and its
+scores are committed artifacts and would survive as evidence either way.
+
+## D64 — Six X handles promoted off the weak tier, and one flagged (2026-09-05)
+
+D30 established `x_evidence` because x.com returned HTTP 402 to the fetcher: no
+profile in `config/people.yaml` had ever been read, so each handle carried a
+tier recording how it was *inferred* instead. Nine sat on `search_index`, which
+that file calls "a lead, not a fact... do not ship an insight that depends on
+one without promoting it first."
+
+D63 gave the project an X credential, and stage 0 of the posts leg reads every
+handle's profile in one request. That is a direct read of the thing D30 could
+only infer. It also made the gap concrete rather than theoretical: **73 of the
+238 posts in the scored corpus — 31% — came from `search_index` handles**, and
+the dashboard was rendering that tier on every one of those cards. The register
+was shipping on the tier it tells you not to ship on.
+
+### A fifth tier, because a profile is neither a post nor a search hit
+
+`api_profile` — the account was read directly through the X API and its own
+profile asserts the affiliation. It is not `self_post` (that tier means a post,
+quoted with its status URL) and it is plainly stronger than `search_index`.
+
+**How far it reaches is per-handle, and `supports:` already expresses that.** A
+bio reading "President & Co-Founder @OpenAI" carries the role; one reading
+"OpenAI" carries only the handle. So the promotions are not uniform:
+
+| handle | bio | verified | supports |
+|---|---|---|---|
+| @gdb | "President & Co-Founder @OpenAI" | yes | role, x_handle |
+| @DarioAmodei | "Anthropic CEO" | yes | role, x_handle |
+| @DanielaAmodei | "President @AnthropicAI" | no | role, x_handle |
+| @zdaxie | "Researcher @ DeepSeek AI // Pre-training…" | no | role, x_handle |
+| @sama | "The mission of OpenAI to ensure that AGI…" | yes | x_handle |
+| @merettm | "OpenAI" | yes | x_handle |
+
+**Three were not promoted.** @samsamoa resolves to an account named "sam",
+unverified, with an empty bio — nothing corroborates Sam McCandlish, and it
+stays on `search_index`. @8enmann's bio is "Make AI safe again", which asserts
+no affiliation. And @Guodaya is the interesting one.
+
+### The register was wrong about someone, and his own profile said so
+
+@Guodaya's bio ends **"Previously @deepseek_ai"**. `config/people.yaml` lists
+Daya Guo as an *active* DeepSeek researcher. That is precisely the error D30
+named as this file's most likely failure — rendering someone as a voice of a lab
+they left.
+
+He is **not** moved to `departed`: an unverified profile is a lead, not the
+dated source a departure needs, and the DeepSeek-R1 first authorship is solid.
+He is flagged `role_contested: true` with the contradiction quoted, which the
+dashboard surfaces as a badge. He posted nothing in the 90-day window, so no
+attribution currently rests on it. Settling it needs a dated report, not a bio.
+
+### What was rejected
+
+**Bumping `researched` from 2026-09-03 to 2026-09-05.** It would claim the whole
+register was re-checked that day; six profiles were. A `revised:` field records
+the later pass instead, and `tests/test_people.py` now compares source dates
+against `revised` while still requiring it to be a real date and not earlier
+than `researched` — so the fabricated-citation guard cannot be escaped by
+omitting the field.
+
+**Stretching `self_post` to cover a bio.** Cheaper, no new vocabulary, and
+wrong: that tier's definition names a post and its status URL. Widening a
+definition to avoid adding one is how a vocabulary stops meaning anything.
+
+**Leaving the corpus's stamped tiers alone.** `posts_corpus.json` snapshots
+`x_evidence` per record at collection time, so a register correction would not
+have reached the dashboard without repaying for a pull. The `filter` stage now
+re-derives attribution from the register, which is the right split: the pull
+records what X returned, the register records what we know about the person.
+
+### Consequence
+
+No post in the corpus is now attributed on `search_index`: 139 `self_post`, 73
+`api_profile`, 26 `own_site`. The claim the register can make about its own
+handles is stronger and, where it is not, says so. The cost is a fifth tier to
+keep in step across `config/people.yaml`, `config/validate.py` and
+`tests/test_people.py`, and one person whose employment is now openly marked
+unsettled rather than quietly asserted.
+
+---
+
+## D65 — Repositories are filtered on topic, inside the ranking, by the model that keeps `openai/codex` (2026-09-05)
+
+The releases leg watches repositories by star rank, and a star rank is a
+popularity order rather than a topic filter — so it faithfully surfaces each
+lab's best work in every field it works in. Measured against the live database:
+**35 of the 87 watched repositories are not language-model work**, and **33 of
+the 193 releases currently rendered in the 90-day window** come from them. They
+are not mis-scored, which is the whole difficulty: `alphafold3` averages 35.6 on
+the AI axis, third of all 87. Relevance is a different axis from quality, so no
+threshold on `score` or `ai_score` can separate them.
+
+### There is no repository list to edit, so the filter has to judge on sight
+
+`config/github_sources.yaml` names 8 orgs; `adapters.fetch_releases` ranks each
+org's repositories by stars and slices `[:releases_watch]`. Star ranks churn
+between firings, which is why **87 distinct repositories have accumulated
+against a nominal 80 slots** — `google-deepmind` alone contributed 28. A
+maintained exclusion list would therefore always be one firing behind. The
+verdict is bought once per repository and cached in `raw_llm_responses` under
+`repo:{org}/{name}` + `{prompt_version}:{model}`, the same table and the same
+contract duplicate adjudication uses.
+
+The model is in the cache key, which is one element more than dedupe records.
+It has to be: `UniqueConstraint(url, prompt_version)` means a version-only key
+would serve verdicts bought from a *different* model after `relevance.model`
+changes — and the bake-off below deliberately puts two candidates' verdicts in
+that table.
+
+### The gate sits inside the ranking, so a rejection promotes rather than shrinks
+
+`rank_repos.shortlist` walks the ranking and takes the first `releases_watch`
+repositories that pass, instead of filtering a slice that has already been
+taken. Dropping a physics simulator then pulls the next real repository up into
+the freed slot rather than leaving the leg watching nine things.
+
+That is worth having and not theoretical: xAI's `grok-prompts` (Grok's system
+prompts, 4,441 stars) and `grok-build` (its coding agent, 26,493 stars) both rank
+above repositories currently watched and neither is reached today. Measured, the
+filter would **drop 36 of the 87 watched repositories and admit 56 of the 96
+frontier ones**.
+
+`rank()` itself is untouched. The predicate is injected, so the module keeps the
+purity its docstring promises and `TestStarsAreTheOnlyRanking` never has to learn
+that a gate exists. The walk is lazy — `keep` is called only as far down as
+needed — because judging a whole listing to choose ten of it would be 395 calls
+for `facebookresearch` on every firing. `max_judged` bounds the cold start,
+since an org whose ranking is mostly off-topic has no natural stopping point.
+
+### What the review caught: one gate, two populations
+
+The first version had the derivation gate reading a cache that only the ranking
+walk ever filled. Those are not the same set, and the difference is not small.
+The walk stops at the tenth *passing* repository — 11 rows for `anthropics` —
+while the corpus holds releases from 87 repositories accumulated over many
+firings, 16 of them ranked beyond 30. Replayed against the committed artifacts,
+**31 of the 87 were never judged at all**, so their releases were re-derived on
+every firing for ever. `torax` and `habitat-lab` were among them: two of the
+repositories this entry's opening paragraph names as the reason the feature
+exists.
+
+Worse, it was invisible. The watermark reported `judged` and `excluded`, so a
+reader saw "11 judged, 4 excluded" with no way to tell a repository that was
+kept from one that was never asked about.
+
+So `_relevant_slice` now does two things with one verdict function: the lazy walk
+decides what to *watch*, and a sweep over the repositories already in the corpus
+gives the derivation gate the verdicts it needs. The sweep is bounded by the
+corpus, not by `max_judged` — it is 87 repositories once, about $0.06, and free
+afterwards, and capping it would reintroduce exactly the hole it closes.
+
+**And the cap counted cache hits.** `max_judged` exists to bound spend and
+wall-clock, and a cached verdict costs neither — but every row handed to the
+predicate consumed a slot, so after the first firing the walk still stopped 30
+rows down while going deeper was free. Measured: `facebookresearch` watched
+**3 repositories instead of 10, permanently**, which is the shrinking outcome the
+in-ranking design exists to prevent. The ceiling now counts provider calls only,
+so a warm walk runs as deep as it needs to and a cold one still stops.
+
+### A second gate was needed, because `transform` re-derives silver every firing
+
+Gating ingestion is forward-only, and the 33 off-topic releases already on the
+dashboard would have stayed exactly where they were. A one-off `DELETE` does not
+fix it either: `transform` reads **all** of `raw_articles` and upserts silver on
+every run, so deleted rows return on the next firing.
+
+So `transform` skips derivation for a release whose repository is judged
+off-topic, and removes the classification if one already exists. Bronze is never
+touched, which is what makes the whole thing reversible — correcting a verdict
+re-derives the article on the next run with no refetch and no backfill, and the
+releases cursor never has to be rewound.
+`tests/test_transform.py::TestTheRelevanceGate::test_flipping_a_verdict_back_re_derives_the_rows`
+is the pin.
+
+### The bake-off was decided on recall, and it was not close
+
+Both candidates over all 183 labelled repositories, using the production prompt,
+schema and rendering so what was measured is what ships:
+
+| | recall(relevant) | precision | watched | frontier | vendor SDK | cost | median |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `claude-haiku-4-5` | 0.692 | 0.988 | 0.750 | 0.647 | 0.765 | $0.208 | 2.0s |
+| **`gpt-5-mini`** | **0.875** | 0.981 | **0.942** | **0.824** | **0.863** | **$0.120** | 3.4s |
+
+**Recall is the deciding metric because the two errors are not symmetric.** A
+wrongly excluded repository stops producing articles, and nothing downstream can
+tell that apart from a repository that shipped nothing. A wrongly kept one costs
+one classification and is visible in the feed, where a human can see it.
+
+The summary statistics understate the gap. Haiku drops **`openai/codex`** — the
+repository D61's release-to-launch pairing actually runs on — along with
+`openai/harmony`, `openai/skills`, `openai/plugins`, `mistralai/workflows-starter-app`
+and `deepseek-ai/deepseek-harness`. The two candidates disagree on 29 of 183, and
+the disagreements concentrate almost entirely on labs' own tooling and
+domain repositories, which Haiku reads as applications built *with* a model
+rather than work *on* one.
+
+`gpt-5-mini` also costs less, which is a coincidence rather than the reason.
+Measured per call over the 183, from the cost log:
+
+| | median in | median out |
+|---|---:|---:|
+| `claude-haiku-4-5` | 882 | 48 |
+| `gpt-5-mini` | 705 | **193** |
+
+It is cheaper *despite* emitting four times the output, because the input rate
+difference dominates a prompt this shape. Worth stating precisely rather than as
+"~900 in, ~40 out": that is Haiku's profile, and anyone sizing a change to
+`r1.md` against it would under-budget gpt-5-mini's output by about five times, on
+the side that is priced at 8x its input.
+
+### The labels are a model's, and the error rate is measured rather than assumed
+
+Fable 5 labelled all 183 blind — 87 watched plus 96 **frontier** repositories
+drawn from ranks 11–30. The frontier cohort exists because the gate promotes:
+those are the repositories a freed slot actually reaches, none of them is in the
+corpus today, and measuring only the watched 87 would report accuracy on a
+population the filter no longer sees. Their figures are reported as a separate
+line and never folded into the headline.
+
+Fable is deliberately **not** one of the two candidates, for the reason
+`config/dedupe.yaml` records about its adjudicator: an eval whose labels come
+from a model under test is marking its own homework.
+
+The labelling was run twice and the first run superseded, because `label_v1.md`
+was edited while it was in flight — so those labels spanned two prompt texts
+while every record claimed one `prompt_version`. Both runs are committed
+(`repo_relevance_labels_run1.json` beside `repo_relevance_labels.json`), the way
+D59 kept `dedupe_labels_ordered.json`: the difference between the two files is
+the evidence, and a figure derived from a deleted run cannot be checked.
+
+| | agreement over the same 183 |
+|---|---|
+| `relevant` / `off_topic` | **182/183 = 0.995** |
+| category | **175/183 = 0.956** |
+
+**Say what this is, and what it is not.** It is agreement between a mixed-prompt
+run and a single-prompt run, so it bounds labeller variance *and* the effect of
+that one-word edit together and cannot separate them. It is not stability under
+a fixed prompt, which would need a third run nobody has paid for.
+
+Read that way it still says something useful. The binary verdict barely moves.
+The **category does**: eight rows changed category, and five of those moved
+between `agent_or_tooling` and `vendor_sdk` — the exact field the vendor-SDK
+slice above is sliced on. So that slice carries roughly 4% label noise under it,
+and the figure should not be read to three decimal places.
+
+### The spot-check was marked, and the disagreements were all one disagreement
+
+Neil marked all 20 blind on 2026-09-06. **16/20 = 0.80** against Fable's labels —
+vendor SDKs 5/7, frontier 8/10.
+
+Four disagreements, and three of them share a cause:
+
+| repository | Neil (blind) | Fable | Fable's category |
+|---|---|---|---|
+| `openai/openai-dotnet` | off_topic | relevant | `vendor_sdk`, high |
+| `openai/transformer-debugger` | off_topic | relevant | `eval_or_safety`, high |
+| `deepseek-ai/LPLB` | off_topic | relevant | `training_or_serving`, high |
+| `anthropics/healthcare` | off_topic | relevant | `vendor_sdk`, low |
+
+The reason given for each of the first three, in Neil's words: *nobody here
+programs in .NET*; *I don't know if we're ever gonna do that*; *I don't know if
+these people are working at that level*. **None of those says the repository is
+not about language models.** All three say BIT would not act on it — which is
+the AI-team score's question, not this filter's. `r1.md` gets all three right on
+the rule as written: an official client library is always `true`, and
+interpretability and serving infrastructure are listed `true`.
+
+So the 0.80 measures **the human against the rubric**, not the model against the
+truth. That is worth more than a clean number, because it says the topic/score
+boundary is genuinely hard for the person who drew it — which is the argument
+for stating it explicitly rather than leaving it to feel.
+
+The boundary holds on the asymmetry already recorded above. A low score stays
+visible and arguable; an exclusion is silent and permanent, and nothing
+downstream distinguishes a filtered repository from one that shipped nothing.
+`openai-dotnet` is the sharpest case: whether anyone at BIT writes C# has no
+bearing on whether it is an LLM repository, and its releases are exactly where a
+new model identifier surfaces first — the pairing in D61 runs on them.
+
+**Run 2, after that discussion: 19/20 = 0.95** — SDKs 6/7, frontier 10/10, with
+the three revised to `relevant`. It is the weaker number of the two and is kept
+as the second one, not the headline: those marks were made having read Fable's
+labels and reasons, so they measure agreement after anchoring. Both sheets are
+committed (`repo_relevance_spotcheck_run1.json` beside
+`repo_relevance_spotcheck.json`), the same way both label runs are, and for the
+same reason — the difference between the files is the evidence.
+
+`anthropics/healthcare` survives as the one honest disagreement, and it is the
+one Fable itself flagged `low`. GitHub carries no description and no topics for
+it; its README describes a plugin of payer, provider and pharma skills. Whether
+a lab's domain-vertical repository belongs in an LLM tracker is unresolved, and
+it is the same boundary the two candidate models split on. `[NEIL]`
+
+**What this does not measure.** Eight of the 20 rows carry no GitHub description
+at all — verified against the live API on 2026-09-06, so this is a property of
+the source and not a capture bug. A `context` line drawn from each README was
+added to the sheet before marking, so the human judged on more evidence than the
+filter sees. Reading the README in production is a real option, once per
+repository and cached beside the verdict; it is recorded here as a next cut, not
+taken.
+
+### Vendor SDKs are kept, deliberately
+
+An SDK bump is thin, routine, frequent, and looks exactly like the noise this
+filter exists to remove. It is also where a new model identifier first appears in
+public — D61's pairing runs on those releases, and `openai/codex` naming GPT-6
+Astra is the case the feature was built for. A filter that tidied the SDKs away
+would read as an improvement and delete the evidence.
+
+The rule lives in the prompt, where it is measured, rather than in a denylist.
+
+### The verdicts are committed, because a rebuild cannot re-derive them
+
+`raw_llm_responses` is not an ops table, so `bitcap-db rebuild` drops it — and
+the derivation gate only ever *reads* the cache, never re-buys. A rebuilt
+database therefore came back with no verdicts at all, and the README's promise
+that a rebuild "needs no API key" and drops only what is "derived from files in
+the repo" stopped being true the moment verdicts existed: they are the one
+derived thing here that can only be re-bought.
+
+**Stated precisely, because the first draft of this paragraph overclaimed.**
+`drop_all` also drops `raw_articles`, and there is no committed releases corpus
+— `load_article_records` says so — so a rebuilt database holds *no release rows*
+and nothing off-topic can come back to the dashboard. What was actually broken is
+narrower: the rebuild silently re-bought 87 verdicts, and any firing against a
+rebuilt database ran the gate against an empty cache.
+
+Every other derived thing here is reproducible from a committed file. Verdicts
+now are too: `research/docs/repo_relevance_verdicts.json`, frozen from the
+bake-off run of the configured model (`bakeoff_repos.py --freeze`, not a second
+purchase) and replayed by `load_raw.load_repo_verdicts` before `transform`. It
+never overwrites a fresher verdict — the live cache wins — and it is keyed on the
+same `{version}:{model}`, with a test that fails if config moves to a model the
+artifact was not frozen for.
+
+**Reproduce it like this**, because the check is worth being able to repeat:
+`DATABASE_URL=sqlite:////tmp/probe.db uv run bitcap-db rebuild` with no API key
+set, then read the cache back — 183 rows under `r1:gpt-5-mini`, and
+`transform.off_topic_repos(session)` returns 76 repositories including `torax`,
+`habitat-lab` and `mujoco`, and excluding `openai/codex`, `faiss` and
+`deepseek-harness`. That is a statement about the *verdict set the gate would
+apply*; it is not a claim that releases disappeared from a rebuilt dashboard,
+which as noted above cannot happen because a rebuild leaves no release rows at
+all.
+
+### The gate fails open, and that is why it needs an alert
+
+The house convention is not to prefer the cheap outcome, it is to decline the
+destructive action when no answer came back. For duplicate adjudication the
+destructive action is merging; here it is exclusion, and the asymmetry above
+points at keeping what could not be judged.
+
+Failing open is silent by construction: a dead provider means every judgement
+fails, every repository is kept, the run succeeds, and the dashboard quietly
+refills with physics simulators. **This actually happened during development** —
+an import error inside `repo_relevance.prompt` made every verdict `None`, and the
+filter did nothing whatever while reporting a full watch list. It surfaced only
+because of an n=1 live run, not because anything reported it. Two consequences:
+`judge` returns the error as a third element rather than swallowing it, and
+`alerts.repo_filter_unavailable` fires when a source's judgements all fail,
+carrying the last error the way `source_down` carries one.
+
+Unlike the detector declined in `docs/handover-releases.md` §5, this one needs no
+calibration: "every judgement on this source failed" is unambiguous at any corpus
+size. A *partial* failure is deliberately not an alert.
+
+### What was rejected
+
+**A denylist of the 35 off-topic repositories.** The decision is a rule, and a
+rule belongs in the prompt where it can be measured. A list of 35 names becomes
+the de-facto spec and drifts from the prompt silently. An entry is worth adding
+only for a repository the eval shows the model getting wrong.
+
+**The `archived` flag.** Free and already fetched, and refused twice over: it is
+a liveness axis rather than a topic one, and `harvest_github.repos` already
+excludes archived repositories, so the field is dead on arrival.
+
+**`rank(keep=...)`.** Overloads a sort with a take and puts a defaulted-to-None
+LLM seam inside the one function `tests/test_rank_repos.py` exists to guard.
+
+**Adding `topics`/`language` to `rank_repos.row`.** Its docstring is explicit that
+it stays thin and does not grow fields for one consumer. They are merged in at
+the call site instead, from the listing that is already in hand.
+
+**Reporting the filter's spend through `FetchResult.cost_usd`.** That was the
+first version, and it satisfied the no-double-count rule while breaking
+CLAUDE.md's third non-negotiable: `run_sources.cost_usd` is a rolled-up float, so
+tokens were thrown away and "how much of this is input?" became unanswerable six
+months later. It also only ever ran on the adapter's success path, so a failure
+after the gate had already bought its verdicts lost the record of money that had
+left the card.
+
+Spend is now recorded with tokens at the call site, the way dedupe and drift
+record theirs. The second attempt then over-corrected — leaving `cost_usd` at
+zero also stopped `budget.spend` firing, so the one firing that could not see
+the money was the firing that spent it, and that is the firing which also
+backfills every newly promoted repository. Hence `metered_usd`: charged to the
+run's ceiling like any other spend, kept out of `run_sources` because its
+records are already in `raw_costs`. The two ceilings read different things, so
+this duplicates nothing.
+
+### Honest limits
+
+**The labels are a cross-model proxy, and the proxy is now measured.** The
+20-repository blind sheet was marked: **0.80 blind, 0.95 after review**, with the
+disagreements analysed above. That bounds the labels but does not make them
+ground truth — 20 marks over 183 repositories, and `gpt-5-mini` scoring higher
+than Haiku may still partly mean it resembles Fable more than Haiku does. The
+bake-off compares two models against a third model's labels; the spot-check says
+how far that third model can be trusted, not that it is right.
+
+**The winner still gets three watched repositories wrong**, and they are
+judgement calls rather than blunders: `google-deepmind/chex` (generic JAX testing
+utilities), `anthropics/sandbox-runtime` (an OS sandbox built for coding agents)
+and `anthropics/healthcare` (no description at all). It also keeps
+`google-deepmind/alphagenome` and `facebookresearch/mmf`.
+
+**Two figures here are no longer re-derivable from the database.** "33 of the 193
+releases in the 90-day window" and "151 of 380 releases" were measured against
+the local Postgres on 2026-09-05, before another session reshaped it — the
+releases corpus and `raw_github_repos` are both empty there now, replaced by a
+`posts_corpus.json` corpus. Everything else in this entry reconciles from the
+committed artifacts (`repo_population.json`, `repo_relevance_labels.json`,
+`repo_relevance_bakeoff.json`), which is why those files are committed. The two
+release counts rest on a database state that no longer exists, and they are
+flagged rather than restated as if they could be checked.
+
+**The filter reduces noise, not cost, and raises spend before it lowers it.**
+Every promoted repository has no cursor and takes `releases_backfill: 5` on first
+sight; `releases_per_run: 20` is per-repository and does not bound that.
+`config/repo_signals.yaml` already records the same event once — the first
+releases firing ingested 380 documents against a $3 per-run ceiling. Staged
+rollout, and `relevance.enabled: false` stops it without a deploy.
+
+### Consequence
+
+`gpt-5-mini`, one call per repository at ~$0.00065, cached for ever; a warm
+re-run costs $0.00, verified live. **The filter** marks 36 of the 87 watched
+repositories off-topic, accounting for 151 of 380 releases, and admits 56 of the
+96 frontier ones in their place. (35 is the number *Fable* labelled off-topic —
+the two differ by `alphagenome`, and mixing a gold count with a model count in
+one sentence is how a Consequence section stops being checkable.)
+
+Files: `app/pipeline/repo_relevance.py` (new), `rank_repos.shortlist`,
+`adapters._relevant_slice` and its corpus sweep, the derivation gate in
+`app/transform.py`, `load_raw.load_repo_verdicts`,
+`alerts.repo_filter_unavailable`, the `relevance` block in
+`config/repo_signals.yaml` with its validator, `prompts/repo_relevance/{r1,label_v1}.md`,
+and three research scripts under `research/github/`. **67 new tests, 1,485 pass.**
+Spend **$8.37** — $8.04 of it the labelling, and half of *that* a discarded run.
+The bake-off itself, both candidates over 183 repositories, was $0.33.
+
+No migration: the verdict cache reuses `raw_llm_responses`.
+
+## D66 — Google DeepMind and Meta AI were under-covered, for two different reasons (2026-09-05)
+
+Neil noticed the register held almost nothing from either lab. It held 12
+DeepMind announcements and 5 Meta ones across a three-month window. The two
+turned out to have nothing in common except the symptom.
+
+### DeepMind: the sitemap does not enumerate the blog
+
+`method: sitemap` on `deepmind.google/sitemap.xml`, chosen in D14 "for parity
+with Anthropic's proven path". Every observable said it was working: 200s, a
+clean parse, real dates, and every article it returned genuinely in window. It
+was reading a document that does not list most of the blog.
+
+Measured 2026-09-05 against `deepmind.google/blog/rss.xml`: **sitemap 12, RSS
+30, and the sitemap's 12 a strict subset of the RSS 30.** The 18 it missed were
+not a random sample. They were the launches — Gemini 3.6, 3.7, 3.8 Flash and 3.8
+Flash Cyber, Gemma 4 12B, DiffusionGemma, Nano Banana 2 Lite, Gemini Omni 1.1
+Flash, Gemini 3.5 Transcribe, computer use in Gemini 3.5 Flash, Gemini Robotics
+ER 2, WeatherNext 3, Lyria 3.5. What the sitemap *did* carry was the education,
+policy and programme posts. The register therefore said DeepMind shipped nothing
+but outreach for three months, which is close to the opposite of the truth.
+
+The sitemap is not stale, it is the wrong document: 731 URLs, 347 matching
+`/blog/`, against a blog with far more history than that, and 267 of the 347
+carrying an identical `2026-07` `<lastmod>` from a bulk re-render. The existing
+code was right to treat `<lastmod>` as a coarse prefilter only. A prefilter
+cannot recover a URL the document never listed.
+
+Switched to `method: rss`, `date_from: feed`. That also fixes a date drift the
+page-reading path had — 06-18 against the feed's 06-16 for "Securing the future
+of AI agents", 07-30 against 07-28 for Gemini Robotics 2 — because the first
+"Month D, YYYY" in a stripped DeepMind page is not reliably the article's own.
+
+**Alternative rejected: keep the sitemap as a second channel.** The `also:`
+mechanism exists and D47's whole lesson is that one feed fails silently. It
+buys nothing here — the sitemap's in-window set is a strict subset of the
+feed's — and costs ~276 article fetches per run to confirm that. The feed's own
+failure mode is depth, not omission: 100 items reaching back to 2026-01, noted
+in the config as the thing to watch if `window_months` is ever raised.
+
+### Meta: nothing was broken, the blog is quiet
+
+The opposite finding, and worth stating plainly because the instinct was to fix
+it. `from_listing_pagination` against `ai.meta.com/blog/` is correct. Crawled to
+exhaustion: 231 unique articles back to 2019, of which exactly 5 are in window,
+and the register held all 5. Meta's AI blog had not published in 40 days.
+
+Two properties of that listing are worth knowing before trusting a future count.
+It is **not reverse-chronological** — page 1 carried March, April, June and July
+posts together, because five sticky "featured" items repeat on every page. And
+`from_listing_pagination` stops at the first page with no in-window article,
+which on a listing ordered like this could stop early. It does not today only
+because the sticky block sits on page 1. Recorded, not fixed: changing the
+stopping rule without a listing that actually needs it is speculative.
+
+The real gap was that `ai.meta.com/blog` is not where Meta's investment-relevant
+AI news lands. Added `about.fb.com/news/tag/ai/feed/` as a second channel: **15
+in-window items against the blog's 5**, carrying the BlackRock data-centre joint
+venture, the Reliance AI data centre in India, the Louisiana and Canada
+expansions and "Infrastructure Explained: Compute Power" — none of which appear
+on the AI blog at all. For a fund whose Meta exposure runs through capex into
+the compute and energy complex, that is the highest-value Meta signal there is,
+and the register had none of it.
+
+**Alternative rejected: filter the newsroom feed to infra and product.** It also
+carries CSR and programme posts ("Facebook Verified", "America's Workforce
+Academy"). A keyword rule would raise signal-to-noise at ingestion, and a filter
+that silently drops a real launch is a worse failure than a low-scoring row.
+This pipeline already has a scorer whose entire job is that judgement, and it
+did it: the four data-centre items band `high`, the CSR posts band `none`.
+
+**Not done: impersonating `facebookexternalhit`.** `ai.meta.com`'s sitemap is
+gated to named crawler agents, which robots.txt allows by name, and sending that
+agent would open it. That is a statement about that crawler and not about us,
+and the same robots.txt opens by prohibiting automated collection outright. The
+listing is a published surface reachable as ourselves; the sitemap is not.
+
+### Two traps this switch set, both real
+
+**URL identity.** The feed's `<link>` carries a trailing slash where the sitemap
+path stripped it, so all 12 pre-existing DeepMind articles changed URL form. URL
+is the unique key on `raw_articles` and on the score cache, so every one of them
+became a cache miss — 30 articles to classify, not 18 — and the run needs a
+`bitcap-db rebuild` rather than an incremental load, or the 12 old rows persist
+beside their replacements. The scored register merges by URL and never prunes,
+so it also had to be pruned of the 12 superseded rows by hand.
+
+**Entity encoding in RSS titles.** `from_rss` never unescaped `<title>`, which
+was invisible while every configured feed served real UTF-8. `about.fb.com`
+serves numeric entities, so the channel would have stored `Meta&#8217;s AI`
+verbatim. Not cosmetic: the title is what dedupe's exact gate matches on and
+what it embeds, and `strip_html`'s docstring already records this exact class of
+bug costing 9 of 90 verbatim quote checks. Fixed in `from_rss`; a no-op on all
+292 existing rows.
+
+### Consequence
+
+Corpus 259 -> 292. DeepMind 12 -> 30, Meta 5 -> 20. Eight new `high` band items,
+four of them scoring 100.0 (see `docs/insights.md`).
+
+**The test that would have caught this does not exist and cannot be written with
+a mock.** A stubbed sitemap returns exactly the URLs the test author puts in it,
+so a unit test of `from_sitemap` passes just as happily against a document
+listing nothing. `TestDeepMindDiscoveryChannel` in `tests/test_announcements.py`
+instead pins the two things checkable offline: the configured channel, and a
+coverage floor of 20 in the committed register with an explicit assertion that
+the named launches are present — a count alone could be met while still missing
+every launch, which is precisely the shape of the original failure. Both
+assertions were verified to fail against the pre-fix register.
+
+**The general gap remains open.** Nothing detects a discovery channel that
+silently narrows on a lab this exercise did not touch. The honest prerequisite
+is a per-lab expected-cadence baseline, which is the cost of that detector
+rather than a detail of it — same reasoning as D61's link-count arm.
+
+### D66a — what review caught, and the one finding that was a regression I introduced
+
+Six findings from `bitcap-reviewer` against the D66 branch. Four fixed, one
+already-correct-but-untested, one that turned out to be a regression this
+change itself introduced rather than the pre-existing gap it was reported as.
+
+**The validator could not see inside `also:`.** `check_sources` validated
+required keys over `[lab] + also` but ran its unknown-key allowlist over `lab`
+alone. Verified by execution: renaming `feed_pages` to `feed_pagees` inside the
+meta-ai newsroom channel returns `[]` from the validator. `from_rss` then falls
+back to one page, which the config's own note records as reaching 2026-07-07 —
+two months, not three — silently dropping the June items including the Reliance
+data-centre JV that `docs/insights.md` names as a top finding. Green validator,
+green suite, successful run. That is the D66 failure exactly, one level down,
+and it was introduced by adding config keys the allowlist did not know about.
+Fixed by iterating the same `[lab] + also` the loop above it already used, and
+`also` is now rejected *inside* a channel because `channels()` merges one level
+and never recurses, so a nested one is a silent no-op.
+
+**The Meta half had no register-level test where DeepMind got two.** The
+asymmetry mattered more than it looked: Meta's fix is a *second channel*, which
+is one `enabled: false` away from vanishing — an edit `channels()`' docstring
+explicitly invites — and that channel carries all four 100.0-scoring items.
+Losing it returns the register to its pre-D66 state with every test passing.
+`TestMetaDiscoveryChannels` now pins the channel's presence and enablement, its
+page depth, a coverage floor of 12, and the four named data-centre items, on the
+same reasoning as DeepMind's: a floor alone could be met by the CSR posts the
+feed also carries.
+
+**`from_rss` was the only path not truncating to 24000.** Pre-existing, and
+invisible until this change: every configured feed served short pages, and
+DeepMind's longest article is 18.5k. `about.fb.com` has no such discipline and
+stored a 47,148-character row — the first in the corpus over a cap every other
+discovery path enforces, and nothing downstream bounds it, since `build_prompt`
+interpolates the text verbatim. Capped, and the one oversized row truncated.
+
+Re-scoring that row after truncation is worth recording, because it is a
+variance observation and not a truncation one: the full text scored `none` with
+zero mechanisms, the truncated text scored `low` (3.3) with four, all four
+quotes resolving. The article is a vision essay whose signal is genuinely
+marginal either way, so this changes nothing about the corpus — but it is the
+same classifier, the same prompt and near-identical text disagreeing with
+itself, which is what `docs/drift` exists to watch and is worth not averaging
+away.
+
+**A test that pinned a string no code reads.**
+`test_the_date_comes_from_the_feed_not_the_page` asserted
+`deepmind["date_from"] == "feed"`. Only `from_sitemap` reads that key;
+`from_rss` always dates from `pubDate`, so the test would have passed unchanged
+if this path started reading dates off the page. Rewritten to feed a fake whose
+page date differs from its `pubDate` and assert the feed's date wins.
+
+**The empty-feed guard, and the regression underneath it.** Reported as
+pre-existing: `from_rss` returning `[]` is indistinguishable from a quiet lab,
+because `adapters.fetch_announcements` records a channel as failed only when the
+method raises. Half right. The zero-item case was pre-existing and is now
+guarded, matching `from_model_index`'s "parsed 0 models" and `from_discourse`'s
+"listed 0 topics" — and it matters more here because D66 deliberately left
+DeepMind single-channel. But the `try/except RuntimeError: break` that paging
+introduced was *new*, and it swallowed a page-1 **fetch failure** that
+previously propagated. Paging turned a loud failure into a silent one while
+adding depth. Page 1 now re-raises; only later pages are tolerated, since page 1
+is the channel and pages 2+ are only depth.
+
+**Verified clean by review, recorded because the checks are worth having run:**
+all 292 stored tag quotes resolve under the real `verbatim.enforce`; `score_of`
+recomputed from `config/scoring.yaml` matches every stored `(score, band)`; the
+artifact surgery changed zero rows present in both versions, so the D55 OpenAI
+revert hazard was in fact avoided; and the UA logic is correct — `user_agent`
+appears on exactly one lab entry, so openai, mistral and deepmind resolve to the
+module default and are byte-identical to before.
+
+**Also cleaned:** the 12 orphan v9 cache files left by the URL-form change.
+D66's trap note said the scored register was pruned by hand; the score cache was
+not, and it is not read by URL glob so nothing broke — but it left a 12-file
+discrepancy for the next person auditing cache coverage. Register, cache and
+scored register are now 1:1 at 292 with zero orphans in either direction, which
+is asserted rather than claimed.
+
+---
+
+## D67 — Two production failures whose common shape is "success recorded in one place, data in another" (2026-09-06)
+
+The 2026-09-05 firing reported eight `releases/*` sources down and four
+`papers/*` sources down. They are unrelated faults with one thing in common:
+in both, the indicator that says a thing worked and the thing itself are
+written at different times, so they can disagree without anyone noticing.
+
+### 1. `rebuild` dropped the GitHub bronze and kept the state that vouches for it
+
+Every `releases/*` source failed with "no repositories in raw_github_repos --
+the github leg has not run", while `github/*` read *last success 2d ago, 0
+failures*. Both were true.
+
+`raw_github_repos` was not in `models.OPS_TABLES`, so `bitcap-db rebuild`
+dropped it. `source_state` **is** in that set, so the row asserting the github
+leg had succeeded survived the rebuild that deleted everything that leg
+produced. `releases` reads the table and runs at cadence 1 against github's 3,
+so all eight failed on every firing until github's next turn came round.
+
+The table was excluded on the reasoning that guards the whole set — everything
+outside `OPS_TABLES` is a pure function of committed files. `raw_github_repos`
+is not: it is live-fetched bronze, `load_raw` never restores it, and rebuilding
+it costs a 14-minute walk of 2,000+ repositories. It belongs in the set on
+exactly the argument that already put `fetch_cache` and `raw_article_embeddings`
+there. One line, plus the test that would have caught it.
+
+**Not fixed, and worth naming.** The same disagreement is reachable without a
+rebuild at all. The github source's success is committed inside the *ingest*
+phase (`orchestrator._record`), while the rows it produced are written in the
+*landing* phase — so an OOM or a timeout in between leaves the identical state.
+The `releases` leg already avoids this (D52: it lands inside its own adapter, in
+the transaction that advances its cursor); the github leg does not. Left alone
+because it is a real change to phase boundaries and this was a one-line fix to
+an eight-source outage.
+
+### 2. The arXiv cache expired as a herd, and a failed fetch cannot re-cache
+
+Four papers sources failed on `export.arxiv.org` 429s, and the split was exact:
+every source that queries the arXiv *API* failed, and the two that do not
+(`anthropic`, which never touches arXiv, and `google-deepmind`, whose fetches
+are permanently-cached `arxiv.org/html/`) were fine.
+
+D53 put discovery URLs on a 14-day TTL and its comment claimed they would
+"re-run on staggered expiry rather than all at once". Nothing staggered them.
+Every discovery URL is first fetched in the same firing, so all of them lapse in
+the same firing — measured 2026-09-06: **35 cached rows, one expiry date**. That
+firing replays the whole set at arXiv, and once a source is throttled it stays
+throttled, because a failed fetch caches nothing: the next firing re-opens the
+same uncached query and fails identically. Self-perpetuating, and it was.
+
+Three changes, and one deliberate non-change:
+
+**Listings are marked at the call site and refresh daily** (`fetch_cache.LISTING`,
+`listing_ttl_hours: 24`). The distinction is between "how we learn a paper
+exists" — DeepSeek's `au:"DeepSeek-AI"` search, DeepMind's sitemap, Meta's
+paginated index — and "which arXiv paper is called X", asked about a title we
+already have. It cannot be derived from the URL: `deepseek_harvest.arxiv_query`
+issues both against the same endpoint, and `openai_harvest` imports it for the
+second. There are three listing URLs, so asking daily costs three requests a
+night. This also fixes a product problem found while diagnosing: DeepSeek
+publishes no papers page, so that search is the *only* route by which one of its
+papers is ever found, and it was on a fortnight's lag.
+
+**The discovery TTL is spread per URL** (`discovery_ttl_jitter: 0.25`), from a
+`hashlib` digest of the URL — not the built-in `hash()`, which is salted per
+process and would move a URL's expiry every run, so a row re-stamped further
+into the future each time it was touched would never expire at all. Only ever
+extends, so the configured number stays the floor it reads as. Measured on the
+35 real cached URLs: one expiry date becomes four, busiest night 35 → 14.
+
+**Rows already written are rewritten once** (`spread_cache_expiry.py`). Jitter
+applies as a row is written, so the rows that caused the incident keep their
+flat expiry until something rewrites them. Anchored on *now* rather than on
+`fetched_at`, because the production rows are already past due and re-deriving
+from the fetch time would leave them all due on the next firing — the burst, one
+more time. Measured: 35 rows on one date become 13 dates, busiest 5.
+
+**Rejected: caching a successful title lookup permanently.** It is the obvious
+fix — we found the paper, why ask again — and it is wrong. `resolve_title`
+returns a *versioned* arXiv id and `meta_harvest.py:251` builds
+`arxiv.org/html/<that id>`, which is cached forever and correctly so. Re-running
+the lookup is therefore the only mechanism by which a byline is ever updated: a
+paper that gains an author in v2 is invisible until the lookup runs again and
+returns the v2 id. Caching it permanently would freeze bylines at v1, silently,
+on the harvesters whose entire output is bylines — the failure `_IMMUTABLE`
+already exists to prevent for DeepMind. Jitter buys the same burst reduction
+with no freshness cost.
+
+**Uncertainty, stated.** 35 requests at the 3-second spacing already enforced is
+under two minutes of traffic, which should not trip arXiv's published guidance
+on its own. The herd is demonstrated and the fix is right, but a shared Render
+egress IP, or a tighter limit on the API host than on `arxiv.org`, may be doing
+part of the work. If 429s recur against a spread cache, that is where to look
+next, and the 429 backoff ceiling (currently ~21s against an IP-level penalty
+measured in minutes) is the next thing to raise.
+
+**Flagged, not touched:** `harvest_contributors.py` (the Anthropic harvester)
+never reaches `fetch_cache` at all. It keeps a private `urlopen` loop with a
+`time.sleep(1.0)` and an on-disk cache that does not exist on Render, so it
+re-fetches Anthropic's index and every article page on every firing, with no
+retry and outside the shared throttle. It survived this incident only because it
+never touches arXiv.

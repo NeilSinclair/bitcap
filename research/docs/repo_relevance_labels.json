@@ -1,0 +1,1832 @@
+[
+  {
+    "repo": "anthropics/skills",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repository of Agent Skills, tooling that extends the capabilities of their Claude language-model agents.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-code",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Anthropic's official agentic coding tool built around the Claude language model, a coding agent whose subject is an LLM.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-cookbooks",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic worked-example collection for using the Claude model API, matching the vendor_sdk definition.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/prompt-eng-interactive-tutorial",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic tutorial with worked examples for prompt engineering against their model API.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-plugins-official",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic-managed plugin directory for Claude Code, a lab's own tooling for its model products.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/financial-services",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Description is empty, but this is an official Anthropic repository in Python, almost certainly a worked-example collection for applying Claude in financial services, so I judged from the organisation and name.",
+    "confidence": "low",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/knowledge-work-plugins",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repository of plugins for Claude Cowork, making its subject tooling built around a frontier lab's language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/courses",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic repository of educational courses and worked examples for using their Claude model API, matching the vendor worked-example collection category.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-quickstarts",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic worked-example collection for building applications with the Claude API, which is explicitly a vendor SDK/example category.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-for-legal",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repository providing Claude plugins for legal workflows, i.e., tooling whose subject is a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-code-action",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repository whose name indicates a GitHub Action for the Claude Code coding agent, making it LLM agent tooling despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic Python SDK for building agents with Claude, an official client library for a frontier lab's model API.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/defending-code-reference-harness",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "An Anthropic repository providing skills and an autonomous scanning harness (Claude-style agent skills for security triage/patching), making its subject LLM agent tooling.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-code-security-review",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Anthropic tool that uses Claude as an LLM-powered agent to perform security reviews of code changes, making the language model its central subject.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/sandbox-runtime",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Anthropic's sandboxing tool built to safely execute processes spawned by LLM agents like Claude Code, making it agent-adjacent tooling from a frontier lab even though the description reads as general OS sandboxing.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/original_performance_takehome",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "non_ai",
+    "reason": "Despite being from Anthropic, the repository is an interview performance-optimization take-home exercise, not model weights, SDKs, or LLM tooling.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Repository name and the anthropics organisation identify this as Anthropic's official Python client library for their model API, despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-plugins-community",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repository hosting a plugin marketplace for Claude Code and Claude Cowork, tooling directly centered on their language model products.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claudes-c-compiler",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "An Anthropic-published showcase artifact demonstrating Claude Opus 4.6's coding capabilities, effectively a worked example tied to a frontier lab's model release.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-demos",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic repository of worked examples for the Claude Code/Agent SDK, a lab's own model API tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-desktop-buddy",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic repository providing a reference/example for an API in Claude Cowork and Claude Code Desktop, making it a lab's own worked-example collection.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-typescript",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic TypeScript client library for their language model API, a canonical vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/cwc-workshops",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Empty description, but the repository sits in the official anthropics org and its name suggests workshop/worked-example materials for Claude, Anthropic's own model API.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/commerce-agents",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic reference blueprint for building agents with Claude, making its subject an LLM-based agent framework.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/jacobian-lens",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "Anthropic repository providing companion code for an interpretability paper, which falls under interpretability/alignment tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-typescript",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic SDK for building agents on Claude, as indicated by the anthropics org and repository name despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-go",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic Go client library for their language model API, a lab's own vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/launch-your-agent",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Anthropic repository providing Claude Code skills for building and launching Claude Managed Agents, squarely LLM agent tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/buffa",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "non_ai",
+    "reason": "Despite being under the anthropics org, the repository is a Rust protobuf serialization library, general software infrastructure unrelated to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/cwc-long-running-agents",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Description is empty, but the anthropics organisation and the repository name 'cwc-long-running-agents' indicate tooling/examples for long-running Claude-based agents.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-cli",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic CLI for the Claude API, a lab's own client tooling for its model API.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/life-sciences",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Anthropic repo hosting the Claude Code plugin marketplace (marketplace.json for MCP servers), which is tooling whose subject is connecting Claude to external tools.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/healthcare",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Description is empty, but this is an official Anthropic repository likely containing healthcare-domain worked examples or tooling for the Claude API, judged from the organisation and name.",
+    "confidence": "low",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-ruby",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic Ruby SDK for their model API, a vendor client library which is always relevant despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-java",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic Java SDK for their model API, a vendor SDK which is always relevant despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-csharp",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Anthropic C# SDK for their language model API, an official vendor client library.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/codex",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "OpenAI's Codex is a coding agent powered by their language models, squarely an LLM agent tool.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/whisper",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Whisper is a speech recognition model, whose subject is audio rather than language models, even though it comes from OpenAI.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-cookbook",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI collection of worked examples and guides for using the OpenAI API, which fits the vendor_sdk category exactly.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/CLIP",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "CLIP is a vision-language contrastive model whose centre of gravity is image understanding and classification, not language modeling.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/codex-plugin-cc",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official OpenAI plugin that lets the Claude Code coding agent invoke Codex for code review and task delegation, which is developer tooling centered on language-model agents.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Python client library for the OpenAI API, a frontier lab's own model API SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-agents-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "OpenAI's official Python framework for building multi-agent LLM workflows, as indicated by the description and topics (agents, llm, openai).",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/symphony",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "An OpenAI tool for orchestrating autonomous coding-agent implementation runs, making its subject LLM-based agents.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/skills",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official OpenAI repository providing a skills catalog for Codex, a tool that extends the capabilities of their LLM-based coding agent.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/swarm",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "OpenAI's Swarm is a multi-agent orchestration framework built around language models, squarely an agent framework.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/gpt-oss",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "model",
+    "reason": "OpenAI's official repository for the gpt-oss-120b and gpt-oss-20b open-weight language models, explicitly stated in the description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/evals",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "OpenAI's evals is explicitly a framework and benchmark registry for evaluating LLMs.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/tiktoken",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "tiktoken is OpenAI's BPE tokeniser for its language models, squarely within tokeniser/inference tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-node",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI client library for their model API, which is always relevant as a vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/codex-security",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI CLI and TypeScript SDK for its Codex-based security product, a lab's own tooling built directly around its language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-realtime-agents",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI worked-example repository demonstrating agentic patterns on their Realtime API, a lab's own model API example collection.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/tart",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "non_ai",
+    "reason": "Despite being under the openai org, the repository is a macOS/Linux virtualization tool for CI automation on Apple Silicon, unrelated to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-cs-agents-demo",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "OpenAI's official demo of a customer service agent built on the OpenAI Agents SDK, a worked example of LLM agent tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/plugins",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI repository for ChatGPT plugins, an example/tooling collection for the lab's own model API.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/parameter-golf",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "An OpenAI repository challenging users to train the smallest possible language model, directly about LM training.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/simple-evals",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "OpenAI's simple-evals is a lightweight benchmark/evaluation harness for measuring language model performance (e.g., MMLU, GPQA, HumanEval), judged from the org and repo name despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/harmony",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI repository providing the harmony response format renderer for their gpt-oss models, a lab's own model tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/transformer-debugger",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "OpenAI's transformer-debugger is a known interpretability tool for investigating transformer language model behavior, fitting interpretability/alignment tooling despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-agents-js",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "OpenAI's official TypeScript agent framework for building multi-agent workflows on top of the OpenAI API, squarely an LLM agent framework.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-go",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Go client library for the OpenAI API, a lab's own model API SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-fm",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI demo application for their own Speech API (openai.fm), a worked example for a lab's model API where new model identifiers surface.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-dotnet",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI .NET client library for the OpenAI API, a lab's own vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/privacy-filter",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "An OpenAI repository named privacy-filter is most plausibly PII/privacy filtering tooling for their language model pipeline, a safety-adjacent tool, though the description is minimal.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-quickstart-node",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI worked-example quickstart app for the OpenAI API, which counts as a vendor SDK/example collection.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-openapi",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAPI specification for OpenAI's model API, a canonical vendor API definition where new model identifiers appear.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/chatkit-js",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Description is empty, but the openai org and the name chatkit-js indicate an official OpenAI JavaScript library for building chat interfaces on their model API.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/openai-java",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official OpenAI Java client library for their model API, a vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "openai/procgen",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Procgen is a reinforcement-learning benchmark of procedurally generated game environments, not language-model work, despite being from OpenAI.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/deepmind-research",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The description states it is a grab-bag of code accompanying DeepMind publications across many projects with no single language-model subject dominating.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mujoco",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "MuJoCo is a physics simulator for robotics and RL environments, a non-language AI domain.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/alphafold",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AlphaFold is a protein structure prediction model, which falls under biology/genomics AI research rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/sonnet",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "Sonnet is DeepMind's general-purpose TensorFlow neural network library, general deep-learning infrastructure that language-model work can be built on.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/alphafold3",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AlphaFold 3 is a protein structure prediction model, a biology domain application rather than language modeling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/weathernext",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Google DeepMind's WeatherNext is a weather forecasting model, an AI application in the climate/weather domain rather than language models, as indicated by the name and weather-forecast topics despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/gemma",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "model",
+    "reason": "Official Google DeepMind repository for the Gemma open-weight LLM, providing model implementation and reference code.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/open_spiel",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "OpenSpiel is a reinforcement-learning environments and game-playing algorithms library, which falls under RL/game research rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/alphageometry",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AlphaGeometry is DeepMind's system for solving olympiad geometry problems, which falls under mathematics and theorem proving rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/dm_control",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Repository is a physics-based simulation and reinforcement-learning environment stack (MuJoCo), a non-language AI domain.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/acme",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Acme is a general reinforcement-learning components and agents library, not focused on language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mujoco_menagerie",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Repository provides robot models for the MuJoCo physics engine, which is robotics/physics simulation rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/dm-haiku",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "Haiku is a general-purpose JAX neural network library from DeepMind, core infrastructure that language-model stacks are built on.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/science-skills",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "The repository provides skills/tool integrations for LLM-based agentic workflows, connecting language model agents to scientific databases, making its subject agent tooling rather than the science domains themselves.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mctx",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Monte Carlo tree search library for reinforcement learning in JAX, a game-playing/RL domain rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/optax",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "Optax is a general-purpose gradient optimization library for JAX, core infrastructure used in training language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mujoco_playground",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is for GPU-accelerated robot learning and sim-to-real transfer using MuJoCo, a robotics/RL domain unrelated to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/open_x_embodiment",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Open X-Embodiment is DeepMind's robotics dataset and RT-X model project for robot learning, a robotics domain rather than language models; description is empty but the repo name is well known.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/alphagenome",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AlphaGenome is a genomics model from DeepMind, an AI application in biology rather than a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/tapnet",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "TAP is a computer-vision point-tracking model and benchmark, not language-model work, as shown by its topics and description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mujoco_mpc",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Repository is about model-predictive control and robotics motor control with MuJoCo physics simulation, not language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/concordia",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Concordia is DeepMind's generative agent-based social simulation library whose agents are driven by language models, making it an LLM agent framework.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/bsuite",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "bsuite is a benchmark suite for reinforcement learning agents, a non-language AI research domain.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/rlax",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Description is empty, but rlax is DeepMind's well-known JAX library of reinforcement-learning building blocks, an RL-focused project rather than language-model infrastructure.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/mujoco_warp",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is a GPU-optimized physics simulator for robotics/RL research, not language-model related.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/android_env",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AndroidEnv is a reinforcement-learning environment platform for Android devices, not language-model work.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/materials_discovery",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Despite the empty description, the repository name and DeepMind organisation indicate this is the GNoME materials discovery project, applying ML to materials science rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/formal-conjectures",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Repository is a collection of formalized mathematical conjectures in Lean 4, which falls under mathematics and theorem proving rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/synthid-text",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "SynthID-Text is Google DeepMind's watermarking system for language-model-generated text, which falls under safety/watermarking tooling despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/tree",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "dm-tree is DeepMind's general-purpose nested-structure (pytree-like) utility library that underpins their deep-learning frameworks such as Sonnet and JAX-based stacks.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/chex",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "Description is empty, but chex is DeepMind's well-known testing and assertion utility library for JAX code, general-purpose deep-learning infrastructure that LLM stacks are built on.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/meltingpot",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Melting Pot is a multi-agent reinforcement learning environment/benchmark suite, not related to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/alphagenome_research",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AlphaGenome is a genomics/DNA sequence model from DeepMind, which falls under protein/genomics domain rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "google-deepmind/torax",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "TORAX is a tokamak plasma physics simulation library in JAX, a domain-specific physics application rather than language-model infrastructure.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/mistral-vibe",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official Mistral repository described as a minimal CLI coding agent, a developer tool whose subject is a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/cookbook",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Mistral AI cookbook repository of worked examples for their model API, a vendor example collection where new model usage first appears.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/mistral-common",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Mistral library for tokenization and pre-processing of their models, a lab's own model support library.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/client-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Python client library from Mistral AI for their own model API, a canonical vendor SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/client-ts",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official TypeScript client library for Mistral AI's model API, a frontier lab's own SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/mistral-evals",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "Repository from frontier lab Mistral AI named 'mistral-evals', evidently an evaluation harness for their language models despite empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/platform-docs-public",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Mistral AI public platform documentation repository, where the lab documents its own model API and new model identifiers appear.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/LeanstralSafeVerify",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "Mistral's fork of a Lean proof-verification tool explicitly used for code agent training and as part of their LLM evaluation stack, making it evaluation tooling for a frontier lab's models.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/search-starter-app",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Mistral AI starter template, a worked-example app for building search on top of Mistral's model API.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/workflows-starter-app",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Mistral AI starter template for registering and invoking workflows on their platform, a worked-example collection for the lab's own API.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/FLTEval",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "An evaluation harness from frontier lab Mistral AI for assessing models on Lean formal-proof (FLT) tasks, making it LLM benchmark tooling.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "mistralai/cli",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Description is empty, but the repository is named 'cli' under the mistralai organisation, indicating an official command-line tool for Mistral's model API.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/x-algorithm",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is X's For You feed recommendation algorithm, a recommender-system domain rather than language models, despite being hosted under xai-org.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/grok-build",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official xAI coding agent harness and terminal UI for their Grok models, a developer tool whose subject is a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/grok-prompts",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official xAI repository publishing the system prompts for their Grok model, a lab's own model-related resource.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/xai-cookbook",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official xAI repository providing worked examples for the Grok API, a lab's own model API cookbook.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/xai-sdk-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Python SDK from xai-org for the xAI (Grok) model API, a lab's own client library.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/grok-build-plugin-cc",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official xAI plugin that integrates Claude Code with the Grok Build CLI, making its subject LLM coding-agent tooling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/plugin-marketplace",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Official xAI repository hosting a plugin marketplace, i.e. extension tooling built around xAI's Grok models and agent products.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "xai-org/xai-proto",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official xAI repository containing public protobuf/gRPC API definitions for their model API, where new model identifiers may first appear.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/faiss",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "Faiss is a vector similarity search library, a core retrieval infrastructure component used in LLM/RAG stacks, matching the ml_infrastructure vector search criterion.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/detectron2",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Detectron2 is a computer vision platform for object detection and segmentation, not language-model work.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/audiocraft",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Audiocraft is centred on audio compression and music generation (EnCodec, MusicGen), an audio-domain project despite using LM techniques and text conditioning.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/sam2",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "SAM 2 is a computer vision model for image and video segmentation, not a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/vggt",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "VGGT is a computer vision model for visual geometry and 3D reconstruction (CVPR paper), not language modeling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/dinov2",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "DINOv2 is a self-supervised vision foundation model for image representation learning, not a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/seamless_communication",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository contains Meta's Seamless models for speech and text translation, whose centre of gravity is speech/audio processing rather than language models.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/sam3",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "SAM 3 is Meta's Segment Anything Model for image/video segmentation, a computer vision project rather than a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/dinov3",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "DINOv3 is a self-supervised computer vision foundation model, not a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/xformers",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "xformers provides optimized transformer building blocks and attention kernels used in language-model training and inference.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/pytorch3d",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "PyTorch3D is a library for deep learning on 3D data (computer vision/graphics), a domain separate from language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/ImageBind",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "ImageBind is a multimodal embedding model centered on images, audio, depth and other sensory modalities rather than language modeling.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/SlowFast",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "SlowFast is a video understanding and computer vision codebase, not related to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/sam-3d-objects",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "SAM 3D Objects is a computer vision model for 3D object segmentation/reconstruction, not language modeling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/Kats",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Kats is a time series analysis and forecasting toolkit, a machine learning domain unrelated to language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/mmf",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "MMF is a vision-and-language multimodal research framework centered on VQA, captioning and hateful memes rather than language models themselves.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/sapiens",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Sapiens is a family of computer-vision models for human-centric tasks like pose estimation, segmentation and depth, not language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/moco",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "MoCo is a self-supervised contrastive learning method for visual representation learning (computer vision), not language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/AugLy",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "AugLy is a general data augmentation library spanning audio, image, text, and video with no specific focus on language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/co-tracker",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "CoTracker is a computer vision model for point tracking in video, not language-model related.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/flow_matching",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "General-purpose flow matching generative modeling library spanning image and text modalities, centered on a generative algorithm rather than language models specifically.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/vjepa2",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "VJEPA2 is a self-supervised learning model for video, a computer vision domain rather than language modeling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/vggt-omega",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "VGGT (Visual Geometry Grounded Transformer) is a computer vision / 3D geometry model from a CVPR paper, not a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/nevergrad",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Nevergrad is a general-purpose gradient-free (evolutionary/black-box) optimization toolbox used for hyperparameter search and optimization research, not infrastructure that language-model stacks are built on.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/dlrm",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "DLRM is a deep learning recommendation model for recommender systems, not language modeling or LLM infrastructure.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/habitat-sim",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Habitat-sim is a 3D simulator for embodied AI and robotics research, not language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/ReAgent",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "ReAgent is Meta's applied reinforcement learning and contextual bandits platform, a non-language-model AI domain.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/map-anything",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is a 3D reconstruction and depth estimation model for computer vision, not language modeling.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/sam-audio",
+    "cohort": "frontier",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "SAM-Audio is an audio segmentation model, a speech/audio domain project rather than a language model.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/pytorchvideo",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is a deep learning library specifically for video understanding, a computer vision domain rather than language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/habitat-lab",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "Habitat-lab is an embodied AI / robotics simulation and reinforcement learning framework, not about language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/omnilingual-asr",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "The repository is a multilingual automatic speech recognition system, which is speech/audio AI rather than language-model work.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "facebookresearch/fairchem",
+    "cohort": "watched",
+    "label": "off_topic",
+    "category": "other_ai_research",
+    "reason": "FAIR Chemistry's ML library targets chemistry and materials science, a non-language AI domain.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/llama-cookbook",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official meta-llama worked-example collection for building with the Llama model family (inference, fine-tuning, RAG).",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/llama-models",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "model",
+    "reason": "Official meta-llama repository containing utilities and reference code for the Llama family of language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/PurpleLlama",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "Meta's PurpleLlama explicitly provides tools to assess and improve LLM security, which is red-teaming/safety tooling for language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/synthetic-data-kit",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "Meta Llama's tool for generating synthetic datasets for LLM fine-tuning, with 'llm' and 'synthetic' topics, placing it squarely in the model training data pipeline.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/prompt-ops",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Meta's meta-llama org tool explicitly for LLM prompt optimization, which is prompt tooling for language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/llama-api-python",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official Python client library from meta-llama for the Llama API, a lab's own model API SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/llama-api-typescript",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official TypeScript client library from meta-llama for the Llama API, a lab's own model API SDK.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "meta-llama/llama-verifications",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "eval_or_safety",
+    "reason": "Meta's official repository of functional tests and benchmarks for verifying Llama model providers is an evaluation harness for a frontier lab's language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/deepseek-harness",
+    "cohort": "watched",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "An AI-agent harness/plugin framework from frontier lab DeepSeek, whose subject is agent tooling around their language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-integration",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official DeepSeek repository curating integrations of the DeepSeek model API into software, effectively a lab-maintained worked-example collection for its own API.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Coder",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "DeepSeek Coder is a code language model released by frontier lab DeepSeek, with this repo hosting its reference code and weights info.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-OCR",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "DeepSeek-OCR is a vision-language model release from frontier lab DeepSeek whose subject is optical compression of text contexts for LLMs, making it a language-centred model despite the vision input.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/FlashMLA",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DeepSeek's FlashMLA provides efficient attention kernels for multi-head latent attention used in LLM inference/training.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/3FS",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "ml_infrastructure",
+    "reason": "DeepSeek's distributed file system is storage infrastructure explicitly designed for AI training and inference workloads underpinning their LLM stack.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepEP",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DeepEP is DeepSeek's CUDA communication library for expert-parallel (MoE) training and inference, core LLM training/serving infrastructure.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepGEMM",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DeepGEMM is DeepSeek's CUDA GEMM kernel library built for efficient FP8 matrix multiplication used in training and inference of their language models.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSpec",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "Speculative decoding is an LLM inference acceleration technique, and this repo from DeepSeek provides training and evaluation code for such algorithms.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Coder-V2",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "Official DeepSeek repository for the DeepSeek-Coder-V2 code language model release.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-agent",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "vendor_sdk",
+    "reason": "Official deepseek-ai repository whose name indicates a curated collection of agent integrations/examples for DeepSeek's own models; description is empty so judged from org and name.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/Engram",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DeepSeek repository on a sparsity/memory mechanism for large language models, i.e. LLM architecture and efficiency research.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-OCR-2",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "DeepSeek-OCR-2 is a vision-language model release from frontier lab DeepSeek, continuing their OCR/optical-context-compression line that is built on and feeds into their LLM stack.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DualPipe",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DualPipe is a pipeline parallelism algorithm used in training DeepSeek V3/R1 language models, per its description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/TileKernels",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "A GPU kernel library from deepseek-ai written in tilelang, which supports attention/GEMM kernels for LLM training and inference stacks.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-V3.2-Exp",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "Repository from frontier lab deepseek-ai named DeepSeek-V3.2-Exp is clearly the reference release for their V3.2 experimental language model, despite the empty description.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Math-V2",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "model",
+    "reason": "DeepSeek-Math-V2 is a mathematical-reasoning large language model release from frontier lab DeepSeek, judged from the org and repo name since the description is empty.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-coder",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "agent_or_tooling",
+    "reason": "Curated list from DeepSeek's official org of projects built around their DeepSeek Coder language model, making its subject an LLM ecosystem.",
+    "confidence": "medium",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  },
+  {
+    "repo": "deepseek-ai/LPLB",
+    "cohort": "frontier",
+    "label": "relevant",
+    "category": "training_or_serving",
+    "reason": "DeepSeek's expert-parallel load balancer for MoE models is serving/training infrastructure directly targeting large language model workloads.",
+    "confidence": "high",
+    "labeller": "claude-fable-5",
+    "prompt_version": "label_v1"
+  }
+]

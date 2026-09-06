@@ -102,7 +102,7 @@ class Paper:
     truncated: bool = False
 
 
-def fetch(url: str, retries: int | None = None) -> str:
+def fetch(url: str, retries: int | None = None, ttl_hours=fetch_cache.AUTO) -> str:
     """Fetch a URL through the shared cache, throttle and retry policy.
 
     The 403-mid-batch this used to guard against was arXiv rate-limiting us,
@@ -115,6 +115,8 @@ def fetch(url: str, retries: int | None = None) -> str:
     Args:
         url: Absolute URL.
         retries: Attempts before giving up. None takes the configured value.
+        ttl_hours: How long the body stays trustworthy; passed straight through.
+            `fetch_cache.LISTING` for a URL that is how we learn a paper exists.
 
     Returns:
         Decoded response body.
@@ -124,7 +126,8 @@ def fetch(url: str, retries: int | None = None) -> str:
             dead source aborts the whole run (it does not, here).
     """
     return fetch_cache.fetch(
-        url, cache_dir=CACHE, suffix=".html", user_agent=UA, retries=retries
+        url, cache_dir=CACHE, suffix=".html", user_agent=UA, retries=retries,
+        ttl_hours=ttl_hours,
     )
 
 
@@ -144,7 +147,9 @@ def list_publication_urls(months: int) -> list[tuple[str, str]]:
     Returns:
         List of (url, lastmod) tuples, most recently modified first.
     """
-    xml = fetch(SITEMAP)
+    # The sitemap is this lab's listing: every publication reaches us through
+    # it, so its staleness is the lag on finding a new DeepMind paper.
+    xml = fetch(SITEMAP, ttl_hours=fetch_cache.LISTING)
     cutoff = (datetime.now() - timedelta(days=months * 30.5)).strftime("%Y-%m-%d")
     out = []
     for entry in re.findall(r"<url>(.*?)</url>", xml, re.S):

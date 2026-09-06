@@ -75,6 +75,9 @@ OUT = ROOT / "research" / "docs" / f"scored_announcements_{PROMPT_VERSION}.json"
 PAPER_PROMPT_VERSION = re.search(
     r'^PAPER_PROMPT_VERSION = "([^"]+)"', _APP.read_text(encoding="utf-8"), re.M
 ).group(1)
+POST_PROMPT_VERSION = re.search(
+    r'^POST_PROMPT_VERSION = "([^"]+)"', _APP.read_text(encoding="utf-8"), re.M
+).group(1)
 
 
 class Variant(NamedTuple):
@@ -110,6 +113,21 @@ def papers() -> Variant:
     register, which is precisely the seam a one-off re-score needs.
     """
     return Variant(PAPER_PROMPT_VERSION, PAPER_PROMPT, PAPER_CACHE, PAPER_OUT)
+
+
+POST_PROMPT = ROOT / "prompts" / "post_scoring" / f"{POST_PROMPT_VERSION}.md"
+POST_CACHE = ROOT / "research" / "docs" / "post_scores" / POST_PROMPT_VERSION
+POST_OUT = ROOT / "research" / "docs" / f"scored_posts_{POST_PROMPT_VERSION}.json"
+
+
+def posts() -> Variant:
+    """The posts variant, read from the module globals at call time.
+
+    A function for the same reason the other two are.
+    """
+    return Variant(POST_PROMPT_VERSION, POST_PROMPT, POST_CACHE, POST_OUT)
+
+
 COST = ROOT / "research" / "docs" / "announcement_cost.json"
 
 TAG = {

@@ -234,3 +234,135 @@ across the other review passes.
 reproduces 306 articles, 47 papers and 126 paper connections offline with no API
 key, which is the clone-to-running requirement and also the thing that made
 every one of the above recoverable in seconds rather than dollars.
+
+---
+
+## 2026-09-05 — releases: a feature that measured itself into the wrong answer
+
+Operational picture: [`handover-releases.md`](handover-releases.md).
+Rationale: [`decisions.md`](decisions.md) §D61.
+
+**The agent shipped a join that silently did nothing on its own headline
+example, and every number it produced looked right.** Pairing releases to launch
+posts was built with exact identifiers on the release side, on the stated
+reasoning that an exact key at one end bounds the join. It produced 20 links.
+They were all correct. The measurement was quoted in the plan, in the config
+comment and in the decision record.
+
+It was still wrong. The identifier pattern does not span a space, so "GPT-6
+Astra: A new generation of intelligence" — the highest-scoring announcement in
+the corpus, and the specific example the feature was written for — yields
+`gpt-6`, while the release body yields `gpt-6-astra`. They never intersect. The
+only announcements that linked were the ones that happened to hyphenate. The
+20 links were a *biased sample presented as a result*, and nothing in the output
+said so: no test failed, no count looked odd, and the sample happened to contain
+the visually convincing cases.
+
+**What makes this the interesting failure, rather than an ordinary bug:** the
+agent had already run the exact query that would have exposed it. It listed the
+Astra-window announcements and their identifiers while sizing the work, and did
+not notice that the launch post it kept quoting was absent from its own link
+output. **The check was performed and the answer was not read.**
+
+**The review agent caught it, and the fix inverted the design.** Asked to verify,
+the reviewer executed `release_links` on the two real rows and got `[]`. Chasing
+that produced a second finding the agent had also missed: on identifiers alone
+the launch post and "Legora reviewed 41 documents in minutes with GPT-6 Astra"
+are *identical* — both exactly `{gpt-6}`. So the original rationale was wrong
+twice over: exact matching did not avoid the customer stories, it avoided the
+launch post. No identifier rule could ever have separated them; `event_type`
+could, and gate 2 already trusted that axis. Precision and recall both improved:
+20 links over 11 announcements with 2 customer stories became 25 over 5 with
+none.
+
+**A test that could not fail, again.** `test_the_denied_collision_never_extracts`
+asserted that "Sonnet v2.0.1 release notes" extracts nothing — which is true with
+*or without* the denylist it was written to defend, because `max_version_parts:
+2` rejects three-part versions. It would have passed with the `sonnet-2` entry
+deleted. Same shape as the CI defect in D54 and the `is_signal` test before it.
+**Three times now.** The pattern each time: the assertion was written from the
+intent rather than from a failing state, so nobody watched it go red.
+
+**On the review loop.** The reviewer's two passes returned 9 and 8 findings. One
+was a genuine correctness bug, one a real determinism bug (`max` over a set
+breaks ties on hash order, so the stored evidence string changed between
+processes), and the rest were comments that had drifted from the code — including
+three comments still arguing *for the design that had just been replaced*. That
+ratio is close to the papers leg's 3-of-11. The second pass verified its own
+conclusions by reverting each fix and watching the tests go red, which is the
+only form of this that is worth anything.
+
+**One finding was declined, on purpose.** The reviewer noted `stats["links"]` has
+no alert reading it, unlike the `coverage` the code cited as precedent — correct.
+The agent chose not to add an alert, because zero links is the normal state of
+most windows and there is no labelled set to calibrate a healthy count from, and
+dropped the false analogy instead. **Recording that a gap exists is not the same
+as closing it**, and §5 of the handover says so in those words rather than
+letting a green dashboard imply otherwise.
+
+**What worked.** Every claim in this feature was checked against the live
+database rather than against the code, and that is what found all three original
+problems — the doc-type mislabelling, the 186 pre-window releases and the
+unconnected rows were invisible in the source and obvious in a query. It is also
+what made the review's finding fixable in minutes: the corpus was right there to
+re-measure against.
+
+## `[NEIL]` — only you can answer these
+
+- The "test written from intent, never watched fail" pattern has now produced
+  three defects across three legs. Worth a standing rule that a new test must be
+  demonstrated red before it counts?
+
+## 2026-09-05 — posts: the measurement that corrected the measurer
+
+The X leg is the first one where the agent's own estimates were checked against
+a cheap measurement before any money was spent at scale, and it is worth
+recording because the estimates lost.
+
+**Three of four priors were wrong.** Asked which handles to exclude on volume
+grounds, I named @karpathy as the top candidate ("high volume, general AI
+commentary"). Neil corrected two of them from his own reading — Wang posts a lot
+*and* it matters, Karpathy posts less than assumed — and predicted the DeepSeek
+pair would be dormant. The measured answer: Karpathy 5 posts a quarter, Wang the
+second-largest contributor, both DeepSeek handles silent. The $0.68 probe was
+worth more than the argument.
+
+**Then the probe itself was wrong, and the fix came from reading the raw
+output rather than the summary.** It reported @sama at 4 posts in 90 days. That
+number is absurd on its face for the CEO of OpenAI, and the only reason it was
+caught is that the printed table also carried the date of the oldest post —
+yesterday. X applies `exclude=replies,retweets` after assembling a page, so a
+page of five originals from a prolific replier is not five posts in the window.
+True figure ~223. **The design lesson is narrow and general: a count and a date
+disagreed, and the count was the one that looked like an answer.** The fix
+turned into two tests named after the bug, and a `None` return for "the probe
+saw nothing", because an empty first page is indistinguishable from silence.
+
+**A wrong diagnosis, corrected by the config.** When @sama's 80%-price-cut post
+scored 0.0 on the investment axis I called it a failure of the new prompt and
+started looking for the over-tuned sentence. It was not. Running the same post
+under all three prompts returned zero mechanisms from each, and
+`config/mechanisms.yaml` says why in a line written months earlier: *"Tag this
+only when the work per token falls, not whenever a price falls."* The system was
+right and I was about to loosen a prompt to break it. The check that saved it
+cost one extra classification call.
+
+**Two bugs found that were nobody's feature.** `bitcap-db load` was already
+failing on `deployment-dev` for everyone — `load_refs` deletes the silver layer
+and the recent dedupe work added two tables referencing `articles` without
+adding them to the list. I only found it because it blocked me, and only proved
+it was pre-existing by stashing the branch and reproducing. And
+`classify_new`'s corpus dispatch was a ternary that silently scored any unknown
+corpus under the announcement prompt: the kind of default that produces
+plausible output at full price and never raises.
+
+**Where the loop needed a human.** Twice. Neil's discomfort with twitterapi.io
+being "way cheaper" was the right instinct pointed at the wrong reason — the
+price gap is monopoly rent versus commodity cost, not a scam signal — but
+checking it properly surfaced that official access is self-serve, which removed
+the only argument for the mirror and changed the recommendation. And I asserted
+that Karpathy at Anthropic looked wrong from my own sense of it, against a
+sourced register entry with a fetched TechCrunch citation dated after my
+training cutoff. The register was right. That is exactly the failure
+`config/people.yaml` documents itself as guarding against, and I walked into it
+from the other side.
