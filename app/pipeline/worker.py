@@ -243,13 +243,25 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
         stats["repo_verdicts"] = load_repo_verdicts(session, run_id=run.id)
         # Once per version: `transform` scopes its delete by prompt_version, so
         # the derivations are additive. `connect` rebuilds the whole table, so
-        # it runs once across both -- calling it per version would leave only
-        # the last one's rows.
+        # it runs once across ALL THREE -- calling it per version, or across a
+        # subset, leaves only the versions named here.
+        #
+        # All three, and the omission of the third was a live fault. The posts
+        # version reached `transform` on the line above when the leg landed and
+        # never reached this tuple, so every scheduled firing deleted 1,265+
+        # connection rows and rebuilt them from v9 and p1 only. `app/cli.py`
+        # passes all three in both `cmd_load` and `cmd_connect`, so a
+        # `bitcap-db rebuild` put the posts routes back and the next firing took
+        # them away again -- the rebuild path and the live path disagreeing,
+        # with nothing failing on either. Measured on the local Postgres:
+        # 44 post classifications carry mechanism tags and 4 carry category
+        # tags, all of them unroutable for as long as this tuple was short.
         stats["transform"] = transform(session, prompt_version, run_id=run.id)
         stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
         stats["post_transform"] = transform(session, POST_PROMPT_VERSION, run_id=run.id)
         stats["connections"] = run_connect(
-            session, (prompt_version, PAPER_PROMPT_VERSION), run_id=run.id)
+            session, (prompt_version, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION),
+            run_id=run.id)
         # Assign, never accumulate: `new_usd` is this run's whole delta on the
         # shared cost log, covering classification and drift alike. Adding it to
         # a figure those stages had already contributed double-counted them.

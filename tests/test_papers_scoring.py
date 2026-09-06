@@ -594,16 +594,37 @@ class TestTheCliSpansBothVersions:
     def test_the_prompt_flag_reaches_the_join_and_the_digest(self):
         """`--prompt v10` classified and transformed at v10 while joining and
         publishing from the module constant, so the new version's rows got no
-        connections and never reached a digest."""
+        connections and never reached a digest.
+
+        Asserted on the *shape* of the call rather than its literal text. The
+        earlier version of this test pinned the exact string
+        `run_connect(\n            session, (prompt_version, PAPER_PROMPT_VERSION)`,
+        which pinned the arity too -- so when the posts version was added to
+        `transform` and not to this tuple, the guard held the omission in place
+        and went red on the fix rather than on the bug. A test that fails when
+        you correct the thing it guards is worse than no test.
+        """
         import inspect
+        import re
 
         from app.pipeline import worker
         source = inspect.getsource(worker)
-        assert "run_connect(\n            session, (prompt_version, PAPER_PROMPT_VERSION)" in source
-        # D69 added POST_PROMPT_VERSION to the published tuple. What this pins
-        # is unchanged: the *flag* reaches the digest, not the module constant.
-        assert ("session, (prompt_version, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION),"
-                in source)
+
+        call = re.search(r"run_connect\(\s*session,\s*\(([^)]*)\)", source)
+        assert call, "run_connect is no longer called with a version tuple"
+        versions = {v.strip() for v in call.group(1).split(",") if v.strip()}
+
+        # The flag, not the module constant: this is what `--prompt v10` broke.
+        assert "prompt_version" in versions, (
+            "the join reads the module constant, so --prompt never reaches it")
+        assert "PROMPT_VERSION" not in versions
+
+        # Every corpus, because `connect` rebuilds the whole table: a version
+        # missing here is a version whose rows are deleted and not rebuilt.
+        for constant in ("PAPER_PROMPT_VERSION", "POST_PROMPT_VERSION"):
+            assert constant in versions, (
+                f"{constant} is absent from the join, so every scheduled firing "
+                f"deletes that corpus's connections and does not rebuild them")
 
 
 class TestAnExtractionDowngradeIsASystemAlert:

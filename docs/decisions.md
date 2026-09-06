@@ -7757,6 +7757,65 @@ Files: `research/posts/harvest_x.py` (`pull(since=...)`),
 
 No migration.
 
+## D71 — Every scheduled firing deleted the posts corpus's holding connections (2026-09-06)
+
+Found by `bitcap-reviewer` while reviewing D70, and unrelated to it. Present
+since the posts leg landed.
+
+`connect` is a wholesale delete-and-rebuild: the table is fully derived, so
+rebuilding it is the idempotency story. That makes the version tuple it is given
+load-bearing in a way `transform`'s is not — `transform` scopes its delete by
+version and is additive, so a missing version there costs nothing, while a
+missing version in `connect` means those rows are deleted and never rebuilt.
+
+`app/cli.py` passes all three versions, in both `cmd_load` and `cmd_connect`.
+`app/pipeline/worker.py`'s `_etl` passed two. The posts version reached the
+`transform` call on the line directly above and never reached the join below it;
+the comment alongside still read "it runs once across **both**", written when
+there were two corpora and never revisited when the third arrived.
+
+### Measured on the local Postgres, before the fix
+
+```
+connections total:                     1,265
+  from v9 (announcements):             1,135
+  from p1 (papers):                      130
+  from t1 (posts):                         0
+t1 classifications carrying tags:    44 mechanism, 4 category
+```
+
+The zero is the fault, caught mid-act. Run 41 was a `bitcap-db load`, which
+passes all three versions, at 09:08. Run 42 was a scheduled worker firing at
+09:09. The second deleted what the first had built and rebuilt it from two
+corpora, and nothing failed.
+
+**The two paths disagreed, and both looked healthy.** A `bitcap-db rebuild`
+restored the posts routes; the next firing removed them again. So the database a
+reviewer reproduces from committed artifacts and the database actually running in
+production differ by an entire corpus's worth of the connections table, with no
+alert, no failed source and no error. That is the same shape as D67, D69 and D70:
+a fact recorded in one place, the thing it describes in another.
+
+### The guard was pinning the bug
+
+`tests/test_papers_scoring.py` asserted the literal source text
+`run_connect(\n            session, (prompt_version, PAPER_PROMPT_VERSION)`.
+Its intent was sound and predates this — that the `--prompt` *flag* reaches the
+join rather than the module constant, which is a real bug that happened. But
+asserting it as a source string pinned the *arity* as a side effect, so adding
+the posts version turned the test red. The test failed on the correction and
+passed on the defect.
+
+Rewritten to assert the shape rather than the text: parse the tuple, require the
+flag, forbid the module constant, require every corpus constant. Verified to fail
+on the two-version tuple, fail on the module-constant regression it was
+originally written for, and pass only on the fix.
+
+**A test that goes red when you correct the thing it guards is worse than no
+test**, because it converts the fix into extra work and argues for the defect.
+Worth stating as a rule: pin behaviour, not source text. The three other
+`inspect.getsource` assertions in this suite have the same fragility and are
+left alone — noticing them is not licence to rewrite them.
 ## D70 — The classifier was dropping stated prices, and the scoring rule turns a missing tag into a zero (2026-09-06)
 
 Neil flagged a Gemini security launch scoring 6.7 as implausible. It wasn't the
