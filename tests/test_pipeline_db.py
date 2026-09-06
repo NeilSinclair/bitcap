@@ -299,7 +299,7 @@ class TestFailureLeavesTheDatabaseUsable:
         # Not `{}`: an operator must be able to see which stage died.
         assert set(run.stats) == {"refs", "articles", "paper_corpus", "posts_corpus",
                               "classifications", "paper_classifications",
-                              "post_classifications", "costs"}
+                              "post_classifications", "costs", "repo_verdicts"}
         assert "transform" not in run.stats
         s.close()
 

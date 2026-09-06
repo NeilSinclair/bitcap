@@ -22,7 +22,7 @@ from app.load_raw import PAPERS as PAPERS_CORPUS_FILE
 from app.load_raw import POSTS as POSTS_CORPUS_FILE
 from app.pipeline.registry import CORPUS_LABELS, PAPERS_CORPUS, POSTS_CORPUS
 from app.load_raw import (PAPER_SCORES_DIR, POST_SCORES_DIR, load_articles,
-                          load_classifications, load_costs)
+                          load_classifications, load_costs, load_repo_verdicts)
 from app.load_refs import load_refs
 from app.runs import tracked, watermarks
 from app.transform import transform
@@ -96,6 +96,12 @@ def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
             session, POST_PROMPT_VERSION, scores_dir=POST_SCORES_DIR, run_id=run.id,
             source_files=(POSTS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
+        # Before `transform`, because transform's relevance gate reads these and
+        # only these. Loaded from a committed artifact so a rebuild needs no API
+        # key: verdicts are the one derived thing here that cannot be recomputed
+        # from files, and without them the rebuilt database renders every
+        # off-topic release again (D65).
+        stats["repo_verdicts"] = load_repo_verdicts(session, run_id=run.id)
         # Once per version: `transform` scopes its delete by prompt_version, so
         # the two derivations are additive. `connect` is not -- it rebuilds the
         # whole table -- so it is called once, spanning both.

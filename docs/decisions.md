@@ -6826,3 +6826,323 @@ handles is stronger and, where it is not, says so. The cost is a fifth tier to
 keep in step across `config/people.yaml`, `config/validate.py` and
 `tests/test_people.py`, and one person whose employment is now openly marked
 unsettled rather than quietly asserted.
+
+---
+
+## D65 — Repositories are filtered on topic, inside the ranking, by the model that keeps `openai/codex` (2026-09-05)
+
+The releases leg watches repositories by star rank, and a star rank is a
+popularity order rather than a topic filter — so it faithfully surfaces each
+lab's best work in every field it works in. Measured against the live database:
+**35 of the 87 watched repositories are not language-model work**, and **33 of
+the 193 releases currently rendered in the 90-day window** come from them. They
+are not mis-scored, which is the whole difficulty: `alphafold3` averages 35.6 on
+the AI axis, third of all 87. Relevance is a different axis from quality, so no
+threshold on `score` or `ai_score` can separate them.
+
+### There is no repository list to edit, so the filter has to judge on sight
+
+`config/github_sources.yaml` names 8 orgs; `adapters.fetch_releases` ranks each
+org's repositories by stars and slices `[:releases_watch]`. Star ranks churn
+between firings, which is why **87 distinct repositories have accumulated
+against a nominal 80 slots** — `google-deepmind` alone contributed 28. A
+maintained exclusion list would therefore always be one firing behind. The
+verdict is bought once per repository and cached in `raw_llm_responses` under
+`repo:{org}/{name}` + `{prompt_version}:{model}`, the same table and the same
+contract duplicate adjudication uses.
+
+The model is in the cache key, which is one element more than dedupe records.
+It has to be: `UniqueConstraint(url, prompt_version)` means a version-only key
+would serve verdicts bought from a *different* model after `relevance.model`
+changes — and the bake-off below deliberately puts two candidates' verdicts in
+that table.
+
+### The gate sits inside the ranking, so a rejection promotes rather than shrinks
+
+`rank_repos.shortlist` walks the ranking and takes the first `releases_watch`
+repositories that pass, instead of filtering a slice that has already been
+taken. Dropping a physics simulator then pulls the next real repository up into
+the freed slot rather than leaving the leg watching nine things.
+
+That is worth having and not theoretical: xAI's `grok-prompts` (Grok's system
+prompts, 4,441 stars) and `grok-build` (its coding agent, 26,493 stars) both rank
+above repositories currently watched and neither is reached today. Measured, the
+filter would **drop 36 of the 87 watched repositories and admit 56 of the 96
+frontier ones**.
+
+`rank()` itself is untouched. The predicate is injected, so the module keeps the
+purity its docstring promises and `TestStarsAreTheOnlyRanking` never has to learn
+that a gate exists. The walk is lazy — `keep` is called only as far down as
+needed — because judging a whole listing to choose ten of it would be 395 calls
+for `facebookresearch` on every firing. `max_judged` bounds the cold start,
+since an org whose ranking is mostly off-topic has no natural stopping point.
+
+### What the review caught: one gate, two populations
+
+The first version had the derivation gate reading a cache that only the ranking
+walk ever filled. Those are not the same set, and the difference is not small.
+The walk stops at the tenth *passing* repository — 11 rows for `anthropics` —
+while the corpus holds releases from 87 repositories accumulated over many
+firings, 16 of them ranked beyond 30. Replayed against the committed artifacts,
+**31 of the 87 were never judged at all**, so their releases were re-derived on
+every firing for ever. `torax` and `habitat-lab` were among them: two of the
+repositories this entry's opening paragraph names as the reason the feature
+exists.
+
+Worse, it was invisible. The watermark reported `judged` and `excluded`, so a
+reader saw "11 judged, 4 excluded" with no way to tell a repository that was
+kept from one that was never asked about.
+
+So `_relevant_slice` now does two things with one verdict function: the lazy walk
+decides what to *watch*, and a sweep over the repositories already in the corpus
+gives the derivation gate the verdicts it needs. The sweep is bounded by the
+corpus, not by `max_judged` — it is 87 repositories once, about $0.06, and free
+afterwards, and capping it would reintroduce exactly the hole it closes.
+
+**And the cap counted cache hits.** `max_judged` exists to bound spend and
+wall-clock, and a cached verdict costs neither — but every row handed to the
+predicate consumed a slot, so after the first firing the walk still stopped 30
+rows down while going deeper was free. Measured: `facebookresearch` watched
+**3 repositories instead of 10, permanently**, which is the shrinking outcome the
+in-ranking design exists to prevent. The ceiling now counts provider calls only,
+so a warm walk runs as deep as it needs to and a cold one still stops.
+
+### A second gate was needed, because `transform` re-derives silver every firing
+
+Gating ingestion is forward-only, and the 33 off-topic releases already on the
+dashboard would have stayed exactly where they were. A one-off `DELETE` does not
+fix it either: `transform` reads **all** of `raw_articles` and upserts silver on
+every run, so deleted rows return on the next firing.
+
+So `transform` skips derivation for a release whose repository is judged
+off-topic, and removes the classification if one already exists. Bronze is never
+touched, which is what makes the whole thing reversible — correcting a verdict
+re-derives the article on the next run with no refetch and no backfill, and the
+releases cursor never has to be rewound.
+`tests/test_transform.py::TestTheRelevanceGate::test_flipping_a_verdict_back_re_derives_the_rows`
+is the pin.
+
+### The bake-off was decided on recall, and it was not close
+
+Both candidates over all 183 labelled repositories, using the production prompt,
+schema and rendering so what was measured is what ships:
+
+| | recall(relevant) | precision | watched | frontier | vendor SDK | cost | median |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `claude-haiku-4-5` | 0.692 | 0.988 | 0.750 | 0.647 | 0.765 | $0.208 | 2.0s |
+| **`gpt-5-mini`** | **0.875** | 0.981 | **0.942** | **0.824** | **0.863** | **$0.120** | 3.4s |
+
+**Recall is the deciding metric because the two errors are not symmetric.** A
+wrongly excluded repository stops producing articles, and nothing downstream can
+tell that apart from a repository that shipped nothing. A wrongly kept one costs
+one classification and is visible in the feed, where a human can see it.
+
+The summary statistics understate the gap. Haiku drops **`openai/codex`** — the
+repository D61's release-to-launch pairing actually runs on — along with
+`openai/harmony`, `openai/skills`, `openai/plugins`, `mistralai/workflows-starter-app`
+and `deepseek-ai/deepseek-harness`. The two candidates disagree on 29 of 183, and
+the disagreements concentrate almost entirely on labs' own tooling and
+domain repositories, which Haiku reads as applications built *with* a model
+rather than work *on* one.
+
+`gpt-5-mini` also costs less, which is a coincidence rather than the reason.
+Measured per call over the 183, from the cost log:
+
+| | median in | median out |
+|---|---:|---:|
+| `claude-haiku-4-5` | 882 | 48 |
+| `gpt-5-mini` | 705 | **193** |
+
+It is cheaper *despite* emitting four times the output, because the input rate
+difference dominates a prompt this shape. Worth stating precisely rather than as
+"~900 in, ~40 out": that is Haiku's profile, and anyone sizing a change to
+`r1.md` against it would under-budget gpt-5-mini's output by about five times, on
+the side that is priced at 8x its input.
+
+### The labels are a model's, and the error rate is measured rather than assumed
+
+Fable 5 labelled all 183 blind — 87 watched plus 96 **frontier** repositories
+drawn from ranks 11–30. The frontier cohort exists because the gate promotes:
+those are the repositories a freed slot actually reaches, none of them is in the
+corpus today, and measuring only the watched 87 would report accuracy on a
+population the filter no longer sees. Their figures are reported as a separate
+line and never folded into the headline.
+
+Fable is deliberately **not** one of the two candidates, for the reason
+`config/dedupe.yaml` records about its adjudicator: an eval whose labels come
+from a model under test is marking its own homework.
+
+The labelling was run twice and the first run superseded, because `label_v1.md`
+was edited while it was in flight — so those labels spanned two prompt texts
+while every record claimed one `prompt_version`. Both runs are committed
+(`repo_relevance_labels_run1.json` beside `repo_relevance_labels.json`), the way
+D59 kept `dedupe_labels_ordered.json`: the difference between the two files is
+the evidence, and a figure derived from a deleted run cannot be checked.
+
+| | agreement over the same 183 |
+|---|---|
+| `relevant` / `off_topic` | **182/183 = 0.995** |
+| category | **175/183 = 0.956** |
+
+**Say what this is, and what it is not.** It is agreement between a mixed-prompt
+run and a single-prompt run, so it bounds labeller variance *and* the effect of
+that one-word edit together and cannot separate them. It is not stability under
+a fixed prompt, which would need a third run nobody has paid for.
+
+Read that way it still says something useful. The binary verdict barely moves.
+The **category does**: eight rows changed category, and five of those moved
+between `agent_or_tooling` and `vendor_sdk` — the exact field the vendor-SDK
+slice above is sliced on. So that slice carries roughly 4% label noise under it,
+and the figure should not be read to three decimal places.
+
+### Vendor SDKs are kept, deliberately
+
+An SDK bump is thin, routine, frequent, and looks exactly like the noise this
+filter exists to remove. It is also where a new model identifier first appears in
+public — D61's pairing runs on those releases, and `openai/codex` naming GPT-6
+Astra is the case the feature was built for. A filter that tidied the SDKs away
+would read as an improvement and delete the evidence.
+
+The rule lives in the prompt, where it is measured, rather than in a denylist.
+
+### The verdicts are committed, because a rebuild cannot re-derive them
+
+`raw_llm_responses` is not an ops table, so `bitcap-db rebuild` drops it — and
+the derivation gate only ever *reads* the cache, never re-buys. A rebuilt
+database therefore came back with no verdicts at all, and the README's promise
+that a rebuild "needs no API key" and drops only what is "derived from files in
+the repo" stopped being true the moment verdicts existed: they are the one
+derived thing here that can only be re-bought.
+
+**Stated precisely, because the first draft of this paragraph overclaimed.**
+`drop_all` also drops `raw_articles`, and there is no committed releases corpus
+— `load_article_records` says so — so a rebuilt database holds *no release rows*
+and nothing off-topic can come back to the dashboard. What was actually broken is
+narrower: the rebuild silently re-bought 87 verdicts, and any firing against a
+rebuilt database ran the gate against an empty cache.
+
+Every other derived thing here is reproducible from a committed file. Verdicts
+now are too: `research/docs/repo_relevance_verdicts.json`, frozen from the
+bake-off run of the configured model (`bakeoff_repos.py --freeze`, not a second
+purchase) and replayed by `load_raw.load_repo_verdicts` before `transform`. It
+never overwrites a fresher verdict — the live cache wins — and it is keyed on the
+same `{version}:{model}`, with a test that fails if config moves to a model the
+artifact was not frozen for.
+
+**Reproduce it like this**, because the check is worth being able to repeat:
+`DATABASE_URL=sqlite:////tmp/probe.db uv run bitcap-db rebuild` with no API key
+set, then read the cache back — 183 rows under `r1:gpt-5-mini`, and
+`transform.off_topic_repos(session)` returns 76 repositories including `torax`,
+`habitat-lab` and `mujoco`, and excluding `openai/codex`, `faiss` and
+`deepseek-harness`. That is a statement about the *verdict set the gate would
+apply*; it is not a claim that releases disappeared from a rebuilt dashboard,
+which as noted above cannot happen because a rebuild leaves no release rows at
+all.
+
+### The gate fails open, and that is why it needs an alert
+
+The house convention is not to prefer the cheap outcome, it is to decline the
+destructive action when no answer came back. For duplicate adjudication the
+destructive action is merging; here it is exclusion, and the asymmetry above
+points at keeping what could not be judged.
+
+Failing open is silent by construction: a dead provider means every judgement
+fails, every repository is kept, the run succeeds, and the dashboard quietly
+refills with physics simulators. **This actually happened during development** —
+an import error inside `repo_relevance.prompt` made every verdict `None`, and the
+filter did nothing whatever while reporting a full watch list. It surfaced only
+because of an n=1 live run, not because anything reported it. Two consequences:
+`judge` returns the error as a third element rather than swallowing it, and
+`alerts.repo_filter_unavailable` fires when a source's judgements all fail,
+carrying the last error the way `source_down` carries one.
+
+Unlike the detector declined in `docs/handover-releases.md` §5, this one needs no
+calibration: "every judgement on this source failed" is unambiguous at any corpus
+size. A *partial* failure is deliberately not an alert.
+
+### What was rejected
+
+**A denylist of the 35 off-topic repositories.** The decision is a rule, and a
+rule belongs in the prompt where it can be measured. A list of 35 names becomes
+the de-facto spec and drifts from the prompt silently. An entry is worth adding
+only for a repository the eval shows the model getting wrong.
+
+**The `archived` flag.** Free and already fetched, and refused twice over: it is
+a liveness axis rather than a topic one, and `harvest_github.repos` already
+excludes archived repositories, so the field is dead on arrival.
+
+**`rank(keep=...)`.** Overloads a sort with a take and puts a defaulted-to-None
+LLM seam inside the one function `tests/test_rank_repos.py` exists to guard.
+
+**Adding `topics`/`language` to `rank_repos.row`.** Its docstring is explicit that
+it stays thin and does not grow fields for one consumer. They are merged in at
+the call site instead, from the listing that is already in hand.
+
+**Reporting the filter's spend through `FetchResult.cost_usd`.** That was the
+first version, and it satisfied the no-double-count rule while breaking
+CLAUDE.md's third non-negotiable: `run_sources.cost_usd` is a rolled-up float, so
+tokens were thrown away and "how much of this is input?" became unanswerable six
+months later. It also only ever ran on the adapter's success path, so a failure
+after the gate had already bought its verdicts lost the record of money that had
+left the card.
+
+Spend is now recorded with tokens at the call site, the way dedupe and drift
+record theirs. The second attempt then over-corrected — leaving `cost_usd` at
+zero also stopped `budget.spend` firing, so the one firing that could not see
+the money was the firing that spent it, and that is the firing which also
+backfills every newly promoted repository. Hence `metered_usd`: charged to the
+run's ceiling like any other spend, kept out of `run_sources` because its
+records are already in `raw_costs`. The two ceilings read different things, so
+this duplicates nothing.
+
+### Honest limits
+
+**The labels are a cross-model proxy, not ground truth.** `research/github/spotcheck_repos.py`
+writes a 20-repository blind sheet — 7 off-topic, 13 relevant, 7 vendor SDKs, 10
+frontier, and every low-confidence call — and **it has not been marked yet**.
+Until it is, every figure in this entry is agreement with Fable 5 rather than
+accuracy, and `gpt-5-mini` scoring higher may partly mean it resembles the
+labeller more than Haiku does. `[NEIL]`
+
+**The winner still gets three watched repositories wrong**, and they are
+judgement calls rather than blunders: `google-deepmind/chex` (generic JAX testing
+utilities), `anthropics/sandbox-runtime` (an OS sandbox built for coding agents)
+and `anthropics/healthcare` (no description at all). It also keeps
+`google-deepmind/alphagenome` and `facebookresearch/mmf`.
+
+**Two figures here are no longer re-derivable from the database.** "33 of the 193
+releases in the 90-day window" and "151 of 380 releases" were measured against
+the local Postgres on 2026-09-05, before another session reshaped it — the
+releases corpus and `raw_github_repos` are both empty there now, replaced by a
+`posts_corpus.json` corpus. Everything else in this entry reconciles from the
+committed artifacts (`repo_population.json`, `repo_relevance_labels.json`,
+`repo_relevance_bakeoff.json`), which is why those files are committed. The two
+release counts rest on a database state that no longer exists, and they are
+flagged rather than restated as if they could be checked.
+
+**The filter reduces noise, not cost, and raises spend before it lowers it.**
+Every promoted repository has no cursor and takes `releases_backfill: 5` on first
+sight; `releases_per_run: 20` is per-repository and does not bound that.
+`config/repo_signals.yaml` already records the same event once — the first
+releases firing ingested 380 documents against a $3 per-run ceiling. Staged
+rollout, and `relevance.enabled: false` stops it without a deploy.
+
+### Consequence
+
+`gpt-5-mini`, one call per repository at ~$0.00065, cached for ever; a warm
+re-run costs $0.00, verified live. **The filter** marks 36 of the 87 watched
+repositories off-topic, accounting for 151 of 380 releases, and admits 56 of the
+96 frontier ones in their place. (35 is the number *Fable* labelled off-topic —
+the two differ by `alphagenome`, and mixing a gold count with a model count in
+one sentence is how a Consequence section stops being checkable.)
+
+Files: `app/pipeline/repo_relevance.py` (new), `rank_repos.shortlist`,
+`adapters._relevant_slice` and its corpus sweep, the derivation gate in
+`app/transform.py`, `load_raw.load_repo_verdicts`,
+`alerts.repo_filter_unavailable`, the `relevance` block in
+`config/repo_signals.yaml` with its validator, `prompts/repo_relevance/{r1,label_v1}.md`,
+and three research scripts under `research/github/`. **67 new tests, 1,485 pass.**
+Spend **$8.37** — $8.04 of it the labelling, and half of *that* a discarded run.
+The bake-off itself, both candidates over 183 repositories, was $0.33.
+
+No migration: the verdict cache reuses `raw_llm_responses`.

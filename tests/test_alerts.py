@@ -776,3 +776,72 @@ class TestDedupeUnavailable:
 
         assert first[0].dedupe_key == second[0].dedupe_key
 
+
+class TestRepoFilterUnavailable:
+    """The relevance gate fails open, and this is the only thing that says so.
+
+    The silent failure: the provider is unreachable, every judgement fails,
+    every repository is kept, and the leg watches exactly the ungated star
+    ranking it watched before the filter existed. The run succeeds, the watch
+    list looks plausible, and the dashboard refills with physics simulators.
+    There is no exception to catch — failing open is the correct behaviour, and
+    this rule is the price of it.
+    """
+
+    def _state(self, session, source_id, relevance):
+        session.add(m.SourceState(leg="releases", source_id=source_id,
+                                  watermark={"cursors": {}, "relevance": relevance}))
+        session.flush()
+
+    def test_a_working_filter_raises_nothing(self, session):
+        self._state(session, "google-deepmind",
+                    {"judged": 12, "errors": 0, "excluded": [{"repo": "mujoco"}]})
+
+        assert alerts.repo_filter_unavailable(session, CONFIG, {}) == []
+
+    def test_every_judgement_failing_is_reported(self, session):
+        self._state(session, "google-deepmind", {"judged": 12, "errors": 12})
+
+        found = alerts.repo_filter_unavailable(session, CONFIG, {})
+
+        assert len(found) == 1
+        assert found[0].rule == "repo_filter_unavailable"
+        assert found[0].severity == alerts.WARNING
+        assert "google-deepmind" in found[0].subject
+
+    def test_a_partial_failure_is_not_an_alert(self, session):
+        """Some repositories failing is ordinary — a rate limit, one bad
+        response. Only the total failure means the gate did nothing at all, and
+        that is the case that needs no threshold to interpret."""
+        self._state(session, "openai", {"judged": 12, "errors": 3})
+
+        assert alerts.repo_filter_unavailable(session, CONFIG, {}) == []
+
+    def test_a_source_that_judged_nothing_is_not_an_alert(self, session):
+        """`enabled: false`, or a firing where every verdict was already
+        cached. Nothing failed, so nothing is wrong."""
+        self._state(session, "openai", {"judged": 0, "errors": 0})
+        session.add(m.SourceState(leg="releases", source_id="xai-org",
+                                  watermark={"cursors": {}}))
+        session.flush()
+
+        assert alerts.repo_filter_unavailable(session, CONFIG, {}) == []
+
+    def test_another_leg_is_never_read(self, session):
+        """`watermark` is leg-shaped. Only the releases leg carries a
+        `relevance` report, and reading one from elsewhere would alert on a
+        key that means something else."""
+        session.add(m.SourceState(leg="papers", source_id="openai",
+                                  watermark={"relevance": {"judged": 5, "errors": 5}}))
+        session.flush()
+
+        assert alerts.repo_filter_unavailable(session, CONFIG, {}) == []
+
+    def test_an_ongoing_outage_is_one_alert_not_one_a_night(self, session):
+        self._state(session, "openai", {"judged": 8, "errors": 8})
+
+        first = alerts.repo_filter_unavailable(session, CONFIG, {})
+        second = alerts.repo_filter_unavailable(session, CONFIG, {})
+
+        assert first[0].dedupe_key == second[0].dedupe_key
+

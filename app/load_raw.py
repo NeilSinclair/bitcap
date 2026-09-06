@@ -33,6 +33,9 @@ PAPER_SCORES_DIR = ROOT / "research" / "docs" / "paper_scores"
 POSTS = ROOT / "research" / "docs" / "posts_corpus.json"
 POST_SCORES_DIR = ROOT / "research" / "docs" / "post_scores"
 COSTS = ROOT / "research" / "docs" / "announcement_cost.json"
+# Repository relevance verdicts. Committed because they are the one derived
+# artifact here that a rebuild cannot recompute from files -- only re-buy.
+REPO_VERDICTS = ROOT / "research" / "docs" / "repo_relevance_verdicts.json"
 
 
 def content_hash(payload: dict) -> str:
@@ -180,6 +183,58 @@ def load_classifications(session: Session, prompt_version: str,
             counts["updated"] += 1
         else:
             counts["unchanged"] += 1
+    session.flush()
+    return counts
+
+
+def load_repo_verdicts(session: Session, path: Path = REPO_VERDICTS,
+                       run_id: int | None = None) -> dict:
+    """Replay the committed repository relevance verdicts into the cache.
+
+    `raw_llm_responses` is not an ops table, so `bitcap-db rebuild` drops it.
+    Every other derived thing in this repo survives that because it is rebuilt
+    from a committed artifact — but the relevance verdicts cannot be recomputed
+    from files, only re-bought from a provider. Without this, a fresh clone
+    starts with an empty cache and, because the derivation gate only ever
+    *reads* the cache, renders every off-topic release again while
+    `source_state` (which does survive) still reports them excluded.
+
+    That would also break the README's promise that a rebuild needs no API key.
+
+    Keyed on `(url, prompt_version)` like every other row in the table, so a
+    verdict already bought tonight is left alone rather than overwritten.
+
+    Args:
+        session: Open session; this function flushes, the caller commits.
+        path: The committed verdicts artifact.
+        run_id: pipeline_runs row to attribute inserts to.
+
+    Returns:
+        Counts: inserted / unchanged / malformed.
+    """
+    rows = json.loads(path.read_text()) if path.exists() else []
+    seen = set(session.execute(
+        select(m.RawLlmResponse.url, m.RawLlmResponse.prompt_version)
+        .where(m.RawLlmResponse.url.startswith("repo:"))
+    ).all())
+    counts = {"inserted": 0, "unchanged": 0, "malformed": 0}
+    for r in rows:
+        # A verdict without a repo, a version, or a real boolean cannot be
+        # stored as one. Counted rather than raised, so one bad row does not
+        # take down a load that is otherwise fine.
+        if not (r.get("repo") and r.get("prompt_version")) or not isinstance(
+                r.get("relevant"), bool):
+            counts["malformed"] += 1
+            continue
+        key = (f"repo:{r['repo']}", r["prompt_version"])
+        if key in seen:
+            counts["unchanged"] += 1
+            continue
+        seen.add(key)
+        session.add(m.RawLlmResponse(
+            url=key[0], prompt_version=key[1], load_run_id=run_id,
+            payload={"relevant": r["relevant"], "reason": r.get("reason", "")}))
+        counts["inserted"] += 1
     session.flush()
     return counts
 

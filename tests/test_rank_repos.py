@@ -140,3 +140,84 @@ class TestMirrorExclusion:
 
     def test_no_description_is_not_a_mirror(self):
         assert not is_mirror(None)
+
+
+class TestShortlist:
+    """The take that sits between the ranking and the releases fetch.
+
+    The silent failures here are all arithmetic on a list, which is the kind of
+    thing that looks obviously right in review and is wrong at run time: a gate
+    that shrinks the watch list instead of refilling it, a walk that judges the
+    whole listing every firing, and a cap that never lets the list fill at all.
+    None of them raises; each one quietly changes what the product watches.
+    """
+
+    def ranked(self, *names):
+        """Ranked rows in the shape `rank` returns, stars descending."""
+        return [{"org": "google-deepmind", "repo": n, "stars": 100 - i,
+                 "description": None, "age": "established", "created_at": None}
+                for i, n in enumerate(names)]
+
+    def test_a_rejected_repo_frees_its_slot_for_the_next_one(self):
+        """Why the gate sits inside the ranking rather than after the caller's
+        slice. Taking the top 2 and *then* dropping mujoco watches one
+        repository; dropping it here watches two."""
+        rows = self.ranked("mujoco", "gemma", "torax", "gpt-oss")
+        picked = rank_repos.shortlist(
+            rows, lambda r: r["repo"] not in {"mujoco", "torax"}, 2)
+        assert [r["repo"] for r in picked] == ["gemma", "gpt-oss"]
+
+    def test_only_the_repos_needed_to_fill_the_slots_are_judged(self):
+        """Laziness is the cost model, not an optimisation. Judging a whole
+        listing to choose ten of it is 395 calls for facebookresearch, every
+        firing, for an identical answer."""
+        seen = []
+        rows = self.ranked("a", "b", "c", "d", "e")
+        picked = rank_repos.shortlist(
+            rows, lambda r: seen.append(r["repo"]) or True, 2)
+        assert [r["repo"] for r in picked] == ["a", "b"]
+        assert seen == ["a", "b"], "judged past the point the slots were full"
+
+    def test_the_walk_stops_at_max_judged_when_the_slots_never_fill(self):
+        """An org whose ranking is mostly off-topic has no natural stopping
+        point. Without the cap, one firing walks the entire listing."""
+        seen = []
+        rows = self.ranked(*[f"r{i}" for i in range(50)])
+        picked = rank_repos.shortlist(
+            rows, lambda r: seen.append(r["repo"]) or False, 10,
+            stop=lambda: len(seen) >= 3)
+        assert picked == []
+        assert len(seen) == 3
+
+    def test_the_limit_stops_the_walk_even_when_the_cap_is_generous(self):
+        """The cap and the limit are separate ceilings. Only one of them is
+        normally reached, so a bug in the other is invisible."""
+        seen = []
+        rows = self.ranked(*[f"r{i}" for i in range(50)])
+        rank_repos.shortlist(rows, lambda r: seen.append(r["repo"]) or True, 4,
+                             stop=lambda: len(seen) >= 40)
+        assert len(seen) == 4
+
+    def test_shortlist_never_reorders(self):
+        """`TestStarsAreTheOnlyRanking` guards the sort one function upstream.
+        This guards the same property at the new seam: the gate must not become
+        a second sort key by promoting whatever it happens to accept first."""
+        rows = self.ranked("a", "b", "c", "d")
+        picked = rank_repos.shortlist(rows, lambda r: r["repo"] in {"d", "b"}, 2)
+        assert [r["repo"] for r in picked] == ["b", "d"]
+
+    def test_a_mirror_is_never_judged(self):
+        """Two free deterministic cuts already run in `rank`. Paying a model to
+        rule on a repository they removed is spend for an answer nobody reads."""
+        seen = []
+        rows = rank([
+            ("google-deepmind", "gemma", payload(500)),
+            ("google-deepmind", "mirrored", payload(900, description="Mirror of upstream")),
+        ], CFG, NOW)
+        rank_repos.shortlist(rows, lambda r: seen.append(r["repo"]) or True, 5)
+        assert "mirrored" not in seen
+
+    def test_an_empty_ranking_takes_nothing_and_judges_nothing(self):
+        seen = []
+        assert rank_repos.shortlist([], lambda r: seen.append(r) or True, 5) == []
+        assert seen == []

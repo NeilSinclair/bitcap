@@ -138,3 +138,52 @@ def rank(repos: list[tuple[str, str, dict]], cfg: dict,
             rows.append(r)
     rows.sort(key=lambda r: (-r["stars"], r["repo"]))
     return rows
+
+
+def shortlist(rows: list[dict], keep, limit: int, stop=None) -> list[dict]:
+    """Walk the ranking and take the first `limit` rows `keep` accepts.
+
+    Separate from `rank` because ranking is a sort and this is a take. Keeping
+    them apart is what lets `rank` stay the pure function this module's
+    docstring promises: `keep` is injected, so the relevance gate can consult a
+    model and a session while nothing here knows that. It also means this walk
+    is tested with a lambda, and `TestStarsAreTheOnlyRanking` never has to learn
+    that a gate exists.
+
+    Order is never changed. A rejected repository frees its slot to the next one
+    down the ranking rather than shrinking the list -- that is the whole point
+    of gating here rather than after the caller's slice, because dropping a
+    physics simulator should promote whatever real repository sits behind it.
+
+    Laziness is not an optimisation, it is the cost model. `keep` is called only
+    as far down as needed to fill `limit`; judging a whole listing to choose ten
+    of it would be 395 calls for facebookresearch alone, every firing.
+
+    `stop` bounds the walk. Laziness bounds the *typical* case, but an org whose
+    ranking is mostly off-topic has no natural stopping point, and without a
+    ceiling one firing walks the entire listing. It is a callable rather than a
+    count because what needs bounding is *what the walk spends*, not how far it
+    looks: the caller's predicate answers most rows from a cache, and counting
+    those against the ceiling stopped the walk 30 rows down for ever even when
+    going deeper was free. That left `facebookresearch` watching three
+    repositories rather than ten, permanently, with no way to recover.
+    Stopping is a legitimate finding about an org, not a failure -- the caller
+    reports it rather than raising.
+
+    Args:
+        rows: Ranked rows from `rank`, in ranking order.
+        keep: Predicate called with one row; truthy keeps it.
+        limit: How many rows to take.
+        stop: Optional zero-argument callable checked before each row; a truthy
+            answer ends the walk. Omitted means walk until `limit` is filled.
+
+    Returns:
+        At most `limit` rows, in ranking order.
+    """
+    picked = []
+    for r in rows:
+        if len(picked) >= limit or (stop is not None and stop()):
+            break
+        if keep(r):
+            picked.append(r)
+    return picked

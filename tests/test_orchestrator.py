@@ -327,3 +327,67 @@ class TestMergeAnnouncements:
         ], path)
         dates = [a["date"] for a in json.loads(path.read_text())]
         assert dates == sorted(dates, reverse=True)
+
+
+class TestSpendReachesTheRunsCeiling:
+    """A source's spend has to be charged to the budget of the run that spent it.
+
+    `Budget.month_spent_before` is snapshotted at construction, so spend that
+    only reaches `raw_costs` shows up on the *next* firing — the one firing that
+    cannot see it is the one that spent it. That matters most on the first
+    firing after the relevance filter ships, which is also the firing that
+    backfills every newly promoted repository at `releases_backfill` apiece,
+    i.e. exactly when the per-run ceiling is doing work.
+
+    The two fields are charged the same way and stored differently, which is the
+    whole point: `cost_usd` also reaches `run_sources`, `metered_usd` does not,
+    because its records are already in `raw_costs` and `month_to_date` sums both
+    tables on the stated assumption that they never overlap.
+    """
+
+    class _Budget:
+        """The slice of `Budget` `run_source` touches."""
+
+        exhausted = False
+
+        def __init__(self):
+            self.spent = 0.0
+
+        def spend(self, usd):
+            self.spent += usd
+
+    def test_metered_spend_is_charged_to_the_budget(self, session, adapters):
+        from app.pipeline.orchestrator import run_source
+
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(metered_usd=0.02)
+        budget = self._Budget()
+
+        run_source(session, make_source(), budget=budget)
+
+        assert budget.spent == 0.02
+
+    def test_metered_spend_is_kept_out_of_run_sources(self, session, adapters):
+        """Charging the ceiling and writing the row are different questions.
+        Writing it here as well would double-count it against the month."""
+        from app.pipeline.orchestrator import run_source
+
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(metered_usd=0.02)
+        run = m.PipelineRun(kind="scheduled", stats={})
+        session.add(run)
+        session.flush()
+
+        run_source(session, make_source(), run_id=run.id)
+
+        row = session.scalars(select(m.RunSource)).one()
+        assert row.cost_usd == 0.0
+
+    def test_both_kinds_of_spend_are_charged(self, session, adapters):
+        from app.pipeline.orchestrator import run_source
+
+        adapters["anthropic"] = lambda s, st, sess=None: FetchResult(
+            cost_usd=0.01, metered_usd=0.02)
+        budget = self._Budget()
+
+        run_source(session, make_source(), budget=budget)
+
+        assert budget.spent == pytest.approx(0.03)

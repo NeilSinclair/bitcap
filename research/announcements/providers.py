@@ -24,6 +24,11 @@ from datetime import datetime, timezone
 # (developers.openai.com/api/docs/pricing): `gpt-5-mini` on 2026-09-02,
 # `text-embedding-3-small` on 2026-09-05.
 PRICES = {
+    # Fable 5 is the labeller for the repo relevance eval, never a production
+    # path — it is priced here because `_cost` raises KeyError *after* the
+    # provider has billed the call, so an unpriced model spends money and
+    # returns nothing.
+    "claude-fable-5": (10.00, 50.00),
     "claude-opus-5": (5.00, 25.00),
     "claude-sonnet-5": (2.00, 10.00),
     "claude-haiku-4-5-20251001": (1.00, 5.00),

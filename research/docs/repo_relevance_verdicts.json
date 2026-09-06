@@ -1,0 +1,1100 @@
+[
+  {
+    "repo": "anthropics/anthropic-cli",
+    "relevant": true,
+    "reason": "Description states it is \"The CLI for the Claude API\" and topics include anthropic, claude, api, cli, indicating it's an official client tool for a language-model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-csharp",
+    "relevant": true,
+    "reason": "Official C# SDK for Anthropic\u2019s language model APIs (repository description: 'Access to Anthropic's safety-first language model APIs in C#'), indicating it is a client library for a lab's models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-go",
+    "relevant": true,
+    "reason": "The repository description states it is a Go SDK providing access to Anthropic's language model APIs (an official client library for a lab's models).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-java",
+    "relevant": true,
+    "reason": "Organization 'anthropics' and the repository name 'anthropic-sdk-java' indicate this is an official Java/Kotlin SDK for Anthropic's model API (client library for their LLMs).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-python",
+    "relevant": true,
+    "reason": "Repository name 'anthropic-sdk-python' in the 'anthropics' organization indicates it is the official Python SDK/client for Anthropic's language model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-ruby",
+    "relevant": true,
+    "reason": "Repository name 'anthropic-sdk-ruby' under the 'anthropics' organisation indicates this is an official Ruby SDK/client for Anthropic's model API, and official client libraries for model APIs are on-topic.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/anthropic-sdk-typescript",
+    "relevant": true,
+    "reason": "Repository is Anthropic's official TypeScript SDK (repository name and description: 'Access to Anthropic's safety-first language model APIs in TypeScript'), i.e., a client library for a language-model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/buffa",
+    "relevant": false,
+    "reason": "Description and repo purpose: a Rust implementation of Protocol Buffers (serialization library) \u2014 a general-purpose protobuf crate, not specifically about language models, model code, training, inference, or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-demos",
+    "relevant": true,
+    "reason": "Repository is by Anthropic and named/descried as \"Claude Code SDK Demos\", indicating official SDK demos for the Claude model API (TypeScript demo code).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-python",
+    "relevant": true,
+    "reason": "Repository name 'claude-agent-sdk-python' in the 'anthropics' organization indicates an official Python SDK / client library for Anthropic's Claude agent API (a language-model client).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-agent-sdk-typescript",
+    "relevant": true,
+    "reason": "Repository name 'claude-agent-sdk-typescript' under organisation 'anthropics' indicates an official TypeScript SDK for Anthropic's Claude agent API (a client library for a frontier language model).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-code",
+    "relevant": true,
+    "reason": "Organisation 'anthropics' and repository name 'claude-code' plus the description stating it is an agentic coding tool using natural-language commands (Claude) indicate this is a tool built around a lab's language model/API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-code-action",
+    "relevant": true,
+    "reason": "Repository name 'claude-code-action' under the anthropics organisation (TypeScript) indicates it is tooling for Anthropic's Claude model \u2014 an official client/action for their LLM.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-code-security-review",
+    "relevant": true,
+    "reason": "Repository is an AI-powered GitHub Action that uses Claude (Anthropic's language model) to analyze code changes, per the description and the organisation name 'anthropics'.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-cookbooks",
+    "relevant": true,
+    "reason": "The repository is a collection of notebooks/recipes for using Claude \u2014 Anthropic's large language model \u2014 so it is worked-example client material for a lab's model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-desktop-buddy",
+    "relevant": false,
+    "reason": "The description says it is a Bluetooth API example for Claude Cowork & Claude Code Desktop (hardware/desktop integration), not model code, weights, client SDK or evaluation tooling for language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-for-legal",
+    "relevant": true,
+    "reason": "Repo is from Anthropic (organisation), named 'claude-for-legal' and described as 'A suite of plugins for legal workflows' \u2014 indicating official plugins/worked examples for the Claude model API (language-model tooling).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-plugins-community",
+    "relevant": true,
+    "reason": "Description states it is a community plugin marketplace for Anthropic's Claude Cowork and Claude Code (plugin tooling for a language-model platform).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-plugins-official",
+    "relevant": true,
+    "reason": "Repository is an official Anthropic-managed directory of Claude Code plugins for the Claude model (description mentions 'Official, Anthropic-managed directory of high quality Claude Code Plugins' and topics include 'claude-code').",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claude-quickstarts",
+    "relevant": true,
+    "reason": "The repository is an official Anthropic collection of Claude API quickstarts (description states it helps developers build applications using the Claude API), so it directly concerns a lab's language model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/claudes-c-compiler",
+    "relevant": false,
+    "reason": "Repository is a C compiler (claudes-c-compiler) written in Rust targeting x86/ARM/RISC-V and able to build a Linux kernel \u2014 it\u2019s a systems/compiler project, not about language models or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/commerce-agents",
+    "relevant": true,
+    "reason": "Repository is an Anthropic (Claude) reference blueprint for building shopping/merchant agents using Claude, i.e., worked examples for a lab's model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/courses",
+    "relevant": true,
+    "reason": "Organisation 'anthropics' with description 'Anthropic's educational courses' and Jupyter Notebook content indicates official worked-example/educational materials from an LLM lab about language models and related tooling/align\u00adment.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/cwc-long-running-agents",
+    "relevant": true,
+    "reason": "Repository name 'cwc-long-running-agents' together with the Anthropics organisation indicates this is about agent frameworks/long-running agents for language models (agent tooling is on-topic).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/cwc-workshops",
+    "relevant": false,
+    "reason": "No description or topics provided and the repo name 'cwc-workshops' (primary language TypeScript) suggests workshop/web code rather than model implementations, weights, training/inference tooling or an official model API client.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/defending-code-reference-harness",
+    "relevant": false,
+    "reason": "Repository description and topics indicate a security/threat-modeling and autonomous scanning harness for code (threat modeling, scanning, triage, patching), not language models or tooling for building/running/evaluating LLMs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/financial-services",
+    "relevant": false,
+    "reason": "Repository name 'financial-services' with no description or topics and org 'anthropics' (not clearly the LLM lab 'anthropic') gives no indication this is about language models, model APIs, or related tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/healthcare",
+    "relevant": false,
+    "reason": "Repository has no description or topics and the name 'healthcare' (with JavaScript language) indicates a domain-specific application rather than model implementations, tooling, or an official API client from the Anthropics organisation.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/jacobian-lens",
+    "relevant": true,
+    "reason": "Description says this is companion code for a 'global workspace interpretability' paper (an interpretability tool) and the repository is by Anthropics, a lab focused on language models, indicating it's LLM interpretability code.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/knowledge-work-plugins",
+    "relevant": true,
+    "reason": "Anthropic's open-source \"knowledge-work-plugins\" repo provides plugins for Claude Cowork (an official plugin ecosystem for their language model), per the repository description.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/launch-your-agent",
+    "relevant": true,
+    "reason": "Repository description references Claude Code skills and launching a Claude Managed Agent (Anthropic), indicating official worked examples/tooling for building and deploying language-model agents.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/life-sciences",
+    "relevant": true,
+    "reason": "Organisation 'anthropics' and the description states this is the Claude Code Marketplace for the Claude for Life Sciences launch (hosting marketplace.json for Anthropic's Claude model ecosystem).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/original_performance_takehome",
+    "relevant": false,
+    "reason": "The repository is described as \"Anthropic's original performance take-home\" (a hiring/assignment repo) rather than model weights, implementations, APIs, or tooling for building/serving language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/prompt-eng-interactive-tutorial",
+    "relevant": true,
+    "reason": "Repository description and name state it's Anthropic's interactive prompt engineering tutorial (Jupyter Notebook), which is directly about using and shaping large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/sandbox-runtime",
+    "relevant": false,
+    "reason": "The repository description states it is a lightweight OS-level sandboxing tool for enforcing filesystem and network restrictions on arbitrary processes, which is general system tooling not specific to language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "anthropics/skills",
+    "relevant": true,
+    "reason": "Organisation 'anthropics' and repository name/topics ('skills', 'agent-skills') plus description 'Public repository for Agent Skills' indicate this is an agent/skill framework for language-model-based agents.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/3FS",
+    "relevant": true,
+    "reason": "Description states it is a high-performance distributed file system designed to address challenges of AI training and inference workloads (topic: distributed-file-system), which is core infrastructure used to build and run large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepEP",
+    "relevant": true,
+    "reason": "The repo description calls it an \u201cefficient expert-parallel communication library\u201d (Cuda language and high stars), indicating infrastructure for Mixture-of-Experts expert-parallelism used in large language model training.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepGEMM",
+    "relevant": true,
+    "reason": "The repo description says \u201cDeepGEMM: clean and efficient BLAS kernel library on GPU\u201d and the code is in CUDA \u2014 GPU GEMM/BLAS kernels are fundamental high-performance building blocks used to train and run large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Coder",
+    "relevant": true,
+    "reason": "Repository name 'DeepSeek-Coder', organisation 'deepseek-ai', and the description 'Let the Code Write Itself' indicate this is an AI code-generation/coding-assistant project (a language-model-related tool).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Coder-V2",
+    "relevant": true,
+    "reason": "Repository name 'DeepSeek-Coder-V2' and description 'Breaking the Barrier of Closed-Source Models in Code Intelligence' indicate this is a code-focused language model/LLM implementation.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-Math-V2",
+    "relevant": true,
+    "reason": "Repository name 'DeepSeek-Math-V2' under the deepseek-ai org, Python language and high star count indicate an AI/math-focused project (likely a dataset or model for math reasoning used with language models).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-OCR",
+    "relevant": false,
+    "reason": "The repository name DeepSeek-OCR and description referencing 'Optical' indicate it's an OCR/computer-vision project (text extraction from images), not a language-model or LM-infrastructure project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-OCR-2",
+    "relevant": false,
+    "reason": "Repository name 'DeepSeek-OCR-2' and description 'Visual Causal Flow' indicate an OCR/visual computer-vision project rather than language models, model APIs, or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-V3.2-Exp",
+    "relevant": true,
+    "reason": "Repository name 'DeepSeek-V3.2-Exp' under the AI-focused org 'deepseek-ai' and the Python language indicate this is an AI model/experiment (likely a model or retrieval system) even though the description is missing.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DeepSpec",
+    "relevant": true,
+    "reason": "The repository description states it is a \"full-stack codebase for training and evaluating speculative decoding algorithms,\" which is directly about model inference/decoding for language models (Python codebase).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/DualPipe",
+    "relevant": true,
+    "reason": "The repo implements a bidirectional pipeline parallelism algorithm for computation\u2013communication overlap in DeepSeek V3/R1 training, i.e. distributed training infrastructure for large model training (pipeline parallelism).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/Engram",
+    "relevant": true,
+    "reason": "Repository title and description explicitly state it introduces a conditional memory / scalable lookup method for large language models, indicating it is about LLM architectures and tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/FlashMLA",
+    "relevant": true,
+    "reason": "Repository description 'Efficient Multi-head Latent Attention Kernels' indicates it implements attention/transformer kernels (multi-head attention), which are core components of language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/LPLB",
+    "relevant": true,
+    "reason": "Repository description states it is an expert-parallel load balancer for MoE (Mixture-of-Experts) models, which is infrastructure directly for training/serving large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/TileKernels",
+    "relevant": false,
+    "reason": "The description labels it as \u201cA kernel library written in tilelang,\u201d indicating low-level compute/kernel code rather than language-model implementations, APIs, or evaluation/tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-agent",
+    "relevant": true,
+    "reason": "Repository name \u201cawesome-deepseek-agent\u201d under organisation deepseek-ai indicates a curated list about an agent framework for AI/LLMs, and agent frameworks for language models are on-topic.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-coder",
+    "relevant": false,
+    "reason": "The repository is an \u201cawesome\u201d curated list (description: \u201cA curated list of open-source projects related to DeepSeek Coder\u201d) with no evidence in the name, org, or description that it contains model weights, implementations, APIs, or other LLM-specific tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/awesome-deepseek-integration",
+    "relevant": true,
+    "reason": "Repository description states 'Integrate the DeepSeek API into popular software', indicating it provides integrations/clients for a model API (official API integrations for a lab).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "deepseek-ai/deepseek-harness",
+    "relevant": true,
+    "reason": "Topics include \"ai-agents\" and \"dsh-plugin\" and the description \"DeepSeek Harness: Everything is a Plugin\" indicates this is an agent/plugin framework for connecting to or orchestrating language-model based agents.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/AugLy",
+    "relevant": false,
+    "reason": "The repo is a general multimodal data augmentation library (description: 'A data augmentations library for audio, image, text, and video') and is not specifically about language models, model implementations, training/inference tooling, or LM APIs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/ImageBind",
+    "relevant": false,
+    "reason": "Repository name \u2018ImageBind\u2019 and description \u2018One Embedding Space to Bind Them All\u2019 indicate a multimodal/image-centric embedding project (computer vision/audio multimodal research) rather than language-models or tooling for LLMs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/Kats",
+    "relevant": false,
+    "reason": "The repository description states it is a toolkit for time series analysis (change point detection, anomalies, forecasting), which is about temporal data analysis rather than language models or tooling for building/serving/evaluating LLMs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/ReAgent",
+    "relevant": false,
+    "reason": "The repository is a reinforcement-learning/decision-making platform (ReAgent) for contextual bandits and RL, per its description, not a language-model or LLM infrastructure project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/SlowFast",
+    "relevant": false,
+    "reason": "Repository description states it is a PySlowFast video understanding codebase for reproducing state-of-the-art video models (computer-vision/video domain), not language models or related tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/audiocraft",
+    "relevant": false,
+    "reason": "The repository is focused on audio/music generation and processing (EnCodec compressor/tokenizer and MusicGen music-generation LM), not on language models or LM infrastructure for text.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/co-tracker",
+    "relevant": false,
+    "reason": "Description and topics indicate this is a computer-vision point-tracking/optical-flow model for videos (CoTracker: 'tracking any point (pixel) on a video'), not about language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/detectron2",
+    "relevant": false,
+    "reason": "Repository description states it is a platform for object detection, segmentation and other visual recognition tasks (computer vision), not language models or tooling for them.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/dinov2",
+    "relevant": false,
+    "reason": "Repository description: 'PyTorch code and models for the DINOv2 self-supervised learning method' \u2014 DINOv2 is a computer-vision representation model, so this is CV-focused and not about language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/dinov3",
+    "relevant": false,
+    "reason": "Description: 'Reference PyTorch implementation and models for DINOv3' \u2014 DINO is a self-supervised computer-vision model family, so this repo is about vision models not language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/dlrm",
+    "relevant": false,
+    "reason": "Description states this is \"An implementation of a deep learning recommendation model (DLRM)\", indicating the repo is about recommender systems rather than language models or related tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/fairchem",
+    "relevant": false,
+    "reason": "Description states it is FAIR Chemistry's library of machine learning methods for chemistry, indicating a chemistry-focused ML project rather than language models or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/faiss",
+    "relevant": true,
+    "reason": "Description states it is a library for efficient similarity search and clustering of dense vectors (vector search/retrieval), which is core infrastructure for embedding-based retrieval used with language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/flow_matching",
+    "relevant": false,
+    "reason": "Description shows this is a PyTorch library for flow-matching generative-model algorithms with examples for both text and image modalities\u2014a general generative modeling toolkit rather than a repository focused on language-model implementations, APIs or LM-specific tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/habitat-lab",
+    "relevant": false,
+    "reason": "Description and topics indicate this is an embodied AI / simulator and reinforcement-learning library for robotics and vision (habitat-lab), not language models or LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/habitat-sim",
+    "relevant": false,
+    "reason": "Description and topics indicate a 3D simulator for Embodied AI / robotics and computer vision (habitat-sim), not language models, model code, or LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/map-anything",
+    "relevant": false,
+    "reason": "The project is about 3D reconstruction/computer vision (description: 'Universal Feed-Forward Metric 3D Reconstruction' and topics like 3d-reconstruction, depth-estimation, multi-view-stereo).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/mmf",
+    "relevant": true,
+    "reason": "Repository description and topics show it's a FAIR modular framework for vision-and-language multimodal research (captioning, dialog, pretrained-models, vqa/textvqa), so it concerns language-capable models and their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/moco",
+    "relevant": false,
+    "reason": "Description identifies this as a PyTorch implementation of MoCo (momentum contrast) from the linked paper, which is a self-supervised computer-vision representation learning method, not a language-model or LM tooling repository.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/nevergrad",
+    "relevant": false,
+    "reason": "Description says it is a general Python toolbox for gradient-free optimization (generic optimizer library), not specific to language models or model training/inference tools.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/omnilingual-asr",
+    "relevant": false,
+    "reason": "Repository name and description state it is an open-source multilingual ASR (speech recognition) project for 1600+ languages, i.e., speech/audio domain not language-model infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/pytorch3d",
+    "relevant": false,
+    "reason": "The repository description states it is \"FAIR's library of reusable components for deep learning with 3D data\" (PyTorch3D), indicating a 3D computer-vision/graphics focus rather than language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/pytorchvideo",
+    "relevant": false,
+    "reason": "The repository is described as \"A deep learning library for video understanding research,\" indicating a video/vision focus rather than language models, tokenizers, model weights, or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/sam-3d-objects",
+    "relevant": false,
+    "reason": "Repository name and description 'SAM 3D Objects' (by facebookresearch) indicate a Segment Anything / 3D computer-vision project rather than language-model code, tooling, or APIs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/sam-audio",
+    "relevant": false,
+    "reason": "The repo hosts code and checkpoints for Meta's Segment Anything Audio model and inference/example notebooks focused on audio segmentation (speech/audio), not language models or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/sam2",
+    "relevant": false,
+    "reason": "The description says it provides code, checkpoints and example notebooks for Meta's Segment Anything Model 2, which is an image segmentation (computer vision) model rather than a language model.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/sam3",
+    "relevant": false,
+    "reason": "The description and repo name indicate it\u2019s Meta\u2019s Segment Anything Model 3 (an image segmentation / computer-vision model) with code, checkpoints and notebooks for inference and finetuning, not a language-model or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/sapiens",
+    "relevant": false,
+    "reason": "The repo description says \u201cHigh-resolution models for human tasks,\u201d indicating 3D/vision/graphics human models (facebookresearch/sapiens) rather than language-model code or tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/seamless_communication",
+    "relevant": false,
+    "reason": "The repository description states it provides foundational models for speech and text translation (speech/audio and translation), which is an audio/translation domain rather than language-model infrastructure or LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/vggt",
+    "relevant": false,
+    "reason": "Repository title and description ('Visual Geometry Grounded Transformer', CVPR 2025 Best Paper) indicate this is computer-vision research (visual geometry/transformer) rather than language-model tooling, weights, or APIs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/vggt-omega",
+    "relevant": false,
+    "reason": "The repo title/description labels it as a CVPR 2026 oral paper ('VGGT Omega'), indicating a computer-vision model (VGG/VGGT) rather than language-model tooling or weights.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/vjepa2",
+    "relevant": false,
+    "reason": "Repository description states \u201cVJEPA2 self-supervised learning from video\u201d (video representation learning / computer vision), not language models or tooling for them.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "facebookresearch/xformers",
+    "relevant": true,
+    "reason": "Description states it provides hackable and optimized Transformers building blocks (attention/transformer kernels) for composable model construction, indicating it's a transformer/LLM infrastructure library from facebookresearch.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/acme",
+    "relevant": false,
+    "reason": "Repository description and topics show it is a reinforcement-learning library (\"A library of reinforcement learning components and agents\", topics: agents, reinforcement-learning), not about language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/alphafold",
+    "relevant": false,
+    "reason": "The repo is AlphaFold (repo name 'alphafold' and description 'Open source code for AlphaFold 2'), which is protein structure prediction/bioinformatics rather than language-model or LM-infrastructure work.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/alphafold3",
+    "relevant": false,
+    "reason": "The repository is AlphaFold 3 (description: \"AlphaFold 3 inference pipeline\" and repo name alphafold3 under google-deepmind), which is a protein structure prediction system rather than a language-model or LM infrastructure project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/alphagenome",
+    "relevant": true,
+    "reason": "The repository description explicitly says it provides programmatic access to DeepMind's AlphaGenome model, making it an official client/API for a lab model.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/alphagenome_research",
+    "relevant": false,
+    "reason": "The repository description is 'Research code accompanying AlphaGenome' (AlphaGenome is a genomics project, not about language models or LM infrastructure).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/alphageometry",
+    "relevant": false,
+    "reason": "Repository name 'alphageometry' (under google-deepmind) and lack of description/topics indicate a geometry-focused project rather than language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/android_env",
+    "relevant": false,
+    "reason": "Description and topics show this is for reinforcement-learning research on Android devices (android, reinforcement-learning), not language models or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/bsuite",
+    "relevant": false,
+    "reason": "The repository description states it is a collection of experiments for evaluating reinforcement learning (RL) agents (bsuite), so its focus is RL rather than language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/chex",
+    "relevant": false,
+    "reason": "Repository 'chex' (google-deepmind) is a general-purpose JAX utility/testing library for neural-network development (Python) and has no LLM-related topics or description, so it's not specific to language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/concordia",
+    "relevant": true,
+    "reason": "The repository description and topics indicate it's a Python library for generative social simulation / generative agents (description: \"A library for generative social simulation\"; topics: \"generative-agents\", \"agent-based-simulation\").",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/deepmind-research",
+    "relevant": false,
+    "reason": "Repository description says it contains implementations and illustrative code to accompany DeepMind publications (a broad grab-bag), not specifically about language models or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/dm-haiku",
+    "relevant": true,
+    "reason": "Description and topics show it is a JAX-based neural network library (description: \"JAX-based neural network library\" and topics: jax, deep-learning, neural-networks), i.e. general deep-learning infrastructure used to implement and train language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/dm_control",
+    "relevant": false,
+    "reason": "The repository is DeepMind's dm_control physics-based simulation and reinforcement-learning environments (MuJoCo) as shown by the description and topics: 'physics-simulation', 'reinforcement-learning', 'mujoco'.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/formal-conjectures",
+    "relevant": false,
+    "reason": "The description and topics say it is a collection of formalized conjectures in Lean (formal-mathematics, lean4) \u2014 a formal mathematics repository, not about language models, their training, serving, or tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/gemma",
+    "relevant": true,
+    "reason": "The repository description states 'Gemma open-weight LLM library' from Google DeepMind, indicating it provides model implementations/weights and tooling for large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/materials_discovery",
+    "relevant": false,
+    "reason": "Repository name 'materials_discovery' (with Jupyter Notebook language and no topics/description) indicates a materials-science/materials-discovery project, not language-models or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mctx",
+    "relevant": false,
+    "reason": "Repository description and topics (Monte Carlo tree search in JAX; jax, monte-carlo-tree-search, reinforcement-learning) indicate an RL algorithm library rather than language-model code, weights, APIs, or tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/meltingpot",
+    "relevant": false,
+    "reason": "Repository is a suite of multi-agent reinforcement-learning test scenarios (description and topic 'multiagent-reinforcement-learning'), not about language models or tooling for them.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mujoco",
+    "relevant": false,
+    "reason": "Repository is a physics simulator (description: \"A general purpose physics simulator\") focused on mujoco/physics/robotics (topics include mujoco, physics, robotics), not language models or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mujoco_menagerie",
+    "relevant": false,
+    "reason": "The repo is a collection of MuJoCo physics/robotics models (description and topics 'mujoco, robotics'), not about language models, training/serving, or LM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mujoco_mpc",
+    "relevant": false,
+    "reason": "The repo is focused on MuJoCo-based model-predictive/control and motor-control (topics: model-predictive-control, mpc, mujoco; description: real-time behaviour synthesis with MuJoCo), i.e. robotics/control rather than language models or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mujoco_playground",
+    "relevant": false,
+    "reason": "Description states it's a library for GPU-accelerated robot learning and sim-to-real transfer (robotics/control), not language models or tooling for them.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/mujoco_warp",
+    "relevant": false,
+    "reason": "Repository description and topics indicate it is a GPU-optimized MuJoCo physics simulator for NVIDIA hardware (mujoco-warp, nvidia-warp), a robotics/physics tool rather than language-model tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/open_spiel",
+    "relevant": false,
+    "reason": "Repository is a collection of environments and algorithms for general reinforcement learning and search/planning in games (description and topics: reinforcement-learning, games, multiagent), not language-model or LLM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/open_x_embodiment",
+    "relevant": false,
+    "reason": "The repository name 'open_x_embodiment' (suggesting embodied/robotics work) and its Jupyter Notebook content indicate an embodiment/robotics project rather than language-model code, APIs, or tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/optax",
+    "relevant": true,
+    "reason": "Repository description states 'Optax is a gradient processing and optimization library for JAX' and topics include 'machine-learning, optimization', indicating it's general optimizer infrastructure commonly used to train large language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/rlax",
+    "relevant": false,
+    "reason": "The repository name 'rlax' under google-deepmind (with no description) indicates a reinforcement-learning library (RLax) in Python, not a language-model or LLM tooling project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/science-skills",
+    "relevant": true,
+    "reason": "The repository description explicitly targets agentic scientific workflows, grounding and token efficiency and provides 'skills' that integrate LLM-facing tools/databases (AlphaGenome, UniProt, etc.), indicating agent/tooling for language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/sonnet",
+    "relevant": true,
+    "reason": "Description and topics indicate this is a TensorFlow-based neural network library (deep-learning, neural-networks, tensorflow) \u2014 general DL infrastructure often used to build and run language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/synthid-text",
+    "relevant": true,
+    "reason": "Repository name 'synthid-text' under google-deepmind (Python) indicates a DeepMind project for synthetic-text identification/watermarking, which is directly related to language-model outputs and watermarking tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/tapnet",
+    "relevant": false,
+    "reason": "The repository is about visual point tracking and computer vision (description: \u201cTracking Any Point (TAP)\u201d; topics: computer-vision, point-tracking, robotics, benchmark), not language models or LLM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/torax",
+    "relevant": false,
+    "reason": "Description states \"Tokamak transport simulation in JAX\", indicating a plasma/physics simulation project rather than anything to do with language models, model weights, or LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/tree",
+    "relevant": false,
+    "reason": "Description says it is a library for working with nested data structures (a general-purpose utility), not a language-model, model implementation, training/inference tooling, or evaluation related to LLMs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "google-deepmind/weathernext",
+    "relevant": false,
+    "reason": "Repository focuses on weather forecasting (repo name \u201cweathernext\u201d and topics: weather, weather-forecast) under google-deepmind, not on language models or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/PurpleLlama",
+    "relevant": true,
+    "reason": "The repository description states it is a set of tools to assess and improve LLM security (red\u2011teaming/evaluation tooling for language models), indicating it directly targets language models and their evaluation.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/llama-api-python",
+    "relevant": true,
+    "reason": "Description states it is \"The official Python library for the Llama API\" under the meta-llama organization, i.e. an official client for a model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/llama-api-typescript",
+    "relevant": true,
+    "reason": "The repository description states it is \"The official Typescript library for the Llama API\" under the meta-llama organization, indicating it is an official client library for a lab's model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/llama-cookbook",
+    "relevant": true,
+    "reason": "Repository is an official Llama cookbook for building with Llama models (description mentions Inference, Fine-Tuning, RAG) and topics include llama, llama2, llm, finetuning, vllm and langchain indicating language-model tooling and examples.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/llama-models",
+    "relevant": true,
+    "reason": "Repository name and description explicitly reference utilities for Llama language models (organisation meta-llama and description: \"Utilities intended for use with Llama models\").",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/llama-verifications",
+    "relevant": true,
+    "reason": "Repository description states it contains functional tests and benchmarks for verifying Llama model providers (Llama language models), indicating it's directly about language-model validation.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/prompt-ops",
+    "relevant": true,
+    "reason": "Repository description states it is \"An open-source tool for LLM prompt optimization,\" indicating prompt tooling for language models (Python repo under meta-llama).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "meta-llama/synthetic-data-kit",
+    "relevant": true,
+    "reason": "Meta-llama repository described as a \u201cTool for generating high quality Synthetic datasets\u201d with topics including \u201cllm\u201d and \u201cgeneration\u201d, indicating it supports dataset generation for language-model work.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/FLTEval",
+    "relevant": true,
+    "reason": "Repository description states it is a Docker-only evaluation harness for FLT Lean tasks (an evaluation harness), hosted under the Mistral AI org which builds language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/LeanstralSafeVerify",
+    "relevant": true,
+    "reason": "Repository description states it is Leanstral's fork of SafeVerify used for code agent training and as part of our evaluation stack (evidence: repo description; language: Lean).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/cli",
+    "relevant": true,
+    "reason": "Repository is in the official 'mistralai' organization and named 'cli', indicating it is likely the official command-line client for Mistral AI's model API (client CLIs are in-scope).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/client-python",
+    "relevant": true,
+    "reason": "Repository is the official Python client library for Mistral AI platform (org=mistralai and description), i.e. an API client for a language-model lab.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/client-ts",
+    "relevant": true,
+    "reason": "Description and repository name indicate this is the official TypeScript client library for Mistral AI's platform (mistralai/client-ts), which is an official client for a model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/cookbook",
+    "relevant": true,
+    "reason": "Repository is under the Mistral AI organization and named 'cookbook' in Jupyter Notebook format, indicating an official worked-example collection for using Mistral's language models/APIs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/mistral-common",
+    "relevant": true,
+    "reason": "Description states it is the official inference library for pre-processing of Mistral models (repo name mistral-common under organisation mistralai), indicating model/tokenisation and inference tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/mistral-evals",
+    "relevant": true,
+    "reason": "Repository is from the MistralAI organisation and named 'mistral-evals' (Python), indicating an official evaluation harness/tooling for Mistral language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/mistral-vibe",
+    "relevant": true,
+    "reason": "Repository is from the Mistral AI org and is described as a \u201cMinimal CLI coding agent by Mistral\u201d (Python CLI agent for interacting with models), indicating it\u2019s an official agent/CLI tool for language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/platform-docs-public",
+    "relevant": true,
+    "reason": "Repository is in the MistralAI organisation and named 'platform-docs-public' with MDX content, indicating it is official public platform/API documentation for Mistral's model platform.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/search-starter-app",
+    "relevant": false,
+    "reason": "The repository description says it\u2019s a generic \u201cBase template to build, manage and improve search engines\u201d with no mention of language models, retrieval/embeddings, or model APIs (and topics are empty), so it\u2019s not clearly about LLMs or their tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "mistralai/workflows-starter-app",
+    "relevant": true,
+    "reason": "Repository under mistralai named 'workflows-starter-app' with description 'Base template to register and invoke workflows' indicates an official starter app for registering/invoking model workflows for Mistral's API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/CLIP",
+    "relevant": false,
+    "reason": "Repository is CLIP, a contrastive language\u2013image pretraining model whose description says \u2018Predict the most relevant text snippet given an image\u2019 indicating the project is image-centered multimodal vision work rather than a language-model or LLM infrastructure project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/chatkit-js",
+    "relevant": true,
+    "reason": "Repository is in the openai organization and named chatkit-js (TypeScript), indicating it is OpenAI's official JavaScript/TypeScript client for the ChatKit chat API for their language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/codex",
+    "relevant": true,
+    "reason": "Repository is by openai, named 'codex', and described as a 'Lightweight coding agent that runs in your terminal', indicating it's an agent built around a language model/API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/codex-plugin-cc",
+    "relevant": true,
+    "reason": "Repository openai/codex-plugin-cc (description: \"Use Codex from Claude Code to review code or delegate tasks\") is an OpenAI plugin directly about using the Codex language model.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/codex-security",
+    "relevant": true,
+    "reason": "Repository is OpenAI's official Codex Security CLI and TypeScript SDK (description and topics show it is an official OpenAI SDK/CLI for a Codex-based security service), which is tooling connecting to an LLM product.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/evals",
+    "relevant": true,
+    "reason": "The repo description states it is \"a framework for evaluating LLMs and LLM systems, and an open-source registry of benchmarks\" (openai/evals, Python), which directly targets LLM evaluation tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/gpt-oss",
+    "relevant": true,
+    "reason": "The repository description explicitly states it contains open-weight language models (gpt-oss-120b and gpt-oss-20b) by OpenAI, indicating model implementations/weights.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/harmony",
+    "relevant": true,
+    "reason": "Description states it is a Rust renderer for the 'harmony' response format to be used with gpt-oss, i.e. tooling for language-model responses/formatting.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-agents-js",
+    "relevant": true,
+    "reason": "The repo is an official OpenAI TypeScript framework for multi-agent and voice agents (description) with topics including agents, openai, openai-api and realtime-api, indicating agent tooling built around language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-agents-python",
+    "relevant": true,
+    "reason": "Repository is an OpenAI Python framework for multi-agent workflows with topics including \"agents\" and \"llm\" and description indicating agent/LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-cookbook",
+    "relevant": true,
+    "reason": "Official OpenAI 'openai-cookbook' repository providing examples and guides for using the OpenAI API (topics include gpt-4, chatgpt, openai-api; description: 'Examples and guides for using the OpenAI API').",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-cs-agents-demo",
+    "relevant": true,
+    "reason": "Repository is an official OpenAI demo implementing a customer-service use case with the OpenAI Agents SDK, an agent framework for language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-dotnet",
+    "relevant": true,
+    "reason": "Repository is the official .NET (C#) client library for the OpenAI API (description: 'The official .NET library for the OpenAI API' and topics include openai, csharp, dotnet), so it's an official client for a lab's model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-fm",
+    "relevant": false,
+    "reason": "Description and repo name indicate this is a TypeScript demo for the OpenAI Speech API (audio/speech domain), not code for language models, model weights, training or LM-serving tools.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-go",
+    "relevant": true,
+    "reason": "Description states it is \"The official Go library for the OpenAI API\" (official client library for a lab's model API).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-java",
+    "relevant": true,
+    "reason": "Repository is the official Java library for the OpenAI API (repository description and organization 'openai'), i.e. an official client for a model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-node",
+    "relevant": true,
+    "reason": "Official OpenAI organization repository described as the \"Official JavaScript / TypeScript library for the OpenAI API\" (topics: openai, nodejs, typescript), i.e. the lab's client library for its models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-openapi",
+    "relevant": true,
+    "reason": "Repository is the official OpenAI OpenAPI specification for the OpenAI API (description: \"OpenAPI specification for the OpenAI API\", organisation: openai, topics: openai-api), which is an API definition for a lab's models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-python",
+    "relevant": true,
+    "reason": "Description states it is \u201cThe official Python library for the OpenAI API\u201d (organization: openai, repo name: openai-python, topics: openai, python).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-quickstart-node",
+    "relevant": true,
+    "reason": "Official OpenAI repository (organisation: openai) that is a Node.js example app / quickstart tutorial for the OpenAI API (description and topics: openai, openai-api), which is an official worked-example client for a lab's model API.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/openai-realtime-agents",
+    "relevant": true,
+    "reason": "Official OpenAI TypeScript demo implementing agentic patterns on the Realtime API (description states it's built on the Realtime API), i.e., developer tooling/agent framework for language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/parameter-golf",
+    "relevant": true,
+    "reason": "Repository description states it's about training language models (\u201cTrain the smallest LM you can that fits in 16MB\u201d), indicating model development and training code relevant to LMs.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/plugins",
+    "relevant": true,
+    "reason": "Repository is OpenAI's official 'plugins' project (name 'plugins', description 'OpenAI Plugins', org 'openai'), which provides official plugin/connectivity code for their language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/privacy-filter",
+    "relevant": true,
+    "reason": "The repository is from OpenAI and its description is 'OpenAI Privacy Filter', indicating it is privacy/alignment tooling for filtering model outputs (relevant to LLM safety and deployment).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/procgen",
+    "relevant": false,
+    "reason": "The repository is the Procgen Benchmark for procedurally-generated game-like Gym environments (description and name), which targets reinforcement-learning game environments rather than language-model tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/simple-evals",
+    "relevant": true,
+    "reason": "Organisation 'openai' and the repository name 'simple-evals' (Python) indicate this is an evaluation/benchmarking harness for language models, which matches the product's scope (benchmarks/evaluation of LLMs).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/skills",
+    "relevant": true,
+    "reason": "Repository title and description ('Skills Catalog for Codex') under the openai organisation indicate this is an official worked-example/skills collection for Codex, a language model.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/swarm",
+    "relevant": true,
+    "reason": "Repo is an OpenAI-maintained Python educational framework for multi-agent orchestration (an agent framework, which is on-topic as tooling for language-model-based agents).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/symphony",
+    "relevant": true,
+    "reason": "Repository description mentions \"autonomous implementation runs\" and \"coding agents,\" indicating it's an agent/orchestration framework for language-model-driven coding agents (developer tooling for LLMs).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/tart",
+    "relevant": false,
+    "reason": "Repository description and topics show it's a Swift tool for running macOS/Linux VMs on Apple Silicon for CI/automation (virtualization, macos, ci), not a language-model or LLM infrastructure project.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/tiktoken",
+    "relevant": true,
+    "reason": "The repository is a fast BPE tokenizer for use with OpenAI's language models (description: \"tiktoken is a fast BPE tokeniser for use with OpenAI's models\"), indicating it's directly part of the language-model tooling stack.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/transformer-debugger",
+    "relevant": true,
+    "reason": "Repository name 'transformer-debugger' in the openai organization (plus Python language and high stars) indicates a tool for inspecting/debugging transformer models, i.e. model interpretability/analysis relevant to language models.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "openai/whisper",
+    "relevant": false,
+    "reason": "The repo is OpenAI's Whisper automatic speech recognition project (description: \"Robust Speech Recognition via Large-Scale Weak Supervision\"), so it focuses on speech/audio rather than language-model tooling or LM infrastructure.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/grok-build",
+    "relevant": true,
+    "reason": "Repository is SpaceXAI's coding agent harness and TUI (description) under the xai-org organisation, i.e. an agent/framework tool for a lab's language-model product.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/grok-build-plugin-cc",
+    "relevant": true,
+    "reason": "Description states it is a Claude Code plugin that integrates/delegates tasks to the Grok Build CLI, i.e. tooling that connects to and extends a language-model-based assistant.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/grok-prompts",
+    "relevant": true,
+    "reason": "Description states it contains prompts for the Grok chat assistant and the @grok bot (xai-org), i.e. prompt tooling for a language model.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/plugin-marketplace",
+    "relevant": true,
+    "reason": "Organization 'xai-org' and the repository description 'Official xAI plugin marketplace' indicate this is an official plugin marketplace tied to a frontier LLM lab's model ecosystem.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/x-algorithm",
+    "relevant": false,
+    "reason": "The repository description says it is the \"Algorithm powering the For You feed on X\" (a recommendation/ranking system), which is about social feed ranking rather than language models, model code, or LLM tooling.",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/xai-cookbook",
+    "relevant": true,
+    "reason": "The repository description states it is a collection of examples for xAI's Grok APIs, which are the lab's language-model APIs (official worked examples for a model).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/xai-proto",
+    "relevant": true,
+    "reason": "The repository contains public protobuf definitions for xAI's gRPC APIs, i.e. an official API definition for a lab's models (per the description).",
+    "prompt_version": "r1:gpt-5-mini"
+  },
+  {
+    "repo": "xai-org/xai-sdk-python",
+    "relevant": true,
+    "reason": "Repository description states this is the official Python SDK for the xAI API (an official client library for a lab's model API).",
+    "prompt_version": "r1:gpt-5-mini"
+  }
+]

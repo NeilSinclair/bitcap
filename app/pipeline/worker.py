@@ -52,7 +52,7 @@ from app.cli import PAPER_PROMPT_VERSION, POST_PROMPT_VERSION, PROMPT_VERSION
 from app.connect import connect as run_connect
 from app.db import ensure_schema, get_engine, get_session, load_env
 from app.load_raw import (PAPER_SCORES_DIR, load_article_records, load_articles,
-                          load_classifications, load_costs)
+                          load_classifications, load_costs, load_repo_verdicts)
 from app.load_refs import load_refs
 from app.pipeline import alerts as alerts_mod
 from app.pipeline import dedupe as dedupe_mod
@@ -236,6 +236,10 @@ def _etl(session: Session, run: m.PipelineRun, prompt_version: str, stats: dict)
             session, POST_PROMPT_VERSION, scores_dir=POST_SCORES_DIR, run_id=run.id,
             source_files=(POSTS_CORPUS,))
         stats["costs"] = costs = load_costs(session, run_id=run.id)
+        # Before `transform`, whose relevance gate reads these. A live firing
+        # normally has them already; this is what makes a rebuilt database
+        # agree with one that has been running (D65).
+        stats["repo_verdicts"] = load_repo_verdicts(session, run_id=run.id)
         # Once per version: `transform` scopes its delete by prompt_version, so
         # the derivations are additive. `connect` rebuilds the whole table, so
         # it runs once across both -- calling it per version would leave only
