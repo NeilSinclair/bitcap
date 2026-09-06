@@ -8254,3 +8254,75 @@ docstring says why — "swallowed and unreported is how `drift_unavailable`'s
 outage went unnoticed for days (D45)". The digest page repeated the swallow
 without the reporting half. Catching an exception to protect a surface is
 correct; discarding it is a decision to make the next failure undiagnosable.
+
+## D76 — The posts leg goes nightly, because the reason it could not was removed a day earlier (2026-09-06)
+
+`cadence.posts: 7 → 1`. The X posts leg now runs on every scheduled firing,
+like every other leg except GitHub.
+
+**The old cadence was a cost control standing in for a missing feature.** Its
+comment argued that "a daily firing would multiply the bill sevenfold", and
+against the code as it then stood that was correct: `fetch_posts` wrote
+`source_state.watermark["max_published"]` on every firing and never read it
+back, so each firing bought the entire 90-day window regardless of how recently
+the last one had run. Cost was a function of *how often* the leg ran and not of
+how much was new. With that shape, 7 was the only defensible number.
+
+D69 made the leg incremental — the stored mark is passed to X as `start_time`,
+X bills per post *returned*, and `start_time` is applied server-side. A firing
+now buys the days since the last one. That severed cost from cadence, and the
+sevenfold argument went with it. Nothing else changed; the number was simply
+never revisited after the thing it was compensating for was fixed.
+
+**What nightly actually costs**, from the one measured pull (`docs/cost.md`,
+2026-09-05: 473 posts billed across a 90-day window, ~5.3 a day, $0.005 each):
+
+| | firings/wk | days bought each | posts/wk | $/wk |
+|---|---:|---:|---:|---:|
+| weekly (old) | 1 | 7 + 1 overlap | ~42 | ~$0.21 |
+| nightly (new) | 7 | 1 + 1 overlap | ~74 | ~$0.37 |
+
+~$0.16 a week — under a euro a month — to take the worst-case lag on a post
+from seven days to one. Classification does not move at all: the overlap day's
+posts are already in `raw_articles` and are dropped on the URL match before any
+model sees them, so the same posts are classified, just sooner.
+
+**The overlap is why it is 1.75x rather than 1x, and it is deliberate.** The
+mark is a date, not an instant, because `to_record` stores `created_at[:10]`. So
+every firing re-reads the day it stopped on. Seven firings re-read seven days;
+one firing re-reads one. An exact instant would remove that 0.75x and silently
+drop any post published later on the same day as the last one stored — a hole
+nothing downstream could detect, traded for fifteen cents a week.
+
+**This is now the second number that depends on the watermark being read, and
+they live in different files.** Nothing in `config/pipeline.yaml` reaches
+`fetch_posts` and nothing in `fetch_posts` mentions the cadence. Remove the read
+and the corpus stays correct, nothing fails, nothing alerts, and the bill goes
+from ~$0.37 a week to ~$16.60 — seven full-window pulls instead of one.
+`TestANightlyPostsCadenceRestsOnTheWatermark` pins the pairing: one test asserts
+the shipped cadence is 1, the other asserts the stored mark reaches the provider
+as `start_time`. Mutation-checked by replacing `since=_post_since(mark)` with
+`since=None`, which turns the second red.
+
+**What this does not do.** Posts still cannot raise a content alert —
+`alerts.content_mute_prompt_versions` holds `t1` and `t2`, which is an
+independent guard and a separate decision (D69 declined to take it). A nightly
+posts leg means the noisiest corpus in the system is refreshed nightly into the
+dashboard and the digest; it does not mean anyone gets paged about it.
+
+**Also in this change, and unrelated except by surface: the run picker could not
+name two of its own legs.** `releases` and `posts` had no entry in the
+frontend's `LEG_LABEL` and none in the API's `_LEG_NOTES`, so they rendered as
+lowercase `releases` and `posts` beside `Announcements` and `Papers`, with a
+blank line where every other leg carries a one-line description. The checkboxes
+worked. The two newest and least self-explanatory legs were simply the two with
+nothing explaining them — which is the failure mode config-not-code is supposed
+to prevent, arriving one layer up: a leg is *declared* in `registry.LEGS`, and
+described in two other files that adding one does not touch.
+
+Fixed by adding both, and by asserting the coverage from `LEGS` itself rather
+than from a list someone remembers to extend — the same approach
+`TestEveryRouteIsGated` already takes to the route table. Three tests: every leg
+the API offers has a non-empty note; every leg has a label in the picker; and no
+label is lowercase, which catches the case where the raw id is copied in as the
+"fix". All three mutation-checked against the state they replaced.

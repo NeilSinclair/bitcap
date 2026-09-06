@@ -28,10 +28,15 @@ const PHASE_LABEL = {
   etl: "Rebuilding scores and connections",
 };
 
+// Display names. A leg missing from here falls back to its raw id, which is
+// lowercase and reads as a bug next to the others -- `releases` and `posts`
+// shipped that way. Kept in step with LEGS by `tests/test_api_pipeline.py`.
 const LEG_LABEL = {
   announcements: "Announcements",
   papers: "Papers",
   github: "GitHub",
+  releases: "Releases",
+  posts: "Posts",
   drift: "Drift check",
 };
 

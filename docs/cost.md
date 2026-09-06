@@ -612,9 +612,18 @@ document, which is exactly why the deterministic prefilter runs first. Without
 it the 235 dropped posts would have added ~$2.60 to confirm that "check our
 model out!" is not an investment signal.
 
-**Leg total: $5.35.** Recurring cost at the configured weekly cadence is the
-pull plus classification only — the handle resolution and the rate probe are
-manual steps re-run when the register changes, not per firing.
+**Leg total: $5.35.** Recurring cost is the pull plus classification only — the
+handle resolution and the rate probe are manual steps re-run when the register
+changes, not per firing.
+
+**The cadence this was measured under is no longer the one that ships.** It was
+weekly then and is nightly now (D76), which is affordable only because the leg
+became incremental in between (D69). Sized from the numbers above — 473 posts
+across 90 days, ~5.3 a day at $0.005 — a nightly firing buys one new day plus
+the one-day overlap the date-granular mark re-reads: ~$0.37 a week against
+~$0.21 weekly. **Not yet invoiced**, for the reason given further down: this
+database has no `source_state` row for the leg, so the first live firing still
+reads the full window and the steady state starts from the second.
 
 **Running total across all workflows: ~$23.55.**
 ---

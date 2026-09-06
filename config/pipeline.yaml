@@ -84,11 +84,38 @@ cadence:
   github: 3
   releases: 1        # a release is news the day it ships, and the cursor makes
                      # a firing with nothing new cost one API call per repo
-  posts: 7           # weekly. Every firing costs real money at X's per-post
-                     # rate whether or not anyone posted, and the measured
-                     # corpus is ~2.6 original posts a day across 27 handles --
-                     # so a daily firing would multiply the bill sevenfold to
-                     # shorten the lag on a slow-moving feed.
+  # NIGHTLY, was weekly (7). The old comment argued that a daily firing would
+  # "multiply the bill sevenfold", and at the time it was right: `fetch_posts`
+  # wrote a watermark every firing and never read it, so every firing re-bought
+  # the entire 90-day window no matter how often it ran. Cadence was the only
+  # thing holding that cost down, so it had to be 7.
+  #
+  # D69 made the leg incremental -- the stored `max_published` is passed to X as
+  # `start_time`, and X bills per post *returned*, applied server-side. A firing
+  # now buys the days since the last one, not the window. That severs cost from
+  # cadence and the sevenfold argument with it.
+  #
+  # What a daily firing actually costs, from the measured pull (docs/cost.md,
+  # 2026-09-05: 473 posts billed over 90 days = ~5.3/day at $0.005):
+  #
+  #   weekly   1 firing  x (7 days + 1 overlap) x 5.3 x $0.005  = ~$0.21/wk
+  #   nightly  7 firings x (1 day  + 1 overlap) x 5.3 x $0.005  = ~$0.37/wk
+  #
+  # ~$0.16 a week, ~$0.70 a month, to cut the worst-case lag on a post from 7
+  # days to 1. Classification is unchanged: the overlap day's posts are already
+  # in `raw_articles` and dedupe by URL before any model sees them.
+  #
+  # The overlap is why nightly is 1.75x and not 1x. The mark is a DATE, not an
+  # instant, so each firing re-reads the day it stopped on -- deliberately, to
+  # avoid dropping posts published later on that day. Seven firings re-read
+  # seven days; one firing re-reads one.
+  #
+  # THIS NUMBER IS NOW LOAD-BEARING ON THAT WATERMARK. If the mark stops being
+  # read, nightly re-buys the full 90-day window every night: ~473 posts x
+  # $0.005 x 7 = ~$16.60 a week. `TestANightlyPostsCadenceRestsOnTheWatermark`
+  # (tests/test_adapters.py) pins both halves and fails if the read is removed
+  # while this is 1.
+  posts: 1
   drift: 1
 
 alerts:

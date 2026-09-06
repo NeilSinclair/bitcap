@@ -19,6 +19,8 @@ The silent failures this suite exists to catch:
 from __future__ import annotations
 
 import os
+import re
+from pathlib import Path
 
 import pytest
 from fastapi import FastAPI
@@ -139,6 +141,53 @@ class TestTheGateOnPipelineRoutes:
         assert {leg["id"] for leg in response.json()} == {
             "announcements", "papers", "github", "releases", "posts", "drift"
         }
+
+
+class TestEveryLegIsPresentableInTheUI:
+    """A leg the operator cannot read is a leg they will not tick.
+
+    `releases` and `posts` shipped into the run picker with no display name and
+    no description: the frontend falls back to the raw id, so they rendered as
+    lowercase `releases` and `posts` beside `Announcements` and `Papers`, with
+    the note line blank. Nothing failed -- the checkboxes worked -- and the two
+    newest, least obvious legs were the two with nothing explaining them.
+
+    The cause is that a leg is declared in `registry.LEGS` and described in two
+    other files, and neither of those is reached by adding one. So the coverage
+    is asserted from `LEGS` itself rather than from a list somebody remembers to
+    extend, exactly as `TestEveryRouteIsGated` walks the route table.
+    """
+
+    ROOT = Path(__file__).parent.parent
+
+    def _labels(self) -> str:
+        source = (self.ROOT / "frontend" / "app" / "pipeline" / "page.js").read_text(
+            encoding="utf-8")
+        return source.split("const LEG_LABEL = {", 1)[1].split("};", 1)[0]
+
+    def test_every_leg_the_api_offers_has_a_description(self, client, token):
+        rows = client.get("/api/pipeline/legs", headers=bearer(token)).json()
+        missing = [r["id"] for r in rows if not (r.get("note") or "").strip()]
+        assert missing == [], (
+            f"{missing} render with a blank description under the checkbox")
+
+    def test_every_leg_has_a_display_name_in_the_run_picker(self):
+        """Read from the frontend source, as `tests/test_digest.py` does: the
+        fallback is `LEG_LABEL[id] || id`, so a missing entry is invisible to
+        every server-side check and shows up only as a lowercase word."""
+        from app.pipeline.registry import LEGS
+
+        labels = self._labels()
+        missing = [leg for leg in (*LEGS, "drift") if f"{leg}:" not in labels]
+        assert missing == [], (
+            f"{missing} fall back to their raw lowercase id in the run picker")
+
+    def test_the_names_are_capitalised_like_their_neighbours(self):
+        """The fallback's tell. A label that is not capitalised is either a raw
+        id leaking through or a new one typed to match the bug."""
+        names = re.findall(r':\s*"([^"]+)"', self._labels())
+        assert names, "LEG_LABEL parsed empty; the test is reading the wrong thing"
+        assert [n for n in names if not n[0].isupper()] == []
 
 
 class TestStartingARun:
