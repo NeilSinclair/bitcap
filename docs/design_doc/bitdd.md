@@ -31,7 +31,9 @@ There are separate scoring prompts for the sources. The announcements (articles)
 
 All sources are re-scored when a prompt relevant to that source type changes.
 
-Most of what is collected scores zero: 348 of 447 announcements and releases, 33 of 47 papers and 210 of 238 X posts. That is the filter doing its job rather than a gap in the data.
+Most of what is collected scores zero: 348 of 447 announcements and releases, 33 of 47 papers and 210 of 238 X posts. This is not on accident as the purpose of the pipeline is remove noise. 
+
+Although different sources are not weighted differently, X posts generally score lower, in part because they often lack the evidence needed for a confident label from the model. However, a post with real signal still reaches the top: the highest scoring item anywhere in the system is a single post from OpenAI's Mark Chen committing to 4+ GW of NVIDIA capacity, which had no press release behind it.
 
 ## Sources
 
