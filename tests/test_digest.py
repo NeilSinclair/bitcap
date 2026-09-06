@@ -1298,6 +1298,56 @@ class TestEverySurfaceReadsTheSameCorpora:
             "separate decision D69 deliberately did not take")
 
 
+class TestTheRegisterTabIsGoneFromEveryPage:
+    """Withdrawn from the navigation because the data under it was wrong.
+
+    The tab is removed rather than the page, so nothing else breaks and the
+    decision is reversible. That makes this the kind of change that comes back
+    by accident: every page carries its own copy of the nav, so restoring one
+    link restores the tab for the page a reader happens to be on and no other,
+    and nothing in the build or the render tests would notice.
+
+    Asserted across every page rather than the four that had it, so a NEW page
+    copying an old nav is covered the day it lands.
+
+    **The page and `/api/register` still exist and are still reachable by URL.**
+    That is deliberate and recorded here so it is not mistaken for an oversight:
+    withdrawing a link is not deleting a feature.
+    """
+
+    FRONTEND = Path(__file__).parent.parent / "frontend" / "app"
+
+    def test_no_page_links_to_the_register(self):
+        offenders = [
+            p.relative_to(self.FRONTEND).as_posix()
+            for p in self.FRONTEND.rglob("*.js")
+            if 'href="/register/"' in p.read_text(encoding="utf-8")
+        ]
+        assert offenders == [], f"the Register tab is back on {offenders}"
+
+    def test_the_remaining_tabs_are_the_same_on_every_page(self):
+        """The nav is copied per page, so removing one entry four times is four
+        chances to leave one behind. This reads the actual set on each page and
+        requires them identical -- which is what a reader moving between pages
+        experiences, and what a partial edit breaks."""
+        import re
+
+        navs = {}
+        for page in self.FRONTEND.rglob("page.js"):
+            source = page.read_text(encoding="utf-8")
+            hrefs = re.findall(r'className="btn btn-ghost" href="([^"]+)"', source)
+            if hrefs:
+                navs[page.relative_to(self.FRONTEND).as_posix()] = set(hrefs)
+
+        assert navs, "no navigation found; the test is reading the wrong thing"
+        # Each page omits its own link, so compare the union rather than each set.
+        everything = set().union(*navs.values())
+        assert "/register/" not in everything
+        for name, hrefs in navs.items():
+            missing = everything - hrefs - {f"/{name.rsplit('/', 1)[0]}/", "/"}
+            assert not missing, f"{name} is missing nav entries {missing}"
+
+
 class TestTheDigestPageOpensOnTheLiveWindow:
     """The landing view is the rolling week, not the newest published edition.
 
