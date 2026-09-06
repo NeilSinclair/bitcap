@@ -113,15 +113,24 @@ function TheCut({ stats, windowStart, windowEnd }) {
 // One event. Never one connection: an article that fires against fourteen
 // holdings is one thing that happened, and rendering it fourteen times is the
 // noise this page exists to remove.
+// The `card` class is what makes a card look clickable: it carries
+// `cursor: pointer`, a transition and the hover highlight the dashboard's rows
+// have had all along. Wiring the click without it (D72) produced a card that
+// opened when clicked and gave no sign it would — reported, fairly, as "nothing
+// happens when I mouse over them, like the cards do on the dashboard".
+//
+// Applied ONLY when `onOpen` is set. The class promises a click unconditionally,
+// so putting it on a card whose document has left the corpus would be the
+// opposite mistake.
 function InvestmentItem({ item, onOpen }) {
   const h = item.holdings || { named: [], more: 0, total: 0 };
   return (
     <article
+      className={onOpen ? "card" : undefined}
       onClick={onOpen || undefined}
       style={{
         border: "1px solid var(--border)", background: "var(--bg-2)",
         padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
-        cursor: onOpen ? "pointer" : "default",
       }}
     >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
@@ -182,14 +191,23 @@ function InvestmentItem({ item, onOpen }) {
   );
 }
 
+// The `card` class is what makes a card look clickable: it carries
+// `cursor: pointer`, a transition and the hover highlight the dashboard's rows
+// have had all along. Wiring the click without it (D72) produced a card that
+// opened when clicked and gave no sign it would — reported, fairly, as "nothing
+// happens when I mouse over them, like the cards do on the dashboard".
+//
+// Applied ONLY when `onOpen` is set. The class promises a click unconditionally,
+// so putting it on a card whose document has left the corpus would be the
+// opposite mistake.
 function AiItem({ item, onOpen }) {
   return (
     <article
+      className={onOpen ? "card" : undefined}
       onClick={onOpen || undefined}
       style={{
         border: "1px solid var(--border)", background: "var(--bg-2)",
         padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12,
-        cursor: onOpen ? "pointer" : "default",
       }}
     >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>

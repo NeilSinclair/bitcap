@@ -8218,6 +8218,28 @@ The fetch stays tolerant and stops being silent: the reason is captured and the
 page renders a line saying the cards will not open and everything else is
 unaffected. Four tests pin it, two of which go red against the old catch.
 
+**And that was not the reported fault.** With the banner shipped, the answer
+came back "no banner, and nothing happens when I mouse over them, like the cards
+do on the dashboard" — which located it exactly. The dashboard's rows have
+carried `className="card"` since they were written: the class holds
+`cursor: pointer`, a 120ms transition and `.card:hover { border-color:
+var(--muted); background: var(--bg-3); }`. D72 made the Alerts cards open a
+detail panel and left them a bare `<article>` with inline styles and no class.
+They opened when clicked and gave no sign they would.
+
+So the cards were working the whole time. Behaviour with no affordance is
+indistinguishable from no behaviour, and worse than leaving them plainly inert:
+before D72 nothing suggested a card was interactive, so nothing was missing.
+The class is applied only when `onOpen` is set — it promises a click
+unconditionally, so a card whose document has left the corpus must not wear it.
+
+Two lessons, and the second is the one worth keeping. The first is that adding
+an interaction means adding its affordance. The second is diagnostic: three
+rounds of measurement said the system was healthy — 643 rows, every item
+resolving, both smoke tests green — because every check ran on the side of the
+browser where the fault was not. The question that resolved it was asking the
+person looking at the screen what they actually saw.
+
 **The first version of one of those tests read the prose instead of the code.**
 It asserted the old silent catch was absent from the file — and failed, against
 the comment that quotes it while explaining why it was removed. An accurate

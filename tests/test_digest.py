@@ -1042,3 +1042,32 @@ class TestAlertsSaysWhenItCannotOpenACard:
         # The items list is gated on `loading`/`items.length`, never on corpus.
         assert "items.length ? (" in source
         assert "corpus.length ? (" not in source
+
+    def test_a_clickable_card_looks_clickable(self):
+        """D75. Behaviour without affordance reads as a broken feature.
+
+        The dashboard's rows have carried `className="card"` all along — the
+        class holds `cursor: pointer`, a transition, and the hover highlight in
+        globals.css. D72 made the Alerts cards open a panel and left them a bare
+        `<article>` with inline styles, so they opened when clicked and gave no
+        sign they would. Reported as "nothing happens when I mouse over them,
+        like the cards do on the dashboard", which is exactly right.
+
+        Conditional on `onOpen`, and that is not decoration: the class promises
+        a click unconditionally, so a card whose document has left the corpus
+        must not wear it.
+        """
+        code = self._code("digest", "page.js")
+        assert code.count('className={onOpen ? "card" : undefined}') == 2, (
+            "both card types must take the shared card class, and only when "
+            "they actually open")
+        # The class supplies the cursor; an inline one would fight it and mask
+        # a missing class.
+        assert 'cursor: onOpen ? "pointer" : "default"' not in code
+
+    def test_the_card_class_still_carries_the_hover_state(self):
+        """The other half of the pair: the class has to be worth applying."""
+        css = (self.FRONTEND / "globals.css").read_text(encoding="utf-8")
+        assert ".card:hover" in css
+        block = css[css.index(".card:hover"):]
+        assert "border-color" in block[:120] and "background" in block[:120]
