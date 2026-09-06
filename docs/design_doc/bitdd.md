@@ -102,21 +102,13 @@ The data is also processed in a medallion archicture. The Bronze layer is update
 
 ### Production concerns
 
-The pipeline runs unattended overnight, so a few things were built in to make it fail in a way I could see rather than silently.
+The pipeline runs unattended overnight, so it is built to fail in a way I can see.
 
-- Fetches retry four times with exponential backoff, capped at 120 seconds. If a server asks for a longer wait, that is honoured up to the same cap.
+- Fetches retry four times with exponential backoff and are rate limited per host, with arXiv's three second guideline set in config rather than in code. Each source keeps its own watermark and failure count, so one source breaking does not reset or block the others.
 
-- Rate limits are per host and live in one config file. arXiv asks for one request every three seconds and enforces it with 429s, so that is what it gets. Everything else is one a second. Keeping the limits in one place is deliberate, because five harvesters were each polite on their own and were not polite in aggregate.
+- Re-runs are safe and cheap. The work list is whatever the current prompt version has not scored yet, read from the database, so a second run in the same night does nothing. Cost ceilings per run and per month stop further calls and finish with what they have rather than failing and discarding an ingest that already happened. Only one run can happen at a time, enforced by the database rather than a flag.
 
-- Run state is persisted per source. Each one keeps a watermark of how far it got and a count of consecutive failures. A source that fails keeps its old watermark rather than resetting, so the next run picks up where it stopped instead of starting again.
-
-- Re-runs are idempotent. The work list is articles the current prompt version has not seen, which is a database query and not a file scan, so running the pipeline twice in a night costs nothing the second time.
-
-- There are cost ceilings per run and per month. When a run hits the ceiling it stops making calls, finishes with what it has and reports the rest as skipped_for_budget. It does not fail the run and throw away the ingest that already happened.
-
-- System alerts are separate from content alerts. A content alert says the pipeline found something. A system alert says the pipeline itself is broken, for example a source failing three scheduled runs in a row, or gold set agreement dropping below 0.80. These are different problems and the reader should not have to work out which one they are looking at.
-
-- Only one run can happen at a time, enforced by the database rather than by a flag. The nightly cron and the manual trigger in the app are separate processes on separate containers, so nothing in-process could see both.
+- System alerts are kept separate from content alerts. A content alert says the pipeline found something, a system alert says the pipeline itself is broken, for example a source failing three runs in a row or gold set agreement dropping below 0.80.
 
 ### System Health
 
