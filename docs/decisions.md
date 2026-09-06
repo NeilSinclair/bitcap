@@ -8186,3 +8186,71 @@ The residual, unfixed: a worker that dies between `etl` and `dedupe` leaves them
 empty until 03:00 the next day. The run records `failed`, so it is visible, and
 the next firing self-heals. Closing that would need one transaction spanning both
 phases, which is a larger change than this one and is not being made in passing.
+
+## D75 — Alerts stopped opening its cards and said nothing, because the failure was caught and discarded (2026-09-06)
+
+Reported as "the alerts cards are no longer clickable", immediately after two
+unrelated merges — which is how a silent failure always reads: as damage from
+whatever changed most recently.
+
+D72 added a second fetch to the digest page. The cards summarise; the panel
+needs the whole record, so `/api/items` is fetched separately and the click
+target is resolved against it. That fetch was written:
+
+    apiFetch("/api/items").then(setCorpus).catch(() => setCorpus([]));
+
+The catch was deliberate — a digest that cannot open its panels is worth more
+than an error page, so a failure here must not take down the edition. What was
+not deliberate is that it discards the reason. With an empty corpus, `resolve`
+returns null for every card, every card loses its opener, and the page renders
+*perfectly*: correct items, correct scores, correct evidence, and nothing
+clickable. There is no error, no console line, and no visible difference from
+the legitimate state where a document has genuinely left the corpus.
+
+**Everything measurable was healthy while the symptom was real.** 643 rows
+returned, all 643 decorating cleanly under both audiences, every preview item
+resolving, both servers restarted after the merges, the render smoke tests
+green. That is the diagnostic cost of swallowing an error: the failure lives in
+one branch that leaves no trace, so every check from outside the browser says
+the system is fine.
+
+The fetch stays tolerant and stops being silent: the reason is captured and the
+page renders a line saying the cards will not open and everything else is
+unaffected. Four tests pin it, two of which go red against the old catch.
+
+**And that was not the reported fault.** With the banner shipped, the answer
+came back "no banner, and nothing happens when I mouse over them, like the cards
+do on the dashboard" — which located it exactly. The dashboard's rows have
+carried `className="card"` since they were written: the class holds
+`cursor: pointer`, a 120ms transition and `.card:hover { border-color:
+var(--muted); background: var(--bg-3); }`. D72 made the Alerts cards open a
+detail panel and left them a bare `<article>` with inline styles and no class.
+They opened when clicked and gave no sign they would.
+
+So the cards were working the whole time. Behaviour with no affordance is
+indistinguishable from no behaviour, and worse than leaving them plainly inert:
+before D72 nothing suggested a card was interactive, so nothing was missing.
+The class is applied only when `onOpen` is set — it promises a click
+unconditionally, so a card whose document has left the corpus must not wear it.
+
+Two lessons, and the second is the one worth keeping. The first is that adding
+an interaction means adding its affordance. The second is diagnostic: three
+rounds of measurement said the system was healthy — 643 rows, every item
+resolving, both smoke tests green — because every check ran on the side of the
+browser where the fault was not. The question that resolved it was asking the
+person looking at the screen what they actually saw.
+
+**The first version of one of those tests read the prose instead of the code.**
+It asserted the old silent catch was absent from the file — and failed, against
+the comment that quotes it while explaining why it was removed. An accurate
+docstring would have kept it red forever. It now strips comments before
+matching, and checks the fetch chain itself references the setter rather than
+merely having it in scope.
+
+**The general rule this is the second instance of.** `worker._phases` swallows
+the dedupe phase's exceptions for the same good reason and is *not* silent:
+`alerts.dedupe_unavailable` exists precisely to report what was caught, and its
+docstring says why — "swallowed and unreported is how `drift_unavailable`'s
+outage went unnoticed for days (D45)". The digest page repeated the swallow
+without the reporting half. Catching an exception to protect a surface is
+correct; discarding it is a decision to make the next failure undiagnosable.
