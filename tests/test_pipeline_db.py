@@ -332,9 +332,10 @@ class TestARebuiltDatabaseHasItsGrouping:
     Nothing errored and no alert fired, because from the pipeline's point of view
     nothing had gone wrong.
 
-    `transform` deletes and re-inserts `articles`, which reassigns their primary
-    keys, and both grouping tables hang off `articles.id`. `cmd_load` chains
-    `connect` for exactly this reason — its own docstring says a load stopping
+    `load_refs` deletes `ArticleGroup` and `ArticleLink` by name — it must,
+    because both carry a plain foreign key to `articles` with no cascade, so
+    leaving them would make its own `DELETE FROM articles` raise. Nothing
+    afterwards rebuilt them. `cmd_load` chains `connect` for exactly this reason — its own docstring says a load stopping
     before the join "would leave the table empty and looking like a finding" —
     and grouping was never added to the same chain.
 
@@ -448,8 +449,112 @@ class TestARebuiltDatabaseHasItsGrouping:
 
         import app.cli as cli
 
-        source = inspect.getsource(cli.cmd_load)
-        assert "adjudicate_pairs=False" in source, (
-            "cmd_load may not let the dedupe phase reach a paid adjudication")
+        assert "adjudicate_pairs=False" in inspect.getsource(cli._group), (
+            "the load's grouping may not reach a paid adjudication")
+        # And the outcome, not only the flag: the source check alone would pass
+        # against a call that never ran.
         assert self._dedupe_stats(session)["usd"] == 0.0
         assert self._dedupe_stats(session)["adjudicated"] == 0
+
+
+class TestAGroupingFaultCostsTheGroupingAndNothingElse:
+    """Chaining dedupe into the load added a new way for the load to fail. D74.
+
+    Caught in review, and it was worse than the bug being fixed. `dedupe.assign`
+    COMMITS internally, and `tracked` owns the single commit precisely so that
+    "a failure anywhere downstream would leave the database empty rather than
+    stale, and empty is the worse of the two" — its own words. Calling `assign`
+    inside the tracked body made the ref wipe durable partway through, so a
+    later failure no longer rolled back to the previous good state.
+
+    On a first-ever `bitcap-db rebuild` there IS no previous good state, and the
+    measured result was `articles 577 -> 0`: a new reader following README.md
+    would have got an empty database and a non-zero exit, where before this
+    branch they got a merely ungrouped one. Trading a cosmetic fault for a
+    total one.
+
+    So grouping runs after the block, and is guarded for the reason
+    `worker._phases` gives at its own call — "a duplicate row must not fail a
+    run". These pin both halves.
+    """
+
+    def _fresh(self):
+        engine = create_engine("sqlite:///:memory:")
+        create_all(engine)
+        return Session(engine)
+
+    def _explode(self, monkeypatch):
+        import app.cli as cli
+
+        def boom(*a, **kw):
+            raise RuntimeError("dedupe exploded")
+
+        monkeypatch.setattr(cli.dedupe_mod, "assign", boom)
+
+    def test_a_first_rebuild_still_produces_a_usable_database(self, monkeypatch):
+        """The README path, with no previous state to fall back to."""
+        self._explode(monkeypatch)
+        s = self._fresh()
+
+        cmd_load(s, PROMPT_VERSION, kind="rebuild")   # must not raise
+
+        assert s.scalar(select(func.count()).select_from(m.Article)) == corpus_size()
+        assert s.scalar(select(func.count()).select_from(m.Connection)) > 0
+        assert s.scalar(select(func.count()).select_from(m.ArticleGroup)) == 0
+        s.close()
+
+    def test_the_failure_is_recorded_rather_than_swallowed(self, monkeypatch):
+        """Swallowed and unreported is how D45's outage went unnoticed for days.
+
+        `alerts.dedupe_unavailable` reads exactly this key and raises a system
+        alert on it, so recording it is what makes the degradation visible.
+        """
+        self._explode(monkeypatch)
+        s = self._fresh()
+        cmd_load(s, PROMPT_VERSION)
+
+        run = s.scalars(select(m.PipelineRun).order_by(m.PipelineRun.id.desc())).first()
+        assert run.status == "succeeded", "grouping is not the load's success criterion"
+        assert "dedupe exploded" in run.stats["dedupe"]["error"]
+        s.close()
+
+    def test_a_load_that_fails_after_grouping_still_rolls_back(self, monkeypatch):
+        """The invariant `assign`'s internal commit was quietly voiding.
+
+        `TestFailureLeavesTheDatabaseUsable` patches `cli.transform`, which
+        raises BEFORE grouping — so nothing there would have noticed. This
+        injects the failure on the far side of it.
+        """
+        s = self._fresh()
+        cmd_load(s, PROMPT_VERSION)
+        before = session_counts(s)
+        assert before["articles"] == corpus_size()
+
+        import app.cli as cli
+
+        # `watermarks` is the last thing the tracked body touches, so raising
+        # here is as late as a failure can be while still inside the block.
+        monkeypatch.setattr(cli, "watermarks", lambda *a, **kw: 1 / 0)
+        with pytest.raises(ZeroDivisionError):
+            cmd_load(s, PROMPT_VERSION)
+
+        assert session_counts(s) == before
+        s.close()
+
+    def test_grouping_is_not_inside_the_tracked_block(self):
+        """Structural, because the runtime tests above cannot see placement.
+
+        Moving the call back inside would reintroduce a commit into a body
+        documented as one transaction, and every test above would still pass
+        until the day something raised after it.
+        """
+        import inspect
+
+        source = inspect.getsource(cmd_load)
+        body, _, tail = source.partition("_group(session, prompt_version")
+        assert "with tracked(" in body
+        # Nothing between the end of the `with` block and the grouping call may
+        # be indented into it.
+        after_block = body[body.rindex("run.watermarks"):]
+        assert "\n        " not in after_block.split("\n", 1)[1], (
+            "the grouping call appears to be inside the tracked block")
