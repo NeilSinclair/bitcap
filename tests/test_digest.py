@@ -696,6 +696,124 @@ class TestNearDuplicatesDoNotFillTheEdition:
         assert [i["title"] for i in investment["items"]] == ["Investment side"]
         assert [i["title"] for i in ai["items"]] == ["AI side"]
 
+
+class TestAFoldedCardSaysWhatItStandsFor:
+    """The merge is a decision made on the reader's behalf; it has to carry why.
+
+    Before this, the only trace of folding in a published digest was the
+    edition-level `collapsed` count — a reader could see that eleven rows were
+    folded somewhere and not which card ate what. The dashboard has rendered
+    `groupReason` since grouping shipped, so the string already existed; the
+    digest simply never passed it through.
+
+    The silent failure guarded here is the *count*, not the presence: reporting
+    `ArticleGroup.group_size` instead of the number this edition actually folded
+    makes the card claim it speaks for documents that were never candidates in
+    this window.
+    """
+
+    def _group(self, session, group_id, articles, anchor, reason="cosine 0.91"):
+        for art in articles:
+            session.add(m.ArticleGroup(
+                article_id=art.id, group_id=group_id, is_anchor=art is anchor,
+                group_size=len(articles), method="embedding", reason=reason,
+            ))
+        session.flush()
+
+    def test_a_card_standing_for_two_documents_says_so_and_says_why(self, session):
+        _holding(session, "US1", "NVIDIA")
+        launch, _ = _article(session, published=date(2026, 9, 3), title="Launch",
+                             score=90.0, band="high")
+        echo, _ = _article(session, published=date(2026, 9, 3), title="Launch echo",
+                           score=90.0, band="high")
+        _connect(session, launch, "US1", 0.9)
+        _connect(session, echo, "US1", 0.9)
+        self._group(session, "g1", [launch, echo], launch)
+
+        item = digest.build(session, "investment", V, END, CONFIG)["items"][0]
+
+        assert item["groupSize"] == 2
+        assert item["groupMethod"] == "embedding"
+        assert item["groupReason"] == "cosine 0.91"
+
+    def test_a_card_that_folded_nothing_makes_no_claim_at_all(self, session):
+        """Absent, not `groupSize: 1`. A card that stands for one document
+        should not render a merge badge saying so."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), title="Alone",
+                          score=90.0, band="high")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        item = digest.build(session, "investment", V, END, CONFIG)["items"][0]
+
+        assert "groupSize" not in item
+        assert "groupReason" not in item
+
+    def test_the_count_is_what_this_edition_folded_not_the_stored_group(self, session):
+        """The regression `ArticleGroup.group_size` would introduce.
+
+        A group can span days — a release train is the standing case — so its
+        corpus-wide size counts members published outside this window that were
+        never candidates here. Three in the group, two in the window: the card
+        stands for the two a reader can actually open, and saying "one of 3"
+        would point at a document that is not in this edition.
+        """
+        _holding(session, "US1", "NVIDIA")
+        old, _ = _article(session, published=date(2026, 8, 20), title="v1",
+                          score=95.0, band="high")
+        recent, _ = _article(session, published=date(2026, 9, 3), title="v2",
+                             score=90.0, band="high")
+        echo, _ = _article(session, published=date(2026, 9, 3), title="v2 echo",
+                           score=60.0, band="high")
+        _connect(session, recent, "US1", 0.9)
+        _connect(session, echo, "US1", 0.9)
+        self._group(session, "g1", [old, recent, echo], old)  # stored size == 3
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+        item = out["items"][0]
+
+        assert item["title"] == "v2"
+        assert item["groupSize"] == 2, "counted a member outside this window"
+        assert out["stats"]["collapsed"] == 1
+
+    def test_one_member_in_window_makes_no_claim_even_inside_a_real_group(self, session):
+        """The same rule at the boundary: nothing folded, so nothing claimed."""
+        _holding(session, "US1", "NVIDIA")
+        old, _ = _article(session, published=date(2026, 8, 20), title="v1",
+                          score=95.0, band="high")
+        recent, _ = _article(session, published=date(2026, 9, 3), title="v2",
+                             score=60.0, band="high")
+        _connect(session, recent, "US1", 0.9)
+        self._group(session, "g1", [old, recent], old)   # stored group_size == 2
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+        item = out["items"][0]
+
+        assert item["title"] == "v2"
+        assert "groupSize" not in item, "claimed a fold that this window did not make"
+        assert out["stats"]["collapsed"] == 0
+
+    def test_the_group_fields_survive_into_the_published_payload(self, session):
+        """`publish` stores what `build` rendered; a field added to the item and
+        dropped on the way to the row would show in preview and vanish in the
+        archive."""
+        _holding(session, "US1", "NVIDIA")
+        launch, _ = _article(session, published=date(2026, 9, 3), title="Launch",
+                             score=90.0, band="high")
+        echo, _ = _article(session, published=date(2026, 9, 3), title="Echo",
+                           score=90.0, band="high")
+        _connect(session, launch, "US1", 0.9)
+        _connect(session, echo, "US1", 0.9)
+        self._group(session, "g1", [launch, echo], launch)
+
+        rows = digest.publish(session, V, END, config=CONFIG)
+        stored = next(r for r in rows if r.kind == "investment")
+
+        assert stored.payload["items"][0]["groupSize"] == 2
+        assert stored.payload["items"][0]["groupReason"] == "cosine 0.91"
+
+
 class TestTheGroupIsRepresentedByAMemberThatPasses:
     """Two losses the first anchoring rewrite introduced, both reproduced in review.
 

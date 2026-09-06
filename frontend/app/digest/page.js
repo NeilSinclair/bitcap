@@ -110,6 +110,30 @@ function TheCut({ stats, windowStart, windowEnd }) {
   );
 }
 
+// A card that stands for several documents says so, and says why on hover.
+//
+// Folding is a decision the digest makes on the reader's behalf, and until this
+// existed the only trace of it was the edition-level `collapsed` count: you
+// could see that eleven rows were folded somewhere and not which card ate what.
+// `groupReason` is the same string the dashboard renders, so both surfaces
+// explain a merge identically rather than inventing two vocabularies.
+//
+// Renders nothing when the card folded nothing — `groupSize` is absent on those
+// items rather than set to 1 (app/digest.py), so a solitary card makes no claim
+// instead of announcing that it stands for itself. Old published editions
+// predate the field entirely, which is the same branch.
+function FoldedBadge({ item }) {
+  if (!item.groupSize || item.groupSize < 2) return null;
+  return (
+    <span
+      title={item.groupReason || "merged as one event"}
+      style={{ fontSize: 11, color: "var(--muted-2)", border: "1px solid var(--border)", padding: "2px 8px" }}
+    >
+      {item.groupSize} documents · {item.groupMethod === "release_train" ? "one release train" : "one event"}
+    </span>
+  );
+}
+
 // One event. Never one connection: an article that fires against fourteen
 // holdings is one thing that happened, and rendering it fourteen times is the
 // noise this page exists to remove.
@@ -129,6 +153,7 @@ function InvestmentItem({ item, onOpen }) {
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
         <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
         <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.eventType?.replace(/_/g, " ")}</span>
+        <FoldedBadge item={item} />
       </div>
 
       <h3 className="serif" style={{ fontSize: 19, lineHeight: 1.3, margin: 0 }}>{item.title}</h3>
@@ -196,6 +221,7 @@ function AiItem({ item, onOpen }) {
         <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
         <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
+        <FoldedBadge item={item} />
       </div>
 
       <h3 className="serif" style={{ fontSize: 19, lineHeight: 1.3, margin: 0 }}>{item.title}</h3>
