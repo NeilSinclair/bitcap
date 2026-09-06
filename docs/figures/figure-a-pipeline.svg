@@ -1,0 +1,140 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='color:#141817' viewBox="0 0 900 980" role="img" aria-label="A single nightly firing: a 03:00 UTC cron triggers five ingestion legs on two cadences, which fan into the bronze tables, then run in fixed order through classify, drift, transform, connect, group and link, and digest, ending in two audience views. A budget gate sits on classify; system alerts branch from drift and content alerts from digest, as two distinct channels."><style>
+  :root{--surface:#FFFFFF;--surface-2:#E9EDEA;--ink:#141817;--muted:#5B6663;--rule:#D2D8D4;
+        --accent:#0F6E5C;--accent-tint:#E2F0EB;--warn:#9C5316;--warn-tint:#F6EADD;
+        --sans:'Helvetica Neue',Arial,sans-serif;--mono:Menlo,'SF Mono',monospace;}
+  html,body{margin:0;padding:0;background:#fff}
+  .pad{padding:28px;background:#fff}
+  svg{display:block;width:100%;height:auto;color:var(--ink)}
+  .d-box{fill:var(--surface);stroke:currentColor;stroke-width:1.1}
+  .d-fill{fill:var(--surface-2);stroke:currentColor;stroke-width:1.1}
+  .d-acc{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.3}
+  .d-warn{fill:var(--warn-tint);stroke:var(--warn);stroke-width:1.3}
+  .d-ghost{fill:none;stroke:var(--rule);stroke-width:1.1;stroke-dasharray:3 4}
+  .d-lab{font-family:var(--sans);font-size:13.5px;font-weight:600;fill:var(--ink)}
+  .d-sub{font-family:var(--sans);font-size:11px;fill:var(--muted)}
+  .d-mono{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+  .d-note{font-family:var(--sans);font-size:11.5px;fill:var(--muted)}
+  .d-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;fill:var(--muted)}
+  .d-accent-text{fill:var(--accent)}
+  .d-line{stroke:currentColor;stroke-width:1.2;fill:none}
+  .d-dash{stroke:var(--muted);stroke-width:1.1;fill:none;stroke-dasharray:4 3}
+  .d-rule{stroke:var(--accent);stroke-width:2}
+  .d-layer{font-family:var(--sans);font-size:25px;font-weight:700;letter-spacing:-0.02em;fill:var(--ink)}
+  .d-layer-s{font-family:var(--sans);font-size:19px;font-weight:700;letter-spacing:-0.01em;fill:var(--ink)}
+  .d-step{font-family:var(--mono);font-size:12px;letter-spacing:0.1em;fill:var(--muted)}
+  .d-num{font-family:var(--mono);font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+  .d-hair{stroke:var(--rule);stroke-width:1}
+  .d-hair-acc{stroke:var(--accent);stroke-width:1}
+  .d-bronze{fill:var(--warn-tint);stroke:var(--warn);stroke-width:1.3}
+  .d-silver{fill:var(--surface);stroke:currentColor;stroke-width:1.3}
+  .d-gold{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.6}
+</style>
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <polygon points="0,1 10,5 0,9" fill="currentColor"></polygon>
+            </marker>
+          </defs>
+
+          <text class="d-eyebrow" x="16" y="24">TRIGGER</text>
+          <rect class="d-fill" x="350" y="36" width="200" height="38" rx="5"></rect>
+          <text class="d-lab" x="450" y="60" text-anchor="middle">cron · 03:00 UTC daily</text>
+          <line class="d-line" x1="450" y1="74" x2="450" y2="110" marker-end="url(#ar)"></line>
+
+          <text class="d-eyebrow" x="16" y="106">INGEST · 5 LEGS, 2 CADENCES</text>
+
+          <rect class="d-box" x="16" y="118" width="167" height="56" rx="5"></rect>
+          <text class="d-lab" x="99" y="141" text-anchor="middle">announcements</text>
+          <text class="d-sub" x="99" y="158" text-anchor="middle">every firing</text>
+
+          <rect class="d-box" x="191" y="118" width="167" height="56" rx="5"></rect>
+          <text class="d-lab" x="274" y="141" text-anchor="middle">papers</text>
+          <text class="d-sub" x="274" y="158" text-anchor="middle">every firing</text>
+
+          <rect class="d-box" x="366" y="118" width="167" height="56" rx="5"></rect>
+          <text class="d-lab" x="449" y="141" text-anchor="middle">releases</text>
+          <text class="d-sub" x="449" y="158" text-anchor="middle">every firing</text>
+
+          <rect class="d-box" x="541" y="118" width="167" height="56" rx="5"></rect>
+          <text class="d-lab" x="624" y="141" text-anchor="middle">github</text>
+          <text class="d-sub" x="624" y="158" text-anchor="middle">every 3rd · 14 min</text>
+
+          <rect class="d-box" x="716" y="118" width="167" height="56" rx="5"></rect>
+          <text class="d-lab" x="799" y="141" text-anchor="middle">posts</text>
+          <text class="d-sub" x="799" y="158" text-anchor="middle">every firing</text>
+
+          <line class="d-line" x1="99" y1="174" x2="99" y2="192"></line>
+          <line class="d-line" x1="274" y1="174" x2="274" y2="192"></line>
+          <line class="d-line" x1="449" y1="174" x2="449" y2="192"></line>
+          <line class="d-line" x1="624" y1="174" x2="624" y2="192"></line>
+          <line class="d-line" x1="799" y1="174" x2="799" y2="192"></line>
+          <line class="d-line" x1="99" y1="192" x2="799" y2="192"></line>
+          <line class="d-line" x1="450" y1="192" x2="450" y2="212" marker-end="url(#ar)"></line>
+
+          <rect class="d-fill" x="170" y="216" width="560" height="62" rx="5"></rect>
+          <text class="d-lab" x="450" y="241" text-anchor="middle">raw_articles · raw_papers · raw_github_*</text>
+          <text class="d-sub" x="450" y="260" text-anchor="middle">bronze — verbatim, upsert-only, one table for every leg</text>
+
+          <line class="d-line" x1="450" y1="278" x2="450" y2="310" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="314" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="339" text-anchor="middle">classify</text>
+          <text class="d-sub" x="450" y="357" text-anchor="middle">sonnet-5 · v9 / p1 / t1 · 3-vote</text>
+          <line class="d-dash" x1="590" y1="343" x2="602" y2="343"></line>
+          <rect class="d-warn" x="604" y="320" width="280" height="46" rx="5"></rect>
+          <text class="d-mono" x="618" y="338">budget gate</text>
+          <text class="d-sub" x="618" y="355">on exceed: abort_llm_stage</text>
+
+          <line class="d-line" x1="450" y1="372" x2="450" y2="400" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="404" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="429" text-anchor="middle">drift</text>
+          <text class="d-sub" x="450" y="447" text-anchor="middle">gold set re-scored every firing</text>
+          <line class="d-dash" x1="590" y1="433" x2="602" y2="433"></line>
+          <rect class="d-acc" x="604" y="410" width="280" height="46" rx="5"></rect>
+          <text class="d-mono d-accent-text" x="618" y="428">SYSTEM alert · agreement &lt; 0.80</text>
+          <text class="d-sub" x="618" y="445">and when it measures nothing at all</text>
+
+          <line class="d-line" x1="450" y1="462" x2="450" y2="490" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="494" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="519" text-anchor="middle">transform</text>
+          <text class="d-sub" x="450" y="537" text-anchor="middle">×3 prompt versions → silver</text>
+
+          <line class="d-line" x1="450" y1="552" x2="450" y2="580" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="584" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="609" text-anchor="middle">connect</text>
+          <text class="d-sub" x="450" y="627" text-anchor="middle">4 routes, deterministic</text>
+          <text class="d-note" x="604" y="605">mechanism · category</text>
+          <text class="d-note" x="604" y="621">lab_exposure · named</text>
+
+          <line class="d-line" x1="450" y1="642" x2="450" y2="670" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="674" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="699" text-anchor="middle">group + link</text>
+          <text class="d-sub" x="450" y="717" text-anchor="middle">LLM only inside [0.70, 0.80)</text>
+
+          <line class="d-line" x1="450" y1="732" x2="450" y2="760" marker-end="url(#ar)"></line>
+
+          <rect class="d-box" x="310" y="764" width="280" height="58" rx="5"></rect>
+          <text class="d-lab" x="450" y="789" text-anchor="middle">digest</text>
+          <text class="d-sub" x="450" y="807" text-anchor="middle">7-day window, half-open</text>
+          <line class="d-dash" x1="590" y1="793" x2="602" y2="793"></line>
+          <rect class="d-acc" x="604" y="770" width="280" height="46" rx="5"></rect>
+          <text class="d-mono d-accent-text" x="618" y="798">CONTENT alert · band high</text>
+
+          <line class="d-line" x1="450" y1="822" x2="450" y2="846"></line>
+          <line class="d-line" x1="280" y1="846" x2="620" y2="846"></line>
+          <line class="d-line" x1="280" y1="846" x2="280" y2="874" marker-end="url(#ar)"></line>
+          <line class="d-line" x1="620" y1="846" x2="620" y2="874" marker-end="url(#ar)"></line>
+
+          <rect class="d-fill" x="140" y="878" width="280" height="54" rx="5"></rect>
+          <text class="d-lab" x="280" y="901" text-anchor="middle">investment view</text>
+          <text class="d-sub" x="280" y="919" text-anchor="middle">event weight × strongest mechanism</text>
+
+          <rect class="d-fill" x="480" y="878" width="280" height="54" rx="5"></rect>
+          <text class="d-lab" x="620" y="901" text-anchor="middle">AI-team view</text>
+          <text class="d-sub" x="620" y="919" text-anchor="middle">action weight × strongest practice</text>
+
+          <text class="d-note" x="450" y="960" text-anchor="middle">one core, two renderers — the same rows, a different first axis</text>
+        </svg>
