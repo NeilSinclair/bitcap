@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "DeepMind released Sonnet 2.0.1, a minor update to the TensorFlow 2.0 neural network library adding a functional API.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": ["practices:orchestration:quote not in document"]}

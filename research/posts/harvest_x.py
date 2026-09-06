@@ -357,14 +357,25 @@ def to_record(post: dict, person: dict) -> dict:
 
 def pull(resolved: list[dict], caps: dict[str, int], token: str, spend: xc.Spend,
          cfg: dict, now: datetime | None = None,
-         base_url: str = "https://api.x.com/2") -> tuple[list[dict], list[dict]]:
-    """Stage 2. One page per handle, at the cap the probe computed.
+         base_url: str = "https://api.x.com/2",
+         since: datetime | None = None) -> tuple[list[dict], list[dict]]:
+    """Stage 2. One page per handle, from `since` or the window, whichever is later.
 
     Every request is clamped against what has actually been billed so far, so
     the ceiling binds on real spend rather than on the optimistic reservation.
     When the remaining budget falls below the API's five-post floor the run
     stops and says which handles it did not reach -- a truncated pull that
     reports itself is recoverable; one that looks complete is not.
+
+    **`since` is what makes a repeat firing cheap.** X bills per post returned,
+    not per post requested, and `start_time` is applied server-side, so
+    narrowing the window is a direct cut to the bill rather than a filter over
+    something already paid for. Without it every firing re-reads and re-buys the
+    whole `window_days` lookback: at the measured corpus that is ~$1.19 a week
+    for posts already in the database.
+
+    It is clamped to the window and never widens it, so a stale or corrupt
+    watermark cannot turn one firing into a bigger pull than the config allows.
 
     Args:
         resolved: The `resolved` list from :func:`verify`.
@@ -374,6 +385,8 @@ def pull(resolved: list[dict], caps: dict[str, int], token: str, spend: xc.Spend
         cfg: Parsed posts_sources.yaml.
         now: Reference time, for tests.
         base_url: API root.
+        since: Read only posts at or after this instant. `None` -- the first
+            firing, or a leg whose state was lost -- reads the full window.
 
     Returns:
         Tuple of (article-shaped records, unresolved). A handle that errors or
@@ -382,6 +395,8 @@ def pull(resolved: list[dict], caps: dict[str, int], token: str, spend: xc.Spend
     """
     now = now or datetime.now(timezone.utc)
     start = xc.window_start(cfg["window_days"], now)
+    if since is not None:
+        start = max(start, since)
     records, unresolved = [], []
 
     # Largest caps first: if the budget runs out, it should run out on the

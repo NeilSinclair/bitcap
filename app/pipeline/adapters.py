@@ -803,6 +803,25 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
     ranked, relevance = _relevant_slice(ranked, listing, cfg, session)
 
     cursors = dict((getattr(state, "watermark", None) or {}).get("cursors") or {})
+    stale_cursors = 0
+    # A cursor asserts "everything up to here is already stored". `source_state`
+    # is in `models.OPS_TABLES` and survives `drop_all`; the release rows it
+    # vouches for live in `raw_articles`, which does not. So a rebuild leaves
+    # every cursor intact against an empty corpus, and this leg then reports
+    # itself caught up for ever -- the outage is permanent and silent, because
+    # "no new releases" is exactly what a quiet week looks like.
+    #
+    # D67 fixed the sibling case by moving `raw_github_repos` into OPS_TABLES.
+    # That is not available here: these documents are articles, and the whole
+    # articles table cannot be exempt from a rebuild.
+    #
+    # Narrow on purpose -- every cursor present and the corpus completely empty,
+    # which is the rebuild signature. A *partially* missing corpus is a
+    # different fault, and re-backfilling 380 documents to paper over it would
+    # hide it. A genuinely new org has no cursors and never reaches this.
+    if cursors and session is not None and not _corpus_repos(session, org):
+        stale_cursors = len(cursors)
+        cursors = {}
 
     items: list[dict] = []
     truncated = 0
@@ -870,6 +889,12 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
         # a clean run.
         "reached_cursor": reached_all,
     }
+    # Recorded, never silent. A backfill this size is indistinguishable from a
+    # busy week in the item count alone, and an operator reading the run needs
+    # to know the leg recovered rather than that the labs suddenly shipped 380
+    # releases.
+    if stale_cursors:
+        watermark["stale_cursors"] = stale_cursors
     if newest:
         watermark["max_published"] = newest
     if failures:
@@ -901,6 +926,28 @@ def fetch_releases(source, state=None, session=None) -> FetchResult:
                        metered_usd=relevance.get("usd", 0.0))
 
 
+def _post_since(mark) -> datetime | None:
+    """Turn a stored `max_published` date into an X `start_time`.
+
+    Returns midnight UTC of that day, so the day of the newest stored post is
+    re-read rather than skipped -- see `fetch_posts`.
+
+    Args:
+        mark: The watermark value. Anything unparseable, including `None`,
+            yields `None`.
+
+    Returns:
+        A timezone-aware UTC datetime, or `None` to read the full window.
+        Never raises: a corrupt watermark must cost a wider pull, not a firing.
+    """
+    if not isinstance(mark, str):
+        return None
+    try:
+        return datetime.fromisoformat(mark[:10]).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
 def fetch_posts(source, state=None, session=None) -> FetchResult:
     """Read the window's posts from the handles in config/people.yaml.
 
@@ -912,9 +959,35 @@ def fetch_posts(source, state=None, session=None) -> FetchResult:
     caps come from the committed rate probe for the same reason: both files are
     artifacts of a measurement that cost money.
 
+    **The watermark bounds the pull.** `source_state.watermark["max_published"]`
+    is the newest post date this leg has stored, and it is passed to X as
+    `start_time`. Posts are billed per post *returned* and `start_time` is
+    applied server-side, so this is a cut to the bill, not a filter over
+    something already bought. It was previously written every firing and never
+    read, which meant a weekly cadence re-bought the whole 90-day window every
+    week for posts already in the database.
+
+    The mark is a date, not an instant (`to_record` stores `created_at[:10]`),
+    so the pull restarts at midnight of that day and re-reads it. That overlap
+    is deliberate: an exact instant would drop any post published later on the
+    same day as the last one stored, and re-reading one day is far cheaper than
+    a hole nothing downstream could detect.
+
+    **A partial pull does not advance the mark.** The mark is one date for the
+    whole leg, not one per handle, so advancing it after a run where a handle
+    errored or was skipped for budget would move every handle's floor past posts
+    that handle never returned -- permanently, and with nothing downstream able
+    to tell those posts from posts that were never written. This was harmless
+    while the mark was write-only and became a silent coverage hole the moment
+    it started gating the fetch. On a partial run the leg returns an empty
+    watermark; `state.record_success` leaves the previous mark in place for a
+    falsy one, so the next firing retries the same window.
+
     Args:
         source: The posts Source, carrying the parsed posts_sources.yaml.
-        state: Unused; the window is a fixed lookback, not a cursor.
+        state: The source's persistent state; `watermark["max_published"]`
+            bounds the pull. `None`, or a state with no mark, reads the full
+            window.
         session: Open session, read-only, used to mark a post whose links point
             at coverage the register already holds.
 
@@ -949,9 +1022,15 @@ def fetch_posts(source, state=None, session=None) -> FetchResult:
     spend = x_client.Spend(budget["max_posts_total"], budget["max_user_lookups"],
                            config["provider"]["price_per_post_usd"],
                            config["provider"]["price_per_user_usd"])
+    mark = (getattr(state, "watermark", None) or {}).get("max_published")
     records, unresolved = harvest_x.pull(
         resolved, caps, x_client.load_token(config["provider"]["token_env"]),
-        spend, config, base_url=config["provider"]["base_url"])
+        spend, config, base_url=config["provider"]["base_url"],
+        since=_post_since(mark))
+    # Everything `pull` reports here is handle-level -- a fetch that failed, or a
+    # handle the budget never reached. Counted before the prefilter appends its
+    # own entries below, which are posts we did read and chose to drop.
+    incomplete = len(unresolved)
 
     known = set()
     if session is not None:
@@ -962,10 +1041,14 @@ def fetch_posts(source, state=None, session=None) -> FetchResult:
     unresolved.extend({"url": d["url"], "lab": d["lab"], "kind": "post",
                        "reason": f"prefiltered: {d['dropped']}"} for d in dropped)
 
+    # One mark for the whole leg, so it may only advance on a run that read
+    # every handle. See the docstring: advancing it past a handle that errored
+    # moves that handle's floor over posts it never returned, and nothing
+    # downstream can distinguish those from posts that were never written.
     newest = max((r["date"] for r in kept), default=None)
     return FetchResult(
         items=kept,
-        watermark={"max_published": newest} if newest else {},
+        watermark={"max_published": newest} if newest and not incomplete else {},
         unresolved=unresolved,
         cost_usd=spend.usd,
     )

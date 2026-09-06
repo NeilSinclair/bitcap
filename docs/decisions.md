@@ -7502,3 +7502,220 @@ never reaches `fetch_cache` at all. It keeps a private `urlopen` loop with a
 re-fetches Anthropic's index and every article page on every firing, with no
 retry and outside the shared throttle. It survived this incident only because it
 never touches arXiv.
+
+## D68 — A watermark that was never read, a cursor that outlived its corpus, and a firing that could not finish (2026-09-06)
+
+Three faults with one shape: a fact recorded in one place, and the thing it
+describes in another, free to disagree. All three were found by running the
+pipeline against the live database. None is reachable from a suite that builds
+its own — and the suite was green, at 1,628 tests, throughout.
+
+### The posts leg re-bought its whole window every firing
+
+`fetch_posts` returned `watermark={"max_published": newest}` on every run, the
+orchestrator persisted it faithfully, and nothing ever read it back. Its own
+docstring said so: *"state: Unused; the window is a fixed lookback, not a
+cursor."*
+
+X bills per post **returned**, and `start_time` is applied server-side, so the
+window is the bill. At `posts: 7` against `window_days: 90`, every firing re-read
+and re-paid for ~89 days of posts already in `raw_articles` — about **$1.19 a
+week** at the measured 238-post corpus, for nothing. Nothing failed, nothing
+alerted, and the corpus was correct the whole time. It was just bought again.
+
+`pull()` now takes a `since` and applies `max(window_start, since)`. The clamp is
+the part worth having: a stale or corrupt mark must only be able to *narrow* a
+pull, never widen it past what config allows.
+
+**The mark is a date, not an instant.** `to_record` stores `created_at[:10]`, so
+the pull restarts at midnight of that day and re-reads it. The one-day overlap is
+deliberate — an exact instant would silently drop any post published later on the
+same day as the last one stored, and a hole nothing downstream can detect is
+worth far more than a day of re-read posts.
+
+### A cursor is a claim about data, and it can outlive the data
+
+Measured on the local Postgres this morning:
+
+```
+release cursors in source_state:  87 across 8 orgs, dated 2026-09-03/04
+release rows in raw_articles:      0
+```
+
+`source_state` is in `models.OPS_TABLES` and survives `drop_all`; `raw_articles`
+is not. A rebuild in another session deleted every release document and kept all
+87 cursors asserting they were stored. `fetch_releases` would then report itself
+caught up on every firing, for ever, and "no new releases" is exactly what a
+quiet week looks like.
+
+This is the shape D67 named and fixed for `raw_github_repos` by moving it into
+`OPS_TABLES`. **That fix is unavailable here.** These documents are articles, and
+exempting the articles table from a rebuild would make `rebuild` meaningless.
+
+So the guard runs the other way: where state and data disagree, **the state
+loses**. If an org holds cursors and `_corpus_repos(session, org)` is empty, the
+cursors describe documents that no longer exist — drop them and backfill.
+`_corpus_repos` already existed, added in D65 for the derivation gate, and
+answers exactly this question without loading release bodies.
+
+**Deliberately narrow: all cursors present, corpus completely empty.** That is
+the rebuild signature. A *partially* missing corpus is a different fault and
+silently re-backfilling would hide it, so the guard does not fire —
+`test_a_partially_missing_corpus_is_not_treated_as_stale` holds it there. A
+genuinely new org has no cursors and never reaches the guard.
+
+**The recovery is counted.** `watermark["stale_cursors"]` carries how many were
+dropped. A backfill this size is indistinguishable from a busy week in the item
+count alone. Live, it read 15 / 1 / 14 / 28 / 5 / 6 / 16 / 2 — **87, the exact
+number measured before the run.**
+
+### A firing could not finish at all, and had not since 22:10 the previous night
+
+The restore surfaced it: every `bitcap-worker` run died in the ETL phase with
+
+```
+NameError: name 'POST_SCORES_DIR' is not defined
+```
+
+`d60df97` (the X posts leg) added `scores_dir=POST_SCORES_DIR` to `_etl` and did
+not add the name to `app/pipeline/worker.py`'s imports. `app/cli.py` imports it,
+which is why `bitcap-db load` kept working and the corpus looked healthy. On
+`deployment-dev` **and on `deployment`**, every scheduled firing had been failing
+since that commit merged. Run 40 (20:27) was the last clean one.
+
+**Why nothing caught it.** `tests/test_worker.py` stubs `_etl` out wholesale —
+correctly, for testing phase *ordering*, since `_etl` needs a real corpus. But it
+meant the phase was never executed, and a `NameError` on a module-level name
+fires only when the line runs. The only thing that catches it is running the
+line, so `test_the_etl_phase_runs_against_an_empty_database` now does: an empty
+database is enough, because every step is a no-op and a missing import still
+raises.
+
+### Posts join the digest; they still cannot page anyone
+
+D63 held `t1` out of `DIGEST_VERSIONS` while the corpus was unproven and named
+widening it as *"the whole change when the corpus has earned it"*.
+
+It was not one line. `api/main.py:277` reads `DIGEST_VERSIONS`;
+`app/pipeline/worker.py` builds its own tuple because it honours `--prompt`.
+Changing only the constant would have shown posts in `/api/digests/preview` while
+the published digest omitted them — two surfaces disagreeing while each looks
+correct, which is this entry's subject.
+`test_the_worker_publishes_the_versions_the_api_previews` pins them together.
+
+**The alert mute stays.** `content_mute_prompt_versions: [t1]` was not touched.
+Reaching a digest a reader chooses to open is not the same permission as paging
+them, and only the first was granted.
+
+### What the restore actually did
+
+`--legs github releases` in one firing **cannot work from cold**, and this is
+D67's "not fixed, and worth naming" in ordinary operation rather than as an OOM
+edge case: the github leg's rows land in the *landing* phase, after the whole
+ingest phase, so `releases` runs alongside `github` and reads an empty
+`raw_github_repos`. All eight releases sources failed with "the github leg has
+not run" while all eight github sources succeeded in the same run. It takes two
+firings.
+
+### What was rejected
+
+**A manual cursor reset.** Written first — a scratchpad script backing up the 87
+cursors and clearing them. It fixes one database and leaves the next rebuild to
+rediscover the same eight-source outage. The guard is a few lines against a
+helper that already existed.
+
+**Widening the guard to any missing rows.** It would convert every partial data
+loss into a silent re-ingest, which is the behaviour that would have hidden this
+fault rather than surfacing it.
+
+**A committed `releases_corpus.json`,** so `load_raw` restores releases the way
+it already does for papers and posts. It is the only change that makes CLAUDE.md's
+"rebuild reproduces the whole database from committed artifacts" literally true
+for releases — it is not true today. Rejected on scope and recorded as the next
+cut, not as a solved problem. The guard makes the loss recoverable and visible;
+the artifact would stop it happening.
+
+**Subtracting the overlap day from the posts mark.** Saves a handful of re-read
+posts a week and risks a permanent hole on any handle posting twice in a day.
+Wrong trade at $0.005 a post.
+
+### Honest limits
+
+**The posts saving is designed, not yet measured.** The posts leg has no
+`source_state` row in this database at all: the 238 posts came from
+`posts_corpus.json` via `bitcap-db load`, never through a live orchestrator
+fetch. So the first live firing still reads the full window and the saving starts
+from the second. The clamp and the conversion are unit-tested and
+mutation-checked; the bill is not.
+
+**The filter dropped two repositories the spot-check said to keep.** Of nine
+spot-checked repositories the live filter excluded, seven match Neil's marks
+exactly. The two that do not are `anthropics/financial-services` and
+`deepseek-ai/DeepSeek-OCR` — both marked `relevant` blind and kept on review.
+They are the same two boundary cases D65 flagged as needing a human call, now
+acting in production rather than in an eval. `[NEIL]`
+
+**The dominant failure mode is thin metadata, not bad judgement**, and the
+reasons say so in the model's own words: `financial-services` — *"no description
+or topics"*; `facebookresearch/blt` — *"description only says 'Code for BLT
+research paper'... ambiguous name"*, which is Byte Latent Transformer, an
+LLM architecture. Eight of twenty spot-check rows carry no GitHub description at
+all, verified against the live API, so this is a property of the source and not a
+capture bug. Reading the README — one call per repository, cached beside the
+verdict — is the concrete next cut, and it is now evidenced rather than
+speculated.
+
+**One exclusion looks like a rubric violation rather than an evidence gap.**
+`facebookresearch/schedule_free` was dropped as *"a general deep-learning
+optimizer... rather than anything specific to language models"*, while `r1.md`
+lists "autodiff and optimiser libraries" under `true`. One case, not a pattern,
+and recorded rather than fixed by hand — D65's rule stands that an entry is added
+only for a repository the eval shows the model getting wrong.
+
+**155 releases, not the 380 the old corpus held.** `releases_backfill: 5` bounds
+a first-sight repository, so this is the most recent five per watched repository
+rather than the full 90-day history. That is the configured behaviour, not a
+shortfall, but the two corpora are not comparable and figures from the old one do
+not carry over.
+
+### Consequence
+
+**The releases corpus is back and scored**: 155 documents under `v9`, where
+before today it had never been scored under `v9` at all —
+the committed
+`scored_announcements_v9.json` held 292 scored items and **zero** releases,
+because D56's rescore covered announcements only. (Release scores do exist under
+`v8`, but only as 380 untracked files in `research/docs/announcement_scores/v8/`
+and in another session's uncommitted working copy -- so that is an observation
+about this machine, not a fact the repository records.) All four corpora now classify and digest together: 304
+announcements + 155 releases + 238 posts + 47 papers = **744 articles**, 459 at
+`v9`, 238 at `t1`, 47 at `p1`.
+
+**The filter did what D65 said it would, on live data and for free.** 159
+repositories judged across 8 orgs, **84 excluded**, `$0.00` — every verdict a
+cache hit from the committed artifact. `facebookresearch` 47 of 57 excluded
+(`detectron2`, `audiocraft`, `sam2`), `google-deepmind` 31 of 41 (`mujoco`,
+`alphafold`, `deepmind-research`), `openai` dropping `whisper` and `CLIP`,
+`xai-org` dropping `x-algorithm`. The walk reached 31 repositories the labelled
+population never held; those verdicts are now committed too (183 → 214), because
+an uncommitted verdict is re-bought on the next rebuild — the same fault as the
+cursors, one layer up.
+
+**Idempotence verified.** An immediate second releases firing reported
+`stale_cursors: None` on all eight orgs, cost `$0.0000`, and left the corpus at
+155. The guard is one-shot by construction, not by luck.
+
+Spend: **$1.7792** to classify the 155 releases, at `$0.0115` each against the
+`$0.028` estimated — the filter cut the population to 155 and release notes are
+short. The same firing also classified 40 announcements it found unscored
+(`$0.7938`) and bought 31 new verdicts (`$0.0205`), for a ledger total of
+**$2.5937**. `docs/cost.md` carries the breakdown and the $0.08 gap against the
+run's own reported figure.
+
+Files: `research/posts/harvest_x.py` (`pull(since=...)`),
+`app/pipeline/adapters.py` (`_post_since`, `fetch_posts`, the stale-cursor guard),
+`app/pipeline/worker.py` (the missing import, the digest tuple), `app/cli.py`
+(`DIGEST_VERSIONS`), and `research/docs/repo_relevance_verdicts.json`.
+**13 new tests**, each mutation-checked against the fault it names.
+
+No migration.

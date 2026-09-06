@@ -1,0 +1,1 @@
+{"is_signal": false, "event_type": "developer_tooling", "summary": "Meta AI released SONAR v0.5.0, upgrading its dependency to fairseq2>=0.5.2, which is incompatible with the previous fairseq2~=0.4.", "mechanisms": [], "categories": [], "practices": [], "notable": false, "notable_reason": "", "dropped_tags": ["practices:integration:quote not in document"]}

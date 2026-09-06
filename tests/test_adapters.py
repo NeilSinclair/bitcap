@@ -702,6 +702,23 @@ class TestReleasesAdapter:
             content_hash="h"))
         session.flush()
 
+    def in_corpus(self, session, repo, org="xai-org"):
+        """Put one release for `repo` in bronze.
+
+        A cursor asserts that documents up to it are stored, so any test whose
+        premise is "we have a cursor from a previous run" needs the rows that
+        run produced -- otherwise it is describing the corrupt state the
+        stale-cursor guard exists to recover from, not a healthy one.
+        """
+        from app import models as m
+        from app.pipeline.registry import CORPUS_LABELS, RELEASES
+
+        session.add(m.RawArticle(
+            url=f"https://github.com/{org}/{repo}/releases/tag/v0",
+            payload={"org": org, "repo": repo}, content_hash="h",
+            source_file=CORPUS_LABELS[RELEASES]))
+        session.flush()
+
     def listing(self, monkeypatch, entries):
         """Stand in for the live REST listing the leg overlays onto bronze."""
         import harvest_github
@@ -777,6 +794,7 @@ class TestReleasesAdapter:
 
     def test_the_cursor_comes_from_the_watermark(self, session, monkeypatch):
         self.stored(session, "grok", stars=10)
+        self.in_corpus(session, "grok")
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         seen = {}
 
@@ -809,6 +827,7 @@ class TestReleasesAdapter:
         lost and it re-backfills."""
         self.stored(session, "a", stars=20)
         self.stored(session, "b", stars=10)
+        self.in_corpus(session, "b")
         self.listing(monkeypatch, [self.listed_repo("a", 20),
                                    self.listed_repo("b", 10)])
         self.released(monkeypatch, lambda org, repo, token, lab, cursor, *a: (
@@ -997,6 +1016,108 @@ class TestReleasesAdapter:
 
         result = adapters.fetch_releases(self.release_source(), session=session)
         assert result.watermark["reached_cursor"] is False
+
+    # --- stale cursors ----------------------------------------------------
+    #
+    # `source_state` is in `models.OPS_TABLES` and survives `drop_all`; the
+    # release rows it vouches for live in `raw_articles`, which does not. A
+    # rebuild therefore leaves every cursor intact against an empty corpus, and
+    # this leg then reports itself caught up for ever. The outage is permanent
+    # and completely silent, because "no new releases" is exactly what a quiet
+    # week looks like. Measured on the live database 2026-09-06: 87 cursors
+    # dated 2026-09-03/04 against 0 release rows.
+    #
+    # D67 fixed the sibling case by moving `raw_github_repos` into OPS_TABLES.
+    # That is unavailable here: these are articles, and the articles table
+    # cannot be exempt from a rebuild.
+
+    def test_cursors_against_an_empty_corpus_trigger_a_backfill(
+            self, session, monkeypatch):
+        """The outage itself: a cursor claiming documents that no longer exist."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        seen = {}
+
+        def fake(org, repo, token, lab, cursor, *a):
+            seen["cursor"] = cursor
+            return [], STATS
+
+        self.released(monkeypatch, fake)
+        state = SimpleNamespace(watermark={"cursors": {"grok": "2026-09-03T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert seen["cursor"] is None, "a cursor with no corpus behind it must not bind"
+        assert result.watermark["stale_cursors"] == 1
+
+    def test_a_healthy_run_keeps_its_cursors(self, session, monkeypatch):
+        """The expensive false positive: re-backfilling every firing because
+        the guard reads the wrong signal."""
+        self.stored(session, "grok", stars=10)
+        self.in_corpus(session, "grok")
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        seen = {}
+
+        def fake(org, repo, token, lab, cursor, *a):
+            seen["cursor"] = cursor
+            return [], STATS
+
+        self.released(monkeypatch, fake)
+        state = SimpleNamespace(watermark={"cursors": {"grok": "2026-09-03T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert seen["cursor"] == "2026-09-03T00:00:00Z"
+        assert "stale_cursors" not in result.watermark
+
+    def test_a_partially_missing_corpus_is_not_treated_as_stale(
+            self, session, monkeypatch):
+        """Narrowness. Losing *some* rows is a different fault, and silently
+        re-backfilling would hide it rather than surface it."""
+        self.stored(session, "grok", stars=20)
+        self.stored(session, "grok-prompts", stars=10)
+        self.in_corpus(session, "grok")           # one present, one missing
+        self.listing(monkeypatch, [self.listed_repo("grok", 20),
+                                   self.listed_repo("grok-prompts", 10)])
+        seen = {}
+
+        def fake(org, repo, token, lab, cursor, *a):
+            seen[repo] = cursor
+            return [], STATS
+
+        self.released(monkeypatch, fake)
+        state = SimpleNamespace(watermark={
+            "cursors": {"grok": "2026-09-03T00:00:00Z",
+                        "grok-prompts": "2026-09-02T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert seen["grok-prompts"] == "2026-09-02T00:00:00Z"
+        assert "stale_cursors" not in result.watermark
+
+    def test_a_new_org_never_reaches_the_guard(self, session, monkeypatch):
+        """No cursors and no corpus is a first run, not a recovery, and must
+        not be reported as one."""
+        self.stored(session, "grok", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 10)])
+        self.released(monkeypatch, lambda *a: ([], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+        assert "stale_cursors" not in result.watermark
+
+    def test_the_recovery_is_counted_so_an_operator_can_see_it(
+            self, session, monkeypatch):
+        """A large backfill is indistinguishable from a busy week in the item
+        count alone. The operator has to be told the leg recovered."""
+        self.stored(session, "grok", stars=20)
+        self.stored(session, "grok-prompts", stars=10)
+        self.listing(monkeypatch, [self.listed_repo("grok", 20),
+                                   self.listed_repo("grok-prompts", 10)])
+        self.released(monkeypatch, lambda *a: ([], STATS))
+
+        state = SimpleNamespace(watermark={
+            "cursors": {"grok": "2026-09-03T00:00:00Z",
+                        "grok-prompts": "2026-09-02T00:00:00Z"}})
+        result = adapters.fetch_releases(self.release_source(), state=state,
+                                         session=session)
+        assert result.watermark["stale_cursors"] == 2
 
 
 class TestTheBackfillRunsInThePipeline:
@@ -1316,3 +1437,94 @@ class TestRepoRelevanceGate:
         assert report["paid"] == 0
         assert report["capped"] is False
         assert report["judged"] == 20, "stopped early on judgements that cost nothing"
+
+
+class TestThePostsWatermarkIsReadNotJustWritten:
+    """`max_published` was written every firing and never read back.
+
+    The leg has a weekly cadence and a 90-day window, so the unread mark meant
+    re-buying ~89 days of posts every week. Nothing failed and nothing alerted:
+    the corpus was correct, it was just paid for again.
+    """
+
+    def test_a_stored_date_becomes_the_start_of_that_day(self):
+        """Midnight, not the instant: the mark is a date, so re-read its day."""
+        from datetime import datetime, timezone
+        assert adapters._post_since("2026-09-04") == datetime(2026, 9, 4, tzinfo=timezone.utc)
+
+    def test_a_full_timestamp_is_accepted_too(self):
+        """`max_published` is a date today; a later change must not break this."""
+        from datetime import datetime, timezone
+        assert adapters._post_since("2026-09-04T11:34:32Z") == datetime(
+            2026, 9, 4, tzinfo=timezone.utc)
+
+    def test_a_missing_or_corrupt_watermark_reads_the_whole_window(self):
+        """Fail wide, not closed: a bad mark costs money, a silent hole costs coverage."""
+        for bad in (None, "", "never", 20260904, {"max_published": "2026-09-04"}):
+            assert adapters._post_since(bad) is None
+
+
+class TestAPartialPostsPullDoesNotAdvanceTheMark:
+    """One mark for the whole leg, so a partial run must not move it.
+
+    Harmless while the mark was write-only; a silent, permanent coverage hole
+    the moment it started gating the fetch. If @sama's timeline errors and the
+    mark advances on the other 26 handles, every post @sama published before the
+    new floor is skipped for ever -- and nothing downstream can tell those from
+    posts that were never written.
+    """
+
+    def _leg(self, monkeypatch, records, unresolved):
+        from pathlib import Path
+
+        import harvest_x
+        import yaml
+
+        monkeypatch.setattr(harvest_x, "pull",
+                            lambda *a, **k: (records, list(unresolved)))
+        monkeypatch.setattr("x_client.load_token", lambda env: "token")
+        config = yaml.safe_load(
+            (Path(__file__).parent.parent / "config" / "posts_sources.yaml")
+            .read_text(encoding="utf-8"))
+        return Source(leg="posts", id="posts", label="posts", stage=5,
+                      enabled=True, config=config)
+
+    def _post(self, handle="sama", date="2026-09-04"):
+        return {"url": f"https://x.com/{handle}/status/1", "lab": "openai",
+                "date": date, "title": "t", "text": "x" * 300,
+                "text_source": "x_post", "author_handle": handle,
+                "author_name": "n", "author_role": "r", "x_evidence": "profile",
+                "role_contested": False, "is_quote": False, "quoted_id": None,
+                "links": []}
+
+    def test_a_clean_run_advances_the_mark(self, monkeypatch):
+        source = self._leg(monkeypatch, [self._post()], [])
+        result = adapters.fetch_posts(source)
+        assert result.watermark == {"max_published": "2026-09-04"}
+
+    def test_a_handle_that_errored_holds_the_mark_back(self, monkeypatch):
+        source = self._leg(monkeypatch, [self._post()], [
+            {"url": "https://x.com/demishassabis", "lab": "google-deepmind",
+             "kind": "post", "reason": "fetch failed: HTTPError"}])
+        result = adapters.fetch_posts(source)
+        assert result.watermark == {}, (
+            "an empty watermark leaves the stored mark in place, so the next "
+            "firing retries the window this one only partly read")
+
+    def test_a_handle_skipped_for_budget_holds_the_mark_back(self, monkeypatch):
+        source = self._leg(monkeypatch, [self._post()], [
+            {"url": "https://x.com/sama", "lab": "openai", "kind": "post",
+             "reason": "post budget exhausted before this handle"}])
+        assert adapters.fetch_posts(source).watermark == {}
+
+    def test_a_prefiltered_post_is_not_a_partial_run(self, monkeypatch):
+        """The prefilter drops posts we *did* read. Treating that as incomplete
+        would freeze the mark for ever, because it fires on most runs."""
+        source = self._leg(monkeypatch,
+                           [self._post(), self._post("sama") | {
+                               "url": "https://x.com/sama/status/2",
+                               "text": "congrats!"}],
+                           [])
+        result = adapters.fetch_posts(source)
+        assert result.watermark == {"max_published": "2026-09-04"}
+        assert any("prefiltered" in u["reason"] for u in result.unresolved)

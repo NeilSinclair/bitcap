@@ -45,12 +45,20 @@ POST_PROMPT_VERSION = "t1"
 # would leave only the second version's rows (app/connect.py).
 PROMPT_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION)
 
-# What the DIGEST and the content alerts read, which is deliberately not all of
-# them. Posts are scored, joined to holdings and shown in the dashboard, but an
-# unproven corpus must not be able to spam the two surfaces a reader is pushed
-# rather than pulls. Widening this to include POST_PROMPT_VERSION is the whole
-# change when the corpus has earned it.
-DIGEST_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION)
+# What the DIGEST and the content alerts read. Posts were held out of this while
+# the corpus was unproven (D63); D68 admits them, so all four corpora are now
+# eligible for a digest.
+#
+# Alerts are a separate decision and are still off: `content_mute_prompt_versions`
+# in config/pipeline.yaml keeps `t1` muted, so a post can reach a digest a reader
+# chooses to open without being able to page anyone. Two surfaces, two switches.
+#
+# `app/pipeline/worker.py` builds its own tuple here rather than importing this
+# one, because it honours a `--prompt` override. The two must agree at the
+# default, and `test_digest.py` asserts it: a divergence would show posts in
+# `/api/digests/preview` while the published digest omitted them, which is the
+# same "two places disagree and both look right" failure D67 and D68 are about.
+DIGEST_VERSIONS = (PROMPT_VERSION, PAPER_PROMPT_VERSION, POST_PROMPT_VERSION)
 
 
 _load_env = load_env  # kept as a name here; the implementation lives in app.db
