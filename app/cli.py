@@ -20,6 +20,7 @@ from app.connect import connect as run_connect
 from app.db import drop_all, ensure_schema, get_engine, get_session, load_env
 from app.load_raw import PAPERS as PAPERS_CORPUS_FILE
 from app.load_raw import POSTS as POSTS_CORPUS_FILE
+from app.pipeline import dedupe as dedupe_mod
 from app.pipeline.registry import CORPUS_LABELS, PAPERS_CORPUS, POSTS_CORPUS
 from app.load_raw import (PAPER_SCORES_DIR, POST_SCORES_DIR, load_articles,
                           load_classifications, load_costs, load_repo_verdicts)
@@ -71,11 +72,32 @@ _load_env = load_env  # kept as a name here; the implementation lives in app.db
 
 
 def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
-    """Run refs + raw + transform + connect as one tracked transaction.
+    """Run refs + raw + transform + connect + group as one tracked transaction.
 
     Connect is chained deliberately: the ref reload deletes the connections
     (they reference holdings and are derived), so a load that stopped before
     the join would leave the table empty and looking like a finding.
+
+    **Grouping is chained for the same reason, and was not, and it cost a
+    production morning (D74).** `transform` deletes and re-inserts `articles`,
+    which reassigns their primary keys; `article_groups` and `article_links`
+    hang off `articles.id` and went with them. A `bitcap-db load` therefore left
+    both at zero rows and every surface silently flat — no "5 more on this" on
+    the dashboard, no fold badge in the digest, no related-document pills
+    anywhere. Nothing errored, because from the pipeline's side nothing had.
+
+    It matters beyond an operator's afternoon: `bitcap-db rebuild` is
+    `drop_all` + `ensure_schema` + this function, and README.md makes it the
+    first command a new reader runs. Without the chain they clone the repo,
+    follow the instructions, and open an ungrouped feed with no way to tell it
+    is not the finished product.
+
+    `adjudicate_pairs=False` is what lets this live here at all. It runs the
+    exact pass, the release trains and the cached-cosine gate, and skips the
+    only call in the path that costs money — so a rebuild stays reproducible
+    from committed artifacts with no API key, which is what the README promises.
+    A pair the adjudicator would have decided is left ungrouped rather than
+    guessed at; the next worker firing resolves it.
 
     `stats` is filled stage by stage and handed to `tracked`, which records it
     on either path — so a run that dies in `transform` says so, rather than
@@ -123,6 +145,12 @@ def cmd_load(session, prompt_version: str, kind: str = "load") -> None:
         stats["paper_transform"] = transform(session, PAPER_PROMPT_VERSION, run_id=run.id)
         stats["post_transform"] = transform(session, POST_PROMPT_VERSION, run_id=run.id)
         stats["connections"] = run_connect(session, versions, run_id=run.id)
+        # Once, under the announcement version, matching the worker. `assign`
+        # rebuilds both tables wholesale on every call, so looping the versions
+        # here would leave only the last one's rows — the same trap `connect`
+        # carries, one table over.
+        stats["dedupe"] = dedupe_mod.assign(
+            session, prompt_version, run_id=run.id, adjudicate_pairs=False)
         run.cost_usd = costs["new_usd"]
         run.watermarks = watermarks(session)
 
