@@ -8693,17 +8693,32 @@ and the D51 idempotence tests pass unchanged.
 hands those to `window_for` — which now resolves them *backwards* one period. The
 backfill filled the period before each gap and left every gap exactly where it
 was. It now returns the moment that resolves forward to the gap, and the
-docstring says why, because the coupling is invisible from either side. Caught by
-`test_a_missed_firing_does_not_leave_a_permanent_hole`, which is the test written
-for D79's missed-firing problem and turned out to cover this too.
+docstring says why, because the coupling is invisible from either side.
+
+Caught by two tests written for D79 that turned out to cover this too. **One of
+them barely did, and review found that as well.** It asserted `date(9, 4) in
+ends` — the period the second firing publishes anyway, so it held whether or not
+the backfill ran — leaving only a `len(ends) == 3` count doing any work. A
+backfill that filled the *wrong* day would have passed both. It now pins the
+ordered set `[2 Sep, 3 Sep, 4 Sep]`, and mutation-checking it against the old
+boundary shows exactly which day goes missing.
 
 **The test fixture moved, and the data did not.** `tests/test_digest.py` pinned
 `END = 4 Sep` against articles dated the 3rd and 4th — a pairing that encoded the
 old relationship between firing time and covered days. It is now `END = 6 Sep`,
-which reproduces the identical window `[02 Sep, 04 Sep]`, so every assertion in
-that file still tests what it tested. Verified before changing it rather than
-after: 35 tests failed, and shifting the firing time — not the assertions — made
-all 35 pass again.
+which under the new code reproduces the identical window `[02 Sep, 04 Sep]`, so
+every assertion in that file still tests what it tested. Verified before changing
+it rather than after, and no assertion was touched.
+
+**The first version of this paragraph said "35 tests failed and shifting the
+firing time made all 35 pass again", and that was wrong** — caught in review and
+measured rather than argued. The fixture shift alone fixes **33**. The other two,
+`test_a_missed_firing_does_not_leave_a_permanent_hole` and
+`test_a_backfill_never_rewrites_an_edition_that_exists`, stayed red until the
+backfill compensation below, which is the whole point: they were reporting a
+second real bug, and rolling them into a fixture-change tally would have buried
+it. Re-checked by reverting the backfill line and running the file: exactly those
+two fail.
 
 Three new tests, mutation-checked against the old offset: the Wednesday firing
 covers Tuesday; no published window at any width ever includes an unfinished day;

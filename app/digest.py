@@ -75,7 +75,7 @@ EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
 def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
-    """The period one digest covers: the last complete slot of the fixed grid.
+    """The period one digest covers: the newest slot of the grid that is over.
 
     **Quantised, and this is the whole point.** Taking the window as
     `[run.started_at - 48h, run.started_at]` looked right and was wrong twice
@@ -574,7 +574,9 @@ def _unpublished_periods(session: Session, config: dict, end: datetime,
     Args:
         session: Open session.
         config: Parsed config; `window_hours` sets the grid.
-        end: The moment being published for.
+        end: The moment being published for. `window_for` resolves it back to
+            the newest period whose days have all finished, so this is the
+            firing time, not the window's own end.
         label: `prompt_version` the editions are keyed under.
 
     Returns:

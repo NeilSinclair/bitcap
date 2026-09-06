@@ -634,11 +634,16 @@ class TestPublishing:
                        config=cfg)
         session.commit()
 
+        # The ORDERED SET, not a count and not one membership check. An earlier
+        # version asserted `date(2026, 9, 4) in ends` -- which is the period the
+        # second firing publishes anyway, so it held whether or not the backfill
+        # ran, and only `len(ends) == 3` was doing any work. A backfill that
+        # filled the wrong day would have passed both.
+        #
         # sqlite hands back naive datetimes; the dates are what matter here.
         ends = sorted({r.window_end.date() for r in session.scalars(select(m.Digest))})
-        assert date(2026, 9, 4) in ends, (
-            f"the period ending 4 Sep was never published; ends are {ends}")
-        assert len(ends) == 3, "expected 2, 3 and 4 Sep"
+        assert ends == [date(2026, 9, 2), date(2026, 9, 3), date(2026, 9, 4)], (
+            f"expected the 3rd to be backfilled between the two firings; got {ends}")
 
     def test_a_backfill_never_rewrites_an_edition_that_exists(self, session):
         """The delicate half. A digest is a frozen record of what the product
