@@ -8393,3 +8393,54 @@ picker; and no label is lowercase, which catches the case where the raw id is
 copied in as the "fix". All three mutation-checked against the state they
 replaced, and the parse asserts it found something, so a refactor cannot make
 three emptiness checks pass vacuously.
+
+## D77 — The digest cap was raised to 16, and measuring what it had been cutting reversed the reason for doing it (2026-09-06)
+
+`max_items: 8 → 16` on both audiences (`config/digest.yaml`).
+
+The prompt for this was the open question D76 left: posts now reliably reach the
+window they belong to, an edition has a fixed number of slots, and nobody had
+looked at whether posts were pushing announcements out of them.
+
+**They were not.** Measured on the deployed corpus before the change:
+
+| audience | passed the rule | shown at 8 | dropped by the cap |
+|---|---:|---:|---:|
+| investment | 2 | 2 | 0 |
+| ai | 15 | 8 | 7 |
+
+Two findings, and the first one makes the second one smaller than it looks.
+
+**On the investment digest the cap has never done anything.** Two items of 58
+considered clear `min_strength` + `always_band`; 8 and 1000 produce the identical
+edition. The number that bounds this audience is the rule, not the cap, and the
+worry that posts crowd it out was misplaced — nothing is being crowded out of a
+list with six empty slots. It is raised anyway, only so the two audiences do not
+silently differ.
+
+**On the AI digest the cap was binding, and every one of the 7 items it dropped
+was `medium`.** Not one high-band item was lost to it: the ranking already had
+all of them inside the top 8. Five of the seven were X posts. So posts were not
+displacing announcements — they rank *below* them, which is the ranking working
+as designed. The cap was cutting the medium tail, and the medium tail is mostly
+posts.
+
+**What raising it actually does, stated because it is the real consequence.**
+The AI edition goes from 8 rows to 15, and 6 of those 15 are X posts — from one
+in eight to roughly two in five. That is a larger change to how that digest reads
+than "8 → 16" suggests, and it follows directly from D76: nightly ingestion is
+what put those posts inside their own window in the first place.
+
+**If it reads as noisy, this is the wrong lever to reach back for.** `max_items`
+cuts on *position* — it drops whatever fell below a line, regardless of merit,
+and reports it as `suppressed` next to items suppressed on merit. `min_band:
+medium → high` cuts on merit and says so. The cap is a length limit for a reader,
+not a quality filter, and using it as one is how a genuinely important item ends
+up dropped for being ninth.
+
+**Neither number was pinned by anything before this.** Every test in
+`tests/test_digest.py` runs against a `CONFIG` fixture carrying its own
+`max_items`, so both shipped values could be changed — or reverted by a merge —
+with the whole suite green. `test_the_shipped_item_caps_are_pinned` is the
+tripwire, on the same reasoning as `test_the_shipped_window_is_pinned` (D73): it
+asserts the number moves deliberately, not that 16 is correct.

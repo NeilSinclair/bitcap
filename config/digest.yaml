@@ -122,7 +122,13 @@ investment:
   always_band: high
 
   # Hard cap on rows. A digest nobody finishes reading has suppressed nothing.
-  max_items: 8
+  #
+  # RAISED 8 -> 16 (2026-09-06), and on this audience it is a no-op TODAY. The
+  # investment rule (`min_strength` + `always_band`) admits 2 items of the 58
+  # considered, so the cap has never been what bounds this digest -- measured,
+  # 8 and 1000 produce the identical edition. Raised anyway so the two audiences
+  # do not silently differ; the number that governs this one is the rule above.
+  max_items: 16
 
 ai:
   # An item reaches the AI team only if it carries a practice tagged `adopt` or
@@ -131,7 +137,30 @@ ai:
   # to do nothing.
   actions: [adopt, investigate]
   min_band: medium
-  max_items: 8
+
+  # RAISED 8 -> 16 (2026-09-06). Here the cap WAS binding: 15 items passed the
+  # rule and 8 were shown, so 7 were dropped by the cap rather than on merit.
+  #
+  # What the cut was actually doing, measured on the deployed corpus before the
+  # change -- and it is not what it looks like from the outside:
+  #
+  #   dropped by the cap:  7, EVERY ONE of them `medium` band
+  #   of those 7:          5 are X posts, 2 are documents
+  #   high-band items:     0 dropped -- the ranking already had all of them
+  #                        inside the top 8
+  #
+  # So posts were not crowding out announcements. They rank below them, which
+  # is the ranking working. The cap was cutting the medium tail, and the medium
+  # tail is mostly posts.
+  #
+  # THE COST, STATED. At 16 this audience's edition goes from 8 rows to 15, and
+  # 6 of those 15 are X posts -- from one in eight to roughly two in five. That
+  # is a bigger change to what the AI digest FEELS like than the number
+  # suggests, and it is the direct consequence of the posts leg going nightly
+  # (D76): posts now reliably reach the window they belong to. If an edition
+  # reads as noisy, `min_band: medium` is the honest lever, not this one --
+  # raising it to `high` cuts on merit where this cuts on position.
+  max_items: 16
 
 # Per event, how many affected holdings to name before collapsing to a count.
 #
