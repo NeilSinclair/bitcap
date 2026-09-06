@@ -167,6 +167,60 @@ class TestTheBackfillKeyIsValidated:
         assert check_sources(ROOT / "config") == []
 
 
+class TestUnknownKeysAreCaughtInsideSecondaryChannels:
+    """The allowlist walked only the primary lab entry, so a typo inside an
+    `also:` channel passed clean -- the gap the class above claims an allowlist
+    does not have, one level down.
+
+    Found in review of D66. `feed_pagees: 3` in the meta-ai newsroom channel
+    validated green; `from_rss` then read page 1 only, which reaches back two
+    months rather than three, dropping the June items the channel was added
+    for. Every check stayed green, which is the same silent-under-coverage
+    shape D66 itself was about. The required-keys loop directly above already
+    iterated `[lab] + also` for exactly this reason.
+    """
+
+    def _sources(self, also_extra):
+        lab = {"id": "meta-ai", "label": "Meta AI", "method": "rss",
+               "index_url": "https://ai.meta.com/blog/",
+               "text_source": "full_text",
+               "also": [{"method": "rss",
+                         "index_url": "https://about.fb.com/news/tag/ai/feed/",
+                         **also_extra}]}
+        return {"version": 1, "window_months": 3, "labs": [lab]}
+
+    def _check(self, tmp_path, doc):
+        _write(tmp_path / "sources.yaml", doc)
+        return check_sources(tmp_path)
+
+    def test_the_new_paging_keys_are_allowed(self, tmp_path):
+        doc = self._sources({"feed_pages": 3, "feed_page_param": "paged"})
+        assert self._check(tmp_path, doc) == []
+
+    def test_a_typo_inside_a_secondary_channel_is_caught(self, tmp_path):
+        errors = self._check(tmp_path, self._sources({"feed_pagees": 3}))
+        assert any("feed_pagees" in e and "unknown key" in e for e in errors)
+
+    def test_a_typo_on_the_primary_entry_is_still_caught(self, tmp_path):
+        doc = self._sources({})
+        doc["labs"][0]["feed_pagees"] = 3
+        errors = self._check(tmp_path, doc)
+        assert any("feed_pagees" in e and "unknown key" in e for e in errors)
+
+    def test_the_paging_keys_are_allowed_on_a_primary_entry_too(self, tmp_path):
+        """They were usable only inside `also:` by accident of the loop's
+        scope -- on a primary entry the allowlist would have rejected them."""
+        doc = self._sources({})
+        doc["labs"][0]["feed_pages"] = 2
+        assert self._check(tmp_path, doc) == []
+
+    def test_a_nested_also_is_rejected(self, tmp_path):
+        """`channels()` merges one level and never recurses, so a nested
+        `also` is a silent no-op rather than a second tier of channels."""
+        errors = self._check(tmp_path, self._sources({"also": []}))
+        assert any("'also'" in e and "unknown key" in e for e in errors)
+
+
 class TestTheRelevanceBlockIsValidated:
     """`repo_signals.yaml`'s `relevance` block.
 

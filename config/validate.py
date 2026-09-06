@@ -227,6 +227,7 @@ SOURCE_LAB_KEYS = {
     "id", "label", "method", "index_url", "text_source", "date_from",
     "url_contains", "notes", "also", "enabled", "backfill", "window_months",
     "baseline", "date_basis", "category", "page_param", "user_agent",
+    "feed_pages", "feed_page_param",
 }
 
 # Text-recovery strategies a lab may declare with `backfill:`. Read by
@@ -300,12 +301,25 @@ def check_sources(root: Path) -> list[str]:
         # underscores cannot recover a dropped letter. An allowlist has no such
         # gap: anything not named here is either a typo or a key someone added
         # without telling this file.
-        for key in lab:
-            if key not in SOURCE_LAB_KEYS:
-                errors.append(
-                    f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
-                    f"reads it (known: {', '.join(sorted(SOURCE_LAB_KEYS))})"
-                )
+        #
+        # Over `[lab] + also`, matching the required-keys loop above, because
+        # the allowlist was walking only the primary entry and a typo inside a
+        # secondary channel passed silently -- the exact gap the paragraph
+        # above claims an allowlist does not have. `feed_pagees: 3` in the
+        # meta-ai newsroom channel validated clean, and `from_rss` then read
+        # page 1 only, which reaches back two months rather than three.
+        #
+        # `also` itself is not allowed inside a channel: `channels()` merges
+        # one level and never recurses, so a nested one is a silent no-op
+        # rather than a second tier of channels.
+        for channel in [lab] + list(lab.get("also", [])):
+            allowed = SOURCE_LAB_KEYS if channel is lab else SOURCE_LAB_KEYS - {"also"}
+            for key in channel:
+                if key not in allowed:
+                    errors.append(
+                        f"sources.yaml/{lab_id}: unknown key '{key}' -- nothing "
+                        f"reads it (known: {', '.join(sorted(allowed))})"
+                    )
     return errors
 
 

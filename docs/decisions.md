@@ -7146,3 +7146,197 @@ Spend **$8.37** — $8.04 of it the labelling, and half of *that* a discarded ru
 The bake-off itself, both candidates over 183 repositories, was $0.33.
 
 No migration: the verdict cache reuses `raw_llm_responses`.
+
+## D66 — Google DeepMind and Meta AI were under-covered, for two different reasons (2026-09-05)
+
+Neil noticed the register held almost nothing from either lab. It held 12
+DeepMind announcements and 5 Meta ones across a three-month window. The two
+turned out to have nothing in common except the symptom.
+
+### DeepMind: the sitemap does not enumerate the blog
+
+`method: sitemap` on `deepmind.google/sitemap.xml`, chosen in D14 "for parity
+with Anthropic's proven path". Every observable said it was working: 200s, a
+clean parse, real dates, and every article it returned genuinely in window. It
+was reading a document that does not list most of the blog.
+
+Measured 2026-09-05 against `deepmind.google/blog/rss.xml`: **sitemap 12, RSS
+30, and the sitemap's 12 a strict subset of the RSS 30.** The 18 it missed were
+not a random sample. They were the launches — Gemini 3.6, 3.7, 3.8 Flash and 3.8
+Flash Cyber, Gemma 4 12B, DiffusionGemma, Nano Banana 2 Lite, Gemini Omni 1.1
+Flash, Gemini 3.5 Transcribe, computer use in Gemini 3.5 Flash, Gemini Robotics
+ER 2, WeatherNext 3, Lyria 3.5. What the sitemap *did* carry was the education,
+policy and programme posts. The register therefore said DeepMind shipped nothing
+but outreach for three months, which is close to the opposite of the truth.
+
+The sitemap is not stale, it is the wrong document: 731 URLs, 347 matching
+`/blog/`, against a blog with far more history than that, and 267 of the 347
+carrying an identical `2026-07` `<lastmod>` from a bulk re-render. The existing
+code was right to treat `<lastmod>` as a coarse prefilter only. A prefilter
+cannot recover a URL the document never listed.
+
+Switched to `method: rss`, `date_from: feed`. That also fixes a date drift the
+page-reading path had — 06-18 against the feed's 06-16 for "Securing the future
+of AI agents", 07-30 against 07-28 for Gemini Robotics 2 — because the first
+"Month D, YYYY" in a stripped DeepMind page is not reliably the article's own.
+
+**Alternative rejected: keep the sitemap as a second channel.** The `also:`
+mechanism exists and D47's whole lesson is that one feed fails silently. It
+buys nothing here — the sitemap's in-window set is a strict subset of the
+feed's — and costs ~276 article fetches per run to confirm that. The feed's own
+failure mode is depth, not omission: 100 items reaching back to 2026-01, noted
+in the config as the thing to watch if `window_months` is ever raised.
+
+### Meta: nothing was broken, the blog is quiet
+
+The opposite finding, and worth stating plainly because the instinct was to fix
+it. `from_listing_pagination` against `ai.meta.com/blog/` is correct. Crawled to
+exhaustion: 231 unique articles back to 2019, of which exactly 5 are in window,
+and the register held all 5. Meta's AI blog had not published in 40 days.
+
+Two properties of that listing are worth knowing before trusting a future count.
+It is **not reverse-chronological** — page 1 carried March, April, June and July
+posts together, because five sticky "featured" items repeat on every page. And
+`from_listing_pagination` stops at the first page with no in-window article,
+which on a listing ordered like this could stop early. It does not today only
+because the sticky block sits on page 1. Recorded, not fixed: changing the
+stopping rule without a listing that actually needs it is speculative.
+
+The real gap was that `ai.meta.com/blog` is not where Meta's investment-relevant
+AI news lands. Added `about.fb.com/news/tag/ai/feed/` as a second channel: **15
+in-window items against the blog's 5**, carrying the BlackRock data-centre joint
+venture, the Reliance AI data centre in India, the Louisiana and Canada
+expansions and "Infrastructure Explained: Compute Power" — none of which appear
+on the AI blog at all. For a fund whose Meta exposure runs through capex into
+the compute and energy complex, that is the highest-value Meta signal there is,
+and the register had none of it.
+
+**Alternative rejected: filter the newsroom feed to infra and product.** It also
+carries CSR and programme posts ("Facebook Verified", "America's Workforce
+Academy"). A keyword rule would raise signal-to-noise at ingestion, and a filter
+that silently drops a real launch is a worse failure than a low-scoring row.
+This pipeline already has a scorer whose entire job is that judgement, and it
+did it: the four data-centre items band `high`, the CSR posts band `none`.
+
+**Not done: impersonating `facebookexternalhit`.** `ai.meta.com`'s sitemap is
+gated to named crawler agents, which robots.txt allows by name, and sending that
+agent would open it. That is a statement about that crawler and not about us,
+and the same robots.txt opens by prohibiting automated collection outright. The
+listing is a published surface reachable as ourselves; the sitemap is not.
+
+### Two traps this switch set, both real
+
+**URL identity.** The feed's `<link>` carries a trailing slash where the sitemap
+path stripped it, so all 12 pre-existing DeepMind articles changed URL form. URL
+is the unique key on `raw_articles` and on the score cache, so every one of them
+became a cache miss — 30 articles to classify, not 18 — and the run needs a
+`bitcap-db rebuild` rather than an incremental load, or the 12 old rows persist
+beside their replacements. The scored register merges by URL and never prunes,
+so it also had to be pruned of the 12 superseded rows by hand.
+
+**Entity encoding in RSS titles.** `from_rss` never unescaped `<title>`, which
+was invisible while every configured feed served real UTF-8. `about.fb.com`
+serves numeric entities, so the channel would have stored `Meta&#8217;s AI`
+verbatim. Not cosmetic: the title is what dedupe's exact gate matches on and
+what it embeds, and `strip_html`'s docstring already records this exact class of
+bug costing 9 of 90 verbatim quote checks. Fixed in `from_rss`; a no-op on all
+292 existing rows.
+
+### Consequence
+
+Corpus 259 -> 292. DeepMind 12 -> 30, Meta 5 -> 20. Eight new `high` band items,
+four of them scoring 100.0 (see `docs/insights.md`).
+
+**The test that would have caught this does not exist and cannot be written with
+a mock.** A stubbed sitemap returns exactly the URLs the test author puts in it,
+so a unit test of `from_sitemap` passes just as happily against a document
+listing nothing. `TestDeepMindDiscoveryChannel` in `tests/test_announcements.py`
+instead pins the two things checkable offline: the configured channel, and a
+coverage floor of 20 in the committed register with an explicit assertion that
+the named launches are present — a count alone could be met while still missing
+every launch, which is precisely the shape of the original failure. Both
+assertions were verified to fail against the pre-fix register.
+
+**The general gap remains open.** Nothing detects a discovery channel that
+silently narrows on a lab this exercise did not touch. The honest prerequisite
+is a per-lab expected-cadence baseline, which is the cost of that detector
+rather than a detail of it — same reasoning as D61's link-count arm.
+
+### D66a — what review caught, and the one finding that was a regression I introduced
+
+Six findings from `bitcap-reviewer` against the D66 branch. Four fixed, one
+already-correct-but-untested, one that turned out to be a regression this
+change itself introduced rather than the pre-existing gap it was reported as.
+
+**The validator could not see inside `also:`.** `check_sources` validated
+required keys over `[lab] + also` but ran its unknown-key allowlist over `lab`
+alone. Verified by execution: renaming `feed_pages` to `feed_pagees` inside the
+meta-ai newsroom channel returns `[]` from the validator. `from_rss` then falls
+back to one page, which the config's own note records as reaching 2026-07-07 —
+two months, not three — silently dropping the June items including the Reliance
+data-centre JV that `docs/insights.md` names as a top finding. Green validator,
+green suite, successful run. That is the D66 failure exactly, one level down,
+and it was introduced by adding config keys the allowlist did not know about.
+Fixed by iterating the same `[lab] + also` the loop above it already used, and
+`also` is now rejected *inside* a channel because `channels()` merges one level
+and never recurses, so a nested one is a silent no-op.
+
+**The Meta half had no register-level test where DeepMind got two.** The
+asymmetry mattered more than it looked: Meta's fix is a *second channel*, which
+is one `enabled: false` away from vanishing — an edit `channels()`' docstring
+explicitly invites — and that channel carries all four 100.0-scoring items.
+Losing it returns the register to its pre-D66 state with every test passing.
+`TestMetaDiscoveryChannels` now pins the channel's presence and enablement, its
+page depth, a coverage floor of 12, and the four named data-centre items, on the
+same reasoning as DeepMind's: a floor alone could be met by the CSR posts the
+feed also carries.
+
+**`from_rss` was the only path not truncating to 24000.** Pre-existing, and
+invisible until this change: every configured feed served short pages, and
+DeepMind's longest article is 18.5k. `about.fb.com` has no such discipline and
+stored a 47,148-character row — the first in the corpus over a cap every other
+discovery path enforces, and nothing downstream bounds it, since `build_prompt`
+interpolates the text verbatim. Capped, and the one oversized row truncated.
+
+Re-scoring that row after truncation is worth recording, because it is a
+variance observation and not a truncation one: the full text scored `none` with
+zero mechanisms, the truncated text scored `low` (3.3) with four, all four
+quotes resolving. The article is a vision essay whose signal is genuinely
+marginal either way, so this changes nothing about the corpus — but it is the
+same classifier, the same prompt and near-identical text disagreeing with
+itself, which is what `docs/drift` exists to watch and is worth not averaging
+away.
+
+**A test that pinned a string no code reads.**
+`test_the_date_comes_from_the_feed_not_the_page` asserted
+`deepmind["date_from"] == "feed"`. Only `from_sitemap` reads that key;
+`from_rss` always dates from `pubDate`, so the test would have passed unchanged
+if this path started reading dates off the page. Rewritten to feed a fake whose
+page date differs from its `pubDate` and assert the feed's date wins.
+
+**The empty-feed guard, and the regression underneath it.** Reported as
+pre-existing: `from_rss` returning `[]` is indistinguishable from a quiet lab,
+because `adapters.fetch_announcements` records a channel as failed only when the
+method raises. Half right. The zero-item case was pre-existing and is now
+guarded, matching `from_model_index`'s "parsed 0 models" and `from_discourse`'s
+"listed 0 topics" — and it matters more here because D66 deliberately left
+DeepMind single-channel. But the `try/except RuntimeError: break` that paging
+introduced was *new*, and it swallowed a page-1 **fetch failure** that
+previously propagated. Paging turned a loud failure into a silent one while
+adding depth. Page 1 now re-raises; only later pages are tolerated, since page 1
+is the channel and pages 2+ are only depth.
+
+**Verified clean by review, recorded because the checks are worth having run:**
+all 292 stored tag quotes resolve under the real `verbatim.enforce`; `score_of`
+recomputed from `config/scoring.yaml` matches every stored `(score, band)`; the
+artifact surgery changed zero rows present in both versions, so the D55 OpenAI
+revert hazard was in fact avoided; and the UA logic is correct — `user_agent`
+appears on exactly one lab entry, so openai, mistral and deepmind resolve to the
+module default and are byte-identical to before.
+
+**Also cleaned:** the 12 orphan v9 cache files left by the URL-form change.
+D66's trap note said the scored register was pruned by hand; the score cache was
+not, and it is not read by URL glob so nothing broke — but it left a 12-file
+discrepancy for the next person auditing cache coverage. Register, cache and
+scored register are now 1:1 at 292 with zero orphans in either direction, which
+is asserted rather than claimed.
