@@ -44,15 +44,25 @@ path (optional — without it the database falls back to a local sqlite file).
 git clone <repo> && cd bitcap
 uv sync                        # env + deps from the committed lockfile
 docker compose up -d           # local Postgres (skip for sqlite fallback)
-echo "DATABASE_URL=postgresql+psycopg://bitcap:bitcap@localhost:5432/bitcap" >> .env
+cp .env.example .env           # then uncomment DATABASE_URL for the container above
+uv run python -m api.auth      # prints AUTH_PASSWORD_HASH and AUTH_SECRET; paste both
+                               # into .env along with any AUTH_EMAIL
 uv run bitcap-db rebuild       # schema + full load from committed data
 uv run bitcap-db status        # last runs, counts, watermarks, cost
 uv run pytest                  # full test suite
 ```
 
-`DATABASE_URL` goes in `.env` rather than a plain `export` so every later
-terminal — the API, the frontend, a fresh `bitcap-db` invocation — picks it up
-the same way, instead of only the shell that ran this command.
+Everything goes in `.env` rather than a plain `export` so every later terminal —
+the API, the frontend, a fresh `bitcap-db` invocation — picks it up the same way,
+instead of only the shell that ran this command. `DATABASE_URL` ships commented
+out, so skipping Docker needs no edit at all: that is what selects the sqlite
+fallback.
+
+**The three `AUTH_` values are not optional if you want to see anything.** The
+site is behind a single account and the API fails closed: without them every
+route returns `503 authentication is not configured`, so a rebuilt database
+renders as a blank page rather than an error you can act on. Details, and how to
+rotate them, under [Sign-in](#sign-in) below.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
 announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
@@ -334,7 +344,7 @@ counter that decides when the GitHub leg is due.
 - `config/` — what's tracked: labs, mechanisms, categories, practices,
   holdings, scoring rules. Adding a lab or holding is a config change;
   `config/validate.py` gates every load.
-- `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v7.md`)
+- `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v9.md`)
 - `research/` — ingestion, classification, evaluation (gold set), analyses
 - `app/` — the database package (`bitcap-db`), the scheduled pipeline
   (`app/pipeline/`), and the digest (`app/digest.py`)
