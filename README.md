@@ -344,7 +344,7 @@ counter that decides when the GitHub leg is due.
 - `config/` — what's tracked: labs, mechanisms, categories, practices,
   holdings, scoring rules. Adding a lab or holding is a config change;
   `config/validate.py` gates every load.
-- `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v7.md`)
+- `prompts/` — versioned LLM prompts (current classifier: `announcement_scoring/v9.md`)
 - `research/` — ingestion, classification, evaluation (gold set), analyses
 - `app/` — the database package (`bitcap-db`), the scheduled pipeline
   (`app/pipeline/`), and the digest (`app/digest.py`)
