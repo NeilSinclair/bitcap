@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codebase Walkthrough Notes</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf8;
+    --panel: #ffffff;
+    --ink: #1b1a18;
+    --muted: #6b6862;
+    --rule: #e3e0d9;
+    --accent: #9a5b2e;
+    --code-bg: #f2efe9;
+    --warn-bg: #fdf6ec;
+    --warn-rule: #d9a441;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c;
+      --panel: #1d2025;
+      --ink: #e8e6e1;
+      --muted: #9a978f;
+      --rule: #30343b;
+      --accent: #e0a06a;
+      --code-bg: #24272d;
+      --warn-bg: #26221a;
+      --warn-rule: #7a5f22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  main { max-width: none; margin: 0; padding: 48px 40px 96px; }
+  header { border-bottom: 1px solid var(--rule); padding-bottom: 20px; margin-bottom: 36px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0; max-width: 900px; }
+  h2 {
+    font-size: 21px; margin: 48px 0 6px; letter-spacing: -0.01em;
+    padding-top: 20px; border-top: 1px solid var(--rule);
+  }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 32px 0 10px; }
+  h4 { font-size: 16px; margin: 26px 0 8px; }
+  p, ul, ol { max-width: 1000px; }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 10px; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 0.87em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; max-width: 1000px; margin: 0 0 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+  }
+  .lede { color: var(--muted); font-size: 14.5px; }
+  .note {
+    background: var(--warn-bg); border-left: 3px solid var(--warn-rule);
+    padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 0 0 16px;
+    font-size: 15px; max-width: 1000px;
+  }
+  .refusals { list-style: none; padding: 0; margin: 0 0 20px; max-width: 1000px; }
+  .refusals li {
+    border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin-bottom: 16px;
+  }
+  .refusals b { display: block; }
+  .ref { color: var(--muted); font-size: 0.87em; white-space: nowrap; }
+  table { border-collapse: collapse; margin: 0 0 22px; font-size: 14.5px; width: 100%; max-width: 1100px; }
+  th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; }
+  td:first-child { white-space: nowrap; }
+  td:last-child, th:last-child { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  tr.group td {
+    padding-top: 20px; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--accent); font-weight: 600; border-bottom: none;
+  }
+
+  /* --- diagram --- */
+  :root { --lane: #f4f1ea; --inv: #2f6f9f; --ai: #4b7f52; }
+  @media (prefers-color-scheme: dark) {
+    :root { --lane: #212429; --inv: #7fb6de; --ai: #8dc196; }
+  }
+  .figure {
+    overflow-x: auto; margin: 24px 0 10px; padding: 14px;
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+  }
+  .figure svg { display: block; width: 100%; height: auto; min-width: 1160px; }
+  .caption { color: var(--muted); font-size: 13px; margin: 0 0 24px; max-width: 1000px; }
+  .bx { fill: var(--panel); stroke: var(--rule); stroke-width: 1; }
+  .lane { fill: var(--lane); stroke: var(--rule); stroke-width: 1; stroke-dasharray: 4 4; }
+  .key { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+  .keyinv { fill: none; stroke: var(--inv); stroke-width: 1.4; }
+  .keyai  { fill: none; stroke: var(--ai);  stroke-width: 1.4; }
+  .ln { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+  .t   { fill: var(--ink); font-size: 13px; }
+  .tb  { fill: var(--ink); font-size: 13.5px; font-weight: 600; }
+  .tm  { fill: var(--muted); font-size: 12.5px; }
+  .tl  { fill: var(--muted); font-size: 11px; letter-spacing: 0.12em; font-weight: 600; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: var(--ink); }
+  .monod { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: var(--muted); }
+  .cinv { fill: var(--inv); }
+  .cai  { fill: var(--ai); }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Codebase walkthrough — session notes</h1>
+  <p class="sub">Read-only walkthrough, 8–9 September 2026. Notes taken while reading, to be
+  condensed later. Nothing here is authoritative — it is what the code reads like from
+  outside.</p>
+</header>
+
+<h2>The register</h2>
+
+<p class="lede">Two different things in this repo are called “the register”.</p>
+
+<h3>1. The config files — what we track</h3>
+
+<p>This is the <em>Register</em> box in the pipeline diagram. It is nineteen YAML files and
+no code, because adding a lab, a person or a source has to be a config change
+(non-negotiable #6). The files are doing five different jobs, and they are much easier to
+read once you know which job each one has.</p>
+
+<table>
+  <thead><tr><th>File</th><th>What's in it</th><th>Lines</th></tr></thead>
+  <tbody>
+    <tr class="group"><td colspan="3">Where to look</td></tr>
+    <tr><td><code>sources.yaml</code></td><td>Where each of the seven labs publishes, and how reachable it is. Each entry names a discovery method the fetcher implements; an unknown method is refused rather than guessed at. <code>text_source</code> records what the scorer actually read, so a score taken from a two-line RSS summary is never silently compared with one taken from a full article.</td><td>324</td></tr>
+    <tr><td><code>people.yaml</code></td><td>Senior figures per lab and the channels they publish on. Labs don't post; people do. Every role and handle carries the date it was fetched and what established it, and anything that couldn't be sourced is <code>null</code> with a note saying so.</td><td>993</td></tr>
+    <tr><td><code>papers_sources.yaml</code></td><td>Which labs have a papers harvester, and how to call it. Coverage used to be encoded in which files happened to exist on disk, which meant xAI's deliberate exclusion looked identical to work nobody had got round to.</td><td>138</td></tr>
+    <tr><td><code>github_sources.yaml</code></td><td>GitHub orgs per lab, and what each org's commit-email domain proves. <code>domain_shared</code> marks a domain owned by the parent company rather than the lab — <code>@google.com</code> covers all of Alphabet, so a match there is real evidence but weaker.</td><td>152</td></tr>
+    <tr><td><code>posts_sources.yaml</code></td><td>The X leg: which handles to read, over what window, and how much may be spent. The handles themselves live in <code>people.yaml</code> and are not repeated here, so there is one list of who works where and no copy to drift.</td><td>113</td></tr>
+    <tr><td><code>repo_signals.yaml</code></td><td>Which repositories the releases leg watches, ranked by stars and nothing else. Commit volume was tried and rejected: xAI's three most newsworthy repos are its three least-committed, because they're code dumps pushed by CI.</td><td>176</td></tr>
+
+    <tr class="group"><td colspan="3">Vocabularies — the tag ids the LLM may use</td></tr>
+    <tr><td><code>mechanisms.yaml</code></td><td>The tags that connect a lab event to a holding. Each one records what a <em>positive</em> sign means, so “negative exposure to inference_cost_down” is never ambiguous.</td><td>194</td></tr>
+    <tr><td><code>categories.yaml</code></td><td>Kinds of company, for when an article describes a class rather than naming a name. A company can sit in several, so weights sum past 100%. Every category has to state its own boundary: “memory and storage” came out anywhere between 5% and 16% of the fund depending on where the line was drawn.</td><td>182</td></tr>
+    <tr><td><code>practices.yaml</code></td><td>The AI-team tags. They're separate from mechanisms because a technique doesn't change demand for anything. Of 19 technique-like articles, 17 scored zero with an empty mechanism list, and in a multiplied score no re-weighting rescues a zero.</td><td>224</td></tr>
+    <tr><td><code>entities.yaml</code></td><td>Model-name families, used to spot the first time a name appears anywhere in the corpus. No single document can tell you that, however the prompt is worded, so it's done as set arithmetic instead. Costs nothing.</td><td>87</td></tr>
+
+    <tr class="group"><td colspan="3">The book — what signals get joined to</td></tr>
+    <tr><td><code>holdings.yaml</code></td><td>The 26 positions in BIT Global Technology Leaders, weights as at 2026-06-30. One fund only: the other five report on different dates, so a combined book would blend six dates.</td><td>263</td></tr>
+    <tr><td><code>companies.yaml</code></td><td>The largest file. Reference data per security, keyed on ISIN rather than name, holding the <code>mechanisms</code> and <code>lab_exposure</code> edges the join runs on. Each edge carries the <code>why</code> string the UI shows.</td><td>3269</td></tr>
+    <tr><td><code>tickers.yaml</code></td><td>CUSIP → ticker, for price series. Hand-written, then checked: each ticker is compared against the price implied by the filing itself, and one that doesn't reconcile is dropped. A wrong ticker produces no price line instead of a wrong one.</td><td>68</td></tr>
+
+    <tr class="group"><td colspan="3">Rules — behaviour written as numbers</td></tr>
+    <tr><td><code>scoring.yaml</code></td><td>Both scoring formulas and the route ceilings. Every number in the system comes from here.</td><td>203</td></tr>
+    <tr><td><code>dedupe.yaml</code></td><td>The merge gates, the cosine band, and where the band's numbers came from.</td><td>225</td></tr>
+    <tr><td><code>digest.yaml</code></td><td>The two windows and the cut for each audience.</td><td>233</td></tr>
+    <tr><td><code>pipeline.yaml</code></td><td>How the scheduled run behaves: spend ceilings, how often each leg runs, and when a failure stops being noise. Described in the file as the numbers a person would want to change at 2am without reading Python.</td><td>328</td></tr>
+
+    <tr class="group"><td colspan="3">Entity resolution, and what enforces all of it</td></tr>
+    <tr><td><code>aliases.yaml</code></td><td>Person merges a human has confirmed. Never written by code.</td><td>62</td></tr>
+    <tr><td><code>aliases_proposed.yaml</code></td><td>Merges the machine proposes. Nothing here takes effect until a human sets <code>confirmed</code>.</td><td>14</td></tr>
+    <tr><td><code>validate.py</code></td><td>Runs before anything reads the configs. Catches a tag id that doesn't exist, an ISIN the fund doesn't hold, a category with no members, and a claim with neither a source nor an explicit <code>unverified</code> note.</td><td>1198</td></tr>
+  </tbody>
+</table>
+
+<p>Ids in one file point at ids in another: a company's mechanism edge has to name a
+mechanism that exists, and a holding's category has to name a category that exists and has
+members. <code>validate.py</code> checks all of those before a run starts, so a typo fails
+immediately instead of quietly scoring zero.</p>
+
+<h3>What reads what</h3>
+
+<div class="figure">
+<svg viewBox="0 0 1220 920" width="1220" height="920" role="img"
+     aria-label="Which code reads which config file, and which config files reference each other.">
+  <defs>
+    <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g color="currentColor" style="color: var(--muted)">
+
+  <text class="tl" x="150" y="42">CONFIG</text>
+  <text class="tl" x="560" y="42">CODE THAT READS IT</text>
+  <text class="tl" x="950" y="42">WHAT LANDS IN POSTGRES</text>
+
+  <rect class="bx keyinv" x="150" y="64" width="300" height="152" rx="8"/>
+  <text class="tl" x="166" y="86">WHERE TO LOOK</text>
+  <text class="mono" x="166" y="108">sources.yaml</text>
+  <text class="mono" x="166" y="126">people.yaml</text>
+  <text class="mono" x="166" y="144">papers_sources.yaml</text>
+  <text class="mono" x="166" y="162">github_sources.yaml</text>
+  <text class="mono" x="166" y="180">posts_sources.yaml</text>
+  <text class="mono" x="166" y="198">repo_signals.yaml</text>
+
+  <rect class="bx keyinv" x="150" y="232" width="300" height="116" rx="8"/>
+  <text class="tl" x="166" y="254">VOCABULARIES</text>
+  <text class="mono" x="166" y="276">mechanisms.yaml</text>
+  <text class="mono" x="166" y="294">categories.yaml</text>
+  <text class="mono" x="166" y="312">practices.yaml</text>
+  <text class="mono" x="166" y="330">entities.yaml</text>
+
+  <rect class="bx keyinv" x="150" y="366" width="300" height="98" rx="8"/>
+  <text class="tl" x="166" y="388">THE BOOK</text>
+  <text class="mono" x="166" y="410">holdings.yaml</text>
+  <text class="mono" x="166" y="428">companies.yaml</text>
+  <text class="mono" x="166" y="446">tickers.yaml</text>
+
+  <rect class="bx keyinv" x="150" y="482" width="300" height="116" rx="8"/>
+  <text class="tl" x="166" y="504">RULES</text>
+  <text class="mono" x="166" y="526">scoring.yaml</text>
+  <text class="mono" x="166" y="544">dedupe.yaml</text>
+  <text class="mono" x="166" y="562">digest.yaml</text>
+  <text class="mono" x="166" y="580">pipeline.yaml</text>
+
+  <rect class="bx keyinv" x="150" y="616" width="300" height="80" rx="8"/>
+  <text class="tl" x="166" y="638">ENTITY RESOLUTION</text>
+  <text class="mono" x="166" y="660">aliases.yaml</text>
+  <text class="monod" x="166" y="678">aliases_proposed.yaml → promoted by hand</text>
+
+  <rect class="bx key" x="150" y="716" width="300" height="86" rx="8"/>
+  <text class="tb" x="166" y="740">config/validate.py</text>
+  <text class="tm" x="166" y="760">Runs before anything reads them.</text>
+  <text class="tm" x="166" y="778">An id that doesn't exist fails the run.</text>
+
+  <path class="ln" style="stroke-dasharray: 4 4" d="M28,716 L28,70" marker-end="url(#ah2)"/>
+  <path class="ln" style="stroke-dasharray: 4 4" d="M28,760 L146,760"/>
+  <text class="tm" transform="translate(20,420) rotate(-90)" text-anchor="middle">checks every id against the file that defines it</text>
+
+  <path class="ln" style="stroke-dasharray: 3 3" d="M150,428 C 95,424 95,282 150,276" marker-end="url(#ah2)"/>
+  <path class="ln" style="stroke-dasharray: 3 3" d="M150,410 C 116,406 116,300 150,294" marker-end="url(#ah2)"/>
+
+  <rect class="bx" x="560" y="64" width="330" height="92" rx="8"/>
+  <text class="tb" x="576" y="88">INGESTION</text>
+  <text class="mono" x="576" y="110">pipeline/registry.py · adapters.py</text>
+  <text class="monod" x="576" y="128">research/*/harvest_*.py, fetch_*.py</text>
+  <text class="tm" x="576" y="147">one source failing costs only that source</text>
+
+  <rect class="bx" x="560" y="176" width="330" height="104" rx="8"/>
+  <text class="tb" x="576" y="200">EXTRACTION</text>
+  <text class="mono" x="576" y="222">announcements/score_announcements.py</text>
+  <text class="monod" x="576" y="240">prompts/announcement_scoring/v9.md</text>
+  <text class="mono" x="576" y="258">app/pipeline/classify.py</text>
+
+  <rect class="bx" x="560" y="300" width="330" height="76" rx="8"/>
+  <text class="tb" x="576" y="324">SCORING</text>
+  <text class="mono" x="576" y="346">app/scoring.py · app/transform.py</text>
+  <text class="tm" x="576" y="365">no number appears in the code</text>
+
+  <rect class="bx" x="560" y="396" width="330" height="76" rx="8"/>
+  <text class="tb" x="576" y="420">JOIN</text>
+  <text class="mono" x="576" y="442">app/connect.py</text>
+  <text class="tm" x="576" y="461">four routes, each capped at what it proves</text>
+
+  <rect class="bx" x="560" y="492" width="330" height="66" rx="8"/>
+  <text class="tb" x="576" y="516">DEDUPE</text>
+  <text class="mono" x="576" y="538">app/pipeline/dedupe.py</text>
+
+  <rect class="bx" x="560" y="578" width="330" height="66" rx="8"/>
+  <text class="tb" x="576" y="602">DIGEST</text>
+  <text class="mono" x="576" y="624">app/digest.py</text>
+
+  <rect class="bx" x="560" y="664" width="330" height="94" rx="8"/>
+  <text class="tb" x="576" y="688">OPS</text>
+  <text class="mono" x="576" y="710">budget · worker · alerts · drift</text>
+  <text class="monod" x="576" y="728">api/pipeline.py · api/queries.py</text>
+  <text class="tm" x="576" y="747">spend ceilings, cadence, failure counts</text>
+
+  <rect class="bx" x="560" y="778" width="330" height="76" rx="8"/>
+  <text class="tb" x="576" y="802">LOAD</text>
+  <text class="mono" x="576" y="824">app/load_refs.py · pipeline/register.py</text>
+  <text class="tm" x="576" y="843">mirrors are wiped and reloaded each run</text>
+
+  <rect class="bx" x="950" y="64" width="250" height="96" rx="8"/>
+  <text class="tb" x="966" y="88">raw_*</text>
+  <text class="tm" x="966" y="110">raw_articles · raw_llm_responses</text>
+  <text class="tm" x="966" y="128">raw_costs · embeddings</text>
+  <text class="tm" x="966" y="148">upsert-only, keeps history</text>
+
+  <rect class="bx" x="950" y="200" width="250" height="116" rx="8"/>
+  <text class="tb" x="966" y="224">derived</text>
+  <text class="tm" x="966" y="246">articles · classifications</text>
+  <text class="tm" x="966" y="264">article_mechanisms / categories</text>
+  <text class="tm" x="966" y="282">/ practices · connections</text>
+  <text class="tm" x="966" y="302">rebuilt per item</text>
+
+  <rect class="bx" x="950" y="356" width="250" height="76" rx="8"/>
+  <text class="tb" x="966" y="380">digests</text>
+  <text class="tm" x="966" y="402">an ops table — once published,</text>
+  <text class="tm" x="966" y="421">never recomputed</text>
+
+  <rect class="bx" x="950" y="472" width="250" height="134" rx="8"/>
+  <text class="tb" x="966" y="496">ops</text>
+  <text class="tm" x="966" y="518">pipeline_runs · run_sources</text>
+  <text class="tm" x="966" y="536">source_state · alerts</text>
+  <text class="tm" x="966" y="554">fetch_cache · gold_snapshots</text>
+  <text class="tm" x="966" y="572">people · person_identity</text>
+  <text class="tm" x="966" y="592">these survive a rebuild</text>
+
+  <rect class="bx" x="950" y="640" width="250" height="96" rx="8"/>
+  <text class="tb" x="966" y="664">ref_* mirrors</text>
+  <text class="tm" x="966" y="686">queryable copies of the</text>
+  <text class="tm" x="966" y="704">vocabularies and the book</text>
+  <text class="tm" x="966" y="724">the YAML is still the source</text>
+
+  <line class="ln" x1="450" y1="140" x2="558" y2="110" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="278" x2="558" y2="226" marker-end="url(#ah2)"/>
+  <text class="tm" x="452" y="252">pasted into the prompt at render</text>
+  <line class="ln" x1="450" y1="424" x2="558" y2="440" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="524" x2="558" y2="344" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="530" x2="558" y2="438" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="546" x2="558" y2="522" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="562" x2="558" y2="608" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="580" x2="558" y2="700" marker-end="url(#ah2)"/>
+  <path class="ln" d="M450,304 L512,304 L512,812 L558,812" marker-end="url(#ah2)"/>
+  <path class="ln" d="M450,440 L528,440 L528,822 L558,822" marker-end="url(#ah2)"/>
+  <line class="ln" x1="450" y1="662" x2="558" y2="806" marker-end="url(#ah2)"/>
+
+  <line class="ln" x1="890" y1="110" x2="948" y2="110" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="222" x2="948" y2="140" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="344" x2="948" y2="248" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="440" x2="948" y2="266" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="524" x2="948" y2="286" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="610" x2="948" y2="394" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="710" x2="948" y2="530" marker-end="url(#ah2)"/>
+  <line class="ln" x1="890" y1="820" x2="948" y2="690" marker-end="url(#ah2)"/>
+
+  <text class="tm" x="28" y="880">Dashed = an id written in one file that has to exist in another. Solid = a file a module reads at runtime.</text>
+
+  </g>
+</svg>
+</div>
+
+<p class="caption">Config on the left, the code that reads it in the middle, what gets
+written on the right. No config file imports another, and no module in the middle contains
+a threshold.</p>
+
+<h4>Things the diagram leaves out</h4>
+
+<ul>
+  <li><strong><code>posts_sources.yaml</code> contains no handles.</strong> They come from
+  <code>people.yaml</code>, so there is one list of who works where and no second copy to
+  drift. What <code>posts_sources</code> adds is which handles to skip and why — a skip
+  rather than a deletion, so that “we chose not to read this” doesn't look the same as “we
+  don't know this person exists”.</li>
+  <li><strong><code>companies.yaml</code> also points at <code>sources.yaml</code></strong>,
+  because its <code>lab_exposure</code> edges are keyed on the lab. That's a third
+  cross-file check; I left it off the picture to keep it readable.</li>
+  <li><strong>Four different things read <code>scoring.yaml</code></strong> — the scorer,
+  the join (for route ceilings), the drift check and the transform. That's why the file
+  carries so much comment: four stages have to agree about it.</li>
+  <li><strong>The vocabularies are read twice, for different reasons.</strong>
+  <code>score_announcements.py</code> pastes them into the prompt as
+  <code>{mechanisms}</code>, <code>{categories}</code> and <code>{practices}</code>, and
+  <code>load_refs.py</code> copies them into <code>ref_*</code> tables so joins can query
+  them. Both read the same file, so the prompt and the database can't disagree about what a
+  tag id means.</li>
+  <li><strong><code>research/</code> reads the same config as <code>app/</code>.</strong>
+  The one-off analysis scripts don't keep their own copy, so a calibration script's results
+  still describe what actually runs.</li>
+</ul>
+
+<h3>2. The people tables — who works where</h3>
+
+<p>Papers and GitHub don't become insights. They become people and evidence, in three
+tables: <code>Person</code>, <code>PersonIdentity</code> and <code>PersonEvidence</code>
+(<code>app/pipeline/register.py</code>). The idea was to record who is at each lab and since
+when, so that a departure or a new stealth startup could be measured against it.
+<code>app/people.py</code> is the read side.</p>
+
+<div class="note">
+  <strong>It was built but never trusted, and nothing downstream uses it.</strong> Move
+  detection matches on names, and it reported people as changing labs when they hadn't —
+  a byline appearing under two affiliations was enough to trigger it. The tables are
+  populated and the harvesting works; the judgement on top of it was never good enough to
+  ship, and not enough time went into fixing it. It feeds nothing in the digest, the scoring
+  or the alerts. Read the rest of this section as the design of a leg that stopped short.
+</div>
+
+<p>The merge rules are the part worth keeping, because they are deliberately cautious. That
+caution is why the failure showed up as visible bad output rather than a register that was
+quietly wrong.</p>
+
+<h4>Three merges the module refuses to make</h4>
+
+<ul class="refusals">
+  <li><b>The same name at two labs stays two people.</b> Merging them would be a claim about
+  someone's employment, made on the strength of a matching string.</li>
+  <li><b>A GitHub login and a paper byline are never merged.</b> They are different kinds of
+  identifier. Lookups go through <code>PersonIdentity</code> rather than the name
+  <span class="ref">(<code>_person</code>, register.py:125)</span>, so two legs producing an
+  identical name at one lab still can't collide.</li>
+  <li><b>An affiliation the model read off a byline is recorded as
+  <code>model_asserted</code>, never <code>confirmed</code></b>
+  <span class="ref">(register.py:294)</span>.</li>
+</ul>
+
+<h4>Details worth keeping</h4>
+
+<div class="note">
+  <code>config/aliases.yaml</code> is the only entity-resolution control an operator has,
+  and code never writes it. A generator overwrote it once and destroyed ten confirmed
+  merges: once an alias takes effect the duplicate spelling stops appearing, so regeneration
+  correctly proposes nothing — and then writes that nothing over the file. Proposals now go
+  to <code>aliases_proposed.yaml</code> instead.
+</div>
+
+<ul>
+  <li><strong>Confirming an alias has to work retroactively.</strong> If both spellings were
+  already loaded, <code>_person</code> resolves on the identity, finds the variant's own
+  row, and never looks at the alias file — so nothing happens. <code>_absorb</code>
+  <span class="ref">(register.py:87)</span> moves the loser's identities and evidence onto
+  the winner and deletes it. Without that, the control does nothing.</li>
+  <li><strong>Aliases apply at aggregation time only.</strong> Per-article bylines keep
+  exactly what the page published, so any merge can be undone by editing config.</li>
+  <li><strong>Per-load counts are measured before and after.</strong> They used to be
+  whole-table totals reported as per-load figures, so the run log claimed 4,927 new people
+  every night.</li>
+  <li><strong>Everything upserts on a natural key.</strong> A repo not re-fetched this run
+  keeps the row it had rather than being deleted as missing.</li>
+  <li><strong>The GitHub canonical name is the login, not the commit <code>name</code>
+  field</strong>, because the login is the identifier GitHub guarantees.</li>
+  <li><strong>Bronze is written before the aggregate built from it</strong>, so a run that
+  dies between the two keeps the commits it already paid to fetch.</li>
+</ul>
+
+<h2>Scoring</h2>
+
+<p class="lede">The LLM classifies and tags, with a verbatim quote on every tag. It never
+produces a number. <code>config/scoring.yaml</code> turns those tags into a score, and
+<code>app/scoring.py</code> — 82 lines — does the arithmetic. So every number can be
+argued line by line and changed without a deploy.</p>
+
+<h3>Two formulas over one extraction</h3>
+
+<pre>investment  score = 100 × (event_weight/5) × max(magnitude × confidence)/3
+ai team  ai_score = 100 × (action_weight/3) × max(impact × confidence)/3</pre>
+
+<p>The AI formula has no event weight, on purpose. <code>event_weight</code> ranks
+<code>compute_commitment</code> at 5 because clusters move semiconductor demand, which is
+worth nothing to an engineer deciding what to build with. The practice tag already says what
+kind of thing the item is. That's why the two audiences rank the same corpus differently
+rather than seeing one list in two colours.</p>
+
+<h3>The terms are multiplied, not added</h3>
+
+<p>An article with no mechanism tags has zero for the second term, so its whole score is
+zero. Every tag has to carry a quote, so an article can't score anything unless it quotes
+the document. An earlier version added the two terms instead, and articles scored 40 on
+their event label alone with no tags and no quotes.</p>
+
+<p>There's a second reason not to add them. Event weight is already a guess at how strong
+the tags will be — <code>compute_commitment</code> is weighted 5 precisely because it tends
+to fire <code>training_compute_up</code> at high magnitude. Adding the two would count that
+twice.</p>
+
+<h3>A low-confidence tag counts as zero</h3>
+
+<p><code>confidence: low</code> maps to 0.0, so a tag the model isn't sure about contributes
+nothing at all.</p>
+
+<p>This changed on evidence. Someone hand-reviewed a 20-article run
+(<code>docs/gold_review.md</code>), and every tag they rejected as unsupported had already
+been marked low confidence by the model. The model was flagging them correctly; the scale
+was paying for them anyway. Two examples, both quoting marketing copy:
+<code>inference_volume_up</code> on OpenAI's $122bn raise, cited to “meet growing demand for
+ChatGPT, Codex, and enterprise AI”.</p>
+
+<p>Making the change moved 34 items and dropped 5 to zero. All five were
+<code>enterprise_partnership</code> items scoring 4.4 whose only tags were low
+magnitude and low confidence. Nothing above 5 was affected; the largest fall was 66.7 to
+50.0.</p>
+
+<h3>Other details</h3>
+
+<ul>
+  <li><strong>The model's <code>is_signal</code> flag is ignored</strong>
+  <span class="ref">(scoring.py:30)</span>. It used to be a hard veto. Then a stability check
+  re-ran the classifier and found the flag flipping on 9% of items, including articles
+  carrying maximum-strength quoted tags, which it zeroed. An article with no tags already
+  scores zero through the arithmetic.</li>
+
+  <li><strong><code>other</code> is weighted 0, and how full it gets is a health check.</strong>
+  It gives the classifier somewhere to put things that fit nothing else, instead of forcing
+  them into a wrong category where the mistake would be invisible. In the v1 run it held 48
+  of 375 items — and alongside the office openings and student club forms sat both labs'
+  confidential S-1 filings and three acquisitions, all scoring zero. That's what led to
+  adding <code>corporate_finance</code>.</li>
+
+  <li><strong>v1's problem was the vocabulary, not the arithmetic.</strong> The first US
+  export control on a frontier model scored 20, because it was classified
+  <code>safety_policy</code> (weight 1) rather than as something done <em>to</em> the lab.
+  Adding <code>regulatory_action</code> and <code>lab_capital_access</code> fixed it under
+  the same multiplied rule.</li>
+
+  <li><strong>Each join route is capped at what it can prove.</strong> Four routes connect an
+  article to a holding and they don't carry the same evidence — a mechanism tag is quoted on
+  both sides, while <code>named</code> is just the company's name appearing in the text. All
+  four write a strength into one column the digest sorts on, so a bare name match was
+  landing at 1.0 next to a doubly-quoted mechanism. The caps: mechanism 1.0, category 0.6,
+  lab_exposure 0.6, named 0.3.</li>
+
+  <li><strong>Bands are labels on a score.</strong> They don't change it.</li>
+</ul>
+
+<h2>What filters the noise</h2>
+
+<p class="lede">Three separate things, at three stages, costing three different amounts.</p>
+
+<h3>1. Dedupe — <code>config/dedupe.yaml</code></h3>
+
+<ul>
+  <li><strong>The exact pass runs first, and it fixes a correctness problem.</strong> One
+  article can reach us at two URLs, and the classifier gave the two copies different event
+  types. Since the event-type gate later on refuses to merge anything with mismatched types,
+  it would refuse to merge two copies of one text. Running the exact pass first stops that.
+  The differing types are classifier noise on identical input, not evidence the articles
+  differ.</li>
+
+  <li><strong>Tag overlap is not used to merge.</strong> Mechanism tags say what
+  <em>kind</em> of event something is, not <em>which</em> event. Two unrelated partnership
+  announcements score a perfect 1.0 on tag overlap.</li>
+
+  <li><strong>Cosine similarity gets a band, not a threshold.</strong> In the labelled set,
+  real duplicates run 0.70 to 0.966 and non-duplicates reach 0.79 — so wherever you draw a
+  single line, you get errors. Instead: 0.80 and above merges, below 0.70 stays separate,
+  and the gap between goes to a model. That gap is the only part that costs money.</li>
+
+  <li><strong>The two edges are set differently.</strong> A wrong merge deletes an article
+  from the product. A missed merge leaves a duplicate row the reader can see and ignore. So
+  the top edge is placed to avoid wrong merges and the bottom edge to avoid missed ones,
+  rather than both at some blended optimum that treats the two as equally bad.</li>
+
+  <li><strong>What gets embedded is the title plus the classifier's summary, never the
+  body.</strong> Bodies carry site furniture — “OpenAI Research Products Business Developers
+  Company Foundation Log in Try ChatGPT” opens two different Astra articles — which raises
+  the similarity between any two pages from one lab regardless of what they say.</li>
+</ul>
+
+<h4>Two ways the calibration nearly went wrong</h4>
+
+<ul class="refusals">
+  <li><b>The first labelling pass read a file sorted by cosine.</b> The number was hidden but
+  the ordering wasn't, which is the same information one step removed. Shuffling the file
+  changed two of 82 labels — and they were the top two negatives, which is exactly where the
+  upper edge sits.</li>
+  <li><b>Prompt v2 contains seven of the 20 blind-check pairs as worked examples, with the
+  answers.</b> So the 0.90 first written into the config was a score on its own training
+  data. Out of sample it scores 12/13, the same as v1, and it introduces one wrong merge v1
+  didn't make. A fresh blind check on unseen pairs is still outstanding.</li>
+</ul>
+
+<h4>The whole pass, drawn</h4>
+
+<div class="figure">
+<svg viewBox="0 0 1200 1120" width="1200" height="1120" role="img"
+     aria-label="The dedupe passes: exact match, release trains, a cosine band with a model asked only inside it, and a linking pass that never merges.">
+  <defs>
+    <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g color="currentColor" style="color: var(--muted)">
+
+  <text class="tl" x="20" y="30">WHY IT IS SHAPED THIS WAY</text>
+  <text class="tl" x="330" y="30">app/pipeline/dedupe.py — assign()</text>
+  <text class="tl" x="880" y="30">THE PASS THAT DOES NOT MERGE</text>
+
+  <rect class="bx" x="380" y="48" width="340" height="56" rx="8"/>
+  <text class="tb" x="550" y="72" text-anchor="middle">_rows(prompt_version)</text>
+  <text class="tm" x="550" y="92" text-anchor="middle">every classified article and release</text>
+  <line class="ln" x1="550" y1="104" x2="550" y2="146" marker-end="url(#ah3)"/>
+
+  <rect class="lane" x="20" y="148" width="290" height="92" rx="8"/>
+  <text class="tm" x="34" y="170">Runs first because the event-type</text>
+  <text class="tm" x="34" y="188">gate below would refuse two copies</text>
+  <text class="tm" x="34" y="206">of one text that the classifier</text>
+  <text class="tm" x="34" y="224">happened to label differently.</text>
+
+  <rect class="bx key" x="330" y="148" width="440" height="92" rx="8"/>
+  <text class="tb" x="346" y="172">PASS 1 — exact match</text>
+  <text class="mono" x="346" y="196">same lab · same day · same normalised title</text>
+  <text class="tm" x="346" y="216">Merges them whatever else disagrees.</text>
+  <text class="tm" x="346" y="234">Costs nothing.</text>
+  <line class="ln" x1="550" y1="240" x2="550" y2="278" marker-end="url(#ah3)"/>
+
+  <rect class="lane" x="20" y="280" width="290" height="98" rx="8"/>
+  <text class="tm" x="34" y="302">380 of 647 rows are releases, and</text>
+  <text class="tm" x="34" y="320">the repo already identifies which</text>
+  <text class="tm" x="34" y="338">train they belong to. The span cap</text>
+  <text class="tm" x="34" y="356">stops a repo that ships daily from</text>
+  <text class="tm" x="34" y="374">becoming one group thirty long.</text>
+
+  <rect class="bx key" x="330" y="280" width="440" height="92" rx="8"/>
+  <text class="tb" x="346" y="304">PASS 2 — release trains</text>
+  <text class="mono" x="346" y="328">all releases from one repo within 48h</text>
+  <text class="tm" x="346" y="348">Chained, then capped at a 14-day span.</text>
+  <text class="tm" x="346" y="366">No embedding, no model call.</text>
+  <line class="ln" x1="550" y1="372" x2="550" y2="410" marker-end="url(#ah3)"/>
+
+  <rect class="bx keyinv" x="330" y="412" width="440" height="48" rx="8"/>
+  <text class="tb" x="550" y="441" text-anchor="middle">PASS 3 — articles only · releases are excluded</text>
+  <line class="ln" x1="550" y1="460" x2="550" y2="490" marker-end="url(#ah3)"/>
+
+  <rect class="lane" x="20" y="492" width="290" height="82" rx="8"/>
+  <text class="tm" x="34" y="514">Two labs announcing in one week are</text>
+  <text class="tm" x="34" y="532">two events, so cross-lab pairs are</text>
+  <text class="tm" x="34" y="550">never compared. The window stops an</text>
+  <text class="tm" x="34" y="568">article pairing with a year-old post.</text>
+
+  <rect class="bx" x="330" y="492" width="440" height="76" rx="8"/>
+  <text class="tb" x="346" y="516">candidate pairs — same lab, within 14 days</text>
+  <text class="mono" x="346" y="540">35,511 possible pairs → 4,412</text>
+  <text class="tm" x="346" y="560">cutting the pair count is what keeps this cheap</text>
+  <line class="ln" x1="550" y1="568" x2="550" y2="596" marker-end="url(#ah3)"/>
+
+  <rect class="lane" x="20" y="598" width="290" height="98" rx="8"/>
+  <text class="tm" x="34" y="620">“Safety overview: GPT-6 Astra”</text>
+  <text class="tm" x="34" y="638">reports a crossed Preparedness</text>
+  <text class="tm" x="34" y="656">threshold that the launch post never</text>
+  <text class="tm" x="34" y="674">mentions. Merging the two would take</text>
+  <text class="tm" x="34" y="692">that claim out of the product.</text>
+
+  <rect class="bx keyinv" x="330" y="598" width="440" height="60" rx="8"/>
+  <text class="tb" x="550" y="622" text-anchor="middle">same event_type?</text>
+  <text class="tm" x="550" y="644" text-anchor="middle">no → the pair is dropped here</text>
+  <line class="ln" x1="550" y1="658" x2="550" y2="670" marker-end="url(#ah3)"/>
+
+  <rect class="bx" x="330" y="672" width="440" height="52" rx="8"/>
+  <text class="tb" x="550" y="694" text-anchor="middle">cosine over the cached vector</text>
+  <text class="tm" x="550" y="714" text-anchor="middle">embedded from title + summary, never the body</text>
+
+  <path class="ln" d="M550,724 L550,742 M345,742 L755,742"/>
+  <line class="ln" x1="345" y1="742" x2="345" y2="768" marker-end="url(#ah3)"/>
+  <line class="ln" x1="550" y1="742" x2="550" y2="768" marker-end="url(#ah3)"/>
+  <line class="ln" x1="755" y1="742" x2="755" y2="768" marker-end="url(#ah3)"/>
+
+  <rect class="lane" x="20" y="770" width="290" height="134" rx="8"/>
+  <text class="tm" x="34" y="792">In the labelled set, real duplicates</text>
+  <text class="tm" x="34" y="810">run 0.70–0.966 and non-duplicates</text>
+  <text class="tm" x="34" y="828">reach 0.79. Any single line is wrong</text>
+  <text class="tm" x="34" y="846">somewhere, so the band covers the</text>
+  <text class="tm" x="34" y="864">range where the number can't decide.</text>
+  <text class="tm" x="34" y="888">Top edge avoids wrong merges, bottom</text>
+  <text class="tm" x="34" y="898">edge avoids missed ones.</text>
+
+  <rect class="bx" x="250" y="770" width="190" height="92" rx="8"/>
+  <text class="tb" x="345" y="794" text-anchor="middle">≥ 0.80</text>
+  <text class="tm" x="345" y="816" text-anchor="middle">merge, don't ask</text>
+  <text class="monod" x="345" y="838" text-anchor="middle">method: embedding</text>
+  <text class="tm" x="345" y="856" text-anchor="middle">no wrong merge in labels</text>
+
+  <rect class="bx key" x="455" y="770" width="190" height="92" rx="8"/>
+  <text class="tb" x="550" y="794" text-anchor="middle">0.70 – 0.80</text>
+  <text class="tm" x="550" y="816" text-anchor="middle">ask the model</text>
+  <text class="monod" x="550" y="838" text-anchor="middle">sonnet-5 · prompt v2</text>
+  <text class="tm" x="550" y="856" text-anchor="middle">the only step that costs</text>
+
+  <rect class="bx" x="660" y="770" width="190" height="92" rx="8"/>
+  <text class="tb" x="755" y="794" text-anchor="middle">&lt; 0.70</text>
+  <text class="tm" x="755" y="816" text-anchor="middle">separate, don't ask</text>
+  <text class="tm" x="755" y="838" text-anchor="middle">no real duplicate</text>
+  <text class="tm" x="755" y="856" text-anchor="middle">missed in the labels</text>
+
+  <line class="ln" x1="550" y1="862" x2="550" y2="886" marker-end="url(#ah3)"/>
+  <rect class="bx" x="440" y="888" width="220" height="50" rx="8"/>
+  <text class="tm" x="550" y="910" text-anchor="middle">model says same → merge</text>
+  <text class="monod" x="550" y="929" text-anchor="middle">method: llm</text>
+
+  <path class="ln" d="M345,862 L345,962 L520,962"/>
+  <path class="ln" d="M550,938 L550,962"/>
+  <line class="ln" x1="550" y1="962" x2="550" y2="986" marker-end="url(#ah3)"/>
+
+  <rect class="bx key" x="330" y="988" width="440" height="106" rx="8"/>
+  <text class="tb" x="346" y="1012">union-find → groups → article_groups</text>
+  <text class="tm" x="346" y="1034">One anchor per group, picked on significance: the</text>
+  <text class="tm" x="346" y="1052">latest for a release train, the earliest otherwise.</text>
+  <text class="tm" x="346" y="1070">Each row keeps the method and reason that merged it.</text>
+  <text class="tm" x="346" y="1088">Rebuilt from scratch each run, so a changed threshold</text>
+
+  <rect class="bx keyai" x="880" y="412" width="300" height="152" rx="8"/>
+  <text class="tb" x="896" y="436">PASS 4 — pairing</text>
+  <text class="tm" x="896" y="458">Writes a link. Merges nothing.</text>
+  <text class="tm" x="896" y="480">release ↔ the announcement naming</text>
+  <text class="tm" x="896" y="498">the same model, within 14 days</text>
+  <text class="tm" x="896" y="518">the announcement must itself release</text>
+  <text class="tm" x="896" y="536">a model, not merely mention one</text>
+  <text class="monod" x="896" y="557">→ article_links · names_model</text>
+
+  <rect class="lane" x="880" y="582" width="300" height="168" rx="8"/>
+  <text class="tm" x="894" y="604">Feeding these into the union-find</text>
+  <text class="tm" x="894" y="622">was tried and is wrong. Union-find</text>
+  <text class="tm" x="894" y="640">is transitive, and one codex release</text>
+  <text class="tm" x="894" y="658">reaches six announcements — so the</text>
+  <text class="tm" x="894" y="676">launch post, the safety overview and</text>
+  <text class="tm" x="894" y="694">two customer stories all become one</text>
+  <text class="tm" x="894" y="712">group. As links, both rows stay in</text>
+  <text class="tm" x="894" y="730">the feed with their own scores.</text>
+
+  <text class="tm" x="894" y="770">Costs nothing: regex and set</text>
+  <text class="tm" x="894" y="788">intersection over rows already loaded.</text>
+
+  <rect class="lane" x="880" y="814" width="300" height="150" rx="8"/>
+  <text class="tb" x="894" y="838">why coverage is reported</text>
+  <text class="tm" x="894" y="860">An empty or model-mismatched vector</text>
+  <text class="tm" x="894" y="878">cache makes this whole gate do</text>
+  <text class="tm" x="894" y="896">nothing: every pair skipped, no error,</text>
+  <text class="tm" x="894" y="914">a clean run with fewer merges. That</text>
+  <text class="tm" x="894" y="932">looks exactly like no duplicates.</text>
+  <text class="monod" x="894" y="954">alerts.dedupe_unavailable reads it</text>
+
+  <path class="ln" style="stroke-dasharray: 4 4" d="M770,436 L830,436 L830,1032 L772,1032"/>
+  <text class="tm" x="838" y="1026">same rows, written</text>
+  <text class="tm" x="838" y="1044">independently</text>
+
+  </g>
+</svg>
+</div>
+
+<p class="caption">Three passes merge rows and the fourth only links them. The order
+matters: exact match first, then release trains, then the cosine pass — and only the middle
+of the cosine band costs anything.</p>
+
+<h4>The short version</h4>
+
+<table>
+  <thead><tr><th>Pass</th><th>Applies to</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr><td>1 — exact match</td><td>everything: articles <em>and</em> releases</td><td>free</td></tr>
+    <tr><td>2 — release trains</td><td>releases only</td><td>free</td></tr>
+    <tr><td>3 — cosine + model</td><td>articles only; releases excluded</td><td>the only paid path</td></tr>
+    <tr><td>4 — pairing</td><td>releases ↔ articles, as links</td><td>free</td></tr>
+  </tbody>
+</table>
+
+<p>A release never reaches the expensive path. Pass 2 handles it, and that's all the
+grouping it gets.</p>
+
+<h4>What “normalised title” means</h4>
+
+<p>One line, and less clever than it sounds:</p>
+
+<pre>re.sub(r"[^a-z0-9]+", " ", (title or "").lower()).strip()</pre>
+
+<p>Lowercase, then every run of non-alphanumeric characters becomes a single space, then
+trim. No stemming, no stopwords, no fuzzy matching. It absorbs curly versus straight quotes,
+em-dash versus hyphen, trailing punctuation and casing — the ways one publisher's CMS and a
+forum mirror render the same headline differently. It's one third of the bucket key
+<code>(lab, published_on, normalised_title)</code>, and a bucket holding more than one row
+is one article at two URLs.</p>
+
+<p>It deliberately doesn't do fuzzy matching. “Introducing GPT-6 Astra” and “Introducing
+GPT-6 Astra: A New Generation” normalise to different strings and don't match here; they
+fall through to the cosine path. This gate merges on no other evidence at all, so it only
+catches titles that are identical once punctuation is gone.</p>
+
+<h4>What has to be true for a link (pass 4)</h4>
+
+<p>A release can link to several articles. But four things have to hold, not just the model
+name:</p>
+
+<ol>
+  <li><strong>The model identifier matches, with both sides stemmed.</strong> Stemming only
+  one side lost the case the feature exists for. The identifier pattern doesn't span a
+  space, so the launch post “GPT-6 Astra: A new generation of intelligence” yields only
+  <code>gpt-6</code>, while the release body's “GPT-6-Astra” yields only
+  <code>gpt-6-astra</code>. Those never intersect, so the only announcements that linked
+  were the ones that happened to hyphenate.</li>
+  <li><strong>Same lab.</strong></li>
+  <li><strong>Within 14 days.</strong></li>
+  <li><strong>The article's <code>event_type</code> is a model release</strong> —
+  <code>frontier_model_release</code>, <code>incremental_model_release</code> or
+  <code>open_weights</code>.</li>
+</ol>
+
+<div class="note">
+  <strong>Condition 4 is what does the work.</strong> Once both sides are stemmed,
+  <code>gpt-6</code> reaches every Astra-adjacent post. On identifiers alone the launch post
+  and “Legora reviewed 41 documents in minutes with GPT-6 Astra” are identical — both yield
+  exactly <code>{gpt-6}</code> — so no threshold over identifiers could separate them. Their
+  event types can, and that's a field the pipeline already trusts to separate things in
+  pass 3.
+</div>
+
+<ul>
+  <li><strong>One edge per pair</strong>, on the longest shared identifier. Writing one edge
+  per shared key produced <code>gpt-6</code> and <code>gpt-6-astra</code> as two rows for one
+  fact, and the card then said the same thing twice.</li>
+  <li><strong><code>sorted</code> before <code>max</code> matters.</strong> <code>max</code>
+  over a set breaks ties in iteration order, which follows string hash randomisation, so a
+  pair sharing two same-length identifiers stored a different evidence string on each
+  process. A table rebuilt from scratch has to come out the same every time.</li>
+  <li><strong><code>safety_policy</code> is left off the list</strong>, even though “Safety
+  overview: GPT-6 Astra” is genuinely about Astra. It reports a crossed Preparedness
+  threshold the launch post never mentions, so pointing the release at it would say the
+  model was announced there.</li>
+</ul>
+
+<h3>2. The digest cut — <code>config/digest.yaml</code></h3>
+
+<p>The dashboard shows every classified article. The digest picks a handful and says the
+rest aren't worth reading. Every threshold below is that choice written as a number, and
+each edition records how many items it left out.</p>
+
+<ul>
+  <li><strong>Investment:</strong> an item gets in if it has a connection to a holding at
+  strength 0.5 or above. That's the normal route, and most items in the digest arrive that
+  way. Failing that, it still gets in if its band is <code>high</code>, even with no
+  connection at all — a lab-level shift that hasn't yet touched anything in the book is the
+  early signal worth catching, and requiring a connection would filter it out.</li>
+  <li><strong>AI:</strong> the item needs a practice tagged <code>adopt</code> or
+  <code>investigate</code>, and band <code>high</code>. <code>watch</code> means “nothing to
+  do yet”, so including it would fill the digest with items whose own tag says to ignore
+  them.</li>
+  <li><strong>Connections below 0.5 aren't thrown away</strong> — they're still shown on the
+  card, they just aren't what got the item in.</li>
+</ul>
+
+<h4>The 16-item cap does nothing right now</h4>
+
+<p>Both audiences cap at 16 items. The cap never actually kicks in, because the quality
+rules admit far fewer than that anyway — the investment rule lets 2 items through out of 58
+considered. You could set the cap to 8 or to 1000 and get the same digest. It was raised
+from 8 so the two audiences wouldn't differ for no reason.</p>
+
+<h4>Two windows, deliberately different numbers</h4>
+
+<p><code>window_hours</code> is 24. That's the published edition: quantised to a fixed grid,
+one per day, stored permanently. <code>preview_window_hours</code> is 168 — the last seven
+days, ending now. That's what you see when you open the page, and it's rebuilt on every load
+and never stored.</p>
+
+<p>They used to share one value, which meant the archive of editions a reader could browse
+was frozen at whatever the number happened to be when they were published. An archive that
+records “the labs published nothing on the 14th” is doing its job. A landing page that's
+empty half the time teaches people to stop opening it. Those are different requirements, so
+they get different numbers.</p>
+
+<p>The file also says its own measurements are stale: the window table was taken before
+papers, releases and posts joined the digest, and before the AI band moved to
+<code>high</code>. It tells you to read it as the shape of the trade rather than as current
+figures.</p>
+
+<h3>3. Drift — <code>app/pipeline/drift.py</code></h3>
+
+<ul>
+  <li><strong>It re-runs the classifier on a fixed set of articles every run and compares
+  the tags.</strong> It calls the uncached path deliberately: reading through the result
+  cache would return the stored answer every time and report perfect agreement forever,
+  which is the one failure that looks exactly like success. So this check always costs
+  money.</li>
+  <li><strong>The provider's prompt cache is left on.</strong> One call runs on its own
+  first to create the cache entry, then the rest fan out. A cold parallel start would bill
+  every request as a cache write at 1.25× instead of a read at 0.10×.</li>
+  <li><strong>The sample is a fixed named list, not a random draw</strong>, so a change
+  between runs is the classifier moving rather than the sample moving.</li>
+  <li><strong>It started at six articles, and that was too few.</strong> Six articles carry
+  ten reference tags, so one tag gained or lost moves micro-F1 by about 0.05 — and the alarm
+  floor was 0.80. The first run to breach it scored 0.750, which is either real degradation
+  or three tags of noise, and six items can't tell you which. It's now all 20 gold articles,
+  about $0.75 a run.</li>
+  <li><strong>The headline number is mechanism micro-F1, not a blend.</strong> Under the
+  scoring rule an article with no mechanism tag scores zero, so agreeing about mechanism
+  tags is the same thing as agreeing about the score.</li>
+</ul>
+
+<h2>One document, two numbers, and what reaches the screen</h2>
+
+<p class="lede">One model call at the top. Everything below it is arithmetic over the tags
+that call produced.</p>
+
+<div class="figure">
+<svg viewBox="0 0 1160 1256" width="1160" height="1256" role="img"
+     aria-label="Flow from an article through LLM extraction into the investment and AI-team scores, the portfolio join, the digest cut, and the frontend.">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g color="currentColor" style="color: var(--muted)">
+
+  <rect class="bx" x="430" y="24" width="300" height="54" rx="8"/>
+  <text class="tb" x="580" y="47" text-anchor="middle">Article · paper · post · release</text>
+  <text class="monod" x="580" y="66" text-anchor="middle">raw_articles — upsert-only, idempotent</text>
+  <line class="ln" x1="580" y1="78" x2="580" y2="112" marker-end="url(#ah)"/>
+
+  <rect class="bx key" x="330" y="116" width="500" height="86" rx="8"/>
+  <text class="tb" x="580" y="142" text-anchor="middle">LLM extraction — the only model call</text>
+  <text class="tm" x="580" y="163" text-anchor="middle">prompts/announcement_scoring/v9 · typed schema, validated on parse</text>
+  <text class="tm" x="580" y="182" text-anchor="middle">It classifies and it tags. It never produces a number.</text>
+
+  <path class="ln" d="M580,202 L580,228 M250,228 L910,228"/>
+  <line class="ln" x1="250" y1="228" x2="250" y2="248" marker-end="url(#ah)"/>
+  <line class="ln" x1="580" y1="228" x2="580" y2="248" marker-end="url(#ah)"/>
+  <line class="ln" x1="910" y1="228" x2="910" y2="248" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="110" y="250" width="280" height="80" rx="8"/>
+  <text class="mono" x="250" y="276" text-anchor="middle">event_type</text>
+  <text class="tm" x="250" y="296" text-anchor="middle">one of 15 labels, weight 0–5</text>
+  <text class="tm" x="250" y="315" text-anchor="middle">ranked for investors, not engineers</text>
+
+  <rect class="bx" x="440" y="250" width="280" height="80" rx="8"/>
+  <text class="mono" x="580" y="276" text-anchor="middle">mechanism tags[]</text>
+  <text class="tm" x="580" y="296" text-anchor="middle">magnitude · confidence · direction</text>
+  <text class="tm" x="580" y="315" text-anchor="middle">+ a verbatim quote, required</text>
+
+  <rect class="bx" x="770" y="250" width="280" height="80" rx="8"/>
+  <text class="mono" x="910" y="276" text-anchor="middle">practice tags[]</text>
+  <text class="tm" x="910" y="296" text-anchor="middle">action · impact · confidence</text>
+  <text class="tm" x="910" y="315" text-anchor="middle">+ a verbatim quote, required</text>
+
+  <rect class="lane" x="48" y="362" width="520" height="532" rx="12"/>
+  <rect class="lane" x="592" y="362" width="520" height="532" rx="12"/>
+  <text class="tl cinv" x="308" y="390" text-anchor="middle">INVESTMENT AUDIENCE</text>
+  <text class="tl cai"  x="852" y="390" text-anchor="middle">AI-TEAM AUDIENCE</text>
+
+  <line class="ln" x1="250" y1="330" x2="250" y2="408" marker-end="url(#ah)"/>
+  <path class="ln" d="M580,330 L580,350 L380,350 L380,408" marker-end="url(#ah)"/>
+  <line class="ln" x1="910" y1="330" x2="910" y2="408" marker-end="url(#ah)"/>
+
+  <rect class="bx keyinv" x="72" y="410" width="472" height="80" rx="8"/>
+  <text class="mono" x="88" y="436">score = 100 × (event_weight/5) × max(magnitude × confidence)/3</text>
+  <text class="tm" x="88" y="458">Multiplied, not added. No mechanism tag makes the second</text>
+  <text class="tm" x="88" y="477">term zero, and every tag has to carry a quote.</text>
+  <line class="ln" x1="308" y1="490" x2="308" y2="518" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="72" y="520" width="472" height="58" rx="8"/>
+  <text class="tb" x="88" y="543">Investment score 0–100 + band</text>
+  <text class="tm" x="88" y="563">high ≥ 60 · medium ≥ 30 · low ≥ 1 — a label, not a change</text>
+  <line class="ln" x1="308" y1="578" x2="308" y2="604" marker-end="url(#ah)"/>
+
+  <rect class="bx keyinv" x="72" y="606" width="472" height="156" rx="8"/>
+  <text class="tb" x="88" y="629">app/connect.py — four routes to a holding</text>
+  <text class="mono"  x="88" y="654">mechanism      1.00   quoted and signed on both sides</text>
+  <text class="monod" x="88" y="674">category       0.60   a claim about a group of companies</text>
+  <text class="monod" x="88" y="694">lab_exposure   0.60   publisher edge, only if score &gt; 0</text>
+  <text class="monod" x="88" y="714">named          0.30   a string matched, no quote</text>
+  <text class="tm" x="88" y="738">All four write into one column the digest sorts on, so each</text>
+  <text class="tm" x="88" y="755">is capped. Signs compose (+·−=−); low confidence = 0.</text>
+  <line class="ln" x1="308" y1="762" x2="308" y2="798" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="72" y="800" width="472" height="76" rx="8"/>
+  <text class="tb" x="88" y="824">connections → portfolio holdings (ISIN)</text>
+  <text class="tm" x="88" y="845">One row per holding × route × via, with its own quote and why.</text>
+  <text class="tm" x="88" y="864">A zero-strength connection is never written.</text>
+
+  <rect class="bx keyai" x="616" y="410" width="472" height="80" rx="8"/>
+  <text class="mono" x="632" y="436">ai_score = 100 × (action_weight/3) × max(impact × confidence)/3</text>
+  <text class="tm" x="632" y="458">No event weight here. compute_commitment ranks 5 because</text>
+  <text class="tm" x="632" y="477">clusters move silicon, which tells an engineer nothing.</text>
+  <line class="ln" x1="852" y1="490" x2="852" y2="518" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="616" y="520" width="472" height="58" rx="8"/>
+  <text class="tb" x="632" y="543">AI score 0–100 + band</text>
+  <text class="tm" x="632" y="563">Same bands and same confidence gate, so the two read side by side.</text>
+  <line class="ln" x1="852" y1="578" x2="852" y2="604" marker-end="url(#ah)"/>
+
+  <rect class="bx keyai" x="616" y="606" width="472" height="156" rx="8"/>
+  <text class="tb" x="632" y="629">action — what the reader should do about it</text>
+  <text class="mono"  x="632" y="654">adopt          3      implementable, and the gain is stated</text>
+  <text class="monod" x="632" y="674">investigate    2      credible, unproven for our setting</text>
+  <text class="monod" x="632" y="694">watch          1      interesting, nothing to do yet</text>
+  <text class="tm" x="632" y="722">“Should we act” is this audience's question, so it takes</text>
+  <text class="tm" x="632" y="739">the first slot. No practice tag means no AI score, the</text>
+  <text class="tm" x="632" y="756">same way no mechanism tag means no investment score.</text>
+  <line class="ln" x1="852" y1="762" x2="852" y2="798" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="616" y="800" width="472" height="76" rx="8"/>
+  <text class="tb" x="632" y="824">nothing joins to the portfolio here</text>
+  <text class="tm" x="632" y="845">Exposure isn't what an engineer decides on. Same extraction,</text>
+  <text class="tm" x="632" y="864">different last mile.</text>
+
+  <line class="ln" x1="308" y1="876" x2="308" y2="912" marker-end="url(#ah)"/>
+  <line class="ln" x1="852" y1="876" x2="852" y2="912" marker-end="url(#ah)"/>
+
+  <rect class="bx key" x="48" y="914" width="1064" height="134" rx="10"/>
+  <text class="tb" x="580" y="940" text-anchor="middle">The cut — config/digest.yaml · stored as a record of what the product said</text>
+  <text class="tb cinv" x="80" y="970">Investment edition</text>
+  <text class="tm" x="80" y="991">a connection at strength ≥ 0.50 — or band `high`</text>
+  <text class="tm" x="80" y="1009">with no connection at all, because a shift that hasn't</text>
+  <text class="tm" x="80" y="1027">reached the book yet is the one worth catching early.</text>
+  <text class="tb cai" x="600" y="970">AI edition</text>
+  <text class="tm" x="600" y="991">action is adopt or investigate, and band `high`.</text>
+  <text class="tm" x="600" y="1009">`watch` means nothing to do yet, so including it would</text>
+  <text class="tm" x="600" y="1027">fill the digest with items tagged as ignorable.</text>
+
+  <line class="ln" x1="580" y1="1048" x2="580" y2="1078" marker-end="url(#ah)"/>
+
+  <rect class="bx" x="48" y="1080" width="1064" height="158" rx="10"/>
+  <text class="tb" x="580" y="1106" text-anchor="middle">What the reader sees — frontend/app/detail.js, fed by api/queries.py</text>
+
+  <text class="tb" x="80" y="1136">The number</text>
+  <text class="tm" x="80" y="1157">Score and band chip. The audience</text>
+  <text class="tm" x="80" y="1175">toggle picks which of the two shows;</text>
+  <text class="tm" x="80" y="1193">both are always stored.</text>
+  <text class="monod" x="80" y="1216">it.score / it.aiScore</text>
+
+  <text class="tb" x="430" y="1136">The why</text>
+  <text class="tm" x="430" y="1157">Every tag shows its reason and its</text>
+  <text class="tm" x="430" y="1175">verbatim quote, so the claim can be</text>
+  <text class="tm" x="430" y="1193">checked against the text.</text>
+  <text class="monod" x="430" y="1216">tag.reason + tag.quote</text>
+
+  <text class="tb" x="780" y="1136">The impact</text>
+  <text class="tm" x="780" y="1157">“Portfolio impact”: connections</text>
+  <text class="tm" x="780" y="1175">grouped by company, each with a</text>
+  <text class="tm" x="780" y="1193">direction arrow, label and strength.</text>
+  <text class="monod" x="780" y="1216">connectionGroups[]</text>
+
+  </g>
+</svg>
+</div>
+
+<p class="caption">The two lanes are two renderers over the same extraction. That's why they
+can rank the same corpus differently without being two systems.</p>
+
+<h3>The join in detail — <code>app/connect.py</code></h3>
+
+<p>It answers one question per article: which holdings does this touch, and how strongly. It
+runs after scoring, writes the <code>connections</code> table, and uses no LLM — the
+classifier already did its part by tagging the article.</p>
+
+<p><strong>Both sides carry the same three fields.</strong> An article's mechanism tag has
+<code>magnitude</code>, <code>confidence</code> and <code>sign</code>. So does a holding's
+mechanism edge in <code>companies.yaml</code>. A connection exists when the two name the
+same mechanism id.</p>
+
+<p>Each side is turned into a number between 0 and 1 by the same function, reading the same
+maps from <code>scoring.yaml</code>:</p>
+
+<pre>weight = (magnitude × confidence) / 3
+magnitude:  high 3, medium 2, low 1
+confidence: high 1.0, medium 0.5, low 0.0</pre>
+
+<p>High/high is 1.0, medium/medium is 0.33, and anything low-confidence is 0.</p>
+
+<table>
+  <thead><tr><th>Route</th><th>Strength</th><th>Why that shape</th></tr></thead>
+  <tbody>
+    <tr><td><code>mechanism</code></td><td>article weight × holding weight × 1.0</td><td>Both sides quoted, signed and sized.</td></tr>
+    <tr><td><code>category</code></td><td>article confidence × 0.6</td><td>No magnitude — belonging to a category has no size.</td></tr>
+    <tr><td><code>lab_exposure</code></td><td>holding weight × 0.6</td><td>Holding side only; the classifier has no lab-sentiment axis.</td></tr>
+    <tr><td><code>named</code></td><td>flat 0.3</td><td>Nothing to weigh. A string matched.</td></tr>
+  </tbody>
+</table>
+
+<p>Worked example: an article tags <code>memory_intensity_up</code> high/high/positive;
+Micron's edge is high/high/positive. Strength = 1.0 × 1.0 × 1.0 = <strong>1.00</strong>,
+direction positive. Drop the article tag to medium/medium and it becomes 0.33.</p>
+
+<p>Directions compose like signs: positive × positive = positive, positive × negative =
+negative, and <code>mixed</code> on either side wins, because a guessed direction would be
+shown as evidence.</p>
+
+<h4>Four guards</h4>
+
+<ul>
+  <li><strong>A zero-strength connection is never written.</strong> Low confidence on either
+  side removes the row.</li>
+  <li><strong><code>lab_exposure</code> only fires when the article scored above zero.</strong>
+  That edge fires on the publisher rather than on what was published — ungated, a Brazil
+  office opening reached Amazon.</li>
+  <li><strong>One row per (holding, route, via)</strong>, strongest kept. The classifier
+  sometimes tags one mechanism twice with different quotes.</li>
+  <li><strong>Name matching has floors.</strong> Legal suffixes stripped (“Micron
+  Technology, Inc.” → “Micron”), minimum 4 characters, and tickers must be 3+ characters and
+  uppercase-exact, so <code>MU</code> and <code>ON</code> can't fire in ordinary prose.</li>
+</ul>
+
+<h4>Why you never see a lab_exposure row</h4>
+
+<p>There are three <code>lab_exposure</code> edges in the whole config, and one of them is
+dead:</p>
+
+<table>
+  <thead><tr><th>Holding</th><th>Lab</th><th>Kind</th></tr></thead>
+  <tbody>
+    <tr><td>Amazon</td><td>anthropic</td><td>equity</td></tr>
+    <tr><td>TeraWulf</td><td>anthropic</td><td>revenue_contract</td></tr>
+    <tr><td>IREN</td><td>microsoft — <em>dormant</em></td><td>revenue_contract</td></tr>
+  </tbody>
+</table>
+
+<p><code>load_refs.py</code> marks an edge <code>is_dormant</code> when its lab isn't in
+<code>sources.yaml</code>, and <code>microsoft</code> isn't one of the seven tracked labs.
+<code>connections_for</code> skips dormant edges. So only an Anthropic article can produce
+this route, and only onto Amazon or TeraWulf — every OpenAI, DeepMind, Meta, Mistral,
+DeepSeek and xAI article produces none.</p>
+
+<p>When it does fire there's no special UI. It renders as an ordinary row in “Portfolio
+impact”, labelled by <code>_connection_label</code> as <code>Lab relationship — Equity</code>
+or <code>Lab relationship — Revenue contract</code>, with the edge's <code>why</code> string
+underneath. Strength is 0.60 and the arrow is always neutral, because
+<code>direction</code> is hardcoded to <code>mixed</code>. 0.60 clears the digest's 0.5
+threshold, so an Anthropic article with no other connection can reach the investment digest
+on this route alone.</p>
+
+<h4>Dashboard and digest read the same rows</h4>
+
+<p><code>/api/items</code> attaches every connection an article has — no route filter, no
+strength filter — so the dashboard shows all four routes, including <code>named</code> at
+0.30 and anything below the digest's threshold. Its only filter is on date
+(<code>window_start()</code>, from <code>pipeline.yaml</code>). The digest is a filtered
+subset of the same data.</p>
+
+<h3>One article, traced all the way through</h3>
+
+<p>A real example from the dashboard: a Meta announcement, scoring 40.0, reaching two
+holdings.</p>
+
+<div class="figure">
+<svg viewBox="0 0 1160 840" width="1160" height="840" role="img"
+     aria-label="One article traced from the model's tags through the score and the holdings join to what the reader sees.">
+  <defs>
+    <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g color="currentColor" style="color: var(--muted)">
+
+  <rect class="bx" x="30" y="40" width="1100" height="86" rx="8"/>
+  <text class="tb" x="50" y="66">The document</text>
+  <text class="tm" x="50" y="88">Meta launches Muse, an autonomous consumer agent.</text>
+  <text class="monod" x="50" y="112">“It can open a browser, fill out forms, and negotiate on their behalf.”</text>
+  <line class="ln" x1="580" y1="126" x2="580" y2="156" marker-end="url(#ah4)"/>
+
+  <rect class="bx key" x="30" y="158" width="1100" height="182" rx="8"/>
+  <text class="tb" x="50" y="184">The model call — the only one in this flow</text>
+  <text class="tm" x="50" y="204">It classifies and tags. Every tag carries a quote. It returns no number.</text>
+
+  <rect class="bx" x="50" y="220" width="300" height="104" rx="6"/>
+  <text class="mono" x="66" y="244">event_type</text>
+  <text class="tm" x="66" y="266">weight 2 of 5</text>
+  <text class="tm" x="66" y="288">the kind of announcement</text>
+  <text class="tm" x="66" y="308">this is</text>
+
+  <rect class="bx" x="390" y="220" width="330" height="104" rx="6"/>
+  <text class="mono" x="406" y="244">agentic_workflows</text>
+  <text class="tm" x="406" y="266">positive · high magnitude</text>
+  <text class="tm" x="406" y="288">high confidence</text>
+  <text class="tm" x="406" y="308">quoted from the text above</text>
+
+  <rect class="bx" x="760" y="220" width="330" height="104" rx="6"/>
+  <text class="mono" x="776" y="244">inference_volume_up</text>
+  <text class="tm" x="776" y="266">positive · medium magnitude</text>
+  <text class="tm" x="776" y="288">low confidence</text>
+  <text class="tm" x="776" y="308">this one changes nothing, twice</text>
+
+  <line class="ln" x1="300" y1="340" x2="300" y2="376" marker-end="url(#ah4)"/>
+  <line class="ln" x1="860" y1="340" x2="860" y2="376" marker-end="url(#ah4)"/>
+
+  <rect class="lane" x="30" y="378" width="540" height="284" rx="10"/>
+  <text class="tl cinv" x="50" y="402">PATH A — THE ARTICLE'S OWN SCORE</text>
+  <text class="mono" x="50" y="430">strongest = max over tags of (magnitude × confidence)</text>
+  <text class="mono" x="50" y="454">  agentic_workflows    3 × 1.0 = 3</text>
+  <text class="monod" x="50" y="474">  inference_volume_up  2 × 0.0 = 0</text>
+  <text class="mono" x="50" y="502">score = 100 × (2/5) × (3/3)</text>
+  <text class="tb" x="50" y="530">= 40.0    band: medium</text>
+  <text class="tm" x="50" y="562">A low-confidence tag is worth zero, so it can never</text>
+  <text class="tm" x="50" y="580">raise a score. The other tag sets this one on its own.</text>
+  <text class="tm" x="50" y="608">Bands label the number. They don't change it.</text>
+  <text class="tm" x="50" y="640">With no tags at all, the score would be 0.</text>
+
+  <rect class="lane" x="590" y="378" width="540" height="284" rx="10"/>
+  <text class="tl cinv" x="610" y="402">PATH B — THE JOIN TO HOLDINGS</text>
+  <text class="mono" x="610" y="430">article side: (3 × 1.0)/3 = 1.00</text>
+  <text class="tm" x="610" y="454">companies.yaml, Navan → agentic_workflows,</text>
+  <text class="tm" x="610" y="472">written by hand and sourced:</text>
+  <text class="mono" x="610" y="494">  medium magnitude, high confidence</text>
+  <text class="mono" x="610" y="514">  (2 × 1.0)/3 = 0.67</text>
+  <text class="mono" x="610" y="542">strength = 1.00 × 0.67 × 1.00 = 0.67</text>
+  <text class="monod" x="610" y="560">                       mechanism ceiling</text>
+  <text class="tm" x="610" y="588">Hinge Health's edge is medium/medium, so it comes</text>
+  <text class="tm" x="610" y="606">out at 0.33 from the same article.</text>
+  <text class="tm" x="610" y="634">The low-confidence tag writes no connection at all.</text>
+
+  <line class="ln" x1="300" y1="662" x2="300" y2="696" marker-end="url(#ah4)"/>
+  <line class="ln" x1="860" y1="662" x2="860" y2="696" marker-end="url(#ah4)"/>
+
+  <rect class="bx key" x="30" y="698" width="1100" height="114" rx="8"/>
+  <text class="tb" x="50" y="724">What the reader gets</text>
+  <text class="tm" x="50" y="748">0.67 clears the digest's 0.50 threshold, so this article enters the investment edition.</text>
+  <text class="tm" x="50" y="770">The card shows 40.0 with a medium chip, both evidence cards with their quotes, and a</text>
+  <text class="tm" x="50" y="792">Portfolio impact block: Navan 0.67, Hinge Health 0.33, each with its own why string.</text>
+
+  </g>
+</svg>
+</div>
+
+<p class="caption">Two numbers come out of one set of tags. The score says how much this
+document matters; the strength says how much it matters to a particular holding. Neither is
+produced by the model.</p>
+
+<div class="note">
+  <strong>An open question about the company side.</strong> On the article side, magnitude
+  and confidence measure genuinely different things — a document can state a small effect
+  plainly, or hint at a large one. On the company side that separation is weaker: it is hard
+  to say what “medium confidence that the impact is high” means about a standing
+  relationship between a mechanism and a company. Magnitude alone might carry it. Noted, not
+  changed.
+</div>
+
+<h3>Parts of that flow worth saying in words</h3>
+
+<ul>
+  <li><strong>The join is deterministic and carries its quotes.</strong> Four routes, each
+  storing its provenance on the row. <code>lab_exposure</code> only fires when the article
+  scores above zero, because the edge fires on the <em>publisher</em> rather than on what
+  was published — ungated, it connected a Brazil office opening to Amazon.</li>
+
+  <li><strong>Category and mechanism can disagree, and the code picks a side.</strong> A
+  category tag is a claim about a group of companies; a mechanism edge is evidence about one
+  company. OpenAI shipping its own accelerator reads positive for the accelerator category
+  and negative for NVIDIA specifically.
+  <code>_drop_contradicted_category_rows</code> removes the group row where that company's
+  own mechanism row points the other way, since showing both confuses rather than informs.
+  Only strict opposites count.</li>
+
+  <li><strong>The reader never sees a bare route name.</strong>
+  <code>_connection_label</code> in <code>api/queries.py</code> turns the row into what it
+  actually matched — the mechanism's label, the category's label, “Lab relationship — …”, or
+  <code>Named in article — "…"</code>. The word “mechanism” on its own says nothing.</li>
+
+  <li><strong>The note prefers the holding-side <code>why</code></strong> over the article's
+  own reason, and falls back only when there isn't one. Category rows never carry a
+  holding-side why, because membership has no argument attached to it.</li>
+
+  <li><strong>Folded duplicate groups rank on the axis being displayed.</strong>
+  <code>event_type</code> is multiplied into the investment score and absent from the AI
+  score, so the member ranking highest overall can score zero on the axis you're looking
+  at.</li>
+
+  <li><strong>Published digests are stored and never recomputed.</strong> A digest records
+  what the product said on a given day. Rebuilding an old one against a re-scored corpus
+  would show today's opinions under last week's date.</li>
+</ul>
+
+<h2>Text provenance — knowing what was actually read</h2>
+
+<p>Sources degrade unevenly. openai.com sits behind Cloudflare and returns 403 to every
+fetcher tried — plain curl, a browser user agent, a full browser header set, Googlebot —
+but serves XML, so discovery runs on RSS and gets a two-line editorial summary. Other labs
+give up the whole page.</p>
+
+<p>A score computed from two lines and a score computed from a full article are not
+comparable. Nothing downstream can tell them apart unless the item says so. That's what
+<code>text_source</code> is for, and it's used in two places:</p>
+
+<ul>
+  <li><strong>In the prompt.</strong> v9 has a section telling the model what it's holding
+  and what to do about it: <code>full_text</code> normal confidence ·
+  <code>rss_summary</code> cap confidence at medium, you're reading an abstract ·
+  <code>full_text_archived</code> treat as the real article, but site furniture may have
+  survived the extraction so never quote from it · <code>model_spec</code> first-party and
+  canonical, and the absence of benchmarks is a property of the format, not weak
+  evidence.</li>
+  <li><strong>On the rendered item</strong>, so a reader can see that a low score came from
+  a thin source rather than a thin event.</li>
+</ul>
+
+<div class="note">
+  <strong>The fallback enriches the existing row. It never creates a new one.</strong>
+  <code>enrich_wayback</code> takes the articles RSS already found
+  (<code>text_source == "rss_summary"</code>), fetches the archived text, and upgrades them
+  in place. The article keeps its canonical openai.com URL; the archive URL is stored as
+  <code>archive_snapshot</code> metadata. Since <code>raw_articles</code> is keyed on url,
+  duplicates are impossible by construction rather than something dedupe has to catch
+  later.
+</div>
+
+<h4>Three things learned the hard way</h4>
+
+<ul>
+  <li><strong>The enrichment runs inside the fetch, not after it.</strong> The fetch rewrites
+  the register from scratch, so a recovery pass that runs afterwards lasts exactly until the
+  next fetch. It was run afterwards once, and 141 recovered articles reverted to summaries
+  overnight with nothing reporting it.</li>
+  <li><strong>A snapshot shorter than the summary is refused.</strong> That's a redirect stub
+  or an error page, never an improvement, and both are common in archives.</li>
+  <li><strong>What couldn't be recovered is reported</strong> as an unresolved row per item,
+  rather than passing quietly. A source stuck on summaries is exactly the degradation this
+  field exists to make visible.</li>
+</ul>
+
+<p>Measured 2026-09-05: 131 of 149 OpenAI articles are archived, and the recovered text runs
+12× to 98× the RSS summary. The 18 that aren't are mostly customer stories and academy
+pages — with one exception worth knowing about, the GPT-6 Astra safety overview, which is
+substantive and has never been crawled.</p>
+
+<p>The open edge: an article settles once it's classified, which happens in the firing that
+discovers it, so enrichment gets one attempt. Anything the archive hasn't crawled inside
+that window keeps its summary permanently.</p>
+
+<h2>To fix</h2>
+
+<p class="lede">Raised while reading, not actioned. Each needs a decision before any code
+changes.</p>
+
+<h3>1. The dashboard can't sort by impact on a holding</h3>
+
+<p>The dashboard offers two sorts, <code>score</code> and <code>date</code>, and
+<code>score</code> means the article score for the selected audience
+(<code>frontend/app/page.js:166</code>). Connection strength never enters the ordering
+across cards — only within one card, where <code>api/queries.py</code> already returns
+connections strength-descending.</p>
+
+<p>The investment digest does it the other way round: selection ranks on connection strength
+first, then article score (<code>app/digest.py</code>, “TWO SORTS, AND THE ORDER OF THEM IS
+THE POINT”). So the two surfaces rank the same corpus differently.</p>
+
+<p>This matters most with the holding filter on. Pick NVIDIA and you get every article
+connected to NVIDIA, ordered by how important the article is in general rather than by how
+hard it hits NVIDIA. That is the moment a reader is asking the second question, and the
+answer isn't available.</p>
+
+<p><strong>Fix:</strong> add a third sort option — impact — ranking on the article's
+strongest connection, or on the connection to the filtered holding when one is selected. The
+data is already in the payload, so this is frontend-only.</p>
+
+<h3>2. <code>min_strength</code> is a misleading name</h3>
+
+<p><code>min_strength: 0.5</code> sits under <code>investment:</code> in
+<code>digest.yaml</code> and filters <strong>connection strength</strong>, which runs 0–1.
+The article score runs 0–100 and is filtered separately by <code>always_band</code>. Two
+scales, two different things, one name that doesn't say which.</p>
+
+<p>It has already caused a mistake once, recorded in <code>digest.yaml</code>: the AI cut was
+asked for as “scores above 0.5”, but there is no 0–1 score on that axis —
+<code>ai_score</code> is 0–100, and the 0.5 in the investment block is a connection strength
+the AI rule doesn't use at all.</p>
+
+<p><strong>Fix:</strong> rename to <code>min_connection_strength</code>.</p>
+
+<h3>3. Should the article score be its highest impact on a holding?</h3>
+
+<p>The current article score is <code>event_weight × strongest tag</code> and knows nothing
+about the portfolio. An alternative: score the article on its strongest connection instead,
+which would answer the question the fund actually asks and would let
+<code>event_type</code> drop out of scoring entirely.</p>
+
+<p>Four things that would cost:</p>
+
+<ul>
+  <li><strong>The early signal disappears.</strong> An article about a lab shift that
+  doesn't yet touch anything in the book would score 0. That is precisely what
+  <code>always_band: high</code> exists to catch — the item that arrives before the market
+  has priced it. This change deletes it by construction rather than by choice.</li>
+  <li><strong>The score becomes a function of the portfolio.</strong> The book is 26
+  positions of one fund on one date. After a rebalance every article's score moves, and last
+  month's scores stop being comparable with this month's.</li>
+  <li><strong>A missing edge looks like unimportance.</strong> A connection only exists where
+  someone hand-wrote an edge in <code>companies.yaml</code>. An article about something real
+  but unmapped scores 0, and that can't be told apart from an article about nothing.</li>
+  <li><strong>The AI axis still needs its own score</strong>, because it has no holdings. So
+  this doesn't collapse to one number — it gives two differently-shaped ones.</li>
+</ul>
+
+<p><strong>Already partly done:</strong> the investment digest ranks on connection strength
+before article score, so the fund's ordering exists there without making the score itself
+portfolio-dependent. Item 1 above would extend the same idea to the dashboard.</p>
+
+<h3>4. The last layer should be a serving table, not fourteen joins</h3>
+
+<p><code>/api/items</code> reads fourteen tables, substitutes ids for labels, and ships the
+whole corpus so the browser can filter it. That work is identical on every request and
+depends on nothing about the request. It is precomputation pretending to be a query.</p>
+
+<p>The dashboard and the digest are the same object with different filters. Build one
+denormalised table that <em>is</em> what the reader receives, and have both read it:</p>
+
+<pre>cards
+  article_id, audience, published_on, score, band,
+  top_connection_isin, top_strength,   -- precomputed: what got this in
+  payload                              -- summary, tags with quotes, connections
+                                       --   with labels, group, related links</pre>
+
+<p>Three things follow:</p>
+
+<ul>
+  <li><strong>To-fix item 1 disappears.</strong> Sorting by impact on a holding needs
+  <code>top_strength</code> stored, not computed in the browser.</li>
+  <li><strong>The feed stops shipping everything.</strong> One response with the whole corpus
+  works at 746 rows and breaks at 50,000.</li>
+  <li><strong>Audience becomes a column</strong> instead of parallel
+  <code>score</code>/<code>ai_score</code> fields that every consumer branches on. The
+  two-renderer design lands in the schema rather than in <code>if</code> statements.</li>
+</ul>
+
+<p><strong>And store a published edition as a selection, not a copy.</strong> An edition has
+to record what was said on a date, but <code>digests</code> currently stores the
+<em>rendered</em> payload, which freezes everything — fix a mechanism label and the dashboard
+updates while old editions keep the old wording for ever. Store the decision and the numbers
+behind it, and render from current data:</p>
+
+<pre>digest_editions  id, audience, period_start, period_end, published_at, suppressed_count
+digest_items     edition_id, article_id, rank, score_at_publish, strength_at_publish</pre>
+
+<p>The rule this gets you: the dashboard and the digest are one table with different filters,
+and the only thing worth storing separately is which rows went out and when.</p>
+
+<h3>5. Company-side <code>confidence</code> may be redundant</h3>
+
+<p>On the article side, magnitude and confidence measure different things: a document can
+state a small effect plainly, or hint at a large one. On the company side that separation is
+weaker — it is hard to say what “medium confidence that the impact is high” means about a
+standing relationship between a mechanism and a company. Magnitude alone might carry it.</p>
+
+<p><strong>Fix:</strong> decide whether the field earns its place. Dropping it changes every
+strength in the join, so it needs the gold set replayed before and after.</p>
+
+</main>
+</body>
+</html>
