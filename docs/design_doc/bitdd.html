@@ -1,4 +1,5 @@
 <!doctype html><meta charset="utf-8"><style>
+.pagebreak { break-after: page; page-break-after: always; height:0; }
 @page { size: A4; margin: 20mm 18mm; }
 body { font: 10.5pt/1.5 "Helvetica Neue", Arial, sans-serif; color:#111; }
 h1 { font-size: 19pt; margin: 0 0 .6em; }
@@ -10,12 +11,16 @@ li { margin: 0 0 .3em; }
 table { border-collapse: collapse; width:100%; margin: .6em 0 1em; font-size: 9pt; }
 th, td { border:1px solid #ccc; padding:5px 7px; text-align:left; vertical-align:top; }
 th { background:#f4f4f4; }
-img { display:block; width:70%; max-width:70%; margin:.6em auto; }
+img { display:block; width:90%; max-width:90%; margin:.6em auto; }
+/* keep a figure with its caption, and never split one across a page */
+p:has(img) { break-inside: avoid; break-after: avoid; margin:.4em 0; }
+p:has(img) + p em { display:block; text-align:center; }
+p:has(img) + p { break-before: avoid; }
 code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 3px; border-radius:3px; }
 </style>
 <h1>BIT Capital Frontier Lab Intelligence Platform</h1>
 <p>The BIT Capital Frontier Lab Intelligence Platform pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) fund, indicating how these signals could impact BitCap positions as well as the strength of these impacts.</p>
-<h3>Discussion of the principles of Design</h3>
+<h3>Discussion of the Principles of Design</h3>
 <p>A key design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across funds and settled on the positions within the Technology Leaders fund as of 30 June 2026. These positions represent roughly 1.5B € or 50% of BitCap&#x27;s AUM and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across funds.</p>
 <p>When a source is scored, it links back to a BitCap position through a linked Mechanism (see Scoring below). The user can then see a rated impact of the source on the investment, whether positive, negative or mixed.  </p>
 <p>Sources are also scored both for investment and AI Team impact, with some sources having relevance for both user bases and others having relevance for just one. For example, announcements from Labs often had relevance both for the investing team and the AI Team whereas GitHub releases often just had relevance for the AI Team.</p>
@@ -35,17 +40,17 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <p>All sources are re-scored when a prompt relevant to that source type is updated to a new version.</p>
 <p>Most of what is collected scores zero: 348 of 447 announcements and releases, 33 of 47 papers and 210 of 238 X posts. This is not on accident as the purpose of the pipeline is to remove noise. </p>
 <p>Although different sources are not weighted differently, X posts generally score lower, because most of them are not about an event at all. Of the 210 posts scoring zero, 194 carry no mechanism tag, and 119 were classified as event type other, which is commentary and advocacy rather than something with a path to a holding. However, a post with real signal still reaches the top: the highest scoring item anywhere in the system is a single post from OpenAI&#x27;s Mark Chen committing to 4+ GW of NVIDIA capacity, which carriers clear investment signal.</p>
-<h2>Model selection</h2>
+<h2>Model Selection</h2>
 <p>To score the sources, namely lab announcements, github releases, X-posts and papers, Sonnet 5 was used. Sonnet 5 was compared against Haiku 4.5 and GPT5-mini on the gold set of announcements over three runs. Haiku was removed because it consistently scored an important article 0. GPT5-mini was removed because of high variances with its results across runs.</p>
 <p>A scoring drift report is run nightly (see Pipeline) and can be run on command to compare the results from the lab announcement scoring model with the gold set. I acknowledge that there is variance on these results from run-to-run and that the current score, generally around 0.85 Micro-F1 could be improved. I tested a version of the scorer that runs three times on each article and scores based on the majority label with both Sonnet 5 and GPT5-mini. Sonnet 5 performed well, but the variance was very high with GPT5-mini making a three way vote for this model infeasible. This cost of running three source classifications was, however, too high in development because I was regularly rescoring the whole 3 months of the corpus. If I had more time, I would have moved over to this scoring method for the sources.</p>
 <p>Due to the length of the announcements being scored, I tried to see if it was possible to first summarise them and then score them. I tested summarisation with Sonnet 5, Haiku 4.5 and GPT5-mini, however there was significant degradation of the results on the gold set and the token saving was small – less than 20% per announcement / article on average. This was due partly to the length of the scoring prompt instructions. A significant cost saving (~50%) was achieved instead by applying prompt caching to this scoring prompt first and then running the scoring.</p>
 <p>For choosing which Frontier AI Lab repos might be relevant to the AI team, the repos are classified using GPT5-mini. GPT5-mini was chosen over Haiku 4.5 for this task based on the results on a set of Fable 5 labelled repos, labelled for significance. The Fable 5 labels were validated by manually comparing them to a subset of 20 items from this list that I had hand scored; human agreement with Fable was 95%. Sonnet 5 was not tested for this task because the results with GPT5-mini were satisfactory and it is 1/8th the cost of Sonnet 5. Note this was a filter stage. Once filtered, the repo releases were then scored by the Sonnet 5 scorer.</p>
 <h2>Sources</h2>
-<h3>Labs selected</h3>
+<h3>Labs Selected</h3>
 <p>From an intial list of 21 labs 7 were selected. This initial list was created through AI research where the labs were placed into four buckets, Closed Frontier, China, Western Challengers, and Stealth/New Modality. Meta AI entered Closed Frontier due to their move away from open weights models recently. </p>
 <p>I selected all of the Closed Frontier labs namely OpenAI, Anthropic, Google Deepmind, Meta AI, xAI; DeepSeek from China; and Mistral from Western Challengers. The Closed Frontier labs were selected because of their size and impact on the market. DeepSeek was selected because of the impact of DeepSeek R1 on the market (-17% of Nvidia&#x27;s share price a week after the launch). Mistral was chosen because of a hypothesised impact it could have on driving European-based AI development, including Data Centre build out. </p>
 <p>A second reason for chosing 7 labs was to limit the size of the sample in order to lower costs and make development more managable in the time frame. In a second phase of the project I would include additional labs.</p>
-<h3>Lab announcements</h3>
+<h3>Lab Announcements</h3>
 <p>Announcements are discovered per lab and the method differs because the sites do. Every entry is a config change in <code>config/sources.yaml</code>, but the code for extraction is the same for each.</p>
 <table><thead><tr><th>Lab</th><th>Channels</th><th>Why</th></tr></thead><tbody>
 <tr><td>Anthropic</td><td>Sitemap</td><td>No RSS feed exists at any path tried</td></tr>
@@ -80,6 +85,7 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <p>The pipeline runs in eight phases in a fixed order. There’s also a per source failure isolation, so if one of the sources breaks, the others can still be processed. </p>
 <p><img src="media/image1.png"></p>
 <p><em>Figure 1 The stages of the ETL Ingestion Pipeline</em></p>
+<div class="pagebreak"></div>
 <p>The data is processed in a medallion architecture. The Bronze layer is updated whenever new data is added to the pipeline when the pipeline is run for one or more of the parts. The Silver layer is then processed deterministically. For example, the deterministic scoring algorithm (but not the LLM labels the scores are based on) can be adjusted and the Silver Layer rerun without having to reprocesses the Bronze layer. The Gold layer brings together the company (BitCap) holding data with the data from the Silver layer to create the objects on the UI.</p>
 <p><img src="media/image2.png"></p>
 <p><em>Figure 2 The Medallion architecture</em></p>
@@ -87,7 +93,7 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <p>Articles covering the same event are grouped so the Dashboard feed shows one row per event rather than one row per source. Three deterministic passes run first: exact matches on lab, date and title, release trains from a single repo, and a requirement that the event type matches before anything can merge at all. The remaining pairs are compared by embedding, and only those in a narrow cosine band are sent to an LLM to decide.  This is because on the pairs I labelled the cosine score does not separate duplicates from near misses cleanly enough to cut at one threshold. Pairs at or above 0.80 merge unasked, pairs below 0.70 stay separate, and the model is only asked in between. Grouping has not been implemented for X posts due to time constraints.</p>
 <h3>Alerts Digest</h3>
 <p>The digest in the Alerts tab is a daily edition of the highest scoring items, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day. When the pipeline runs each night, it creates a published set of articles from the past 24 hours which the user can then investigate by selecting it in the drop down menu at the top of the Alerts - e.g. &#x27;Published 6 Sept - 1d - 1 of 9&#x27; shows the key alert for the 24 hour period across 6 September. This would enable a user to open the tool in the morning and select the digest to see the previous day&#x27;s alerts from sources. Only high scoring sources are shown here.</p>
-<h3>Pipeline alerts and failures</h3>
+<h3>Pipeline Alerts and Failures</h3>
 <p>The pipeline runs unattended overnight, so it is built to fail in a way one can see.</p>
 <ul>
 <li>Fetches retry four times with exponential backoff and are rate limited per host. Each source keeps its own watermark and failure count, so one source breaking does not reset or block the others.</li>
@@ -100,7 +106,7 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <h2>Costs</h2>
 <p>Every LLM call records its model, tokens and cost at the call site as it runs, so the figures below are what was charged rather than an estimate made afterwards. Based on these, the cost of scoring the full pipeline for the three-month period is roughly ~13.50€, with the X posts pulled from the limited list of leadership members costing ~3€ over the same period.</p>
 <p>The costs for each daily pipeline run are ~1€. This includes the cost for the drift checker at ~0.80€.</p>
-<h2>Development cycle</h2>
+<h2>Development Cycle</h2>
 <p>I started off with a planning document based on the case-study and sketched out the high-level steps for the project. The key points from this document were included in the CLAUDE.md file governing the sessions. I clearly stated in the planning document that every decision needs to be recorded in a decisions document. I also indicated that unit tests must be written for everything the agents do.</p>
 <p>Each part of the pipeline started with an interactive research session with a Claude agent. Sources were discovered and scripts built for extracting them. These were then built into a repeatable pipeline once they had been validated.</p>
 <p>I ran different agents in different work-trees simultaneously to work on different features. Along with tracking all key decisions in the decisions document, the agents also wrote short handover documents for other agents once a larger feature was complete. This helped the agents to maintain context throughout the project as it developed.</p>
@@ -124,6 +130,7 @@ code { font: 9.5pt "SF Mono", Menlo, monospace; background:#f2f2f2; padding:1px 
 <h2>Next Steps and Improvements</h2>
 <ul>
 <li>Incorporate additional labs into the data. I would start off with incorporating additional labs from China into the sample.</li>
+<li>Incoporate additional sources into the data from lab employees outside of leadership, including their X posts, private blog posts and personal GitHub Repos. I would also use this information to try to identify lab departures for researchers and engineers. I would focus on the ones with the highest impact potentially scoring them based on number of publications and GitHub commits.</li>
 <li>Update the scoring LLM to do three scorings of each source and choose the most often occuring label. In the event of a tie, take the median of the three runs&#x27; event weights, rounding down. Do the same reduction applied to a mechanism&#x27;s magnitude and confidence. Flag the item as contested rather than resolving it silently. </li>
 <li>The grouping of articles together is not currently functioning on the alerts digest as it functions on the dashboard. With additional time, I would include this feature. </li>
 <li>The tweets are currently not being grouped either and there is some overlap. I would apply the grouping process to these too in a future release.</li>

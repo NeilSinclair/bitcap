@@ -2,7 +2,7 @@
 
 The BIT Capital Frontier Lab Intelligence Platform pulls the latest signals from a series of Frontier AI Labs. The signals are linked with investments currently in the BIT Capital (BitCap) fund, indicating how these signals could impact BitCap positions as well as the strength of these impacts.
 
-### Discussion of the principles of Design
+### Discussion of the Principles of Design
 
 A key design principle for the app was to link announcements to BitCap positions. I did an analysis of BitCap positions across funds and settled on the positions within the Technology Leaders fund as of 30 June 2026. These positions represent roughly 1.5B € or 50% of BitCap's AUM and announcements by AI Frontier Labs are also most likely to influence these tech-oriented positions, acknowledging that there is overlap in investments across funds.
 
@@ -38,7 +38,7 @@ Most of what is collected scores zero: 348 of 447 announcements and releases, 33
 
 Although different sources are not weighted differently, X posts generally score lower, because most of them are not about an event at all. Of the 210 posts scoring zero, 194 carry no mechanism tag, and 119 were classified as event type other, which is commentary and advocacy rather than something with a path to a holding. However, a post with real signal still reaches the top: the highest scoring item anywhere in the system is a single post from OpenAI's Mark Chen committing to 4+ GW of NVIDIA capacity, which carriers clear investment signal.
 
-## Model selection
+## Model Selection
 
 To score the sources, namely lab announcements, github releases, X-posts and papers, Sonnet 5 was used. Sonnet 5 was compared against Haiku 4.5 and GPT5-mini on the gold set of announcements over three runs. Haiku was removed because it consistently scored an important article 0. GPT5-mini was removed because of high variances with its results across runs.
 
@@ -50,7 +50,7 @@ For choosing which Frontier AI Lab repos might be relevant to the AI team, the r
 
 ## Sources
 
-### Labs selected
+### Labs Selected
 
 From an intial list of 21 labs 7 were selected. This initial list was created through AI research where the labs were placed into four buckets, Closed Frontier, China, Western Challengers, and Stealth/New Modality. Meta AI entered Closed Frontier due to their move away from open weights models recently. 
 
@@ -58,7 +58,7 @@ I selected all of the Closed Frontier labs namely OpenAI, Anthropic, Google Deep
 
 A second reason for chosing 7 labs was to limit the size of the sample in order to lower costs and make development more managable in the time frame. In a second phase of the project I would include additional labs.
 
-### Lab announcements
+### Lab Announcements
 
 Announcements are discovered per lab and the method differs because the sites do. Every entry is a config change in `config/sources.yaml`, but the code for extraction is the same for each.
 
@@ -112,6 +112,8 @@ The pipeline runs in eight phases in a fixed order. There’s also a per source 
 ![](media/image1.png)
 *Figure 1 The stages of the ETL Ingestion Pipeline*
 
+\pagebreak
+
 The data is processed in a medallion architecture. The Bronze layer is updated whenever new data is added to the pipeline when the pipeline is run for one or more of the parts. The Silver layer is then processed deterministically. For example, the deterministic scoring algorithm (but not the LLM labels the scores are based on) can be adjusted and the Silver Layer rerun without having to reprocesses the Bronze layer. The Gold layer brings together the company (BitCap) holding data with the data from the Silver layer to create the objects on the UI.
 
 ![](media/image2.png)
@@ -125,7 +127,7 @@ Articles covering the same event are grouped so the Dashboard feed shows one row
 
 The digest in the Alerts tab is a daily edition of the highest scoring items, rendered separately for the investment team and the AI team from the same underlying data. The landing view is a rolling seven day preview, so it is never empty on a quiet day. When the pipeline runs each night, it creates a published set of articles from the past 24 hours which the user can then investigate by selecting it in the drop down menu at the top of the Alerts - e.g. 'Published 6 Sept - 1d - 1 of 9' shows the key alert for the 24 hour period across 6 September. This would enable a user to open the tool in the morning and select the digest to see the previous day's alerts from sources. Only high scoring sources are shown here.
 
-### Pipeline alerts and failures
+### Pipeline Alerts and Failures
 
 The pipeline runs unattended overnight, so it is built to fail in a way one can see.
 
@@ -147,7 +149,7 @@ Every LLM call records its model, tokens and cost at the call site as it runs, s
 
 The costs for each daily pipeline run are ~1€. This includes the cost for the drift checker at ~0.80€.
 
-## Development cycle
+## Development Cycle
 
 I started off with a planning document based on the case-study and sketched out the high-level steps for the project. The key points from this document were included in the CLAUDE.md file governing the sessions. I clearly stated in the planning document that every decision needs to be recorded in a decisions document. I also indicated that unit tests must be written for everything the agents do.
 
@@ -184,6 +186,8 @@ These concerns are acknowledged, however the risk appears to be low given all of
 ## Next Steps and Improvements
 
 - Incorporate additional labs into the data. I would start off with incorporating additional labs from China into the sample.
+
+- Incoporate additional sources into the data from lab employees outside of leadership, including their X posts, private blog posts and personal GitHub Repos. I would also use this information to try to identify lab departures for researchers and engineers. I would focus on the ones with the highest impact potentially scoring them based on number of publications and GitHub commits.
 
 - Update the scoring LLM to do three scorings of each source and choose the most often occuring label. In the event of a tie, take the median of the three runs' event weights, rounding down. Do the same reduction applied to a mechanism's magnitude and confidence. Flag the item as contested rather than resolving it silently. 
 
