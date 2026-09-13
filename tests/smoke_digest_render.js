@@ -79,7 +79,7 @@ sandbox.globalThis = sandbox;
 
 try {
   vm.createContext(sandbox);
-  for (const name of ['decorateItems', 'groupAnchors', 'relatedByGroup']) {
+  for (const name of ['leadHoldings', 'decorateItems', 'groupAnchors', 'relatedByGroup']) {
     vm.runInContext(sharedFunction(name), sandbox, { timeout: 5000 });
   }
   vm.runInContext(`(function () {\n${body}\n})()`, sandbox, { timeout: 5000 });

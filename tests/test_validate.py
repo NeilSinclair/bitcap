@@ -14,11 +14,31 @@ import yaml
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "config"))
 
-from validate import check_github_sources, check_sources
+from validate import check_github_sources, check_ranking, check_sources
 
 
 def _write(path: Path, doc: dict) -> None:
     path.write_text(yaml.safe_dump(doc))
+
+
+class TestCheckRanking:
+    """A typo in `ranking.holding_routes` zeroes every holding score silently."""
+
+    def _scoring(self, tmp_path, routes):
+        doc = yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
+        doc["ranking"]["holding_routes"] = routes
+        _write(tmp_path / "scoring.yaml", doc)
+        return tmp_path / "scoring.yaml"
+
+    def test_real_config_has_no_errors(self):
+        assert check_ranking() == []
+
+    def test_a_route_the_join_never_writes_is_an_error(self, tmp_path):
+        errors = check_ranking(self._scoring(tmp_path, ["mechanism", "mechanisms"]))
+        assert len(errors) == 1 and "'mechanisms'" in errors[0]
+
+    def test_an_empty_list_is_an_error(self, tmp_path):
+        assert check_ranking(self._scoring(tmp_path, []))
 
 
 class TestCheckSources:

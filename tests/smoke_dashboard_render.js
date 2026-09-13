@@ -97,7 +97,7 @@ vm.createContext(sandbox);
 try {
   // The real implementations, so the component body below resolves them the way
   // the browser will.
-  for (const name of ['decorateItems', 'groupAnchors', 'relatedByGroup']) {
+  for (const name of ['leadHoldings', 'decorateItems', 'groupAnchors', 'relatedByGroup']) {
     vm.runInContext(sharedFunction(name), sandbox, { timeout: 5000 });
   }
 
@@ -115,6 +115,14 @@ try {
     connections: [{ holding: 'NVIDIA', isin: 'US1', direction: 'positive',
                     strength: 0.9, route: 'mechanism', label: 'l', note: 'n',
                     magnitude: 'high', confidence: 'high' }],
+    // The investment rank fields /api/items sends (app/ranking.py, D81).
+    eventType: 'frontier_model_release', holdingScore: 90, rankLead: 'event',
+    rankValue: 90, rankBand: 'high',
+    eventBasis: { eventType: 'frontier_model_release', eventLabel: 'Frontier model release',
+                  eventWeight: 5, maxEventWeight: 5, tag: null },
+    holdingBasis: { holding: 'NVIDIA', isin: 'US1', route: 'mechanism', label: 'l',
+                    direction: 'positive', strength: 0.9, routeCeiling: 1,
+                    article: { quote: 'q', weight: 1 }, company: { why: 'w', weight: 0.9 } },
   };
   sandbox.article = article;   // the context is already created; add, don't clone
   vm.runInContext(
@@ -130,6 +138,34 @@ try {
          const r = decorateItems([article], audience);
          if (!r[0].displayBand) throw new Error('displayBand empty for ' + audience);
        }
+
+       // D81, investment: a score-0 member never anchors or folds, and the
+       // anchor is the best member on (higher score, other score).
+       const zero = { ...article, id: 2, score: 0, rankValue: 90, holdingScore: 90 };
+       const deal = { ...article, id: 3, score: 40, rankValue: 100, holdingScore: 100,
+                      rankLead: 'holding' };
+       const group = decorateItems([article, zero, deal], 'investment');
+       const [anchor, folded] = groupAnchors(group, 'investment');
+       if (anchor.g1.id !== 3) throw new Error('anchor is not the best-ranked member: ' + anchor.g1.id);
+       if ((folded.g1 || []).some((r) => r.score <= 0)) throw new Error('a score-0 member was folded in');
+       const lead = group.find((r) => r.id === 3);
+       if (lead.displayLead !== 'NVIDIA' || lead.displayScore !== '100.0') {
+         throw new Error('chip does not name the holding that set the rank: ' + lead.displayLead);
+       }
+       // A tie at 100 breaks on the other score, not on date: the later member
+       // (100 / 67) must beat the earlier one (100 / 17).
+       const early = { ...article, id: 4, groupId: 'g2', score: 100, rankValue: 100, holdingScore: 17 };
+       const later = { ...article, id: 5, groupId: 'g2', score: 100, rankValue: 100, holdingScore: 67,
+                       date: '2026-09-04' };
+       const [tie] = groupAnchors(decorateItems([early, later], 'investment'), 'investment');
+       if (tie.g2.id !== 5) throw new Error('a tie at 100 did not break on the other score');
+       // Holdings tied at the top strength are all named, past three counted.
+       const tied = { ...deal, id: 6, groupId: 'g3', holdingBasis: { ...article.holdingBasis,
+                      tiedWith: [{ holding: 'Micron' }, { holding: 'Amazon' }, { holding: 'Intel' }] } };
+       const tiedLead = decorateItems([tied], 'investment')[0].displayLead;
+       if (tiedLead !== 'NVIDIA, Micron, Amazon +1') throw new Error('tied holdings not named: ' + tiedLead);
+       const [aiAnchor] = groupAnchors(decorateItems([zero], 'ai'), 'ai');
+       if (!aiAnchor.g1) throw new Error('the AI view dropped a score-0 item');
      })()`,
     sandbox, { timeout: 5000 });
 } catch (error) {

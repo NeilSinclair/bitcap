@@ -339,8 +339,8 @@ class TestInvestmentSelection:
 
         assert digest.build(session, "investment", V, END, CONFIG)["items"] == []
 
-    def test_items_rank_on_connection_strength_before_score(self, session):
-        """A weaker headline that reaches the book harder outranks a louder one."""
+    def test_items_rank_on_the_higher_score_then_the_other(self, session):
+        """Both top out at 95; the tie breaks on the other score, 61 over 55 (D81)."""
         _holding(session, "US1", "NVIDIA")
         loud, _ = _article(session, published=date(2026, 9, 3), title="Loud", score=95.0)
         _connect(session, loud, "US1", 0.55)
@@ -351,6 +351,96 @@ class TestInvestmentSelection:
         out = digest.build(session, "investment", V, END, CONFIG)
 
         assert [i["title"] for i in out["items"]] == ["Close", "Loud"]
+
+
+class TestInvestmentRank:
+    """D81: score-0 exclusion, the two-score rank, and the justification it ships.
+
+    The silent failures: a score-0 item riding a holding link into the edition
+    ("How agents are transforming work" did, on an internal-usage quote); the
+    thin-link frontier launch and the strong-link partnership ordered on one
+    score only; and a card quoting a tag the score never rested on.
+    """
+
+    def _tag(self, session, cls, ordinal, magnitude, confidence, quote):
+        session.add(m.ArticleMechanism(
+            classification_id=cls.id, mechanism_id="training_compute_up", sign="positive",
+            magnitude=magnitude, confidence=confidence, reason="r", quote=quote,
+            ordinal=ordinal))
+
+    def test_a_score_zero_item_never_enters_the_cut_even_with_a_strong_link(self, session):
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=0.0, band="none")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        out = digest.build(session, "investment", V, END, CONFIG)
+
+        assert out["items"] == []
+        assert out["stats"]["considered"] == 0
+
+    def test_the_ai_cut_still_considers_a_score_zero_item(self, session):
+        """Investment only: a release scores 0 there and is the AI digest's staple."""
+        _article(session, published=date(2026, 9, 3), score=0.0, band="none")
+        session.flush()
+
+        assert digest.build(session, "ai", V, END, CONFIG)["stats"]["considered"] == 1
+
+    def test_within_a_day_merit_orders_and_across_days_the_date_does(self, session):
+        _holding(session, "US1", "NVIDIA")
+        launch, _ = _article(session, published=date(2026, 9, 3), title="Launch", score=100.0)
+        _connect(session, launch, "US1", 0.17)          # (100, 17)
+        deal, _ = _article(session, published=date(2026, 9, 3), title="Deal",
+                           score=40.0, band="medium")
+        _connect(session, deal, "US1", 1.0)             # (100, 40)
+        newer, _ = _article(session, published=date(2026, 9, 4), title="Newer",
+                            score=30.0, band="medium")
+        _connect(session, newer, "US1", 0.6)            # (60, 30), but a day later
+        session.flush()
+
+        items = digest.build(session, "investment", V, END, CONFIG)["items"]
+
+        assert [i["title"] for i in items] == ["Newer", "Deal", "Launch"]
+
+    def test_the_group_speaks_through_its_best_ranked_member(self, session):
+        _holding(session, "US1", "NVIDIA")
+        thin, _ = _article(session, published=date(2026, 9, 3), title="Forum post", score=100.0)
+        _connect(session, thin, "US1", 0.67)            # (100, 67)
+        full, _ = _article(session, published=date(2026, 9, 3), title="Spec page", score=100.0)
+        _connect(session, full, "US1", 1.0)             # (100, 100)
+        for art in (thin, full):
+            session.add(m.ArticleGroup(article_id=art.id, group_id="g1", is_anchor=False,
+                                       group_size=2, method="embedding", reason="grouped"))
+        session.flush()
+
+        items = digest.build(session, "investment", V, END, CONFIG)["items"]
+
+        assert [i["title"] for i in items] == ["Spec page"]
+
+    def test_the_card_quotes_the_tag_that_set_the_score_not_the_first(self, session):
+        art, cls = _article(session, published=date(2026, 9, 3), score=80.0)
+        self._tag(session, cls, 0, "low", "medium", "the first, weaker tag")
+        self._tag(session, cls, 1, "high", "high", "the tag the score rests on")
+        session.flush()
+
+        [item] = digest.build(session, "investment", V, END, CONFIG)["items"]
+
+        assert item["mechanism"]["quote"] == "the tag the score rests on"
+        assert item["eventBasis"]["tag"]["quote"] == "the tag the score rests on"
+
+    def test_the_payload_says_which_score_set_the_rank_and_why(self, session):
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=40.0, band="medium")
+        _connect(session, art, "US1", 0.9)
+        session.flush()
+
+        [item] = digest.build(session, "investment", V, END, CONFIG)["items"]
+
+        assert (item["rankLead"], item["rankValue"], item["rankBand"], item["holdingScore"]) == \
+            ("holding", 90.0, "high", 90.0)
+        assert item["holdingBasis"]["holding"] == "NVIDIA"
+        assert item["holdingBasis"]["company"]["why"] == "why"
+        assert "rank" not in item
 
 
 class TestAiSelection:

@@ -191,6 +191,19 @@ join:
     lab_exposure: 0.6
     named: 0.3
 
+# ---------------------------------------------------------------------------
+# RANKING RULE (app/ranking.py, docs/decisions.md D81). The investment surfaces
+# order an item on the higher of its event score and its holding score
+# (100 x strongest connection), and break ties on the other one.
+#
+# Only routes backed by a quoted article tag set the holding score. A publisher
+# edge (lab_exposure) fires on who published, not what was published -- the
+# OpenAI -> Amazon contract would rank every OpenAI post at 60 -- and a name
+# match carries no quote. Those links still display on the card; they do not
+# move it.
+ranking:
+  holding_routes: [mechanism, category]
+
 # Bands used for presentation only. They label a score, they do not change it.
 bands:
   - min: 60

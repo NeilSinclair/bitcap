@@ -76,6 +76,8 @@ corpus stops. Every width has the same cliff. Re-derive if ingestion resumes.
 Ordering is **two sorts either side of the `max_items` cut** — selection on
 `rank`, display on date-then-rank. They cannot be one sort: sorting by date
 before the cut drops a higher-scoring launch from earlier in the window.
+Since D81 the investment `rank` is the higher of event and holding score, then
+the other (`app/ranking.py`), and score-0 items never enter the cut.
 
 Nothing else reads the shipped `window_hours`; `test_the_shipped_window_is_pinned`
 is a tripwire, and its docstring says it pins the value rather than endorsing it.
