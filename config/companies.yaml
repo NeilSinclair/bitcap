@@ -1498,14 +1498,6 @@ companies:
           Trainium is the substitution. Every workload moved from merchant GPUs to
           Amazon's own silicon improves AWS margin and reduces what Amazon pays
           NVIDIA — the chips business passed $25bn run rate growing triple digits.
-      - id: lab_capital_access
-        sign: positive
-        magnitude: high
-        confidence: high
-        why: >
-          The only holding where a lab's own valuation lands in the income
-          statement: $53.4 billion of non-operating pre-tax other income in one
-          quarter, primarily from the Anthropic investment.
       - id: datacenter_power_up
         sign: negative
         magnitude: medium
@@ -1841,12 +1833,12 @@ companies:
           rent with no inference required.
       - id: lab_capital_access
         sign: positive
-        magnitude: high
+        magnitude: medium
         confidence: high
         why: >
-          A 20-year lease is an unsecured 20-year bet on one lab's solvency. The
-          Google credit support of $600m behind Fluidstack's obligations shows
-          the market pricing exactly this risk on the earlier contract.
+          TeraWulf leases data-centre capacity to labs, so a lab that can raise
+          more capital can commit to more capacity. Medium because the link to
+          any one raise is indirect: it runs through new leases.
 
     lab_exposure:
       - lab: anthropic

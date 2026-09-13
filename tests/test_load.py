@@ -39,7 +39,8 @@ class TestLoadRefs:
         assert counts["ref_categories"] == 13
         assert counts["ref_practices"] == 5
         assert counts["holdings"] == 26
-        assert counts["holding_mechanisms"] == 76
+        # 75 since D81 removed Amazon's lab_capital_access edge.
+        assert counts["holding_mechanisms"] == 75
         assert counts["holding_lab_exposure"] == 6
         assert counts["edges_skipped"] == 0
         dormant = session.scalar(select(func.count()).select_from(m.HoldingLabExposure)

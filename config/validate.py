@@ -966,6 +966,30 @@ def check_dedupe(path: Path | None = None) -> list[str]:
     return errors
 
 
+def check_ranking(path: Path | None = None) -> list[str]:
+    """Validate scoring.yaml's `ranking` block against its own join routes.
+
+    A route the join never writes matches no connection, so a typo there zeroes
+    every holding score without raising, and the investment surfaces quietly
+    fall back to ranking on the event score alone (D81).
+
+    Args:
+        path: scoring.yaml to check. Defaults to the shipped one; tests override.
+
+    Returns:
+        Error message list.
+    """
+    path = path or ROOT / "scoring.yaml"
+    doc = yaml.safe_load(path.read_text()) or {}
+    known = set((doc.get("join") or {}).get("route_ceiling") or {})
+    routes = (doc.get("ranking") or {}).get("holding_routes")
+    if not isinstance(routes, list) or not routes:
+        return ["scoring.yaml: ranking.holding_routes must be a non-empty list — "
+                "without it no link can set a holding score"]
+    return [f"scoring.yaml: ranking.holding_routes '{r}' is not a join route "
+            f"({', '.join(sorted(known))})" for r in routes if r not in known]
+
+
 def check_digest(path: Path | None = None) -> list[str]:
     """Validate digest.yaml — every value here fails by emptying the digest.
 
@@ -1169,7 +1193,7 @@ def main() -> int:
     pipe_errors = check_pipeline(ROOT)
     papers_errors = check_papers_sources(ROOT, tracked_labs)
     people_errors = check_people(ROOT, tracked_labs)
-    digest_errors = check_digest()
+    digest_errors = check_digest() + check_ranking()
     dedupe_errors = check_dedupe()
     signal_errors = check_repo_signals(ROOT)
     entity_errors = check_entities(ROOT)

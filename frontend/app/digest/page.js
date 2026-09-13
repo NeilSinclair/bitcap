@@ -17,7 +17,7 @@ import { Gate, apiFetch, signOut } from "../auth";
 // The same record the dashboard opens, not a second rendering of it. A digest
 // card is a summary by design; the reader who wants the whole thing should not
 // have to leave the page they live in to get it.
-import { DetailPanel, decorateItems, groupAnchors, relatedByGroup } from "../detail";
+import { DetailPanel, decorateItems, groupAnchors, leadHoldings, relatedByGroup } from "../detail";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -163,6 +163,10 @@ function FoldedBadge({ item }) {
 // opposite mistake.
 function InvestmentItem({ item, onOpen }) {
   const h = item.holdings || { named: [], more: 0, total: 0 };
+  // Which score set this item's rank (app/ranking.py, D81). Absent on editions
+  // published before it, which keep their stored `band · score` chip.
+  const link = item.holdingBasis;
+  const byHolding = item.rankLead === "holding" && link;
   return (
     <article
       className={onOpen ? "card" : undefined}
@@ -173,7 +177,17 @@ function InvestmentItem({ item, onOpen }) {
       }}
     >
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-        <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
+        {item.rankLead ? (
+          <>
+            <Pill style={bandStyle(item.rankBand)}>{Math.round(item.rankValue)} · {byHolding ? leadHoldings(link) : "Event"}</Pill>
+            <span style={{ fontSize: 12, color: "var(--muted-2)" }}>
+              {byHolding ? `event ${Math.round(item.score)}`
+                : item.holdingScore > 0 ? `holding ${Math.round(item.holdingScore)}` : "no tag-backed holding link"}
+            </span>
+          </>
+        ) : (
+          <Pill style={bandStyle(item.band)}>{item.band} · {Math.round(item.score)}</Pill>
+        )}
         <span style={{ fontSize: 12, color: "var(--muted)" }}>{item.lab}</span>
         <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
         <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.eventType?.replace(/_/g, " ")}</span>
@@ -195,6 +209,41 @@ function InvestmentItem({ item, onOpen }) {
           <blockquote className="serif" style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: "var(--text)", fontStyle: "italic" }}>
             “{item.mechanism.quote}”
           </blockquote>
+        </div>
+      ) : null}
+
+      {/* Ranked on a holding link: both halves of why, not just the quote. The
+          quote is what the lab said; the `why` is what makes it this company's
+          news. Skipped when the quote is the one already shown above. */}
+      {byHolding ? (
+        <div style={{ borderLeft: `2px solid ${ACCENT}`, paddingLeft: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ fontSize: 12 }}>
+            <span style={{ color: signColor(link.direction) }}>{signArrow(link.direction)} Ranked on {leadHoldings(link)}</span>
+            <span style={{ color: "var(--muted-2)" }}> · via {link.label} · {link.strength.toFixed(2)}</span>
+          </div>
+          {link.article.quote && link.article.quote !== item.mechanism?.quote ? (
+            <blockquote className="serif" style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: "var(--text)", fontStyle: "italic" }}>
+              “{link.article.quote}”
+            </blockquote>
+          ) : null}
+          {/* One reason per holding named: tied holdings share the article's
+              quote but not the reason it reaches each company. */}
+          {[link, ...(link.tiedWith || [])].map((l) => (
+            <div key={l.isin} style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+              {link.tiedWith?.length ? <span style={{ color: "var(--text)" }}>{l.holding}: </span> : null}
+              {l.company?.why || `Member of ${l.label}.`}
+              {l.company ? (
+                /^https?:\/\//.test(l.company.source || "") ? (
+                  <a href={l.company.source} target="_blank" rel="noreferrer"
+                     onClick={(e) => e.stopPropagation()} style={{ color: ACCENT }}> Source ↗</a>
+                ) : (
+                  <span style={{ color: "var(--muted-2)" }}>
+                    {l.company.source ? ` Source: ${l.company.source}` : " (no source recorded)"}
+                  </span>
+                )
+              ) : null}
+            </div>
+          ))}
         </div>
       ) : null}
 

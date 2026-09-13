@@ -153,7 +153,9 @@ function Dashboard() {
     const relevant = anchors.filter((it) => (audience === "investment" ? it.score > 0 : it.aiScore > 0));
     const byBand = bandFilter === "all"
       ? relevant
-      : relevant.filter((it) => (audience === "investment" ? it.band : it.aiBand) === bandFilter);
+      // Investment filters on the band of the ranked value, so the filter and
+      // the chip agree (D81).
+      : relevant.filter((it) => (audience === "investment" ? it.displayBand : it.aiBand) === bandFilter);
     const byLab = labFilter === "all" ? byBand : byBand.filter((it) => it.lab === labFilter);
     // Papers and announcements are one corpus scored by one rule, so they rank
     // in one list by default. The filter is here because "what has the lab
@@ -165,9 +167,12 @@ function Dashboard() {
 
     const sorted = [...byHolding].sort((a, b) => {
       if (sortBy === "date") return b.date.localeCompare(a.date);
-      const av = audience === "investment" ? a.score : a.aiScore;
-      const bv = audience === "investment" ? b.score : b.aiScore;
-      return bv - av;
+      // Investment: the higher of event and holding score, then the other,
+      // newest first on a full tie (app/ranking.py).
+      if (audience === "investment") {
+        return (b.rankValue - a.rankValue) || (b.rankMin - a.rankMin) || b.date.localeCompare(a.date);
+      }
+      return b.aiScore - a.aiScore;
     });
 
     // With a holding selected, the card's impact pills must lead with that
@@ -386,7 +391,14 @@ function Dashboard() {
                     )}
                     <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{item.date}</span>
                   </div>
-                  <span className="tag-pill" style={item.displayStyle}>{item.displayScore} · {item.displayBand}</span>
+                  {/* Investment names which score set the rank, with the other
+                      one beside it; AI keeps its band. */}
+                  <span style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                    {item.displaySecondary && (
+                      <span style={{ fontSize: 11, color: "var(--muted-2)" }}>{item.displaySecondary}</span>
+                    )}
+                    <span className="tag-pill" style={item.displayStyle}>{item.displayScore} · {item.displayLead || item.displayBand}</span>
+                  </span>
                 </div>
                 <div className="serif" style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.35 }}>{item.title}</div>
                 <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{item.summary}</div>

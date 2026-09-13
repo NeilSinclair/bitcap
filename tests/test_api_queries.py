@@ -96,6 +96,40 @@ def test_falls_back_to_article_side_when_no_holding_side(session):
     assert (conn["magnitude"], conn["confidence"]) == ("high", "high")
 
 
+class TestInvestmentRank:
+    """D81: the rank fields /api/items ships, from the same code the digest runs."""
+
+    def test_an_event_led_item_names_its_rank_and_both_scores(self, session):
+        item = build_items(session, "v7", since=date.min)[0]
+        assert item["eventType"] == "compute_commitment"
+        assert (item["rankLead"], item["rankValue"], item["rankBand"], item["holdingScore"]) == \
+            ("event", 80.0, "high", 62.0)
+        assert item["eventBasis"]["tag"]["label"] == "Training compute demand rises"
+
+    def test_the_holding_basis_carries_both_halves_the_connection_list_hides(self, session):
+        """`connections[].note` merges the two sides; the basis must not."""
+        session.query(m.Connection).update({
+            "article_quote": "a verbatim sentence", "holding_source": "https://sec.gov/x"})
+        session.commit()
+        basis = build_items(session, "v7", since=date.min)[0]["holdingBasis"]
+        assert (basis["holding"], basis["label"]) == ("Micron", "Training compute demand rises")
+        assert (basis["article"]["reason"], basis["article"]["quote"]) == \
+            ("article side", "a verbatim sentence")
+        assert (basis["company"]["why"], basis["company"]["source"]) == \
+            ("holding side", "https://sec.gov/x")
+
+    def test_a_category_link_sets_the_holding_score_but_a_named_one_does_not(self, session):
+        session.query(m.Connection).update({"route": "named", "via": "name:Micron"})
+        session.add(m.Connection(article_id=1, isin="US0001", route="category",
+                                 via="memory_storage", direction="positive", strength=0.3,
+                                 article_confidence="medium", article_reason="group claim"))
+        session.commit()
+        item = build_items(session, "v7", since=date.min)[0]
+        assert item["holdingScore"] == 30.0
+        assert item["holdingBasis"]["label"] == "Memory and storage"
+        assert item["holdingBasis"]["company"] is None
+
+
 def test_wrong_prompt_version_yields_nothing(session):
     assert build_items(session, "v99", since=date.min) == []
 
