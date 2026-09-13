@@ -171,8 +171,14 @@ export function decorateItems(items, audience) {
       }))
       .sort((a, b) => b.maxStrength - a.maxStrength);
 
-    const displayScore = (audience === "investment" ? it.score : it.aiScore).toFixed(1);
-    const displayBand = audience === "investment" ? it.band : it.aiBand;
+    // Investment ranks on the higher of the event and holding scores, the other
+    // breaking ties (app/ranking.py), so the chip shows that value and names
+    // which score set it.
+    const investment = audience === "investment";
+    const holdingScore = it.holdingScore || 0;
+    const leadLink = it.rankLead === "holding" && it.holdingBasis;
+    const displayScore = (investment ? (it.rankValue ?? it.score) : it.aiScore).toFixed(1);
+    const displayBand = investment ? (it.rankBand || it.band) : it.aiBand;
 
     return {
       ...it,
@@ -187,6 +193,11 @@ export function decorateItems(items, audience) {
       displayScore,
       displayBand,
       displayStyle: bandStyle(displayBand),
+      rankMin: Math.min(it.score, holdingScore),
+      displayLead: investment ? (leadLink ? leadHoldings(it.holdingBasis) : "Event") : null,
+      displaySecondary: !investment ? null
+        : leadLink ? `event ${it.score.toFixed(1)}`
+        : holdingScore > 0 ? `holding ${holdingScore.toFixed(1)}` : null,
       chipScore: it.score.toFixed(1),
       aiChipScore: it.aiScore.toFixed(1),
     };
@@ -200,15 +211,26 @@ export function decorateItems(items, audience) {
 // highest overall can score zero on the axis being displayed — and the member
 // carrying the signal for this audience is the one that got folded.
 export function groupAnchors(decorated, audience) {
-  const value = (it) => (audience === "investment" ? it.score : it.aiScore) || 0;
-  // Score first, then by date — and the date direction flips for release
-  // trains, where every member usually scores the same so this decides every
-  // one of them. A repo's card must name the version it is on, not the one it
-  // has left. Everywhere else earliest wins, because being early is the
-  // claim. Same rule as app/digest.py `rank`; the two must agree or the feed
-  // and the digest name different articles as the same event.
+  const investment = audience === "investment";
+  // Investment: a score-0 member never speaks for a group or sits folded in
+  // one, so a group of only score-0 members has no anchor and is not in the
+  // feed (D81). The digest drops the same rows before grouping.
+  const eligible = investment ? decorated.filter((it) => it.score > 0) : decorated;
+  // Merit first: investment on the higher of event and holding score, then the
+  // other (app/ranking.py); AI on its own score. Then by date — and the date
+  // direction flips for release trains, where every member usually scores the
+  // same so this decides every one of them. A repo's card must name the
+  // version it is on, not the one it has left. Everywhere else earliest wins,
+  // because being early is the claim. Same rule as app/digest.py `rank`; the
+  // two must agree or the feed and the digest name different articles as the
+  // same event.
+  const merit = (it) => (investment
+    ? [it.rankValue ?? it.score ?? 0, it.rankMin ?? 0]
+    : [it.aiScore || 0, 0]);
   const better = (a, b) => {
-    if (value(a) !== value(b)) return value(a) > value(b);
+    const [ma, mb] = [merit(a), merit(b)];
+    if (ma[0] !== mb[0]) return ma[0] > mb[0];
+    if (ma[1] !== mb[1]) return ma[1] > mb[1];
     const latest = a.groupMethod === "release_train";
     if (a.date !== b.date) return latest ? a.date > b.date : a.date < b.date;
     // Ids break a full tie, or the winner depends on the order the API
@@ -216,16 +238,21 @@ export function groupAnchors(decorated, audience) {
     return latest ? a.id > b.id : a.id < b.id;
   };
   const best = {};
-  for (const it of decorated) {
+  for (const it of eligible) {
     const cur = best[it.groupId];
     if (!cur || better(it, cur)) best[it.groupId] = it;
   }
   const folded = {};
-  for (const it of decorated) {
+  for (const it of eligible) {
     if (best[it.groupId] === it) continue;
     (folded[it.groupId] = folded[it.groupId] || []).push(it);
   }
-  for (const list of Object.values(folded)) list.sort((a, b) => b.date.localeCompare(a.date));
+  // Investment lists folded members in merit order, so the next-best document
+  // reads first; AI keeps newest first.
+  const order = investment
+    ? (a, b) => (better(a, b) ? -1 : better(b, a) ? 1 : 0)
+    : (a, b) => b.date.localeCompare(a.date);
+  for (const list of Object.values(folded)) list.sort(order);
   return [best, folded];
 }
 
@@ -259,6 +286,140 @@ export function relatedByGroup(decorated, anchorFor) {
   }
   return Object.fromEntries(
     Object.entries(out).map(([groupId, seen]) => [groupId, [...seen.values()]]));
+}
+
+// One piece of evidence behind the rank: a heading, what it is, and the reason
+// and verbatim quote where it has them.
+function BasisBlock({ heading, sign, label, detail, reason, quote, children }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
+      <span style={{ fontSize: 11, color: "var(--muted-2)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{heading}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
+        {sign && <span style={{ color: signColor(sign) }}>{signArrow(sign)}</span>}
+        <span style={{ fontWeight: 600 }}>{label}</span>
+        {detail && <span style={{ color: "var(--muted-2)" }}>· {detail}</span>}
+      </div>
+      {reason && <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{reason}</div>}
+      {quote && <div className="quote-block">&ldquo;{quote}&rdquo;</div>}
+      {children}
+    </div>
+  );
+}
+
+function sizing(magnitude, confidence) {
+  return [magnitude, confidence].filter(Boolean).join(" / ");
+}
+
+// Every holding tied at the top holding strength, named together. One tag at
+// 1.00 on Amazon, Micron and NVIDIA is news for all three; naming only the
+// first made it read as Amazon's alone. Past three, the rest are counted.
+export function leadHoldings(basis) {
+  const names = [basis.holding, ...(basis.tiedWith || []).map((t) => t.holding)];
+  return names.length > 3 ? `${names.slice(0, 3).join(", ")} +${names.length - 3}` : names.join(", ");
+}
+
+// A holding edge's source, or a plain statement that it has none: a `why` with
+// no source is a judgement in config and must not read as a cited fact.
+function SourceLine({ source }) {
+  if (!source) {
+    return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>No source recorded for this link in config/companies.yaml</div>;
+  }
+  if (/^https?:\/\//.test(source)) {
+    return <a href={source} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>Source ↗</a>;
+  }
+  return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>Source: {source}</div>;
+}
+
+// Which investment score put this item where it is, and the evidence for THAT
+// score (app/ranking.py, D81). The two rest on different evidence, often from
+// different tags. An event score rests on its event type and strongest tag. A
+// holding score rests on two halves, and shows both: what the article said, and
+// why that reaches the company — the quote alone would claim the lab said
+// something about the company.
+function RankBasis({ item }) {
+  const event = item.eventBasis;
+  const link = item.holdingBasis;
+  const byHolding = item.rankLead === "holding" && link;
+  const tag = event?.tag;
+
+  const otherScore = byHolding
+    ? `Event score ${item.score.toFixed(1)} · ${event.eventLabel} (weight ${event.eventWeight} of ${event.maxEventWeight})`
+      + (tag ? ` × ${tag.label} (${sizing(tag.magnitude, tag.confidence)})` : "")
+    : link
+    ? `Holding score ${item.holdingScore.toFixed(1)} · ${leadHoldings(link)} via ${link.label}`
+    : "No holding link backed by an article tag";
+
+  return (
+    <div className="section-block" style={{ paddingTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div className="serif" style={{ fontSize: 34, fontWeight: 500 }}>{item.displayScore}</div>
+        <span className="tag-pill" style={bandStyle(item.displayBand)}>{item.displayBand}</span>
+        <span style={{ fontSize: 13, color: "var(--muted)" }}>
+          {byHolding ? `Set by holding link · ${leadHoldings(link)}` : "Set by event score"}
+        </span>
+      </div>
+
+      {byHolding ? (
+        <>
+          <BasisBlock
+            heading="What the article says" sign={link.article.sign} label={link.label}
+            detail={sizing(link.article.magnitude, link.article.confidence)}
+            reason={link.article.reason} quote={link.article.quote}
+          />
+          {link.company ? (
+            <BasisBlock
+              heading={`Why it reaches ${link.holding}`} sign={link.company.sign} label={link.holding}
+              detail={sizing(link.company.magnitude, link.company.confidence)} reason={link.company.why}
+            >
+              <SourceLine source={link.company.source} />
+            </BasisBlock>
+          ) : (
+            <BasisBlock
+              heading={`Why it reaches ${link.holding}`} label={`Member of ${link.label}`}
+              detail="category membership, no company-specific evidence"
+            />
+          )}
+          {/* Holdings tied at the same strength each get their own reason:
+              the article half is shared, the company half is not. */}
+          {(link.tiedWith || []).map((t) => (
+            <BasisBlock
+              key={t.isin}
+              heading={`Tied at ${t.strength.toFixed(2)} · why it reaches ${t.holding}`}
+              sign={t.company?.sign} label={t.holding}
+              detail={[t.label !== link.label ? `via ${t.label}` : null,
+                t.company ? sizing(t.company.magnitude, t.company.confidence) : `member of ${t.label}`]
+                .filter(Boolean).join(" · ")}
+              reason={t.company?.why}
+            >
+              {t.company && <SourceLine source={t.company.source} />}
+            </BasisBlock>
+          ))}
+          <div style={{ fontSize: 12, color: "var(--muted-2)" }}>
+            Strength {link.strength.toFixed(2)}
+            {link.article.weight != null
+              ? ` = ${[link.article.weight, link.company?.weight]
+                  .filter((w) => w != null).map((w) => w.toFixed(2)).join(" × ")} × route ${link.routeCeiling}`
+              : ""}
+          </div>
+        </>
+      ) : event ? (
+        <>
+          <div style={{ fontSize: 13 }}>
+            {event.eventLabel}
+            <span style={{ color: "var(--muted-2)" }}> · weight {event.eventWeight} of {event.maxEventWeight}</span>
+          </div>
+          {tag && (
+            <BasisBlock
+              heading="Strongest tag" sign={tag.sign} label={tag.label}
+              detail={sizing(tag.magnitude, tag.confidence)} reason={tag.reason} quote={tag.quote}
+            />
+          )}
+        </>
+      ) : null}
+
+      <div style={{ fontSize: 12, color: "var(--muted-2)", lineHeight: 1.5 }}>{otherScore}</div>
+    </div>
+  );
 }
 
 // The full record. Takes a decorated item, the related list for its group, and
@@ -311,10 +472,7 @@ export function DetailPanel({ item, related, audience, onOpen, onClose }) {
 
         {audience === "investment" && (
           <>
-            <div className="section-block" style={{ paddingTop: 18, display: "flex", alignItems: "center", gap: 16 }}>
-              <div className="serif" style={{ fontSize: 34, fontWeight: 500 }}>{item.chipScore}</div>
-              <span className="tag-pill" style={bandStyle(item.band)}>{item.band}</span>
-            </div>
+            <RankBasis item={item} />
 
             {(item.mechanisms.length > 0 || item.categories.length > 0) && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

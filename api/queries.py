@@ -16,8 +16,8 @@ import yaml
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app import models as m
-from app.connect import match_name
+from app import models as m, ranking
+from app.connect import SCORING, match_name
 from app.pipeline.registry import PAPERS_CORPUS, POSTS_CORPUS, RELEASES_CORPUS
 
 PIPELINE_CONFIG = Path(__file__).parent.parent / "config" / "pipeline.yaml"
@@ -118,6 +118,7 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
     cat_labels = {r.id: r.label for r in session.scalars(select(m.RefCategory))}
     prac_labels = {r.id: r.label for r in session.scalars(select(m.RefPractice))}
     holding_names = {h.isin: _short_name(h.name) for h in session.scalars(select(m.Holding))}
+    rules = yaml.safe_load(SCORING.read_text(encoding="utf-8"))
 
     versions = ((prompt_version,) if isinstance(prompt_version, str)
                 else tuple(prompt_version))
@@ -236,6 +237,12 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
             "band": cls.band,
             "aiScore": cls.ai_score,
             "aiBand": cls.ai_band,
+            "eventType": cls.event_type,
+            # Investment rank and its justification (app/ranking.py): the same
+            # computation the digest runs, so both surfaces rank on one key.
+            **ranking.rank_fields(
+                cls, mechs_by_cls.get(cls.id, []), conns_by_article.get(art.id, []), rules,
+                mech_labels=mech_labels, cat_labels=cat_labels, names=holding_names),
             "mechanisms": [
                 {
                     "id": t.mechanism_id,

@@ -8724,3 +8724,101 @@ Three new tests, mutation-checked against the old offset: the Wednesday firing
 covers Tuesday; no published window at any width ever includes an unfinished day;
 and, end to end on the corpus rather than the calendar, an article ingested
 overnight reaches that night's edition.
+
+## D81 — Investment items rank on the higher of event and holding score, and score-0 items leave the investment surfaces (2026-09-13)
+
+**Decision (Neil).** On the investment dashboard and digest an item ranks on the
+higher of its event score and its holding score (100 × strongest connection),
+and a tie there breaks on the other score. Any item with event score 0 is
+excluded. The AI view is unchanged. One module, `app/ranking.py`, computes it
+for both surfaces.
+
+**Why.** The event score alone could not order the top of the feed and ignored
+the book. Ten groups tied at 100. GPT-6 Astra scored 100 from `capability_jump`,
+which reaches no holding (its one edge, Navan, is low/low), while its holding
+links came from secondary tags the classifier sized differently on each
+duplicate: 0.17, 0.67, 1.00. A read-only trial over the v9 dashboard groups
+compared max-then-min, product and average. All three agreed on the top nine.
+Product buried Claude Opus 5 (event 100, holding 17) at #24; max-then-min kept it
+while lifting holding-driven items.
+
+**Score 0 is excluded rather than rescued.** Max-then-min lifted two `other`
+items (event weight 0) into the top 20 on 1.00 links. Reading one, "How agents
+are transforming work", showed the tag behind it was `inference_volume_up`
+high/high on "Codex accounts for 99.8% of weekly output tokens generated within
+OpenAI", which is internal usage share, not demand. A holding link is not trusted
+to carry an item that no weighted event earned. Neil chose any score 0, not only
+`other`.
+
+**Rules that follow.**
+
+- **Holding routes: mechanism and category** (`ranking.holding_routes`,
+  config/scoring.yaml). `lab_exposure` fires on the publisher, so OpenAI → Amazon
+  would put 40 on every OpenAI post; `named` has no quote. Both still display.
+- **A group ranks on its best member's own scores, not maxima pooled across
+  members.** Every number on a card then comes from the card's own document, so
+  its citation resolves to that card's source. Members fold in the same order.
+- **A tie between the two scores leads with the event.**
+- **The chip band follows the ranked value**, and the dashboard band filter uses
+  it, so chip and filter agree.
+- **Digest display stays date-first (Neil), with this rank inside a day.** D73's
+  two sorts are unchanged; only the key changed. Score-0 items are dropped before
+  grouping, so the digest's `considered` no longer counts them.
+- **The digest's quoted mechanism is the tag that set the score**, not
+  `mech_tags[0]`; the two differed on 4 of 101 scored announcements.
+
+**The justification follows the score that set the rank.** The two scores rest
+on different evidence. An event score shows its event type and weight and its
+strongest tag with that tag's reason and quote. A holding score shows two halves:
+what the article said (the connection's article-side tag, reason, quote) and why
+that reaches the company (the holding edge's `why` and source), plus the strength
+arithmetic. The article quote alone would read as the lab saying something about
+the company. The other score is always shown in one line beneath.
+
+**Rejected.** Event score only (the ties and the blind spot above). Product
+(zero on either axis sinks an item, so a capability jump with no book link
+vanishes). Average (weights nobody chose). Pooled group maxima (a card would
+show numbers taken from other documents). All routes (publisher links move rank).
+
+**Measured on local Postgres after the change**, over the dashboard's corpora
+(announcements, papers, posts): 595 items, 135 with a non-zero event score, 127
+cards. GPT-6 Astra anchors on the API spec page (100 / 100), with the forum post
+(100 / 67) and launch post (100 / 22) folded beneath in that order. "Redeploying
+Claude Fable 5" reads `100 · Amazon.com (event 80)`. Opus 5 reads
+`100 · Event (holding 17)`. "How agents are transforming work" and "Building
+abundant intelligence" are absent from investment and still in the AI view.
+
+**Known open.**
+
+- The Samsung partnership ranks #12 on `inference_volume_up` high/high quoted
+  from "one of OpenAI's largest enterprise deployments", a size claim. That is a
+  classifier problem, not a ranking one.
+- Digest admission and `holding_impact` alerts still count publisher and name
+  links at ≥ 0.5.
+- On the spec page `memory_intensity_up` and `capability_jump` are both
+  high/high, so the event basis cites the lower ordinal, memory. Deterministic,
+  though a reader might expect the capability tag.
+- **None of the 76 mechanism edges in config/companies.yaml carries a `source`
+  or an `unverified` note**, and validate.py does not require one (found in
+  review). So the company half of every holding-led card is a judgement in
+  config, not a cited fact. The card says "No source recorded" rather than
+  implying otherwise. Sourcing the edges is its own piece of work.
+- **Ties at the top holding strength are named together** (added after testing on
+  a copy of production). "On the Navier–Stokes Millennium Prize Problem" reached
+  Amazon, Micron and NVIDIA all at 1.00 through one `inference_volume_up` tag,
+  and the card said "Amazon" only because its ISIN sorts first. The chip now
+  names every tied holding (three, then "+N"), and each gets its own reason. The
+  tag itself reads an internal research run's 300 billion tokens as market
+  demand. That is the same classifier fault as the agents article, left for now
+  because nothing is being reclassified before the presentation.
+- **Two capital-access edges changed in config/companies.yaml (Neil).** Mistral's
+  €3B raise read `100 · Amazon.com, TeraWulf` through `lab_capital_access`, whose
+  `why` on both holdings described Anthropic alone: Amazon's stake income, and
+  TeraWulf's lease risk on one lab. A mechanism edge cannot be scoped to one lab,
+  so it fired on every lab's funding round. Amazon's edge is removed. Its
+  Anthropic exposure stays in `lab_exposure`, which does not set rank, so an
+  Anthropic raise no longer ranks on Amazon. That is accepted rather than
+  over-credit Amazon on every lab's raise. TeraWulf's edge becomes medium/high
+  (0.67), on the data-centre case: labs that raise more lease more capacity,
+  indirectly. No reclassification; scores and links recompute from config at the
+  next firing.

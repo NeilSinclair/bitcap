@@ -366,3 +366,27 @@ sourced register entry with a fetched TechCrunch citation dated after my
 training cutoff. The register was right. That is exactly the failure
 `config/people.yaml` documents itself as guarding against, and I walked into it
 from the other side.
+
+## 2026-09-13 — investment ranking (D81): where the loop broke and what caught it
+
+**The trial recommended something the source text contradicted.** The read-only
+ranking comparison I published called two score-0 items lifted by a 1.00 holding
+link "the strongest argument for the max rule". Neil asked to read one. The tag
+behind it was an internal-usage share ("99.8% of weekly output tokens generated
+within OpenAI") scored as high/high inference demand. Score-0 items were excluded
+instead. Reading the raw document again beat reasoning over the numbers.
+
+**A formula stood in for the rule.** The plan wrote the rank as
+`(max(event, holding), min(event, holding))`. Neil read it as a different rule
+from the one he had described: rank on the higher score, break ties on the other.
+It was the same rule. The plan now states it in words with a four-item example.
+
+**Green Python tests, broken page.** 1,732 tests passed while `next build` and
+both smoke scripts failed. A new `const byHolding` in `decorateItems` collided
+with an existing `byHolding` map fifty lines lower in the same function. The
+smoke scripts caught it, which is what they exist for.
+
+**Production reads were blocked.** The permission classifier refused a
+read-only query on the deployed database. Every number here came from local
+Postgres after Neil asked for the container to be started. Local data can lag the
+deployed dashboard.

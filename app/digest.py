@@ -33,8 +33,8 @@ import yaml
 from sqlalchemy import func as sa_func, select
 from sqlalchemy.orm import Session
 
-from app import models as m
-from app.connect import match_name
+from app import models as m, ranking
+from app.connect import SCORING, match_name
 
 CONFIG = Path(__file__).resolve().parents[1] / "config" / "digest.yaml"
 
@@ -270,6 +270,8 @@ def build(
     prac_labels = {r.id: r.label for r in session.scalars(select(m.RefPractice))}
     mech_labels = {r.id: r.label for r in session.scalars(select(m.RefMechanism))}
     names = {h.isin: (match_name(h.name) or h.name) for h in session.scalars(select(m.Holding))}
+    cat_labels = {r.id: r.label for r in session.scalars(select(m.RefCategory))}
+    scoring = yaml.safe_load(SCORING.read_text(encoding="utf-8"))
 
     classifications = {
         c.article_id: c
@@ -321,7 +323,6 @@ def build(
     #
     # Membership is the durable fact and lives in the table; which member speaks
     # for the group is a property of the view, so each view decides it.
-    axis = "score" if kind == INVESTMENT else "ai_score"
     grouping = {g.article_id: g for g in session.scalars(select(m.ArticleGroup))}
     groups = {article_id: g.group_id for article_id, g in grouping.items()}
     methods = {g.group_id: g.method for g in grouping.values()}
@@ -329,10 +330,26 @@ def build(
     in_window = [
         art for art in session.scalars(select(m.Article))
         if classifications.get(art.id) is not None and _in_window(art, start, end)
+        # A score-0 item never enters the investment cut, not even to be counted
+        # as suppressed: no quoted mechanism tag earned it a place, and a holding
+        # link alone is not trusted to (D81). The dashboard drops the same rows.
+        and (kind != INVESTMENT or (classifications[art.id].score or 0) > 0)
     ]
 
+    # The investment rank needs each member's holding link; the AI cut has none.
+    ranked = {
+        art.id: ranking.rank_fields(
+            classifications[art.id], mechs[classifications[art.id].id],
+            conns_by_article[art.id], scoring,
+            mech_labels=mech_labels, cat_labels=cat_labels, names=names)
+        for art in in_window
+    } if kind == INVESTMENT else {}
+
     def rank(art) -> tuple:
-        """Highest score on this edition's axis, then by date.
+        """This edition's merit order, then by date.
+
+        Investment ranks on the higher of the event and holding scores, then the
+        other (app/ranking.py); AI on its own score.
 
         The date tie-break flips for release trains, and it decides every one of
         them: within a train each release usually carries the same score, so the
@@ -342,17 +359,20 @@ def build(
         group means. Elsewhere earliest wins, because being early is the
         product's claim.
         """
+        cls = classifications[art.id]
+        merit = (ranking.rank_key(cls.score or 0.0, ranked[art.id]["holdingScore"])
+                 if kind == INVESTMENT else (cls.ai_score or 0.0,))
         latest = methods.get(groups.get(art.id, f"g{art.id}")) == "release_train"
         direction = 1 if latest else -1
-        return (getattr(classifications[art.id], axis) or 0.0,
-                direction * art.published_on.toordinal(), direction * art.id)
+        return (*merit, direction * art.published_on.toordinal(), direction * art.id)
 
     def item_for(art):
         """Render `art` under this edition's rule, or None if it does not pass."""
         cls = classifications[art.id]
         return (
             _investment_item(art, cls, conns_by_article[art.id], mechs[cls.id],
-                             labs, names, mech_labels, rules, config)
+                             labs, names, mech_labels, rules, config,
+                             ranked[art.id], scoring)
             if kind == INVESTMENT
             else _ai_item(art, cls, pracs[cls.id], labs, prac_labels, rules)
         )
@@ -409,9 +429,10 @@ def build(
 
     # TWO SORTS, AND THE ORDER OF THEM IS THE POINT.
     #
-    # Selection is on `rank` alone — connection strength then score for the
-    # investment cut, ai_score then how many practices are actionable for the
-    # AI cut. Display is newest first, with `rank` breaking ties inside a day.
+    # Selection is on `rank` alone — the higher of event and holding score, then
+    # the other, for the investment cut (app/ranking.py, D81); ai_score then how
+    # many practices are actionable for the AI cut. Display is newest first,
+    # with `rank` ordering items inside a day.
     #
     # They cannot be one sort, because `max_items` cuts between them. Sorting
     # by date before the cut fills the edition with whatever is most recent and
@@ -449,7 +470,8 @@ def build(
     }
 
 
-def _investment_item(art, cls, conns, mech_tags, labs, names, mech_labels, rules, config):
+def _investment_item(art, cls, conns, mech_tags, labs, names, mech_labels, rules, config,
+                     ranked, scoring):
     """Render one event for the investment audience, or None if it is suppressed.
 
     Two ways in. A connection at or above `min_strength` means the event reaches
@@ -457,6 +479,11 @@ def _investment_item(art, cls, conns, mech_tags, labs, names, mech_labels, rules
     surfaces: a lab-level shift that does not yet touch a holding is the early
     signal this system exists to catch, and requiring a connection would filter
     out exactly that case.
+
+    Args:
+        ranked: This article's `ranking.rank_fields`: the rank and its
+            justification, carried into the payload.
+        scoring: Parsed config/scoring.yaml.
 
     Returns:
         The rendered item with a private `rank` key, or None.
@@ -473,11 +500,15 @@ def _investment_item(art, cls, conns, mech_tags, labs, names, mech_labels, rules
     # without claiming them.
     rolled = _holdings_line(strong, names, config["max_holdings_shown"])
     below = len({c.isin for c in conns}) - rolled["total"]
-    top = mech_tags[0] if mech_tags else None
+    # The tag that set the score, not the first one tagged: in 4 of 101 scored
+    # announcements those differ, and the card would quote evidence the score
+    # did not rest on.
+    top = ranking.strongest_tag(mech_tags, scoring)
     peak = max((c.strength for c in strong), default=0.0)
 
     return {
-        "rank": (peak, cls.score),
+        "rank": ranking.rank_key(cls.score or 0.0, ranked["holdingScore"]),
+        **ranked,
         "id": art.id,
         "date": str(art.published_on),
         "lab": labs.get(art.lab, art.lab),
