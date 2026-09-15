@@ -8801,8 +8801,8 @@ abundant intelligence" are absent from investment and still in the AI view.
 - **None of the 76 mechanism edges in config/companies.yaml carries a `source`
   or an `unverified` note**, and validate.py does not require one (found in
   review). So the company half of every holding-led card is a judgement in
-  config, not a cited fact. The card says "No source recorded" rather than
-  implying otherwise. Sourcing the edges is its own piece of work.
+  config, not a cited fact. The card said "No source recorded" until
+  2026-09-15, when Neil removed the label as noise; the gap stands. Sourcing the edges is its own piece of work.
 - **Ties at the top holding strength are named together** (added after testing on
   a copy of production). "On the Navier–Stokes Millennium Prize Problem" reached
   Amazon, Micron and NVIDIA all at 1.00 through one `inference_volume_up` tag,
@@ -8830,3 +8830,52 @@ abundant intelligence" are absent from investment and still in the AI view.
   Explained: Compute Power" at 0.67 and GPT-5.6 Sol at 0.33. The Trainium commitments stay cited under `training_compute_up`, and
   Anthropic under `lab_exposure`. NVIDIA's negative edge and the TSMC, Marvell and
   Intel edges are unchanged.
+
+## D82 — Category links leave the investment surfaces (2026-09-15)
+
+**Decision (Neil).** Category membership no longer ranks, lists or admits
+anything on the investment dashboard or digest. `ranking.holding_routes` is
+`[mechanism]`, and a new `ranking.hidden_routes: [category]` drops those
+connections in `ranking.visible` before either surface reads them. The dashboard
+stops showing category tags. His reason: the category score was too confusing to
+read.
+
+**What it was doing.** D81 put `category` into `holding_routes` without a stated
+reason; only the exclusions were argued. At a 0.6 ceiling a single category link
+reaches the high band. The prompt already says a mention is not a signal, yet on
+local Postgres 21 of 734 items in the display window took their rank from one,
+mostly `hyperscale_platform` (9) and `health_insurance` (8): "now on AWS" posts
+and health or safety posts. A card led by one also rendered a score whose company
+half read "category membership, no company-specific evidence".
+
+**Rejected.** Hiding categories in the UI only. The 60 would stay on the card
+with its only evidence removed.
+
+**Measured on local Postgres, through `build_items` and `digest.build`, before and
+after.**
+- **Dashboard high band 49 → 43; the top 20 are identical, in the same order.**
+  The six that left: Grok 4.6 on Amazon Bedrock, Grok on Amazon Bedrock, GPT-5.6
+  in Kiro, GPT-5.6 in Microsoft 365 Copilot, "In-region inference, open models,
+  and new European infrastructure", and an X post on a strategic partnership.
+  None joined.
+- A raw count first said 57 → 48. Three of those nine have event score 0 and
+  were already off the investment surfaces (D81), so the real effect is six.
+- Category connections on the dashboard 67 → 0.
+- The live 7-day digest preview is unchanged (1 surfaced of 4 considered). No
+  current item was in it on a category link alone.
+
+**Known open.**
+- `holding_impact` alerts still fire on category links. 19 have so far. Out of
+  scope by Neil's choice.
+- Stored digest editions keep their category-led bases, and the digest page
+  still renders "Member of …" for them.
+- `app/connect.py` still writes category rows, and `_holding_basis` still sizes
+  one if the route is re-enabled in config.
+- The `accelerator_custom_si` sign disagreement (positive against mixed, D56)
+  is unchanged; it no longer reaches a surface.
+
+**Also (Neil): a holding-led card no longer repeats its evidence at the top.**
+The "What the article says" and "Why it reaches…" blocks duplicated Evidence
+and Portfolio impact on the same card. The top now shows the score, the
+holdings and the strength arithmetic. Both halves went together, because the
+quote alone beside the company names would read as the lab talking about them.

@@ -126,7 +126,6 @@ export function FoldedGroup({ members, reason, onOpen }) {
 export function decorateItems(items, audience) {
   return items.map((it) => {
     const mechanisms = it.mechanisms.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
-    const categories = it.categories.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
     const connections = it.connections.map((c) => ({
       ...c,
       color: signColor(c.direction),
@@ -134,8 +133,10 @@ export function decorateItems(items, audience) {
       // `note` prefers the holding-specific "why" (app/connect.py) and
       // only falls back to the article's own reason when there isn't one.
       // Category rows never carry a holding-side why (membership has no
-      // company-specific evidence), so their note is always identical to
-      // what Evidence already shows for that same tag — hide only there.
+      // company-specific evidence), so their note would repeat the tag's own
+      // reason. They are hidden by config today (D82) and the category Evidence
+      // cards are gone, so re-enabling the route must bring that reason back
+      // somewhere — until then a category row would show with none.
       // Every other route's note is genuinely distinct information.
       showNote: c.route !== "category",
       caption: c.magnitude && c.confidence
@@ -147,7 +148,7 @@ export function decorateItems(items, audience) {
     const practices = it.practices.map((p) => ({ ...p, actionStyleObj: actionStyle(p.action) }));
 
     const evidencePills = audience === "investment"
-      ? [...mechanisms, ...categories].slice(0, 2).map((t) => ({ label: t.label, color: t.color, arrow: t.arrow }))
+      ? mechanisms.slice(0, 2).map((t) => ({ label: t.label, color: t.color, arrow: t.arrow }))
       : practices.slice(0, 2).map((p) => ({ label: p.label, color: ACCENT, arrow: p.action === "adopt" ? "↑" : "→" }));
 
     const impactPills = audience === "investment"
@@ -183,7 +184,6 @@ export function decorateItems(items, audience) {
     return {
       ...it,
       mechanisms,
-      categories,
       connections,
       connectionGroups,
       practices,
@@ -290,7 +290,7 @@ export function relatedByGroup(decorated, anchorFor) {
 
 // One piece of evidence behind the rank: a heading, what it is, and the reason
 // and verbatim quote where it has them.
-function BasisBlock({ heading, sign, label, detail, reason, quote, children }) {
+function BasisBlock({ heading, sign, label, detail, reason, quote }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
       <span style={{ fontSize: 11, color: "var(--muted-2)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{heading}</span>
@@ -301,7 +301,6 @@ function BasisBlock({ heading, sign, label, detail, reason, quote, children }) {
       </div>
       {reason && <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{reason}</div>}
       {quote && <div className="quote-block">&ldquo;{quote}&rdquo;</div>}
-      {children}
     </div>
   );
 }
@@ -318,24 +317,11 @@ export function leadHoldings(basis) {
   return names.length > 3 ? `${names.slice(0, 3).join(", ")} +${names.length - 3}` : names.join(", ");
 }
 
-// A holding edge's source, or a plain statement that it has none: a `why` with
-// no source is a judgement in config and must not read as a cited fact.
-function SourceLine({ source }) {
-  if (!source) {
-    return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>No source recorded for this link in config/companies.yaml</div>;
-  }
-  if (/^https?:\/\//.test(source)) {
-    return <a href={source} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>Source ↗</a>;
-  }
-  return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>Source: {source}</div>;
-}
-
-// Which investment score put this item where it is, and the evidence for THAT
-// score (app/ranking.py, D81). The two rest on different evidence, often from
-// different tags. An event score rests on its event type and strongest tag. A
-// holding score rests on two halves, and shows both: what the article said, and
-// why that reaches the company — the quote alone would claim the lab said
-// something about the company.
+// Which investment score put this item where it is (app/ranking.py, D81). An
+// event score shows its event type and strongest tag. A holding score shows only
+// the holdings and the strength arithmetic: its quote is in Evidence and each
+// company's reason in Portfolio impact below, and a quote placed beside the
+// company names without that reason would read as the lab talking about them.
 function RankBasis({ item }) {
   const event = item.eventBasis;
   const link = item.holdingBasis;
@@ -360,48 +346,13 @@ function RankBasis({ item }) {
       </div>
 
       {byHolding ? (
-        <>
-          <BasisBlock
-            heading="What the article says" sign={link.article.sign} label={link.label}
-            detail={sizing(link.article.magnitude, link.article.confidence)}
-            reason={link.article.reason} quote={link.article.quote}
-          />
-          {link.company ? (
-            <BasisBlock
-              heading={`Why it reaches ${link.holding}`} sign={link.company.sign} label={link.holding}
-              detail={sizing(link.company.magnitude, link.company.confidence)} reason={link.company.why}
-            >
-              <SourceLine source={link.company.source} />
-            </BasisBlock>
-          ) : (
-            <BasisBlock
-              heading={`Why it reaches ${link.holding}`} label={`Member of ${link.label}`}
-              detail="category membership, no company-specific evidence"
-            />
-          )}
-          {/* Holdings tied at the same strength each get their own reason:
-              the article half is shared, the company half is not. */}
-          {(link.tiedWith || []).map((t) => (
-            <BasisBlock
-              key={t.isin}
-              heading={`Tied at ${t.strength.toFixed(2)} · why it reaches ${t.holding}`}
-              sign={t.company?.sign} label={t.holding}
-              detail={[t.label !== link.label ? `via ${t.label}` : null,
-                t.company ? sizing(t.company.magnitude, t.company.confidence) : `member of ${t.label}`]
-                .filter(Boolean).join(" · ")}
-              reason={t.company?.why}
-            >
-              {t.company && <SourceLine source={t.company.source} />}
-            </BasisBlock>
-          ))}
-          <div style={{ fontSize: 12, color: "var(--muted-2)" }}>
-            Strength {link.strength.toFixed(2)}
-            {link.article.weight != null
-              ? ` = ${[link.article.weight, link.company?.weight]
-                  .filter((w) => w != null).map((w) => w.toFixed(2)).join(" × ")} × route ${link.routeCeiling}`
-              : ""}
-          </div>
-        </>
+        <div style={{ fontSize: 12, color: "var(--muted-2)" }}>
+          {link.label} · strength {link.strength.toFixed(2)}
+          {link.article.weight != null
+            ? ` = ${[link.article.weight, link.company?.weight]
+                .filter((w) => w != null).map((w) => w.toFixed(2)).join(" × ")} × route ${link.routeCeiling}`
+            : ""}
+        </div>
       ) : event ? (
         <>
           <div style={{ fontSize: 13 }}>
@@ -474,7 +425,7 @@ export function DetailPanel({ item, related, audience, onOpen, onClose }) {
           <>
             <RankBasis item={item} />
 
-            {(item.mechanisms.length > 0 || item.categories.length > 0) && (
+            {item.mechanisms.length > 0 && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <span className="label-bracket">Evidence</span>
                 {item.mechanisms.map((m, i) => (
@@ -486,17 +437,6 @@ export function DetailPanel({ item, related, audience, onOpen, onClose }) {
                     </div>
                     <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{m.reason}</div>
                     <div className="quote-block">&ldquo;{m.quote}&rdquo;</div>
-                  </div>
-                ))}
-                {item.categories.map((c, i) => (
-                  <div key={`c${i}`} style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                      <span style={{ color: c.color }}>{c.arrow}</span>
-                      <span style={{ fontWeight: 600 }}>{c.label}</span>
-                      <span style={{ color: "var(--muted-2)" }}>· {c.confidence} confidence</span>
-                    </div>
-                    <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{c.reason}</div>
-                    <div className="quote-block">&ldquo;{c.quote}&rdquo;</div>
                   </div>
                 ))}
               </div>

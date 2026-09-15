@@ -196,13 +196,21 @@ join:
 # order an item on the higher of its event score and its holding score
 # (100 x strongest connection), and break ties on the other one.
 #
-# Only routes backed by a quoted article tag set the holding score. A publisher
-# edge (lab_exposure) fires on who published, not what was published -- the
-# OpenAI -> Amazon contract would rank every OpenAI post at 60 -- and a name
-# match carries no quote. Those links still display on the card; they do not
-# move it.
+# Only a mechanism link sets the holding score: it is the one route sized on
+# both sides. A publisher edge (lab_exposure) fires on who published, not what
+# was published -- the OpenAI -> Amazon contract would rank every OpenAI post at
+# 60 -- and a name match carries no quote. Those links still display on the
+# card; they do not move it.
+#
+# `hidden_routes` are dropped from the investment surfaces entirely (D82): not
+# scored, not listed on the dashboard, and unable to admit an item to the
+# digest. Category membership was confusing to read, and on a claim about a
+# whole group it ranked "now on AWS" and health posts in the high band.
+# app/connect.py still writes the rows, and `holding_impact` alerts still read
+# them.
 ranking:
-  holding_routes: [mechanism, category]
+  holding_routes: [mechanism]
+  hidden_routes: [category]
 
 # Bands used for presentation only. They label a score, they do not change it.
 bands:

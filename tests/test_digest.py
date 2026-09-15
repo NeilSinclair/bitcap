@@ -293,8 +293,8 @@ class TestTheUnitIsTheEventNotTheConnection:
         _holding(session, "US1", "NVIDIA")
         art, _ = _article(session, published=date(2026, 9, 3))
         _connect(session, art, "US1", 0.6)
-        session.add(m.Connection(article_id=art.id, isin="US1", route="category",
-                                 via="semis", direction="positive", strength=0.9))
+        session.add(m.Connection(article_id=art.id, isin="US1", route="lab_exposure",
+                                 via="xai:revenue_contract", direction="positive", strength=0.9))
         session.flush()
 
         out = digest.build(session, "investment", V, END, CONFIG)
@@ -332,6 +332,21 @@ class TestInvestmentSelection:
         assert item["peakStrength"] == 0.0
         # Counted, so the card can say they exist without claiming them.
         assert item["belowThreshold"] == 2
+
+    def test_a_category_link_cannot_admit_an_item_but_a_mechanism_link_can(self, session):
+        """D82: membership admitted "now on AWS" posts on a claim about the group."""
+        _holding(session, "US1", "NVIDIA")
+        art, _ = _article(session, published=date(2026, 9, 3), score=20.0, band="low")
+        session.add(m.Connection(article_id=art.id, isin="US1", route="category",
+                                 via="semis", direction="positive", strength=0.6))
+        session.flush()
+
+        assert digest.build(session, "investment", V, END, CONFIG)["items"] == []
+
+        _connect(session, art, "US1", 0.6)
+        session.flush()
+        [item] = digest.build(session, "investment", V, END, CONFIG)["items"]
+        assert item["holdings"]["total"] == 1
 
     def test_a_low_band_article_with_no_connection_does_not(self, session):
         _article(session, published=date(2026, 9, 3), score=10.0, band="low")

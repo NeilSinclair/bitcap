@@ -110,7 +110,7 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
 
     Returns:
         One dict per article that has a classification for this version, each
-        carrying its mechanism/category/practice tags and holding connections.
+        carrying its mechanism/practice tags and holding connections.
     """
     since = window_start() if since is None else since
     labs = {r.id: r.label for r in session.scalars(select(m.RefLab))}
@@ -169,20 +169,16 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
                                 .order_by(m.ArticleMechanism.ordinal)):
         mechs_by_cls[row.classification_id].append(row)
 
-    cats_by_cls: dict[int, list] = defaultdict(list)
-    for row in session.scalars(select(m.ArticleCategory)
-                                .where(m.ArticleCategory.classification_id.in_(cls_ids))
-                                .order_by(m.ArticleCategory.ordinal)):
-        cats_by_cls[row.classification_id].append(row)
-
     pracs_by_cls: dict[int, list] = defaultdict(list)
     for row in session.scalars(select(m.ArticlePractice)
                                 .where(m.ArticlePractice.classification_id.in_(cls_ids))
                                 .order_by(m.ArticlePractice.ordinal)):
         pracs_by_cls[row.classification_id].append(row)
 
+    # Hidden routes (category, D82) never reach the dashboard: not ranked, not listed.
     conns_by_article: dict[int, list] = defaultdict(list)
-    for row in session.scalars(select(m.Connection).order_by(m.Connection.strength.desc())):
+    for row in ranking.visible(
+            session.scalars(select(m.Connection).order_by(m.Connection.strength.desc())), rules):
         conns_by_article[row.article_id].append(row)
 
     # Near-duplicate grouping. Every row still ships, including the folded ones:
@@ -254,17 +250,6 @@ def build_items(session: Session, prompt_version: str | tuple[str, ...],
                     "quote": t.quote,
                 }
                 for t in mechs_by_cls.get(cls.id, [])
-            ],
-            "categories": [
-                {
-                    "id": t.category_id,
-                    "label": cat_labels.get(t.category_id, t.category_id),
-                    "sign": t.sign,
-                    "confidence": t.confidence,
-                    "reason": t.reason,
-                    "quote": t.quote,
-                }
-                for t in cats_by_cls.get(cls.id, [])
             ],
             "practices": [
                 {
