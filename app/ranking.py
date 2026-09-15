@@ -6,7 +6,8 @@ its strongest quoted mechanism tag. The holding score is how hard the article
 reaches a position in the book: its strongest connection (app/connect.py) × 100,
 counted only on routes backed by an article tag (`ranking.holding_routes` in
 config/scoring.yaml). A frontier launch can score 100 on the first and 17 on the
-second; a partnership can score 40 and 100.
+second; a partnership can score 40 and 100. Routes in `ranking.hidden_routes`
+are removed by `visible` before either surface reads a connection (D82).
 
 Ranked on either alone, one of those is buried. So an item ranks on its higher
 score, and a tie there breaks on the other one (`rank_key`). The dashboard
@@ -62,6 +63,24 @@ def strongest_tag(tags: list, rules: dict):
         if w > best_weight:
             best, best_weight = tag, w
     return best
+
+
+def visible(connections, rules: dict) -> list:
+    """The connections an investment surface may read at all.
+
+    Routes in `ranking.hidden_routes` are dropped before ranking, listing or
+    digest admission, so a hidden link can neither move, show on nor admit an
+    item (docs/decisions.md D82). app/connect.py still writes the rows.
+
+    Args:
+        connections: Connection rows, for any number of articles.
+        rules: Parsed config/scoring.yaml.
+
+    Returns:
+        The rows whose route is not hidden, in their original order.
+    """
+    hidden = set(rules["ranking"].get("hidden_routes") or ())
+    return [c for c in connections if c.route not in hidden]
 
 
 def tied_links(connections: list, routes: list[str]) -> list:

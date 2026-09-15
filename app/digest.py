@@ -283,8 +283,9 @@ def build(
         )
     }
 
+    # Hidden routes (category, D82) cannot rank, admit or name a holding here.
     conns_by_article: dict[int, list[m.Connection]] = defaultdict(list)
-    for c in session.scalars(select(m.Connection)):
+    for c in ranking.visible(session.scalars(select(m.Connection)), scoring):
         conns_by_article[c.article_id].append(c)
 
     cls_ids = [c.id for c in classifications.values()]

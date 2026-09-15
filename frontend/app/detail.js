@@ -126,7 +126,6 @@ export function FoldedGroup({ members, reason, onOpen }) {
 export function decorateItems(items, audience) {
   return items.map((it) => {
     const mechanisms = it.mechanisms.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
-    const categories = it.categories.map((t) => ({ ...t, color: signColor(t.sign), arrow: signArrow(t.sign) }));
     const connections = it.connections.map((c) => ({
       ...c,
       color: signColor(c.direction),
@@ -134,8 +133,10 @@ export function decorateItems(items, audience) {
       // `note` prefers the holding-specific "why" (app/connect.py) and
       // only falls back to the article's own reason when there isn't one.
       // Category rows never carry a holding-side why (membership has no
-      // company-specific evidence), so their note is always identical to
-      // what Evidence already shows for that same tag — hide only there.
+      // company-specific evidence), so their note would repeat the tag's own
+      // reason. They are hidden by config today (D82) and the category Evidence
+      // cards are gone, so re-enabling the route must bring that reason back
+      // somewhere — until then a category row would show with none.
       // Every other route's note is genuinely distinct information.
       showNote: c.route !== "category",
       caption: c.magnitude && c.confidence
@@ -147,7 +148,7 @@ export function decorateItems(items, audience) {
     const practices = it.practices.map((p) => ({ ...p, actionStyleObj: actionStyle(p.action) }));
 
     const evidencePills = audience === "investment"
-      ? [...mechanisms, ...categories].slice(0, 2).map((t) => ({ label: t.label, color: t.color, arrow: t.arrow }))
+      ? mechanisms.slice(0, 2).map((t) => ({ label: t.label, color: t.color, arrow: t.arrow }))
       : practices.slice(0, 2).map((p) => ({ label: p.label, color: ACCENT, arrow: p.action === "adopt" ? "↑" : "→" }));
 
     const impactPills = audience === "investment"
@@ -183,7 +184,6 @@ export function decorateItems(items, audience) {
     return {
       ...it,
       mechanisms,
-      categories,
       connections,
       connectionGroups,
       practices,
@@ -474,7 +474,7 @@ export function DetailPanel({ item, related, audience, onOpen, onClose }) {
           <>
             <RankBasis item={item} />
 
-            {(item.mechanisms.length > 0 || item.categories.length > 0) && (
+            {item.mechanisms.length > 0 && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <span className="label-bracket">Evidence</span>
                 {item.mechanisms.map((m, i) => (
@@ -486,17 +486,6 @@ export function DetailPanel({ item, related, audience, onOpen, onClose }) {
                     </div>
                     <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{m.reason}</div>
                     <div className="quote-block">&ldquo;{m.quote}&rdquo;</div>
-                  </div>
-                ))}
-                {item.categories.map((c, i) => (
-                  <div key={`c${i}`} style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                      <span style={{ color: c.color }}>{c.arrow}</span>
-                      <span style={{ fontWeight: 600 }}>{c.label}</span>
-                      <span style={{ color: "var(--muted-2)" }}>· {c.confidence} confidence</span>
-                    </div>
-                    <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{c.reason}</div>
-                    <div className="quote-block">&ldquo;{c.quote}&rdquo;</div>
                   </div>
                 ))}
               </div>

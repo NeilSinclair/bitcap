@@ -8,6 +8,7 @@ holding-led justification losing its company half — which would read as the la
 having said something about the company.
 """
 
+import copy
 from pathlib import Path
 from types import SimpleNamespace as N
 
@@ -18,6 +19,11 @@ from app import ranking
 RULES = yaml.safe_load(
     (Path(__file__).parent.parent / "config" / "scoring.yaml").read_text(encoding="utf-8"))
 ROUTES = RULES["ranking"]["holding_routes"]
+
+# Category is hidden in the shipped config (D82) but stays reachable by config,
+# so the code that ranks it is still exercised under rules that allow it.
+RULES_WITH_CATEGORY = copy.deepcopy(RULES)
+RULES_WITH_CATEGORY["ranking"].update(holding_routes=["mechanism", "category"], hidden_routes=[])
 
 
 def _tag(ordinal, magnitude="high", confidence="high", mechanism_id="memory_intensity_up"):
@@ -60,14 +66,33 @@ class TestHoldingLink:
         assert link is None
         assert ranking.holding_score(link) == 0.0
 
+    def test_a_category_link_does_not_set_the_holding_score(self):
+        link = ranking.holding_link([_conn(0.6, route="category", via="memory_storage")], ROUTES)
+        assert link is None
+
     def test_mechanism_beats_category_at_equal_strength(self):
         link = ranking.holding_link(
-            [_conn(0.3, route="category", via="memory_storage"), _conn(0.3)], ROUTES)
+            [_conn(0.3, route="category", via="memory_storage"), _conn(0.3)],
+            RULES_WITH_CATEGORY["ranking"]["holding_routes"])
         assert link.route == "mechanism"
 
-    def test_the_shipped_routes_are_mechanism_and_category(self):
-        """Pinned: adding lab_exposure lets Amazon's contract rank every OpenAI post."""
-        assert sorted(ROUTES) == ["category", "mechanism"]
+    def test_the_shipped_routes_are_mechanism_only_and_category_is_hidden(self):
+        """Pinned: lab_exposure would rank every OpenAI post on Amazon's contract,
+        and category ranked group claims in the high band (D82)."""
+        assert ROUTES == ["mechanism"]
+        assert RULES["ranking"]["hidden_routes"] == ["category"]
+
+
+class TestVisible:
+    def test_the_shipped_config_hides_category_links_only(self):
+        conns = [_conn(0.6, route="category", via="memory_storage"),
+                 _conn(0.4, route="lab_exposure"), _conn(0.3, route="named"), _conn(0.2)]
+        assert [c.route for c in ranking.visible(conns, RULES)] == \
+            ["lab_exposure", "named", "mechanism"]
+
+    def test_no_hidden_routes_keeps_every_link(self):
+        conns = [_conn(0.6, route="category", via="memory_storage"), _conn(0.2)]
+        assert len(ranking.visible(conns, RULES_WITH_CATEGORY)) == 2
 
 
 class TestStrongestTag:
@@ -90,9 +115,9 @@ class TestRankFields:
         names={"US1": "Micron"},
     )
 
-    def _fields(self, score, tags, conns, event_type="frontier_model_release"):
+    def _fields(self, score, tags, conns, event_type="frontier_model_release", rules=RULES):
         cls = N(score=score, event_type=event_type)
-        return ranking.rank_fields(cls, tags, conns, RULES, **self.LABELS)
+        return ranking.rank_fields(cls, tags, conns, rules, **self.LABELS)
 
     def test_an_event_led_item_cites_the_tag_that_set_the_score(self):
         """GPT-6 Astra's shape: capability_jump sets 100, memory links the book at 17."""
@@ -120,7 +145,7 @@ class TestRankFields:
         conn = _conn(0.6, route="category", via="memory_storage", article_magnitude=None,
                      holding_sign=None, holding_magnitude=None, holding_confidence=None,
                      holding_why=None, holding_source=None)
-        f = self._fields(20.0, [_tag(0, "low", "high")], [conn])
+        f = self._fields(20.0, [_tag(0, "low", "high")], [conn], rules=RULES_WITH_CATEGORY)
 
         basis = f["holdingBasis"]
         assert (basis["label"], basis["company"]) == ("Memory and storage", None)
@@ -132,7 +157,7 @@ class TestRankFields:
                  _conn(1.0, isin="US1", route="category", via="memory_storage"),
                  _conn(1.0, isin="US2", route="category", via="memory_storage"),
                  _conn(0.33, isin="US4")]
-        basis = self._fields(60.0, [_tag(0)], conns)["holdingBasis"]
+        basis = self._fields(60.0, [_tag(0)], conns, rules=RULES_WITH_CATEGORY)["holdingBasis"]
 
         assert (basis["holding"], basis["route"]) == ("Micron", "mechanism")
         assert [(t["isin"], t["route"]) for t in basis["tiedWith"]] == \
