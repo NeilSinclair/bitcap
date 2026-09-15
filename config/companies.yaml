@@ -1490,14 +1490,6 @@ companies:
           AWS hosts frontier training under multi-year contracts, and the release
           names Anthropic and OpenAI as making "multi-year, multi-gigawatt
           commitments" on Trainium.
-      - id: custom_silicon_substitution
-        sign: positive
-        magnitude: high
-        confidence: high
-        why: >
-          Trainium is the substitution. Every workload moved from merchant GPUs to
-          Amazon's own silicon improves AWS margin and reduces what Amazon pays
-          NVIDIA — the chips business passed $25bn run rate growing triple digits.
       - id: datacenter_power_up
         sign: negative
         magnitude: medium

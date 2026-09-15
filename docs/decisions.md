@@ -8822,3 +8822,11 @@ abundant intelligence" are absent from investment and still in the AI view.
   (0.67), on the data-centre case: labs that raise more lease more capacity,
   indirectly. No reclassification; scores and links recompute from config at the
   next firing.
+- **Amazon's `custom_silicon_substitution` edge removed (Neil)**, as inaccurate
+  and a spurious link. It was positive high/high on Trainium, but the mechanism
+  fires on any lab's own silicon, so another lab's chip ranked on Amazon at full
+  strength. On local Postgres it produced four Amazon links, none about Trainium:
+  OpenAI's Jalapeño and its Broadcom inference chip at 1.00, "Infrastructure
+  Explained: Compute Power" at 0.67 and GPT-5.6 Sol at 0.33. The Trainium commitments stay cited under `training_compute_up`, and
+  Anthropic under `lab_exposure`. NVIDIA's negative edge and the TSMC, Marvell and
+  Intel edges are unchanged.
