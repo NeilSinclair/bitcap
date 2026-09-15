@@ -8801,8 +8801,8 @@ abundant intelligence" are absent from investment and still in the AI view.
 - **None of the 76 mechanism edges in config/companies.yaml carries a `source`
   or an `unverified` note**, and validate.py does not require one (found in
   review). So the company half of every holding-led card is a judgement in
-  config, not a cited fact. The card says "No source recorded" rather than
-  implying otherwise. Sourcing the edges is its own piece of work.
+  config, not a cited fact. The card said "No source recorded" until
+  2026-09-15, when Neil removed the label as noise; the gap stands. Sourcing the edges is its own piece of work.
 - **Ties at the top holding strength are named together** (added after testing on
   a copy of production). "On the Navier–Stokes Millennium Prize Problem" reached
   Amazon, Micron and NVIDIA all at 1.00 through one `inference_volume_up` tag,

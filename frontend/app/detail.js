@@ -318,12 +318,9 @@ export function leadHoldings(basis) {
   return names.length > 3 ? `${names.slice(0, 3).join(", ")} +${names.length - 3}` : names.join(", ");
 }
 
-// A holding edge's source, or a plain statement that it has none: a `why` with
-// no source is a judgement in config and must not read as a cited fact.
+// A holding edge's source, when config/companies.yaml records one.
 function SourceLine({ source }) {
-  if (!source) {
-    return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>No source recorded for this link in config/companies.yaml</div>;
-  }
+  if (!source) return null;
   if (/^https?:\/\//.test(source)) {
     return <a href={source} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>Source ↗</a>;
   }
