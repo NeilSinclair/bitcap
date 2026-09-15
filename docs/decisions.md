@@ -8873,3 +8873,9 @@ after.**
   one if the route is re-enabled in config.
 - The `accelerator_custom_si` sign disagreement (positive against mixed, D56)
   is unchanged; it no longer reaches a surface.
+
+**Also (Neil): a holding-led card no longer repeats its evidence at the top.**
+The "What the article says" and "Why it reaches…" blocks duplicated Evidence
+and Portfolio impact on the same card. The top now shows the score, the
+holdings and the strength arithmetic. Both halves went together, because the
+quote alone beside the company names would read as the lab talking about them.

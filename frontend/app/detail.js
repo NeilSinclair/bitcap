@@ -290,7 +290,7 @@ export function relatedByGroup(decorated, anchorFor) {
 
 // One piece of evidence behind the rank: a heading, what it is, and the reason
 // and verbatim quote where it has them.
-function BasisBlock({ heading, sign, label, detail, reason, quote, children }) {
+function BasisBlock({ heading, sign, label, detail, reason, quote }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, border: "1px solid var(--border)", padding: "12px 14px" }}>
       <span style={{ fontSize: 11, color: "var(--muted-2)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{heading}</span>
@@ -301,7 +301,6 @@ function BasisBlock({ heading, sign, label, detail, reason, quote, children }) {
       </div>
       {reason && <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{reason}</div>}
       {quote && <div className="quote-block">&ldquo;{quote}&rdquo;</div>}
-      {children}
     </div>
   );
 }
@@ -318,21 +317,11 @@ export function leadHoldings(basis) {
   return names.length > 3 ? `${names.slice(0, 3).join(", ")} +${names.length - 3}` : names.join(", ");
 }
 
-// A holding edge's source, when config/companies.yaml records one.
-function SourceLine({ source }) {
-  if (!source) return null;
-  if (/^https?:\/\//.test(source)) {
-    return <a href={source} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: ACCENT }}>Source ↗</a>;
-  }
-  return <div style={{ fontSize: 12, color: "var(--muted-2)" }}>Source: {source}</div>;
-}
-
-// Which investment score put this item where it is, and the evidence for THAT
-// score (app/ranking.py, D81). The two rest on different evidence, often from
-// different tags. An event score rests on its event type and strongest tag. A
-// holding score rests on two halves, and shows both: what the article said, and
-// why that reaches the company — the quote alone would claim the lab said
-// something about the company.
+// Which investment score put this item where it is (app/ranking.py, D81). An
+// event score shows its event type and strongest tag. A holding score shows only
+// the holdings and the strength arithmetic: its quote is in Evidence and each
+// company's reason in Portfolio impact below, and a quote placed beside the
+// company names without that reason would read as the lab talking about them.
 function RankBasis({ item }) {
   const event = item.eventBasis;
   const link = item.holdingBasis;
@@ -357,48 +346,13 @@ function RankBasis({ item }) {
       </div>
 
       {byHolding ? (
-        <>
-          <BasisBlock
-            heading="What the article says" sign={link.article.sign} label={link.label}
-            detail={sizing(link.article.magnitude, link.article.confidence)}
-            reason={link.article.reason} quote={link.article.quote}
-          />
-          {link.company ? (
-            <BasisBlock
-              heading={`Why it reaches ${link.holding}`} sign={link.company.sign} label={link.holding}
-              detail={sizing(link.company.magnitude, link.company.confidence)} reason={link.company.why}
-            >
-              <SourceLine source={link.company.source} />
-            </BasisBlock>
-          ) : (
-            <BasisBlock
-              heading={`Why it reaches ${link.holding}`} label={`Member of ${link.label}`}
-              detail="category membership, no company-specific evidence"
-            />
-          )}
-          {/* Holdings tied at the same strength each get their own reason:
-              the article half is shared, the company half is not. */}
-          {(link.tiedWith || []).map((t) => (
-            <BasisBlock
-              key={t.isin}
-              heading={`Tied at ${t.strength.toFixed(2)} · why it reaches ${t.holding}`}
-              sign={t.company?.sign} label={t.holding}
-              detail={[t.label !== link.label ? `via ${t.label}` : null,
-                t.company ? sizing(t.company.magnitude, t.company.confidence) : `member of ${t.label}`]
-                .filter(Boolean).join(" · ")}
-              reason={t.company?.why}
-            >
-              {t.company && <SourceLine source={t.company.source} />}
-            </BasisBlock>
-          ))}
-          <div style={{ fontSize: 12, color: "var(--muted-2)" }}>
-            Strength {link.strength.toFixed(2)}
-            {link.article.weight != null
-              ? ` = ${[link.article.weight, link.company?.weight]
-                  .filter((w) => w != null).map((w) => w.toFixed(2)).join(" × ")} × route ${link.routeCeiling}`
-              : ""}
-          </div>
-        </>
+        <div style={{ fontSize: 12, color: "var(--muted-2)" }}>
+          {link.label} · strength {link.strength.toFixed(2)}
+          {link.article.weight != null
+            ? ` = ${[link.article.weight, link.company?.weight]
+                .filter((w) => w != null).map((w) => w.toFixed(2)).join(" × ")} × route ${link.routeCeiling}`
+            : ""}
+        </div>
       ) : event ? (
         <>
           <div style={{ fontSize: 13 }}>
