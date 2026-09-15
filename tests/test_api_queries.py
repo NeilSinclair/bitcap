@@ -118,16 +118,20 @@ class TestInvestmentRank:
         assert (basis["company"]["why"], basis["company"]["source"]) == \
             ("holding side", "https://sec.gov/x")
 
-    def test_a_category_link_sets_the_holding_score_but_a_named_one_does_not(self, session):
+    def test_category_links_and_tags_are_hidden_and_a_named_link_does_not_score(self, session):
+        """D82: category membership is dropped before ranking and listing."""
         session.query(m.Connection).update({"route": "named", "via": "name:Micron"})
         session.add(m.Connection(article_id=1, isin="US0001", route="category",
                                  via="memory_storage", direction="positive", strength=0.3,
                                  article_confidence="medium", article_reason="group claim"))
+        session.add(m.ArticleCategory(classification_id=1, category_id="memory_storage",
+                                      sign="positive", confidence="high", reason="r",
+                                      quote="q", ordinal=0))
         session.commit()
         item = build_items(session, "v7", since=date.min)[0]
-        assert item["holdingScore"] == 30.0
-        assert item["holdingBasis"]["label"] == "Memory and storage"
-        assert item["holdingBasis"]["company"] is None
+        assert (item["holdingScore"], item["holdingBasis"]) == (0.0, None)
+        assert [c["route"] for c in item["connections"]] == ["named"]
+        assert "categories" not in item
 
 
 def test_wrong_prompt_version_yields_nothing(session):

@@ -24,9 +24,11 @@ def _write(path: Path, doc: dict) -> None:
 class TestCheckRanking:
     """A typo in `ranking.holding_routes` zeroes every holding score silently."""
 
-    def _scoring(self, tmp_path, routes):
+    def _scoring(self, tmp_path, routes, hidden=None):
         doc = yaml.safe_load((ROOT / "config" / "scoring.yaml").read_text())
         doc["ranking"]["holding_routes"] = routes
+        if hidden is not None:
+            doc["ranking"]["hidden_routes"] = hidden
         _write(tmp_path / "scoring.yaml", doc)
         return tmp_path / "scoring.yaml"
 
@@ -39,6 +41,19 @@ class TestCheckRanking:
 
     def test_an_empty_list_is_an_error(self, tmp_path):
         assert check_ranking(self._scoring(tmp_path, []))
+
+    def test_a_hidden_route_the_join_never_writes_is_an_error(self, tmp_path):
+        """A typo here leaves the route it meant to hide on every surface (D82)."""
+        errors = check_ranking(self._scoring(tmp_path, ["mechanism"], ["categories"]))
+        assert len(errors) == 1 and "'categories'" in errors[0]
+
+    def test_hidden_routes_that_are_not_a_list_are_an_error(self, tmp_path):
+        errors = check_ranking(self._scoring(tmp_path, ["mechanism"], "category"))
+        assert errors == ["scoring.yaml: ranking.hidden_routes must be a list"]
+
+    def test_a_route_both_ranked_and_hidden_is_an_error(self, tmp_path):
+        errors = check_ranking(self._scoring(tmp_path, ["mechanism", "category"], ["category"]))
+        assert len(errors) == 1 and "'category'" in errors[0]
 
 
 class TestCheckSources:

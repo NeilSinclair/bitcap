@@ -971,7 +971,10 @@ def check_ranking(path: Path | None = None) -> list[str]:
 
     A route the join never writes matches no connection, so a typo there zeroes
     every holding score without raising, and the investment surfaces quietly
-    fall back to ranking on the event score alone (D81).
+    fall back to ranking on the event score alone (D81). A typo in
+    `hidden_routes` fails the other way: the route it meant to hide stays
+    visible (D82). A route in both lists is hidden before it can be ranked, so
+    listing it as a holding route would be a claim the code never honours.
 
     Args:
         path: scoring.yaml to check. Defaults to the shipped one; tests override.
@@ -982,12 +985,21 @@ def check_ranking(path: Path | None = None) -> list[str]:
     path = path or ROOT / "scoring.yaml"
     doc = yaml.safe_load(path.read_text()) or {}
     known = set((doc.get("join") or {}).get("route_ceiling") or {})
-    routes = (doc.get("ranking") or {}).get("holding_routes")
+    ranking = doc.get("ranking") or {}
+    routes = ranking.get("holding_routes")
     if not isinstance(routes, list) or not routes:
         return ["scoring.yaml: ranking.holding_routes must be a non-empty list — "
                 "without it no link can set a holding score"]
-    return [f"scoring.yaml: ranking.holding_routes '{r}' is not a join route "
-            f"({', '.join(sorted(known))})" for r in routes if r not in known]
+    errors = [f"scoring.yaml: ranking.holding_routes '{r}' is not a join route "
+              f"({', '.join(sorted(known))})" for r in routes if r not in known]
+    hidden = ranking.get("hidden_routes") or []
+    if not isinstance(hidden, list):
+        return errors + ["scoring.yaml: ranking.hidden_routes must be a list"]
+    errors += [f"scoring.yaml: ranking.hidden_routes '{r}' is not a join route "
+               f"({', '.join(sorted(known))})" for r in hidden if r not in known]
+    errors += [f"scoring.yaml: ranking route '{r}' is both a holding route and hidden — "
+               "a hidden link never reaches the ranking" for r in hidden if r in routes]
+    return errors
 
 
 def check_digest(path: Path | None = None) -> list[str]:
