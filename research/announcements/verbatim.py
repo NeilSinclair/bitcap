@@ -71,12 +71,16 @@ def fold(text: str) -> tuple[str, list[int]]:
             offsets.append(i)
             i += 1
 
+    # NFKC can expand one character into several ("…" -> "..."). Each output
+    # character keeps the offset of its source character, or the map drifts.
+    chars = [
+        (c, offset)
+        for ch, offset in zip(decoded, offsets)
+        for c in unicodedata.normalize("NFKC", FOLD.get(ch, ch))
+    ]
+
     out, index, space = [], [], False
-    for ch, offset in zip(decoded, offsets):
-        ch = FOLD.get(ch, ch)
-        if not ch:
-            continue
-        ch = unicodedata.normalize("NFKC", ch)
+    for ch, offset in chars:
         if ch.isspace():
             # Collapse a whitespace run to one space, anchored at its start.
             if not space and out:
