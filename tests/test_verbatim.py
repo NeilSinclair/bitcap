@@ -195,3 +195,23 @@ class TestFold:
         clean = "A simple sentence with no tricks."
         folded, _ = fold(clean)
         assert folded == clean
+
+    def test_the_offset_map_survives_characters_that_expand(self):
+        # NFKC turns "…" into "..." and "ﬁ" into "fi". Each expanded character
+        # needs its own offset, or every match after it is shifted -- found by
+        # a production crash on an article containing "…".
+        folded, index = fold("Intro… a ﬁne result")
+        assert folded == "Intro... a fine result"
+        assert len(folded) == len(index)
+
+
+class TestExpandingCharacters:
+    TEXT = "Intro… Terminal-Bench 2.1 reaches a new high score"
+
+    def test_a_quote_after_an_ellipsis_snaps_to_the_right_span(self):
+        q = "Terminal-Bench 2.1 reaches"
+        assert snap(q, self.TEXT) == q
+
+    def test_a_quote_ending_the_document_does_not_crash(self):
+        q = "Terminal-Bench 2.1 reaches a new high score"
+        assert snap(q, self.TEXT) == q
