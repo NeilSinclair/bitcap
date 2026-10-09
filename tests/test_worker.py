@@ -311,8 +311,10 @@ class TestSystemExitIsNotAnEscapeHatch:
             lambda source: lambda s, st, sess=None: _sys.exit("GITHUB_TOKEN not set"),
         )
 
+        # Switched on explicitly: the shipped config has the github leg off
+        # (D84), and this test is about the exit, not about which leg.
         run, stats = worker.run_once(session, legs=("github",),
-                                     config_path=config_file(quiet),
+                                     config_path=config_file(quiet, enabled={"github": True}),
                                      spend=False, deliver=False)
 
         assert stats["ingest"]["failed"] == 1
@@ -581,6 +583,18 @@ class TestTheScheduledWorkflow:
         fire = next(s for s in firing["steps"] if s.get("name") == "Fire")
         script = fire["run"]
         assert script.index('test -n "$DATABASE_URL"') < script.index("bitcap-worker")
+
+    def test_the_shipped_legs_are_pinned(self):
+        """A tripwire on the kill switches, which nothing else reads.
+
+        The github leg is off on purpose (D84) and releases must stay on. A
+        revert or a merge that flips either goes green everywhere else: an
+        extra 14-minute leg, or a leg that quietly stops, both look like
+        ordinary firings.
+        """
+        live = worker.live_legs(worker.load_config())
+        assert "github" not in live
+        assert "releases" in live
 
     def test_the_posts_stall_threshold_outlasts_one_weekly_firing(self):
         """At one firing interval, a single bad firing raised the alert."""

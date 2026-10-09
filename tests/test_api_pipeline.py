@@ -269,6 +269,23 @@ class TestEveryLegIsPresentableInTheUI:
         assert bad == []
 
 
+class TestTheRunPickerOffersOnlyLiveLegs:
+    def test_a_leg_switched_off_in_config_is_not_offered(self, client, monkeypatch):
+        """The worker refuses a disabled leg whatever is ticked, so listing it
+        is a checkbox that silently does nothing."""
+        monkeypatch.setattr(pipeline_api.worker, "load_config",
+                            lambda: {"enabled": {"papers": False}})
+
+        offered = {leg["id"] for leg in client.get("/api/pipeline/legs").json()}
+
+        assert "papers" not in offered
+        assert {"announcements", "releases", "drift"} <= offered
+
+    def test_the_shipped_picker_does_not_offer_the_github_leg(self, client):
+        offered = {leg["id"] for leg in client.get("/api/pipeline/legs").json()}
+        assert "github" not in offered and "releases" in offered
+
+
 class TestStartingARun:
     def test_an_unknown_leg_is_rejected(self, client, token):
         response = client.post("/api/pipeline/run", headers=bearer(token),

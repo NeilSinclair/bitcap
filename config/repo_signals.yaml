@@ -27,9 +27,8 @@
 #      because it was dormant and got touched, and would read as new. It is
 #      captured from the org listing on every run by
 #      `adapters._listing_fields`, alongside the live star count.
-#   2. Star delta. Not implemented: `raw_github_repos` keeps one payload per
-#      repository, overwritten on each walk, so there is no star history to
-#      difference. Recorded as the obvious next cut, not as something this
+#   2. Star delta. Not implemented: nothing stores a star history to
+#      difference -- the ranking reads a live listing each firing (D84). Recorded as the obvious next cut, not as something this
 #      file configures.
 
 version: 1

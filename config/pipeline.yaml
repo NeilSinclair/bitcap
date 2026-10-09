@@ -79,6 +79,11 @@ budget:
 # the line to flip at 2am without reading any Python. It outranks cadence and
 # an explicit --legs. A leg absent from this map defaults to on.
 enabled:
+  github: false      # OFF since D84. The commit-history walk that built the
+                     # people register is no longer wanted. The code, the
+                     # stored people and the Register page all stay; nothing
+                     # else depends on this leg now that releases ranks from
+                     # its own live listing.
   releases: true     # GitHub release notes as documents. Newest leg, and the
                      # one most likely to be switched off after a look at the
                      # output.

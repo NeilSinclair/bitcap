@@ -33,18 +33,8 @@ LEGS = (ANNOUNCEMENTS, PAPERS, GITHUB, RELEASES, POSTS)
 # Stage order. Announcements first because Mistral's papers harvester sources
 # its candidate titles from the announcements corpus; GitHub is independent of
 # both and runs last only because it is the slowest and least urgent.
-# Releases run after GitHub because they read the bronze `raw_github_repos`
-# that leg maintains, and reading it after the leg that fills it is the honest
-# order.
-#
-# It does not save the first firing. `raw_github_repos` is written by
-# `register.load_github_repos` in the landing phase, after the whole ingest
-# phase, so against a freshly rebuilt database every releases source raises
-# "no repositories in raw_github_repos" on firing 1 and succeeds on firing 2.
-# That is one wasted leg and eight recorded failures, below the
-# `source_down_runs` threshold, and it self-heals -- but it is a real cost of
-# gating on a table another leg fills, and not something the stage order
-# fixes.
+# Releases keep their place after GitHub only for stable ordering: they rank
+# from their own live listing and depend on no other leg (D84).
 STAGES = {ANNOUNCEMENTS: 1, PAPERS: 2, GITHUB: 3, RELEASES: 4, POSTS: 5}
 
 # What each article-producing leg writes into `raw_articles.source_file`.

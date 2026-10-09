@@ -78,10 +78,8 @@ compound: a rebuilt database looks as though the collapse was never built.
 uv run bitcap-worker           # fetches releases, classifies, groups, digests
 ```
 
-Run it **twice** on a freshly rebuilt database. The releases leg reads its repo
-list from `raw_github_repos`, which a later phase of the same firing fills, so
-every releases source fails on firing 1 and succeeds on firing 2. Documented at
-`app/pipeline/registry.py:35`; it self-heals and needs no intervention.
+Once is enough, including on a freshly rebuilt database: the releases leg ranks
+each org's repositories from a live listing and depends on no other leg (D84).
 
 Two failure modes worth knowing before they bite, both written up in
 [`decisions.md`](docs/decisions.md) §D62:
@@ -232,7 +230,7 @@ Actions secrets; the API needs the same keys only so the run button works:
 | `DATABASE_URL` | everything |
 | `ANTHROPIC_API_KEY` | classification and drift. Needed in **both** the workflow and `bitcap-api` — the pipeline tab runs firings from the API service, and without it the gold-set check measures nothing (D45) |
 | `OPENAI_API_KEY` | embeddings for the duplicate collapse, and the repository relevance filter (`gpt-5-mini`, D65). In **both** places, same reason as above. Unset, the duplicate phase still runs its free passes but the cosine gate never fires and `dedupe.coverage` is 0, and the relevance filter fails *open* so the releases leg quietly watches the ungated star ranking — the deploy goes green with half of each feature off. `alerts.dedupe_unavailable` and `alerts.repo_filter_unavailable` are what say so |
-| `GITHUB_TOKEN` | the GitHub leg. In the workflow the secret is named `HARVEST_GITHUB_TOKEN`, because Actions reserves `GITHUB_*` |
+| `GITHUB_TOKEN` | the releases leg (and the GitHub leg, if switched back on). In the workflow the secret is named `HARVEST_GITHUB_TOKEN`, because Actions reserves `GITHUB_*` |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
 | `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the operator sign-in, API only — see below |
 
@@ -310,7 +308,8 @@ for the replay over the whole corpus that chose it.
 ### The register
 
 `/register` browses the people the system tracks — 4,941 across seven labs, from
-paper bylines and GitHub commit history — and leads with the thing that falls
+paper bylines and GitHub commit history (the commit-history leg is switched off
+since D84, so that side is as of its last run) — and leads with the thing that falls
 out of it: **possible researcher moves**.
 
 The register keeps one record per (lab, person) and refuses to merge a name
