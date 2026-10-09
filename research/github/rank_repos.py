@@ -20,11 +20,12 @@ That date has to be *fetched*, never inferred: "no commit before X" means only
 `openai/CLIP` (2020) as created in 2026. The error is not noise, it lands on
 precisely the famous quiet repositories stars float to the top.
 
-Input is `raw_github_repos.payload` -- the bronze layer the github leg already
-maintains, which carries the star count, the description, `created_at` and the
-commits, all refreshed from the org listing on every run. Nothing here reads a
-file or the network, so the ranking is a pure function of what is in the
-database (D31: the deployed container has no disk).
+Input is one payload per repository carrying `stars`, `description` and
+`created_at`. The releases leg builds these from a live org listing
+(`adapters._listing_fields`); it used to overlay them onto
+`raw_github_repos`, which tied the watch list to the github leg (D84). Nothing
+here reads a file or the network, so the ranking is a pure function of what it
+is handed.
 """
 
 from __future__ import annotations
@@ -69,7 +70,7 @@ def is_mirror(description: str | None) -> bool:
 
 
 def row(org: str, name: str, payload: dict, cfg: dict, now: datetime) -> dict:
-    """Build one ranked row from a repository's bronze payload.
+    """Build one ranked row from a repository's listing fields.
 
     Deliberately thin. An earlier version carried the activity evidence too --
     commits, human commits, bot commits, distinct authors, last commit -- so a
@@ -81,7 +82,7 @@ def row(org: str, name: str, payload: dict, cfg: dict, now: datetime) -> dict:
     Args:
         org: GitHub organisation login.
         name: Repository name.
-        payload: `raw_github_repos.payload` with the live listing overlaid.
+        payload: The listing fields for one repository.
         cfg: Parsed config/repo_signals.yaml.
         now: The instant the ranking is computed against.
 
@@ -91,7 +92,7 @@ def row(org: str, name: str, payload: dict, cfg: dict, now: datetime) -> dict:
     """
     created = payload.get("created_at")
     if not created:
-        # A repository absent from the live listing overlay has no date. Saying
+        # A listing entry with no `created_at` has no date. Saying
         # so is honest; guessing from the first commit in the window would mark
         # every dormant famous repository as new, which is the failure this cut
         # exists to avoid.
@@ -120,8 +121,7 @@ def rank(repos: list[tuple[str, str, dict]], cfg: dict,
     stable across runs; nothing about commit volume enters the comparison.
 
     Args:
-        repos: `(org, repo, payload)` triples, typically from
-            `raw_github_repos`.
+        repos: `(org, repo, payload)` triples.
         cfg: Parsed config/repo_signals.yaml.
         now: The instant to rank against; defaults to now.
 

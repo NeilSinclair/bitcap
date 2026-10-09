@@ -8948,3 +8948,46 @@ reviewers with credentials; now it is anyone with the link.
 - Branding: the UI, README and the brief PDF are done. The repo, package, CLI
   and service names are still `bitcap`, and `.claude/CLAUDE.md`, `docs/` and
   `config/holdings.yaml` still name the fund.
+
+## D84 — The github leg is off, and releases no longer depends on it (2026-10-09)
+
+**Decision.** `enabled.github: false`. The releases leg ranks each org's
+repositories from its own live listing instead of from `raw_github_repos`.
+
+**What it was doing.** `fetch_releases` already fetched a live listing for
+stars and `created_at`, then kept only repositories that also had a row in
+`raw_github_repos`, and refused to run when that table was empty for the org.
+Only the github leg fills that table. So a repository created since that leg
+last ran was not watched whatever its stars, and a rebuilt database failed
+every releases source on its first firing.
+
+**Why it was there.** The ranking was first computed from bronze alone (D31: no
+disk, so bronze was the only input). The live listing was added later to fix
+frozen star counts, and the bronze filter was left behind. `rank_repos.row`
+reads `stars`, `description` and `created_at`, all three from the listing.
+
+**Why switch off rather than delete (Neil).** Smallest change; the leg can be
+turned back on.
+
+**Consequences.**
+- The Register page's GitHub side is frozen as of the leg's last run. Paper
+  bylines still update.
+- The first firing after this can promote repositories the github leg never
+  walked into an org's top 10: up to `releases_backfill` (5) documents and one
+  relevance judgement each.
+- `GET /api/pipeline/legs` lists live legs only, so the run picker does not
+  offer a leg the worker would refuse.
+- `raw_github_repos`, `fetch_github`, `register.load_github*` and the
+  `research/github` scripts are untouched.
+- `POST /api/pipeline/run` refuses a switched-off leg with 400, rather than
+  claiming the slot and reporting a firing that fetched nothing as succeeded.
+
+**Known open (from review).**
+- `source_down` and `/api/health` filter on the per-source `disabled` flag, not
+  on `enabled`. A leg switched off while a source sits at the failure threshold
+  would re-raise its alert every firing for ever. Checked on the hosted
+  database on 2026-10-09: all 8 github sources are at 0 failures, so it does
+  not bite here. It would for the next leg switched off mid-outage.
+- `research/github/label_repos.py` still builds the bronze-filtered population
+  D65 was measured on, and `research/corpus/first_mention.py`'s CLI report
+  ranks `raw_github_repos` directly. Both are offline scripts and now frozen.

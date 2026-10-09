@@ -72,6 +72,9 @@ budget:
 # cron to a weekly one, and every 3rd weekly firing is a three-week-old commit
 # picture. The 14 minutes no longer matters: it is once a week, on a runner
 # with no request waiting on it.
+#
+# MOOT SINCE D84: the github leg is switched off in `enabled` below, which
+# outranks cadence. The paragraphs above apply only if it is switched back on.
 # The kill switch. A leg set false is not fetched, not landed and not spent on
 # -- including rows it ingested on earlier firings, which stay in bronze and
 # would otherwise keep being classified. Separate from `cadence` because
@@ -79,6 +82,11 @@ budget:
 # the line to flip at 2am without reading any Python. It outranks cadence and
 # an explicit --legs. A leg absent from this map defaults to on.
 enabled:
+  github: false      # OFF since D84. The commit-history walk that built the
+                     # people register is no longer wanted. The code, the
+                     # stored people and the Register page all stay; nothing
+                     # else depends on this leg now that releases ranks from
+                     # its own live listing.
   releases: true     # GitHub release notes as documents. Newest leg, and the
                      # one most likely to be switched off after a look at the
                      # output.

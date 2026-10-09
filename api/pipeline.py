@@ -54,13 +54,13 @@ from app.runs import STALE_RUN_HOURS, running_run  # noqa: F401 -- re-exported f
 # counter, or clicking the button would silently skip the GitHub leg's turn.
 KIND = "manual"
 
-# Human-facing copy for the four checkboxes. Kept here rather than in the
+# Human-facing copy for the run picker's checkboxes. Kept here rather than in the
 # frontend so the page cannot drift out of step with what the backend accepts.
 _LEG_NOTES = {
     "announcements": "Lab blogs and newsrooms. The insight stream the digest is built from.",
     "papers": "arXiv and lab publications, with byline extraction for the people register.",
     "github": "Commit history across each lab's orgs. The slow one — around 14 minutes.",
-    "releases": "Release notes from each lab's watched repositories. Runs after GitHub, which supplies the repository list.",
+    "releases": "Release notes from each lab's top-starred repositories, ranked from a live listing of the org.",
     "posts": "X posts from the handles in the people register. Billed per post read, so it asks only for what is new.",
     "drift": "Re-scores 20 gold articles and compares. Costs about $0.75 every time.",
 }
@@ -187,7 +187,10 @@ def build_router(engine: Engine) -> APIRouter:
     def list_legs() -> list[dict]:
         """The checkboxes, with how many sources each one covers."""
         out = []
-        for leg in LEGS:
+        # Live legs, not LEGS: a leg switched off in config/pipeline.yaml is
+        # refused by the worker whatever is ticked, so offering it would be a
+        # checkbox that silently does nothing.
+        for leg in worker.live_legs(worker.load_config()):
             sources = load_sources(legs=(leg,))
             out.append({
                 "id": leg,
@@ -206,12 +209,20 @@ def build_router(engine: Engine) -> APIRouter:
         """Start a firing and return immediately with its run id.
 
         Raises:
-            HTTPException: 400 on an unknown leg or an empty selection; 409 when
+            HTTPException: 400 on an unknown or switched-off leg or an empty
+                selection; 409 when
                 a run is already in flight.
         """
         unknown = set(body.legs) - set(LEGS)
         if unknown:
             raise HTTPException(400, f"unknown leg(s): {sorted(unknown)}")
+        # The worker drops a disabled leg silently (`enabled` outranks an
+        # explicit selection), so a run asked for only that leg would claim the
+        # slot, fetch nothing and report success.
+        off = set(body.legs) - set(worker.live_legs(worker.load_config()))
+        if off:
+            raise HTTPException(
+                400, f"leg(s) switched off in config/pipeline.yaml: {sorted(off)}")
         if not body.legs and not body.drift:
             raise HTTPException(400, "select at least one leg")
 

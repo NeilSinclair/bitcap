@@ -19,8 +19,9 @@ STATS = {"seen": 0, "kept": 0, "truncated": 0, "empty": 0,
          "drafts": 0, "reached_cursor": True}
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import func, select
 
+from app import models as m
 from app.pipeline import adapters
 from app.pipeline.registry import Source
 
@@ -693,15 +694,6 @@ class TestReleasesAdapter:
         return Source(leg="releases", id=org, label=org, stage=4, enabled=True,
                       config={"org": org, "lab": lab})
 
-    def stored(self, session, repo, stars=10, commits=None, org="xai-org"):
-        from app import models as m
-
-        session.add(m.RawGithubRepo(
-            org=org, repo=repo, pushed_at="2026-08-01T00:00:00Z",
-            payload={"total": 0, "commits": commits or [], "stars": stars},
-            content_hash="h"))
-        session.flush()
-
     def in_corpus(self, session, repo, org="xai-org"):
         """Put one release for `repo` in bronze.
 
@@ -720,7 +712,7 @@ class TestReleasesAdapter:
         session.flush()
 
     def listing(self, monkeypatch, entries):
-        """Stand in for the live REST listing the leg overlays onto bronze."""
+        """Stand in for the live REST listing the leg ranks from."""
         import harvest_github
 
         monkeypatch.setattr(harvest_github, "load_token", lambda: "token")
@@ -743,21 +735,39 @@ class TestReleasesAdapter:
                 "lab": lab, "date": published[:10], "tag": "v1",
                 "published_at": published}
 
-    def test_an_empty_bronze_raises_rather_than_reporting_no_releases(
-            self, session, monkeypatch):
-        """Nothing downstream can tell "the github leg has not run" from "this
-        org ships nothing" -- both are an empty leg."""
-        self.listing(monkeypatch, [])
-        with pytest.raises(RuntimeError, match="raw_github_repos"):
-            adapters.fetch_releases(self.release_source(), session=session)
+    def test_a_repo_the_github_leg_never_walked_is_watched(self, session,
+                                                           monkeypatch):
+        """The regression test for D84.
 
-    def test_the_watch_list_is_ranked_by_live_stars_not_bronze(self, session,
-                                                               monkeypatch):
-        """Bronze's star count is only as fresh as the last history walk, and
-        the github leg runs at cadence 3. A repository that stops being
-        committed to would rank for ever on a frozen number."""
-        self.stored(session, "quiet", stars=1)
-        self.stored(session, "loud", stars=999)
+        The ranking used to be filtered to repositories present in
+        `raw_github_repos`, a table only the github leg fills. A repository
+        created since that leg last ran was invisible here whatever its stars,
+        and against an empty table the source refused to run at all. Nothing
+        reported either: an unwatched repository looks like one that shipped
+        nothing.
+        """
+        assert session.scalar(select(func.count()).select_from(m.RawGithubRepo)) == 0
+        self.listing(monkeypatch, [self.listed_repo("brand-new", 50_000)])
+        seen = []
+        self.released(monkeypatch,
+                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
+
+        result = adapters.fetch_releases(self.release_source(), session=session)
+
+        assert seen == ["brand-new"]
+        assert result.watermark["repos_watched"] == 1
+
+    def test_stored_commit_history_does_not_decide_what_is_watched(self, session,
+                                                                   monkeypatch):
+        """The other direction: a stale row in `raw_github_repos` neither adds
+        a repository to the watch list nor lends it a star count."""
+        session.add(m.RawGithubRepo(
+            org="xai-org", repo="gone", pushed_at="2026-08-01T00:00:00Z",
+            payload={"total": 0, "commits": [], "stars": 999}, content_hash="h"))
+        session.add(m.RawGithubRepo(
+            org="xai-org", repo="quiet", pushed_at="2026-08-01T00:00:00Z",
+            payload={"total": 0, "commits": [], "stars": 1}, content_hash="h"))
+        session.flush()
         self.listing(monkeypatch, [self.listed_repo("quiet", 500_000),
                                    self.listed_repo("loud", 2)])
         seen = []
@@ -767,33 +777,16 @@ class TestReleasesAdapter:
         adapters.fetch_releases(self.release_source(), session=session)
         assert seen == ["quiet", "loud"]
 
-    def test_a_repo_absent_from_the_live_listing_is_not_watched(self, session,
-                                                                monkeypatch):
-        """Deleted, renamed, or pushed outside the window: bronze still holds
-        the row, and fetching releases for it would 404 every firing."""
-        self.stored(session, "gone", stars=999)
-        self.stored(session, "here", stars=1)
-        self.listing(monkeypatch, [self.listed_repo("here", 1)])
-        seen = []
-        self.released(monkeypatch,
-                      lambda org, repo, *a: seen.append(repo) or ([], STATS))
-
-        adapters.fetch_releases(self.release_source(), session=session)
-        assert seen == ["here"]
-
-    def test_an_empty_listing_against_non_empty_bronze_fails_the_source(
-            self, session, monkeypatch):
+    def test_an_empty_listing_fails_the_source(self, session, monkeypatch):
         """The API failing to answer and an org going quiet produce the same
-        empty result. Bronze knowing about repositories is what separates
-        them, and a failed source is recorded and escalated where a quiet week
+        empty result. Every tracked org has repositories, so empty is read as a
+        failure: a failed source is recorded and escalated where a quiet week
         is not."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [])
         with pytest.raises(RuntimeError, match="listing came back empty"):
             adapters.fetch_releases(self.release_source(), session=session)
 
     def test_the_cursor_comes_from_the_watermark(self, session, monkeypatch):
-        self.stored(session, "grok", stars=10)
         self.in_corpus(session, "grok")
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         seen = {}
@@ -812,7 +805,6 @@ class TestReleasesAdapter:
         """The orchestrator persists this. On a container with no disk it is
         the only thing that stops every firing re-fetching the same backfill
         for ever while looking healthy."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
                       lambda *a: ([self.item("grok")], STATS))
@@ -825,8 +817,6 @@ class TestReleasesAdapter:
         """The watermark replaces the stored one wholesale, so a repository
         with nothing new this run must still appear in it or its cursor is
         lost and it re-backfills."""
-        self.stored(session, "a", stars=20)
-        self.stored(session, "b", stars=10)
         self.in_corpus(session, "b")
         self.listing(monkeypatch, [self.listed_repo("a", 20),
                                    self.listed_repo("b", 10)])
@@ -840,11 +830,9 @@ class TestReleasesAdapter:
         assert result.watermark["cursors"]["b"] == "2026-01-01T00:00:00Z"
 
     def test_one_dead_repo_does_not_take_out_the_org(self, session, monkeypatch):
-        """A repository renamed since bronze last saw it raises a 404 that
+        """A repository renamed since it was listed raises a 404 that
         `_call` does not retry. Letting it propagate discards every release
         already fetched, advances no cursor, and repeats every firing."""
-        self.stored(session, "dead", stars=20)
-        self.stored(session, "live", stars=10)
         self.listing(monkeypatch, [self.listed_repo("dead", 20),
                                    self.listed_repo("live", 10)])
 
@@ -859,7 +847,6 @@ class TestReleasesAdapter:
         assert any("404" in f for f in result.watermark["repo_failures"])
 
     def test_items_carry_the_lab_id_not_the_org_login(self, session, monkeypatch):
-        self.stored(session, "grok", stars=10, org="anthropics")
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda org, repo, token, lab, *a: (
             [self.item("grok", lab=lab)], STATS))
@@ -871,7 +858,6 @@ class TestReleasesAdapter:
     def test_truncation_is_surfaced_on_the_watermark(self, session, monkeypatch):
         """A cap that drops documents quietly reads as full coverage; the
         watermark is where the ops view can see it."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda *a: ([], {**STATS, "truncated": 7}))
 
@@ -893,8 +879,6 @@ class TestReleasesAdapter:
         monkeypatch.setattr(repo_relevance, "judge", lambda session, row, config: (
             {"relevant": row["repo"] != "mujoco", "reason": "a physics simulator"},
             0.0007, None))
-        self.stored(session, "grok", stars=20)
-        self.stored(session, "mujoco", stars=30)
         self.listing(monkeypatch, [self.listed_repo("grok", 20),
                                    self.listed_repo("mujoco", 30)])
         self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
@@ -916,7 +900,6 @@ class TestReleasesAdapter:
 
         monkeypatch.setattr(repo_relevance, "judge", lambda session, row, config: (
             {"relevant": True, "reason": "r"}, 0.0007, None))
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
 
@@ -927,7 +910,6 @@ class TestReleasesAdapter:
     def test_nothing_is_written_to_disk(self, session, monkeypatch, tmp_path):
         """The whole reason for the port: the deployed container has no disk,
         and state kept there resets to the image copy every firing."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
                       lambda *a: ([self.item("grok")], STATS))
@@ -946,7 +928,6 @@ class TestReleasesAdapter:
         """
         from app import models as m
 
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
                       lambda *a: ([self.item("grok")], STATS))
@@ -963,7 +944,6 @@ class TestReleasesAdapter:
         so the next one refetches. The url-keyed upsert has to absorb that."""
         from app import models as m
 
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda *a: ([self.item("grok")], STATS))
 
@@ -977,8 +957,6 @@ class TestReleasesAdapter:
         Reported as a success it would reset `consecutive_failures` to zero
         every firing, so `source_down` could never fire and the leg would stay
         dead behind a green row."""
-        self.stored(session, "a", stars=20)
-        self.stored(session, "b", stars=10)
         self.listing(monkeypatch, [self.listed_repo("a", 20),
                                    self.listed_repo("b", 10)])
         self.released(monkeypatch, lambda *a: (_ for _ in ()).throw(
@@ -989,8 +967,6 @@ class TestReleasesAdapter:
 
     def test_some_repos_failing_does_not_fail_the_source(self, session,
                                                          monkeypatch):
-        self.stored(session, "dead", stars=20)
-        self.stored(session, "live", stars=10)
         self.listing(monkeypatch, [self.listed_repo("dead", 20),
                                    self.listed_repo("live", 10)])
 
@@ -1009,7 +985,6 @@ class TestReleasesAdapter:
         and uncounted -- `truncated` only counts what this call saw and
         dropped. Discarding the flag made that indistinguishable from a clean
         run."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch,
                       lambda *a: ([], {**STATS, "reached_cursor": False}))
@@ -1034,7 +1009,6 @@ class TestReleasesAdapter:
     def test_cursors_against_an_empty_corpus_trigger_a_backfill(
             self, session, monkeypatch):
         """The outage itself: a cursor claiming documents that no longer exist."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         seen = {}
 
@@ -1052,7 +1026,6 @@ class TestReleasesAdapter:
     def test_a_healthy_run_keeps_its_cursors(self, session, monkeypatch):
         """The expensive false positive: re-backfilling every firing because
         the guard reads the wrong signal."""
-        self.stored(session, "grok", stars=10)
         self.in_corpus(session, "grok")
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         seen = {}
@@ -1072,8 +1045,6 @@ class TestReleasesAdapter:
             self, session, monkeypatch):
         """Narrowness. Losing *some* rows is a different fault, and silently
         re-backfilling would hide it rather than surface it."""
-        self.stored(session, "grok", stars=20)
-        self.stored(session, "grok-prompts", stars=10)
         self.in_corpus(session, "grok")           # one present, one missing
         self.listing(monkeypatch, [self.listed_repo("grok", 20),
                                    self.listed_repo("grok-prompts", 10)])
@@ -1095,7 +1066,6 @@ class TestReleasesAdapter:
     def test_a_new_org_never_reaches_the_guard(self, session, monkeypatch):
         """No cursors and no corpus is a first run, not a recovery, and must
         not be reported as one."""
-        self.stored(session, "grok", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 10)])
         self.released(monkeypatch, lambda *a: ([], STATS))
 
@@ -1106,8 +1076,6 @@ class TestReleasesAdapter:
             self, session, monkeypatch):
         """A large backfill is indistinguishable from a busy week in the item
         count alone. The operator has to be told the leg recovered."""
-        self.stored(session, "grok", stars=20)
-        self.stored(session, "grok-prompts", stars=10)
         self.listing(monkeypatch, [self.listed_repo("grok", 20),
                                    self.listed_repo("grok-prompts", 10)])
         self.released(monkeypatch, lambda *a: ([], STATS))
