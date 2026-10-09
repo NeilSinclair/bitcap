@@ -1,7 +1,8 @@
 """FastAPI service for the Frontier Lab Intelligence frontend.
 
-Reading is public: every GET answers without a credential, because the site is
-a portfolio piece anyone with the link may browse.
+Reading is public: every GET over the corpus answers without a credential,
+because the site is a portfolio piece anyone with the link may browse. The one
+gated GET is `/api/auth/me`, which is about the caller.
 
 **Every route that is not a GET requires a session token** (`api/auth.py`),
 apart from `/api/auth/login` itself. That is `/api/pipeline/run`, which starts a

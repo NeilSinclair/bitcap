@@ -142,6 +142,62 @@ class TestEveryWriteIsGated:
         assert TestClient(api_main.app).get("/api/health").status_code == 200
 
 
+class TestTheProbeLeavesTheDatabaseAsleep:
+    """The silent failure: a free database tier exhausted mid-month.
+
+    The uptime monitor and the platform's health check hit one path every few
+    minutes for as long as the API is up. If that path queries the database, a
+    scale-to-zero Postgres never suspends. Nothing errors until the compute
+    allowance runs out and the site goes dark (D83).
+    """
+
+    def _app(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'probe.db'}")
+        monkeypatch.setenv("SKIP_SCHEMA_SYNC", "1")
+        import importlib
+
+        from api import main as api_main
+        importlib.reload(api_main)
+        return api_main
+
+    def test_ping_never_opens_a_connection(self, monkeypatch, tmp_path):
+        from sqlalchemy import event
+
+        api_main = self._app(monkeypatch, tmp_path)
+        checkouts = []
+        event.listen(api_main.engine, "checkout", lambda *a: checkouts.append(1))
+
+        assert TestClient(api_main.app).get("/api/ping").json() == {"ok": True}
+        assert not checkouts, "/api/ping touched the database"
+
+    def test_the_probe_itself_would_notice_a_query(self, monkeypatch, tmp_path):
+        """Guards the test above: the listener does fire for a route that queries."""
+        from sqlalchemy import event
+
+        api_main = self._app(monkeypatch, tmp_path)
+        create_all(api_main.engine)
+        checkouts = []
+        event.listen(api_main.engine, "checkout", lambda *a: checkouts.append(1))
+
+        TestClient(api_main.app).get("/api/health")
+        assert checkouts
+
+    def test_the_platform_health_check_points_at_ping(self):
+        import yaml
+
+        blueprint = yaml.safe_load(
+            (Path(__file__).parent.parent / "render.yaml").read_text(encoding="utf-8"))
+        api = next(s for s in blueprint["services"] if s["name"] == "bitcap-api")
+        assert api["healthCheckPath"] == "/api/ping"
+
+    def test_pooled_connections_are_checked_before_use(self):
+        """A suspended database drops idle connections; the next request must
+        reconnect rather than fail on a dead one."""
+        from app.db import get_engine
+
+        assert get_engine("sqlite://").pool._pre_ping is True
+
+
 class TestTheGateOnPipelineRoutes:
     def test_starting_a_run_is_401_without_a_token(self, client):
         assert client.post("/api/pipeline/run", json={"legs": ["announcements"]}).status_code == 401

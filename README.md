@@ -276,8 +276,8 @@ in the Render dashboard for `bitcap-api`. The password itself is never stored:
 `AUTH_PASSWORD_HASH` is a salted scrypt hash, and rotating `AUTH_SECRET` logs
 every session out.
 
-Every GET is public. Every other route requires a bearer token, except the login
-itself; `tests/test_api_pipeline.py` walks the route table and fails if a write
+Every GET over the corpus is public. Every other route requires a bearer token,
+except the login itself; `tests/test_api_pipeline.py` walks the route table and fails if a write
 route is ever added without the gate. The greyed-out buttons in the frontend are
 ergonomics — the site is a static export, so its HTML is public either way; the
 guarantee is that the API returns 401 without a token.

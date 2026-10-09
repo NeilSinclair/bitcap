@@ -118,9 +118,9 @@ def window_for(at: datetime, config: dict) -> tuple[datetime, datetime]:
     window `[A, B]` selects the days `A+1 .. B` — the end date is *included* and
     the start date is not. The period ending at the most recent grid boundary
     therefore has today as its last day, and at a 24-hour width today is its
-    ONLY day. The 03:00 cron would publish an edition about a day three hours
-    old, which is also the day its own ingestion has barely reached: render.yaml
-    fires at 03:00 UTC "after the US-hours announcement window has closed", and
+    ONLY day. The 03:00 firing would publish an edition about a day three hours
+    old, which is also the day its own ingestion has barely reached: it fires
+    at 03:00 UTC, after the US-hours announcement window has closed, and
     the articles that lands are dated *yesterday*. The edition systematically
     excluded what the firing had just harvested.
 
@@ -438,7 +438,7 @@ def build(
     # They cannot be one sort, because `max_items` cuts between them. Sorting
     # by date before the cut fills the edition with whatever is most recent and
     # drops a higher-scoring launch from earlier in the window. That is a real
-    # loss on the live view, whose `preview_window_hours` spans a week; on a
+    # loss on the live view, whose `preview_window_hours` spans two weeks; on a
     # 24-hour published edition the two sorts nearly agree, and the ordering
     # still has to be right there because both read this one function.
     # So the edition is chosen on merit and then read in the order a reader

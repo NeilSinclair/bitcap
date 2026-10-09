@@ -8913,6 +8913,14 @@ reviewers with credentials; now it is anyone with the link.
 - `cadence.github` 3 → 1. Every 3rd weekly firing is a three-week-old picture.
 - `tests/test_api_pipeline.py` now asserts both halves: no write route answers
   without a token, and no read route refuses a visitor.
+- The workflow checks out `deployment`, not the default branch. A schedule
+  fires from the default branch, which is `deployment-dev`; unpinned, untested
+  work would migrate the hosted database and spend money every Thursday. Found
+  in review.
+- `preview_window_hours` 168 → 336. The live view rolls with the clock while
+  the corpus moves weekly, so a 7-day window drained to the firing day alone.
+  Twice the firing interval, pinned against the workflow's cron by
+  `test_the_live_view_spans_two_weekly_firings`. Found in review.
 
 **Known open.**
 - A run started from the button executes in a thread on a free instance
@@ -8924,6 +8932,12 @@ reviewers with credentials; now it is anyone with the link.
 - `alerts.source_down_runs: 3` now means three weeks, not three nights. Unchanged.
 - `budget.per_month_usd: 250` was sized for a reimbursed budget. Unchanged.
 - GitHub disables the schedule after 60 days without repository activity.
+- From the review, not fixed: a refused firing still exits 0, so a corpse
+  younger than two hours costs a silent week; `posts_watermark_stalled`'s 7-day
+  threshold now equals one firing interval; the login rate limit is one shared
+  bucket behind Render's proxy; run errors and tracebacks are public; the
+  workflow's secrets are job-wide; a wrong password reloads the page rather
+  than showing an error.
 - Branding: the UI, README and the brief PDF are done. The repo, package, CLI
   and service names are still `bitcap`, and `.claude/CLAUDE.md`, `docs/` and
   `config/holdings.yaml` still name the fund.

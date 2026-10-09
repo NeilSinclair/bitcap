@@ -20,9 +20,8 @@ name: pipeline
 
 on:
   schedule:
-    # Thursday 03:00 UTC. Thursday because the digest's period grid is anchored
-    # on the Unix epoch, which was one (app/digest.py EPOCH), so a firing just
-    # after Thursday midnight closes a whole week of daily editions.
+    # Thursday 03:00 UTC. 03:00 so the day that has just closed is complete
+    # (D80); the weekday is arbitrary while editions are daily.
     - cron: "0 3 * * 4"
   workflow_dispatch:
     inputs:
@@ -54,7 +53,14 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.HARVEST_GITHUB_TOKEN }}
       X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
     steps:
+      # `deployment`, not the default branch. A schedule fires from the default
+      # branch, which here is `deployment-dev` -- where work lands to be tried.
+      # Without this pin, whatever was pushed there on Wednesday migrates the
+      # hosted database and spends money on Thursday. This FILE is still read
+      # from the default branch; only the code it runs is pinned.
       - uses: actions/checkout@v4
+        with:
+          ref: deployment
 
       # Same pin as tests.yml and the Dockerfile.
       - name: Install uv

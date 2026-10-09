@@ -107,7 +107,15 @@ version: 1
 window_hours: 24
 
 # ---------------------------------------------------------------------------
-# preview_window_hours: 168 -- the last 7 days, ending now.
+# preview_window_hours: 336 -- the last 14 days, ending now.
+#
+# WIDENED 168 -> 336 WHEN THE FIRING WENT WEEKLY (D83). The window rolls with
+# the clock but the corpus now only moves on Thursdays, so a 7-day view drained
+# as the week went on: six days after a firing it held the few hours of the
+# firing day and nothing else. Twice the firing interval means the window
+# always contains at least one whole week of ingested days. The argument below
+# was written for 168 under a nightly firing; "a week is the widest span still
+# describable as recent" is the part this overrides, and it is the cost.
 #
 # Rolling, not quantised. A published edition must snap to a grid so that re-runs
 # update one edition rather than issuing several; the preview writes nothing, so
@@ -129,7 +137,7 @@ window_hours: 24
 # Re-derive it if ingestion resumes; the corpus it was chosen against ends
 # 05 Sep. `/api/digests/preview?hours=N` overrides it per request without
 # changing anything published, which is the cheap way to test another width.
-preview_window_hours: 168
+preview_window_hours: 336
 
 investment:
   # A connection at or above this strength is worth a PM's attention. Matches

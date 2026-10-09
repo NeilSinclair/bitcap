@@ -55,8 +55,8 @@ class PipelineRun(Base):
     # records — and cost instrumentation is a graded requirement, not a nicety.
     #
     # A partial unique index rather than a lock or a flag: the manual trigger
-    # (api/pipeline.py) and the nightly cron are separate processes on separate
-    # containers, so nothing in-process can see both. Unique on `status` where
+    # (api/pipeline.py) and the scheduled firing are separate processes on
+    # separate machines, so nothing in-process can see both. Unique on `status` where
     # `status = 'running'` permits any number of succeeded and failed rows and
     # exactly one running one (docs/decisions.md D44).
     __table_args__ = (

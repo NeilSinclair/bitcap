@@ -21,8 +21,8 @@ completes is `succeeded` even with failures underneath it, and those failures
 are escalated by `source_down` after N consecutive runs, not immediately.
 
 **The exit code follows the same rule.** Non-zero means the firing itself broke
-and the platform's own cron alerting should fire. A source being down exits
-zero, because a nightly red cron for a transient outage makes the platform's
+and the scheduler's own failure alerting should fire. A source being down exits
+zero, because a red run for every transient outage makes the scheduler's
 alerting the noisy channel instead of ours.
 
 Which legs run on which firing is `cadence` in config/pipeline.yaml. Skipping a
@@ -74,7 +74,7 @@ class ConcurrentRunRefused(RuntimeError):
     """Raised when a firing will not start because another is in flight.
 
     Not a failure of this firing — nothing broke, and the work will happen on
-    the next one. `main` therefore exits 0: a nightly red cron for a run that
+    the next one. `main` therefore exits 0: a red scheduled run for a firing that
     correctly declined to trample another makes the platform's alerting the
     noisy channel, which is the same reasoning as a dead source (D26).
     """
@@ -89,7 +89,7 @@ def firing_number(session: Session) -> int:
     """Which scheduled firing this is, counting from 1.
 
     Cadence is derived from this rather than from wall-clock dates, so a
-    platform that misses a night does not skip a leg's turn as well.
+    platform that misses a firing does not skip a leg's turn as well.
     """
     done = session.scalar(
         select(func.count()).select_from(m.PipelineRun).where(m.PipelineRun.kind == KIND)
@@ -651,8 +651,8 @@ def main(argv: list[str] | None = None) -> int:
     Returns:
         0 when the firing completed — including one where a source was down,
         which `source_down` escalates rather than the exit code. Non-zero only
-        when the firing itself broke, so the platform's cron alerting stays a
-        signal rather than a nightly red light.
+        when the firing itself broke, so a red scheduled run stays a signal
+        rather than a fixture.
     """
     parser = argparse.ArgumentParser(prog="bitcap-worker", description=__doc__)
     parser.add_argument("--legs", nargs="*", choices=LEGS,
@@ -685,7 +685,8 @@ def main(argv: list[str] | None = None) -> int:
     except ConcurrentRunRefused as exc:
         # Exit 0: nothing broke. Another firing holds the lock and this one
         # correctly stood down; the work happens on the next tick. A non-zero
-        # exit here would page somebody every time a manual run overlapped 3am.
+        # exit here would page somebody every time a manual run overlapped the
+        # schedule.
         print(f"firing skipped — {exc}", file=sys.stderr)
         session.close()
         return 0
