@@ -25,12 +25,9 @@ and the platform's own cron alerting should fire. A source being down exits
 zero, because a nightly red cron for a transient outage makes the platform's
 alerting the noisy channel instead of ours.
 
-Every leg runs on every firing except GitHub, which runs every 3rd. Skipping a
+Which legs run on which firing is `cadence` in config/pipeline.yaml. Skipping a
 *feed* leg is what was rejected: it produces "no new papers" meaning "we did not
 look", which nothing downstream can distinguish from "nothing was published".
-The GitHub leg is not a feed — it re-derives contribution weight over a full
-3-month history, so each run restates the whole picture and a skipped one loses
-nothing, while costing 14 minutes of wall-clock to do it.
 """
 
 from __future__ import annotations
@@ -66,7 +63,7 @@ from app.pipeline import adapters
 from app.pipeline.registry import (CORPUS_LABELS, LEGS, PAPERS_CORPUS, POSTS_CORPUS,
                                    load_sources)
 from app.pipeline.sink import merge_announcements
-from app.runs import tracked, watermarks
+from app.runs import running_run, tracked, watermarks
 from app.transform import transform
 
 CONFIG = Path(__file__).parent.parent.parent / "config" / "pipeline.yaml"
@@ -318,6 +315,10 @@ def run_once(
     firing = firing_number(session)
 
     if run is None:
+        # Reap before claiming. A firing the runner killed (timeout, cancelled
+        # workflow) leaves a `running` row, and nothing else is guaranteed to
+        # look before the next weekly firing is refused because of it.
+        running_run(session)
         run = m.PipelineRun(kind=KIND)
         session.add(run)
         try:

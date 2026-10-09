@@ -78,7 +78,13 @@ version: 1
 # A multiple of 24, necessarily. `_in_window` compares at date resolution, so a
 # grid that does not land on day boundaries disagrees with its own selection.
 #
-# This value does not have to DIVIDE the cron schedule in render.yaml.
+# WEEKLY SINCE D83: the firing is now Thursday 03:00 UTC
+# (.github/workflows/pipeline.yml), and each one backfills the seven daily
+# periods since the last -- exactly `MAX_BACKFILL_PERIODS`, so a missed week
+# loses seven editions for good. The rest of this note describes the daily cron
+# it was written under.
+#
+# This value does not have to DIVIDE the cron schedule.
 # `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
 # publishes each period once and re-publishes it harmlessly on any later firing
 # inside it. Before that quantisation existed the two settings silently

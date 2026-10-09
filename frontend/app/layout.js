@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Frontier Lab Intelligence",
-  description: "BIT Capital — frontier lab signal for the investment and AI teams.",
+  description: "Frontier lab signal, scored for an investment team and an AI engineering team.",
 };
 
 export default function RootLayout({ children }) {

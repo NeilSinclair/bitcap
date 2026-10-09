@@ -14,7 +14,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Gate, apiFetch, signOut } from "../auth";
+import { SessionButton, apiFetch } from "../auth";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -134,7 +134,7 @@ function RegisterView() {
             <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+            <SessionButton />
           </div>
         </div>
 
@@ -247,9 +247,5 @@ function RegisterView() {
 }
 
 export default function Register() {
-  return (
-    <Gate>
-      <RegisterView />
-    </Gate>
-  );
+  return <RegisterView />;
 }

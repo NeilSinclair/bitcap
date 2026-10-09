@@ -66,7 +66,12 @@ budget:
 # GitHub re-derives contribution weight over a full 3-month history, so every
 # run restates the whole picture and a skipped one loses nothing. It is also the
 # only leg that costs 14 minutes of wall-clock (2,074 repos, measured run 12).
-# Every 3rd firing keeps the history intact and the nightly run short.
+# Every 3rd firing kept the history intact and the nightly run short.
+#
+# WEEKLY SINCE D83, so GitHub is back to 1. The firing moved from a nightly
+# cron to a weekly one, and every 3rd weekly firing is a three-week-old commit
+# picture. The 14 minutes no longer matters: it is once a week, on a runner
+# with no request waiting on it.
 # The kill switch. A leg set false is not fetched, not landed and not spent on
 # -- including rows it ingested on earlier firings, which stay in bronze and
 # would otherwise keep being classified. Separate from `cadence` because
@@ -81,7 +86,7 @@ enabled:
 cadence:
   announcements: 1
   papers: 1
-  github: 3
+  github: 1
   releases: 1        # a release is news the day it ships, and the cursor makes
                      # a firing with nothing new cost one API call per repo
   # NIGHTLY, was weekly (7). The old comment argued that a daily firing would

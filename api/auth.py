@@ -9,11 +9,11 @@ those would be machinery serving nobody (docs/decisions.md D39).
 project this size adding `passlib` and `pyjwt` to hash one password and sign one
 token would be carrying a transitive stack for two function calls.
 
-**What this does and does not protect.** The frontend is a static export, so its
-HTML and JavaScript are public files — a login gate in the browser hides the UI,
-it does not secure anything. Every protected route on this API therefore checks
-the token server-side, which is where the guarantee actually lives: without a
-valid token the API returns 401 and the page has nothing to render.
+**What this does and does not protect.** Reading is public; this guards the
+routes that change state — starting a pipeline run, which spends money, and
+acknowledging alerts (docs/decisions.md D83). The frontend is a static export,
+so a greyed-out button there secures nothing. Each of those routes checks the
+token server-side, which is where the guarantee lives.
 
 Generating the hash to put in `AUTH_PASSWORD_HASH`:
 

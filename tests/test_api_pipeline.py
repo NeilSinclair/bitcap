@@ -1,12 +1,12 @@
-"""The manual trigger, and the gate in front of the whole API.
+"""The manual trigger, and the gate in front of everything that writes.
 
 The silent failures this suite exists to catch:
 
-* **A route that forgot `Depends(require_auth)`.** The site is gated so that no
-  data leaves without a token; one route missing its dependency reads fine in a
-  logged-in browser and is wide open to everyone else. `TestEveryRouteIsGated`
-  walks the app's own route table, so a route added next month is covered the
-  day it lands rather than whenever somebody remembers to extend a list.
+* **A write route that forgot `Depends(require_auth)`.** Reading is public, so
+  the gate is now the only thing between a visitor and a firing that spends
+  money. `TestEveryWriteIsGated` walks the app's own route table, so a POST
+  added next month is covered the day it lands rather than whenever somebody
+  remembers to extend a list.
 * **Two runs at once.** A second firing would interleave writes to the same
   corpus file and spend the budget twice. The guard has to hold against a
   concurrent request, not just a polite one.
@@ -37,10 +37,10 @@ from app.db import create_all
 EMAIL = "neil@example.com"
 PASSWORD = "hunter2-but-longer"
 
-# Open by design: the platform probes this before a deploy is live, and a health
-# check that needs a credential fails the deploy on first boot. Everything else
-# must be gated.
-PUBLIC_ROUTES = {"/api/health", "/api/auth/login"}
+# The one non-GET route a visitor may call: it is how a token is obtained.
+PUBLIC_WRITES = {"/api/auth/login"}
+# The one GET that is about the caller rather than the corpus.
+GATED_READS = {"/api/auth/me"}
 
 
 @pytest.fixture()
@@ -75,9 +75,8 @@ def bearer(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-class TestEveryRouteIsGated:
-    def test_no_data_route_answers_without_a_token(self, monkeypatch, tmp_path):
-        """Walks the real app's route table rather than a hand-maintained list."""
+class TestEveryWriteIsGated:
+    def _app(self, monkeypatch, tmp_path):
         monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'gate.db'}")
         monkeypatch.setenv("SKIP_SCHEMA_SYNC", "1")
         monkeypatch.setenv("AUTH_SECRET", "test-secret")
@@ -85,33 +84,51 @@ class TestEveryRouteIsGated:
 
         from api import main as api_main
         importlib.reload(api_main)
+        create_all(api_main.engine)
+        return api_main
 
-        client = TestClient(api_main.app)
-        # `app.openapi()["paths"]`, not `app.routes`. A router mounted with
-        # `include_router` appears in `app.routes` as a single entry whose
-        # `path` is None, so `if not path: continue` silently skipped the whole
-        # `/api/pipeline/*` subtree — this test probed six routes and zero
-        # pipeline routes while claiming to walk them all. The OpenAI schema
-        # flattens included routers, so it sees every path the app serves (D43).
+    def _operations(self, api_main):
+        """Every (METHOD, path) the app serves, from its own route table.
+
+        `app.openapi()["paths"]`, not `app.routes`: a router mounted with
+        `include_router` appears in `app.routes` as a single entry whose `path`
+        is None, which once hid the whole `/api/pipeline/*` subtree from this
+        test while it claimed to walk everything (D43).
+        """
         paths = api_main.app.openapi()["paths"]
         assert any(p.startswith("/api/pipeline/") for p in paths), (
             "the pipeline routes are not being enumerated; this test is blind"
         )
+        return [(method.upper(), path) for path, ops in paths.items() for method in ops
+                if method.upper() in {"GET", "POST", "PUT", "PATCH", "DELETE"}]
 
+    def test_no_write_route_answers_without_a_token(self, monkeypatch, tmp_path):
+        api_main = self._app(monkeypatch, tmp_path)
+        client = TestClient(api_main.app)
+
+        writes = [(m_, p) for m_, p in self._operations(api_main)
+                  if m_ != "GET" and p not in PUBLIC_WRITES]
+        assert ("POST", "/api/pipeline/run") in writes, "the run trigger is not being probed"
         ungated = []
-        for path, operations in paths.items():
-            if path in PUBLIC_ROUTES:
+        for method, path in writes:
+            response = client.request(method, path.replace("{run_id}", "1"), json={})
+            if response.status_code not in (401, 403):
+                ungated.append(f"{method} {path} -> {response.status_code}")
+        assert not ungated, f"write routes answering without a token: {ungated}"
+
+    def test_every_read_route_is_public(self, monkeypatch, tmp_path):
+        """The other half: a GET left behind the login is a blank panel for a visitor."""
+        api_main = self._app(monkeypatch, tmp_path)
+        client = TestClient(api_main.app)
+
+        gated = []
+        for method, path in self._operations(api_main):
+            if method != "GET" or path in GATED_READS:
                 continue
-            # Concrete value for a path parameter; the gate must reject before
-            # the handler ever looks it up.
-            url = path.replace("{run_id}", "1")
-            for method in operations:
-                if method.upper() not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
-                    continue
-                response = client.request(method.upper(), url, json={})
-                if response.status_code not in (401, 403):
-                    ungated.append(f"{method.upper()} {path} -> {response.status_code}")
-        assert not ungated, f"routes answering without a token: {ungated}"
+            response = client.get(path.replace("{run_id}", "1"))
+            if response.status_code in (401, 403, 503):
+                gated.append(f"GET {path} -> {response.status_code}")
+        assert not gated, f"read routes refusing a visitor: {gated}"
 
     def test_health_stays_open_for_the_platform_probe(self, monkeypatch, tmp_path):
         monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'health.db'}")
@@ -126,21 +143,12 @@ class TestEveryRouteIsGated:
 
 
 class TestTheGateOnPipelineRoutes:
-    @pytest.mark.parametrize("method,path", [
-        ("GET", "/api/pipeline/legs"),
-        ("GET", "/api/pipeline/current"),
-        ("GET", "/api/pipeline/run/1"),
-        ("POST", "/api/pipeline/run"),
-    ])
-    def test_401_without_a_token(self, client, method, path):
-        assert client.request(method, path, json={}).status_code == 401
+    def test_starting_a_run_is_401_without_a_token(self, client):
+        assert client.post("/api/pipeline/run", json={"legs": ["announcements"]}).status_code == 401
 
-    def test_a_valid_token_gets_the_legs(self, client, token):
-        response = client.get("/api/pipeline/legs", headers=bearer(token))
-        assert response.status_code == 200
-        assert {leg["id"] for leg in response.json()} == {
-            "announcements", "papers", "github", "releases", "posts", "drift"
-        }
+    @pytest.mark.parametrize("path", ["/api/pipeline/legs", "/api/pipeline/current"])
+    def test_reading_needs_no_token(self, client, path):
+        assert client.get(path).status_code == 200
 
 
 class TestEveryLegIsPresentableInTheUI:
@@ -476,6 +484,22 @@ class TestAStaleRunDoesNotBlockForever:
         response = client.post("/api/pipeline/run", headers=bearer(token),
                                json={"legs": ["announcements"]})
         assert response.status_code == 200
+
+    def test_the_scheduled_worker_reaps_before_it_claims(self, engine, monkeypatch):
+        """A runner killed mid-firing must not cost the next week's firing too.
+
+        The reaper used to run only on the API's paths, so a corpse left by a
+        cancelled workflow blocked the cron until somebody opened the site.
+        """
+        from app.pipeline import worker
+
+        corpse = self._aged(engine, pipeline_api.STALE_RUN_HOURS + 1)
+        monkeypatch.setattr(worker, "_phases", lambda session, run, *a, **kw: (run, {}))
+
+        with Session(engine) as s:
+            run, _ = worker.run_once(s, spend=False, deliver=False)
+            assert run.id != corpse
+            assert s.get(m.PipelineRun, corpse).status == "failed"
 
     def test_reaping_marks_it_failed_so_alerting_can_see_it(self, engine):
         """`alerts.run_failed` keys on status; a silently deleted row alerts nobody."""

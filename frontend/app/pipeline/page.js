@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Gate, apiFetch, signOut } from "../auth";
+import { SessionButton, apiFetch, useSession } from "../auth";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -265,6 +265,7 @@ function PipelineView() {
   const timer = useRef(null);
 
   const isRunning = run?.status === "running";
+  const signedIn = useSession() === "in";
 
   const poll = useCallback(async () => {
     try {
@@ -323,6 +324,8 @@ function PipelineView() {
   }
 
   const nothingSelected = selected.size === 0;
+  // Greyed out for a visitor. The API refuses the POST without a token anyway.
+  const locked = isRunning || nothingSelected || !signedIn;
 
   return (
     <div className="app">
@@ -330,14 +333,13 @@ function PipelineView() {
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px 64px", display: "flex", flexDirection: "column", gap: 32 }}>
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div className="label-bracket">BIT Capital · internal</div>
             <div className="serif" style={{ fontSize: 24, fontWeight: 500 }}>Pipeline</div>
           </div>
           <nav style={{ display: "flex", gap: 8 }}>
             <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
             <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+            <SessionButton />
           </nav>
         </header>
 
@@ -357,7 +359,7 @@ function PipelineView() {
                 key={leg.id}
                 leg={leg}
                 checked={selected.has(leg.id)}
-                disabled={isRunning}
+                disabled={isRunning || !signedIn}
                 onToggle={toggle}
               />
             ))}
@@ -368,23 +370,23 @@ function PipelineView() {
           <button
             className="btn"
             onClick={start}
-            disabled={isRunning || starting || nothingSelected}
+            disabled={locked || starting}
             style={{
               padding: "12px 28px",
-              background: isRunning || nothingSelected ? "var(--bg-3)" : ACCENT,
-              color: isRunning || nothingSelected ? "var(--muted-2)" : "#0d0d0d",
-              borderColor: isRunning || nothingSelected ? "var(--border)" : ACCENT,
-              cursor: isRunning || nothingSelected ? "not-allowed" : "pointer",
+              background: locked ? "var(--bg-3)" : ACCENT,
+              color: locked ? "var(--muted-2)" : "#0d0d0d",
+              borderColor: locked ? "var(--border)" : ACCENT,
+              cursor: locked ? "not-allowed" : "pointer",
             }}
           >
-            {isRunning ? "Run in progress" : starting ? "Starting…" : "Run pipeline"}
+            {isRunning ? "Run in progress" : !signedIn ? "Sign in to run" : starting ? "Starting…" : "Run pipeline"}
           </button>
 
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--muted)" }}>
             <input
               type="checkbox"
               checked={dryRun}
-              disabled={isRunning}
+              disabled={isRunning || !signedIn}
               onChange={() => setDryRun((v) => !v)}
               style={{ accentColor: ACCENT }}
             />
@@ -398,7 +400,7 @@ function PipelineView() {
             note={
               isRunning
                 ? "Updates every few seconds. Closing this tab will not stop it."
-                : "The last run recorded, whether started here or by the nightly cron."
+                : "The last run recorded, whether started here or by the weekly schedule."
             }
           >
             <RunCard run={run} sources={sources} />
@@ -410,9 +412,5 @@ function PipelineView() {
 }
 
 export default function PipelinePage() {
-  return (
-    <Gate>
-      <PipelineView />
-    </Gate>
-  );
+  return <PipelineView />;
 }

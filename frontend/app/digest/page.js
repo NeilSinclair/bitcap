@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Gate, apiFetch, signOut } from "../auth";
+import { SessionButton, apiFetch } from "../auth";
 // The same record the dashboard opens, not a second rendering of it. A digest
 // card is a summary by design; the reader who wants the whole thing should not
 // have to leave the page they live in to get it.
@@ -467,7 +467,7 @@ function DigestView() {
             <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
             <a className="btn btn-ghost" href="/ops/" style={{ padding: "8px 14px", textDecoration: "none" }}>Health</a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+            <SessionButton />
           </div>
         </div>
 
@@ -584,9 +584,5 @@ function DigestView() {
 }
 
 export default function Digest() {
-  return (
-    <Gate>
-      <DigestView />
-    </Gate>
-  );
+  return <DigestView />;
 }

@@ -112,7 +112,11 @@ def get_engine(url: str | None = None) -> Engine:
     Returns:
         SQLAlchemy engine.
     """
-    return create_engine(normalise_url(url) if url else database_url())
+    # pre_ping because a scale-to-zero Postgres drops idle connections when it
+    # suspends; without it the first request after a quiet spell fails on a dead
+    # pooled connection instead of waking the database.
+    return create_engine(normalise_url(url) if url else database_url(),
+                         pool_pre_ping=True)
 
 
 def get_session(engine: Engine) -> Session:

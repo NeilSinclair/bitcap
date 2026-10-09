@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Gate, apiFetch, signOut } from "./auth";
+import { SessionButton, apiFetch } from "./auth";
 // The record, the decoration it needs, and the palette are shared with the
 // digest now — see the header of ./detail for why they stopped living here.
 import {
@@ -227,7 +227,7 @@ function Dashboard() {
               Health
               {systemAlerts ? <span style={{ fontSize: 11 }}>{systemAlerts}</span> : null}
             </a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+            <SessionButton />
           </div>
         </div>
 
@@ -446,9 +446,5 @@ function Dashboard() {
 
 
 export default function Page() {
-  return (
-    <Gate>
-      <Dashboard />
-    </Gate>
-  );
+  return <Dashboard />;
 }

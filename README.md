@@ -1,27 +1,27 @@
 # bitcap — Frontier Lab Intelligence
 
 Tracks frontier AI labs, scores what they publish against a deterministic rule,
-and joins every signal to BIT's portfolio holdings and to AI-engineering
+and joins every signal to a tech fund's portfolio holdings and to AI-engineering
 practice — with a verbatim quote behind every tag.
 
 ## Live
 
-**<https://bitcap-web.onrender.com/>** — the deployed system, running the nightly
-pipeline against managed Postgres.
+**<URL: fill in once deployed>** — the pipeline fires weekly against hosted
+Postgres.
 
-The whole site is behind a single login. That is a deliberate trade-out and not
-an accident of setup: `/pipeline` runs a real firing that spends real money on a
-public URL, and gating only the button while leaving the dashboard open would
-have put the credential check on the wrong side of the thing worth protecting
-(`docs/decisions.md` D39). **Credentials are in the submission email**, not here.
+Built as a take-home case study for a tech-focused investment fund; now a
+portfolio piece. The site is public to read. Starting a pipeline run needs the
+one operator sign-in, because a firing spends real money (`docs/decisions.md`
+D83).
 
-Both services run on Render's `starter` plan, which does not spin down on idle.
-That is a requirement rather than a preference: a firing takes 9–30 minutes and
-runs in a thread on the API instance, so a plan that slept would kill a run
-mid-flight and leave a `running` row that blocks every later firing through the
-concurrency guard. It is the one failure here that code cannot defend against,
-and it is recorded on the service in [`render.yaml`](render.yaml) so the
-constraint travels with the config rather than living in someone's memory.
+It runs entirely on free tiers, and each one has a behaviour worth knowing:
+
+| Piece | Where | Behaviour |
+|---|---|---|
+| Postgres | Neon | Suspends after 5 idle minutes; the first query wakes it. |
+| API | Render free web service | Sleeps after 15 idle minutes, so an uptime monitor pings `/api/ping` — which deliberately does not touch the database. |
+| Dashboard | Render static site | — |
+| Weekly firing | GitHub Actions, [`pipeline.yml`](.github/workflows/pipeline.yml) | GitHub disables the schedule after 60 days without repository activity. |
 
 Where to look first, in the order the brief asks its questions:
 
@@ -31,7 +31,7 @@ Where to look first, in the order the brief asks its questions:
 | `/` | The whole scored corpus — announcements and papers — filterable by band, lab, source and holding |
 | `/register` | Who is tracked — and the four possible researcher moves in it |
 | `/ops` | Can any of the above be trusted: run history, source health, spend, classifier drift |
-| `/pipeline` | Run it yourself |
+| `/pipeline` | The latest run, per source. Signed in, start one |
 
 ## Clone to running
 
@@ -45,8 +45,6 @@ git clone <repo> && cd bitcap
 uv sync                        # env + deps from the committed lockfile
 docker compose up -d           # local Postgres (skip for sqlite fallback)
 cp .env.example .env           # then uncomment DATABASE_URL for the container above
-uv run python -m api.auth      # prints AUTH_PASSWORD_HASH and AUTH_SECRET; paste both
-                               # into .env along with any AUTH_EMAIL
 uv run bitcap-db rebuild       # schema + full load from committed data
 uv run bitcap-db status        # last runs, counts, watermarks, cost
 uv run pytest                  # full test suite
@@ -58,11 +56,9 @@ instead of only the shell that ran this command. `DATABASE_URL` ships commented
 out, so skipping Docker needs no edit at all: that is what selects the sqlite
 fallback.
 
-**The three `AUTH_` values are not optional if you want to see anything.** The
-site is behind a single account and the API fails closed: without them every
-route returns `503 authentication is not configured`, so a rebuilt database
-renders as a blank page rather than an error you can act on. Details, and how to
-rotate them, under [Sign-in](#sign-in) below.
+The three `AUTH_` values in `.env.example` are optional: without them the site
+is fully readable and only the run button stays locked. See
+[Sign-in](#sign-in) below.
 
 `rebuild` needs **no API key**: it loads the committed artifacts — the scored
 announcement corpus (June–Aug 2026), the scored papers corpus (47 papers from
@@ -182,7 +178,7 @@ Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yam
 |---|---|
 | `budget.per_run_usd` / `per_month_usd` | A cron making LLM calls with no ceiling is the one thing that can hurt on a fixed budget. Exceeding it stops classification; ingested data still lands. |
 | `enabled` | The kill switch, one line per leg. `false` means not fetched, not landed, and not classified — including rows the leg ingested on earlier firings, which stay in bronze and would otherwise keep costing money. It outranks `cadence` and an explicit `--legs`. A leg absent from the map is on. |
-| `cadence` | Per leg. A rolling 12-month GitHub window barely moves in a day; re-harvesting nightly is the most expensive thing here in wall-clock. Firing 1 runs everything. |
+| `cadence` | Per leg, as "every Nth firing". All 1 now that the firing is weekly; GitHub was every 3rd while it was nightly. |
 | `alerts.source_down_runs` | One firing down and back up is noise. N in a row is an incident. |
 | `alerts.max_deliveries_per_run` | Everything raised is recorded; only delivery is capped, so a first run over an existing corpus does not fire 135 notifications. |
 
@@ -190,16 +186,21 @@ Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yam
 broken lab does not cost the other six, and the run status and exit code say the
 same thing: a firing that completes exits `0` even with a source down, and
 `source_down` escalates that after N consecutive runs. Non-zero means the firing
-itself broke, so the platform's own cron alerting stays a signal rather than a
-nightly red light.
+itself broke, so a red workflow run stays a signal rather than a weekly fixture.
 
 ## Deploying
 
-One image, two entrypoints — the cron job runs `bitcap-worker`, the web service
-runs uvicorn. The dashboard is neither: it exports to static files and is served
-without a server of its own. [`render.yaml`](render.yaml) declares the database,
-the schedule and both web services; Railway needs the same pieces configured in
-its UI.
+Three pieces, none of them paid:
+
+1. **Database** — any hosted Postgres. Restore a dump or run
+   `DATABASE_URL=... uv run bitcap-db rebuild` against it.
+2. **API and dashboard** — [`render.yaml`](render.yaml) declares both: the API
+   as a free Docker web service, the dashboard as a static export with no
+   server of its own.
+3. **The weekly firing** — [`.github/workflows/pipeline.yml`](.github/workflows/pipeline.yml),
+   Thursday 03:00 UTC, also startable by hand from the Actions tab.
+
+The same image still runs a firing anywhere Docker does:
 
 ```bash
 docker build -t bitcap .
@@ -223,18 +224,17 @@ stored and classified — it does not request the page at all, which beats cachi
 it. What is left on disk is a local convenience for re-running a harvester over
 a window on purpose.
 
-Render cron jobs cannot mount a disk, and the blueprint does not ask for one.
-
-Secrets, none of which are in the repo:
+Secrets, none of which are in the repo. The firing reads its own from GitHub
+Actions secrets; the API needs the same keys only so the run button works:
 
 | Variable | Needed for |
 |---|---|
 | `DATABASE_URL` | everything |
-| `ANTHROPIC_API_KEY` | classification and drift. Needed on **both** `bitcap-worker` and `bitcap-api` — the pipeline tab runs firings from the API service, and without it the gold-set check measures nothing (D45) |
-| `OPENAI_API_KEY` | embeddings for the duplicate collapse, and the repository relevance filter (`gpt-5-mini`, D65). On **both** services, same reason as above. Unset, the duplicate phase still runs its free passes but the cosine gate never fires and `dedupe.coverage` is 0, and the relevance filter fails *open* so the releases leg quietly watches the ungated star ranking — the deploy goes green with half of each feature off. `alerts.dedupe_unavailable` and `alerts.repo_filter_unavailable` are what say so |
-| `GITHUB_TOKEN` | the GitHub leg |
+| `ANTHROPIC_API_KEY` | classification and drift. Needed in **both** the workflow and `bitcap-api` — the pipeline tab runs firings from the API service, and without it the gold-set check measures nothing (D45) |
+| `OPENAI_API_KEY` | embeddings for the duplicate collapse, and the repository relevance filter (`gpt-5-mini`, D65). In **both** places, same reason as above. Unset, the duplicate phase still runs its free passes but the cosine gate never fires and `dedupe.coverage` is 0, and the relevance filter fails *open* so the releases leg quietly watches the ungated star ranking — the deploy goes green with half of each feature off. `alerts.dedupe_unavailable` and `alerts.repo_filter_unavailable` are what say so |
+| `GITHUB_TOKEN` | the GitHub leg. In the workflow the secret is named `HARVEST_GITHUB_TOKEN`, because Actions reserves `GITHUB_*` |
 | `ALERT_WEBHOOK_URL` | only when `alerts.channel` is `webhook` |
-| `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the sign-in — see below |
+| `AUTH_EMAIL` / `AUTH_PASSWORD_HASH` / `AUTH_SECRET` | the operator sign-in, API only — see below |
 
 The two non-secret URLs are a pair, and each is only knowable once the other
 service exists. Deploy the blueprint, then set them from the URLs Render
@@ -245,11 +245,9 @@ assigns and let both services redeploy:
 | `FRONTEND_ORIGIN` | `bitcap-api` | the static site's URL — the API's CORS allow-list. Must not be blank: an empty value overrides the `http://localhost:3000` default and blocks every origin. |
 | `NEXT_PUBLIC_API_URL` | `bitcap-web` | the API's URL. Inlined into the bundle at build time, so a change rebuilds rather than restarts. |
 
-On this deployment those are `https://bitcap-web.onrender.com` and
-`https://bitcap-api.onrender.com` respectively. Because `NEXT_PUBLIC_API_URL` is
-baked in at build time, a frontend change needs a rebuild, not a restart — which
-is also why a new page appears as a 404 on the live site until the static export
-is redeployed.
+Because `NEXT_PUBLIC_API_URL` is baked in at build time, a frontend change needs
+a rebuild, not a restart — which is also why a new page appears as a 404 on the
+live site until the static export is redeployed.
 
 ## Running the web app
 
@@ -265,8 +263,9 @@ cd frontend && npm install && npm run dev           # http://localhost:3000
 
 ### Sign-in
 
-The site is behind a single account, supplied by the environment — there is no
-users table and no signup. Generate the credentials:
+Reading needs no account. One operator account, supplied by the environment,
+unlocks the two things that change state: starting a run and clearing the health
+badge. There is no users table and no signup. Generate the credentials:
 
 ```bash
 uv run python -m api.auth      # prompts for a password, prints the two values
@@ -277,11 +276,11 @@ in the Render dashboard for `bitcap-api`. The password itself is never stored:
 `AUTH_PASSWORD_HASH` is a salted scrypt hash, and rotating `AUTH_SECRET` logs
 every session out.
 
-Every route requires a bearer token except `/api/health`, which stays open
-because it is the platform's deploy probe. The frontend's login screen is
+Every GET is public. Every other route requires a bearer token, except the login
+itself; `tests/test_api_pipeline.py` walks the route table and fails if a write
+route is ever added without the gate. The greyed-out buttons in the frontend are
 ergonomics — the site is a static export, so its HTML is public either way; the
-guarantee is that the API returns 401 without a token and the page has nothing
-to render.
+guarantee is that the API returns 401 without a token.
 
 ### The digest
 
@@ -331,13 +330,14 @@ employment-tier evidence, so every total carries its tier breakdown. See
 
 ### The pipeline tab
 
-`/pipeline` runs the pipeline on demand: tick the legs, press run, watch it
-finish. The run happens in a background thread on the API and takes 9–30
+`/pipeline` shows the latest run to anyone and, signed in, runs the pipeline on
+demand: tick the legs, press run, watch it finish. The run happens in a background thread on the API and takes 9–30
 minutes, so the page polls rather than waiting on a request — closing the tab
 does not stop the run, and reopening it picks the run back up. One run at a
-time, enforced against the database so the nightly cron counts too. Manual runs
+time, enforced against the database so the weekly schedule counts too. Manual runs
 are recorded as `kind: manual` and deliberately do not advance the cadence
-counter that decides when the GitHub leg is due.
+counter. The API instance is a free one, so a long run there can be cut short
+by a restart; the Actions tab's "Run workflow" is the sturdier way to fire.
 
 ## Layout
 

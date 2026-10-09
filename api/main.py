@@ -1,17 +1,18 @@
 """FastAPI service for the Frontier Lab Intelligence frontend.
 
-Mostly read-only: it queries the database `app/` builds. The one exception is
-`/api/pipeline/run`, which starts a firing — the only route here that writes,
-spends money, or takes longer than a request.
+Reading is public: every GET answers without a credential, because the site is
+a portfolio piece anyone with the link may browse.
 
-**Everything except `/api/auth/login` and `/api/health` requires a session
-token** (`api/auth.py`). The frontend is a static export, so its login screen is
-a convenience, not a control; the guarantee is that this service returns 401
-without a token and the page therefore has nothing to render.
+**Every route that is not a GET requires a session token** (`api/auth.py`),
+apart from `/api/auth/login` itself. That is `/api/pipeline/run`, which starts a
+firing and spends money, and `/api/alerts/acknowledge`. The frontend greys those
+controls out for a visitor, but that is a convenience; the guarantee is the 401
+here, and `tests/test_api_pipeline.py` walks the route table to hold it
+(docs/decisions.md D83).
 
-`/api/health` is deliberately open: it is the platform's health check, and a
-deploy that cannot be probed without a credential fails on the first boot.
-It reports pipeline liveness and month-to-date spend, nothing about the labs.
+`/api/ping` touches nothing and is what uptime monitors and the platform's
+health check should hit: a probe that queries the database every few minutes
+keeps a scale-to-zero Postgres awake for the whole month.
 
 Run with:
 
@@ -62,10 +63,7 @@ engine = get_engine()
 if os.environ.get("SKIP_SCHEMA_SYNC", "").lower() not in ("1", "true", "yes"):
     ensure_schema(engine)
 
-# `openapi_url=None` also removes /docs and /redoc, which derive from it. They
-# answered unauthenticated while the docstring above and the README both claimed
-# only /api/health and /api/auth/login were open — route shapes rather than data,
-# but the documentation was wrong, and the honest fix is to make it true (D44).
+# `openapi_url=None` also removes /docs and /redoc, which derive from it.
 # `app.openapi()` the method still works, which is what the route-gate test
 # enumerates.
 app = FastAPI(
@@ -129,7 +127,7 @@ def auth_me(email: str = Depends(require_auth)) -> dict:
 app.include_router(pipeline_api.build_router(engine))
 
 
-@app.get("/api/items", dependencies=[Depends(require_auth)])
+@app.get("/api/items")
 def list_items() -> list[dict]:
     """Every classified document, tags and connections inline.
 
@@ -143,7 +141,7 @@ def list_items() -> list[dict]:
         session.close()
 
 
-@app.get("/api/status", dependencies=[Depends(require_auth)])
+@app.get("/api/status")
 def status() -> dict | None:
     """The most recent pipeline run, for the header's run/cost chip."""
     session = get_session(engine)
@@ -164,7 +162,7 @@ def status() -> dict | None:
         session.close()
 
 
-@app.get("/api/runs", dependencies=[Depends(require_auth)])
+@app.get("/api/runs")
 def runs(limit: int = 20) -> list[dict]:
     """Run history with per-source detail, newest first.
 
@@ -179,7 +177,7 @@ def runs(limit: int = 20) -> list[dict]:
         session.close()
 
 
-@app.get("/api/alerts", dependencies=[Depends(require_auth)])
+@app.get("/api/alerts")
 def alert_feed(kind: str | None = None, limit: int = 50) -> list[dict]:
     """Raised alerts, newest first. `kind` filters to `system` or `content`.
 
@@ -227,7 +225,7 @@ def acknowledge_alerts() -> dict:
         session.close()
 
 
-@app.get("/api/digests", dependencies=[Depends(require_auth)])
+@app.get("/api/digests")
 def digest_feed(kind: str | None = None, limit: int = 20) -> list[dict]:
     """Published digests, newest first — the brief's "read past reports".
 
@@ -247,7 +245,7 @@ def digest_feed(kind: str | None = None, limit: int = 20) -> list[dict]:
         session.close()
 
 
-@app.get("/api/digests/preview", dependencies=[Depends(require_auth)])
+@app.get("/api/digests/preview")
 def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) -> dict:
     """What a digest published right now would say, without publishing it.
 
@@ -290,7 +288,7 @@ def digest_preview(kind: str = digest_mod.INVESTMENT, hours: int | None = None) 
         session.close()
 
 
-@app.get("/api/register", dependencies=[Depends(require_auth)])
+@app.get("/api/register")
 def register_view() -> dict:
     """The people register: totals per lab, evidence tiers, and move candidates.
 
@@ -311,7 +309,7 @@ def register_view() -> dict:
         session.close()
 
 
-@app.get("/api/register/search", dependencies=[Depends(require_auth)])
+@app.get("/api/register/search")
 def register_search(q: str, limit: int = 50) -> list[dict]:
     """People matching `q` by canonical name or by any recorded identity."""
     session = get_session(engine)
@@ -319,6 +317,12 @@ def register_search(q: str, limit: int = 50) -> list[dict]:
         return people_mod.search(session, q, limit=min(max(limit, 1), 200))
     finally:
         session.close()
+
+
+@app.get("/api/ping")
+def ping() -> dict:
+    """Liveness without a database query, for uptime monitors and deploy probes."""
+    return {"ok": True}
 
 
 @app.get("/api/health")
@@ -331,7 +335,7 @@ def health_view() -> dict:
         session.close()
 
 
-@app.get("/api/drift", dependencies=[Depends(require_auth)])
+@app.get("/api/drift")
 def drift_view(prompt_version: str | None = None, limit: int = 30) -> list[dict]:
     """Gold-set agreement over time, oldest first, for the reliability chart.
 
