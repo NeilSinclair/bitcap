@@ -67,7 +67,9 @@ export async function apiFetch(path, options = {}) {
       ...(options.headers || {}),
     },
   });
-  if (response.status === 401) {
+  // Only when a token was sent. A 401 with none is a wrong password on the
+  // login form, and reloading there closed the form without saying why.
+  if (response.status === 401 && token) {
     onUnauthorised();
     throw new Error("session expired");
   }

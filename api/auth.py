@@ -174,6 +174,13 @@ def read_token(token: str, *, now: float | None = None) -> str | None:
 # to grind against and a way to exhaust a small instance with a loop (D44).
 # Successful logins do not count: rate limiting is for guessing, and locking a
 # legitimate operator out of their own tool is the failure mode to avoid.
+#
+# Behind a platform proxy every caller arrives from the proxy's address, so
+# this is in practice ONE bucket for the whole internet. Left that way on
+# purpose (D83): trusting X-Forwarded-For to split it would let a caller mint a
+# fresh bucket per request and remove the bound on guessing. The cost is that
+# a loop of bad logins can 429 the operator too; the Actions "Run workflow"
+# button does not go through here.
 _MAX_ATTEMPTS = 10
 _WINDOW_SECONDS = 300.0
 _attempts: dict[str, list[float]] = {}

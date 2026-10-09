@@ -146,16 +146,18 @@ def _run_in_thread(engine: Engine, run_id: int, legs: tuple[str, ...],
             # ingestion legs", and None would hand the decision back to cadence.
             worker.run_once(session, legs=legs, spend=spend,
                             deliver=spend, drift=drift, run=run)
-        except (Exception, SystemExit):
+        except (Exception, SystemExit) as exc:
             # A thread's exception goes nowhere by default: no request is
             # waiting on it and nothing else will ever see it. Recording it on
             # the row is the only way the browser, or anyone reading the run
             # history later, learns the firing died.
+            # The traceback goes to the log; the row gets the message only,
+            # because `error` is served to anyone by the public read routes.
             traceback.print_exc()
             session.rollback()
             if run is not None and run.status == "running":
                 run.status = "failed"
-                run.error = traceback.format_exc()[-2000:]
+                run.error = f"{type(exc).__name__}: {exc}"[:2000]
                 run.finished_at = datetime.now(timezone.utc)
                 session.commit()
     finally:

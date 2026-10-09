@@ -70,13 +70,16 @@ CONFIG = Path(__file__).parent.parent.parent / "config" / "pipeline.yaml"
 KIND = "scheduled"
 
 
+# `main`'s exit code when the firing stood down for another one. Not 1, so a
+# log reader can tell "did not start" from "broke".
+EXIT_REFUSED = 3
+
+
 class ConcurrentRunRefused(RuntimeError):
     """Raised when a firing will not start because another is in flight.
 
-    Not a failure of this firing — nothing broke, and the work will happen on
-    the next one. `main` therefore exits 0: a red scheduled run for a firing that
-    correctly declined to trample another makes the platform's alerting the
-    noisy channel, which is the same reasoning as a dead source (D26).
+    Nothing broke, but nothing ran either. `main` reports it with
+    :data:`EXIT_REFUSED` so the scheduler shows a skipped week as a failure.
     """
 
 
@@ -336,16 +339,19 @@ def run_once(
     try:
         return _phases(session, run, firing, config, config_path, legs,
                        prompt_version, spend, deliver, stats, drift)
-    except (Exception, SystemExit) as exc:
+    except (Exception, SystemExit, KeyboardInterrupt) as exc:
         # Any failure outside the ETL — the sink, the register load, the
         # classifier, the alerter — must still close the run out. Without this
         # the row stays `running` forever: a corpse that the `run_failed` rule
         # never matches and no operator can distinguish from a firing still in
         # progress. `SystemExit` is included because code under research/ is
         # scripts first and calls `sys.exit()` on missing config; it derives
-        # from BaseException and would otherwise slip past.
+        # from BaseException and would otherwise slip past. `KeyboardInterrupt`
+        # for the same reason: it is what a cancelled or timed-out workflow
+        # sends, and the corpse it left blocked a re-run for two hours.
         session.rollback()
-        run.status, run.error, run.finished_at = "failed", str(exc)[:2000], m.utcnow()
+        run.status, run.finished_at = "failed", m.utcnow()
+        run.error = (str(exc) or type(exc).__name__)[:2000]
         run.stats = {**(run.stats or {}), **stats}
         session.commit()
         raise
@@ -650,9 +656,9 @@ def main(argv: list[str] | None = None) -> int:
 
     Returns:
         0 when the firing completed — including one where a source was down,
-        which `source_down` escalates rather than the exit code. Non-zero only
-        when the firing itself broke, so a red scheduled run stays a signal
-        rather than a fixture.
+        which `source_down` escalates rather than the exit code. 1 when the
+        firing broke, :data:`EXIT_REFUSED` when it stood down for another, so a
+        red scheduled run stays a signal rather than a fixture.
     """
     parser = argparse.ArgumentParser(prog="bitcap-worker", description=__doc__)
     parser.add_argument("--legs", nargs="*", choices=LEGS,
@@ -683,13 +689,13 @@ def main(argv: list[str] | None = None) -> int:
         # cannot refresh, and the summary is the only thing a cron log shows.
         summary = (run.status, run.cost_usd or 0.0)
     except ConcurrentRunRefused as exc:
-        # Exit 0: nothing broke. Another firing holds the lock and this one
-        # correctly stood down; the work happens on the next tick. A non-zero
-        # exit here would page somebody every time a manual run overlapped the
-        # schedule.
+        # Non-zero, and distinct from a broken firing. This used to exit 0, on
+        # the reasoning that the work happens on the next tick. That held when
+        # the next tick was tomorrow; it is now a week away, so a firing that
+        # stood down is a week of nothing ingested and has to be seen.
         print(f"firing skipped — {exc}", file=sys.stderr)
         session.close()
-        return 0
+        return EXIT_REFUSED
     except (Exception, SystemExit):
         traceback.print_exc()
         print("firing FAILED", file=sys.stderr)

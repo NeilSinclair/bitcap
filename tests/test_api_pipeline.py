@@ -393,6 +393,9 @@ class TestTheThreadNeverLeavesARunHanging:
         assert row.status == "failed"
         assert "config is malformed" in row.error
         assert row.finished_at is not None
+        # `error` is served by the public read routes, so it carries the
+        # message and not the stack: no file paths, no source lines.
+        assert "Traceback" not in row.error and 'File "' not in row.error
 
     def test_a_systemexit_is_caught_too(self, engine, monkeypatch):
         """research/ code is scripts first and calls sys.exit on missing config."""

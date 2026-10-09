@@ -30,6 +30,10 @@ on:
         type: boolean
         default: false
 
+# Nothing here pushes, comments or deploys.
+permissions:
+  contents: read
+
 # The database refuses a second `running` row anyway (D44); this stops a second
 # runner from being started only to stand down.
 concurrency:
@@ -43,15 +47,6 @@ jobs:
     # `running` row, which the next firing reaps before it claims its own
     # (app/runs.py `running_run`).
     timeout-minutes: 90
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      # Not GITHUB_TOKEN: Actions reserves that name for its own per-job token,
-      # which is rate-limited far below what the github leg's 2,000 repositories
-      # need. The harvesters read GITHUB_TOKEN, so it is mapped here.
-      GITHUB_TOKEN: ${{ secrets.HARVEST_GITHUB_TOKEN }}
-      X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
     steps:
       # `deployment`, not the default branch. A schedule fires from the default
       # branch, which here is `deployment-dev` -- where work lands to be tried.
@@ -72,11 +67,30 @@ jobs:
       - name: Install
         run: uv sync --frozen
 
+      # Secrets are on this step alone, so the actions and the dependency
+      # install above never see them.
+      #
       # An unset secret expands to an empty string, and an empty DATABASE_URL
       # makes `app/db.py` fall back to a local sqlite file: the firing would
-      # succeed against a database that is thrown away with the runner.
-      - name: Refuse to run without a database
-        run: test -n "$DATABASE_URL"
-
+      # succeed against a database that is thrown away with the runner. Hence
+      # the `test`.
+      #
+      # Exit 3 means the firing stood down because another run holds the lock
+      # (app/pipeline/worker.py EXIT_REFUSED). It fails this job on purpose:
+      # the next scheduled firing is a week away.
       - name: Fire
-        run: uv run bitcap-worker ${{ inputs.dry_run && '--dry-run' || '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Not GITHUB_TOKEN: Actions reserves that name for its own per-job
+          # token, which is rate-limited far below what the github leg's 2,000
+          # repositories need. The harvesters read GITHUB_TOKEN, so it is
+          # mapped here.
+          GITHUB_TOKEN: ${{ secrets.HARVEST_GITHUB_TOKEN }}
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          # Only read when `alerts.channel` is `webhook`; unset is fine.
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: |
+          test -n "$DATABASE_URL"
+          uv run bitcap-worker ${{ inputs.dry_run && '--dry-run' || '' }}

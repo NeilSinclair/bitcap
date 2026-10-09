@@ -8921,6 +8921,12 @@ reviewers with credentials; now it is anyone with the link.
   the corpus moves weekly, so a 7-day window drained to the firing day alone.
   Twice the firing interval, pinned against the workflow's cron by
   `test_the_live_view_spans_two_weekly_firings`. Found in review.
+- A firing that stands down for another run exits 3, not 0, and fails the
+  workflow. Exit 0 was right when the next tick was tomorrow (D26's reasoning);
+  at a week it is a silent skipped week. `KeyboardInterrupt` now closes the run
+  row, so a cancelled workflow does not block its own re-run.
+- `posts_watermark_stale_days` 7 → 15: at 7 it equalled one firing interval.
+- Workflow secrets sit on the firing step only; `permissions: contents: read`.
 
 **Known open.**
 - A run started from the button executes in a thread on a free instance
@@ -8932,12 +8938,13 @@ reviewers with credentials; now it is anyone with the link.
 - `alerts.source_down_runs: 3` now means three weeks, not three nights. Unchanged.
 - `budget.per_month_usd: 250` was sized for a reimbursed budget. Unchanged.
 - GitHub disables the schedule after 60 days without repository activity.
-- From the review, not fixed: a refused firing still exits 0, so a corpse
-  younger than two hours costs a silent week; `posts_watermark_stalled`'s 7-day
-  threshold now equals one firing interval; the login rate limit is one shared
-  bucket behind Render's proxy; run errors and tracebacks are public; the
-  workflow's secrets are job-wide; a wrong password reloads the page rather
-  than showing an error.
+- The login rate limit is one shared bucket behind Render's proxy, so a loop
+  of bad logins can 429 the operator. Left deliberately: splitting it on
+  X-Forwarded-For lets a caller mint a bucket per request and removes the bound
+  on guessing. Not verified against Render's actual proxy addressing.
+- Run and source `error` strings are public. Manual runs now store the message
+  rather than the traceback; a database error message can still carry SQL and
+  the database hostname. No credential path into them was found.
 - Branding: the UI, README and the brief PDF are done. The repo, package, CLI
   and service names are still `bitcap`, and `.claude/CLAUDE.md`, `docs/` and
   `config/holdings.yaml` still name the fund.

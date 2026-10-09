@@ -152,6 +152,11 @@ alerts:
   # pull, and at `cadence.posts: 1` that is seven widening pulls a week -- see
   # the note on that value, and `alerts.posts_watermark_stalled`.
   #
+  # 15 SINCE THE FIRING WENT WEEKLY (D83): two intervals and a day. At 7 the
+  # threshold equalled one interval, so a single firing in which one handle
+  # errored raised this. The reasoning below is the nightly one; what carries
+  # over is that one unmoved firing is ambiguous and two are not.
+  #
   # 7, not 3, because a mark that has not moved is ambiguous: a handle erroring
   # every firing looks exactly like a stretch where every post read was dropped
   # by the prefilter, and the second is harmless. At ~2.6 posts a day surviving
@@ -159,7 +164,7 @@ alerts:
   # the point where the benign reading stops being available. The cost of
   # waiting that long is ~$0.27 of extra pull, which is the right thing to
   # trade against a false page.
-  posts_watermark_stale_days: 7
+  posts_watermark_stale_days: 15
 
   # Content alerts fire at or above this band. `high` is >= 60 on the
   # deterministic score (config/scoring.yaml).
