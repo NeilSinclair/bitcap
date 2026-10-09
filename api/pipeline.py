@@ -1,8 +1,12 @@
 """Trigger a pipeline run from the browser, and report on it while it runs.
 
-The scheduled worker is a Render cron job and fires once a night. This is the
-same `run_once`, started by hand, for the times you do not want to wait for
-3am — a source was fixed, a prompt changed, or a demo is in ten minutes.
+The scheduled worker is a GitHub Actions workflow and fires once a week. This is
+the same `run_once`, started by hand, for the times you do not want to wait —
+a source was fixed, a prompt changed, or a demo is in ten minutes.
+
+**Reading is public; starting a run is not.** The site has no login wall, so the
+GET routes here answer anyone. `POST /run` spends money and is the one route in
+this module behind `require_auth` (docs/decisions.md D83).
 
 **It runs in a thread, not in the request.** A firing takes 9 to 30 minutes and
 no HTTP client waits that long, so `POST /api/pipeline/run` starts the work and
@@ -29,7 +33,7 @@ from __future__ import annotations
 
 import threading
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -42,6 +46,7 @@ from app import models as m
 from app.db import get_session
 from app.pipeline import worker
 from app.pipeline.registry import LEGS, load_sources
+from app.runs import STALE_RUN_HOURS, running_run  # noqa: F401 -- re-exported for the tests
 
 # What the run row's `kind` is set to. Distinct from the cron's "scheduled" so
 # the two are separable in the run history and in `firing_number`, which counts
@@ -67,58 +72,6 @@ class RunRequest(BaseModel):
     legs: list[str] = Field(default_factory=list)
     drift: bool = False
     dry_run: bool = False
-
-
-# How long a `running` row is believed before it is treated as a corpse. The
-# longest real firing measured is ~30 minutes (GitHub leg, 2,074 repos), so two
-# hours is generous. Without this bound a run killed mid-flight — a redeploy, an
-# OOM, `uvicorn --reload` picking up an edit — leaves a row `running` for ever,
-# and since the concurrency guard is "is there a running row", that one corpse
-# blocks every future run until somebody edits the database by hand. Observed
-# twice in one afternoon of local development (D43).
-STALE_RUN_HOURS = 2.0
-
-
-def running_run(session, now: datetime | None = None) -> m.PipelineRun | None:
-    """The firing currently in flight, if any — manual or scheduled.
-
-    Reaps as it reads: a `running` row older than :data:`STALE_RUN_HOURS` cannot
-    be a live firing, so it is marked failed and ignored rather than blocking
-    the caller for ever. Recording it as `failed` rather than deleting it also
-    lets `alerts.run_failed` see it, which a silently-cleared row never would.
-
-    Args:
-        session: Open session.
-        now: Injectable clock for the tests.
-
-    Returns:
-        The in-flight run, or None.
-    """
-    now = now or datetime.now(timezone.utc)
-    cutoff = now - timedelta(hours=STALE_RUN_HOURS)
-
-    live = None
-    for run in session.scalars(
-        select(m.PipelineRun)
-        .where(m.PipelineRun.status == "running")
-        .order_by(desc(m.PipelineRun.id))
-    ):
-        started = run.started_at
-        if started is not None and started.tzinfo is None:
-            started = started.replace(tzinfo=timezone.utc)
-        if started is not None and started < cutoff:
-            run.status = "failed"
-            run.error = (
-                f"no longer running: started {started.isoformat()} and exceeded "
-                f"the {STALE_RUN_HOURS}h ceiling without finishing. The process "
-                "was almost certainly killed (redeploy, restart, or OOM)."
-            )
-            run.finished_at = now
-            continue
-        if live is None:
-            live = run
-    session.commit()
-    return live
 
 
 def _describe(run: m.PipelineRun) -> dict:
@@ -193,16 +146,18 @@ def _run_in_thread(engine: Engine, run_id: int, legs: tuple[str, ...],
             # ingestion legs", and None would hand the decision back to cadence.
             worker.run_once(session, legs=legs, spend=spend,
                             deliver=spend, drift=drift, run=run)
-        except (Exception, SystemExit):
+        except (Exception, SystemExit) as exc:
             # A thread's exception goes nowhere by default: no request is
             # waiting on it and nothing else will ever see it. Recording it on
             # the row is the only way the browser, or anyone reading the run
             # history later, learns the firing died.
+            # The traceback goes to the log; the row gets the message only,
+            # because `error` is served to anyone by the public read routes.
             traceback.print_exc()
             session.rollback()
             if run is not None and run.status == "running":
                 run.status = "failed"
-                run.error = traceback.format_exc()[-2000:]
+                run.error = f"{type(exc).__name__}: {exc}"[:2000]
                 run.finished_at = datetime.now(timezone.utc)
                 session.commit()
     finally:
@@ -228,7 +183,7 @@ def build_router(engine: Engine) -> APIRouter:
     """
     router = APIRouter(prefix="/api/pipeline", tags=["pipeline"])
 
-    @router.get("/legs", dependencies=[Depends(require_auth)])
+    @router.get("/legs")
     def list_legs() -> list[dict]:
         """The checkboxes, with how many sources each one covers."""
         out = []
@@ -295,7 +250,7 @@ def build_router(engine: Engine) -> APIRouter:
         ).start()
         return {"run_id": run_id, "status": "running"}
 
-    @router.get("/run/{run_id}", dependencies=[Depends(require_auth)])
+    @router.get("/run/{run_id}")
     def run_status(run_id: int) -> dict:
         """One run's live state, including the sources it has finished."""
         session = get_session(engine)
@@ -307,7 +262,7 @@ def build_router(engine: Engine) -> APIRouter:
         finally:
             session.close()
 
-    @router.get("/current", dependencies=[Depends(require_auth)])
+    @router.get("/current")
     def current() -> dict:
         """Whatever is in flight now, or the last run that finished.
 

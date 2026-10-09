@@ -1,7 +1,8 @@
 # Image for the scheduled worker (`bitcap-worker`) and the read-only API.
 #
-# One image, two entrypoints: the platform's cron job overrides CMD with
-# `bitcap-worker`, the web service overrides it with uvicorn. They share a
+# One image, two entrypoints: `bitcap-worker` is the default CMD, and the web
+# service overrides it with uvicorn. The weekly firing no longer uses the image
+# (it runs from source on a GitHub runner), but any Docker host still can. They share a
 # database, so building them separately would only mean maintaining two
 # Dockerfiles that must not drift.
 
@@ -41,8 +42,8 @@ ENV PATH="/app/.venv/bin:$PATH" \
 # The per-URL fetch caches live here, and production does not depend on them.
 # Everything expensive is in Postgres — classifications, GitHub commit history —
 # and an article already stored and classified is never requested again, so
-# there is nothing for a page cache to save. Mounting a volume is optional;
-# Render's cron jobs cannot, and do not need to (see README, "Deploying").
+# there is nothing for a page cache to save. Mounting a volume is optional
+# (see README, "Deploying").
 VOLUME ["/app/research/docs"]
 
 CMD ["bitcap-worker"]

@@ -78,7 +78,13 @@ version: 1
 # A multiple of 24, necessarily. `_in_window` compares at date resolution, so a
 # grid that does not land on day boundaries disagrees with its own selection.
 #
-# This value does not have to DIVIDE the cron schedule in render.yaml.
+# WEEKLY SINCE D83: the firing is now Thursday 03:00 UTC
+# (.github/workflows/pipeline.yml), and each one backfills the seven daily
+# periods since the last -- exactly `MAX_BACKFILL_PERIODS`, so a missed week
+# loses seven editions for good. The rest of this note describes the daily cron
+# it was written under.
+#
+# This value does not have to DIVIDE the cron schedule.
 # `window_for` snaps to a fixed grid of periods, so the daily 03:00 firing
 # publishes each period once and re-publishes it harmlessly on any later firing
 # inside it. Before that quantisation existed the two settings silently
@@ -101,7 +107,15 @@ version: 1
 window_hours: 24
 
 # ---------------------------------------------------------------------------
-# preview_window_hours: 168 -- the last 7 days, ending now.
+# preview_window_hours: 336 -- the last 14 days, ending now.
+#
+# WIDENED 168 -> 336 WHEN THE FIRING WENT WEEKLY (D83). The window rolls with
+# the clock but the corpus now only moves on Thursdays, so a 7-day view drained
+# as the week went on: six days after a firing it held the few hours of the
+# firing day and nothing else. Twice the firing interval means the window
+# always contains at least one whole week of ingested days. The argument below
+# was written for 168 under a nightly firing; "a week is the widest span still
+# describable as recent" is the part this overrides, and it is the cost.
 #
 # Rolling, not quantised. A published edition must snap to a grid so that re-runs
 # update one edition rather than issuing several; the preview writes nothing, so
@@ -123,7 +137,7 @@ window_hours: 24
 # Re-derive it if ingestion resumes; the corpus it was chosen against ends
 # 05 Sep. `/api/digests/preview?hours=N` overrides it per request without
 # changing anything published, which is the cheap way to test another width.
-preview_window_hours: 168
+preview_window_hours: 336
 
 investment:
   # A connection at or above this strength is worth a PM's attention. Matches

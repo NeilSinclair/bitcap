@@ -617,8 +617,8 @@ def posts_watermark_stalled(session: Session, config: dict,
             body=(
                 f"The leg last succeeded {st.last_success_at.date().isoformat()} "
                 f"and its mark still reads {marked.isoformat()}, so every firing "
-                f"is now buying a {behind}-day window instead of one day and the "
-                "bill grows by a day's posts every night. A handle erroring on "
+                f"is now buying a {behind}-day window and the bill grows with "
+                "every firing. A handle erroring on "
                 "every firing is the usual cause -- check `unresolved_items` for "
                 "leg `posts`. A stretch in which every post read was prefiltered "
                 "away looks identical from here and is harmless."

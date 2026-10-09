@@ -979,15 +979,33 @@ class TestGuards:
         and the entire suite stayed green each time — which means either can be
         moved back, by a revert or a merge, with nothing going red either.
 
-        This asserts nothing about 24 or 168 being *correct*.
-        `config/digest.yaml` says plainly that 168 is not a measured optimum and
+        This asserts nothing about 24 or 336 being *correct*.
+        `config/digest.yaml` says plainly that the preview width is not a measured optimum and
         that 24 empties nearly half of all investment editions. It asserts only
         that the numbers change deliberately, alongside these lines and the
         reasoning beside them, rather than drifting.
         """
         settings = digest.settings()
         assert settings["window_hours"] == 24
-        assert settings["preview_window_hours"] == 168
+        assert settings["preview_window_hours"] == 336
+
+    def test_the_live_view_spans_two_weekly_firings(self):
+        """The landing view must not drain between firings.
+
+        The preview rolls with the clock; the corpus moves once a week
+        (.github/workflows/pipeline.yml). At 168 hours a visitor six days after
+        a firing saw a window holding only the firing day. Nothing failed.
+        """
+        import re
+        from pathlib import Path
+
+        workflow = (Path(__file__).parent.parent / ".github" / "workflows"
+                    / "pipeline.yml").read_text(encoding="utf-8")
+        cron = re.search(r'- cron: "([^"]+)"', workflow).group(1).split()
+        assert cron[2:4] == ["*", "*"] and cron[4].isdigit(), (
+            f"the schedule is no longer weekly ({' '.join(cron)}); re-derive "
+            "preview_window_hours against the new interval")
+        assert digest.settings()["preview_window_hours"] >= 2 * 7 * 24
 
     def test_the_two_windows_are_not_the_same_setting(self):
         """The archive being narrower than the live view is the whole point.

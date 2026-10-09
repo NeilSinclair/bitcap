@@ -1,116 +1,50 @@
-# Render blueprint: managed Postgres, a nightly worker, and the read-only API.
+# Render blueprint: the API and the dashboard, both on free instances.
 #
-# Declarative so the deployment is reviewable in the diff rather than clicked
-# together in a dashboard. Railway needs the same two pieces (database, cron)
-# configured through its UI — see README, "Deploying".
+# The database is not here: Render's free Postgres expires after 30 days, so it
+# is hosted elsewhere and reaches the API as a plain DATABASE_URL secret. The
+# scheduled firing is not here either: it is a GitHub Actions workflow
+# (.github/workflows/pipeline.yml), because a Render cron job is a paid service
+# (docs/decisions.md D83).
 #
 # Secrets are `sync: false`: Render prompts for them once and never stores them
-# here. ANTHROPIC_API_KEY is the only one the worker cannot run without, and
-# only for the classification and drift stages — most ingestion needs no key at
-# all. The exceptions are per-leg rather than fatal: GITHUB_TOKEN for the github
-# and releases legs, X_BEARER_TOKEN for posts. Each of those legs fails on its
-# own and is recorded as a failed source; the firing still succeeds.
-
-databases:
-  - name: bitcap-db
-    databaseName: bitcap
-    plan: basic-256mb
+# here.
 
 services:
-  # The scheduled firing. 03:00 UTC daily: after the US-hours announcement
-  # window has closed, so a day's publications land in one run.
-  - type: cron
-    name: bitcap-worker
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    schedule: "0 3 * * *"
-    dockerCommand: bitcap-worker
-    plan: starter
-    # No disk: Render cron jobs cannot mount one. That is survivable because
-    # the cache that costs money is in Postgres, not on disk — classify.py
-    # takes its work list from `raw_articles LEFT JOIN raw_classifications`,
-    # so an article already classified at this prompt version never reaches
-    # the API however cold the container starts.
-    #
-    # No disk needed, rather than merely survivable without one. Every cache
-    # that costs anything to rebuild now lives in Postgres: classifications in
-    # `raw_classifications` (D24), and commit history in `raw_github_repos`
-    # (D32). Announcements and papers narrow their window to what has happened
-    # since the last successful run (D31), and GitHub re-walks only the
-    # repositories whose `pushed_at` has moved.
-    #
-    # What is left on /app/research/docs is per-URL fetch cache, and a cold
-    # start barely touches it: an article already stored and classified is not
-    # requested at all (D33), so there is nothing for the cache to save.
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: bitcap-db
-          property: connectionString
-      - key: ANTHROPIC_API_KEY
-        sync: false
-      # Embeddings for the duplicate collapse (D59). Anthropic has no
-      # embeddings API, so `providers.embed_openai` is the only path the cosine
-      # gate has, and it builds a bare `OpenAI()` which reads this name itself.
-      # Unset, the phase degrades to the free deterministic passes and reports
-      # `coverage: 0` — a half-working feature that deploys green, which is why
-      # the key is declared here rather than left to the dashboard.
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: GITHUB_TOKEN
-        sync: false
-      # The posts leg reads X on a weekly cadence. Unset, `fetch_posts` exits
-      # via `x_client.load_token`'s SystemExit and the leg is recorded as a
-      # failed source rather than an empty one -- deliberately, because an
-      # unconfigured credential and a lab that stopped posting must not look
-      # the same. Every other leg still runs.
-      - key: X_BEARER_TOKEN
-        sync: false
-      - key: ALERT_WEBHOOK_URL
-        sync: false
-
   - type: web
     name: bitcap-api
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
-    plan: starter
-    # /api/health, not /api/status: everything else is behind the login now,
-    # and a probe that gets 401 fails the deploy before the service is ever
-    # live. /api/health is deliberately open and reports pipeline liveness and
-    # spend, nothing about the labs.
-    healthCheckPath: /api/health
+    plan: free
+    # /api/ping, not /api/health: the probe runs for as long as the service is
+    # up, and one that queries the database never lets a scale-to-zero Postgres
+    # suspend. Point the uptime monitor that keeps this instance awake at the
+    # same path.
+    healthCheckPath: /api/ping
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: bitcap-db
-          property: connectionString
+        sync: false
       - key: FRONTEND_ORIGIN
         sync: false
-      # The one account. Generate the hash and the secret with
-      # `uv run python -m api.auth` and paste them into the Render dashboard --
-      # never into this file, which is committed.
+      # The operator account, which only guards starting a run. Generate the
+      # hash and the secret with `uv run python -m api.auth` and paste them into
+      # the Render dashboard -- never into this file, which is committed.
       - key: AUTH_EMAIL
         sync: false
       - key: AUTH_PASSWORD_HASH
         sync: false
       - key: AUTH_SECRET
         sync: false
-      # The API starts pipeline runs in a background thread, so its instance
-      # has to still be alive 30 minutes after the request that started one.
-      # A plan that sleeps on idle would kill a run mid-flight and leave the
-      # row `running`, which blocks every later run through the concurrency
-      # guard until somebody clears it by hand.
+      # Only for the run button. The API starts a firing in a background
+      # thread, and a free instance can be restarted or slept under it; a run
+      # cut short that way is reaped as `failed` after two hours
+      # (app/runs.py). The weekly firing does not depend on any of these.
       - key: ANTHROPIC_API_KEY
         sync: false
-      # On both services for the same reason as ANTHROPIC_API_KEY: the pipeline
-      # tab starts firings from the API, and a firing runs the dedupe phase.
       - key: OPENAI_API_KEY
         sync: false
       - key: GITHUB_TOKEN
         sync: false
-      # On both services for the same reason: a firing started from the
-      # pipeline tab runs the posts leg too.
       - key: X_BEARER_TOKEN
         sync: false
 

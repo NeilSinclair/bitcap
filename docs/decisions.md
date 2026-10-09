@@ -8879,3 +8879,72 @@ The "What the article says" and "Why it reaches…" blocks duplicated Evidence
 and Portfolio impact on the same card. The top now shows the score, the
 holdings and the strength arithmetic. Both halves went together, because the
 quote alone beside the company names would read as the lab talking about them.
+
+## D83 — Public to read, sign in to run, weekly on free tiers (2026-10-09)
+
+**Decision.** The project is now a portfolio piece rather than a submission.
+Every GET is public; the login stays but guards only the routes that change
+state (`POST /api/pipeline/run`, `POST /api/alerts/acknowledge`). The firing
+moves from a nightly Render cron to a weekly GitHub Actions workflow
+(Thursday 03:00 UTC). Hosting moves to free tiers: Neon for Postgres, a Render
+free web service for the API, a Render static site for the dashboard.
+
+**Supersedes D39**, which gated the whole site on the grounds that the
+credential check belonged in front of everything. The audience then was three
+reviewers with credentials; now it is anyone with the link.
+
+**Alternatives rejected.**
+- *No login at all, runs only from GitHub Actions.* Built first, then reverted:
+  Neil wants the run button, greyed out unless signed in.
+- *Render's free Postgres.* Expires 30 days after creation.
+- *A Render cron job.* Paid. A GitHub runner is free for a public repo and has
+  no idle timeout to kill a 30-minute firing.
+- *Vercel functions for the API.* Untested for this codebase; Render runs the
+  existing image unchanged.
+
+**Consequences.**
+- `/api/ping` exists because the keep-warm monitor and Render's health check
+  must not query the database: a probe every few minutes keeps Neon's compute
+  awake all month, which is ~180 compute-hours against a 100-hour allowance.
+- `pool_pre_ping` on the engine: Neon drops idle connections when it suspends.
+- `running_run` moved to `app/runs.py` and the worker calls it before claiming.
+  The reaper used to run only on the API's paths, so a firing killed on the
+  runner would have blocked the next week's.
+- `cadence.github` 3 → 1. Every 3rd weekly firing is a three-week-old picture.
+- `tests/test_api_pipeline.py` now asserts both halves: no write route answers
+  without a token, and no read route refuses a visitor.
+- The workflow checks out `deployment`, not the default branch. A schedule
+  fires from the default branch, which is `deployment-dev`; unpinned, untested
+  work would migrate the hosted database and spend money every Thursday. Found
+  in review.
+- `preview_window_hours` 168 → 336. The live view rolls with the clock while
+  the corpus moves weekly, so a 7-day window drained to the firing day alone.
+  Twice the firing interval, pinned against the workflow's cron by
+  `test_the_live_view_spans_two_weekly_firings`. Found in review.
+- A firing that stands down for another run exits 3, not 0, and fails the
+  workflow. Exit 0 was right when the next tick was tomorrow (D26's reasoning);
+  at a week it is a silent skipped week. `KeyboardInterrupt` now closes the run
+  row, so a cancelled workflow does not block its own re-run.
+- `posts_watermark_stale_days` 7 → 15: at 7 it equalled one firing interval.
+- Workflow secrets sit on the firing step only; `permissions: contents: read`.
+
+**Known open.**
+- A run started from the button executes in a thread on a free instance
+  (512 MB, restartable). Not measured there. The Actions "Run workflow" button
+  is the sturdier path.
+- `window_hours` stays 24, so each weekly firing backfills seven daily editions,
+  exactly `MAX_BACKFILL_PERIODS`. A missed week loses seven. A weekly edition
+  (`window_hours: 168`) was not chosen here; it is §7's digest-cadence question.
+- `alerts.source_down_runs: 3` now means three weeks, not three nights. Unchanged.
+- `budget.per_month_usd: 250` was sized for a reimbursed budget. Unchanged.
+- GitHub disables the schedule after 60 days without repository activity.
+- The login rate limit is one shared bucket behind Render's proxy, so a loop
+  of bad logins can 429 the operator. Left deliberately: splitting it on
+  X-Forwarded-For lets a caller mint a bucket per request and removes the bound
+  on guessing. Not verified against Render's actual proxy addressing.
+- Run and source `error` strings are public. Manual runs now store the message
+  rather than the traceback; a database error message can still carry SQL and
+  the database hostname. No credential path into them was found.
+- Branding: the UI, README and the brief PDF are done. The repo, package, CLI
+  and service names are still `bitcap`, and `.claude/CLAUDE.md`, `docs/` and
+  `config/holdings.yaml` still name the fund.

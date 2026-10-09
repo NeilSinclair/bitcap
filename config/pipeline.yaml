@@ -66,7 +66,12 @@ budget:
 # GitHub re-derives contribution weight over a full 3-month history, so every
 # run restates the whole picture and a skipped one loses nothing. It is also the
 # only leg that costs 14 minutes of wall-clock (2,074 repos, measured run 12).
-# Every 3rd firing keeps the history intact and the nightly run short.
+# Every 3rd firing kept the history intact and the nightly run short.
+#
+# WEEKLY SINCE D83, so GitHub is back to 1. The firing moved from a nightly
+# cron to a weekly one, and every 3rd weekly firing is a three-week-old commit
+# picture. The 14 minutes no longer matters: it is once a week, on a runner
+# with no request waiting on it.
 # The kill switch. A leg set false is not fetched, not landed and not spent on
 # -- including rows it ingested on earlier firings, which stay in bronze and
 # would otherwise keep being classified. Separate from `cadence` because
@@ -81,9 +86,13 @@ enabled:
 cadence:
   announcements: 1
   papers: 1
-  github: 3
+  github: 1
   releases: 1        # a release is news the day it ships, and the cursor makes
                      # a firing with nothing new cost one API call per repo
+  # WEEKLY AGAIN SINCE D83, by way of the firing itself going weekly: this is
+  # still 1, and the `weekly` row of the table below is what is now paid. The
+  # rest of this note is the nightly reasoning it was set under.
+  #
   # NIGHTLY, was weekly (7). The old comment argued that a daily firing would
   # "multiply the bill sevenfold", and at the time it was right: `fetch_posts`
   # wrote a watermark every firing and never read it, so every firing re-bought
@@ -143,6 +152,11 @@ alerts:
   # pull, and at `cadence.posts: 1` that is seven widening pulls a week -- see
   # the note on that value, and `alerts.posts_watermark_stalled`.
   #
+  # 15 SINCE THE FIRING WENT WEEKLY (D83): two intervals and a day. At 7 the
+  # threshold equalled one interval, so a single firing in which one handle
+  # errored raised this. The reasoning below is the nightly one; what carries
+  # over is that one unmoved firing is ambiguous and two are not.
+  #
   # 7, not 3, because a mark that has not moved is ambiguous: a handle erroring
   # every firing looks exactly like a stretch where every post read was dropped
   # by the prefilter, and the second is harmless. At ~2.6 posts a day surviving
@@ -150,7 +164,7 @@ alerts:
   # the point where the benign reading stops being available. The cost of
   # waiting that long is ~$0.27 of extra pull, which is the right thing to
   # trade against a false page.
-  posts_watermark_stale_days: 7
+  posts_watermark_stale_days: 15
 
   # Content alerts fire at or above this band. `high` is >= 60 on the
   # deterministic score (config/scoring.yaml).
@@ -172,7 +186,7 @@ alerts:
   # The cost, stated: a genuinely important paper published four months ago and
   # discovered tonight does not alert. It is still scored, still in the UI and
   # still joined to holdings -- and no digest window would have carried it
-  # anyway: the widest is the 7-day live view (config/digest.yaml
+  # anyway: the widest is the 14-day live view (config/digest.yaml
   # `preview_window_hours`). An alert is for what is new, and it is not.
   content_max_age_days: 120
 
@@ -315,7 +329,7 @@ fetch:
 # WHAT IT DOES NOT TOUCH, DELIBERATELY:
 #
 # * `app/digest.py` windows far more narrowly than this (config/digest.yaml:
-#   24 hours published, 7 days for the live view), so an edition is unaffected
+#   24 hours published, 14 days for the live view), so an edition is unaffected
 #   by this number.
 # * `research/corpus/first_mention.py` reads `raw_articles` directly and keeps
 #   the whole archive. Firstness is a claim about the entire corpus, so

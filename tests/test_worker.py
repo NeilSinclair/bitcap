@@ -188,6 +188,40 @@ class TestAFiringThatBrokeFails:
 
         assert worker.main(["--legs", "announcements", "--dry-run"]) == 1
 
+    def test_a_cancelled_firing_closes_its_row(self, session, quiet, monkeypatch):
+        """A timed-out or cancelled workflow sends SIGINT.
+
+        `KeyboardInterrupt` is not an `Exception`, so the row stayed `running`
+        and a re-run inside the two-hour stale ceiling was refused.
+        """
+        monkeypatch.setattr(worker, "_phases",
+                            lambda *a, **kw: (_ for _ in ()).throw(KeyboardInterrupt()))
+
+        with pytest.raises(KeyboardInterrupt):
+            worker.run_once(session, legs=("announcements",),
+                            config_path=config_file(quiet), spend=False, deliver=False)
+
+        run = session.scalars(select(m.PipelineRun)).one()
+        assert run.status == "failed"
+        assert run.error == "KeyboardInterrupt"
+
+    def test_a_firing_that_stood_down_is_not_reported_as_success(self, session, monkeypatch):
+        """The next scheduled firing is a week away; a skipped one must be seen.
+
+        This exited 0 while the cron was nightly. A green run that ingested
+        nothing is a week of silence nobody is told about.
+        """
+        session.add(m.PipelineRun(kind="manual", status="running"))
+        session.commit()
+        monkeypatch.setattr(worker, "get_session", lambda engine: session)
+        monkeypatch.setattr(worker, "get_engine", lambda: session.get_bind())
+        monkeypatch.setattr(worker, "ensure_schema", lambda engine: "current")
+
+        code = worker.main(["--legs", "announcements", "--dry-run"])
+
+        assert code == worker.EXIT_REFUSED
+        assert code not in (0, 1)
+
     def test_ingestion_survives_an_etl_failure(self, session, quiet, monkeypatch):
         """The fetches happened. Re-doing them costs money on the LLM legs."""
         monkeypatch.setattr(
@@ -512,3 +546,43 @@ class TestTheEtlPhaseIsActuallyExecuted:
         # One transform per article-producing corpus. A leg added without its
         # transform wired in here is the next version of this bug.
         assert {"transform", "paper_transform", "post_transform"} <= set(stats)
+
+
+class TestTheScheduledWorkflow:
+    """`.github/workflows/pipeline.yml` is the scheduler, and nothing runs it in CI.
+
+    Each of these is a property that fails silently: the firing still goes
+    green with any one of them undone.
+    """
+
+    @pytest.fixture()
+    def job(self):
+        path = Path(__file__).parent.parent / ".github" / "workflows" / "pipeline.yml"
+        workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return workflow, workflow["jobs"]["firing"]
+
+    def test_it_runs_promoted_code_not_the_default_branch(self, job):
+        """A schedule fires from the default branch, which is the testing one."""
+        _, firing = job
+        checkout = next(s for s in firing["steps"] if "checkout" in s.get("uses", ""))
+        assert checkout["with"]["ref"] == "deployment"
+
+    def test_secrets_reach_only_the_step_that_fires(self, job):
+        workflow, firing = job
+        assert "env" not in workflow and "env" not in firing
+        with_secrets = [s.get("name") for s in firing["steps"]
+                        if "secrets." in str(s.get("env", ""))]
+        assert with_secrets == ["Fire"]
+        assert workflow["permissions"] == {"contents": "read"}
+
+    def test_it_refuses_to_fire_against_a_throwaway_database(self, job):
+        """An unset DATABASE_URL falls back to sqlite on the runner and succeeds."""
+        _, firing = job
+        fire = next(s for s in firing["steps"] if s.get("name") == "Fire")
+        script = fire["run"]
+        assert script.index('test -n "$DATABASE_URL"') < script.index("bitcap-worker")
+
+    def test_the_posts_stall_threshold_outlasts_one_weekly_firing(self):
+        """At one firing interval, a single bad firing raised the alert."""
+        days = worker.load_config()["alerts"]["posts_watermark_stale_days"]
+        assert days > 2 * 7

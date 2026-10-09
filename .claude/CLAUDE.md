@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-Frontier Lab Intelligence — a take-home case study for BIT Capital, a tech-focused investment fund.
+Frontier Lab Intelligence — built as a take-home case study for a tech-focused investment fund, now a public portfolio piece. It did not lead to the job; nothing here should name the fund in anything a visitor sees.
 
-Full plan: [docs/planning.md](docs/planning.md). Original brief: `docs/AI Engineer Case Study (Frontier Lab Intelligence).pdf`. This file is the working contract; planning.md is the reasoning behind it.
+Full plan: [docs/planning.md](docs/planning.md). The original brief was removed from the repo (it is in git history before D83). This file is the working contract; planning.md is the reasoning behind it.
 
 ## Behavioral Guidelines
 
@@ -88,7 +88,8 @@ The bar this is judged against, in order: engineering, product usefulness, desig
 - Python core (ingestion, extraction, scoring) + FastAPI
 - React/Next frontend — light, functional, **not polished**; the brief says don't spend time here
 - Postgres
-- Deployed on Railway/Render: managed Postgres + scheduled worker, reachable by link
+- Deployed on free tiers (`docs/decisions.md` D83): Neon Postgres, the API on a Render free web service, the dashboard as a Render static site, and the weekly firing as a GitHub Actions workflow that runs the `deployment` branch
+- Public to read; one operator sign-in guards starting a run
 - uv is used for environment management
 
 ## Non-negotiables
@@ -130,7 +131,7 @@ Where honest ground truth isn't reachable, say so plainly and use a defensible p
 - **Incremental.** Prove at n=1 before building at scale. Read the raw data manually before automating judgment over it.
 - **Neil authors the design document.** Assist with it; never draft it wholesale. They will not read a document that reads as AI-written.
 - **Record decisions as they're made** — especially every bet on an agent or LLM *versus* deterministic code, with the rationale. The on-site will probe where corners were cut and why.
-- **Flag uncertainty rather than inventing an answer**, particularly about BIT's holdings or a lab's activity. Fabricated domain facts are worse than gaps here.
+- **Flag uncertainty rather than inventing an answer**, particularly about the fund's holdings or a lab's activity. Fabricated domain facts are worse than gaps here.
 - **Concise over verbose, always.** In code, in docs, in commit messages.
 
 ## Running logs — keep current, they're unrecoverable later
@@ -143,7 +144,7 @@ Where honest ground truth isn't reachable, say so plainly and use a defensible p
 
 ## Current state
 
-The pipeline runs end to end: register, ingestion, extraction, dual-axis scoring, signal filter, digest and alerts, an API and a dashboard, on Postgres with a scheduled worker. Two scored corpora — announcements under `v9`, papers under `p1` (`docs/decisions.md` D57). `bitcap-db rebuild` reproduces the whole database from committed artifacts with no API key.
+The pipeline runs end to end: register, ingestion, extraction, dual-axis scoring, signal filter, digest and alerts, an API and a dashboard, on Postgres with a weekly scheduled firing. Two scored corpora — announcements under `v9`, papers under `p1` (`docs/decisions.md` D57). `bitcap-db rebuild` reproduces the whole database from committed artifacts with no API key.
 
 For what was last worked on and what it left open, read the newest entries in `docs/decisions.md` and `docs/agentic-log.md`, then the matching `docs/handover*.md`.
 

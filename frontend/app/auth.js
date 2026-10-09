@@ -2,22 +2,21 @@
 
 // Session handling shared by every page.
 //
-// The whole site is behind the login, so this is the one place that knows how a
-// token is obtained, stored, sent and discarded. Pages call `apiFetch` and wrap
-// themselves in `<Gate>`; nothing else touches the token.
+// Reading is public: every page renders for anyone. Signing in unlocks the two
+// things that change state — starting a pipeline run and clearing the health
+// badge. This is the one place that knows how a token is obtained, stored, sent
+// and discarded.
 //
-// What this is and is not. The site is a static export — the HTML and this file
-// are public, and anyone can read them. The gate below hides the *interface*.
-// The actual protection is that every route on the API returns 401 without a
-// valid token, so an unauthenticated visitor can render the shell and still
-// receive no data. Treat the gate as ergonomics, not as the control.
+// What this is and is not. The site is a static export, so greying a button out
+// here is ergonomics. The control is that the API returns 401 on every
+// non-GET route without a valid token.
 //
 // The token lives in localStorage rather than a cookie because the API is on a
 // different origin from the static site; a cookie would need SameSite=None and
 // credentialed CORS to travel at all, which is more moving parts for the same
 // result on a single-operator tool.
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -68,7 +67,9 @@ export async function apiFetch(path, options = {}) {
       ...(options.headers || {}),
     },
   });
-  if (response.status === 401) {
+  // Only when a token was sent. A 401 with none is a wrong password on the
+  // login form, and reloading there closed the form without saying why.
+  if (response.status === 401 && token) {
     onUnauthorised();
     throw new Error("session expired");
   }
@@ -87,19 +88,7 @@ export async function apiFetch(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
-function LogoMark({ size = 86, fill = "#f5f4f1", accent = ACCENT }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} viewBox="0 0 72 36" fill="none">
-      <path
-        d="M66.3857 1.36043L58.1165 34.525H1.27521L9.54438 1.36043H66.3857ZM67.6062 0.383301H8.81065L8.56725 1.36043L0.298081 34.525L0.0546875 35.5022H58.8503L59.0937 34.525L67.3628 1.36043L67.6062 0.383301Z"
-        fill={fill}
-      />
-      <path d="M23.5 10.5H31.5L28 25.5H20L23.5 10.5Z" fill={accent} />
-    </svg>
-  );
-}
-
-function LoginScreen({ onSignedIn }) {
+function LoginScreen({ onSignedIn, onCancel }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -123,20 +112,17 @@ function LoginScreen({ onSignedIn }) {
   }
 
   return (
-    <div className="app">
+    <div className="app" style={{ position: "fixed", inset: 0, zIndex: 50, background: "var(--bg)" }}>
       <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
         <form onSubmit={submit} style={{ width: 380, display: "flex", flexDirection: "column", gap: 28 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
-            <LogoMark size={86} />
-            <div className="label-bracket">BIT Capital · internal</div>
-          </div>
+          <div className="label-bracket">Operator sign-in</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <div className="serif" style={{ fontSize: 26, fontWeight: 500, lineHeight: 1.2 }}>
               Frontier Lab Intelligence
             </div>
             <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-              Sourced signal on the frontier labs, scored and routed to what it means for the
-              book and for how we&apos;d build.
+              Everything here is readable without an account. Signing in is only for
+              starting pipeline runs.
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -146,7 +132,7 @@ function LoginScreen({ onSignedIn }) {
                 className="field-input"
                 type="email"
                 autoComplete="username"
-                placeholder="you@bitcap.com"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -181,6 +167,9 @@ function LoginScreen({ onSignedIn }) {
             >
               {busy ? "Signing in…" : "Sign in"}
             </button>
+            <button className="btn btn-ghost" type="button" style={{ padding: 12 }} onClick={onCancel}>
+              Back
+            </button>
           </div>
         </form>
       </div>
@@ -188,14 +177,13 @@ function LoginScreen({ onSignedIn }) {
   );
 }
 
-export function Gate({ children }) {
-  // "checking" until the stored token has been validated against the API. A
-  // token in localStorage may have expired since it was issued, and rendering
-  // the page before finding out means every panel fails at once instead of the
-  // login form appearing.
+// "checking" until the stored token has been validated against the API: a
+// token in localStorage may have expired since it was issued. Then "in" or
+// "out". Pages render either way; this only decides what is enabled.
+export function useSession() {
   const [state, setState] = useState("checking");
 
-  const check = useCallback(() => {
+  useEffect(() => {
     if (!getToken()) {
       setState("out");
       return;
@@ -205,17 +193,25 @@ export function Gate({ children }) {
       .catch(() => setState("out"));
   }, []);
 
-  useEffect(check, [check]);
+  return state;
+}
 
-  if (state === "checking") {
+// The nav's last button: "Sign out" for the operator, "Sign in" for everyone
+// else. Signing in reloads, so every `useSession` on the page agrees.
+export function SessionButton() {
+  const session = useSession();
+  const [open, setOpen] = useState(false);
+
+  if (open) {
     return (
-      <div className="app">
-        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--muted-2)", fontSize: 13 }}>
-          Checking session…
-        </div>
-      </div>
+      <LoginScreen
+        onSignedIn={() => window.location.reload()}
+        onCancel={() => setOpen(false)}
+      />
     );
   }
-  if (state === "out") return <LoginScreen onSignedIn={() => setState("in")} />;
-  return children;
+  if (session === "in") {
+    return <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>;
+  }
+  return <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={() => setOpen(true)}>Sign in</button>;
 }

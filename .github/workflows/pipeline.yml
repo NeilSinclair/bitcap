@@ -1,0 +1,96 @@
+# The scheduled firing. Once a week, on a GitHub-hosted runner, against the
+# hosted Postgres.
+#
+# This replaced a nightly Render cron job (docs/decisions.md D83). A runner is
+# free for a public repository, has no idle timeout to kill a 30-minute firing,
+# and needs no always-on service holding the keys.
+#
+# WHO CAN START ONE. The schedule, and `workflow_dispatch`, which GitHub offers
+# only to people with write access to the repository. A fork's copy of this
+# workflow has no access to the secrets below.
+#
+# TWO THINGS THAT WILL BITE:
+#
+# * GitHub disables scheduled workflows in a public repository after 60 days
+#   without repository activity. Nothing here fails when that happens; the
+#   firings just stop. Re-enable from the Actions tab.
+# * The schedule is best-effort and can start late. Nothing depends on the
+#   minute.
+name: pipeline
+
+on:
+  schedule:
+    # Thursday 03:00 UTC. 03:00 so the day that has just closed is complete
+    # (D80); the weekday is arbitrary while editions are daily.
+    - cron: "0 3 * * 4"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: exercise every phase, spend nothing"
+        type: boolean
+        default: false
+
+# Nothing here pushes, comments or deploys.
+permissions:
+  contents: read
+
+# The database refuses a second `running` row anyway (D44); this stops a second
+# runner from being started only to stand down.
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  firing:
+    runs-on: ubuntu-latest
+    # The longest firing measured is ~30 minutes. A run killed here leaves a
+    # `running` row, which the next firing reaps before it claims its own
+    # (app/runs.py `running_run`).
+    timeout-minutes: 90
+    steps:
+      # `deployment`, not the default branch. A schedule fires from the default
+      # branch, which here is `deployment-dev` -- where work lands to be tried.
+      # Without this pin, whatever was pushed there on Wednesday migrates the
+      # hosted database and spends money on Thursday. This FILE is still read
+      # from the default branch; only the code it runs is pinned.
+      - uses: actions/checkout@v4
+        with:
+          ref: deployment
+
+      # Same pin as tests.yml and the Dockerfile.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install
+        run: uv sync --frozen
+
+      # Secrets are on this step alone, so the actions and the dependency
+      # install above never see them.
+      #
+      # An unset secret expands to an empty string, and an empty DATABASE_URL
+      # makes `app/db.py` fall back to a local sqlite file: the firing would
+      # succeed against a database that is thrown away with the runner. Hence
+      # the `test`.
+      #
+      # Exit 3 means the firing stood down because another run holds the lock
+      # (app/pipeline/worker.py EXIT_REFUSED). It fails this job on purpose:
+      # the next scheduled firing is a week away.
+      - name: Fire
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Not GITHUB_TOKEN: Actions reserves that name for its own per-job
+          # token, which is rate-limited far below what the github leg's 2,000
+          # repositories need. The harvesters read GITHUB_TOKEN, so it is
+          # mapped here.
+          GITHUB_TOKEN: ${{ secrets.HARVEST_GITHUB_TOKEN }}
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          # Only read when `alerts.channel` is `webhook`; unset is fine.
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: |
+          test -n "$DATABASE_URL"
+          uv run bitcap-worker ${{ inputs.dry_run && '--dry-run' || '' }}

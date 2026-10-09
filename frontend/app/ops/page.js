@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Gate, apiFetch, signOut } from "../auth";
+import { SessionButton, apiFetch, useSession } from "../auth";
 
 const ACCENT = "#5ac3f0";
 const NEGATIVE = "#f2545b";
@@ -134,6 +134,7 @@ function OpsView() {
   const [kind, setKind] = useState("system");
   const [error, setError] = useState(null);
   const [clearing, setClearing] = useState(false);
+  const signedIn = useSession() === "in";
   // Bumped after acknowledging, to re-run the fetches below rather than
   // duplicating their URLs in the handler — two ways to build the same request
   // is two places for the `kind` filter to drift out of agreement.
@@ -195,7 +196,7 @@ function OpsView() {
             <a className="btn btn-ghost" href="/digest/" style={{ padding: "8px 14px", textDecoration: "none" }}>Alerts</a>
             <a className="btn btn-ghost" href="/" style={{ padding: "8px 14px", textDecoration: "none" }}>Dashboard</a>
             <a className="btn btn-ghost" href="/pipeline/" style={{ padding: "8px 14px", textDecoration: "none" }}>Pipeline</a>
-            <button className="btn btn-ghost" style={{ padding: "8px 14px" }} onClick={signOut}>Sign out</button>
+            <SessionButton />
           </div>
         </div>
 
@@ -307,8 +308,9 @@ function OpsView() {
                 {outstanding ? `${outstanding} outstanding` : "badge clear"}
               </span>
               <button className="btn btn-ghost"
-                      disabled={clearing || !outstanding}
-                      style={{ padding: "6px 12px", fontSize: 12, opacity: clearing || !outstanding ? 0.4 : 1 }}
+                      disabled={clearing || !outstanding || !signedIn}
+                      title={signedIn ? undefined : "Sign in to clear"}
+                      style={{ padding: "6px 12px", fontSize: 12, opacity: clearing || !outstanding || !signedIn ? 0.4 : 1 }}
                       onClick={clearAlerts}>
                 {clearing ? "Clearing…" : "Clear health status"}
               </button>
@@ -340,9 +342,5 @@ function OpsView() {
 
 
 export default function Ops() {
-  return (
-    <Gate>
-      <OpsView />
-    </Gate>
-  );
+  return <OpsView />;
 }
