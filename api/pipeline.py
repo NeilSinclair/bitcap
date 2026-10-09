@@ -54,7 +54,7 @@ from app.runs import STALE_RUN_HOURS, running_run  # noqa: F401 -- re-exported f
 # counter, or clicking the button would silently skip the GitHub leg's turn.
 KIND = "manual"
 
-# Human-facing copy for the four checkboxes. Kept here rather than in the
+# Human-facing copy for the run picker's checkboxes. Kept here rather than in the
 # frontend so the page cannot drift out of step with what the backend accepts.
 _LEG_NOTES = {
     "announcements": "Lab blogs and newsrooms. The insight stream the digest is built from.",
@@ -209,12 +209,20 @@ def build_router(engine: Engine) -> APIRouter:
         """Start a firing and return immediately with its run id.
 
         Raises:
-            HTTPException: 400 on an unknown leg or an empty selection; 409 when
+            HTTPException: 400 on an unknown or switched-off leg or an empty
+                selection; 409 when
                 a run is already in flight.
         """
         unknown = set(body.legs) - set(LEGS)
         if unknown:
             raise HTTPException(400, f"unknown leg(s): {sorted(unknown)}")
+        # The worker drops a disabled leg silently (`enabled` outranks an
+        # explicit selection), so a run asked for only that leg would claim the
+        # slot, fetch nothing and report success.
+        off = set(body.legs) - set(worker.live_legs(worker.load_config()))
+        if off:
+            raise HTTPException(
+                400, f"leg(s) switched off in config/pipeline.yaml: {sorted(off)}")
         if not body.legs and not body.drift:
             raise HTTPException(400, "select at least one leg")
 

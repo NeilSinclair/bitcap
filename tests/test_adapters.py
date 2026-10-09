@@ -830,7 +830,7 @@ class TestReleasesAdapter:
         assert result.watermark["cursors"]["b"] == "2026-01-01T00:00:00Z"
 
     def test_one_dead_repo_does_not_take_out_the_org(self, session, monkeypatch):
-        """A repository renamed since bronze last saw it raises a 404 that
+        """A repository renamed since it was listed raises a 404 that
         `_call` does not retry. Letting it propagate discards every release
         already fetched, advances no cursor, and repeats every firing."""
         self.listing(monkeypatch, [self.listed_repo("dead", 20),

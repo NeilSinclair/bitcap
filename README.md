@@ -176,7 +176,7 @@ Everything it does is configured in [`config/pipeline.yaml`](config/pipeline.yam
 |---|---|
 | `budget.per_run_usd` / `per_month_usd` | A cron making LLM calls with no ceiling is the one thing that can hurt on a fixed budget. Exceeding it stops classification; ingested data still lands. |
 | `enabled` | The kill switch, one line per leg. `false` means not fetched, not landed, and not classified — including rows the leg ingested on earlier firings, which stay in bronze and would otherwise keep costing money. It outranks `cadence` and an explicit `--legs`. A leg absent from the map is on. |
-| `cadence` | Per leg, as "every Nth firing". All 1 now that the firing is weekly; GitHub was every 3rd while it was nightly. |
+| `cadence` | Per leg, as "every Nth firing". All 1 now that the firing is weekly. |
 | `alerts.source_down_runs` | One firing down and back up is noise. N in a row is an incident. |
 | `alerts.max_deliveries_per_run` | Everything raised is recorded; only delivery is capped, so a first run over an existing corpus does not fire 135 notifications. |
 
@@ -212,7 +212,7 @@ for the same answer:
 | Cache | Where | A cold start... |
 |---|---|---|
 | Classifier output | `raw_llm_responses`, keyed on prompt version — `v9` for announcements, `p1` for papers | never re-classifies |
-| GitHub commit history | `raw_github_repos`, keyed on `pushed_at` | walks only repos that were pushed to |
+| GitHub commit history | `raw_github_repos`, keyed on `pushed_at` | not read while the github leg is off (D84); when on, walks only repos that were pushed to |
 | Fetched pages, extracted bylines | `research/docs/` on disk | re-fetches and re-extracts |
 
 The disk row barely fires. Each leg narrows its window to what has happened

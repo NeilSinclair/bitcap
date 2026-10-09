@@ -8979,3 +8979,15 @@ turned back on.
   offer a leg the worker would refuse.
 - `raw_github_repos`, `fetch_github`, `register.load_github*` and the
   `research/github` scripts are untouched.
+- `POST /api/pipeline/run` refuses a switched-off leg with 400, rather than
+  claiming the slot and reporting a firing that fetched nothing as succeeded.
+
+**Known open (from review).**
+- `source_down` and `/api/health` filter on the per-source `disabled` flag, not
+  on `enabled`. A leg switched off while a source sits at the failure threshold
+  would re-raise its alert every firing for ever. Checked on the hosted
+  database on 2026-10-09: all 8 github sources are at 0 failures, so it does
+  not bite here. It would for the next leg switched off mid-outage.
+- `research/github/label_repos.py` still builds the bronze-filtered population
+  D65 was measured on, and `research/corpus/first_mention.py`'s CLI report
+  ranks `raw_github_repos` directly. Both are offline scripts and now frozen.

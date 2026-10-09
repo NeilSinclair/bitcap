@@ -281,6 +281,18 @@ class TestTheRunPickerOffersOnlyLiveLegs:
         assert "papers" not in offered
         assert {"announcements", "releases", "drift"} <= offered
 
+    def test_a_run_asking_for_a_switched_off_leg_is_refused(self, client, token, engine):
+        """Otherwise it claims the only running slot, fetches nothing, and
+        reports `succeeded` -- a firing that did not look, recorded as one that
+        found nothing."""
+        response = client.post("/api/pipeline/run", headers=bearer(token),
+                               json={"legs": ["github"]})
+
+        assert response.status_code == 400
+        assert "switched off" in response.json()["detail"]
+        with Session(engine) as s:
+            assert s.scalars(select(m.PipelineRun)).all() == []
+
     def test_the_shipped_picker_does_not_offer_the_github_leg(self, client):
         offered = {leg["id"] for leg in client.get("/api/pipeline/legs").json()}
         assert "github" not in offered and "releases" in offered

@@ -151,7 +151,10 @@ def population_rows() -> list[dict]:
                 f"{len(org_bronze)} repositories — a failed call, not a quiet org"
             )
         ranked = rank_repos.rank(
-            [(r.org, r.repo, _listing_fields(r.payload, listing.get(r.repo, {})))
+            # Still the bronze-filtered population the D65 measurement was
+            # taken on. Production no longer filters on bronze (D84), so a
+            # re-measurement should rank the whole listing instead.
+            [(r.org, r.repo, _listing_fields(listing[r.repo]))
              for r in org_bronze if r.repo in listing],
             cfg,
         )

@@ -84,9 +84,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           # Not GITHUB_TOKEN: Actions reserves that name for its own per-job
-          # token, which is rate-limited far below what the github leg's 2,000
-          # repositories need. The harvesters read GITHUB_TOKEN, so it is
-          # mapped here.
+          # token, and the releases leg lists and reads other organisations'
+          # repositories on a personal token's rate limit. The harvesters read
+          # GITHUB_TOKEN, so it is mapped here.
           GITHUB_TOKEN: ${{ secrets.HARVEST_GITHUB_TOKEN }}
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           # Only read when `alerts.channel` is `webhook`; unset is fine.

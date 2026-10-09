@@ -72,6 +72,9 @@ budget:
 # cron to a weekly one, and every 3rd weekly firing is a three-week-old commit
 # picture. The 14 minutes no longer matters: it is once a week, on a runner
 # with no request waiting on it.
+#
+# MOOT SINCE D84: the github leg is switched off in `enabled` below, which
+# outranks cadence. The paragraphs above apply only if it is switched back on.
 # The kill switch. A leg set false is not fetched, not landed and not spent on
 # -- including rows it ingested on earlier firings, which stay in bronze and
 # would otherwise keep being classified. Separate from `cadence` because

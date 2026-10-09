@@ -70,7 +70,7 @@ def is_mirror(description: str | None) -> bool:
 
 
 def row(org: str, name: str, payload: dict, cfg: dict, now: datetime) -> dict:
-    """Build one ranked row from a repository's bronze payload.
+    """Build one ranked row from a repository's listing fields.
 
     Deliberately thin. An earlier version carried the activity evidence too --
     commits, human commits, bot commits, distinct authors, last commit -- so a
@@ -92,7 +92,7 @@ def row(org: str, name: str, payload: dict, cfg: dict, now: datetime) -> dict:
     """
     created = payload.get("created_at")
     if not created:
-        # A repository absent from the live listing overlay has no date. Saying
+        # A listing entry with no `created_at` has no date. Saying
         # so is honest; guessing from the first commit in the window would mark
         # every dormant famous repository as new, which is the failure this cut
         # exists to avoid.
